@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-09-21 08:32:28",
-  "generated_at_utc": "2026-09-20 23:32:28",
+  "generated_at_kst": "2026-09-21 09:07:41",
+  "generated_at_utc": "2026-09-21 00:07:41",
   "sources": {
     "yahoo:kospi": {
       "ok": true
@@ -583,8 +583,7 @@
       "error": "ValueError: 네이버는 VKOSPI 를 취급하지 않는다(지수 코드가 KOSPI/KOSDAQ/FUT/KPI100/KPI200/KVALUE 뿐). 야후 미수록, 인베스팅 403, stooq 자바스크립트 차단. KRX 오픈API 무료 인증키(KRX_AUTH_KEY)를 넣으면 열린다. 시도: VKOSPI -> HTTP Error 409: 409; VKOSPI200 -> HTTP Error 409: 409"
     },
     "naver:sectors": {
-      "ok": false,
-      "error": "ValueError: 업종 등락률이 전부 0 — 개장 전 응답이다(79개)"
+      "ok": true
     },
     "naver:investors": {
       "ok": true
@@ -594,10 +593,6 @@
     },
     "naver:market_api:KOSDAQ": {
       "ok": true
-    },
-    "carry:used": {
-      "ok": true,
-      "note": "직전 마감분 이어 붙임: kospi, kosdaq, sectors"
     },
     "naver:rates": {
       "ok": true
@@ -640,11 +635,10 @@
     },
     "derived:ib_mentions": {
       "ok": true,
-      "count": 3,
+      "count": 2,
       "names": [
         "JP모건",
-        "번스타인",
-        "에버코어"
+        "번스타인"
       ]
     },
     "krx:openapi": {
@@ -682,7 +676,7 @@
     },
     "derived:earnings": {
       "ok": true,
-      "found": 5
+      "found": 6
     }
   },
   "indices": {
@@ -706,7 +700,7 @@
         "y1": 99.18,
         "ytd": 63.6,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       }
     },
     "kosdaq": {
@@ -729,28 +723,28 @@
         "y1": -3.5,
         "ytd": -10.63,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       }
     },
     "usdkrw": {
       "symbol": "KRW=X",
       "date": "2026-09-21",
-      "close": 1385.64,
+      "close": 1386.1,
       "open": 1385.0,
-      "high": 1386.47,
+      "high": 1386.98,
       "low": 1384.6,
       "volume": 0,
       "prev_close": 1379.53,
-      "change": 6.11,
-      "change_pct": 0.4429,
+      "change": 6.5699,
+      "change_pct": 0.4762,
       "currency": "KRW",
       "perf": {
-        "w1": 3.05,
-        "m1": -0.37,
-        "m3": -9.88,
-        "m6": -6.99,
-        "y1": -0.08,
-        "ytd": -3.64,
+        "w1": 3.08,
+        "m1": -0.34,
+        "m3": -9.85,
+        "m6": -6.96,
+        "y1": -0.05,
+        "ytd": -3.6,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -873,22 +867,22 @@
     "dxy": {
       "symbol": "DX-Y.NYB",
       "date": "2026-09-20",
-      "close": 100.263,
+      "close": 100.283,
       "open": 100.252,
-      "high": 100.28,
+      "high": 100.29,
       "low": 100.203,
       "volume": 0,
       "prev_close": 100.22,
-      "change": 0.043,
-      "change_pct": 0.0429,
+      "change": 0.063,
+      "change_pct": 0.0629,
       "currency": "USD",
       "perf": {
-        "w1": 1.15,
-        "m1": 1.38,
-        "m3": -0.58,
-        "m6": 0.62,
-        "y1": 2.69,
-        "ytd": 2.02,
+        "w1": 1.17,
+        "m1": 1.4,
+        "m3": -0.56,
+        "m6": 0.64,
+        "y1": 2.71,
+        "ytd": 2.04,
         "unit": "%",
         "from": "2024-09-20"
       }
@@ -896,22 +890,22 @@
     "usdjpy": {
       "symbol": "JPY=X",
       "date": "2026-09-21",
-      "close": 157.026,
+      "close": 156.929,
       "open": 156.855,
       "high": 157.11,
       "low": 156.706,
       "volume": 0,
       "prev_close": 156.129,
-      "change": 0.897,
-      "change_pct": 0.5745,
+      "change": 0.8,
+      "change_pct": 0.5124,
       "currency": "JPY",
       "perf": {
-        "w1": 2.35,
-        "m1": -1.17,
-        "m3": -2.64,
-        "m6": -0.57,
-        "y1": 6.14,
-        "ytd": 0.39,
+        "w1": 2.28,
+        "m1": -1.23,
+        "m3": -2.7,
+        "m6": -0.63,
+        "y1": 6.07,
+        "ytd": 0.33,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -919,22 +913,22 @@
     "wti": {
       "symbol": "CL=F",
       "date": "2026-09-21",
-      "close": 96.03,
+      "close": 95.76,
       "open": 96.75,
       "high": 97.22,
-      "low": 95.85,
-      "volume": 9292,
+      "low": 95.74,
+      "volume": 11284,
       "prev_close": 100.3,
-      "change": -4.27,
-      "change_pct": -4.2572,
+      "change": -4.54,
+      "change_pct": -4.5264,
       "currency": "USD",
       "perf": {
-        "w1": -4.02,
-        "m1": 9.34,
-        "m3": 25.37,
-        "m6": -2.33,
-        "y1": 53.21,
-        "ytd": 67.24,
+        "w1": -4.29,
+        "m1": 9.03,
+        "m3": 25.01,
+        "m6": -2.6,
+        "y1": 52.78,
+        "ytd": 66.77,
         "unit": "%",
         "from": "2024-09-20"
       }
@@ -942,22 +936,22 @@
     "brent": {
       "symbol": "BZ=F",
       "date": "2026-09-21",
-      "close": 99.43,
+      "close": 99.19,
       "open": 100.0,
       "high": 100.26,
-      "low": 99.28,
-      "volume": 658,
+      "low": 99.17,
+      "volume": 909,
       "prev_close": 103.87,
-      "change": -4.44,
-      "change_pct": -4.2746,
+      "change": -4.68,
+      "change_pct": -4.5056,
       "currency": "USD",
       "perf": {
-        "w1": -4.95,
-        "m1": 6.02,
-        "m3": 24.52,
-        "m6": -11.37,
-        "y1": 49.12,
-        "ytd": 63.4,
+        "w1": -5.18,
+        "m1": 5.77,
+        "m3": 24.22,
+        "m6": -11.59,
+        "y1": 48.76,
+        "ytd": 63.01,
         "unit": "%",
         "from": "2024-09-20"
       }
@@ -965,22 +959,22 @@
     "gold": {
       "symbol": "GC=F",
       "date": "2026-09-21",
-      "close": 4412.7998,
+      "close": 4411.2998,
       "open": 4413.0,
       "high": 4420.2002,
-      "low": 4409.2998,
-      "volume": 3037,
+      "low": 4406.8999,
+      "volume": 3904,
       "prev_close": 4424.8999,
-      "change": -12.1001,
-      "change_pct": -0.2735,
+      "change": -13.6001,
+      "change_pct": -0.3074,
       "currency": "USD",
       "perf": {
-        "w1": 0.09,
-        "m1": -3.47,
-        "m3": 3.93,
-        "m6": -3.54,
-        "y1": 19.08,
-        "ytd": 1.65,
+        "w1": 0.05,
+        "m1": -3.5,
+        "m3": 3.9,
+        "m6": -3.58,
+        "y1": 19.04,
+        "ytd": 1.62,
         "unit": "%",
         "from": "2024-09-20"
       }
@@ -1111,22 +1105,22 @@
     "silver": {
       "symbol": "SI=F",
       "date": "2026-09-21",
-      "close": 66.845,
+      "close": 66.83,
       "open": 66.685,
       "high": 67.0,
       "low": 66.55,
-      "volume": 842,
+      "volume": 1047,
       "prev_close": 66.556,
-      "change": 0.289,
-      "change_pct": 0.4342,
+      "change": 0.274,
+      "change_pct": 0.4117,
       "currency": "USD",
       "perf": {
-        "w1": 3.55,
-        "m1": -1.74,
-        "m3": 0.89,
-        "m6": -3.63,
-        "y1": 57.15,
-        "ytd": -4.69,
+        "w1": 3.53,
+        "m1": -1.76,
+        "m3": 0.87,
+        "m6": -3.65,
+        "y1": 57.11,
+        "ytd": -4.71,
         "unit": "%",
         "from": "2024-09-20"
       }
@@ -1134,22 +1128,22 @@
     "copper": {
       "symbol": "HG=F",
       "date": "2026-09-21",
-      "close": 6.712,
+      "close": 6.711,
       "open": 6.722,
       "high": 6.73,
       "low": 6.7015,
-      "volume": 367,
+      "volume": 414,
       "prev_close": 6.615,
-      "change": 0.097,
-      "change_pct": 1.4664,
+      "change": 0.096,
+      "change_pct": 1.4513,
       "currency": "USD",
       "perf": {
-        "w1": 3.75,
-        "m1": 3.9,
-        "m3": 5.29,
-        "m6": 25.63,
-        "y1": 46.9,
-        "ytd": 19.22,
+        "w1": 3.73,
+        "m1": 3.89,
+        "m3": 5.28,
+        "m6": 25.62,
+        "y1": 46.88,
+        "ytd": 19.2,
         "unit": "%",
         "from": "2024-09-20"
       }
@@ -1157,22 +1151,22 @@
     "natgas": {
       "symbol": "NG=F",
       "date": "2026-09-21",
-      "close": 2.888,
+      "close": 2.886,
       "open": 2.902,
       "high": 2.906,
       "low": 2.881,
-      "volume": 1014,
+      "volume": 1058,
       "prev_close": 2.912,
-      "change": -0.024,
-      "change_pct": -0.8242,
+      "change": -0.026,
+      "change_pct": -0.8929,
       "currency": "USD",
       "perf": {
-        "w1": 2.01,
-        "m1": 5.67,
-        "m3": -10.67,
-        "m6": -6.69,
-        "y1": 0.0,
-        "ytd": -21.65,
+        "w1": 1.94,
+        "m1": 5.6,
+        "m3": -10.73,
+        "m6": -6.75,
+        "y1": -0.07,
+        "ytd": -21.7,
         "unit": "%",
         "from": "2024-09-20"
       }
@@ -1341,22 +1335,22 @@
     "eurusd": {
       "symbol": "EURUSD=X",
       "date": "2026-09-21",
-      "close": 1.1484,
+      "close": 1.1482,
       "open": 1.149,
       "high": 1.1494,
-      "low": 1.1482,
+      "low": 1.1481,
       "volume": 0,
       "prev_close": 1.1476,
-      "change": 0.0008,
-      "change_pct": 0.0666,
+      "change": 0.0006,
+      "change_pct": 0.0551,
       "currency": "USD",
       "perf": {
-        "w1": -0.95,
-        "m1": -1.75,
-        "m3": 0.22,
-        "m6": -0.81,
-        "y1": -2.61,
-        "ytd": -2.24,
+        "w1": -0.96,
+        "m1": -1.76,
+        "m3": 0.21,
+        "m6": -0.82,
+        "y1": -2.62,
+        "ytd": -2.26,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -1374,8 +1368,8 @@
       "change_pct": -0.2848,
       "currency": "CNY",
       "perf": {
-        "w1": -0.27,
-        "m1": -0.61,
+        "w1": -0.29,
+        "m1": -0.51,
         "m3": -1.19,
         "m6": -3.07,
         "y1": -5.97,
@@ -1386,25 +1380,25 @@
     },
     "btc": {
       "symbol": "BTC-USD",
-      "date": "2026-09-20",
-      "close": 81175.4766,
-      "open": 81226.6172,
-      "high": 81371.7656,
-      "low": 80217.0625,
-      "volume": 21348073472,
+      "date": "2026-09-21",
+      "close": 81448.5078,
+      "open": 81162.1797,
+      "high": 81313.8125,
+      "low": 81162.1797,
+      "volume": 21118134272,
       "prev_close": 81233.6797,
-      "change": -58.2031,
-      "change_pct": -0.0716,
+      "change": 214.8281,
+      "change_pct": 0.2645,
       "currency": "USD",
       "perf": {
-        "w1": 5.64,
-        "m1": 11.15,
-        "m3": 26.36,
-        "m6": 15.11,
-        "y1": -29.85,
-        "ytd": -7.24,
+        "w1": 4.2,
+        "m1": 3.97,
+        "m3": 28.8,
+        "m6": 18.54,
+        "y1": -29.36,
+        "ytd": -6.93,
         "unit": "%",
-        "from": "2024-09-20"
+        "from": "2024-09-21"
       }
     },
     "stoxx600": {
@@ -1588,30 +1582,30 @@
         "y1": -0.16,
         "ytd": 0.19,
         "unit": "%",
-        "from": "2024-09-18"
+        "from": "2024-09-23"
       }
     },
     "eth": {
       "symbol": "ETH-USD",
-      "date": "2026-09-20",
-      "close": 2641.6399,
-      "open": 2631.7798,
-      "high": 2645.3276,
-      "low": 2569.7356,
-      "volume": 10702804992,
+      "date": "2026-09-21",
+      "close": 2655.78,
+      "open": 2644.7986,
+      "high": 2652.2605,
+      "low": 2644.7986,
+      "volume": 10906011648,
       "prev_close": 2631.9626,
-      "change": 9.6772,
-      "change_pct": 0.3677,
+      "change": 23.8174,
+      "change_pct": 0.9049,
       "currency": "USD",
       "perf": {
-        "w1": 6.65,
-        "m1": 13.55,
-        "m3": 51.88,
-        "m6": 23.07,
-        "y1": -41.06,
-        "ytd": -10.97,
+        "w1": 5.62,
+        "m1": 5.59,
+        "m3": 55.8,
+        "m6": 27.89,
+        "y1": -40.34,
+        "ytd": -10.49,
         "unit": "%",
-        "from": "2024-09-20"
+        "from": "2024-09-21"
       }
     },
     "platinum": {
@@ -1620,8 +1614,8 @@
       "close": 1804.6,
       "open": 1807.8,
       "high": 1814.5,
-      "low": 1803.2,
-      "volume": 190,
+      "low": 1802.2,
+      "volume": 240,
       "prev_close": 1803.5,
       "change": 1.1,
       "change_pct": 0.061,
@@ -1640,22 +1634,22 @@
     "usdtwd": {
       "symbol": "TWD=X",
       "date": "2026-09-21",
-      "close": 31.8,
+      "close": 31.808,
       "open": 31.763,
-      "high": 31.817,
+      "high": 31.82,
       "low": 31.763,
       "volume": 0,
       "prev_close": 31.8511,
-      "change": -0.0511,
-      "change_pct": -0.1604,
+      "change": -0.0431,
+      "change_pct": -0.1353,
       "currency": "TWD",
       "perf": {
-        "w1": 0.39,
-        "m1": -0.12,
-        "m3": 0.52,
-        "m6": -0.01,
-        "y1": 5.61,
-        "ytd": 1.78,
+        "w1": 0.42,
+        "m1": -0.1,
+        "m3": 0.54,
+        "m6": 0.02,
+        "y1": 5.64,
+        "ytd": 1.81,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -1663,22 +1657,22 @@
     "gbpusd": {
       "symbol": "GBPUSD=X",
       "date": "2026-09-21",
-      "close": 1.3392,
+      "close": 1.3389,
       "open": 1.3395,
       "high": 1.3395,
       "low": 1.3385,
       "volume": 0,
       "prev_close": 1.3358,
-      "change": 0.0034,
-      "change_pct": 0.2511,
+      "change": 0.0031,
+      "change_pct": 0.235,
       "currency": "USD",
       "perf": {
-        "w1": -0.99,
-        "m1": -1.85,
-        "m3": 1.44,
-        "m6": -0.25,
-        "y1": -1.21,
-        "ytd": -0.56,
+        "w1": -1.01,
+        "m1": -1.86,
+        "m3": 1.42,
+        "m6": -0.27,
+        "y1": -1.23,
+        "ytd": -0.58,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -1709,22 +1703,22 @@
     "sp500_fut": {
       "symbol": "ES=F",
       "date": "2026-09-21",
-      "close": 7732.25,
+      "close": 7733.75,
       "open": 7722.0,
-      "high": 7734.5,
+      "high": 7735.25,
       "low": 7713.75,
-      "volume": 13738,
+      "volume": 16361,
       "prev_close": 7657.3501,
-      "change": 74.8999,
-      "change_pct": 0.9781,
+      "change": 76.3999,
+      "change_pct": 0.9977,
       "currency": "USD",
       "perf": {
-        "w1": 0.95,
-        "m1": 0.91,
-        "m3": 2.98,
-        "m6": 17.25,
-        "y1": 16.12,
-        "ytd": 12.18,
+        "w1": 0.97,
+        "m1": 0.93,
+        "m3": 3.0,
+        "m6": 17.27,
+        "y1": 16.14,
+        "ytd": 12.21,
         "unit": "%",
         "from": "2024-09-20"
       }
@@ -1732,22 +1726,22 @@
     "nasdaq_fut": {
       "symbol": "NQ=F",
       "date": "2026-09-21",
-      "close": 30016.25,
+      "close": 30027.75,
       "open": 29938.0,
-      "high": 30034.0,
+      "high": 30040.25,
       "low": 29904.0,
-      "volume": 13308,
+      "volume": 16023,
       "prev_close": 29613.6797,
-      "change": 402.5703,
-      "change_pct": 1.3594,
+      "change": 414.0703,
+      "change_pct": 1.3982,
       "currency": "USD",
       "perf": {
-        "w1": 2.14,
-        "m1": 2.44,
-        "m3": -0.82,
-        "m6": 23.57,
-        "y1": 22.18,
-        "ytd": 17.91,
+        "w1": 2.18,
+        "m1": 2.48,
+        "m3": -0.78,
+        "m6": 23.61,
+        "y1": 22.22,
+        "ytd": 17.96,
         "unit": "%",
         "from": "2024-09-20"
       }
@@ -1755,22 +1749,22 @@
     "dow_fut": {
       "symbol": "YM=F",
       "date": "2026-09-21",
-      "close": 52194.0,
+      "close": 52202.0,
       "open": 52085.0,
       "high": 52220.0,
       "low": 52080.0,
-      "volume": 840,
+      "volume": 970,
       "prev_close": 51761.0,
-      "change": 433.0,
-      "change_pct": 0.8365,
+      "change": 441.0,
+      "change_pct": 0.852,
       "currency": "USD",
       "perf": {
-        "w1": -0.74,
-        "m1": -1.24,
-        "m3": 0.45,
-        "m6": 13.72,
-        "y1": 12.66,
-        "ytd": 7.98,
+        "w1": -0.73,
+        "m1": -1.22,
+        "m3": 0.46,
+        "m6": 13.74,
+        "y1": 12.68,
+        "ytd": 8.0,
         "unit": "%",
         "from": "2024-09-20"
       }
@@ -1778,22 +1772,22 @@
     "russell_fut": {
       "symbol": "RTY=F",
       "date": "2026-09-21",
-      "close": 2888.0,
+      "close": 2887.5,
       "open": 2879.5,
       "high": 2890.3,
       "low": 2876.6001,
-      "volume": 2884,
+      "volume": 3211,
       "prev_close": 2873.23,
-      "change": 14.77,
-      "change_pct": 0.5141,
+      "change": 14.27,
+      "change_pct": 0.4967,
       "currency": "USD",
       "perf": {
-        "w1": -0.57,
-        "m1": -3.71,
-        "m3": -2.46,
-        "m6": 15.69,
-        "y1": 16.83,
-        "ytd": 15.61,
+        "w1": -0.59,
+        "m1": -3.72,
+        "m3": -2.47,
+        "m6": 15.67,
+        "y1": 16.81,
+        "ytd": 15.59,
         "unit": "%",
         "from": "2024-09-20"
       }
@@ -1834,13 +1828,13 @@
       "change_pct": 3.02,
       "currency": "KRW",
       "perf": {
-        "w1": 0.0,
-        "m1": 0.76,
+        "w1": 3.75,
+        "m1": -0.55,
         "unit": "%",
-        "from": "2026-06-25",
+        "from": "2026-06-26",
         "basis": "다음 금융 KPI200 일별시세 (야후 ^KS200 은 일봉 이력이 짧다)"
       },
-      "perf_note": "KPI200 일별시세가 60행(2026-06-25부터)뿐이라 m3·m6·y1·ytd 는 되짚지 못했다"
+      "perf_note": "KPI200 일별시세가 60행(2026-06-26부터)뿐이라 m3·m6·y1·ytd 는 되짚지 못했다"
     }
   },
   "stocks": {
@@ -1864,7 +1858,7 @@
         "y1": 225.03,
         "ytd": 117.68,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "메모리·파운드리·스마트폰. 코스피 시총 1위",
       "note_en": "Memory, foundry and handsets; largest KOSPI constituent"
@@ -1889,7 +1883,7 @@
         "y1": 422.36,
         "ytd": 185.25,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "D램·낸드. HBM 시장 선두권, 엔비디아 주요 공급사",
       "note_en": "DRAM and NAND; a leader in HBM and a key Nvidia supplier"
@@ -1914,7 +1908,7 @@
         "y1": 611.79,
         "ytd": 444.31,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "MLCC·반도체 기판. 삼성전자 공급망",
       "note_en": "MLCCs and semiconductor substrates; Samsung supply chain"
@@ -1939,7 +1933,7 @@
         "y1": 141.66,
         "ytd": 115.89,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "가전·TV·전장. 전장(차량 부품)이 성장축",
       "note_en": "Appliances, TVs and auto parts; components are the growth engine"
@@ -1964,7 +1958,7 @@
         "y1": 33.11,
         "ytd": 27.99,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "IT 서비스·물류 BPO. 그룹 시스템 통합",
       "note_en": "IT services and logistics BPO; the group's systems integrator"
@@ -1989,7 +1983,7 @@
         "y1": 417.51,
         "ytd": 193.21,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "SK하이닉스를 거느린 투자지주",
       "note_en": "Investment holding company; SK hynix is its main asset"
@@ -2014,7 +2008,7 @@
         "y1": 3.85,
         "ytd": -1.22,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "이차전지 셀. 완성차에 배터리 공급",
       "note_en": "Battery cells supplied to global automakers"
@@ -2039,7 +2033,7 @@
         "y1": -11.0,
         "ytd": -19.82,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "석유화학·첨단소재. LG에너지솔루션 최대주주",
       "note_en": "Petrochemicals and advanced materials; owns most of LG Energy Solution"
@@ -2064,7 +2058,7 @@
         "y1": 164.55,
         "ytd": 100.74,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "이차전지 셀·전자재료. 각형 배터리 중심",
       "note_en": "Battery cells and electronic materials; focused on prismatic cells"
@@ -2089,7 +2083,7 @@
         "y1": 13.93,
         "ytd": 5.9,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "철강 + 리튬·니켈 등 이차전지 소재 지주",
       "note_en": "Steel plus a battery-materials arm (lithium, nickel)"
@@ -2114,7 +2108,7 @@
         "y1": -10.95,
         "ytd": -17.52,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "바이오의약품 위탁생산(CDMO) 세계 최대급",
       "note_en": "One of the world's largest biologics CDMOs"
@@ -2139,7 +2133,7 @@
         "y1": 11.79,
         "ytd": 4.07,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "바이오시밀러. 미국·유럽 처방 확대",
       "note_en": "Biosimilars, with prescriptions growing in the US and Europe"
@@ -2164,7 +2158,7 @@
         "y1": 68.59,
         "ytd": 23.1,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "완성차. 미국·인도 판매 비중이 큼",
       "note_en": "Automaker with heavy exposure to the US and India"
@@ -2189,7 +2183,7 @@
         "y1": 19.51,
         "ytd": 0.08,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "완성차. 현대차그룹, 미국·유럽 판매 비중이 큼",
       "note_en": "Automaker in the Hyundai group; large US and European sales"
@@ -2214,7 +2208,7 @@
         "y1": 21.67,
         "ytd": 1.61,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "자동차 부품·모듈. 현대차·기아 공급",
       "note_en": "Auto parts and modules supplied to Hyundai and Kia"
@@ -2239,7 +2233,7 @@
         "y1": 49.62,
         "ytd": 40.26,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "은행 중심 금융지주. 금리에 실적이 직결",
       "note_en": "Bank-led financial group; earnings track interest rates"
@@ -2264,7 +2258,7 @@
         "y1": 59.8,
         "ytd": 43.17,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "은행 중심 금융지주. KB금융과 1·2위 다툼",
       "note_en": "Bank-led financial group; vies with KB for the top spot"
@@ -2289,7 +2283,7 @@
         "y1": 48.05,
         "ytd": 41.45,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "은행 중심 금융지주. 외환·기업금융 강점",
       "note_en": "Bank-led financial group; strong in FX and corporate banking"
@@ -2314,7 +2308,7 @@
         "y1": 38.31,
         "ytd": 28.93,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "은행 비중이 가장 큰 금융지주. 증권업 재진출",
       "note_en": "The most bank-weighted financial group; re-entering brokerage"
@@ -2339,7 +2333,7 @@
         "y1": 4.44,
         "ytd": 12.2,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "보험·증권 통합 지주. 높은 주주환원율",
       "note_en": "Insurance and brokerage holding company; high shareholder returns"
@@ -2364,7 +2358,7 @@
         "y1": 84.45,
         "ytd": 79.89,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "국내 최대 생명보험사. 삼성전자 지분 보유",
       "note_en": "Korea's largest life insurer; holds a stake in Samsung Electronics"
@@ -2389,7 +2383,7 @@
         "y1": 44.16,
         "ytd": 30.38,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "국내 최대 손해보험사",
       "note_en": "Korea's largest non-life insurer"
@@ -2414,7 +2408,7 @@
         "y1": 5.27,
         "ytd": 14.56,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "항공엔진·방산. 유럽 수출 확대",
       "note_en": "Aero engines and defence; expanding European exports"
@@ -2439,7 +2433,7 @@
         "y1": -7.82,
         "ytd": -9.63,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "조선. LNG선·특수선 수주 잔고가 실적을 좌우",
       "note_en": "Shipbuilding; LNG and naval order backlog drives earnings"
@@ -2464,7 +2458,7 @@
         "y1": 39.64,
         "ytd": 12.75,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "발전 설비. 원전·가스터빈, SMR 기대주",
       "note_en": "Power plant equipment; nuclear, gas turbines and SMRs"
@@ -2489,7 +2483,7 @@
         "y1": -17.88,
         "ytd": -17.08,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "HD현대 조선 중간지주. 삼호·미포 등 조선 계열을 묶는다",
       "note_en": "HD Hyundai's shipbuilding intermediate holding company"
@@ -2514,7 +2508,7 @@
         "y1": -25.18,
         "ytd": -27.02,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "조선·해양플랜트. 특수선(잠수함)과 LNG선",
       "note_en": "Shipbuilding and offshore; naval submarines and LNG carriers"
@@ -2539,7 +2533,7 @@
         "y1": -2.35,
         "ytd": -13.69,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "조선·해양. FLNG 등 해양플랜트 비중이 높다",
       "note_en": "Shipbuilding and offshore; a large FLNG and offshore mix"
@@ -2564,7 +2558,7 @@
         "y1": -42.08,
         "ytd": -34.81,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "철도차량·방산(K2 전차)·플랜트",
       "note_en": "Rolling stock, defence (K2 tanks) and plant engineering"
@@ -2589,7 +2583,7 @@
         "y1": 29.43,
         "ytd": 10.34,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "HD현대그룹 지주회사. 조선·정유·건설기계·전력기기를 거느린다",
       "note_en": "HD Hyundai group holding company: shipbuilding, refining, construction equipment and power systems"
@@ -2614,7 +2608,7 @@
         "y1": 150.53,
         "ytd": 85.24,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "HBM 본딩 장비(TC본더). 메모리 후공정 장비",
       "note_en": "HBM bonding equipment (TC bonders) for memory back-end"
@@ -2639,7 +2633,7 @@
         "y1": 31.35,
         "ytd": -13.0,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "고다층 인쇄회로기판(MLB). AI 가속기용 기판",
       "note_en": "High-layer-count PCBs (MLB) used in AI accelerators"
@@ -2664,7 +2658,7 @@
         "y1": 73.03,
         "ytd": 60.9,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "고압 수소 어닐링 장비. 반도체 전공정 틈새 1위",
       "note_en": "High-pressure hydrogen annealing tools for chip front-end"
@@ -2689,7 +2683,7 @@
         "y1": 561.84,
         "ytd": 641.88,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "반도체·디스플레이 증착 장비(ALD)",
       "note_en": "Deposition equipment (ALD) for chips and displays"
@@ -2714,7 +2708,7 @@
         "y1": 115.92,
         "ytd": 78.03,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "국내 대형 건설사. 원전·플랜트와 주택",
       "note_en": "A major Korean builder: nuclear, plant and housing"
@@ -2739,7 +2733,7 @@
         "y1": 85.66,
         "ytd": 115.38,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "플랜트 설계·조달·시공(EPC). 화공·에너지 인프라",
       "note_en": "Plant EPC contractor in chemicals and energy infrastructure"
@@ -2764,7 +2758,7 @@
         "y1": -17.21,
         "ytd": -5.32,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "인터넷전문은행. 모바일 기반 여수신",
       "note_en": "An internet-only bank; mobile deposits and lending"
@@ -2789,7 +2783,7 @@
         "y1": -35.98,
         "ytd": -28.87,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "OLED 패널. 스마트폰·TV·차량용 디스플레이",
       "note_en": "OLED panels for handsets, TVs and vehicles"
@@ -2814,7 +2808,7 @@
         "y1": -12.37,
         "ytd": 3.72,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "리니지 계열 온라인·모바일 게임 개발사",
       "note_en": "Developer of the Lineage online and mobile game series"
@@ -2839,7 +2833,7 @@
         "y1": 200.73,
         "ytd": 96.31,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "카메라모듈·기판소재. 애플 공급 비중이 큰 전자부품사",
       "note_en": "Camera modules and substrates; a major Apple supplier"
@@ -2864,7 +2858,7 @@
         "y1": -16.49,
         "ytd": -18.47,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "검색·커머스·핀테크. 국내 최대 인터넷 기업",
       "note_en": "Search, commerce and fintech; Korea's largest internet firm"
@@ -2889,7 +2883,7 @@
         "y1": -48.15,
         "ytd": -44.18,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "카카오톡 기반 플랫폼·핀테크·콘텐츠",
       "note_en": "KakaoTalk-based platform, fintech and content"
@@ -2914,7 +2908,7 @@
         "y1": -35.64,
         "ytd": -16.67,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "배틀그라운드 개발사. 해외 매출 비중이 높음",
       "note_en": "Maker of PUBG; most revenue comes from overseas"
@@ -2939,7 +2933,7 @@
         "y1": 61.01,
         "ytd": 66.73,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "이동통신 1위. 배당 매력이 큰 방어주",
       "note_en": "The largest mobile carrier; a defensive, high-dividend name"
@@ -2964,7 +2958,7 @@
         "y1": 77.9,
         "ytd": 46.56,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "건설·상사·패션. 삼성그룹 지배구조의 정점",
       "note_en": "Construction, trading and fashion; top of the Samsung ownership chain"
@@ -2989,7 +2983,7 @@
         "y1": 23.12,
         "ytd": 21.04,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "담배·홍삼. 경기와 무관한 현금창출력",
       "note_en": "Tobacco and red ginseng; cash generation independent of the cycle"
@@ -3014,7 +3008,7 @@
         "y1": 28.87,
         "ytd": 34.98,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "정유·석유화학 + 배터리(SK온). 유가에 연동",
       "note_en": "Refining and chemicals plus batteries (SK On); tracks crude"
@@ -3039,7 +3033,7 @@
         "y1": -14.46,
         "ytd": -34.85,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "전력 독점 공급. 요금과 연료비 차이가 실적",
       "note_en": "The electricity monopoly; earnings are the tariff-fuel cost gap"
@@ -3064,7 +3058,7 @@
         "y1": -10.15,
         "ytd": 1.46,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "컨테이너 해운. 운임 지수에 실적이 직결",
       "note_en": "Container shipping; earnings track freight rates"
@@ -3089,7 +3083,7 @@
         "y1": -29.81,
         "ytd": -26.69,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "피하주사 전환 기술(ALT-B4) 라이선스. 코스닥 대표주",
       "note_en": "Subcutaneous-conversion technology licensing; a KOSDAQ bellwether"
@@ -3114,7 +3108,7 @@
         "y1": -13.7,
         "ytd": -28.44,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "이차전지 양극재. 하이니켈 중심",
       "note_en": "Cathode materials for batteries, weighted to high-nickel"
@@ -3139,7 +3133,7 @@
         "y1": 62.36,
         "ytd": -10.68,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "에코프로비엠 등을 거느린 이차전지 소재 지주",
       "note_en": "Battery-materials holding company; parent of Ecopro BM"
@@ -3164,7 +3158,7 @@
         "y1": -25.13,
         "ytd": -41.63,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "항암 신약(리보세라닙) 개발. 허가 이벤트에 크게 움직임",
       "note_en": "Oncology drug developer; moves sharply on regulatory events"
@@ -3189,7 +3183,7 @@
         "y1": 41.03,
         "ytd": 15.42,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "반도체 검사용 프로브핀. 높은 이익률",
       "note_en": "Probe pins for chip testing; very high margins"
@@ -3214,7 +3208,7 @@
         "y1": 48.05,
         "ytd": -7.33,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "협동로봇·휴머노이드. 삼성전자가 최대주주",
       "note_en": "Collaborative robots and humanoids; Samsung is top shareholder"
@@ -3239,7 +3233,7 @@
         "y1": 0.29,
         "ytd": -6.82,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "검은사막 개발사. 신작 붉은사막에 기대",
       "note_en": "Maker of Black Desert; hopes rest on Crimson Desert"
@@ -3264,7 +3258,7 @@
         "y1": -8.48,
         "ytd": 7.5,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "K뷰티 화장품 역직구 유통. 미국 매출 급증",
       "note_en": "Cross-border distributor of K-beauty; US sales growing fast"
@@ -3291,7 +3285,7 @@
         "y1": 42.97,
         "ytd": 36.54,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       }
     },
     "삼성증권": {
@@ -3314,7 +3308,7 @@
         "y1": 13.81,
         "ytd": 13.13,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       }
     },
     "NH투자증권": {
@@ -3337,7 +3331,7 @@
         "y1": 22.54,
         "ytd": 21.09,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       }
     },
     "키움증권": {
@@ -3360,7 +3354,7 @@
         "y1": -5.41,
         "ytd": -9.33,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       }
     },
     "한국금융지주": {
@@ -3383,7 +3377,7 @@
         "y1": 16.41,
         "ytd": 12.74,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       }
     },
     "대신증권": {
@@ -3406,7 +3400,7 @@
         "y1": -7.66,
         "ytd": -4.07,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       }
     },
     "한화투자증권": {
@@ -3429,7 +3423,7 @@
         "y1": -26.31,
         "ytd": -4.26,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       }
     }
   },
@@ -3460,22 +3454,22 @@
     "audusd": {
       "symbol": "AUDUSD=X",
       "date": "2026-09-21",
-      "close": 0.7125,
+      "close": 0.7126,
       "open": 0.7121,
       "high": 0.7128,
       "low": 0.7115,
       "volume": 0,
       "prev_close": 0.7115,
-      "change": 0.0009,
-      "change_pct": 0.127,
+      "change": 0.001,
+      "change_pct": 0.1413,
       "currency": "USD",
       "perf": {
-        "w1": -0.38,
-        "m1": 0.07,
-        "m3": 1.59,
-        "m6": 0.61,
-        "y1": 7.66,
-        "ytd": 6.37,
+        "w1": -0.37,
+        "m1": 0.09,
+        "m3": 1.6,
+        "m6": 0.63,
+        "y1": 7.67,
+        "ytd": 6.38,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -3483,22 +3477,22 @@
     "usdchf": {
       "symbol": "CHF=X",
       "date": "2026-09-21",
-      "close": 0.8224,
+      "close": 0.8225,
       "open": 0.8225,
-      "high": 0.8227,
+      "high": 0.8228,
       "low": 0.821,
       "volume": 0,
       "prev_close": 0.8249,
-      "change": -0.0025,
-      "change_pct": -0.3043,
+      "change": -0.0024,
+      "change_pct": -0.2861,
       "currency": "CHF",
       "perf": {
-        "w1": 0.7,
-        "m1": 2.85,
-        "m3": 2.17,
-        "m6": 4.27,
-        "y1": 3.77,
-        "ytd": 3.87,
+        "w1": 0.72,
+        "m1": 2.87,
+        "m3": 2.19,
+        "m6": 4.29,
+        "y1": 3.79,
+        "ytd": 3.89,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -3571,7 +3565,7 @@
         "y1": 129.3,
         "ytd": 79.46,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "코스피200을 그대로 따라가는 대표 지수 ETF",
       "note_en": "The benchmark ETF tracking the KOSPI 200"
@@ -3596,7 +3590,7 @@
         "y1": 129.83,
         "ytd": 79.81,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "코스피200 추종. KODEX 200과 같은 지수, 운용사만 다름",
       "note_en": "Also tracks the KOSPI 200; a different manager, same index"
@@ -3621,7 +3615,7 @@
         "y1": -2.64,
         "ytd": -10.37,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "코스닥150 추종. 중소형·바이오 비중이 큼",
       "note_en": "Tracks the KOSDAQ 150; heavy in small caps and biotech"
@@ -3646,7 +3640,7 @@
         "y1": 263.37,
         "ytd": 128.66,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "코스피200 일간 수익률의 2배. 변동성이 크고 장기보유에 불리",
       "note_en": "Twice the KOSPI 200's daily move; unsuited to long holding"
@@ -3671,7 +3665,7 @@
         "y1": -93.25,
         "ytd": -88.29,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "코스피200 일간 수익률의 -2배. 하락에 베팅하는 상품",
       "note_en": "Minus twice the KOSPI 200's daily move; a bearish bet"
@@ -3696,7 +3690,7 @@
         "y1": 190.42,
         "ytd": 112.96,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "국내 반도체 종목 묶음. 삼성전자·SK하이닉스 비중이 큼",
       "note_en": "A basket of Korean chip names, led by Samsung and SK hynix"
@@ -3721,7 +3715,7 @@
         "y1": 15.01,
         "ytd": 6.18,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "미국 S&P500 추종. 환헤지를 하지 않아 환율도 같이 반영",
       "note_en": "Tracks the S&P 500 unhedged, so the won-dollar rate feeds in"
@@ -3746,7 +3740,7 @@
         "y1": 20.82,
         "ytd": 11.16,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "나스닥100 추종. 미국 기술주 집중",
       "note_en": "Tracks the Nasdaq 100; concentrated in US tech"
@@ -3771,7 +3765,7 @@
         "y1": 89.29,
         "ytd": 55.48,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "필라델피아 반도체지수(SOX) 추종",
       "note_en": "Tracks the Philadelphia Semiconductor Index (SOX)"
@@ -3796,7 +3790,7 @@
         "y1": -7.18,
         "ytd": -8.22,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "국내 리츠·인프라 묶음. 배당과 금리에 민감",
       "note_en": "Korean REITs and infrastructure; driven by yield and rates"
@@ -3821,7 +3815,7 @@
         "y1": -5.12,
         "ytd": -7.06,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "미 국채 10년 선물. 금리가 내리면 오른다",
       "note_en": "US 10-year Treasury futures; rises when yields fall"
@@ -3846,7 +3840,7 @@
         "y1": 15.15,
         "ytd": -2.44,
         "unit": "%",
-        "from": "2024-09-19"
+        "from": "2024-09-23"
       },
       "note_ko": "국제 금 선물, 환헤지형. 금값만 따라간다",
       "note_en": "Gold futures, currency-hedged, so only bullion moves it"
@@ -4444,7 +4438,6 @@
       "change": -3.44,
       "change_pct": -1.8439,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 3.31,
         "m1": 0.34,
@@ -4470,7 +4463,6 @@
       "change": 0.86,
       "change_pct": 1.5636,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -4.61,
         "m1": -2.41,
@@ -4496,7 +4488,6 @@
       "change": 3.5,
       "change_pct": 1.3436,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -0.25,
         "m1": -4.28,
@@ -4522,7 +4513,6 @@
       "change": 49.8,
       "change_pct": 3.5668,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -2.19,
         "m1": -6.21,
@@ -4548,7 +4538,6 @@
       "change": -8.15,
       "change_pct": -1.9832,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -3.01,
         "m1": -10.04,
@@ -4574,7 +4563,6 @@
       "change": -5.85,
       "change_pct": -1.5318,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -1.0,
         "m1": 0.17,
@@ -4595,7 +4583,7 @@
       "open": 77.15,
       "high": 77.6,
       "low": 76.27,
-      "volume": 11202178,
+      "volume": 11202664,
       "prev_close": 77.66,
       "change": -1.39,
       "change_pct": -1.7899,
@@ -4620,12 +4608,11 @@
       "open": 281.0,
       "high": 284.7,
       "low": 279.2,
-      "volume": 9180675,
+      "volume": 9278341,
       "prev_close": 272.6,
       "change": 8.95,
       "change_pct": 3.2832,
       "currency": "DKK",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 1.84,
         "m1": -4.99,
@@ -5495,6 +5482,16 @@
     "note": "기대인플레이션(브레이크이븐) = 명목 국채금리 − 물가연동채(TIPS) 실질금리",
     "source_url": "https://home.treasury.gov (명목·실질 곡선 차)",
     "perf": {
+      "ust10y": {
+        "w1": -3.0,
+        "m1": 3.0,
+        "m3": 8.0,
+        "m6": -7.0,
+        "y1": -5.0,
+        "ytd": 8.0,
+        "unit": "bp",
+        "basis": "명목 기간변화 − 실질 기간변화"
+      },
       "ust7y": {
         "w1": -6.0,
         "m1": 4.0,
@@ -5522,16 +5519,6 @@
         "m6": -35.0,
         "y1": -13.0,
         "ytd": 5.0,
-        "unit": "bp",
-        "basis": "명목 기간변화 − 실질 기간변화"
-      },
-      "ust10y": {
-        "w1": -3.0,
-        "m1": 3.0,
-        "m3": 8.0,
-        "m6": -7.0,
-        "y1": -5.0,
-        "ytd": 8.0,
         "unit": "bp",
         "basis": "명목 기간변화 − 실질 기간변화"
       },
@@ -5582,6 +5569,13 @@
         "value": "백만원"
       },
       "series": [
+        {
+          "date": "2026-09-21",
+          "close": 6992.49,
+          "change_pct": 1.43,
+          "volume_k_shares": 25448,
+          "value_mn_krw": 1835551.0
+        },
         {
           "date": "2026-09-18",
           "close": 6894.23,
@@ -5714,13 +5708,6 @@
           "change_pct": 0.68,
           "volume_k_shares": 286782,
           "value_mn_krw": 24091208.0
-        },
-        {
-          "date": "2026-08-24",
-          "close": 6696.96,
-          "change_pct": -3.12,
-          "volume_k_shares": 267733,
-          "value_mn_krw": 26164058.0
         }
       ],
       "source_url": "https://finance.daum.net/api/market_index/days?page=1&perPage=20&market=KOSPI&pagination=true"
@@ -5732,6 +5719,13 @@
         "value": "백만원"
       },
       "series": [
+        {
+          "date": "2026-09-21",
+          "close": 826.93,
+          "change_pct": -0.02,
+          "volume_k_shares": 53823,
+          "value_mn_krw": 713878.0
+        },
         {
           "date": "2026-09-18",
           "close": 827.12,
@@ -5864,13 +5858,6 @@
           "change_pct": 1.7,
           "volume_k_shares": 482112,
           "value_mn_krw": 4722226.0
-        },
-        {
-          "date": "2026-08-24",
-          "close": 813.33,
-          "change_pct": 1.42,
-          "volume_k_shares": 524746,
-          "value_mn_krw": 4486487.0
         }
       ],
       "source_url": "https://finance.daum.net/api/market_index/days?page=1&perPage=20&market=KOSDAQ&pagination=true"
@@ -5882,6 +5869,13 @@
         "value": "백만원"
       },
       "series": [
+        {
+          "date": "2026-09-21",
+          "close": 1107.96,
+          "change_pct": 1.63,
+          "volume_k_shares": 8250,
+          "value_mn_krw": 1516529.0
+        },
         {
           "date": "2026-09-18",
           "close": 1090.23,
@@ -6294,13 +6288,6 @@
           "change_pct": -6.03,
           "volume_k_shares": 202731,
           "value_mn_krw": 50219856.0
-        },
-        {
-          "date": "2026-06-25",
-          "close": 1454.15,
-          "change_pct": 6.17,
-          "volume_k_shares": 159439,
-          "value_mn_krw": 47452446.0
         }
       ],
       "source_url": "https://finance.daum.net/api/market_index/days?page=1&perPage=60&market=KOSPI_200&pagination=true"
@@ -6324,6 +6311,1527 @@
       "unit": "bp",
       "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
     }
+  },
+  "sectors": {
+    "all": [
+      {
+        "name": "소프트웨어",
+        "change_pct": 10.27,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 23,
+        "declining": 37,
+        "unchanged": 14,
+        "total": 74,
+        "perf": {
+          "w1": 11.89,
+          "w1_days": 5,
+          "m1": 6.74,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "석유와가스",
+        "change_pct": 3.61,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 10,
+        "declining": 7,
+        "unchanged": 2,
+        "total": 19,
+        "perf": {
+          "w1": 6.02,
+          "w1_days": 5,
+          "m1": -0.1,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "전자장비와기기",
+        "change_pct": 2.67,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 32,
+        "declining": 57,
+        "unchanged": 16,
+        "total": 105,
+        "perf": {
+          "w1": 5.62,
+          "w1_days": 5,
+          "m1": 6.23,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "복합유틸리티",
+        "change_pct": 2.54,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 1,
+        "declining": 0,
+        "unchanged": 0,
+        "total": 1,
+        "perf": {
+          "w1": 3.8,
+          "w1_days": 5,
+          "m1": 9.33,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "반도체와반도체장비",
+        "change_pct": 2.52,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 71,
+        "declining": 83,
+        "unchanged": 17,
+        "total": 171,
+        "perf": {
+          "w1": 6.89,
+          "w1_days": 5,
+          "m1": 1.93,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "생명보험",
+        "change_pct": 2.51,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 2,
+        "declining": 1,
+        "unchanged": 0,
+        "total": 3,
+        "perf": {
+          "w1": 5.68,
+          "w1_days": 5,
+          "m1": 4.11,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "건강관리기술",
+        "change_pct": 2.05,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 8,
+        "declining": 5,
+        "unchanged": 0,
+        "total": 13,
+        "perf": {
+          "w1": 7.84,
+          "w1_days": 5,
+          "m1": 7.06,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "우주항공과국방",
+        "change_pct": 1.64,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 14,
+        "declining": 18,
+        "unchanged": 2,
+        "total": 34,
+        "perf": {
+          "w1": 11.67,
+          "w1_days": 5,
+          "m1": 9.67,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "도로와철도운송",
+        "change_pct": 1.43,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 5,
+        "declining": 1,
+        "unchanged": 2,
+        "total": 8,
+        "perf": {
+          "w1": 2.3,
+          "w1_days": 5,
+          "m1": 3.73,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "복합기업",
+        "change_pct": 1.23,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 10,
+        "declining": 11,
+        "unchanged": 3,
+        "total": 24,
+        "perf": {
+          "w1": 5.19,
+          "w1_days": 5,
+          "m1": 5.28,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "핸드셋",
+        "change_pct": 1.21,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 26,
+        "declining": 24,
+        "unchanged": 7,
+        "total": 57,
+        "perf": {
+          "w1": 5.46,
+          "w1_days": 5,
+          "m1": 15.66,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "가스유틸리티",
+        "change_pct": 0.91,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 4,
+        "declining": 5,
+        "unchanged": 3,
+        "total": 12,
+        "perf": {
+          "w1": 0.18,
+          "w1_days": 5,
+          "m1": 4.48,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "기타",
+        "change_pct": 0.82,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 662,
+        "declining": 443,
+        "unchanged": 433,
+        "total": 1538,
+        "perf": {
+          "w1": 3.06,
+          "w1_days": 5,
+          "m1": -2.61,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "손해보험",
+        "change_pct": 0.77,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 5,
+        "declining": 6,
+        "unchanged": 1,
+        "total": 12,
+        "perf": {
+          "w1": 3.97,
+          "w1_days": 5,
+          "m1": 9.76,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "은행",
+        "change_pct": 0.71,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 8,
+        "declining": 3,
+        "unchanged": 0,
+        "total": 11,
+        "perf": {
+          "w1": 3.38,
+          "w1_days": 5,
+          "m1": 11.28,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "창업투자",
+        "change_pct": 0.55,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 25,
+        "declining": 15,
+        "unchanged": 48,
+        "total": 88,
+        "perf": {
+          "w1": 4.92,
+          "w1_days": 5,
+          "m1": 8.52,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "생물공학",
+        "change_pct": 0.54,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 20,
+        "declining": 28,
+        "unchanged": 11,
+        "total": 59,
+        "perf": {
+          "w1": -0.3,
+          "w1_days": 5,
+          "m1": -13.34,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "무역회사와판매업체",
+        "change_pct": 0.54,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 3,
+        "declining": 3,
+        "unchanged": 2,
+        "total": 8,
+        "perf": {
+          "w1": 10.22,
+          "w1_days": 5,
+          "m1": 16.21,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "부동산",
+        "change_pct": 0.52,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 11,
+        "declining": 11,
+        "unchanged": 9,
+        "total": 31,
+        "perf": {
+          "w1": 0.07,
+          "w1_days": 5,
+          "m1": -0.61,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "기계",
+        "change_pct": 0.51,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 22,
+        "declining": 69,
+        "unchanged": 13,
+        "total": 104,
+        "perf": {
+          "w1": 4.83,
+          "w1_days": 5,
+          "m1": 6.6,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "건설",
+        "change_pct": 0.5,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 26,
+        "declining": 37,
+        "unchanged": 15,
+        "total": 78,
+        "perf": {
+          "w1": 3.08,
+          "w1_days": 5,
+          "m1": 10.04,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "생명과학도구및서비스",
+        "change_pct": 0.49,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 18,
+        "declining": 17,
+        "unchanged": 6,
+        "total": 41,
+        "perf": {
+          "w1": 2.51,
+          "w1_days": 5,
+          "m1": -5.16,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "해운사",
+        "change_pct": 0.43,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 3,
+        "declining": 5,
+        "unchanged": 3,
+        "total": 11,
+        "perf": {
+          "w1": 7.94,
+          "w1_days": 5,
+          "m1": 6.88,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "종이와목재",
+        "change_pct": 0.4,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 5,
+        "declining": 5,
+        "unchanged": 4,
+        "total": 14,
+        "perf": {
+          "w1": 1.96,
+          "w1_days": 5,
+          "m1": 3.39,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "통신장비",
+        "change_pct": 0.32,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 19,
+        "declining": 26,
+        "unchanged": 10,
+        "total": 55,
+        "perf": {
+          "w1": 8.95,
+          "w1_days": 5,
+          "m1": 9.95,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "레저용장비와제품",
+        "change_pct": 0.31,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 4,
+        "declining": 5,
+        "unchanged": 4,
+        "total": 13,
+        "perf": {
+          "w1": 3.33,
+          "w1_days": 5,
+          "m1": 7.96,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "담배",
+        "change_pct": 0.29,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 1,
+        "declining": 0,
+        "unchanged": 0,
+        "total": 1,
+        "perf": {
+          "w1": 0.75,
+          "w1_days": 5,
+          "m1": 4.79,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "디스플레이장비및부품",
+        "change_pct": 0.28,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 32,
+        "declining": 27,
+        "unchanged": 12,
+        "total": 71,
+        "perf": {
+          "w1": 3.72,
+          "w1_days": 5,
+          "m1": 1.49,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "광고",
+        "change_pct": 0.26,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 8,
+        "declining": 7,
+        "unchanged": 4,
+        "total": 19,
+        "perf": {
+          "w1": -1.27,
+          "w1_days": 5,
+          "m1": -0.74,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "가구",
+        "change_pct": 0.26,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 5,
+        "declining": 3,
+        "unchanged": 3,
+        "total": 11,
+        "perf": {
+          "w1": 0.04,
+          "w1_days": 5,
+          "m1": 2.3,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "출판",
+        "change_pct": 0.23,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 5,
+        "declining": 3,
+        "unchanged": 0,
+        "total": 8,
+        "perf": {
+          "w1": 1.53,
+          "w1_days": 5,
+          "m1": -1.18,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "컴퓨터와주변기기",
+        "change_pct": 0.19,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 7,
+        "declining": 9,
+        "unchanged": 5,
+        "total": 21,
+        "perf": {
+          "w1": 3.07,
+          "w1_days": 5,
+          "m1": 5.75,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "제약",
+        "change_pct": 0.14,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 48,
+        "declining": 89,
+        "unchanged": 38,
+        "total": 175,
+        "perf": {
+          "w1": 2.15,
+          "w1_days": 5,
+          "m1": 0.71,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "증권",
+        "change_pct": 0.06,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 16,
+        "declining": 18,
+        "unchanged": 5,
+        "total": 39,
+        "perf": {
+          "w1": 1.79,
+          "w1_days": 5,
+          "m1": 0.21,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "전자제품",
+        "change_pct": 0.06,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 5,
+        "declining": 9,
+        "unchanged": 2,
+        "total": 16,
+        "perf": {
+          "w1": 0.03,
+          "w1_days": 5,
+          "m1": 2.63,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "판매업체",
+        "change_pct": 0.05,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 5,
+        "declining": 5,
+        "unchanged": 3,
+        "total": 13,
+        "perf": {
+          "w1": 2.75,
+          "w1_days": 5,
+          "m1": 1.68,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "섬유,의류,신발,호화품",
+        "change_pct": 0.03,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 26,
+        "declining": 41,
+        "unchanged": 14,
+        "total": 81,
+        "perf": {
+          "w1": 1.61,
+          "w1_days": 5,
+          "m1": -0.72,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "다각화된통신서비스",
+        "change_pct": 0.02,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 2,
+        "declining": 0,
+        "unchanged": 1,
+        "total": 3,
+        "perf": {
+          "w1": 1.52,
+          "w1_days": 5,
+          "m1": 3.62,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "전문소매",
+        "change_pct": -0.04,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 1,
+        "declining": 1,
+        "unchanged": 3,
+        "total": 5,
+        "perf": {
+          "w1": -0.58,
+          "w1_days": 5,
+          "m1": 3.94,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "음료",
+        "change_pct": -0.09,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 3,
+        "declining": 6,
+        "unchanged": 7,
+        "total": 16,
+        "perf": {
+          "w1": -0.1,
+          "w1_days": 5,
+          "m1": -1.27,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "호텔,레스토랑,레저",
+        "change_pct": -0.15,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 6,
+        "declining": 10,
+        "unchanged": 3,
+        "total": 19,
+        "perf": {
+          "w1": -0.13,
+          "w1_days": 5,
+          "m1": 1.27,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "비철금속",
+        "change_pct": -0.17,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 5,
+        "declining": 29,
+        "unchanged": 6,
+        "total": 40,
+        "perf": {
+          "w1": 1.57,
+          "w1_days": 5,
+          "m1": 1.92,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "전기유틸리티",
+        "change_pct": -0.2,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 1,
+        "declining": 4,
+        "unchanged": 0,
+        "total": 5,
+        "perf": {
+          "w1": 1.01,
+          "w1_days": 5,
+          "m1": 11.35,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "운송인프라",
+        "change_pct": -0.22,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 2,
+        "declining": 3,
+        "unchanged": 3,
+        "total": 8,
+        "perf": {
+          "w1": 0.69,
+          "w1_days": 5,
+          "m1": 3.44,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "디스플레이패널",
+        "change_pct": -0.24,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 0,
+        "declining": 4,
+        "unchanged": 2,
+        "total": 6,
+        "perf": {
+          "w1": -0.65,
+          "w1_days": 5,
+          "m1": -4.68,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "전기장비",
+        "change_pct": -0.25,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 9,
+        "declining": 20,
+        "unchanged": 6,
+        "total": 35,
+        "perf": {
+          "w1": 5.46,
+          "w1_days": 5,
+          "m1": 9.34,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "사무용전자제품",
+        "change_pct": -0.26,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 0,
+        "declining": 1,
+        "unchanged": 0,
+        "total": 1,
+        "perf": {
+          "w1": -0.25,
+          "w1_days": 5,
+          "m1": -0.62,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "무선통신서비스",
+        "change_pct": -0.28,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 2,
+        "declining": 2,
+        "unchanged": 0,
+        "total": 4,
+        "perf": {
+          "w1": -0.7,
+          "w1_days": 5,
+          "m1": -6.52,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "식품과기본식료품소매",
+        "change_pct": -0.31,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 3,
+        "declining": 1,
+        "unchanged": 3,
+        "total": 7,
+        "perf": {
+          "w1": 0.58,
+          "w1_days": 5,
+          "m1": 2.94,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "가정용품",
+        "change_pct": -0.34,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 2,
+        "declining": 5,
+        "unchanged": 4,
+        "total": 11,
+        "perf": {
+          "w1": 0.66,
+          "w1_days": 5,
+          "m1": 0.28,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "항공사",
+        "change_pct": -0.34,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 2,
+        "declining": 7,
+        "unchanged": 0,
+        "total": 9,
+        "perf": {
+          "w1": 4.49,
+          "w1_days": 5,
+          "m1": 13.64,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "식품",
+        "change_pct": -0.36,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 27,
+        "declining": 50,
+        "unchanged": 15,
+        "total": 92,
+        "perf": {
+          "w1": 0.41,
+          "w1_days": 5,
+          "m1": 1.96,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "건강관리장비와용품",
+        "change_pct": -0.43,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 33,
+        "declining": 45,
+        "unchanged": 26,
+        "total": 104,
+        "perf": {
+          "w1": -0.1,
+          "w1_days": 5,
+          "m1": -5.92,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "방송과엔터테인먼트",
+        "change_pct": -0.46,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 17,
+        "declining": 31,
+        "unchanged": 9,
+        "total": 57,
+        "perf": {
+          "w1": -1.7,
+          "w1_days": 5,
+          "m1": 2.07,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "IT서비스",
+        "change_pct": -0.48,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 44,
+        "declining": 62,
+        "unchanged": 12,
+        "total": 118,
+        "perf": {
+          "w1": 0.55,
+          "w1_days": 5,
+          "m1": -5.29,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "교육서비스",
+        "change_pct": -0.49,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 5,
+        "declining": 15,
+        "unchanged": 4,
+        "total": 24,
+        "perf": {
+          "w1": 0.39,
+          "w1_days": 5,
+          "m1": 1.34,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "기타금융",
+        "change_pct": -0.57,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 0,
+        "declining": 5,
+        "unchanged": 1,
+        "total": 6,
+        "perf": {
+          "w1": -2.08,
+          "w1_days": 5,
+          "m1": 0.52,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "가정용기기와용품",
+        "change_pct": -0.6,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 4,
+        "declining": 14,
+        "unchanged": 2,
+        "total": 20,
+        "perf": {
+          "w1": 3.2,
+          "w1_days": 5,
+          "m1": 6.71,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "철강",
+        "change_pct": -0.64,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 15,
+        "declining": 32,
+        "unchanged": 8,
+        "total": 55,
+        "perf": {
+          "w1": 0.94,
+          "w1_days": 5,
+          "m1": 4.23,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "상업서비스와공급품",
+        "change_pct": -0.68,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 7,
+        "declining": 18,
+        "unchanged": 6,
+        "total": 31,
+        "perf": {
+          "w1": 1.01,
+          "w1_days": 5,
+          "m1": 9.04,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "건강관리업체및서비스",
+        "change_pct": -0.72,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 5,
+        "declining": 22,
+        "unchanged": 3,
+        "total": 30,
+        "perf": {
+          "w1": -0.79,
+          "w1_days": 5,
+          "m1": -8.26,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "건축제품",
+        "change_pct": -0.78,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 2,
+        "declining": 8,
+        "unchanged": 1,
+        "total": 11,
+        "perf": {
+          "w1": -0.91,
+          "w1_days": 5,
+          "m1": 3.37,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "자동차",
+        "change_pct": -0.83,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 2,
+        "declining": 10,
+        "unchanged": 0,
+        "total": 12,
+        "perf": {
+          "w1": 0.75,
+          "w1_days": 5,
+          "m1": -6.6,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "조선",
+        "change_pct": -0.84,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 5,
+        "declining": 22,
+        "unchanged": 3,
+        "total": 30,
+        "perf": {
+          "w1": 7.04,
+          "w1_days": 5,
+          "m1": 10.56,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "양방향미디어와서비스",
+        "change_pct": -0.88,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 7,
+        "declining": 8,
+        "unchanged": 1,
+        "total": 16,
+        "perf": {
+          "w1": -1.56,
+          "w1_days": 5,
+          "m1": -7.93,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "자동차부품",
+        "change_pct": -1.0,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 42,
+        "declining": 90,
+        "unchanged": 22,
+        "total": 154,
+        "perf": {
+          "w1": 0.31,
+          "w1_days": 5,
+          "m1": -10.08,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "포장재",
+        "change_pct": -1.02,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 5,
+        "declining": 15,
+        "unchanged": 7,
+        "total": 27,
+        "perf": {
+          "w1": 0.44,
+          "w1_days": 5,
+          "m1": 3.04,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "화장품",
+        "change_pct": -1.03,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 18,
+        "declining": 39,
+        "unchanged": 7,
+        "total": 64,
+        "perf": {
+          "w1": 0.55,
+          "w1_days": 5,
+          "m1": 7.67,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "게임엔터테인먼트",
+        "change_pct": -1.1,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 11,
+        "declining": 17,
+        "unchanged": 6,
+        "total": 34,
+        "perf": {
+          "w1": 0.63,
+          "w1_days": 5,
+          "m1": 0.55,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "전기제품",
+        "change_pct": -1.12,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 14,
+        "declining": 46,
+        "unchanged": 9,
+        "total": 69,
+        "perf": {
+          "w1": 1.04,
+          "w1_days": 5,
+          "m1": 7.65,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "화학",
+        "change_pct": -1.13,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 34,
+        "declining": 70,
+        "unchanged": 18,
+        "total": 122,
+        "perf": {
+          "w1": 0.25,
+          "w1_days": 5,
+          "m1": 4.31,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "다각화된소비자서비스",
+        "change_pct": -1.2,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 0,
+        "declining": 1,
+        "unchanged": 0,
+        "total": 1,
+        "perf": {
+          "w1": -3.46,
+          "w1_days": 5,
+          "m1": -7.56,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "카드",
+        "change_pct": -1.26,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 0,
+        "declining": 1,
+        "unchanged": 0,
+        "total": 1,
+        "perf": {
+          "w1": -1.14,
+          "w1_days": 5,
+          "m1": -3.05,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "건축자재",
+        "change_pct": -1.34,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 12,
+        "declining": 31,
+        "unchanged": 8,
+        "total": 51,
+        "perf": {
+          "w1": 0.63,
+          "w1_days": 5,
+          "m1": 0.4,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "백화점과일반상점",
+        "change_pct": -1.36,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 2,
+        "declining": 11,
+        "unchanged": 1,
+        "total": 14,
+        "perf": {
+          "w1": 0.14,
+          "w1_days": 5,
+          "m1": 4.77,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "에너지장비및서비스",
+        "change_pct": -1.43,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 8,
+        "declining": 20,
+        "unchanged": 6,
+        "total": 34,
+        "perf": {
+          "w1": -0.09,
+          "w1_days": 5,
+          "m1": 0.89,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "항공화물운송과물류",
+        "change_pct": -1.52,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 1,
+        "declining": 7,
+        "unchanged": 5,
+        "total": 13,
+        "perf": {
+          "w1": 3.18,
+          "w1_days": 5,
+          "m1": 2.52,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "인터넷과카탈로그소매",
+        "change_pct": -1.88,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 0,
+        "declining": 6,
+        "unchanged": 0,
+        "total": 6,
+        "perf": {
+          "w1": -2.1,
+          "w1_days": 5,
+          "m1": 5.05,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "문구류",
+        "change_pct": -2.05,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 0,
+        "declining": 1,
+        "unchanged": 0,
+        "total": 1,
+        "perf": {
+          "w1": 0.28,
+          "w1_days": 5,
+          "m1": -4.23,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      }
+    ],
+    "top5": [
+      {
+        "name": "소프트웨어",
+        "change_pct": 10.27,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 23,
+        "declining": 37,
+        "unchanged": 14,
+        "total": 74,
+        "perf": {
+          "w1": 11.89,
+          "w1_days": 5,
+          "m1": 6.74,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "석유와가스",
+        "change_pct": 3.61,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 10,
+        "declining": 7,
+        "unchanged": 2,
+        "total": 19,
+        "perf": {
+          "w1": 6.02,
+          "w1_days": 5,
+          "m1": -0.1,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "전자장비와기기",
+        "change_pct": 2.67,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 32,
+        "declining": 57,
+        "unchanged": 16,
+        "total": 105,
+        "perf": {
+          "w1": 5.62,
+          "w1_days": 5,
+          "m1": 6.23,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "복합유틸리티",
+        "change_pct": 2.54,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 1,
+        "declining": 0,
+        "unchanged": 0,
+        "total": 1,
+        "perf": {
+          "w1": 3.8,
+          "w1_days": 5,
+          "m1": 9.33,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "반도체와반도체장비",
+        "change_pct": 2.52,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 71,
+        "declining": 83,
+        "unchanged": 17,
+        "total": 171,
+        "perf": {
+          "w1": 6.89,
+          "w1_days": 5,
+          "m1": 1.93,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      }
+    ],
+    "bottom5": [
+      {
+        "name": "백화점과일반상점",
+        "change_pct": -1.36,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 2,
+        "declining": 11,
+        "unchanged": 1,
+        "total": 14,
+        "perf": {
+          "w1": 0.14,
+          "w1_days": 5,
+          "m1": 4.77,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "에너지장비및서비스",
+        "change_pct": -1.43,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 8,
+        "declining": 20,
+        "unchanged": 6,
+        "total": 34,
+        "perf": {
+          "w1": -0.09,
+          "w1_days": 5,
+          "m1": 0.89,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "항공화물운송과물류",
+        "change_pct": -1.52,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 1,
+        "declining": 7,
+        "unchanged": 5,
+        "total": 13,
+        "perf": {
+          "w1": 3.18,
+          "w1_days": 5,
+          "m1": 2.52,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "인터넷과카탈로그소매",
+        "change_pct": -1.88,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 0,
+        "declining": 6,
+        "unchanged": 0,
+        "total": 6,
+        "perf": {
+          "w1": -2.1,
+          "w1_days": 5,
+          "m1": 5.05,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      },
+      {
+        "name": "문구류",
+        "change_pct": -2.05,
+        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+        "advancing": 0,
+        "declining": 1,
+        "unchanged": 0,
+        "total": 1,
+        "perf": {
+          "w1": 0.28,
+          "w1_days": 5,
+          "m1": -4.23,
+          "m1_days": 20,
+          "unit": "%",
+          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+        }
+      }
+    ]
   },
   "investors_kospi": [
     {
@@ -6572,1589 +8080,62 @@
       "source_url": "https://m.stock.naver.com/api/index/KOSPI/integration",
       "unit": "억원",
       "breadth": {
-        "limit_up": 5,
-        "advancing": 407,
-        "unchanged": 41,
-        "declining": 465,
-        "limit_down": 1
+        "limit_up": 0,
+        "advancing": 280,
+        "unchanged": 79,
+        "declining": 515,
+        "limit_down": 0
       },
       "bizdate": "20260921",
       "investor_flows": {
-        "retail": -36359.0,
-        "foreign": 4486.0,
-        "institution": 15322.0
+        "retail": -1956.0,
+        "foreign": 1118.0,
+        "institution": 583.0
       },
       "program_trading": {
-        "arb": 1296.0,
-        "non_arb": 2693.0,
-        "total": 3989.0
+        "arb": -62.0,
+        "non_arb": -428.0,
+        "total": -490.0
       },
       "intraday": {
-        "high": 6914.08,
-        "low": 6830.95
+        "high": 7007.1,
+        "low": 6938.34
       },
       "fifty_two_week": {
         "high": 9385.59,
         "low": 3365.73
-      },
-      "carried_from": "20260918",
-      "carried_note": "개장 전이라 20260918 마감분을 이어 붙였다"
+      }
     },
     "kosdaq": {
       "source_url": "https://m.stock.naver.com/api/index/KOSDAQ/integration",
       "unit": "억원",
       "breadth": {
-        "limit_up": 3,
-        "advancing": 919,
-        "unchanged": 116,
-        "declining": 698,
-        "limit_down": 2
+        "limit_up": 1,
+        "advancing": 528,
+        "unchanged": 120,
+        "declining": 1038,
+        "limit_down": 1
       },
       "bizdate": "20260921",
       "investor_flows": {
-        "retail": 162.0,
-        "foreign": -511.0,
-        "institution": 250.0
+        "retail": 987.0,
+        "foreign": -619.0,
+        "institution": -304.0
       },
       "program_trading": {
-        "arb": 16.0,
-        "non_arb": 72.0,
-        "total": 89.0
+        "arb": -3.0,
+        "non_arb": -475.0,
+        "total": -478.0
       },
       "intraday": {
-        "high": 833.57,
-        "low": 824.73
+        "high": 830.71,
+        "low": 825.75
       },
       "fifty_two_week": {
         "high": 1229.42,
         "low": 630.99
-      },
-      "carried_from": "20260918",
-      "carried_note": "개장 전이라 20260918 마감분을 이어 붙였다"
+      }
     }
-  },
-  "sectors": {
-    "all": [
-      {
-        "name": "통신장비",
-        "change_pct": 6.94,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 36,
-        "declining": 11,
-        "unchanged": 8,
-        "total": 55,
-        "perf": {
-          "w1": 16.14,
-          "w1_days": 5,
-          "m1": 17.21,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "전기장비",
-        "change_pct": 5.1,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 32,
-        "declining": 1,
-        "unchanged": 2,
-        "total": 35,
-        "perf": {
-          "w1": 11.12,
-          "w1_days": 5,
-          "m1": 15.21,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "컴퓨터와주변기기",
-        "change_pct": 4.63,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 14,
-        "declining": 5,
-        "unchanged": 2,
-        "total": 21,
-        "perf": {
-          "w1": 7.63,
-          "w1_days": 5,
-          "m1": 10.44,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "반도체와반도체장비",
-        "change_pct": 4.21,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 126,
-        "declining": 40,
-        "unchanged": 5,
-        "total": 171,
-        "perf": {
-          "w1": 8.65,
-          "w1_days": 5,
-          "m1": 3.61,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "전자장비와기기",
-        "change_pct": 3.74,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 70,
-        "declining": 28,
-        "unchanged": 7,
-        "total": 105,
-        "perf": {
-          "w1": 6.72,
-          "w1_days": 5,
-          "m1": 7.33,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "건강관리기술",
-        "change_pct": 2.59,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 10,
-        "declining": 3,
-        "unchanged": 0,
-        "total": 13,
-        "perf": {
-          "w1": 8.41,
-          "w1_days": 5,
-          "m1": 7.63,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "핸드셋",
-        "change_pct": 2.29,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 36,
-        "declining": 16,
-        "unchanged": 5,
-        "total": 57,
-        "perf": {
-          "w1": 6.59,
-          "w1_days": 5,
-          "m1": 16.89,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "기타",
-        "change_pct": 1.75,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 1096,
-        "declining": 342,
-        "unchanged": 100,
-        "total": 1538,
-        "perf": {
-          "w1": 4.01,
-          "w1_days": 5,
-          "m1": -1.71,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "레저용장비와제품",
-        "change_pct": 1.58,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 9,
-        "declining": 3,
-        "unchanged": 1,
-        "total": 13,
-        "perf": {
-          "w1": 4.64,
-          "w1_days": 5,
-          "m1": 9.33,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "창업투자",
-        "change_pct": 1.56,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 34,
-        "declining": 27,
-        "unchanged": 27,
-        "total": 88,
-        "perf": {
-          "w1": 5.97,
-          "w1_days": 5,
-          "m1": 9.61,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "건설",
-        "change_pct": 1.48,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 49,
-        "declining": 21,
-        "unchanged": 8,
-        "total": 78,
-        "perf": {
-          "w1": 4.09,
-          "w1_days": 5,
-          "m1": 11.12,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "화장품",
-        "change_pct": 1.43,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 26,
-        "declining": 33,
-        "unchanged": 6,
-        "total": 65,
-        "perf": {
-          "w1": 3.05,
-          "w1_days": 5,
-          "m1": 10.35,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "IT서비스",
-        "change_pct": 1.34,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 76,
-        "declining": 33,
-        "unchanged": 9,
-        "total": 118,
-        "perf": {
-          "w1": 2.39,
-          "w1_days": 5,
-          "m1": -3.56,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "출판",
-        "change_pct": 1.3,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 6,
-        "declining": 1,
-        "unchanged": 1,
-        "total": 8,
-        "perf": {
-          "w1": 2.61,
-          "w1_days": 5,
-          "m1": -0.12,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "건축자재",
-        "change_pct": 1.15,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 36,
-        "declining": 10,
-        "unchanged": 5,
-        "total": 51,
-        "perf": {
-          "w1": 3.17,
-          "w1_days": 5,
-          "m1": 2.94,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "소프트웨어",
-        "change_pct": 1.12,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 48,
-        "declining": 16,
-        "unchanged": 9,
-        "total": 73,
-        "perf": {
-          "w1": 2.6,
-          "w1_days": 5,
-          "m1": -2.12,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "에너지장비및서비스",
-        "change_pct": 1.12,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 24,
-        "declining": 9,
-        "unchanged": 1,
-        "total": 34,
-        "perf": {
-          "w1": 2.5,
-          "w1_days": 5,
-          "m1": 3.5,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "우주항공과국방",
-        "change_pct": 1.04,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 28,
-        "declining": 5,
-        "unchanged": 1,
-        "total": 34,
-        "perf": {
-          "w1": 11.01,
-          "w1_days": 5,
-          "m1": 9.02,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "문구류",
-        "change_pct": 1.03,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 1,
-        "declining": 0,
-        "unchanged": 0,
-        "total": 1,
-        "perf": {
-          "w1": 3.44,
-          "w1_days": 5,
-          "m1": -1.21,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "식품과기본식료품소매",
-        "change_pct": 1.0,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 5,
-        "declining": 2,
-        "unchanged": 0,
-        "total": 7,
-        "perf": {
-          "w1": 1.9,
-          "w1_days": 5,
-          "m1": 4.29,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "자동차부품",
-        "change_pct": 0.88,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 83,
-        "declining": 57,
-        "unchanged": 15,
-        "total": 155,
-        "perf": {
-          "w1": 2.22,
-          "w1_days": 5,
-          "m1": -8.37,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "건축제품",
-        "change_pct": 0.8,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 6,
-        "declining": 3,
-        "unchanged": 2,
-        "total": 11,
-        "perf": {
-          "w1": 0.67,
-          "w1_days": 5,
-          "m1": 5.02,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "자동차",
-        "change_pct": 0.77,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 7,
-        "declining": 5,
-        "unchanged": 0,
-        "total": 12,
-        "perf": {
-          "w1": 2.37,
-          "w1_days": 5,
-          "m1": -5.1,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "비철금속",
-        "change_pct": 0.76,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 23,
-        "declining": 13,
-        "unchanged": 4,
-        "total": 40,
-        "perf": {
-          "w1": 2.52,
-          "w1_days": 5,
-          "m1": 2.87,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "생명보험",
-        "change_pct": 0.65,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 1,
-        "declining": 2,
-        "unchanged": 0,
-        "total": 3,
-        "perf": {
-          "w1": 3.77,
-          "w1_days": 5,
-          "m1": 2.22,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "기계",
-        "change_pct": 0.63,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 66,
-        "declining": 24,
-        "unchanged": 14,
-        "total": 104,
-        "perf": {
-          "w1": 4.96,
-          "w1_days": 5,
-          "m1": 6.73,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "철강",
-        "change_pct": 0.56,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 34,
-        "declining": 16,
-        "unchanged": 5,
-        "total": 55,
-        "perf": {
-          "w1": 2.16,
-          "w1_days": 5,
-          "m1": 5.49,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "전기제품",
-        "change_pct": 0.49,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 38,
-        "declining": 25,
-        "unchanged": 6,
-        "total": 69,
-        "perf": {
-          "w1": 2.69,
-          "w1_days": 5,
-          "m1": 9.4,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "해운사",
-        "change_pct": 0.49,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 4,
-        "declining": 6,
-        "unchanged": 1,
-        "total": 11,
-        "perf": {
-          "w1": 8.01,
-          "w1_days": 5,
-          "m1": 6.94,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "무선통신서비스",
-        "change_pct": 0.48,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 2,
-        "declining": 2,
-        "unchanged": 0,
-        "total": 4,
-        "perf": {
-          "w1": 0.06,
-          "w1_days": 5,
-          "m1": -5.8,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "게임엔터테인먼트",
-        "change_pct": 0.46,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 11,
-        "declining": 18,
-        "unchanged": 5,
-        "total": 34,
-        "perf": {
-          "w1": 2.22,
-          "w1_days": 5,
-          "m1": 2.14,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "디스플레이장비및부품",
-        "change_pct": 0.44,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 37,
-        "declining": 29,
-        "unchanged": 5,
-        "total": 71,
-        "perf": {
-          "w1": 3.89,
-          "w1_days": 5,
-          "m1": 1.65,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "전자제품",
-        "change_pct": 0.43,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 12,
-        "declining": 3,
-        "unchanged": 1,
-        "total": 16,
-        "perf": {
-          "w1": 0.4,
-          "w1_days": 5,
-          "m1": 3.01,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "디스플레이패널",
-        "change_pct": 0.43,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 3,
-        "declining": 1,
-        "unchanged": 2,
-        "total": 6,
-        "perf": {
-          "w1": 0.01,
-          "w1_days": 5,
-          "m1": -4.04,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "도로와철도운송",
-        "change_pct": 0.42,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 4,
-        "declining": 3,
-        "unchanged": 1,
-        "total": 8,
-        "perf": {
-          "w1": 1.28,
-          "w1_days": 5,
-          "m1": 2.7,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "화학",
-        "change_pct": 0.37,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 66,
-        "declining": 43,
-        "unchanged": 13,
-        "total": 122,
-        "perf": {
-          "w1": 1.77,
-          "w1_days": 5,
-          "m1": 5.89,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "가정용품",
-        "change_pct": 0.37,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 7,
-        "declining": 3,
-        "unchanged": 1,
-        "total": 11,
-        "perf": {
-          "w1": 1.38,
-          "w1_days": 5,
-          "m1": 1.0,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "부동산",
-        "change_pct": 0.29,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 19,
-        "declining": 7,
-        "unchanged": 5,
-        "total": 31,
-        "perf": {
-          "w1": -0.16,
-          "w1_days": 5,
-          "m1": -0.84,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "운송인프라",
-        "change_pct": 0.23,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 4,
-        "declining": 3,
-        "unchanged": 1,
-        "total": 8,
-        "perf": {
-          "w1": 1.14,
-          "w1_days": 5,
-          "m1": 3.91,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "건강관리업체및서비스",
-        "change_pct": 0.22,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 16,
-        "declining": 13,
-        "unchanged": 1,
-        "total": 30,
-        "perf": {
-          "w1": 0.15,
-          "w1_days": 5,
-          "m1": -7.4,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "석유와가스",
-        "change_pct": 0.15,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 7,
-        "declining": 10,
-        "unchanged": 2,
-        "total": 19,
-        "perf": {
-          "w1": 2.48,
-          "w1_days": 5,
-          "m1": -3.44,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "교육서비스",
-        "change_pct": 0.14,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 12,
-        "declining": 10,
-        "unchanged": 2,
-        "total": 24,
-        "perf": {
-          "w1": 1.02,
-          "w1_days": 5,
-          "m1": 1.98,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "섬유,의류,신발,호화품",
-        "change_pct": 0.12,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 43,
-        "declining": 30,
-        "unchanged": 9,
-        "total": 82,
-        "perf": {
-          "w1": 1.7,
-          "w1_days": 5,
-          "m1": -0.63,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "복합기업",
-        "change_pct": 0.12,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 9,
-        "declining": 14,
-        "unchanged": 1,
-        "total": 24,
-        "perf": {
-          "w1": 4.04,
-          "w1_days": 5,
-          "m1": 4.13,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "전문소매",
-        "change_pct": 0.1,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 2,
-        "declining": 3,
-        "unchanged": 0,
-        "total": 5,
-        "perf": {
-          "w1": -0.44,
-          "w1_days": 5,
-          "m1": 4.09,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "방송과엔터테인먼트",
-        "change_pct": 0.08,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 25,
-        "declining": 26,
-        "unchanged": 6,
-        "total": 57,
-        "perf": {
-          "w1": -1.16,
-          "w1_days": 5,
-          "m1": 2.62,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "음료",
-        "change_pct": -0.11,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 10,
-        "declining": 3,
-        "unchanged": 3,
-        "total": 16,
-        "perf": {
-          "w1": -0.12,
-          "w1_days": 5,
-          "m1": -1.29,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "기타금융",
-        "change_pct": -0.11,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 2,
-        "declining": 3,
-        "unchanged": 1,
-        "total": 6,
-        "perf": {
-          "w1": -1.63,
-          "w1_days": 5,
-          "m1": 0.99,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "포장재",
-        "change_pct": -0.13,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 12,
-        "declining": 10,
-        "unchanged": 5,
-        "total": 27,
-        "perf": {
-          "w1": 1.34,
-          "w1_days": 5,
-          "m1": 3.97,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "복합유틸리티",
-        "change_pct": -0.13,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 0,
-        "declining": 1,
-        "unchanged": 0,
-        "total": 1,
-        "perf": {
-          "w1": 1.09,
-          "w1_days": 5,
-          "m1": 6.48,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "광고",
-        "change_pct": -0.14,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 9,
-        "declining": 9,
-        "unchanged": 1,
-        "total": 19,
-        "perf": {
-          "w1": -1.67,
-          "w1_days": 5,
-          "m1": -1.14,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "식품",
-        "change_pct": -0.25,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 39,
-        "declining": 43,
-        "unchanged": 10,
-        "total": 92,
-        "perf": {
-          "w1": 0.52,
-          "w1_days": 5,
-          "m1": 2.07,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "가구",
-        "change_pct": -0.25,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 5,
-        "declining": 3,
-        "unchanged": 3,
-        "total": 11,
-        "perf": {
-          "w1": -0.47,
-          "w1_days": 5,
-          "m1": 1.78,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "증권",
-        "change_pct": -0.33,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 13,
-        "declining": 22,
-        "unchanged": 4,
-        "total": 39,
-        "perf": {
-          "w1": 1.4,
-          "w1_days": 5,
-          "m1": -0.18,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "다각화된통신서비스",
-        "change_pct": -0.39,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 1,
-        "declining": 2,
-        "unchanged": 0,
-        "total": 3,
-        "perf": {
-          "w1": 1.1,
-          "w1_days": 5,
-          "m1": 3.2,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "판매업체",
-        "change_pct": -0.41,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 8,
-        "declining": 4,
-        "unchanged": 1,
-        "total": 13,
-        "perf": {
-          "w1": 2.28,
-          "w1_days": 5,
-          "m1": 1.21,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "종이와목재",
-        "change_pct": -0.45,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 8,
-        "declining": 5,
-        "unchanged": 1,
-        "total": 14,
-        "perf": {
-          "w1": 1.1,
-          "w1_days": 5,
-          "m1": 2.52,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "생물공학",
-        "change_pct": -0.47,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 30,
-        "declining": 22,
-        "unchanged": 7,
-        "total": 59,
-        "perf": {
-          "w1": -1.3,
-          "w1_days": 5,
-          "m1": -14.21,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "양방향미디어와서비스",
-        "change_pct": -0.47,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 6,
-        "declining": 9,
-        "unchanged": 1,
-        "total": 16,
-        "perf": {
-          "w1": -1.15,
-          "w1_days": 5,
-          "m1": -7.55,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "백화점과일반상점",
-        "change_pct": -0.5,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 7,
-        "declining": 7,
-        "unchanged": 0,
-        "total": 14,
-        "perf": {
-          "w1": 1.01,
-          "w1_days": 5,
-          "m1": 5.68,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "건강관리장비와용품",
-        "change_pct": -0.52,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 50,
-        "declining": 37,
-        "unchanged": 17,
-        "total": 104,
-        "perf": {
-          "w1": -0.19,
-          "w1_days": 5,
-          "m1": -6.01,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "다각화된소비자서비스",
-        "change_pct": -0.53,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 0,
-        "declining": 1,
-        "unchanged": 0,
-        "total": 1,
-        "perf": {
-          "w1": -2.81,
-          "w1_days": 5,
-          "m1": -6.94,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "상업서비스와공급품",
-        "change_pct": -0.58,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 14,
-        "declining": 12,
-        "unchanged": 5,
-        "total": 31,
-        "perf": {
-          "w1": 1.12,
-          "w1_days": 5,
-          "m1": 9.14,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "담배",
-        "change_pct": -0.58,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 0,
-        "declining": 1,
-        "unchanged": 0,
-        "total": 1,
-        "perf": {
-          "w1": -0.12,
-          "w1_days": 5,
-          "m1": 3.88,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "항공사",
-        "change_pct": -0.59,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 1,
-        "declining": 7,
-        "unchanged": 1,
-        "total": 9,
-        "perf": {
-          "w1": 4.23,
-          "w1_days": 5,
-          "m1": 13.35,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "제약",
-        "change_pct": -0.62,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 59,
-        "declining": 90,
-        "unchanged": 26,
-        "total": 175,
-        "perf": {
-          "w1": 1.37,
-          "w1_days": 5,
-          "m1": -0.06,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "전기유틸리티",
-        "change_pct": -0.7,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 2,
-        "declining": 3,
-        "unchanged": 0,
-        "total": 5,
-        "perf": {
-          "w1": 0.51,
-          "w1_days": 5,
-          "m1": 10.79,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "호텔,레스토랑,레저",
-        "change_pct": -0.75,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 7,
-        "declining": 12,
-        "unchanged": 0,
-        "total": 19,
-        "perf": {
-          "w1": -0.73,
-          "w1_days": 5,
-          "m1": 0.66,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "카드",
-        "change_pct": -0.79,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 0,
-        "declining": 1,
-        "unchanged": 0,
-        "total": 1,
-        "perf": {
-          "w1": -0.67,
-          "w1_days": 5,
-          "m1": -2.59,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "무역회사와판매업체",
-        "change_pct": -0.8,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 1,
-        "declining": 5,
-        "unchanged": 2,
-        "total": 8,
-        "perf": {
-          "w1": 8.75,
-          "w1_days": 5,
-          "m1": 14.66,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "항공화물운송과물류",
-        "change_pct": -0.82,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 8,
-        "declining": 4,
-        "unchanged": 1,
-        "total": 13,
-        "perf": {
-          "w1": 3.91,
-          "w1_days": 5,
-          "m1": 3.25,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "생명과학도구및서비스",
-        "change_pct": -0.84,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 19,
-        "declining": 15,
-        "unchanged": 7,
-        "total": 41,
-        "perf": {
-          "w1": 1.15,
-          "w1_days": 5,
-          "m1": -6.42,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "가스유틸리티",
-        "change_pct": -0.99,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 1,
-        "declining": 9,
-        "unchanged": 2,
-        "total": 12,
-        "perf": {
-          "w1": -1.7,
-          "w1_days": 5,
-          "m1": 2.51,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "사무용전자제품",
-        "change_pct": -1.15,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 0,
-        "declining": 1,
-        "unchanged": 0,
-        "total": 1,
-        "perf": {
-          "w1": -1.14,
-          "w1_days": 5,
-          "m1": -1.5,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "인터넷과카탈로그소매",
-        "change_pct": -1.29,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 3,
-        "declining": 3,
-        "unchanged": 0,
-        "total": 6,
-        "perf": {
-          "w1": -1.51,
-          "w1_days": 5,
-          "m1": 5.68,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "은행",
-        "change_pct": -1.62,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 1,
-        "declining": 9,
-        "unchanged": 1,
-        "total": 11,
-        "perf": {
-          "w1": 0.99,
-          "w1_days": 5,
-          "m1": 8.7,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "조선",
-        "change_pct": -1.64,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 11,
-        "declining": 17,
-        "unchanged": 2,
-        "total": 30,
-        "perf": {
-          "w1": 6.18,
-          "w1_days": 5,
-          "m1": 9.67,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "손해보험",
-        "change_pct": -1.81,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 0,
-        "declining": 12,
-        "unchanged": 0,
-        "total": 12,
-        "perf": {
-          "w1": 1.31,
-          "w1_days": 5,
-          "m1": 6.95,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "가정용기기와용품",
-        "change_pct": -3.34,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 12,
-        "declining": 7,
-        "unchanged": 1,
-        "total": 20,
-        "perf": {
-          "w1": 0.35,
-          "w1_days": 5,
-          "m1": 3.77,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      }
-    ],
-    "top5": [
-      {
-        "name": "통신장비",
-        "change_pct": 6.94,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 36,
-        "declining": 11,
-        "unchanged": 8,
-        "total": 55,
-        "perf": {
-          "w1": 16.14,
-          "w1_days": 5,
-          "m1": 17.21,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "전기장비",
-        "change_pct": 5.1,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 32,
-        "declining": 1,
-        "unchanged": 2,
-        "total": 35,
-        "perf": {
-          "w1": 11.12,
-          "w1_days": 5,
-          "m1": 15.21,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "컴퓨터와주변기기",
-        "change_pct": 4.63,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 14,
-        "declining": 5,
-        "unchanged": 2,
-        "total": 21,
-        "perf": {
-          "w1": 7.63,
-          "w1_days": 5,
-          "m1": 10.44,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "반도체와반도체장비",
-        "change_pct": 4.21,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 126,
-        "declining": 40,
-        "unchanged": 5,
-        "total": 171,
-        "perf": {
-          "w1": 8.65,
-          "w1_days": 5,
-          "m1": 3.61,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "전자장비와기기",
-        "change_pct": 3.74,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 70,
-        "declining": 28,
-        "unchanged": 7,
-        "total": 105,
-        "perf": {
-          "w1": 6.72,
-          "w1_days": 5,
-          "m1": 7.33,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      }
-    ],
-    "bottom5": [
-      {
-        "name": "인터넷과카탈로그소매",
-        "change_pct": -1.29,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 3,
-        "declining": 3,
-        "unchanged": 0,
-        "total": 6,
-        "perf": {
-          "w1": -1.51,
-          "w1_days": 5,
-          "m1": 5.68,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "은행",
-        "change_pct": -1.62,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 1,
-        "declining": 9,
-        "unchanged": 1,
-        "total": 11,
-        "perf": {
-          "w1": 0.99,
-          "w1_days": 5,
-          "m1": 8.7,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "조선",
-        "change_pct": -1.64,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 11,
-        "declining": 17,
-        "unchanged": 2,
-        "total": 30,
-        "perf": {
-          "w1": 6.18,
-          "w1_days": 5,
-          "m1": 9.67,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "손해보험",
-        "change_pct": -1.81,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 0,
-        "declining": 12,
-        "unchanged": 0,
-        "total": 12,
-        "perf": {
-          "w1": 1.31,
-          "w1_days": 5,
-          "m1": 6.95,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      },
-      {
-        "name": "가정용기기와용품",
-        "change_pct": -3.34,
-        "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-        "advancing": 12,
-        "declining": 7,
-        "unchanged": 1,
-        "total": 20,
-        "perf": {
-          "w1": 0.35,
-          "w1_days": 5,
-          "m1": 3.77,
-          "m1_days": 20,
-          "unit": "%",
-          "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
-        }
-      }
-    ],
-    "carried_from": "20260918",
-    "carried_note": "개장 전이라 20260918 마감분을 이어 붙였다"
   },
   "rates_kr": {
     "call": 3.025,
@@ -8250,7 +8231,7 @@
     }
   },
   "usdkrw_naver": {
-    "rate": 1387.5,
+    "rate": 1386.5,
     "source_url": "https://stock.naver.com/api/securityService/marketindex/majors/exchange",
     "note": "매매기준율"
   },
@@ -8556,20 +8537,21 @@
     "bizdate": "20260921",
     "month": "26.12.",
     "investors": {
-      "retail": 0.0,
-      "foreign": 0.0,
-      "institution": 0.0
+      "retail": 153.0,
+      "foreign": -997.0,
+      "institution": 791.0
     },
     "investor_unit": "억원",
     "prev_close": 1092.45,
-    "open": null,
-    "high": null,
-    "low": null,
-    "volume_contracts": null,
-    "value_mn_krw": null,
+    "open": 1101.8,
+    "high": 1101.8,
+    "low": 1096.85,
+    "volume_contracts": 1219.0,
+    "value_mn_krw": 334879.0,
     "source_url": "https://m.stock.naver.com/api/index/FUT/integration",
     "close_note": "이 응답에는 현재가 필드가 없다. 지수 코스피200(indices.kospi200)으로 대신 보십시오",
-    "perf_note": "이 응답에는 일별 계열이 없어 기간 수익률을 낼 수 없다. 현물 코스피200 지수(indices.kospi200)로 대신 보십시오"
+    "perf_note": "이 응답에는 일별 계열이 없어 기간 수익률을 낼 수 없다. 현물 코스피200 지수(indices.kospi200)로 대신 보십시오",
+    "implied_multiplier": 251468
   },
   "money_flow": {
     "latest": {
@@ -8938,11 +8920,53 @@
     },
     "articles": [
       {
-        "title": "\"알테오젠 ALT-B4 특허 2043년까지…장기 독점 효과 커질 것\"-IBK",
-        "url": "https://n.news.naver.com/mnews/article/015/0005334459",
-        "chars": 1294,
+        "title": "장외중개 서울거래, 인가 받으려 지분 분산 추진...미래에셋·빗썸은?",
+        "url": "https://n.news.naver.com/mnews/article/023/0003999598",
+        "chars": 2882,
         "extracted": "id=\"dic_area\"",
-        "body": "사진=알테오젠 홈페이지 \nIBK투자증권은 21일 알테오젠에 대해 \"오리지널 의약품의 특허 만료를 앞두고 제약사들이 피하주사(SC) 전환에 속도를 내면서 알테오젠의 핵심 기술인 'ALT-B4'의 장기 특허 가치가 부각되고 있다\"고 말했다. 그러면서 투자의견 '매수'와 목표주가 40만원을 제시했다.\n\n이 증권사 정이수 연구원은 \"오리지널 바이오의약품의 특허 만료를 앞두고 오리지널 제약사의 SC 제형 전환수요가 확대되고 있다\"며 \"제약사는 물질 특허가 만료되더라도 SC 제형의 별도 특허를 확보해 SC 바이오시밀러의 진입장벽을 높일 수 있다\"고 말했다.\n\n이어 \"SC의 짧은 투약 시간을 앞세워 기존 정맥주사(IV) 처방을 SC로 유도함으로써 IV 바이오시밀러 진입에 따른 매출 잠식을 방어할 수 있다\"면서 \"알테오젠의 SC 제형 변경 플랫폼 하이브로자임의 핵심 물질인 'ALT-B4'는 SC 전환을 돕는 효소로, MSD(머크)의 키트루다에 적용됐다\"고 덧붙었다. SC계약부터 출시까지 5년 이상 소요되는 만큼, 특허만료에 대비한 제약사들의 선제적 기술도입은 지속될 전망이라고 내다봤다.\n\nIBK투자증권은 장기 특허가 이끄는 독점 효과가 더욱 확대될 것이라고 전망했다. 정 연구원은 \"SC 전환기술을 글로벌 상업화한 기업은 알테오젠과 미국 할로자임 두 곳\"이라며 \"SC 바이오시밀러의 진입장벽을 유지하려면 전환기술의 특허 잔존기간이 중요하다\"고 짚었다.\n\n그러면서 \"할로자임 효소의 미국 핵심 물질특허는 2027년, 알테오젠 ALT-B4 특허는 2043년 초 만료 예정으로, 장기 특허 방어 수요는 알테오젠에 집중될 수밖에 없다\"고 부연했다.\n\n정 연구원은 \"SC 전환 대상도 단일 항체에서 다양한 모달리티로 확대되고 있다\"며 \"알테오젠은 다이이찌산쿄와 엔허투 계약으로 항체-약물 접합체(ADC)의 임상을 진행 중이고, 향후 임상에서 적용 가능성이 입증되면 추가 기술이전으로 이어질 전망\"이라고 예상했다.\n\n정 연구원은 \"ALT-B4의 첫 상업화 제품인 MSD의 키트루다 큐렉스는 지난해 9월 미국 식품의약국(FDA) 허가를 받았고, 올해 2분기 매출은 전분기 대비 262% 증가한 4억6000만 달러로 키트루다 전체 매출의 5.5%를 차지했다\"며 \"MSD는 내년 말까지 미국 키트루다 처방의 30~40%를 SC로 전환할 계획으로, 가파른 성장세가 예상된다\"고 했다.\n\n아울러 \"알테오젠은 2026~2028년 총 10억 달러의 판매 마일스톤을 수령하고, 2029년부터 시작될 매출 연동 로열티는 2030년 4억6000만 달러가 될 것\"이라고 추정했다.\n\n강경주 한경닷컴 기자 qurasoha@hankyung.com"
+        "body": "3줄 요약 ㆍ 서울거래, 최대주주 지분 30% 미만 추진\n ㆍ 가상자산거래소 5곳, 대주주 지분 20% 제한 검토\n ㆍ 재산권 침해 논란...의결권 제한 절충안 검토\n\n \n\n 비상장주식 거래 플랫폼 서울거래비상장을 운영하는 서울거래가 장외거래중개업 인가를 받기 위해 복수의 증권사에 지분 참여를 타진하고 있는 것으로 확인됐다. 최근 금융감독원 외부평가위원회(외평위)를 마치고 심사가 진행 중인 가운데 대주주의 지분율을 낮추는 작업을 추진하고 있는 것이다. 이에 따라 외평위에서 주주 구성이나 지배구조 등에 관한 논의가 이뤄지지 않았겠느냐는 추측이 업계에서 나온다.\n\n외평위는 금감원이 인가 심사 때 학계·IT·회계 등 외부 전문가를 위촉해 구성하는 평가 기구다. 여기서 매긴 점수가 금융위원회의 인가 의결 근거가 된다. 장외거래중개업은 작년 9월 자본시장법 시행령이 개정되며 인가제가 신설됐다. 종전에는 장외 주식 거래를 일대일로만 중개할 수 있었는데 앞으로는 다자간 중개가 가능해진다.\n\n주주 구성 등을 이유로 장외거래중개업 인가가 나지 않은 경우는 지난 2월 조각투자(STO) 플랫폼 루센트블록 사례가 있다. 당시 금융위는 루센트블록의 최대주주와 특수관계인 지분이 51%여서 실질적으로 컨소시엄 형태로 보기 어렵다고 평가했다. 그러나 핀테크 업계에서는 “루센트블록이 샌드박스를 통해 창업했지만 결국 금융위로부터 인허가를 받지 못했다”는 비판이 나왔다. 이후 정부의 가상자산거래소 대주주 지분율 제한이 헌법상 재산권을 침해한다는 반론이 제기됐다.\n\n \n \n \n \n\n 허세영 루센트블록 대표가 지난 12일 서울 강남구 역삼동 '마루360'에서 열린 'STO 장외거래소 인가 관련 입장'을 알리는 긴급 기자간담회에서 발언하고 있다. /연합뉴스 \n 서울거래, 증권사에 지분 참여 타진\n\n 21일 금융투자 업계에 따르면 서울거래는 최근 몇몇 증권사에 지분 참여 의향을 문의했다. 한 증권사 관계자는 “서울거래 측에서 최대주주 지분율을 30% 아래로 낮추는 방향으로 신규 주주 참여를 검토해 달라는 요청이 있었다”고 말했다. 서울거래는 최대주주인 양주동 대표가 과반에 가까운 지분을 들고 있다. 지난 3월 교보증권 등에서 65억원을 조달하는 증자를 마치면서 최대주주 지분율이 50% 아래로 내려왔다.\n\n서울거래는 2020년 금융위 혁신금융서비스로 지정된 뒤 증권사 계좌와 연동한 비상장주식 거래 플랫폼을 운영해 왔다. 혁신금융서비스는 새 금융 서비스를 일정 기간 완화된 규제 아래서 시험하게 해 주는 금융규제 샌드박스 제도다. 인가를 받으면 임시로 허용된 사업이 정식 인가 사업으로 전환된다. 비상장주식의 호가를 공표하고 여러 투자자의 주문을 한꺼번에 맞춰 거래를 체결시키는 장외 거래 플랫폼을 정식으로 운영할 수 있게 된다. 또 비상장주식뿐 아니라 내년 2월 시행되는 개정 전자증권법상 비상장 토큰증권까지 다룰 수 있게 된다. 예비인가 후 인력과 전산 설비를 갖춘 뒤 본인가 심사를 거쳐야 한다. 최종 결론은 내년에나 나올 전망이다. 서울거래측은 “자본시장 인프라로 자리 잡기 위해 노력 중이다. 인가와 관련된 부분은 확인해 주기 어렵다”고 말했다.\n\n 디지털엑스·빗썸 등 가상자산거래소도 고민\n\n \n \n \n \n\n 디지털엑스 주식회사는 가상자산거래소 서비스명을 기존 '코빗(Korbit)'에서 '디지털엑스(Digital X)'로 변경하고 도메인을 비롯한 서비스 전반을 새롭게 개편한다 \n 거래소 지분 구조를 둘러싼 고민은 비상장주식 시장에만 있는 것이 아니다. 정부와 더불어민주당이 추진 중인 디지털자산기본법 통합안에는 가상자산거래소 대주주의 지분을 20%까지만 허용하되 일정 요건을 갖추면 34%까지 인정하는 절충안이 논의돼 왔다. 지분은 그대로 두고 주주총회 의결권만 제한하는 방안, 몇 년에 걸쳐 단계적으로 팔게 하는 방안도 함께 검토되고 있다.\n\n20% 기준이 그대로 도입되면 지분을 덜어내야 하는 곳은 다섯 곳이다. 코빗 지분 97.15%를 가진 미래에셋컨설팅과 빗썸 지분 73.56%의 빗썸홀딩스, 코인원 대주주인 더원그룹(34.3%)과 컴투스홀딩스(21.95%), 두나무 지분 25.51%를 보유한 송치형 두나무 회장이다. 미래에셋컨설팅은 지난 2월 코빗 지분 92.06% 취득을 공시했고, 지난 7월 공정거래위원회 기업결합 승인을 거쳐 지분율이 97.15%가 됐다. 인수대금은 1413억7000만원이고, 사명도 디지털엑스로 바꿨다.\n\n조각투자 쪽은 복수 주주 구조로 정리되는 분위기다. 지난 2월 예비인가를 받은 한국거래소·코스콤 컨소시엄(KDX)과 넥스트레이드 주도의 넥스체인지는 증권사와 보험사, 지방은행 등 여러 금융회사가 지분을 나눠 갖는 구조로 본인가를 준비하고 있다. 다만, 스타트업인 루센트블록이 8년 가까이 닦아 놓은 시장에 금융위 출신이 수장으로 있는 회사의 컨소시엄이 예비인가를 받으며 잡음은 여전히 나온다.\n\n 인프라냐 사유재산이냐, 재산권 논란\n\n 정부는 거래를 중개하는 유통 플랫폼은 시장 인프라 성격이 강해 특정 개인에게 지분이 쏠리면 안 된다는 입장이다. 이해 상충을 막고 내부 통제를 갖추는 데 여러 기관이 함께 참여하는 편이 안정적이라는 이유에서다. 반면 상품을 만들어 파는 발행 쪽은 사유재산 성격을 인정해 다양한 사업자를 허용하는 방향으로 제도가 짜여 있다.\n\n문제는 지분을 강제로 줄이는 방식이 헌법이 보장한 재산권을 침해하는 것 아니냐는 반론이다. 지난 3월 대주주 지분을 20%로 묶는 안이 알려지자 이미 지분을 가진 거래소 대주주들은 재산권 침해라고 반발했고, 의결권만 제한하는 절충안이 나온 배경이 됐다. 은행은 은행법에 따라 한 사람이 특수관계인 지분까지 합쳐 10%, 산업자본이면 4%를 넘게 가질 수 없지만 가상자산거래소 지분을 막는 규정은 아직 없다. 국회입법조사처 분석에서도 유럽연합(EU)과 홍콩, 싱가포르 등은 일률적인 지분 상한 대신 대주주 적격성 심사로 지배구조를 관리하고 있다."
+      },
+      {
+        "title": "\"연휴 전 돈 쓰려면 오늘 팔아야되는데\"…추석 전 주식 들고갈까",
+        "url": "https://n.news.naver.com/mnews/article/015/0005334477",
+        "chars": 1057,
+        "extracted": "id=\"dic_area\"",
+        "body": "지난 18일 서울 중구 하나은행 본점 딜링룸 /사진=이솔 기자 \n오는 24일부터 추석 연휴가 시작되는 가운데 증권가에선 포트폴리오 비중 유지가 유리할 수 있다는 조언이 나온다. 국내 증시 관련 리스크가 크지 않은 데다, 변동성도 잦아들고 있어서다.\n\n김대준 한국투자증권 연구원은 21일 \"명절이라는 계절성 외에 주식 거래가 한산해질 수 있고 매크로 불확실성이 거래 활성화를 제약하는 요인이기도 하지만 이번에는 그럴 필요가 없다\"며 리스크와 펀더멘털을 근거로 들었다.\n\n그는 \"일단 한국증시와 관련된 내부 리스크는 크지 않다고 본다\"며 \"변동성 확대를 나타내는 VKOSPI는 올해 최대치였던 95%에서 44%로 상당 부분 하락한 상태\"라고 설명했다.\n\n이어 \"국가 위험을 나타내는 CDS 프리미엄도 하향 안정화를 지속하고 있다\"며 \"극단적 변동성은 진정된 가운데 외부 충격을 견딜 수 있는 펀더멘털도 양호한 것으로 판단한다\"고 부연했다.\n\n연휴를 앞두고 지수 대비 상대적 수익률이 양호했던 업종을 중심으로 관심을 둘 필요가 있다는 주문이다.\n\n김 연구원은 \"지수 상승 동력이 뚜렷하게 보이지 않을 때는 시장에서 상대강도가 강했던 업종에 집중해야 한다\"며 \"지난주 방산, 반도체, 화장품 등이 코스피 대비 양호한 성과를 냈는데 해당 업종이 이번주 거래가 정체되는 환경에서도 유리한 흐름을 보일 수 있다\"고 말했다.\n\n반도체에 대해선 \"지난 10일까지 통관 기준 수출은 전년 동기 대비 270% 급증했고 21일 발표 예정인 수출도 호조세를 이어갈 가능성이 높다\"며 \"30일 예정된 마이크론 실적도 계단식 우상향 기조를 유지하고 있어 AI 투자 모멘텀이 약해지지 않을 가능성이 높아 비중을 그대로 유지해야 한다는 생각\"이라고 분석했다.\n\n아울러 \"이번주 거래가 줄어들 것으로 예상되는 상황에서 업종 순환매가 나타날 가능성은 낮다\"며 \"연휴 전 상승세를 보인 수출 관련 업종의 단기 트레이딩이 가능한 선택지\"라고 짚었다.\n\n한편 국내 증시는 추석 연휴로 24일과 25일 휴장하며 중국과 대만도 중추절 연휴에 들어간다. 일본 역시 21일 경로의 날, 22일 대체공휴일, 23일 추분의 날로 휴장한다."
+      },
+      {
+        "title": "“거래대금 138조→56조”…신한證, 5대 증권사 목표가 줄줄이↓[줍줍리포트]",
+        "url": "https://n.news.naver.com/mnews/article/011/0004663913",
+        "chars": 1358,
+        "extracted": "id=\"dic_area\"",
+        "body": "미래에셋 3.7만·NH 3.4만 원으로 하향\n한투 25만·삼성 11만·키움 36만 원\n3분기 순익 컨센서스 최대 91% 밑돌 전망\n브로커리지·IB·트레이딩 동반 부진\n“실적 불확실성 해소 전 보수적 접근” \n \n \n \n\n 서울 여의도 증권가 전경. 연합뉴스 신한투자증권이 증시 거래대금 급감과 금리 상승으로 증권사들의 3분기 실적 눈높이를 잇달아 낮췄다. 브로커리지와 자산관리(WM), 투자은행(IB), 트레이딩 등 전 영업 부문의 환경이 동시에 악화된 만큼, 주요 증권사의 목표주가도 일제히 하향했다.\n\n신한투자증권은 21일 미래에셋증권(006800) 목표주가를 기존 5만 원에서 3만 7000원으로 26% 낮췄다. 한국금융지주(071050) 는 30만 원에서 25만 원으로 17%, NH투자증권(005940) 은 4만 원에서 3만 4000원으로 15% 하향했다. 삼성증권(016360) 은 13만 원에서 11만 원으로 15%, 키움증권(039490) 은 42만 원에서 36만 원으로 14% 낮췄다. 투자의견은 모두 ‘매수’를 유지했다.\n\n목표주가 하향의 핵심은 상반기 증권사 실적을 끌어올렸던 증시 활황이 빠르게 식고 있다는 점이다. 상장지수펀드(ETF)를 포함한 일평균 거래대금은 4월 84조 원에서 5월 136조 원, 6월 138조 원까지 늘었다가 7월 100조 원, 8월 67조 원에 이어 9월에는 56조 원까지 줄었다. 3분기 누적 일평균 거래대금은 77조 원으로 전 분기보다 34% 감소했다.\n\n증시 주변 자금도 함께 빠졌다. 3분기 고객예탁금은 100조 원으로 전 분기보다 18% 줄었고 신용거래융자 잔액도 33조 원으로 11% 감소했다. 신한투자증권은 주도주 부재와 변동성 확대가 투자자 회전율을 낮춘 가운데 자금이 증시에서 은행 예금으로 이동하고 있다고 진단했다. 목표전환형 랩을 포함한 금융상품 판매도 부진할 것으로 예상했다.\n\nIB와 트레이딩 부문 역시 실적 방어가 쉽지 않을 전망이다. 일반기업 공모 회사채는 8월까지 9개월 연속 순상환을 기록했고 올해 9월까지 기업공개(IPO) 상장사는 43곳, 공모금액은 1조 6000억 원으로 전년 동기보다 각각 35%, 53% 감소했다. 금리 상승으로 채권 운용 손익도 악화할 가능성이 커졌다.\n\n이에 3분기 순이익은 시장 기대를 큰 폭으로 밑돌 것으로 봤다. 미래에셋증권의 지배주주순이익 추정치는 161억 원으로 컨센서스 1815억 원보다 91.1% 낮다. 한국금융지주도 2636억 원으로 컨센서스를 61.3% 밑돌 것으로 전망했다. NH투자증권과 삼성증권은 각각 25.1%, 23.5%, 키움증권은 13.2% 하회할 것으로 예상했다.\n\n임희연 신한투자증권 연구위원은 “높은 배당수익률에도 실적 불확실성이 해소되기 전까지는 보수적인 접근이 유효하다”고 말했다."
+      },
+      {
+        "title": "\"'삼전닉스' 쏠림 완화…중소형주의 시간 온다\"",
+        "url": "https://n.news.naver.com/mnews/article/277/0005819004",
+        "chars": 963,
+        "extracted": "id=\"dic_area\"",
+        "body": "국내 증시에서 '삼전닉스'의 쏠림이 완화되면서 중소형주가 주목받을 것이라는 분석이 나왔다. \n\n \n \n \n \n\n \n\n독립 리서치 기업 그로쓰리서치는 삼성전자와 SK하이닉스 중심의 증시 쏠림이 완화되는 가운데 중소형주의 상대 매력과 재평가 요인을 분석한 산업보고서를 발간했다고 21일 전했다.\n\n보고서에 따르면 올해 상반기 삼성전자와 SK하이닉스는 코스피 상승분의 78.3%를 차지했다. 메모리 가격 급등이 두 기업의 실적 성장을 이끌었지만 하반기부터 가격 상승폭은 둔화되는 모습이다. 그로쓰리서치는 메모리 업황이 가격 중심에서 물량 중심의 성장 국면으로 이동하면서 그동안 소외됐던 중소형주의 상대 매력이 부각될 수 있다고 짚었다.\n\n중소형주의 실적도 개선되고 있다. 올해 상반기 코스닥 기업의 영업이익은 전년 동기 대비 62.2% 증가했다. 과거 2020년 BBIG 쏠림 이후에도 2021년 대형주가 약 1% 하락한 반면 중형주와 소형주는 각각 약 9%, 15% 상승했다. 이에 단순 낙폭보다 이익 성장이 이어지고 밸류에이션이 낮으면서 수급에서 소외된 기업을 선별할 필요가 있다는 분석이다.\n\n이익 성장과 저평가, 수급 소외를 기준으로 대주전자재료와 선진, 메가스터디교육을 주목할 기업으로 제시했다. 대주전자재료는 은 페이스트 공급 확대와 MLCC용 전도성 페이스트·실리콘 음극재의 동반 성장이 기대된다. 선진은 올해 상반기 기준 현금성자산과 단기금융자산을 합친 보유 현금이 2738억원으로 시가총액을 웃돈다. 메가스터디교육은 지난 18일 종가 기준 예상 배당수익률이 9.4% 수준이다.\n\n한용희 그로쓰리서치 연구원은 \"메모리 업종의 이익 성장이 둔화된다는 의미보다 삼성전자와 SK하이닉스에 집중됐던 이익 성장 격차가 점차 줄어드는 과정에 주목할 필요가 있다\"며 \"향후에는 실적 개선에도 수급 쏠림으로 주가에 충분히 반영되지 못한 중소형주 가운데 이익 성장과 저평가 매력을 갖춘 기업을 선별하는 것이 중요하다\"고 말했다."
+      },
+      {
+        "title": "넥사다이내믹스, 경영진 개편 이틀 만에 일본서 115만달러 AI 서버 수주",
+        "url": "https://n.news.naver.com/mnews/article/277/0005818984",
+        "chars": 1512,
+        "extracted": "id=\"dic_area\"",
+        "body": "넥사다이내믹스가 경영진 개편 직후 일본 IT 기업과 AI 서버 공급계약을 체결하며 사업 전환에 속도를 내고 있다. 반도체와 서버, 데이터센터 분야의 전문 인력을 새 이사진으로 영입한 데 이어 해외 수주를 확보하면서 AI 서버 제조기업으로의 전환을 본격화하는 모습이다.\n\n코스닥 상장사 넥사다이내믹스는 일본 소재 IT 기업과 115만달러(약 15억5000만원) 규모의 AI 서버 및 부속품 공급계약을 체결했다고 21일 밝혔다. 고객사 측의 경영상 비밀유지 요청에 따라 회사명은 공개하지 않았다.\n\n이번 계약은 지난 14일 임시주주총회를 통해 신규 이사회가 출범한 지 이틀 만에 성사됐다. 당시 넥사다이내믹스는 AI 서버와 데이터센터 전문 제조기업으로 사업 방향을 전환하고 관련 분야의 전문 인력을 이사진으로 영입했다.\n\n특히 이번 계약은 대금 결제 조건에서도 현금흐름 부담을 낮췄다는 게 회사 측 설명이다. 공식 발주서에 따르면 전체 발주금 115만달러 가운데 상당액을 제품 선적 전에 현금으로 지급받고, 잔금은 제품 검수 후 5영업일 이내에 정산하는 조건이다.\n\n넥사다이내믹스는 선급금 비중이 높은 이번 계약을 통해 매출채권 회수에 따른 부담을 줄이는 동시에 생산에 필요한 자금을 선제적으로 확보할 수 있을 것으로 기대하고 있다. 회사 측은 고비율 선급 결제가 해외 고객사의 공급망과 제품에 대한 신뢰를 바탕으로 성사됐다고 설명했다.\n\n새롭게 꾸려진 경영진의 면면도 반도체와 정보기술(IT) 분야에 집중됐다. 이강칠 대표이사는 SK하이닉스 부사장을 거쳐 현재 티콘 대표를 맡고 있다. 이동한 사내이사는 인텔코리아 Executive Managing Director 출신이며, 김후종 사내이사는 SK텔레콤 서비스기술원장과 화웨이 전무를 역임했다. 이상민 사내이사는 LG유플러스 기술부문장을 거쳐 현재 가천대 AI 교수로 재직하고 있다.\n\n데이터센터 분야에서는 DC Korea 경영진으로 활동하는 황동우 이사와 정영훈 감사가 합류했다. 회사 측은 새 경영진의 반도체·데이터센터 네트워크를 활용해 국내외 AI 서버 공급처를 확대한다는 계획이다.\n\n제조 인프라 구축도 병행한다. 넥사다이내믹스는 완납된 130억원 규모 유상증자 자금을 기반으로 시화 국가산업단지에 약 2000평 규모의 AI GPU 서버 전용 조립라인을 구축하고 있다. 올해 4분기 시험생산을 거쳐 2027년부터 완제품 AI 서버 양산에 들어갈 예정이다.\n\n관계사 DCK 그룹이 추진하는 당진 대형 하이퍼스케일 데이터센터와 수도권 도심형 엣지 데이터센터에 필요한 서버를 공급하는 방안도 추진한다. 해외 고객사 수주와 관계사 데이터센터 공급을 함께 확대해 초기 생산라인의 가동률을 높인다는 전략이다.\n\n이강칠 넥사다이내믹스 대표는 \"신규 이사회 출범 직후 일본에서 공급계약이 확정된 것은 산업 네트워크가 글로벌 매출로 연결되고 있음을 보여주는 신호\"라며 \"2026년에는 안정적인 수주를 통해 사업 기반을 다지고 2027년에는 시화 공장에서 자체 생산한 완제품 서버와 데이터센터 인프라를 결합해 한국형 AI 서버 제조 플랫폼을 구축하겠다\"고 말했다."
+      },
+      {
+        "title": "전력 인프라 업체로 재평가된 삼성SDI..'목표주가 80만원' 상향",
+        "url": "https://n.news.naver.com/mnews/article/014/0005578659",
+        "chars": 1221,
+        "extracted": "id=\"dic_area\"",
+        "body": "iM증권, 목표주가 80만원으로 높여\n시장 전망 대비 영업익 2배 이상 예상 \n \n \n \n\n \n[파이낸셜뉴스] iM증권은 삼성SDI가 ESS를 중심으로 실적 개선세가 본격화되고 있다며 목표주가를 기존 59만원에서 80만원으로 상향했다. \n \n투자의견은 '매수'를 유지했다. 삼성SDI의 전일 종가는 54만2000원으로, iM증권의 목표주가 80만원까지 상승여력은 47.9%다. \n \n21일 정원석 iM증권 연구원은 삼성SDI의 3·4분기 실적이 일회성 이익과 에너지저장시스템(ESS) 매출 증가에 힘입어 시장 기대치를 크게 웃돌 것으로 전망했다. \n \n삼성SDI의 3·4분기 매출은 전년 동기 대비 33% 증가한 4조1000억원, 영업이익은 2850억원으로 전망됐다. 시장 컨센서스인 매출 4조원, 영업이익 1159억원을 웃도는 수준이다. \n \n정원석 iM증권 연구원은 \"삼성SDI는 2·4분기 상호관세 환급금에 이어 3·4분기에는 완성차 업체들의 최소 구매 물량 미달 보상금이 반영되면서 일회성 이익이 실적 개선을 이끌 것\"이라고 분석됐다. \n \n본업에서는 ESS가 핵심이다. 3·4분기 ESS 매출은 전분기보다 약 32% 증가할 것으로 예상된다. 미국 LFP 생산라인 가동이 본격화되는 4·4분기에는 매출 증가폭이 더 커질 전망이다. \n \n원형전지도 전동공구와 AIDC용 BBU 수요 확대에 힘입어 매출이 6% 늘고 영업손익이 흑자전환할 것으로 예상됐다. 반면 자동차전지는 주력 고객사의 재고 조정 영향으로 매출이 3% 감소할 전망이다. \n \nSDI-GM 시너지셀의 단독 소유 전환은 북미 ESS 사업 확대의 핵심 변수다. 정 연구원은 \"삼성SDI는 2027년 말 약 35GWh의 ESS 생산능력을 확보할 계획인데, 기존 수주만으로도 2029년까지 생산능력 상당 부분이 채워진 상황\"이라ㅏ고 설명했다. \n \n신규 공장의 ESS 생산라인은 고객 인증 등을 고려하면 오는 2028년 하반기부터 단계적으로 확대될 가능성이 있다는 분석이다. \n \niM증권은 삼성SDI의 영업이익이 2026년 5700억원에서 2028년 2조3840억원으로 증가할 것으로 전망했다. 미국 ESS 시장 성장과 AIDC 투자 확대, 중국 공급망 규제 강화가 국내 배터리 업체에 우호적인 환경을 조성하고 있다는 판단이다. \n \n이에 따라 삼성SDI 역시 기존 전기차 배터리 업체라는 평가에서 벗어나 AI 데이터센터 등에 안정적인 전력을 공급하는 전력 인프라 업체로 밸류에이션이 재평가될 필요가 있다고 분석했다."
+      },
+      {
+        "title": "\"알테오젠 ALT-B4 특허 2043년까지…독점 효과 커질 것\"-IBK",
+        "url": "https://n.news.naver.com/mnews/article/015/0005334459",
+        "chars": 1259,
+        "extracted": "id=\"dic_area\"",
+        "body": "사진=알테오젠 홈페이지 \nIBK투자증권은 21일 알테오젠에 대해 \"오리지널 의약품의 특허 만료를 앞두고 제약사들이 피하주사(SC) 전환에 속도를 내면서 알테오젠의 핵심 기술인 'ALT-B4'의 장기 특허 가치가 부각되고 있다\"고 말했다. 그러면서 투자의견 '매수'와 목표주가 40만원을 제시했다.\n\n이 증권사 정이수 연구원은 \"오리지널 바이오의약품의 특허 만료를 앞두고 오리지널 제약사의 SC 제형 전환수요가 확대되고 있다\"며 \"제약사는 물질 특허가 만료되더라도 SC 제형의 별도 특허를 확보해 SC 바이오시밀러의 진입장벽을 높일 수 있다\"고 말했다.\n\n이어 \"SC의 짧은 투약 시간을 앞세워 기존 정맥주사(IV) 처방을 SC로 유도함으로써 IV 바이오시밀러 진입에 따른 매출 잠식을 방어할 수 있다\"면서 \"알테오젠의 SC 제형 변경 플랫폼 하이브로자임의 핵심 물질인 'ALT-B4'는 SC 전환을 돕는 효소로, MSD(머크)의 키트루다에 적용됐다\"고 덧붙었다. SC계약부터 출시까지 5년 이상 소요되는 만큼, 특허만료에 대비한 제약사들의 선제적 기술도입은 지속될 전망이라고 내다봤다.\n\nIBK투자증권은 장기 특허가 이끄는 독점 효과가 더욱 확대될 것이라고 전망했다. 정 연구원은 \"SC 전환기술을 글로벌 상업화한 기업은 알테오젠과 미국 할로자임 두 곳\"이라며 \"SC 바이오시밀러의 진입장벽을 유지하려면 전환기술의 특허 잔존기간이 중요하다\"고 짚었다.\n\n그러면서 \"할로자임 효소의 미국 핵심 물질특허는 2027년, 알테오젠 ALT-B4 특허는 2043년 초 만료 예정으로, 장기 특허 방어 수요는 알테오젠에 집중될 수밖에 없다\"고 부연했다.\n\n정 연구원은 \"SC 전환 대상도 단일 항체에서 다양한 모달리티로 확대되고 있다\"며 \"알테오젠은 다이이찌산쿄와 엔허투 계약으로 항체-약물 접합체(ADC)의 임상을 진행 중이고, 향후 임상에서 적용 가능성이 입증되면 추가 기술이전으로 이어질 전망\"이라고 예상했다.\n\n정 연구원은 \"ALT-B4의 첫 상업화 제품인 MSD의 키트루다 큐렉스는 지난해 9월 미국 식품의약국(FDA) 허가를 받았고, 올해 2분기 매출은 전분기 대비 262% 증가한 4억6000만 달러로 키트루다 전체 매출의 5.5%를 차지했다\"며 \"MSD는 내년 말까지 미국 키트루다 처방의 30~40%를 SC로 전환할 계획으로, 가파른 성장세가 예상된다\"고 했다.\n\n아울러 \"알테오젠은 2026~2028년 총 10억 달러의 판매 마일스톤을 수령하고, 2029년부터 시작될 매출 연동 로열티는 2030년 4억6000만 달러가 될 것\"이라고 추정했다."
       },
       {
         "title": "한화솔루션, 내년 '판가·AMPC 동반 상승'...실적 개선 탄탄",
@@ -8961,9 +8985,9 @@
       {
         "title": "7000선 재도전 코스피…미중 정상회담·美 금리 ‘주목’ [뉴스새벽배송]",
         "url": "https://n.news.naver.com/mnews/article/018/0006373346",
-        "chars": 2250,
+        "chars": 2363,
         "extracted": "id=\"dic_area\"",
-        "body": "美 10년물 금리 5%·국제유가 향방에 '촉각'\n미·중 정상회담서 '무역·대중 AI 반도체 규제' \n유가 100달러선 공방 속 연준 인사 릴레이 발언\n‘추석 연휴’ 증시 3거래일 뿐 '단기 변동성' 경계 [이데일리 박민 기자] 미국의 기준금리 인상과 AI 속도조절론 등 대형 악재를 딛고 일어선 코스피가 이번 주 7000선 재진입에 나설 것으로 전망된다. 오는 24일 미·중 정상회담의 AI·반도체 의제와 미 국채금리·유가 흐름에 따라 추가 반등 탄력이 결정될 것으로 보인다. 다만 추석 연휴로 거래일이 사흘(21일~23일)에 그쳐 거래대금이 줄어들 것으로 예상되는 만큼 연휴 전 경계 매물 출회에 따른 단기 변동성도 염두에 둬야 할 부분이다.\n\n다음은 21일 개장 전 주목할 뉴스다.\n\n S&P500 0.17%, 나스닥 0.40% ↑..다우 0.18% ↓ \n\n-지난 18일(현지시간) 뉴욕증권거래소(NYSE)에서 스탠더드앤드푸어스(S&P)500지수는 전장보다 0.17% 오른 7650.50에 거래를 마쳐.\n\n-기술주 중심의 나스닥종합지수는 0.40% 상승한 2만6522.55를 기록했다. 반면 다우존스30산업평균지수는 0.18% 내린 5만1682.64에 마감.\n\n-이날 시장을 짓눌렀던 것은 다시 치솟은 국채금리. 미 국채 10년물 금리는 장중 5%를 재돌파한 뒤 5.00% 안팎에서 움직여.\n\n-이번 주에는 2007년 7월 이후 최고 수준까지 치솟았고, 2년물 금리도 2024년 7월 이후 최고 수준으로 올라서.\n\n-그럼에도 이날 S&P500과 나스닥이 상승할 수 있었던 것은 반도체를 중심으로 AI 관련주에 매수세가 이어졌기 때문. 하이퍼스케일러와 반도체, 데이터 저장장치 업체들이 동반 강세를 보여.\n\n-이는 이번 주 시장의 흐름을 압축해서 보여준 것. 연준이 금리를 올린 16일에는 뉴욕증시가 하락했지만 이튿날에는 기술주를 중심으로 반등.\n\n-CNBC는 투자자들이 ‘더 높은 금리가 더 오래 지속되는 환경’을 우려하면서도 기업 이익을 뒷받침할 AI 투자 스토리로 다시 눈을 돌리고 있다고 분석.\n\n 24일 미중 정상회담 …무역과 AI·반도체 규제의 향방 \n\n-이번 주 최대 이벤트는 24일 미국 백악관에서 열리는 미중 정상회담. 도널드 트럼프 미국 대통령과 시진핑 중국 국가주석은 AI와 무역, 희토류 등 양국 현안을 논의할 예정.\n\n-국내 증시에서는 대중 반도체 규제 방향에 따라 삼성전자와 SK하이닉스 등 반도체주 투자심리가 달라질 전망.\n\n 미국 국채금리 5% 안착 여부 및 주요 인사 발언 \n\n-지난주 장중 5%를 돌파했던 미 국채 10년물 국채가 지난주 FOMC 이후 어느 수준에서 안정을 찾을지도 관건.\n\n-앞서 미국 연방준비제도(연준)는 15~16일(현지 시간) 연방공개시장위원회(FOMC)에서 기준금리를 0.25%포인트 올려 3.75~4.00%로 조정\n\n-연내 추가 금리 인상 가능성과 최근 금융여건에 대한 평가가 주요 관심사. 오는 22일(현지시간) 존 윌리엄스 뉴욕 연방준비은행 총재와 필립 제퍼슨 연준 부의장의 발언할 예정.\n\n-오는 24일 예정된 미국 재무부의 20~30년물 장기채 바이백도 금리 방향에 영향을 줄 수 있는 요인으로 꼽혀.\n\n 중동발 지정학 리스크와 국제유가 추이 \n\n-사우디아라비아의 송유관 피격 여파와 중동 분쟁 격화로 WTI가 배럴당 100달러를 터치한 이후 고유가 기조가 이어지고 있어.\n\n-다만 사우디의 요청을 받은 중국이 이란에 예멘 후티 반군의 사우디 석유 인프라 공격을 제한해달라고 요구했다는 소식이 공급 차질 우려를 다소 누그러뜨려.\n\n-유가 상승이 물가를 자극하면 연준의 추가 금리 인상과 국채금리 상승으로 연결돼 증시에 이중 부담을 줄 수 있어.\n\n-최근 이란과의 전쟁이 ‘중대 기로’에 놓였다고 했던 트럼프 대통령이 이란에 대한 대응을 결정 중이며 마수드 페제시키안 이란 대통령과 유엔총회에서 만나는 데도 열려있다는 입장을 전해.\n\n-페제시키안 대통령은 이번 주 열리는 유엔총회에 참석해 23일 연설할 예정. 트럼프 대통령도 22일 유엔총회 연설이 계획돼 있어 전쟁 중인 미국과 이란의 정상급 접촉이 성사될지 이목이 쏠려.\n\n 아시아 주요국 휴장...韓 추석 연휴로 거래일 3일 \n\n-이번주 일본 증시가 주 초반 연휴로 쉬어가고 중국·대만도 주 후반 휴장에 들어가는 만큼 아시아 증시 전반의 거래대금 둔화 예상.\n\n-특히 국내 증시는 추석 연휴로 휴장함에 따라 21일부터 23일까지 단 3거래일만 열려 연휴 직전 위험 회피성 경계 매물이 출회돼 단기 변동성 예상.\n\n \n \n \n \n\n \n 15일(현지시간) 뉴욕증권거래소(NYSE) _[로이터=연합뉴스]"
+        "body": "美 10년물 금리 5%·국제유가 향방에 '촉각'\n미·중 정상회담서 '무역·대중 AI 반도체 규제' \n유가 100달러선 공방 속 연준 인사 릴레이 발언\n‘추석 연휴’ 증시 3거래일 뿐 '단기 변동성' 경계 [이데일리 박민 기자] 미국의 기준금리 인상과 AI 속도조절론 등 대형 악재를 딛고 일어선 코스피가 이번 주 7000선 재진입에 나설 것으로 전망된다. 오는 24일 미·중 정상회담의 AI·반도체 의제와 미 국채금리·유가 흐름에 따라 추가 반등 탄력이 결정될 것으로 보인다. 다만 추석 연휴로 거래일이 사흘(21일~23일)에 그쳐 거래대금이 줄어들 것으로 예상되는 만큼 연휴 전 경계 매물 출회에 따른 단기 변동성도 염두에 둬야 할 부분이다.\n\n다음은 21일 개장 전 주목할 뉴스다.\n\n S&P500 0.17%, 나스닥 0.40% ↑..다우 0.18% ↓ \n\n-지난 18일(현지시간) 뉴욕증권거래소(NYSE)에서 스탠더드앤드푸어스(S&P)500지수는 전장보다 0.17% 오른 7650.50에 거래를 마쳐.\n\n-기술주 중심의 나스닥종합지수는 0.40% 상승한 2만6522.55를 기록했다. 반면 다우존스30산업평균지수는 0.18% 내린 5만1682.64에 마감.\n\n-이날 시장을 짓눌렀던 것은 다시 치솟은 국채금리. 미 국채 10년물 금리는 장중 5%를 재돌파한 뒤 5.00% 안팎에서 움직여.\n\n-이번 주에는 2007년 7월 이후 최고 수준까지 치솟았고, 2년물 금리도 2024년 7월 이후 최고 수준으로 올라서.\n\n-그럼에도 이날 S&P500과 나스닥이 상승할 수 있었던 것은 반도체를 중심으로 AI 관련주에 매수세가 이어졌기 때문. 하이퍼스케일러와 반도체, 데이터 저장장치 업체들이 동반 강세를 보여.\n\n-필라델피아 반도체지수가 2.78% 상승한 가운데 샌디스크(10.99%), 시게이트(6.93%), 웨스턴디지털(4.13%), 마이크론(3.92%), SK하이닉스 ADR(2.46%) 등이 일제히 올라.\n\n-이는 이번 주 시장의 흐름을 압축해서 보여준 것. 연준이 금리를 올린 16일에는 뉴욕증시가 하락했지만 이튿날에는 기술주를 중심으로 반등.\n\n-CNBC는 투자자들이 ‘더 높은 금리가 더 오래 지속되는 환경’을 우려하면서도 기업 이익을 뒷받침할 AI 투자 스토리로 다시 눈을 돌리고 있다고 분석.\n\n 24일 미중 정상회담 …무역과 AI·반도체 규제의 향방 \n\n-이번 주 최대 이벤트는 24일 미국 백악관에서 열리는 미중 정상회담. 도널드 트럼프 미국 대통령과 시진핑 중국 국가주석은 AI와 무역, 희토류 등 양국 현안을 논의할 예정.\n\n-국내 증시에서는 대중 반도체 규제 방향에 따라 삼성전자와 SK하이닉스 등 반도체주 투자심리가 달라질 전망.\n\n 미국 국채금리 5% 안착 여부 및 주요 인사 발언 \n\n-지난주 장중 5%를 돌파했던 미 국채 10년물 국채가 지난주 FOMC 이후 어느 수준에서 안정을 찾을지도 관건.\n\n-앞서 미국 연방준비제도(연준)는 15~16일(현지 시간) 연방공개시장위원회(FOMC)에서 기준금리를 0.25%포인트 올려 3.75~4.00%로 조정\n\n-연내 추가 금리 인상 가능성과 최근 금융여건에 대한 평가가 주요 관심사. 오는 22일(현지시간) 존 윌리엄스 뉴욕 연방준비은행 총재와 필립 제퍼슨 연준 부의장의 발언할 예정.\n\n-오는 24일 예정된 미국 재무부의 20~30년물 장기채 바이백도 금리 방향에 영향을 줄 수 있는 요인으로 꼽혀.\n\n 중동발 지정학 리스크와 국제유가 추이 \n\n-사우디아라비아의 송유관 피격 여파와 중동 분쟁 격화로 WTI가 배럴당 100달러를 터치한 이후 고유가 기조가 이어지고 있어.\n\n-다만 사우디의 요청을 받은 중국이 이란에 예멘 후티 반군의 사우디 석유 인프라 공격을 제한해달라고 요구했다는 소식이 공급 차질 우려를 다소 누그러뜨려.\n\n-유가 상승이 물가를 자극하면 연준의 추가 금리 인상과 국채금리 상승으로 연결돼 증시에 이중 부담을 줄 수 있어.\n\n-최근 이란과의 전쟁이 ‘중대 기로’에 놓였다고 했던 트럼프 대통령이 이란에 대한 대응을 결정 중이며 마수드 페제시키안 이란 대통령과 유엔총회에서 만나는 데도 열려있다는 입장을 전해.\n\n-페제시키안 대통령은 이번 주 열리는 유엔총회에 참석해 23일 연설할 예정. 트럼프 대통령도 22일 유엔총회 연설이 계획돼 있어 전쟁 중인 미국과 이란의 정상급 접촉이 성사될지 이목이 쏠려.\n\n 아시아 주요국 휴장...韓 추석 연휴로 거래일 3일 \n\n-이번주 일본 증시가 주 초반 연휴로 쉬어가고 중국·대만도 주 후반 휴장에 들어가는 만큼 아시아 증시 전반의 거래대금 둔화 예상.\n\n-특히 국내 증시는 추석 연휴로 휴장함에 따라 21일부터 23일까지 단 3거래일만 열려 연휴 직전 위험 회피성 경계 매물이 출회돼 단기 변동성 예상.\n\n \n \n \n \n\n \n 15일(현지시간) 뉴욕증권거래소(NYSE) _[로이터=연합뉴스]"
       },
       {
         "title": "\"죽기 직전까지 돈 빌린다\"…구조조정 골든타임 놓치는 기업들[기업개선 2.0]①",
@@ -9062,77 +9086,40 @@
         "chars": 2591,
         "extracted": "id=\"dic_area\"",
         "body": "[이데일리 신하연 기자] 유안타증권은 21일 KT&G(033780)에 대해 카자흐스탄에서 유통망 확대와 생산 현지화가 맞물리며 해외 궐련 사업의 추가 성장 여력이 확인됐다고 평가했다. 초기 글로벌 생산 투자가 마무리되면서 이익 증가가 현금흐름 개선과 주주환원 확대로 이어질 수 있다는 분석이다. 투자의견 ‘매수’와 목표주가 25만원을 유지했다. 지난 18일 종가 17만2000원 대비 상승 여력은 45%다.\n\n손현정 유안타증권 연구원은 “이번 카자흐스탄 탐방에서 확인한 핵심은 해외 궐련의 추가 성장 여력과, 이를 이익과 현금흐름으로 연결할 현지 사업 기반”이라고 밝혔다.\n\n카자흐스탄 전체 궐련 시장은 축소되고 있지만 KT&G가 강점을 가진 100mm 초슬림 시장은 성장하고 있다. 카자흐스탄 전체 궐련 시장은 2021년 166억개비에서 2025년 144억6000만개비로 13.0% 감소한 반면, 같은 기간 100mm 초슬림 시장은 38억4000만개비에서 46억3000만개비로 20.6% 증가했다. 전체 시장에서 차지하는 비중도 23.1%에서 32.0%로 확대됐다.\n\nKT&G의 현지 시장 점유율도 빠르게 상승했다. 2022년 5.1%였던 카자흐스탄 점유율은 2023년 6.8%, 2024년 8.6%, 지난해 9.6%까지 높아졌다. 2024년에는 BAT를 제치고 현지 3위에 올랐으며 지난해 100mm 초슬림 시장 내 점유율은 26.0%를 기록했다.\n\n손 연구원은 “전체 시장 수요가 줄어드는 환경에서도 성장 제품군에서 점유율을 확보하면서 판매량을 늘렸다는 점에 의미가 있다”고 평가했다.\n\n아직 전국 유통망 확대가 진행 중이라는 점도 추가 성장 여력을 뒷받침한다. KT&G의 카자흐스탄 유통 커버리지는 지난해 60%에서 올해 70%, 내년 80% 이상으로 높아질 예정이다. 진열 점포 수도 지난해 1만1000개에서 올해 1만4000개, 내년 1만6000개로 확대할 계획이다.\n\n손 연구원은 “점유율 상승이 전국 유통망 완성 이전에 나타났다는 점에 주목한다”며 “성장하는 제품군에서 형성된 브랜드 경쟁력을 신규 지역의 실제 구매로 연결할 수 있다면 시장 전체 성장률을 상회하는 판매량 증가가 이어질 수 있다”고 설명했다.\n\n직접사업 전환에 따른 이익 레버리지도 나타나고 있다. 카자흐스탄 판매법인의 2022~2025년 판매량 연평균성장률(CAGR)은 20.4%였던 반면 매출액과 영업이익 CAGR은 각각 70.2%, 89.7%를 기록했다. 유통 마진 내재화와 가격·제품 믹스 개선, 판매량 증가가 동시에 나타난 결과다.\n\n손 연구원은 “직접사업 전환에 따른 일회성 구조 변화가 포함돼 있어 같은 성장률을 향후 그대로 연장하기는 어렵다”면서도 “추가 판매량이 외형 이상의 이익 증가로 연결될 수 있는 사업 구조가 형성됐다는 점은 분명하다”고 짚었다.\n\n생산 현지화 역시 수익성을 높이는 요인이다. KT&G 카자흐스탄 공장은 지난해 3월 상업생산을 시작했다. 올해 예상 생산량은 약 33억개비로 현재 인력 기준 생산능력 40억개비, 설비 기준 최대 생산능력 60억개비를 밑돈다. 판매량이 늘더라도 단기적으로 신규 생산라인 투자보다 인력과 교대 운영 확대를 통해 대응할 수 있다는 의미다.\n\n현지 생산 이후 물류와 원가 부담도 낮아졌다. 한국에서 유라시아 지역으로 공급할 때 25~35일 걸렸던 공급기간은 카자흐스탄 공장 가동 이후 인접 지역 기준 당일~10일로 단축됐다. 완제품 재고는 최소 2개월 줄었으며 감가상각비를 제외한 가공비는 한국보다 약 30% 낮다.\n\n손 연구원은 “현지 생산은 단순한 공급처 이전이 아니라 추가 판매의 수익성을 높이는 기반”이라며 “카자흐스탄 공장은 원가 절감 설비를 넘어 현지 수요를 빠르게 제품과 공급으로 전환하는 플랫폼으로 기능하고 있다”고 평가했다.\n\n투자 부담이 낮아지면서 현금 창출력도 개선되고 있다. 올해 상반기 연결 영업활동현금흐름은 7655억원으로 전년 동기 3881억원보다 3774억원 증가했다. 같은 기간 유형자산 취득액은 3482억원에서 2171억원으로 줄었다. 영업활동현금흐름에서 유형자산 취득액을 단순 차감한 현금잉여는 399억원에서 5484억원으로 확대됐다.\n\n주주환원 확대 가능성도 주목했다. 올해 중간배당은 주당 2000원으로 전년 대비 600원 증가했다. 유안타증권은 연간 주당배당금(DPS)을 올해 7200원, 내년 7600원으로 추정했다. 다만 추가적인 주주환원 확대 여부는 4분기 발표될 중장기 정책을 확인할 필요가 있다고 봤다.\n\n손 연구원은 “초기 생산 투자가 마무리된 이후 현금 창출력도 개선되고 있어 해외 궐련 성장이 주주환원 여력 확대로 이어질 기반도 강화되고 있다”고 평가했다.\n\n유안타증권은 올해 KT&G의 연결 매출액을 전년 대비 7.5% 증가한 7조713억원, 영업이익을 14.3% 늘어난 1조5361억원으로 전망했다. 내년에는 매출액 7조3550억원, 영업이익 1조7379억원을 기록할 것으로 예상했다.\n\n손 연구원은 “향후 중요한 것은 유통 커버리지 자체보다 신규 지역의 판매량이 얼마나 빠르게 올라오고, 증가한 물량이 제조·유통 효율 개선을 통해 연결 이익으로 전환되는지”라며 향후 실적 추정 상향 여부는 신규 지역의 점포 생산성과 카자흐스탄 생산량 증가, 유통비·제조원가 개선의 연결 실적 반영 정도를 확인한 뒤 판단할 예정이라고 밝혔다."
-      },
-      {
-        "title": "11년 만에 백악관 찾는 시진핑…외교가 AI 기술주 흔들까 [마켓무버의 국장 힌트]",
-        "url": "https://n.news.naver.com/mnews/article/215/0001266631",
-        "chars": 1752,
-        "extracted": "id=\"dic_area\"",
-        "body": "미 증시 살펴보며 한국 증시 투자아이디어까지 찾는 마켓무버입니다.\n\n주말 사이 미 증시 혼조세로 마무리됐습니다. 다우지수는 0.18% 내린 반면 S&P 500과 나스닥 지수는 각각 0.17%, 0.4% 상승했습니다. 필라델피아 반도체지수는 2.7% 올랐습니다. 이번 주부터 S&P 100에 합류하는 샌디스크는 10.99% 주가가 상승하기도 했습니다.\n\nAI 속도 조절론에 대한 우려가 잦아드는 가운데, 채권시장의 불안이 시장에 영향을 주었습니다. 주요 시장금리의 벤치마크인 10년물 만기 미 국채 수익률은 또다시 상승해 5%대에 재진입했습니다. \n\n관련해 미 국채 상승률의 원인을 지난 금요일 일본의 기준금리 결정에서 찾는 월가의 시각들이 있습니다. \n\n일본은행은 기준금리를 예상대로 0.25bp 높였습니다만 '비둘기적 인상'이라는 평가가 나옵니다. 금리 인상에 반대하는 의견도 2표가 나왔고요. 우에다 가즈오 총재 역시 인플레이션에 대해 '선제적 조치를 하겠지만 너무 서두르지 않도록 주의해야 한다'고 발언했습니다.\n\n에버코어ISI는 \"스콧 베선트 재무장관이 원했던 엔화 강세를 이끌어내기에는 일본은행의 조치가 턱없이 부족했다\"며 \"일본은행의 미적지근한 태도가 미 국채 금리 상승을 부채질할 수 있다\"고 평가했습니다.\n\nBOJ가 금리를 올렸다는 사실보다, 시장이 기대한 만큼 ‘앞으로도 빠르게 올리겠다’는 신호를 주지 못한 게 핵심이라는 분석입니다. \n\n이 정도의 금리 인상으로 엔화 약세를 저지하지 못한다면, 일본은행은 보유한 미 국채를 추가로 매도할 가능성이 있습니다. 달러 팔아서 엔화 가치 높이겠다는 방식인데, 이건 미국이 원하는 그림이 아닙니다. \n\n국제유가는 서부텍사스산중질유(WTI) 기준 또다시 배럴당 100달러 위에서 움직이고 있습니다. \n\n이란이 미국에 종전 조건을 제시할 가운데, 도널드 트럼프 미국 대통령은 이란에 대한 공격과 경제 제재, 합의 등의 선택지를 놓고 대응 방안을 결정하는 단계라고 밝혔습니다. \n\n관련해 이번 주 주요 외교적 이벤트들을 주목해야겠습니다. 미국 시간 22일부터 열리는 유엔 총회에선 도널드 트럼프 미국 대통령과 이란의 페제시키안의 연설이 차례로 예정되어 있습니다. \n \n \n \n \n\n \n유엔 총회 기간엔 사우디아라비아, 아랍에미리트, 카타르, 바레인, 쿠웨이트, 오만 등 걸프 여섯 개국 정상과 트럼프 대통령의 회담도 예정돼 있습니다. 외신들은 '트럼프 대통령이 대규모 전투 작전을 재개하려면 역내 동맹국의 동의가 필요하다'며 이번 회동을 전쟁의 다음 국면을 좌우할 요인으로 봅니다.\n\n11년만에 백악관을 찾는 시진핑 중국 국가주석과 도널드 트럼프 미국 대통령이 만나 어떤 변곡점이 만들어질지도 시장에 중요한 부분입니다. \n \n \n \n \n\n \n관세와 대만 관련 사안이 큰 쟁점으로 부각되고 있고요. 이번 정상회담을 계기로 양국의 마찰이 줄어들지, 새로운 국면으로 접어들지가 관건입니다. 중국은 미국이 그동안의 입장을 선회해 '대만 독립에 반대한다'는 입장을 공개적으로 택하길 원하고 있다는 보도가 나오고 있습니다. \n\n미-중 정상회담 이후 AI 분야에서 어떤 흐름이 나올지도 한국 증시에 중요한 부분 가운데 하나입니다. \n\n \n \n \n \n\n \n시장에선 회담 이후 미국이 중국산 AI에 부담으로 작용할 안들을 내놓을지에 주목합니다. 중국의 저비용 AI를 미국 기업들이 쓰는 것에 대한 규제 문턱을 높인다면 미국의 AI관련주에는 호재가 될 수 있겠지요. 반대로 미국이 중국에 대한 화해 무드로 진입하면서 중국산 반도체 규체를 완화한다면 국내 반도체주에는 부담이 될 수도 있겠습니다."
-      },
-      {
-        "title": "\"데이터센터 어디 지을까?\"…이제는 '전기·임차인' 싸움",
-        "url": "https://n.news.naver.com/mnews/article/018/0006373319",
-        "chars": 2073,
-        "extracted": "id=\"dic_area\"",
-        "body": "[부동산금융 새 먹거리 데이터센터]③\n수도권, 전력망 포화…'전력 확보' 문턱 높아\n'전기 있는 지방'으로 데이터센터 개발 확산\n현금흐름, 투자 핵심…장기 임대차계약 중요 이 기사는 2026년09월20일 19시31분에 마켓인 프리미엄 콘텐츠 로 선공개 되었습니다.\n\n[이데일리 마켓in 김성수 기자] 데이터센터의 입지 공식이 바뀌면서 투자기준도 달라지고 있다. 과거에는 서울 접근성과 통신 인프라가 핵심이었다면, 이제는 '전기를 끌어올 수 있느냐'와 '임차인 확보 여부'가 사업의 성패를 좌우하는 변수로 떠올랐다. 투자대상을 고를때 '전력과 임차인'이 가장 큰 기준이 된 것이다.\n\n \n\n 수도권, 전력망 포화…'전력 확보' 문턱 높아 \n\n20일 금융투자업계에 따르면 국내 데이터센터에 대한 투자 판단의 핵심 기준으로 △전력을 얼마나 안정적으로 확보했는지 △우량 임차인을 얼마나 오래 붙잡고 있는지가 제기된다. \n\n이 두 가지 요소가 데이터센터에서 발생하는 '현금흐름의 질'과 '향후 엑시트(자금회수) 가능성'을 판단하는 핵심 기준이 되기 때문이다.\n\n \n \n \n \n\n \n (자료=CBRE) \n \n 우선 수도권 전력망이 포화하면서 데이터센터가 인허가를 받고도 전력을 확보하지 못하는 사례가 나오고 있다. 올해 3월 누적 기준 수도권 데이터센터 전력계통영향평가 기술검토 신청(522건) 가운데 절반 이상(279건)이 '공급 불가' 판정을 받았다.\n\n건수 기준 공급불가 비율은 53.4%에 이른다. '데이터센터 전력계통영향평가 기술검토'는 10MW 이상의 대규모 전력 소비가 예상되는 데이터센터 등이 전력망에 미치는 영향을 사전에 정량·정성적으로 심사해서 전기 공급 가능 여부를 결정하는 제도다.\n\n이 검토에 합격했다는 것은 10MW 이상의 대규모 전력을 안정적으로 공급받기 위한 까다로운 사전 검증 관문을 통과했음을 의미한다. 다만 수도권 등 전력 포화 지역은 전력계통영향평가 기술검토 합격 기준이 강화되고 통과율이 매우 낮아졌다.\n\n이에 따라 데이터센터 개발회사들이 '전기가 있는 지방'으로 눈을 돌리고 있다. 데이터센터가 들어설 땅을 확보하는 것만큼이나 전력을 안정적으로 확보하는 것이 중요해져서다.\n\n특히 전통적인 수도권·지방이라는 권역 구분보다 데이터센터가 '전력망에 얼마나 가까운지', '실제 수전(한국전력 등 외부 전력망으로부터 필요한 전기를 받아들이는 것)이 가능한지' 여부가 새로운 입지 기준이 되고 있다.\n\n \n\n 현금흐름, 투자 핵심…장기 임대차계약 중요 \n\n또한 금융기관 입장에서는 '데이터센터를 사용하는 임차인이 누구인지'도 중요한 변수다. 데이터센터의 희소성이 아무리 높아져도 실제 현금흐름을 만들어내는 것은 결국 임차인이기 때문이다.\n\n대규모 데이터센터 개발은 초기 투자비용이 높은 만큼 안정적인 임차인을 얼마나 일찍 확보하느냐가 프로젝트파이낸싱(PF)과 투자금 회수 가능성을 좌우할 수 있다.\n\n특히 글로벌 데이터센터 전문 자본이나 리츠(부동산투자회사·REITs)들은 장기적으로 데이터센터 자산을 편입할 때 '장기 임대차계약'과 '안정적 현금흐름'을 중요한 조건으로 꼽는다. 향후 데이터센터 매각을 염두에 두려면 이들의 기준을 파악하는 것이 필요하다. \n\n'글로벌 데이터센터 전문 자본'이란 데이터센터를 영속적으로 편입하는 게 목적인 투자자를 뜻한다. 싱가포르 거래소에 상장된 아시아 최초 순수 데이터센터 리츠인 '케펠 DC 리츠'나 세계 최대 데이터센터 전문 리츠인 '에퀴닉스'가 이에 해당한다.\n\n국내 최대 상장 인프라 펀드 맥쿼리인프라, 글로벌 사모펀드 운용사 KKR, 블랙스톤 등은 임대차 재구조화로 순영업소득(NOI)을 개선할 가능성이 있는 자산에 높은 가치를 부여하는 경향이 있다.\n\n즉 같은 규모의 데이터센터라도 어떤 임차인이 들어와 있고, 계약 기간이 얼마나 남았으며, 임대료가 어떤 방식으로 상승하도록 설계돼 있는지에 따라 투자 가치가 달라질 수 있다는 얘기다.\n\n최근에는 글로벌 CSP(클라우드 서비스 제공업체) 등이 장기 임차를 확약하는 사례도 나타나고 있다. 글로벌 사업자들이 10MW 이상 계약할 경우 최소 10년 장기 임차가 이뤄지는 것이다. 또한 실수요자 계약시 연 3% 또는 소비자물가지수(CPI) 연동 방식의 임대료 인상 조건도 일반화되는 추세다."
-      },
-      {
-        "title": "“이번 분할은 다르다”는데…카카오 목표가는 ‘뚝’ [오늘 나온 보고서]",
-        "url": "https://n.news.naver.com/mnews/article/009/0005738030",
-        "chars": 1048,
-        "extracted": "id=\"dic_area\"",
-        "body": "경기 성남시 카카오 판교아지트 앞. <사진=연합뉴스> 인공지능(AI) 경쟁력 강화를 위해 인적 분할을 발표한 카카오에 대해 증권가의 의구심이 지속되고 있다. 카카오가 내세운 사업 구조 재편의 당위성을 인정하더라도 투자자들의 투자심리는 각 자회사별 역할 수행에 대한 불확실성으로 약해졌기 때문이다.\n\n21일 IBK투자증권은 카카오에 대한 목표주가를 기존 7만3000원에서 5만3000원으로 2만원 하향했다. 투자의견은 매수를 유지했다.\n\n카카오는 지난달 21일 인적분할을 통해 회사를 ‘카카오X’와 ‘카카오AI’로 나누겠다고 발표했다. 카카오AI는 카카오톡을 기반으로 한 플랫폼 사업을 맡고, 카카오X는 테크핀·콘텐츠·모빌리티·투자 등 나머지 사업을 담당한다. 분할 기일은 2027년 1월 1일이며 변경상장·재상장은 같은 달 27일로 예정됐다.\n\n이 연구원은 “그동안 복잡하고 비효율적인 사업이 혼재되면서 카카오톡·AI 사업 본연의 가치가 저평가됐다”면서 “이번 분할로 저평가 요인이 해소될 것으로 예상된다”고 말했다. 이번 분할의 방향성 자체에는 긍정적인 평가를 내린 셈이다.\n\n다만 시장에서는 카카오의 인적분할에 부정적인 반응이 나온다. 카카오의 주가는 인적분할 발표 이후 6.14% 가량 하락한 상태다. 소액주주 플랫폼 액트(ACT)의 액트기업지배구조연구소는 카카오의 인적분할이 과거 논란이 됐던 쪼개기 상장과는 성격이 다르지만만 상장사를 나눠야만 하는 이유가 명확하지 않다고 지적했다.\n\n이에 카카오는 주주 달래기에 나섰다. 지난 16일 카카오는 카카오AI는 별도 조정 잉여현금흐름(FCF)의 20~35%를 기본 주주환원 재원으로 활용하겠다는 계획을 밝혔다. 카카오X는 자회사 배당금(세후 기준)의 30%와 투자차익(자본비용 및 세금 차감 후) 발생시 30%를 주주환원 재원으로 활용하고 두나무 매각 차익을 활용한 3000억 원 규모의 자사주 매입 및 소각도 진행할 계획이다.\n\n이 연구원은 “인적분할 초기에는 불확실성이 확대될 전망이며 위축된 투자심리의 회복에도 시간이 필요하다”면서 “주가의 향방은 수립된 계획을 얼마나 완벽히 실행에 옮기느냐에 달렸다”고 말했다."
-      },
-      {
-        "title": "메리츠증권 발행어음, 금융당국 답만 남았다",
-        "url": "https://n.news.naver.com/mnews/article/119/0003134785",
-        "chars": 1788,
-        "extracted": "id=\"dic_area\"",
-        "body": "23일 금융위 정례회의 심의·의결 앞둬\n삼성증권 합류로 ‘발행어음 사업자 확대’ 확인\n당국 판단 미룰 명분도 없어…인가 가능성↑ \n \n \n \n\n 해당 이미지는 AI로 제작됨. [데일리안 = 서진주 기자] 최근 삼성증권이 발행어음 사업 인가를 받으면서 초대형 투자은행(IB) 간 경쟁 구도가 확대됐다. \n\n비슷한 시기 발행어음 사업 진출을 추진했던 메리츠증권의 인가 여부는 아직 최종 확정되지 않은 상태다.\n\n메리츠증권의 숙원 사업인 발행어음 진출이 금융당국 승인을 앞둔 만큼, 금융당국이 명확한 결론을 내려야 한다는 목소리가 나온다. \n\n메리츠증권이 9번째 발행어음 사업자에 이름을 올릴 수 있을지 주목된다.\n\n21일 금융투자업계에 따르면 금융위원회 증권선물위원회는 이달 16일 열린 정례회의에서 메리츠증권의 종합금융투자사업자 지정안 및 단기금융업(발행어음) 인가안을 의결했다.\n\n이에 따라 메리츠증권의 발행어음 인가안은 오는 23일 금융위 정례회의 심의·의결을 남겨두고 있다.\n\n발행어음은 자기자본 4조원 이상의 초대형 IB로 지정된 증권사가 자체 신용을 바탕으로 발행하는 만기 1년 이내의 단기 금융상품이다.\n\n자기자본의 최대 200%까지 발행할 수 있고, 발행어음을 통해 모은 자금을 기업금융·채권 등에 투입할 수 있어 핵심 사업으로 꼽힌다.\n\n앞서 메리츠증권은 지난해 7월 금융당국에 발행어음 인가를 신청했고, 올해 4월 삼성증권과 증선위 심의를 받을 예정이었으나 안건에서 돌연 제외됐다.\n\n이화전기 신주인수권부사채(BW) 불공정거래 혐의로 검찰 수사가 진행 중이었고, 영업점 운영 실태에 대한 금융감독원 검사가 맞물린 탓이다.\n\n업계에서는 이달 9일 삼성증권이 인가를 획득한 만큼, 메리츠증권도 인가 문턱을 넘어설 것으로 내다본다.\n\n통상 증선위를 통과한 인가안은 핵심 심사 절차를 상당 부분 마친 것으로 평가돼 금융위 정례회의에서 최종 인가될 가능성이 높다.\n\n앞서 금융당국은 메리츠증권을 둘러싼 검찰 수사 등 현안이 인가 심사를 중단할 정도로 중대하지 않다는 의견을 내비친 것으로 알려졌다. \n\n실제로 지난 9일 금융위 정례회의에서 메리츠증권의 발행어음 인가 ‘심사 재개’가 결정됐다.\n\n업계 한 관계자는 “메리츠증권과 비슷한 시기에 인가 절차를 밟았던 삼성증권이 최근 발행어음 사업자에 합류하면서 메리츠증권에 대한 금융당국 판단에 속도가 붙은 모습”이라며 “심사 재개 일주일 만에 증선위를 통과한 만큼 최종 인가에 무게가 실린다”고 말했다.\n\n또 다른 관계자는 “삼성증권 인가로 발행어음 시장이 새로운 국면에 접어든 상황에서 시장의 관심은 자연스럽게 메리츠증권으로 향하고 있다”며 “금융당국이 메리츠증권의 발행어음 인가에 대해 장기간 결론을 미뤘는데, 이제는 결론을 내리고 시장에 신호를 줄 필요가 있다”고 진단했다.\n\n특히 “삼성증권이 발행어음 인가를 획득하면서 ‘발행어음 사업자 확대’라는 정책 방향이 재확인됐고, 당국도 더 이상 판단을 미룰 명분이 없다”며 “메리츠증권 역시 동일한 기준 아래 심사를 받는 것이 형평성 측면에서 바람직하다”고 덧붙였다.\n\n메리츠증권이 최종 인가를 받을 경우, 국내 발행어음 사업자는 9곳으로 늘어난다. \n\n현재 발행어음 업무가 가능한 종합금융투자사업자는 미래에셋·삼성·신한투자·키움·하나·한국투자·KB·NH투자증권 총 8곳이다.\n\n메리츠증권의 올해 상반기 말 별도 기준 자기자본은 약 8조3500억원으로, 국내 증권사 4위다.\n\n발행어음 한도를 자기자본의 200%로 단순 적용하면 최대 16조7000억원 규모의 자금 조달 여력을 확보하게 된다. \n\n메리츠증권은 발행어음을 통해 조달한 자금을 기업금융과 모험자본 공급 등에 활용한다는 계획이다."
-      },
-      {
-        "title": "두산, 자사주 12.2% 소각…전자사업 생산능력 두 배로",
-        "url": "https://n.news.naver.com/mnews/article/014/0005578632",
-        "chars": 1100,
-        "extracted": "id=\"dic_area\"",
-        "body": "대신증권 \"투자 성과 가시화 전까지 성장 뒷받침\" \n \n \n \n\n 두산 CI \n \n[파이낸셜뉴스] 두산이 대규모 자사주 소각과 전자사업부 증설을 통해 주주환원과 중장기 성장 기반 강화에 나선다. 대신증권은 21일 전자BG의 견조한 수익성이 투자 성과가 본격화하는 2028년까지 실적을 이끌 것으로 평가하며 투자의견 '매수'와 목표주가 184만원을 유지했다. \n \n이경연 대신증권 연구원은 이날 보고서에서 \"자기주식 소각은 현금 유출 없이 주당가치를 높이는 결정이며, 증설은 2028년 이후 매출 성장으로 이어지는 결정\"이라고 분석했다. \n \n두산은 지난 17일 이사회에서 보유 자기주식 320만1028주 가운데 임직원 보상용 63만2500주를 제외한 256만8528주를 소각하기로 했다. 발행주식총수의 12.18%에 해당한다. 예정일은 10월 2일로, 절차가 마무리되면 발행주식은 2108만3335주에서 1851만4807주로 줄어든다. \n \n대신증권은 이를 반영한 발행주식수 기준 주당순이익(EPS)을 올해 3만8360원, 내년 5만5005원으로 추정했다. 기존 전망치보다 각각 3.1%, 13.9% 높은 수준이다. 올해는 소각 시점에 따른 가중평균 효과가 일부만 반영되지만, 내년에는 연간으로 적용된다. \n \n같은 날 승인한 전자사업부 추가 투자액은 9684억원이다. 국내에 4210억원, 중국 창수 현지법인 두산 일렉트로머티리얼즈에 5474억원을 투입한다. 현지법인 증자 1824억원은 별도이며, 투자 기간은 올해 9월부터 2028년 12월까지다. \n \n이는 2·4분기 실적 발표 당시 제시한 계획에 더해진 투자다. 인공지능(AI) 데이터센터용 800G 광모듈과 기존 AI 가속기 고객사의 수요 증가에 대응하기 위한 것으로, 완료 후 생산능력은 현재의 약 두 배에 이를 전망이다. \n \n이 연구원은 \"신규 설비 매출은 2028년부터 반영되기 시작해 2029년에 온전히 반영되는 구조\"라며 \"별도기준 2·4분기 말 순차입금이 마이너스 120억원인 순현금 상태로 자금 여력도 충분하다\"고 평가했다. 그는 이어 \"물량과 가격이 동시에 오르는 구간에서의 증설은 이미 확인된 수요에 대응하는 성격\"이라며 \"증설 이후에도 높은 수익성이 유지될 것으로 판단한다\"고 덧붙였다."
-      },
-      {
-        "title": "[거버넌스워치] ‘화학 한 우물’ 미원그룹 ‘한 지붕 네 가족’",
-        "url": "https://n.news.naver.com/mnews/article/648/0000050941",
-        "chars": 2010,
-        "extracted": "id=\"dic_area\"",
-        "body": "[중견기업 진단] 미원①\n고 김진박 창업주 이어 김정돈 회장 체제\n3대 승계 맞물려 일가 계열 분할 가속도\n핵심 4개사 중심 아들, 딸, 동생, 매제 몫 ‘한 지붕 네 가족’이 지금 당장 계열 분리를 한다고 해도 하등 이상할 게 없어 보인다. 4대(代)까지 내려간 주주 분포와 거미줄처럼 얽히고설킨 계열 출자구도 탓에 겉으로 잘 드러나 보이지 않을 따름이다. \n\n \n \n \n \n\n 미원그룹 2대 사주 김정돈 회장 미원 핵심 ‘4인방’ 매출 2조 육박 \n\n중견그룹 미원(美源·MIWON)은 1959년 11월 설립된 미원상사에 뿌리를 두고 있다. 화학 분야에서 ‘한 우물’을 팠다. 화공약품 수입 도매업을 하다 1963년부터 황산·분황 등 기초화학제품 생산을 시작했다. 계면활성제, 도료첨가제, 감광제, 자외선안정제, 산화방지제, 전자재료 등 정밀화학 분야로 사업영역을 넓혔다. \n\n선택과 집중. 모태 미원상사에서 사업부 분사 전략을 통해 사세를 확장했다. 2009년 2월 미원스페셜티케미칼(특수화학사업부, 에너지경화수지, 이하 ‘미원에스씨’), 2011년 1월 미원화학(기능화학사업부, 황산·분황·계면활성제)을 독립법인으로 떼어 냈다. \n\n인수합병(M&A)에도 공격적으로 뛰어들었다. 경쟁력 강화를 위해 태광정밀화학(1993년 7월, 타이어 및 전자제료 접착제), 동남합성(2012년 9월, 계면활성제), 비드테크(2015년 7월, 바이오·화학 소재 레진·펩타이드), 잉크테크(2021년 5월, 잉크젯)를 차례로 계열 편입했다. \n\n현재 미원이 총 22개 계열사를 거느리고 있는 이유다. 6개 상장사를 비롯해 국내 12개사, 미국·중국·유럽 등지의 해외 제조·판매법인 10개사다. 미원상사를 비롯해 분사법인 미원홀딩스(동남합섬 포함), 미원에스씨, 미원화학 등 핵심 4인방의 합산 자산(2025년 말 연결)만 1조7700억원에 이른다. \n\n벌이도 좋다. 작년에는 매출 1조7500억원에 영업이익으로 1590억원을 벌었다. 이익률 9.06%를 나타냈다. 줄곧 흑자 기조를 이어가고 있어 재무 안정성도 양호하다. 순차입금이 마이너스(-) 1020원(차입금 1280억-현금성자산 2300억원)이다. 실질적인 무차입 경영을 하고 있다. \n\n \n \n \n \n\n 미원그룹 상장 6개사 재무실적 2023년부터 3세 최일선 배치 \n\n미원은 평북 의주 출신의 고(故) 김진박 전 회장이 창업했다. 대를 이어 장남 김정돈(72) 회장이 이끌고 있다. 1976년 서울대 화학공학과 4학년 재학 중 부친의 부름을 받고 미원상사에 합류했다. 36살 때인 1990년 1월 대표이사 사장에 올라 경영권을 승계했다. 1992년 1월 창업주 별세 뒤 1999년 1월 회장으로 취임했다. \n\n김 회장 뿐만 아니다. 아우과 매제는 경영의 조력자이자 동반자였다. 남동생 김정만(71) 미원화학 회장과 김형웅(70) 미원에스씨 회장이다. 미원상사에서 미원화학과 미원에스씨를 분사한 이래 두 핵심 계열사를 줄곧 경영 전면에서 주도해 온 이들이다. \n\n시간이 흐르고 환경이 바뀌고 사람도 변하는 게 세월이다. 미원이 올해로 67돌을 맞는다. 3대 승계가 무르익고 있다. 김정돈 회장의 1남1녀 중 장남 김태준(43) 미원에스씨 전무, 사위 강신우(50) 미원상사 전무, 김정만 회장의 1남1녀 중 장남 김태호(44) 미원화학 이사가 후계자들의 면면이다. \n\n초읽기에 들어갔다. 2대처럼 오너 3세 3인방이 핵심 계열사 경영 최일선에 속속 등장하고 있다. 김 전무가 올해 3월 고모부의 미원에스씨 대표 자리를 물려받았다. 앞서 2023년 3월 강 전무가 미원상사 대표로 나섰다. 같은 시기 김 이사도 부친 옆에 미원화학 대표로 이름을 올렸다. 더 나아가 물류사를 지렛대로 올해 13살 종손 김윤현군의 승계 기반도 닦고 있다. \n\n미원그룹의 지배구조가 세포 분열을 일으키듯 진화하고 있는 까닭이다. 한마디로 ‘한 지붕 네 가족’으로 분화하고 있다. 오너 일가들이 저마다 꿰차고 있는 5개 비상장 가족사와 ‘핏줄’ 경영구도를 들춰보면 가르마가 타진다. (▶ [거버넌스워치] 미원 ②편으로 계속) \n\n \n \n \n \n\n 미원그룹 계열사 지배구조"
       }
     ],
     "futures_mentions": [],
-    "credit_mentions": []
+    "credit_mentions": [
+      {
+        "title": "“거래대금 138조→56조”…신한證, 5대 증권사 목표가 줄줄이↓[줍줍리포트]",
+        "url": "https://n.news.naver.com/mnews/article/011/0004663913",
+        "sentence": "3분기 고객예탁금은 100조 원으로 전 분기보다 18% 줄었고 신용거래융자 잔액도 33조 원으로 11% 감소했다"
+      }
+    ]
   },
   "broker_news": {
     "sector_issues": [
       {
-        "title": "메리츠증권 발행어음, 금융당국 답만 남았다",
-        "url": "https://n.news.naver.com/mnews/article/119/0003134785",
+        "title": "“거래대금 138조→56조”…신한證, 5대 증권사 목표가 줄줄이↓[줍줍리포트]",
+        "url": "https://n.news.naver.com/mnews/article/011/0004663913",
         "words": [
-          "발행어음",
-          "종합금융투자사업자",
-          "초대형 IB"
+          "브로커리지",
+          "증권사 실적",
+          "증권사"
         ],
         "in_title": [
-          "발행어음"
+          "증권사"
         ],
-        "sentence": "[데일리안 = 서진주 기자] 최근 삼성증권이 발행어음 사업 인가를 받으면서 초대형 투자은행(IB) 간 경쟁 구도가 확대됐다",
+        "sentence": "브로커리지와 자산관리(WM), 투자은행(IB), 트레이딩 등 전 영업 부문의 환경이 동시에 악화된 만큼, 주요 증권사의 목표주가도 일제히 하향했다",
         "rank": 3
       }
     ]
   },
   "ib_mentions": {
-    "count": 3,
+    "count": 2,
     "names": [
       "JP모건",
-      "번스타인",
-      "에버코어"
+      "번스타인"
     ],
     "by_name": {
       "JP모건": [
@@ -9140,9 +9127,6 @@
       ],
       "번스타인": [
         0
-      ],
-      "에버코어": [
-        2
       ]
     },
     "mentions": [
@@ -9159,36 +9143,47 @@
         "also": [],
         "title": "[오늘의 증시]美금리 5%에도 반도체는 훈풍…코스피, 7000선 되찾을까",
         "url": "https://n.news.naver.com/mnews/article/003/0014203286"
-      },
-      {
-        "who": "에버코어",
-        "sentence": "에버코어ISI는 \"스콧 베선트 재무장관이 원했던 엔화 강세를 이끌어내기에는 일본은행의 조치가 턱없이 부족했다\"며 \"일본은행의 미적지근한 태도가 미 국채 금리 상승을 부채질할 수 있다\"고 평가했습니다",
-        "also": [],
-        "title": "11년 만에 백악관 찾는 시진핑…외교가 AI 기술주 흔들까 [마켓무버의 국장 힌트]",
-        "url": "https://n.news.naver.com/mnews/article/215/0001266631"
       }
     ]
   },
   "limit_names": {
     "upper": {
-      "names": [],
-      "count": 0,
-      "scanned": 0,
+      "names": [
+        {
+          "code": "393210",
+          "name": "토마토시스템",
+          "change_pct": 29.97,
+          "price": 2550.0,
+          "market": "코스닥",
+          "continual": 0.0
+        }
+      ],
+      "count": 1,
+      "scanned": 100,
       "source_url": "https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=up&startIdx=0&pageSize=100",
-      "market_status": null,
-      "session": null,
+      "market_status": "OPEN",
+      "session": "REGULAR_MARKET",
       "basis": "화면이 부르는 API 에서 upDownGb=1(상한) 로 골라냈다 — 등락률 문턱이 아니라 거래소가 매긴 구분이다",
-      "note": "해당 종목 없음"
+      "note": null
     },
     "lower": {
-      "names": [],
-      "count": 0,
-      "scanned": 0,
+      "names": [
+        {
+          "code": "475830",
+          "name": "오름테라퓨틱",
+          "change_pct": -29.95,
+          "price": 26200.0,
+          "market": "코스닥",
+          "continual": 0.0
+        }
+      ],
+      "count": 1,
+      "scanned": 100,
       "source_url": "https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=down&startIdx=0&pageSize=100",
-      "market_status": null,
-      "session": null,
+      "market_status": "OPEN",
+      "session": "REGULAR_MARKET",
       "basis": "화면이 부르는 API 에서 upDownGb=4(하한) 로 골라냈다 — 등락률 문턱이 아니라 거래소가 매긴 구분이다",
-      "note": "해당 종목 없음"
+      "note": null
     }
   },
   "fx": {
@@ -9199,18 +9194,18 @@
         "name_en": "KRW/USD",
         "symbol": "KRW=X",
         "date": "2026-09-21",
-        "close": 1385.64,
+        "close": 1386.1,
         "prev_close": 1379.53,
-        "change": 6.11,
-        "change_pct": 0.4429,
+        "change": 6.5699,
+        "change_pct": 0.4762,
         "basis": "야후 직접",
         "perf": {
-          "w1": 3.05,
-          "m1": -0.37,
-          "m3": -9.88,
-          "m6": -6.99,
-          "y1": -0.08,
-          "ytd": -3.64,
+          "w1": 3.08,
+          "m1": -0.34,
+          "m3": -9.85,
+          "m6": -6.96,
+          "y1": -0.05,
+          "ytd": -3.6,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9223,18 +9218,18 @@
         "name_en": "KRW/100JPY",
         "symbol": "KRW=X ÷ JPY=X",
         "date": "2026-09-21",
-        "close": 882.43,
+        "close": 883.27,
         "prev_close": 883.58,
-        "change": -1.16,
-        "change_pct": -0.1309,
+        "change": -0.32,
+        "change_pct": -0.036,
         "basis": "재정환율(USD 경유 계산)",
         "perf": {
-          "w1": 0.68,
-          "m1": 0.81,
-          "m3": -7.44,
-          "m6": -6.46,
-          "y1": -5.86,
-          "ytd": -4.01,
+          "w1": 0.78,
+          "m1": 0.9,
+          "m3": -7.35,
+          "m6": -6.37,
+          "y1": -5.77,
+          "ytd": -3.92,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9249,18 +9244,18 @@
         "name_en": "KRW/CNY",
         "symbol": "KRW=X ÷ CNY=X",
         "date": "2026-09-21",
-        "close": 207.1737,
+        "close": 207.2425,
         "prev_close": 205.6728,
-        "change": 1.5009,
-        "change_pct": 0.7297,
+        "change": 1.5697,
+        "change_pct": 0.7632,
         "basis": "재정환율(USD 경유 계산)",
         "perf": {
-          "w1": 3.33,
-          "m1": 0.24,
-          "m3": -8.79,
-          "m6": -4.04,
-          "y1": 6.26,
-          "ytd": 0.79,
+          "w1": 3.38,
+          "m1": 0.17,
+          "m3": -8.76,
+          "m6": -4.01,
+          "y1": 6.3,
+          "ytd": 0.84,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9273,18 +9268,18 @@
         "name_en": "KRW/EUR",
         "symbol": "KRW=X × EURUSD=X",
         "date": "2026-09-21",
-        "close": 1591.269,
+        "close": 1591.52,
         "prev_close": 1583.1486,
-        "change": 8.1203,
-        "change_pct": 0.5129,
+        "change": 8.3714,
+        "change_pct": 0.5288,
         "basis": "재정환율(USD 경유 계산)",
         "perf": {
-          "w1": 2.07,
-          "m1": -2.11,
-          "m3": -9.68,
-          "m6": -7.74,
-          "y1": -2.69,
-          "ytd": -5.8,
+          "w1": 2.09,
+          "m1": -2.09,
+          "m3": -9.66,
+          "m6": -7.72,
+          "y1": -2.67,
+          "ytd": -5.78,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9297,18 +9292,18 @@
         "name_en": "KRW/BRL",
         "symbol": "KRW=X ÷ BRL=X",
         "date": "2026-09-21",
-        "close": 269.4697,
+        "close": 269.5591,
         "prev_close": 269.2239,
-        "change": 0.2458,
-        "change_pct": 0.0913,
+        "change": 0.3353,
+        "change_pct": 0.1245,
         "basis": "재정환율(USD 경유 계산)",
         "perf": {
-          "w1": 2.26,
-          "m1": 0.3,
-          "m3": -9.19,
-          "m6": -5.58,
-          "y1": 3.07,
-          "ytd": 2.62,
+          "w1": 2.29,
+          "m1": 0.33,
+          "m3": -9.16,
+          "m6": -5.55,
+          "y1": 3.11,
+          "ytd": 2.66,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9321,18 +9316,18 @@
         "name_en": "KRW/AUD",
         "symbol": "KRW=X × AUDUSD=X",
         "date": "2026-09-21",
-        "close": 987.2685,
+        "close": 987.7349,
         "prev_close": 981.5356,
-        "change": 5.7329,
-        "change_pct": 0.5841,
+        "change": 6.1993,
+        "change_pct": 0.6316,
         "basis": "재정환율(USD 경유 계산)",
         "perf": {
-          "w1": 2.66,
-          "m1": -0.3,
-          "m3": -8.45,
-          "m6": -6.42,
-          "y1": 7.57,
-          "ytd": 2.5,
+          "w1": 2.7,
+          "m1": -0.25,
+          "m3": -8.41,
+          "m6": -6.37,
+          "y1": 7.62,
+          "ytd": 2.55,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9345,18 +9340,18 @@
         "name_en": "Dollar Index",
         "symbol": "DX-Y.NYB",
         "date": "2026-09-20",
-        "close": 100.263,
+        "close": 100.283,
         "prev_close": 100.22,
-        "change": 0.043,
-        "change_pct": 0.0429,
+        "change": 0.063,
+        "change_pct": 0.0629,
         "basis": "야후 직접",
         "perf": {
-          "w1": 1.15,
-          "m1": 1.38,
-          "m3": -0.58,
-          "m6": 0.62,
-          "y1": 2.69,
-          "ytd": 2.02,
+          "w1": 1.17,
+          "m1": 1.4,
+          "m3": -0.56,
+          "m6": 0.64,
+          "y1": 2.71,
+          "ytd": 2.04,
           "unit": "%",
           "from": "2024-09-20"
         },
@@ -9369,18 +9364,18 @@
         "name_en": "EUR/USD",
         "symbol": "EURUSD=X",
         "date": "2026-09-21",
-        "close": 1.1484,
+        "close": 1.1482,
         "prev_close": 1.1476,
-        "change": 0.0008,
-        "change_pct": 0.0666,
+        "change": 0.0006,
+        "change_pct": 0.0551,
         "basis": "야후 직접",
         "perf": {
-          "w1": -0.95,
-          "m1": -1.75,
-          "m3": 0.22,
-          "m6": -0.81,
-          "y1": -2.61,
-          "ytd": -2.24,
+          "w1": -0.96,
+          "m1": -1.76,
+          "m3": 0.21,
+          "m6": -0.82,
+          "y1": -2.62,
+          "ytd": -2.26,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9393,18 +9388,18 @@
         "name_en": "USD/JPY",
         "symbol": "JPY=X",
         "date": "2026-09-21",
-        "close": 157.026,
+        "close": 156.929,
         "prev_close": 156.129,
-        "change": 0.897,
-        "change_pct": 0.5745,
+        "change": 0.8,
+        "change_pct": 0.5124,
         "basis": "야후 직접",
         "perf": {
-          "w1": 2.35,
-          "m1": -1.17,
-          "m3": -2.64,
-          "m6": -0.57,
-          "y1": 6.14,
-          "ytd": 0.39,
+          "w1": 2.28,
+          "m1": -1.23,
+          "m3": -2.7,
+          "m6": -0.63,
+          "y1": 6.07,
+          "ytd": 0.33,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9423,8 +9418,8 @@
         "change_pct": -0.2848,
         "basis": "야후 직접",
         "perf": {
-          "w1": -0.27,
-          "m1": -0.61,
+          "w1": -0.29,
+          "m1": -0.51,
           "m3": -1.19,
           "m6": -3.07,
           "y1": -5.97,
@@ -9465,18 +9460,18 @@
         "name_en": "GBP/USD",
         "symbol": "GBPUSD=X",
         "date": "2026-09-21",
-        "close": 1.3392,
+        "close": 1.3389,
         "prev_close": 1.3358,
-        "change": 0.0034,
-        "change_pct": 0.2511,
+        "change": 0.0031,
+        "change_pct": 0.235,
         "basis": "야후 직접",
         "perf": {
-          "w1": -0.99,
-          "m1": -1.85,
-          "m3": 1.44,
-          "m6": -0.25,
-          "y1": -1.21,
-          "ytd": -0.56,
+          "w1": -1.01,
+          "m1": -1.86,
+          "m3": 1.42,
+          "m6": -0.27,
+          "y1": -1.23,
+          "ytd": -0.58,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9489,18 +9484,18 @@
         "name_en": "USD/CHF",
         "symbol": "CHF=X",
         "date": "2026-09-21",
-        "close": 0.8224,
+        "close": 0.8225,
         "prev_close": 0.8249,
-        "change": -0.0025,
-        "change_pct": -0.3043,
+        "change": -0.0024,
+        "change_pct": -0.2861,
         "basis": "야후 직접",
         "perf": {
-          "w1": 0.7,
-          "m1": 2.85,
-          "m3": 2.17,
-          "m6": 4.27,
-          "y1": 3.77,
-          "ytd": 3.87,
+          "w1": 0.72,
+          "m1": 2.87,
+          "m3": 2.19,
+          "m6": 4.29,
+          "y1": 3.79,
+          "ytd": 3.89,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9513,18 +9508,18 @@
         "name_en": "USD/TWD",
         "symbol": "TWD=X",
         "date": "2026-09-21",
-        "close": 31.8,
+        "close": 31.808,
         "prev_close": 31.8511,
-        "change": -0.0511,
-        "change_pct": -0.1604,
+        "change": -0.0431,
+        "change_pct": -0.1353,
         "basis": "야후 직접",
         "perf": {
-          "w1": 0.39,
-          "m1": -0.12,
-          "m3": 0.52,
-          "m6": -0.01,
-          "y1": 5.61,
-          "ytd": 1.78,
+          "w1": 0.42,
+          "m1": -0.1,
+          "m3": 0.54,
+          "m6": 0.02,
+          "y1": 5.64,
+          "ytd": 1.81,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9591,54 +9586,54 @@
           "high": 6644.21,
           "value_mn_krw": 58067360,
           "days": 3,
-          "share_pct": 13.1
+          "share_pct": 13.9
         },
         {
           "low": 6644.21,
           "high": 6725.69,
-          "value_mn_krw": 99301944,
-          "days": 5,
-          "share_pct": 22.4
+          "value_mn_krw": 73137886,
+          "days": 4,
+          "share_pct": 17.5
         },
         {
           "low": 6725.69,
           "high": 6807.18,
           "value_mn_krw": 45728658,
           "days": 2,
-          "share_pct": 10.3
+          "share_pct": 10.9
         },
         {
           "low": 6807.18,
           "high": 6888.67,
           "value_mn_krw": 69664791,
           "days": 3,
-          "share_pct": 15.7
+          "share_pct": 16.6
         },
         {
           "low": 6888.67,
           "high": 6970.15,
           "value_mn_krw": 96910524,
           "days": 4,
-          "share_pct": 21.9
+          "share_pct": 23.1
         },
         {
           "low": 6970.15,
           "high": 7051.64,
-          "value_mn_krw": 73315967,
-          "days": 3,
-          "share_pct": 16.6
+          "value_mn_krw": 75151518,
+          "days": 4,
+          "share_pct": 18.0
         }
       ],
       "sessions": 20,
-      "last_close": 6894.23,
+      "last_close": 6992.49,
       "heaviest": {
-        "low": 6644.21,
-        "high": 6725.69,
-        "value_mn_krw": 99301944,
-        "days": 5,
-        "share_pct": 22.4
+        "low": 6888.67,
+        "high": 6970.15,
+        "value_mn_krw": 96910524,
+        "days": 4,
+        "share_pct": 23.1
       },
-      "overhead_share_pct": 16.6,
+      "overhead_share_pct": 0.0,
       "basis": "일별 종가를 지수대로 묶고 거래대금을 더한 값. **진짜 매물대가 아니라 근사**다 — 가격대별 거래량 분포는 무료 원천이 없다",
       "note_ko": "최근 %d영업일 거래대금이 어느 지수대에 쌓였는지"
     },
@@ -9649,54 +9644,54 @@
           "high": 798.24,
           "value_mn_krw": 4928732,
           "days": 1,
-          "share_pct": 4.0
+          "share_pct": 4.1
         },
         {
           "low": 798.24,
           "high": 806.28,
           "value_mn_krw": 5455798,
           "days": 1,
-          "share_pct": 4.4
+          "share_pct": 4.5
         },
         {
           "low": 806.28,
           "high": 814.31,
-          "value_mn_krw": 31899733,
-          "days": 5,
-          "share_pct": 25.7
+          "value_mn_krw": 27413246,
+          "days": 4,
+          "share_pct": 22.8
         },
         {
           "low": 814.31,
           "high": 822.34,
           "value_mn_krw": 30051509,
           "days": 5,
-          "share_pct": 24.2
+          "share_pct": 25.0
         },
         {
           "low": 822.34,
           "high": 830.38,
-          "value_mn_krw": 24442786,
-          "days": 4,
-          "share_pct": 19.7
+          "value_mn_krw": 25156664,
+          "days": 5,
+          "share_pct": 20.9
         },
         {
           "low": 830.38,
           "high": 838.41,
           "value_mn_krw": 27256524,
           "days": 4,
-          "share_pct": 22.0
+          "share_pct": 22.7
         }
       ],
       "sessions": 20,
-      "last_close": 827.12,
+      "last_close": 826.93,
       "heaviest": {
-        "low": 806.28,
-        "high": 814.31,
-        "value_mn_krw": 31899733,
+        "low": 814.31,
+        "high": 822.34,
+        "value_mn_krw": 30051509,
         "days": 5,
-        "share_pct": 25.7
+        "share_pct": 25.0
       },
-      "overhead_share_pct": 22.0,
+      "overhead_share_pct": 22.7,
       "basis": "일별 종가를 지수대로 묶고 거래대금을 더한 값. **진짜 매물대가 아니라 근사**다 — 가격대별 거래량 분포는 무료 원천이 없다",
       "note_ko": "최근 %d영업일 거래대금이 어느 지수대에 쌓였는지"
     }
@@ -9727,6 +9722,17 @@
         "verdict": "beat"
       },
       {
+        "company": "SK하이닉스",
+        "title": "\"'삼전닉스' 쏠림 완화…중소형주의 시간 온다\"",
+        "url": "https://n.news.naver.com/mnews/article/277/0005819004",
+        "quotes": [
+          "한용희 그로쓰리서치 연구원은 \"메모리 업종의 이익 성장이 둔화된다는 의미보다 삼성전자와 SK하이닉스에 집중됐던 이익 성장 격차가 점차 줄어드는 과정에 주목할 필요가 있다\"며 \"향후에는 실적 개선에도 수급 쏠림으로 주가에 충분히 반영되지 못한 중소형주 가운데 이익 성장과 저평가 매력을 갖춘 기업을 선별하는 것이 중요하다\"고 말했다."
+        ],
+        "call_quotes": [],
+        "has_call": false,
+        "verdict": null
+      },
+      {
         "company": "마이크론",
         "title": "[굿모닝 증시]\"이번주도 박스피…오는 30일 마이크론 실적까진 지켜보자\"",
         "url": "https://n.news.naver.com/mnews/article/277/0005818977",
@@ -9740,12 +9746,12 @@
       },
       {
         "company": "삼성SDI",
-        "title": "\"주가 47% 오른다\"…이차전지 '이 종목' 깜짝 전망 이유는",
-        "url": "https://n.news.naver.com/mnews/article/018/0006373329",
+        "title": "전력 인프라 업체로 재평가된 삼성SDI..'목표주가 80만원' 상향",
+        "url": "https://n.news.naver.com/mnews/article/014/0005578659",
         "quotes": [
-          "삼성SDI, ESS 성장에 전력 인프라로 재평가…목표가 80만원 상향-iM [이데일리 김형일 기자] iM증권이 삼성SDI(006400)에 대해 에너지저장장치(ESS)를 중심으로 실적 개선이 본격화될 것으로 전망하며 목표주가를 80만원으로 상향했다",
-          "21일 정원석 iM증권 연구원은 삼성SDI의 3분기 실적에 대해 “매출 4조 1000억원, 영업이익 2850억원을 기록하며 시장 기대치를 상회할 것”이라고 전망했다",
-          "iM증권은 삼성SDI의 영업이익이 올해 약 6000억원에서 2028년 약 2조 4000억원으로 증가할 것으로 전망했다"
+          "[파이낸셜뉴스] iM증권은 삼성SDI가 ESS를 중심으로 실적 개선세가 본격화되고 있다며 목표주가를 기존 59만원에서 80만원으로 상향했다",
+          "21일 정원석 iM증권 연구원은 삼성SDI의 3·4분기 실적이 일회성 이익과 에너지저장시스템(ESS) 매출 증가에 힘입어 시장 기대치를 크게 웃돌 것으로 전망했다",
+          "삼성SDI의 3·4분기 매출은 전년 동기 대비 33% 증가한 4조1000억원, 영업이익은 2850억원으로 전망됐다"
         ],
         "call_quotes": [],
         "has_call": false,
@@ -9753,23 +9759,23 @@
       },
       {
         "company": "알테오젠",
-        "title": "\"알테오젠 ALT-B4 특허 2043년까지…장기 독점 효과 커질 것\"-IBK",
+        "title": "\"알테오젠 ALT-B4 특허 2043년까지…독점 효과 커질 것\"-IBK",
         "url": "https://n.news.naver.com/mnews/article/015/0005334459",
         "quotes": [
           "이어 \"SC의 짧은 투약 시간을 앞세워 기존 정맥주사(IV) 처방을 SC로 유도함으로써 IV 바이오시밀러 진입에 따른 매출 잠식을 방어할 수 있다\"면서 \"알테오젠의 SC 제형 변경 플랫폼 하이브로자임의 핵심 물질인 'ALT-B4'는 SC 전환을 돕는 효소로, MSD(머크)의 키트루다에 적용됐다\"고 덧붙었다",
-          "아울러 \"알테오젠은 2026~2028년 총 10억 달러의 판매 마일스톤을 수령하고, 2029년부터 시작될 매출 연동 로열티는 2030년 4억6000만 달러가 될 것\"이라고 추정했다"
+          "아울러 \"알테오젠은 2026~2028년 총 10억 달러의 판매 마일스톤을 수령하고, 2029년부터 시작될 매출 연동 로열티는 2030년 4억6000만 달러가 될 것\"이라고 추정했다."
         ],
         "call_quotes": [],
         "has_call": false,
         "verdict": null
       }
     ],
-    "count": 5,
+    "count": 6,
     "with_call": 0,
     "basis": "그날 수집한 기사 본문에서 회사 이름과 실적 표현이 같은 문장에 있는 대목만 뽑았다. 문장은 원문 그대로다"
   },
   "summary": {
-    "sources_tried": 220,
+    "sources_tried": 219,
     "sources_ok": 214
   }
 }
