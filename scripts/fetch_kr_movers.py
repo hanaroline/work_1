@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""국내 시장 등락률 상위 종목(무빙)과 시총 상위 보드를 수집한다.
+"""국내 시장 등락률 상위·하위 종목(무빙)을 수집한다.
 
 MARKET DAILY 마감시황(`scripts/build_market_daily.py --edition close`)이 읽는다.
 미국판은 `scripts/fetch_us_movers.py` 다.
@@ -56,7 +56,9 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/125.0 Safari/537.36")
 TIMEOUT = 25
 RETRY = 3
-PAGES = 6                                  # 600건 — 어느 쪽이든 넉넉하다
+PAGES = 6                                  # 쪽당 100건이고 그 뒤는 빈 쪽이 온다
+                                           # (관찰: 한 방향당 100건이 상한). 상위 3종목만
+                                           # 쓰므로 이 상한으로 충분하다.
 
 MIN_CAP_KRW = 1_000_000_000_000            # 시가총액 1조원
 MIN_TRADE_AMOUNT_KRW = 30_000_000_000      # 당일 거래대금 300억원
@@ -208,9 +210,11 @@ def main():
             % (r["name"], r["change_pct"], r["cap"] / 1e12,
                r["trade_amount"] / 1e8, r["market"]))
 
-    # 시총 상위 보드 — 미국판 빅테크 보드에 대응한다.
-    allrows = {r["code"]: r for r in (ups + downs)}
-    top_cap = sorted(allrows.values(), key=lambda r: r["cap"] or 0, reverse=True)[:10]
+    # **시총 상위 보드를 여기서 만들지 않는다.** 이 API 는 한 번에 100건까지만
+    # 주고 그 100건은 등락률 상위이므로, 거기서 시총으로 다시 세우면
+    # 「급등락한 종목 중 시총 상위」가 나온다. 실제로 2026-09-21 장중에
+    # 삼성전자가 아니라 삼성전자우·가온전선이 올라왔다. 마감시황의 대형주
+    # 보드는 빌더가 시세 파일(`stocks`)의 고정 10종목에서 읽는다.
 
     out = {
         "note": NOTE,
@@ -228,13 +232,13 @@ def main():
             "only": "보통주(type=ST), 거래정지 제외",
         },
         "counts": {
+            # 이 API 는 쪽당 100건이고 그 이상은 빈 쪽을 준다 — 관찰된 상한이다.
             "scanned": len(raw_up) + len(raw_dn),
             "passed_up": len(ups),
             "passed_down": len(downs),
         },
         "gainers": gainers,
         "losers": losers,
-        "top_cap": top_cap,
         "sources": sources,
         "elapsed_sec": round(time.time() - started, 1),
     }

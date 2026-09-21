@@ -1,0 +1,1207 @@
+{
+ "deliverable": "MARKET DAILY 2026-09-18 마감시황",
+ "as_of": "2026-09-21",
+ "series_policy": {
+  "코스피": "야후 파이낸스 (수집기 data/market)",
+  "코스닥": "야후 파이낸스 (수집기 data/market)",
+  "코스피 200": "야후 파이낸스 (수집기 data/market)",
+  "니케이 225": "야후 파이낸스 (수집기 data/market)",
+  "항셍": "야후 파이낸스 (수집기 data/market)",
+  "상하이종합": "야후 파이낸스 (수집기 data/market)",
+  "대만 가권": "야후 파이낸스 (수집기 data/market)",
+  "삼성전자": "네이버 증시 · 수집 스냅샷 (stocks)",
+  "SK하이닉스": "네이버 증시 · 수집 스냅샷 (stocks)",
+  "LG에너지솔루션": "네이버 증시 · 수집 스냅샷 (stocks)",
+  "삼성바이오로직스": "네이버 증시 · 수집 스냅샷 (stocks)",
+  "현대차": "네이버 증시 · 수집 스냅샷 (stocks)",
+  "기아": "네이버 증시 · 수집 스냅샷 (stocks)",
+  "셀트리온": "네이버 증시 · 수집 스냅샷 (stocks)",
+  "KB금융": "네이버 증시 · 수집 스냅샷 (stocks)",
+  "NAVER": "네이버 증시 · 수집 스냅샷 (stocks)",
+  "한화에어로스페이스": "네이버 증시 · 수집 스냅샷 (stocks)",
+  "SK스퀘어": "네이버 증시 · 수집 스냅샷 (stocks)",
+  "리노공업": "네이버 증시 · 수집 스냅샷 (stocks)",
+  "코스피 상승폭": "야후 파이낸스 · 수집 스냅샷",
+  "코스피-코스닥 격차": "야후 파이낸스 · 수집 스냅샷",
+  "나스닥 (9/17)": "야후 파이낸스 · 수집 스냅샷",
+  "코스피 외국인 순매수": "네이버 KRX 투자자별 일별동향",
+  "코스피 기관 순매수": "네이버 KRX 투자자별 일별동향",
+  "코스피 개인 순매수": "네이버 KRX 투자자별 일별동향",
+  "코스피 외국인 순매수 (9/17)": "네이버 KRX 투자자별 일별동향",
+  "코스피 외국인 순매수 (장중 집계)": "언론 보도 (장중 집계)",
+  "국내 통신장비 업종": "네이버 업종 등락률 · 기준일 스냅샷",
+  "국내 전기장비 업종": "네이버 업종 등락률 · 기준일 스냅샷",
+  "국내 컴퓨터와주변기기 업종": "네이버 업종 등락률 · 기준일 스냅샷",
+  "국내 조선 업종": "네이버 업종 등락률 · 기준일 스냅샷",
+  "국내 은행 업종": "네이버 업종 등락률 · 기준일 스냅샷",
+  "국내 인터넷과카탈로그소매 업종": "네이버 업종 등락률 · 기준일 스냅샷",
+  "국고채 3년": "한국은행 ECOS",
+  "국고채 10년": "한국은행 ECOS",
+  "원/달러 매매기준율": "네이버 매매기준율 · 기준일 스냅샷",
+  "국고채 3년-10년 스프레드": "한국은행 ECOS"
+ },
+ "claims": [
+  {
+   "id": "BL_KOSPI",
+   "kind": "market_level",
+   "metric": "코스피",
+   "text": "코스피 종가",
+   "value": 6894.23,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "baseline"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BLP_KOSPI",
+   "kind": "market_level",
+   "metric": "코스피",
+   "text": "코스피 전일 종가",
+   "value": 6715.4102,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BL_KOSDAQ",
+   "kind": "market_level",
+   "metric": "코스닥",
+   "text": "코스닥 종가",
+   "value": 827.12,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "baseline"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BLP_KOSDAQ",
+   "kind": "market_level",
+   "metric": "코스닥",
+   "text": "코스닥 전일 종가",
+   "value": 822.18,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BL_KOSPI200",
+   "kind": "market_level",
+   "metric": "코스피 200",
+   "text": "코스피 200 종가",
+   "value": 1090.23,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "baseline"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BLP_KOSPI200",
+   "kind": "market_level",
+   "metric": "코스피 200",
+   "text": "코스피 200 전일 종가",
+   "value": 1058.27,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BL_NIKKEI",
+   "kind": "market_level",
+   "metric": "니케이 225",
+   "text": "니케이 225 종가",
+   "value": 65018.9492,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "baseline"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BLP_NIKKEI",
+   "kind": "market_level",
+   "metric": "니케이 225",
+   "text": "니케이 225 전일 종가",
+   "value": 64136.25,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BL_HANGSENG",
+   "kind": "market_level",
+   "metric": "항셍",
+   "text": "항셍 종가",
+   "value": 24750.7793,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "baseline"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BLP_HANGSENG",
+   "kind": "market_level",
+   "metric": "항셍",
+   "text": "항셍 전일 종가",
+   "value": 24604.2891,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BL_SHANGHAI",
+   "kind": "market_level",
+   "metric": "상하이종합",
+   "text": "상하이종합 종가",
+   "value": 3911.8713,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "baseline"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BLP_SHANGHAI",
+   "kind": "market_level",
+   "metric": "상하이종합",
+   "text": "상하이종합 전일 종가",
+   "value": 3875.604,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BL_TAIWAN",
+   "kind": "market_level",
+   "metric": "대만 가권",
+   "text": "대만 가권 종가",
+   "value": 47180.75,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "baseline"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BLP_TAIWAN",
+   "kind": "market_level",
+   "metric": "대만 가권",
+   "text": "대만 가권 전일 종가",
+   "value": 46288.0,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_18FE76",
+   "kind": "market_level",
+   "metric": "삼성전자",
+   "text": "삼성전자 종가",
+   "value": 261000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_18FE76",
+   "kind": "market_level",
+   "metric": "삼성전자",
+   "text": "삼성전자 전일 종가",
+   "value": 252500.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_SK_962A82",
+   "kind": "market_level",
+   "metric": "SK하이닉스",
+   "text": "SK하이닉스 종가",
+   "value": 1857000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_SK_962A82",
+   "kind": "market_level",
+   "metric": "SK하이닉스",
+   "text": "SK하이닉스 전일 종가",
+   "value": 1745000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_LG_FBB217",
+   "kind": "market_level",
+   "metric": "LG에너지솔루션",
+   "text": "LG에너지솔루션 종가",
+   "value": 364000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_LG_FBB217",
+   "kind": "market_level",
+   "metric": "LG에너지솔루션",
+   "text": "LG에너지솔루션 전일 종가",
+   "value": 365000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_B3887C",
+   "kind": "market_level",
+   "metric": "삼성바이오로직스",
+   "text": "삼성바이오로직스 종가",
+   "value": 1398000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_B3887C",
+   "kind": "market_level",
+   "metric": "삼성바이오로직스",
+   "text": "삼성바이오로직스 전일 종가",
+   "value": 1396000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_665CF4",
+   "kind": "market_level",
+   "metric": "현대차",
+   "text": "현대차 종가",
+   "value": 365000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_665CF4",
+   "kind": "market_level",
+   "metric": "현대차",
+   "text": "현대차 전일 종가",
+   "value": 363000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_655BAA",
+   "kind": "market_level",
+   "metric": "기아",
+   "text": "기아 종가",
+   "value": 121900.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_655BAA",
+   "kind": "market_level",
+   "metric": "기아",
+   "text": "기아 전일 종가",
+   "value": 120900.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_DBC4B4",
+   "kind": "market_level",
+   "metric": "셀트리온",
+   "text": "셀트리온 종가",
+   "value": 179400.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_DBC4B4",
+   "kind": "market_level",
+   "metric": "셀트리온",
+   "text": "셀트리온 전일 종가",
+   "value": 180300.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_KB_AD5FC0",
+   "kind": "market_level",
+   "metric": "KB금융",
+   "text": "KB금융 종가",
+   "value": 174900.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_KB_AD5FC0",
+   "kind": "market_level",
+   "metric": "KB금융",
+   "text": "KB금융 전일 종가",
+   "value": 179200.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_NAVER",
+   "kind": "market_level",
+   "metric": "NAVER",
+   "text": "NAVER 종가",
+   "value": 197700.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_NAVER",
+   "kind": "market_level",
+   "metric": "NAVER",
+   "text": "NAVER 전일 종가",
+   "value": 199000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_ECA520",
+   "kind": "market_level",
+   "metric": "한화에어로스페이스",
+   "text": "한화에어로스페이스 종가",
+   "value": 1078000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_ECA520",
+   "kind": "market_level",
+   "metric": "한화에어로스페이스",
+   "text": "한화에어로스페이스 전일 종가",
+   "value": 1097000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "MV_SK_C53984",
+   "kind": "market_level",
+   "metric": "SK스퀘어",
+   "text": "SK스퀘어 종가",
+   "value": 1079000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "printed_on": [
+    "movers"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "MVP_SK_C53984",
+   "kind": "market_level",
+   "metric": "SK스퀘어",
+   "text": "SK스퀘어 전일 종가",
+   "value": 1008000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "MV_SK_962A82",
+   "kind": "market_level",
+   "metric": "SK하이닉스",
+   "text": "SK하이닉스 종가",
+   "value": 1857000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "printed_on": [
+    "movers"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "MVP_SK_962A82",
+   "kind": "market_level",
+   "metric": "SK하이닉스",
+   "text": "SK하이닉스 전일 종가",
+   "value": 1745000.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "MV_F2FFFB",
+   "kind": "market_level",
+   "metric": "리노공업",
+   "text": "리노공업 종가",
+   "value": 69600.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "printed_on": [
+    "movers"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "MVP_F2FFFB",
+   "kind": "market_level",
+   "metric": "리노공업",
+   "text": "리노공업 전일 종가",
+   "value": 66400.0,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷 (stocks)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "C_KOSPI_PTS",
+   "kind": "market_level",
+   "metric": "코스피 상승폭",
+   "text": "코스피 상승 포인트",
+   "value": 178.82,
+   "unit": "pt",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://www.etoday.co.kr/news/view/2627347",
+   "corroborating_urls": [
+    "https://www.news1.kr/finance/general-stock/6295494"
+   ],
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-index"
+   ]
+  },
+  {
+   "id": "C_GAP_PP",
+   "kind": "market_level",
+   "metric": "코스피-코스닥 격차",
+   "text": "코스피와 코스닥 등락률 차이",
+   "value": 2.06,
+   "unit": "%p",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://www.news1.kr/finance/general-stock/6295494",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-index"
+   ],
+   "note": "2.6628 − 0.6008 = 2.062"
+  },
+  {
+   "id": "C_NASDAQ_0917",
+   "kind": "market_level",
+   "metric": "나스닥 (9/17)",
+   "text": "나스닥 9월 17일 등락률 — 국내 9월 18일 장의 계기",
+   "value": 1.69,
+   "unit": "%",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.newspim.com/news/view/20260918000207",
+   "corroborating_urls": [
+    "https://www.etoday.co.kr/news/view/2627362"
+   ],
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-index"
+   ]
+  },
+  {
+   "id": "C_FLOW_FOREIGN",
+   "kind": "market_level",
+   "metric": "코스피 외국인 순매수",
+   "text": "코스피 외국인 순매수 (확정)",
+   "value": 4486,
+   "unit": "억원",
+   "series": "네이버 KRX 투자자별 일별동향",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260919&startIdx=0&pageSize=30",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-flows",
+    "headline-2"
+   ]
+  },
+  {
+   "id": "C_FLOW_INST",
+   "kind": "market_level",
+   "metric": "코스피 기관 순매수",
+   "text": "코스피 기관 순매수 (확정)",
+   "value": 15322,
+   "unit": "억원",
+   "series": "네이버 KRX 투자자별 일별동향",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260919&startIdx=0&pageSize=30",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-flows",
+    "headline-2"
+   ]
+  },
+  {
+   "id": "C_FLOW_RETAIL",
+   "kind": "market_level",
+   "metric": "코스피 개인 순매수",
+   "text": "코스피 개인 순매수 (확정)",
+   "value": -36359,
+   "unit": "억원",
+   "series": "네이버 KRX 투자자별 일별동향",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260919&startIdx=0&pageSize=30",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-flows",
+    "headline-2"
+   ]
+  },
+  {
+   "id": "C_FLOW_FOREIGN_PREV",
+   "kind": "market_level",
+   "metric": "코스피 외국인 순매수 (9/17)",
+   "text": "코스피 외국인 순매수 — 9월 17일",
+   "value": -22546,
+   "unit": "억원",
+   "series": "네이버 KRX 투자자별 일별동향",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260919&startIdx=0&pageSize=30",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-flows"
+   ]
+  },
+  {
+   "id": "C_FLOW_FOREIGN_PRESS",
+   "kind": "market_level",
+   "metric": "코스피 외국인 순매수 (장중 집계)",
+   "text": "코스피 외국인 순매수 — 일부 매체의 장중 집계",
+   "value": 9701,
+   "unit": "억원",
+   "series": "언론 보도 (장중 집계)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://m.news.nate.com/view/20260918n25405",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-flows"
+   ],
+   "note": "확정치와 다른 계열임을 보이려고 나란히 실었습니다"
+  },
+  {
+   "id": "C_SEC_TELEQ",
+   "kind": "market_level",
+   "metric": "국내 통신장비 업종",
+   "text": "국내 통신장비 업종 등락률",
+   "value": 6.94,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-sector"
+   ]
+  },
+  {
+   "id": "C_SEC_ELEC",
+   "kind": "market_level",
+   "metric": "국내 전기장비 업종",
+   "text": "국내 전기장비 업종 등락률",
+   "value": 5.1,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-sector"
+   ]
+  },
+  {
+   "id": "C_SEC_COMP",
+   "kind": "market_level",
+   "metric": "국내 컴퓨터와주변기기 업종",
+   "text": "국내 컴퓨터와주변기기 업종 등락률",
+   "value": 4.63,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-sector"
+   ]
+  },
+  {
+   "id": "C_SEC_SHIP",
+   "kind": "market_level",
+   "metric": "국내 조선 업종",
+   "text": "국내 조선 업종 등락률",
+   "value": -1.64,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-sector",
+    "board-points"
+   ]
+  },
+  {
+   "id": "C_SEC_BANK",
+   "kind": "market_level",
+   "metric": "국내 은행 업종",
+   "text": "국내 은행 업종 등락률",
+   "value": -1.62,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-sector",
+    "board-points"
+   ]
+  },
+  {
+   "id": "C_SEC_NET",
+   "kind": "market_level",
+   "metric": "국내 인터넷과카탈로그소매 업종",
+   "text": "국내 인터넷과카탈로그소매 업종 등락률",
+   "value": -1.29,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-sector"
+   ]
+  },
+  {
+   "id": "C_KTB3Y",
+   "kind": "market_level",
+   "metric": "국고채 3년",
+   "text": "국고채 3년물 수익률",
+   "value": 4.035,
+   "unit": "%",
+   "series": "한국은행 ECOS",
+   "as_of": "2026-09-18",
+   "tier": 1,
+   "source_url": "https://ecos.bok.or.kr/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-rates"
+   ]
+  },
+  {
+   "id": "C_KTB10Y",
+   "kind": "market_level",
+   "metric": "국고채 10년",
+   "text": "국고채 10년물 수익률",
+   "value": 4.466,
+   "unit": "%",
+   "series": "한국은행 ECOS",
+   "as_of": "2026-09-18",
+   "tier": 1,
+   "source_url": "https://ecos.bok.or.kr/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-rates"
+   ]
+  },
+  {
+   "id": "C_USDKRW",
+   "kind": "market_level",
+   "metric": "원/달러 매매기준율",
+   "text": "원/달러 매매기준율",
+   "value": 1388.0,
+   "unit": "KRW/USD",
+   "series": "네이버 매매기준율 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/api/securityService/marketindex/majors/exchange",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-rates"
+   ],
+   "note": "이 값에는 날짜 필드가 없습니다. 서울 외환시장 마감 뒤 수집분이라 9월 18일 고시분으로 읽었으며, 산출물에도 그 사실을 적었습니다"
+  },
+  {
+   "id": "C_SPREAD_3_10",
+   "kind": "market_level",
+   "metric": "국고채 3년-10년 스프레드",
+   "text": "국고채 3년-10년 스프레드",
+   "value": 43.1,
+   "unit": "bp",
+   "series": "한국은행 ECOS",
+   "as_of": "2026-09-18",
+   "tier": 1,
+   "source_url": "https://ecos.bok.or.kr/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-rates"
+   ],
+   "note": "4.466 − 4.035 = 0.431%p = 43.1bp"
+  }
+ ],
+ "derived": [
+  {
+   "id": "D_BL_KOSPI",
+   "kind": "pct_change",
+   "from": "BLP_KOSPI",
+   "to": "BL_KOSPI",
+   "printed": 2.66,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BL_KOSDAQ",
+   "kind": "pct_change",
+   "from": "BLP_KOSDAQ",
+   "to": "BL_KOSDAQ",
+   "printed": 0.6,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BL_KOSPI200",
+   "kind": "pct_change",
+   "from": "BLP_KOSPI200",
+   "to": "BL_KOSPI200",
+   "printed": 3.02,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BL_NIKKEI",
+   "kind": "pct_change",
+   "from": "BLP_NIKKEI",
+   "to": "BL_NIKKEI",
+   "printed": 1.38,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BL_HANGSENG",
+   "kind": "pct_change",
+   "from": "BLP_HANGSENG",
+   "to": "BL_HANGSENG",
+   "printed": 0.6,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BL_SHANGHAI",
+   "kind": "pct_change",
+   "from": "BLP_SHANGHAI",
+   "to": "BL_SHANGHAI",
+   "printed": 0.94,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BL_TAIWAN",
+   "kind": "pct_change",
+   "from": "BLP_TAIWAN",
+   "to": "BL_TAIWAN",
+   "printed": 1.93,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BT_18FE76",
+   "kind": "pct_change",
+   "from": "BTP_18FE76",
+   "to": "BT_18FE76",
+   "printed": 3.37,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_BT_SK_962A82",
+   "kind": "pct_change",
+   "from": "BTP_SK_962A82",
+   "to": "BT_SK_962A82",
+   "printed": 6.42,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_BT_LG_FBB217",
+   "kind": "pct_change",
+   "from": "BTP_LG_FBB217",
+   "to": "BT_LG_FBB217",
+   "printed": -0.27,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_BT_B3887C",
+   "kind": "pct_change",
+   "from": "BTP_B3887C",
+   "to": "BT_B3887C",
+   "printed": 0.14,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_BT_665CF4",
+   "kind": "pct_change",
+   "from": "BTP_665CF4",
+   "to": "BT_665CF4",
+   "printed": 0.55,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_BT_655BAA",
+   "kind": "pct_change",
+   "from": "BTP_655BAA",
+   "to": "BT_655BAA",
+   "printed": 0.83,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_BT_DBC4B4",
+   "kind": "pct_change",
+   "from": "BTP_DBC4B4",
+   "to": "BT_DBC4B4",
+   "printed": -0.5,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_BT_KB_AD5FC0",
+   "kind": "pct_change",
+   "from": "BTP_KB_AD5FC0",
+   "to": "BT_KB_AD5FC0",
+   "printed": -2.4,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_BT_NAVER",
+   "kind": "pct_change",
+   "from": "BTP_NAVER",
+   "to": "BT_NAVER",
+   "printed": -0.65,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_BT_ECA520",
+   "kind": "pct_change",
+   "from": "BTP_ECA520",
+   "to": "BT_ECA520",
+   "printed": -1.73,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_MV_SK_C53984",
+   "kind": "pct_change",
+   "from": "MVP_SK_C53984",
+   "to": "MV_SK_C53984",
+   "printed": 7.04,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_MV_SK_962A82",
+   "kind": "pct_change",
+   "from": "MVP_SK_962A82",
+   "to": "MV_SK_962A82",
+   "printed": 6.42,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_MV_F2FFFB",
+   "kind": "pct_change",
+   "from": "MVP_F2FFFB",
+   "to": "MV_F2FFFB",
+   "printed": 4.82,
+   "tolerance": 0.05
+  }
+ ],
+ "unit_policy": {
+  "코스피": "pt",
+  "코스닥": "pt",
+  "코스피 200": "pt",
+  "니케이 225": "pt",
+  "항셍": "pt",
+  "상하이종합": "pt",
+  "대만 가권": "pt",
+  "삼성전자": "KRW",
+  "SK하이닉스": "KRW",
+  "LG에너지솔루션": "KRW",
+  "삼성바이오로직스": "KRW",
+  "현대차": "KRW",
+  "기아": "KRW",
+  "셀트리온": "KRW",
+  "KB금융": "KRW",
+  "NAVER": "KRW",
+  "한화에어로스페이스": "KRW",
+  "SK스퀘어": "KRW",
+  "리노공업": "KRW",
+  "코스피 상승폭": "pt",
+  "코스피-코스닥 격차": "%p",
+  "나스닥 (9/17)": "%",
+  "코스피 외국인 순매수": "억원",
+  "코스피 기관 순매수": "억원",
+  "코스피 개인 순매수": "억원",
+  "코스피 외국인 순매수 (9/17)": "억원",
+  "코스피 외국인 순매수 (장중 집계)": "억원",
+  "국내 통신장비 업종": "%",
+  "국내 전기장비 업종": "%",
+  "국내 컴퓨터와주변기기 업종": "%",
+  "국내 조선 업종": "%",
+  "국내 은행 업종": "%",
+  "국내 인터넷과카탈로그소매 업종": "%",
+  "국고채 3년": "%",
+  "국고채 10년": "%",
+  "원/달러 매매기준율": "KRW/USD",
+  "국고채 3년-10년 스프레드": "bp"
+ }
+}
