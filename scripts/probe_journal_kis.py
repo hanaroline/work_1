@@ -89,9 +89,12 @@ def probe(kis, label: str) -> dict:
             d = kis.get("/uapi/domestic-stock/v1/quotations/investor-trend-estimate",
                         "HHPTJ04160200", {"MKSC_SHRN_ISCD": code})
             rows = d.get("output2") or []
+            # **다섯 줄을 다 적는다.** 첫 줄만 적었더니 그 값이 확정치와 2.9배
+            # 어긋났다(삼성전자 기관 1,431,000주 대 확정 4,186,614주). `bsop_hour_gb`
+            # 가 시간대 구분으로 보이므로 **첫 줄이 하루 전체가 아니라 한 토막**일
+            # 수 있다. 다 적어 놓아야 「어느 줄이 마감 기준인가」를 가릴 수 있다.
             r["칸"][f"추정집계:{nm}"] = {
-                "됨": True, "줄수": len(rows),
-                "맛보기": rows[0] if rows else None,
+                "됨": True, "줄수": len(rows), "줄전부": rows,
             }
         except Exception as e:  # noqa: BLE001
             r["칸"][f"추정집계:{nm}"] = {"됨": False, "까닭": str(e)[:200]}
