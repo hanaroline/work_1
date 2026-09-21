@@ -62,6 +62,12 @@ jobs:
       - name: 새것 가리기가 맞는가
         run: python3 scripts/keep_newer_snapshot.py --selftest
 
+      - name: 미국 긴 일봉 수집기를 망 없이 시험한다
+        # 해치를 물려받는가, 창이 미끄러진 것을 잘린 것으로 읽지 않는가,
+        # 정말 잘렸을 때 **쓰지 않고 멈추는가**. ETF 에서 이력을 한 번 잃고
+        # 세운 규칙이라 같은 잣대를 여기에도 건다.
+        run: python3 scripts/fetch_us_bars_long.py --selftest
+
       - name: 워크플로 YAML 이 읽히는가
         run: |
           python3 -m pip install --quiet pyyaml
