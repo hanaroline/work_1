@@ -79,6 +79,12 @@ def probe(kis, label: str) -> dict:
                 "1위": top.get("hts_kor_isnm"),
                 "칸이름": sorted(top),
                 "1위 줄 전체": top,
+                # 순위를 확정치와 맞대려면 한 줄로는 모자란다. 이름·외국인·기관만
+                # 추려 서른 줄을 다 적는다 — 「가집계 순위가 확정 순위와 같은가」가
+                # 이 원천을 쓸 수 있는지를 가른다.
+                "줄간추림": [{"종목": x.get("hts_kor_isnm"),
+                              "외국인": x.get("frgn_ntby_qty"),
+                              "기관": x.get("orgn_ntby_qty")} for x in rows],
             }
         except Exception as e:  # noqa: BLE001
             r["칸"][f"순위:{who}"] = {"됨": False, "까닭": str(e)[:200]}
