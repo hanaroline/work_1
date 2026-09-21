@@ -14,7 +14,7 @@
  *                     덱에서도 "A. 설명서상" / "B. 시뮬레이션" 으로 갈라 표기한다.
  */
 import { writeFile, readFile } from 'node:fs/promises';
-import { analyze, unitOf, MC_SENS, TIER_CUT } from './lib/els-analysis.mjs';
+import { analyze, kindOf, unitOf, perRiskOf, MC_SENS, TIER_CUT } from './lib/els-analysis.mjs';
 
 const A = await analyze(process.argv[2]);   // 인자가 없으면 가장 최근 공시 회차 (덱과 같은 규칙)
 const OUT = 'tools/discovery/els-claims.json';
@@ -291,7 +291,7 @@ for (const it of A.items) {
 
   // 위험당 대가 — 표(2장)에 인쇄된 소수 1자리 손실 확률로 나눈다. 덱과 같은 식이어야
   // 창구에서 표를 보고 검산했을 때 끝자리가 맞는다.
-  const per = (i) => i.annualRate / +i.mcLoss.toFixed(1);
+  const per = perRiskOf;
   const order = [...pts].sort((a, b) => per(b) - per(a));
   const best = order[0], worst = order.at(-1);
   stat('PERRISK_BEST', '위험당 대가', `위험당 대가가 가장 큰 제${best.no}회의 손실 확률 1%당 연 수익률`,
@@ -466,8 +466,221 @@ if (STALE.length) {
   });
 }
 
+// ── 분석자료(els-analysis.html) 가 더 인쇄하는 값 ───────────────────────────
+// 덱은 결론만 싣고, 분석자료는 그 결론이 어디서 나왔는지까지 펼친다. 그래서
+// 자산군 평균·상관계수·회귀·민감도 표 전체가 낱개로 인쇄된다. 두 산출물이 같은
+// 대장을 쓰므로 여기서 한 번만 올린다 (인쇄 위치는 h- 접두사로 구분).
+{
+  const C = A.coupon;
+  const pts = A.items.filter((i) => i.mcLoss != null);
+  const SERIES_STAT = '이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)';
+  const stat = (id, metric, text, value, unit, printed_on, extra = {}) => add({
+    id, kind: 'model_output', metric, text, value, unit, series: SERIES_STAT,
+    as_of: FILED, tier: 1, source_url: SRC, verdict: 'confirmed', render: 'assert',
+    note: '공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값',
+    printed_on, ...extra,
+  });
+  const method = (id, metric, text, value, unit, printed_on, series, extra = {}) => add({
+    id, kind: 'methodology', metric, text, value, unit, series,
+    as_of: FILED, tier: 1, source_url: SRC, verdict: 'confirmed', render: 'assert',
+    printed_on, ...extra,
+  });
+
+  // ① 계산 설정 — 자료가 스스로 밝히는 숫자다
+  method('MC_PATHS', '자체 모의실험 경로 수', '한 상품당 만들어 본 가격 흐름의 수',
+    A.mc.paths, '회', ['h-mc', 'h-basis'], '자체 계산 설정 (시드 고정, 대조변량)');
+  method('MC_WINDOW', '변동성 관측 기간', '공시 이론가가 변동성·상관계수를 잰 기간',
+    180, '영업일', ['h-basis'], '일괄신고추가서류 공시 원문');
+  for (const [id, text, v] of [
+    ['HIST_FROM', '자체 검증에 쓴 기초자산 시세 시작일', DATES[0]],
+    ['HIST_TO', '자체 검증에 쓴 기초자산 시세 종료일', DATES.at(-1)],
+  ]) {
+    method(id, '시세 구간', text, Number(v), 'YYYYMMDD', ['h-basis'],
+      '자체 수집 (Yahoo Finance 일별 종가)');
+  }
+
+  // ② 자산군별 — "종목이 섞이면 더 위험한가" 표
+  for (const k of A.byKind) {
+    disclosed(`KINDN_${k.key}`, '건수', `${k.key}형 상품 수`, k.n, '종', ['h-kind']);
+    stat(`KINDVOL_${k.key}`, '자산군 평균 변동성', `${k.key}형 ${k.n}종의 평균 적용 변동성`,
+      +k.vol.toFixed(1), '%', ['h-kind']);
+    stat(`KINDRATE_${k.key}`, '자산군 평균 수익률', `${k.key}형 ${k.n}종의 평균 연 수익률`,
+      +k.rate.toFixed(1), '%', ['h-kind']);
+    const g = A.items.filter((i) => kindOf(i) === k.key && i.mcAvgLoss != null);
+    if (g.length) {
+      computed(`KINDAVGLOSS_${k.key}`, '손실 시 평균 손실 크기',
+        `${k.key}형이 손실이 났을 때 잃는 평균 크기`,
+        +Math.abs(g.reduce((s, i) => s + i.mcAvgLoss, 0) / g.length).toFixed(1), '%', ['h-exp']);
+    }
+  }
+  computed('MCLOSS_AVG_ALL', '손실 확률', `이번 회차 ${pts.length}종 전체의 평균 손실 확률`,
+    +A.mcAvgAll.toFixed(1), '%', ['h-card', 'h-cau', 'h-ab']);
+  if (A.kindRatio != null) {
+    stat('KIND_RATIO', '자산군 위험 배수', '종목형 평균 손실 확률이 지수형의 몇 배인가',
+      +A.kindRatio.toFixed(1), '배', ['h-kind']);
+    derived.push({
+      id: 'D_KIND_RATIO', kind: 'ratio', numerator: 'KIND_종목', denominator: 'KIND_지수',
+      printed: +A.kindRatio.toFixed(1), tolerance: 0.06,
+    });
+  }
+
+  // ③ 쿠폰-위험 상관표 — 세 가지 관계 × (전체 / 값어치 멀쩡한 것)
+  disclosed('COUPON_NFAIR', '건수', '넣는 순간의 값어치가 5% 넘게 깎이지는 않은 상품 수',
+    C.nFair, '종', ['h-rho', 'h-why']);
+  disclosed('COUPON_NUNFAIR', '건수', '값어치가 5% 넘게 깎인 상품 수', C.n - C.nFair, '종', ['h-why']);
+  derived.push({
+    id: 'D_COUPON_NSPLIT', kind: 'sum',
+    terms: ['COUPON_NFAIR', 'COUPON_NUNFAIR'], printed: C.n, tolerance: 0.01,
+  });
+  const RHO_LABEL = { vol: '가격 출렁임(적용 변동성)', loss: '손실 확률(B)', expLoss: '손실 확률 × 손실 크기' };
+  for (const key of ['vol', 'loss', 'expLoss']) {
+    for (const scope of ['all', 'fair']) {
+      const o = C.rho[key][scope];
+      const id = `RHO_${key.toUpperCase()}_${scope.toUpperCase()}`;
+      const where = `연 수익률과 ${RHO_LABEL[key]}의 순위상관 (${scope === 'all' ? `전체 ${C.n}종` : `값어치 멀쩡한 ${C.nFair}종`})`;
+      // COUPON_RHO 가 이미 올린 값(loss/all)은 다시 올리지 않는다
+      if (!(key === 'loss' && scope === 'all')) stat(id, '순위상관', where, +o.r.toFixed(2), '무차원', ['h-rho']);
+      // 자료는 유의확률을 "우연일 확률 4.3%" 처럼 백분율로 적는다
+      stat(`${id}_P`, '우연일 확률', `${where} — 우연일 확률`,
+        o.p < 0.001 ? 0.1 : +(o.p * 100).toFixed(1), '%', ['h-rho'],
+        o.p < 0.001 ? { note: `실제 p=${o.p.toExponential(2)}. "0.1% 미만" 으로 인쇄한다` } : {});
+    }
+  }
+  stat('REG_R2', '설명력', '연 수익률만으로 손실 확률을 맞히는 정도 (결정계수)',
+    Math.round(C.reg.r2 * 100), '%', ['h-why']);
+  stat('REG_SLOPE', '회귀 기울기', '연 수익률 1%p 당 손실 확률 증가폭',
+    +C.reg.slope.toFixed(2), '%p', ['h-why']);
+
+  // ④ 짝 세기 — 값어치 멀쩡한 것만 본 경우
+  stat('PAIRS_FAIR_N', '짝 수', `값어치 멀쩡한 ${C.nFair}종으로 지은 짝의 수`, C.pairs.fair.n, '쌍', ['h-pairs']);
+  stat('PAIRS_FAIR_OK', '짝 수', '그중 쿠폰 순서와 위험 순서가 맞은 짝', C.pairs.fair.ok, '쌍', ['h-pairs']);
+  stat('PAIRS_FAIR_PCT', '짝 일치율', '값어치 멀쩡한 상품만 본 짝 일치율',
+    Math.round(C.pairs.fair.pct), '%', ['h-pairs']);
+  derived.push({
+    id: 'D_PAIRS_FAIR_PCT', kind: 'ratio',
+    numerator: 'PAIRS_FAIR_OK', denominator: 'PAIRS_FAIR_N',
+    printed: +(C.pairs.fair.ok / C.pairs.fair.n).toFixed(4), tolerance: 0.0006,
+  });
+
+  // ⑤ 위험당 대가 — 값어치 멀쩡한 것만 추린 경우와 지수형 평균
+  const per = C.eff.ratio;
+  stat('PERRISK_FAIRBEST', '위험당 대가', `값어치 멀쩡한 것 중 위험당 대가 1위 제${C.eff.fairBest.no}회`,
+    +per(C.eff.fairBest).toFixed(2), '%', ['h-why', 'h-line']);
+  stat('PERRISK_FAIRWORST', '위험당 대가', `값어치 멀쩡한 것 중 위험당 대가 꼴찌 제${C.eff.fairWorst.no}회`,
+    +per(C.eff.fairWorst).toFixed(2), '%', []);
+  stat('PERRISK_FAIRSPREAD', '위험당 대가 배수', '값어치 멀쩡한 상품만 본 위험당 대가 최대/최소 배수',
+    +C.eff.fairSpread.toFixed(1), '배', ['h-why', 'h-line']);
+  derived.push({
+    id: 'D_PERRISK_FAIRSPREAD', kind: 'ratio',
+    numerator: 'PERRISK_FAIRBEST', denominator: 'PERRISK_FAIRWORST',
+    printed: +C.eff.fairSpread.toFixed(1), tolerance: 0.06,
+  });
+  if (A.idxPerRisk != null) {
+    stat('IDX_PERRISK', '위험당 대가', '지수형 상품의 평균 위험당 대가',
+      +A.idxPerRisk.toFixed(2), '%', ['h-rec']);
+    // 종목형을 권하는 카드는 "지수형에서 같은 수익을 받으려면 위험을 몇 배 져야 하는가"
+    // 를 적는다. 그 배수도 인쇄되는 값이므로 분자·분모를 대장에 두고 검산한다.
+    for (const s2 of A.slots) {
+      const it = s2.pick;
+      if (kindOf(it) === '지수' || !perRiskOf(it)) continue;
+      stat(`PERRISK_${it.no}`, '위험당 대가', `제${it.no}회의 위험당 대가`,
+        +perRiskOf(it).toFixed(2), '%', ['h-rec']);
+      stat(`PERRISK_VS_IDX_${it.no}`, '위험당 대가 배수',
+        `제${it.no}회의 위험당 대가가 지수형 평균의 몇 배인가`,
+        +(perRiskOf(it) / A.idxPerRisk).toFixed(1), '배', ['h-rec']);
+      derived.push({
+        id: `D${it.no}_PERRISK_VS_IDX`, kind: 'ratio',
+        numerator: `PERRISK_${it.no}`, denominator: 'IDX_PERRISK',
+        printed: +(perRiskOf(it) / A.idxPerRisk).toFixed(1), tolerance: 0.06,
+      });
+    }
+  }
+
+  // ⑥ 같은 기초자산인데 값이 갈리는 짝 (어긋나는 이유 ①)
+  const T = C.why.twin || C.why.twinAny;
+  if (T) {
+    disclosed('TWIN_RATE_D', '수익률 차이',
+      `제${T.hi.no}회와 제${T.lo.no}회의 연 수익률 차이`, +T.d.toFixed(1), '%p', ['h-why']);
+    derived.push({
+      id: 'D_TWIN_RATE_D', kind: 'sum',
+      terms: [`R${T.lo.no}_RATE`, 'TWIN_RATE_D'], printed: +T.hi.annualRate.toFixed(1), tolerance: 0.06,
+    });
+    computed('TWIN_LOSS_D', '손실 확률 차이',
+      `제${T.hi.no}회와 제${T.lo.no}회의 손실 확률 차이`, +T.gap.toFixed(1), '%p', ['h-why']);
+    derived.push({
+      id: 'D_TWIN_LOSS_D', kind: 'sum',
+      terms: [`R${T.lo.no}_MCLOSS`, 'TWIN_LOSS_D'], printed: +T.hi.mcLoss.toFixed(1), tolerance: 0.11,
+    });
+  }
+
+  // ⑦ 상관 민감도 표 — 덱은 양 끝만 쓰지만 분석자료는 여섯 칸을 다 인쇄한다
+  if (C.sens) {
+    C.sens.rows.forEach((r, k) => {
+      if (r.rho != null && k < C.sens.rows.length - 1) {
+        stat(`SENS_RHO_${k}`, '가정 상관계수', `민감도 ${k}번째 칸의 가정 상관계수`, r.rho, '무차원', ['h-sens'],
+          { note: '공시값이 아니라 우리가 가정해 넣은 값' });
+      }
+      if (k > 0 && k < C.sens.rows.length - 1) {
+        stat(`SENS_LOSS_${k}`, '손실 확률 (민감도)',
+          `제${C.sens.no}회 상관계수 ${r.rho} 가정 시 손실 확률`, +r.loss.toFixed(1), '%', ['h-sens']);
+      }
+      stat(`SENS_RATIO_${k}`, '위험당 대가 (민감도)',
+        `제${C.sens.no}회 ${r.rho == null ? '공시 상관계수' : `상관계수 ${r.rho}`} 가정 시 위험당 대가`,
+        +r.ratio.toFixed(2), '%', ['h-sens']);
+    });
+    stat('SENS_VOLSPREAD', '변동성 차이', `제${C.sens.no}회 두 기초자산의 적용 변동성 차이`,
+      +C.sens.volSpread.toFixed(1), '%p', ['h-sens']);
+  }
+
+  // ⑧ 회차별로 분석자료에만 나가는 값
+  for (const it of A.items) {
+    const n = it.no;
+    if (it.simWin != null) {
+      disclosed(`R${n}_SIMWIN`, '백테스트 이익 비중', `제${n}회 발행사 모의실험에서 이익으로 끝난 비중 (A)`,
+        it.simWin, '%', ['h-card'], { series: '발행사 수익률 모의실험 (공시 원문)' });
+      derived.push({
+        id: `D${n}_SIMWIN`, kind: 'sum',
+        terms: [`R${n}_SIMLOSS`, `R${n}_SIMWIN`], printed: 100, tolerance: 0.01,
+      });
+    }
+    if (it.covYears != null) {
+      method(`R${n}_COVYEARS`, '자체 검증 기간', `제${n}회 기초자산 시세가 겹치는 기간`,
+        it.covYears, '년', ['h-card'], '자체 수집 (Yahoo Finance 일별 종가)');
+    }
+    if (it.low != null) {
+      computed(`R${n}_LOW`, '과거 최저 수준', `제${n}회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)`,
+        Math.round(it.low), '%', ['h-card'],
+        { series: '자체 수집 (Yahoo Finance 일별 종가)', as_of: String(DATES.at(-1)).replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') });
+    }
+    if (it.margin != null && it.margin < 0) {
+      computed(`R${n}_MARGIN`, '낙인 돌파폭', `제${n}회가 검증 기간에 낙인을 뚫고 내려간 폭`,
+        +Math.abs(it.margin).toFixed(1), '%p', ['h-cau'],
+        { series: '자체 수집 (Yahoo Finance 일별 종가)', as_of: String(DATES.at(-1)).replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') });
+    }
+    // 기초자산 하나하나의 변동성 — 표는 최대값만 싣지만 본문은 자산별로 적는다
+    for (const v of it.volatility || []) {
+      disclosed(`R${n}_VOL_${String(v.asset).replace(/\s+/g, '')}`, '기초자산 변동성',
+        `제${n}회 ${v.asset}의 적용 변동성`, v.vol, '%', ['h-vol']);
+    }
+  }
+  // 추천 카드는 "1만원 → 빠르면 6개월 뒤 10,800원" 으로 첫 상환금액을 적는다
+  for (const s of A.slots) {
+    const R = s.pick, n = R.no;
+    if (!R.schedule?.length || claims.some((c) => c.id === `R${n}_PAYAMT1`)) continue;
+    const unit = R.currency === 'KRW' ? '원' : unitOf(R);
+    disclosed(`R${n}_PAY1`, '상환금액 비율', `제${n}회 1차 상환 시 액면 대비 지급 비율`,
+      R.schedule[0].payout, '%', []);
+    disclosed(`R${n}_PAYAMT1`, `상환금액(${unit})`, `제${n}회 1차 상환 시 받는 금액 (액면 1만 단위)`,
+      Math.round(R.schedule[0].payout * 100), unit, ['h-card']);
+    derived.push({
+      id: `D${n}_PAYAMT1`, kind: 'product',
+      a: `R${n}_PAY1`, b: 100, printed: Math.round(R.schedule[0].payout * 100), tolerance: 0.5,
+    });
+  }
+}
+
 const ledger = {
-  deliverable: `제${A.items[0].no}~${A.items.at(-1).no}회 ELS 세일즈 제안서 (8p PPT)`,
+  deliverable: `제${A.items[0].no}~${A.items.at(-1).no}회 ELS 세일즈 제안서 (8p PPT) + 분석자료 (HTML/PDF)`,
   as_of: new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10),
   series_policy: {
     '연 수익률': '일괄신고추가서류 공시 원문',
@@ -492,6 +705,12 @@ const ledger = {
     '순위상관': '무차원', '유의수준': '무차원', '유의확률': '무차원',
     '짝 수': '쌍', '짝 일치율': '%', '위험당 대가': '%', '위험당 대가 배수': '배', '손실 확률 배수': '배', '축 눈금': '%',
     '가정 상관계수': '무차원', '손실 확률 (민감도)': '%', '수익률 차이': '%p',
+    // 분석자료(HTML)에서만 인쇄하는 지표
+    '자체 모의실험 경로 수': '회', '변동성 관측 기간': '영업일', '시세 구간': 'YYYYMMDD',
+    '자산군 평균 변동성': '%', '자산군 평균 수익률': '%', '자산군 위험 배수': '배',
+    '우연일 확률': '%', '설명력': '%', '회귀 기울기': '%p', '손실 확률 차이': '%p',
+    '위험당 대가 (민감도)': '%', '변동성 차이': '%p', '백테스트 이익 비중': '%',
+    '자체 검증 기간': '년', '과거 최저 수준': '%', '낙인 돌파폭': '%p', '기초자산 변동성': '%',
   },
   claims, derived,
 };

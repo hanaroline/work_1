@@ -16,7 +16,7 @@
  */
 import { readFile } from 'node:fs/promises';
 import pptxgen from 'pptxgenjs';
-import { analyze, kindOf, tierOf, unitOf, money, TIER_CUT } from './lib/els-analysis.mjs';
+import { analyze, kindOf, tierOf, unitOf, money, perRiskOf, TIER_CUT } from './lib/els-analysis.mjs';
 
 const A = await analyze(process.argv[2]);   // 인자가 없으면 가장 최근 공시 회차
 const OUT = 'els-sales-deck.pptx';
@@ -164,7 +164,7 @@ const best = REC[0];
 const bestPerRisk = [...A.items].filter((i) => i.mcLoss).sort((a, b) => b.annualRate / b.mcLoss - a.annualRate / a.mcLoss)[0];
 // 나누는 값은 표에 인쇄된 손실 확률(소수 1자리)이다. 원값으로 나누면 창구에서
 // 표의 숫자로 검산했을 때 끝자리가 어긋난다 — 제38122회가 1.25 대신 1.24 로 나왔다.
-const perRisk = (i) => i.annualRate / +i.mcLoss.toFixed(1);
+const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
 
 // ══ 1. 표지 겸 요약 ═════════════════════════════════════════════════════════
 {

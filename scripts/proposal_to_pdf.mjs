@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * els-proposal.html -> els-proposal.pdf (A4 세로)
+ * els-analysis.html -> els-analysis.pdf (A4 세로)
  *
  *   node scripts/proposal_to_pdf.mjs [입력.html] [출력.pdf]
  *
@@ -17,7 +17,7 @@ import { execFileSync } from 'node:child_process';
 
 const { chromium } = createRequire(import.meta.url)('playwright');
 
-const SRC = process.argv[2] || 'els-proposal.html';
+const SRC = process.argv[2] || 'els-analysis.html';
 const OUT = process.argv[3] || SRC.replace(/\.html$/, '.pdf');
 if (!existsSync(SRC)) { console.error(`${SRC} 없음`); process.exit(1); }
 
@@ -31,7 +31,7 @@ if (!hasKR) {
 
 // 표지에서 회차와 청약기간을 뽑아 꼬리말에 넣는다 — 인쇄본이 돌아다녀도 어느 회차인지 남게
 const html = readFileSync(SRC, 'utf8');
-const title = (html.match(/<h1>([^<]+)<\/h1>/) || [])[1] || 'ELS 제안서';
+const title = (html.match(/<h1>([^<]+)<\/h1>/) || [])[1] || 'ELS 분석자료';
 const offer = (html.match(/<dt>청약기간<\/dt><dd>([^<]+)<\/dd>/) || [])[1] || '';
 
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });

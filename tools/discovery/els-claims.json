@@ -1,5 +1,5 @@
 {
-  "deliverable": "제38133~38151회 ELS 세일즈 제안서 (8p PPT)",
+  "deliverable": "제38133~38151회 ELS 세일즈 제안서 (8p PPT) + 분석자료 (HTML/PDF)",
   "as_of": "2026-09-21",
   "series_policy": {
     "연 수익률": "일괄신고추가서류 공시 원문",
@@ -54,7 +54,24 @@
     "축 눈금": "%",
     "가정 상관계수": "무차원",
     "손실 확률 (민감도)": "%",
-    "수익률 차이": "%p"
+    "수익률 차이": "%p",
+    "자체 모의실험 경로 수": "회",
+    "변동성 관측 기간": "영업일",
+    "시세 구간": "YYYYMMDD",
+    "자산군 평균 변동성": "%",
+    "자산군 평균 수익률": "%",
+    "자산군 위험 배수": "배",
+    "우연일 확률": "%",
+    "설명력": "%",
+    "회귀 기울기": "%p",
+    "손실 확률 차이": "%p",
+    "위험당 대가 (민감도)": "%",
+    "변동성 차이": "%p",
+    "백테스트 이익 비중": "%",
+    "자체 검증 기간": "년",
+    "과거 최저 수준": "%",
+    "낙인 돌파폭": "%p",
+    "기초자산 변동성": "%"
   },
   "claims": [
     {
@@ -10056,6 +10073,2953 @@
       "printed_on": [
         "p8-basis"
       ]
+    },
+    {
+      "id": "MC_PATHS",
+      "kind": "methodology",
+      "metric": "자체 모의실험 경로 수",
+      "text": "한 상품당 만들어 본 가격 흐름의 수",
+      "value": 100000,
+      "unit": "회",
+      "series": "자체 계산 설정 (시드 고정, 대조변량)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-mc",
+        "h-basis"
+      ]
+    },
+    {
+      "id": "MC_WINDOW",
+      "kind": "methodology",
+      "metric": "변동성 관측 기간",
+      "text": "공시 이론가가 변동성·상관계수를 잰 기간",
+      "value": 180,
+      "unit": "영업일",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-basis"
+      ]
+    },
+    {
+      "id": "HIST_FROM",
+      "kind": "methodology",
+      "metric": "시세 구간",
+      "text": "자체 검증에 쓴 기초자산 시세 시작일",
+      "value": 20160919,
+      "unit": "YYYYMMDD",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-basis"
+      ]
+    },
+    {
+      "id": "HIST_TO",
+      "kind": "methodology",
+      "metric": "시세 구간",
+      "text": "자체 검증에 쓴 기초자산 시세 종료일",
+      "value": 20260918,
+      "unit": "YYYYMMDD",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-basis"
+      ]
+    },
+    {
+      "id": "KINDN_지수",
+      "kind": "contract_term",
+      "metric": "건수",
+      "text": "지수형 상품 수",
+      "value": 9,
+      "unit": "종",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-kind"
+      ]
+    },
+    {
+      "id": "KINDVOL_지수",
+      "kind": "model_output",
+      "metric": "자산군 평균 변동성",
+      "text": "지수형 9종의 평균 적용 변동성",
+      "value": 34.8,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-kind"
+      ]
+    },
+    {
+      "id": "KINDRATE_지수",
+      "kind": "model_output",
+      "metric": "자산군 평균 수익률",
+      "text": "지수형 9종의 평균 연 수익률",
+      "value": 11.4,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-kind"
+      ]
+    },
+    {
+      "id": "KINDAVGLOSS_지수",
+      "kind": "model_output",
+      "metric": "손실 시 평균 손실 크기",
+      "text": "지수형이 손실이 났을 때 잃는 평균 크기",
+      "value": 61.9,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-exp"
+      ]
+    },
+    {
+      "id": "KINDN_혼합",
+      "kind": "contract_term",
+      "metric": "건수",
+      "text": "혼합형 상품 수",
+      "value": 2,
+      "unit": "종",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-kind"
+      ]
+    },
+    {
+      "id": "KINDVOL_혼합",
+      "kind": "model_output",
+      "metric": "자산군 평균 변동성",
+      "text": "혼합형 2종의 평균 적용 변동성",
+      "value": 51.2,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-kind"
+      ]
+    },
+    {
+      "id": "KINDRATE_혼합",
+      "kind": "model_output",
+      "metric": "자산군 평균 수익률",
+      "text": "혼합형 2종의 평균 연 수익률",
+      "value": 15.8,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-kind"
+      ]
+    },
+    {
+      "id": "KINDAVGLOSS_혼합",
+      "kind": "model_output",
+      "metric": "손실 시 평균 손실 크기",
+      "text": "혼합형이 손실이 났을 때 잃는 평균 크기",
+      "value": 72.7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-exp"
+      ]
+    },
+    {
+      "id": "KINDN_종목",
+      "kind": "contract_term",
+      "metric": "건수",
+      "text": "종목형 상품 수",
+      "value": 8,
+      "unit": "종",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-kind"
+      ]
+    },
+    {
+      "id": "KINDVOL_종목",
+      "kind": "model_output",
+      "metric": "자산군 평균 변동성",
+      "text": "종목형 8종의 평균 적용 변동성",
+      "value": 71.6,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-kind"
+      ]
+    },
+    {
+      "id": "KINDRATE_종목",
+      "kind": "model_output",
+      "metric": "자산군 평균 수익률",
+      "text": "종목형 8종의 평균 연 수익률",
+      "value": 21.2,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-kind"
+      ]
+    },
+    {
+      "id": "KINDAVGLOSS_종목",
+      "kind": "model_output",
+      "metric": "손실 시 평균 손실 크기",
+      "text": "종목형이 손실이 났을 때 잃는 평균 크기",
+      "value": 79.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-exp"
+      ]
+    },
+    {
+      "id": "MCLOSS_AVG_ALL",
+      "kind": "model_output",
+      "metric": "손실 확률",
+      "text": "이번 회차 19종 전체의 평균 손실 확률",
+      "value": 21.3,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card",
+        "h-cau",
+        "h-ab"
+      ]
+    },
+    {
+      "id": "KIND_RATIO",
+      "kind": "model_output",
+      "metric": "자산군 위험 배수",
+      "text": "종목형 평균 손실 확률이 지수형의 몇 배인가",
+      "value": 2,
+      "unit": "배",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-kind"
+      ]
+    },
+    {
+      "id": "COUPON_NFAIR",
+      "kind": "contract_term",
+      "metric": "건수",
+      "text": "넣는 순간의 값어치가 5% 넘게 깎이지는 않은 상품 수",
+      "value": 14,
+      "unit": "종",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-rho",
+        "h-why"
+      ]
+    },
+    {
+      "id": "COUPON_NUNFAIR",
+      "kind": "contract_term",
+      "metric": "건수",
+      "text": "값어치가 5% 넘게 깎인 상품 수",
+      "value": 5,
+      "unit": "종",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-why"
+      ]
+    },
+    {
+      "id": "RHO_VOL_ALL",
+      "kind": "model_output",
+      "metric": "순위상관",
+      "text": "연 수익률과 가격 출렁임(적용 변동성)의 순위상관 (전체 19종)",
+      "value": 0.89,
+      "unit": "무차원",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-rho"
+      ]
+    },
+    {
+      "id": "RHO_VOL_ALL_P",
+      "kind": "model_output",
+      "metric": "우연일 확률",
+      "text": "연 수익률과 가격 출렁임(적용 변동성)의 순위상관 (전체 19종) — 우연일 확률",
+      "value": 0.1,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "실제 p=2.61e-7. \"0.1% 미만\" 으로 인쇄한다",
+      "printed_on": [
+        "h-rho"
+      ]
+    },
+    {
+      "id": "RHO_VOL_FAIR",
+      "kind": "model_output",
+      "metric": "순위상관",
+      "text": "연 수익률과 가격 출렁임(적용 변동성)의 순위상관 (값어치 멀쩡한 14종)",
+      "value": 0.88,
+      "unit": "무차원",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-rho"
+      ]
+    },
+    {
+      "id": "RHO_VOL_FAIR_P",
+      "kind": "model_output",
+      "metric": "우연일 확률",
+      "text": "연 수익률과 가격 출렁임(적용 변동성)의 순위상관 (값어치 멀쩡한 14종) — 우연일 확률",
+      "value": 0.1,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "실제 p=3.48e-5. \"0.1% 미만\" 으로 인쇄한다",
+      "printed_on": [
+        "h-rho"
+      ]
+    },
+    {
+      "id": "RHO_LOSS_ALL_P",
+      "kind": "model_output",
+      "metric": "우연일 확률",
+      "text": "연 수익률과 손실 확률(B)의 순위상관 (전체 19종) — 우연일 확률",
+      "value": 0.1,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "실제 p=4.29e-4. \"0.1% 미만\" 으로 인쇄한다",
+      "printed_on": [
+        "h-rho"
+      ]
+    },
+    {
+      "id": "RHO_LOSS_FAIR",
+      "kind": "model_output",
+      "metric": "순위상관",
+      "text": "연 수익률과 손실 확률(B)의 순위상관 (값어치 멀쩡한 14종)",
+      "value": 0.55,
+      "unit": "무차원",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-rho"
+      ]
+    },
+    {
+      "id": "RHO_LOSS_FAIR_P",
+      "kind": "model_output",
+      "metric": "우연일 확률",
+      "text": "연 수익률과 손실 확률(B)의 순위상관 (값어치 멀쩡한 14종) — 우연일 확률",
+      "value": 4.3,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-rho"
+      ]
+    },
+    {
+      "id": "RHO_EXPLOSS_ALL",
+      "kind": "model_output",
+      "metric": "순위상관",
+      "text": "연 수익률과 손실 확률 × 손실 크기의 순위상관 (전체 19종)",
+      "value": 0.81,
+      "unit": "무차원",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-rho"
+      ]
+    },
+    {
+      "id": "RHO_EXPLOSS_ALL_P",
+      "kind": "model_output",
+      "metric": "우연일 확률",
+      "text": "연 수익률과 손실 확률 × 손실 크기의 순위상관 (전체 19종) — 우연일 확률",
+      "value": 0.1,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "실제 p=2.39e-5. \"0.1% 미만\" 으로 인쇄한다",
+      "printed_on": [
+        "h-rho"
+      ]
+    },
+    {
+      "id": "RHO_EXPLOSS_FAIR",
+      "kind": "model_output",
+      "metric": "순위상관",
+      "text": "연 수익률과 손실 확률 × 손실 크기의 순위상관 (값어치 멀쩡한 14종)",
+      "value": 0.7,
+      "unit": "무차원",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-rho"
+      ]
+    },
+    {
+      "id": "RHO_EXPLOSS_FAIR_P",
+      "kind": "model_output",
+      "metric": "우연일 확률",
+      "text": "연 수익률과 손실 확률 × 손실 크기의 순위상관 (값어치 멀쩡한 14종) — 우연일 확률",
+      "value": 0.5,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-rho"
+      ]
+    },
+    {
+      "id": "REG_R2",
+      "kind": "model_output",
+      "metric": "설명력",
+      "text": "연 수익률만으로 손실 확률을 맞히는 정도 (결정계수)",
+      "value": 39,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-why"
+      ]
+    },
+    {
+      "id": "REG_SLOPE",
+      "kind": "model_output",
+      "metric": "회귀 기울기",
+      "text": "연 수익률 1%p 당 손실 확률 증가폭",
+      "value": 0.62,
+      "unit": "%p",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-why"
+      ]
+    },
+    {
+      "id": "PAIRS_FAIR_N",
+      "kind": "model_output",
+      "metric": "짝 수",
+      "text": "값어치 멀쩡한 14종으로 지은 짝의 수",
+      "value": 91,
+      "unit": "쌍",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-pairs"
+      ]
+    },
+    {
+      "id": "PAIRS_FAIR_OK",
+      "kind": "model_output",
+      "metric": "짝 수",
+      "text": "그중 쿠폰 순서와 위험 순서가 맞은 짝",
+      "value": 65,
+      "unit": "쌍",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-pairs"
+      ]
+    },
+    {
+      "id": "PAIRS_FAIR_PCT",
+      "kind": "model_output",
+      "metric": "짝 일치율",
+      "text": "값어치 멀쩡한 상품만 본 짝 일치율",
+      "value": 71,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-pairs"
+      ]
+    },
+    {
+      "id": "PERRISK_FAIRBEST",
+      "kind": "model_output",
+      "metric": "위험당 대가",
+      "text": "값어치 멀쩡한 것 중 위험당 대가 1위 제38141회",
+      "value": 1.4,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-why",
+        "h-line"
+      ]
+    },
+    {
+      "id": "PERRISK_FAIRWORST",
+      "kind": "model_output",
+      "metric": "위험당 대가",
+      "text": "값어치 멀쩡한 것 중 위험당 대가 꼴찌 제38144회",
+      "value": 0.52,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": []
+    },
+    {
+      "id": "PERRISK_FAIRSPREAD",
+      "kind": "model_output",
+      "metric": "위험당 대가 배수",
+      "text": "값어치 멀쩡한 상품만 본 위험당 대가 최대/최소 배수",
+      "value": 2.7,
+      "unit": "배",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-why",
+        "h-line"
+      ]
+    },
+    {
+      "id": "IDX_PERRISK",
+      "kind": "model_output",
+      "metric": "위험당 대가",
+      "text": "지수형 상품의 평균 위험당 대가",
+      "value": 0.79,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-rec"
+      ]
+    },
+    {
+      "id": "PERRISK_38141",
+      "kind": "model_output",
+      "metric": "위험당 대가",
+      "text": "제38141회의 위험당 대가",
+      "value": 1.4,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-rec"
+      ]
+    },
+    {
+      "id": "PERRISK_VS_IDX_38141",
+      "kind": "model_output",
+      "metric": "위험당 대가 배수",
+      "text": "제38141회의 위험당 대가가 지수형 평균의 몇 배인가",
+      "value": 1.8,
+      "unit": "배",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-rec"
+      ]
+    },
+    {
+      "id": "PERRISK_38143",
+      "kind": "model_output",
+      "metric": "위험당 대가",
+      "text": "제38143회의 위험당 대가",
+      "value": 1.03,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-rec"
+      ]
+    },
+    {
+      "id": "PERRISK_VS_IDX_38143",
+      "kind": "model_output",
+      "metric": "위험당 대가 배수",
+      "text": "제38143회의 위험당 대가가 지수형 평균의 몇 배인가",
+      "value": 1.3,
+      "unit": "배",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-rec"
+      ]
+    },
+    {
+      "id": "TWIN_RATE_D",
+      "kind": "contract_term",
+      "metric": "수익률 차이",
+      "text": "제38143회와 제38139회의 연 수익률 차이",
+      "value": 9.9,
+      "unit": "%p",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-why"
+      ]
+    },
+    {
+      "id": "TWIN_LOSS_D",
+      "kind": "model_output",
+      "metric": "손실 확률 차이",
+      "text": "제38143회와 제38139회의 손실 확률 차이",
+      "value": 13.2,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-why"
+      ]
+    },
+    {
+      "id": "SENS_RATIO_0",
+      "kind": "model_output",
+      "metric": "위험당 대가 (민감도)",
+      "text": "제38141회 공시 상관계수 가정 시 위험당 대가",
+      "value": 1.4,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-sens"
+      ]
+    },
+    {
+      "id": "SENS_RHO_1",
+      "kind": "model_output",
+      "metric": "가정 상관계수",
+      "text": "민감도 1번째 칸의 가정 상관계수",
+      "value": 0.9,
+      "unit": "무차원",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시값이 아니라 우리가 가정해 넣은 값",
+      "printed_on": [
+        "h-sens"
+      ]
+    },
+    {
+      "id": "SENS_LOSS_1",
+      "kind": "model_output",
+      "metric": "손실 확률 (민감도)",
+      "text": "제38141회 상관계수 0.9 가정 시 손실 확률",
+      "value": 11.6,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-sens"
+      ]
+    },
+    {
+      "id": "SENS_RATIO_1",
+      "kind": "model_output",
+      "metric": "위험당 대가 (민감도)",
+      "text": "제38141회 상관계수 0.9 가정 시 위험당 대가",
+      "value": 1.38,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-sens"
+      ]
+    },
+    {
+      "id": "SENS_RHO_2",
+      "kind": "model_output",
+      "metric": "가정 상관계수",
+      "text": "민감도 2번째 칸의 가정 상관계수",
+      "value": 0.8,
+      "unit": "무차원",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시값이 아니라 우리가 가정해 넣은 값",
+      "printed_on": [
+        "h-sens"
+      ]
+    },
+    {
+      "id": "SENS_LOSS_2",
+      "kind": "model_output",
+      "metric": "손실 확률 (민감도)",
+      "text": "제38141회 상관계수 0.8 가정 시 손실 확률",
+      "value": 12.1,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-sens"
+      ]
+    },
+    {
+      "id": "SENS_RATIO_2",
+      "kind": "model_output",
+      "metric": "위험당 대가 (민감도)",
+      "text": "제38141회 상관계수 0.8 가정 시 위험당 대가",
+      "value": 1.32,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-sens"
+      ]
+    },
+    {
+      "id": "SENS_RHO_3",
+      "kind": "model_output",
+      "metric": "가정 상관계수",
+      "text": "민감도 3번째 칸의 가정 상관계수",
+      "value": 0.7,
+      "unit": "무차원",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시값이 아니라 우리가 가정해 넣은 값",
+      "printed_on": [
+        "h-sens"
+      ]
+    },
+    {
+      "id": "SENS_LOSS_3",
+      "kind": "model_output",
+      "metric": "손실 확률 (민감도)",
+      "text": "제38141회 상관계수 0.7 가정 시 손실 확률",
+      "value": 12.6,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-sens"
+      ]
+    },
+    {
+      "id": "SENS_RATIO_3",
+      "kind": "model_output",
+      "metric": "위험당 대가 (민감도)",
+      "text": "제38141회 상관계수 0.7 가정 시 위험당 대가",
+      "value": 1.27,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-sens"
+      ]
+    },
+    {
+      "id": "SENS_RHO_4",
+      "kind": "model_output",
+      "metric": "가정 상관계수",
+      "text": "민감도 4번째 칸의 가정 상관계수",
+      "value": 0.6,
+      "unit": "무차원",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시값이 아니라 우리가 가정해 넣은 값",
+      "printed_on": [
+        "h-sens"
+      ]
+    },
+    {
+      "id": "SENS_LOSS_4",
+      "kind": "model_output",
+      "metric": "손실 확률 (민감도)",
+      "text": "제38141회 상관계수 0.6 가정 시 손실 확률",
+      "value": 13.1,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-sens"
+      ]
+    },
+    {
+      "id": "SENS_RATIO_4",
+      "kind": "model_output",
+      "metric": "위험당 대가 (민감도)",
+      "text": "제38141회 상관계수 0.6 가정 시 위험당 대가",
+      "value": 1.22,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-sens"
+      ]
+    },
+    {
+      "id": "SENS_RATIO_5",
+      "kind": "model_output",
+      "metric": "위험당 대가 (민감도)",
+      "text": "제38141회 상관계수 0.5 가정 시 위험당 대가",
+      "value": 1.19,
+      "unit": "%",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-sens"
+      ]
+    },
+    {
+      "id": "SENS_VOLSPREAD",
+      "kind": "model_output",
+      "metric": "변동성 차이",
+      "text": "제38141회 두 기초자산의 적용 변동성 차이",
+      "value": 19.8,
+      "unit": "%p",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-sens"
+      ]
+    },
+    {
+      "id": "R38133_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38133회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 100,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38133_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38133회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38133_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38133회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 59,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38133_VOL_KOSPI200",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38133회 KOSPI200의 적용 변동성",
+      "value": 35.47,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38134_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38134회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 100,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38134_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38134회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38134_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38134회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 59,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38134_VOL_EuroStoxx50",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38134회 EuroStoxx50의 적용 변동성",
+      "value": 21.65,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38134_VOL_S&P500",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38134회 S&P500의 적용 변동성",
+      "value": 23.25,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38134_VOL_KOSPI200",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38134회 KOSPI200의 적용 변동성",
+      "value": 35.47,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38135_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38135회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 99.67,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38135_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38135회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38135_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38135회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 59,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38135_VOL_EuroStoxx50",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38135회 EuroStoxx50의 적용 변동성",
+      "value": 21.65,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38135_VOL_KOSPI200",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38135회 KOSPI200의 적용 변동성",
+      "value": 35.47,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38135_VOL_Nikkei225",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38135회 Nikkei225의 적용 변동성",
+      "value": 29.35,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38136_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38136회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 100,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38136_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38136회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38136_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38136회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 59,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38136_VOL_KOSPI200",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38136회 KOSPI200의 적용 변동성",
+      "value": 35.47,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38137_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38137회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 98.41,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38137_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38137회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38137_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38137회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 40,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38137_VOL_KOSPI200",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38137회 KOSPI200의 적용 변동성",
+      "value": 35.47,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38137_VOL_HSCEI",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38137회 HSCEI의 적용 변동성",
+      "value": 26.02,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38137_VOL_Nikkei225",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38137회 Nikkei225의 적용 변동성",
+      "value": 29.35,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38138_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38138회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 97.34,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38138_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38138회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38138_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38138회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 59,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38138_VOL_S&P500",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38138회 S&P500의 적용 변동성",
+      "value": 23.25,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38138_VOL_KOSPI200",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38138회 KOSPI200의 적용 변동성",
+      "value": 35.47,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38138_VOL_Nikkei225",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38138회 Nikkei225의 적용 변동성",
+      "value": 29.35,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38139_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38139회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 100,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38139_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38139회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38139_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38139회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 51,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38139_VOL_삼성전자",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38139회 삼성전자의 적용 변동성",
+      "value": 47.09,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38139_VOL_SK하이닉스",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38139회 SK하이닉스의 적용 변동성",
+      "value": 55.24,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38140_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38140회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 100,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38140_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38140회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38140_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38140회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 58,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38140_VOL_KOSPI200",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38140회 KOSPI200의 적용 변동성",
+      "value": 35.47,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38140_VOL_삼성전자",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38140회 삼성전자의 적용 변동성",
+      "value": 47.09,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38141_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38141회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 99.61,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38141_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38141회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38141_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38141회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 51,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38141_VOL_KOSPI200",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38141회 KOSPI200의 적용 변동성",
+      "value": 35.47,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38141_VOL_SK하이닉스",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38141회 SK하이닉스의 적용 변동성",
+      "value": 55.24,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38142_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38142회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 99.45,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38142_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38142회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38142_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38142회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 51,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38142_VOL_삼성전자",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38142회 삼성전자의 적용 변동성",
+      "value": 47.09,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38142_VOL_SK하이닉스",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38142회 SK하이닉스의 적용 변동성",
+      "value": 55.24,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38143_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38143회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 98.65,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38143_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38143회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38143_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38143회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 51,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38143_VOL_삼성전자",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38143회 삼성전자의 적용 변동성",
+      "value": 47.09,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38143_VOL_SK하이닉스",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38143회 SK하이닉스의 적용 변동성",
+      "value": 55.24,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38144_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38144회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 95.84,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38144_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38144회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38144_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38144회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 40,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38144_MARGIN",
+      "kind": "model_output",
+      "metric": "낙인 돌파폭",
+      "text": "제38144회가 검증 기간에 낙인을 뚫고 내려간 폭",
+      "value": 4.6,
+      "unit": "%p",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-cau"
+      ]
+    },
+    {
+      "id": "R38144_VOL_S&P500",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38144회 S&P500의 적용 변동성",
+      "value": 23.25,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38144_VOL_HSCEI",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38144회 HSCEI의 적용 변동성",
+      "value": 26.02,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38144_VOL_Nikkei225",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38144회 Nikkei225의 적용 변동성",
+      "value": 29.35,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38145_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38145회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 99.49,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38145_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38145회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38145_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38145회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 59,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38145_VOL_S&P500",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38145회 S&P500의 적용 변동성",
+      "value": 23.25,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38145_VOL_KOSPI200",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38145회 KOSPI200의 적용 변동성",
+      "value": 35.47,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38145_VOL_Nikkei225",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38145회 Nikkei225의 적용 변동성",
+      "value": 29.35,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38146_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38146회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 97.03,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38146_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38146회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38146_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38146회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 59,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38146_VOL_EuroStoxx50",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38146회 EuroStoxx50의 적용 변동성",
+      "value": 21.65,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38146_VOL_KOSPI200",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38146회 KOSPI200의 적용 변동성",
+      "value": 35.47,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38146_VOL_Nikkei225",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38146회 Nikkei225의 적용 변동성",
+      "value": 29.35,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38147_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38147회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 98.65,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38147_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38147회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38147_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38147회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 51,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38147_VOL_삼성전자",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38147회 삼성전자의 적용 변동성",
+      "value": 47.09,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38147_VOL_SK하이닉스",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38147회 SK하이닉스의 적용 변동성",
+      "value": 55.24,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38148_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38148회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 96.22,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38148_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38148회 기초자산 시세가 겹치는 기간",
+      "value": 5,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38148_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38148회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 15,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38148_MARGIN",
+      "kind": "model_output",
+      "metric": "낙인 돌파폭",
+      "text": "제38148회가 검증 기간에 낙인을 뚫고 내려간 폭",
+      "value": 9.6,
+      "unit": "%p",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-cau"
+      ]
+    },
+    {
+      "id": "R38148_VOL_테슬라",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38148회 테슬라의 적용 변동성",
+      "value": 55.29,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38148_VOL_팔란티어테크",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38148회 팔란티어 테크의 적용 변동성",
+      "value": 67.35,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38149_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38149회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 97.06,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38149_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38149회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38149_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38149회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 45,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38149_VOL_마이크론테크놀로지",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38149회 마이크론 테크놀로지의 적용 변동성",
+      "value": 94.94,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38149_VOL_어플라이드머티어리얼즈",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38149회 어플라이드 머티어리얼즈의 적용 변동성",
+      "value": 73.17,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38150_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38150회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 97.97,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38150_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38150회 기초자산 시세가 겹치는 기간",
+      "value": 5,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38150_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38150회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 15,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38150_MARGIN",
+      "kind": "model_output",
+      "metric": "낙인 돌파폭",
+      "text": "제38150회가 검증 기간에 낙인을 뚫고 내려간 폭",
+      "value": 14.6,
+      "unit": "%p",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-cau"
+      ]
+    },
+    {
+      "id": "R38150_VOL_마이크론테크놀로지",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38150회 마이크론 테크놀로지의 적용 변동성",
+      "value": 94.94,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38150_VOL_팔란티어테크",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38150회 팔란티어 테크의 적용 변동성",
+      "value": 67.35,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38151_SIMWIN",
+      "kind": "contract_term",
+      "metric": "백테스트 이익 비중",
+      "text": "제38151회 발행사 모의실험에서 이익으로 끝난 비중 (A)",
+      "value": 86.96,
+      "unit": "%",
+      "series": "발행사 수익률 모의실험 (공시 원문)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38151_COVYEARS",
+      "kind": "methodology",
+      "metric": "자체 검증 기간",
+      "text": "제38151회 기초자산 시세가 겹치는 기간",
+      "value": 9,
+      "unit": "년",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38151_LOW",
+      "kind": "model_output",
+      "metric": "과거 최저 수준",
+      "text": "제38151회 기초자산이 검증 기간에 닿은 최저 수준 (기준가 대비)",
+      "value": 35,
+      "unit": "%",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38151_MARGIN",
+      "kind": "model_output",
+      "metric": "낙인 돌파폭",
+      "text": "제38151회가 검증 기간에 낙인을 뚫고 내려간 폭",
+      "value": 0.4,
+      "unit": "%p",
+      "series": "자체 수집 (Yahoo Finance 일별 종가)",
+      "as_of": "2026-09-18",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "h-cau"
+      ]
+    },
+    {
+      "id": "R38151_VOL_마이크론테크놀로지",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38151회 마이크론 테크놀로지의 적용 변동성",
+      "value": 94.94,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38151_VOL_AMD",
+      "kind": "contract_term",
+      "metric": "기초자산 변동성",
+      "text": "제38151회 AMD의 적용 변동성",
+      "value": 82.01,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-vol"
+      ]
+    },
+    {
+      "id": "R38141_PAY1",
+      "kind": "contract_term",
+      "metric": "상환금액 비율",
+      "text": "제38141회 1차 상환 시 액면 대비 지급 비율",
+      "value": 108,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": []
+    },
+    {
+      "id": "R38141_PAYAMT1",
+      "kind": "contract_term",
+      "metric": "상환금액(원)",
+      "text": "제38141회 1차 상환 시 받는 금액 (액면 1만 단위)",
+      "value": 10800,
+      "unit": "원",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
+    },
+    {
+      "id": "R38143_PAY1",
+      "kind": "contract_term",
+      "metric": "상환금액 비율",
+      "text": "제38143회 1차 상환 시 액면 대비 지급 비율",
+      "value": 112.5,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": []
+    },
+    {
+      "id": "R38143_PAYAMT1",
+      "kind": "contract_term",
+      "metric": "상환금액(원)",
+      "text": "제38143회 1차 상환 시 받는 금액 (액면 1만 단위)",
+      "value": 11250,
+      "unit": "원",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-09-17",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "h-card"
+      ]
     }
   ],
   "derived": [
@@ -11509,6 +14473,282 @@
       "denominator": "R38143_MCLOSS",
       "printed": 2.1,
       "tolerance": 0.06
+    },
+    {
+      "id": "D_KIND_RATIO",
+      "kind": "ratio",
+      "numerator": "KIND_종목",
+      "denominator": "KIND_지수",
+      "printed": 2,
+      "tolerance": 0.06
+    },
+    {
+      "id": "D_COUPON_NSPLIT",
+      "kind": "sum",
+      "terms": [
+        "COUPON_NFAIR",
+        "COUPON_NUNFAIR"
+      ],
+      "printed": 19,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D_PAIRS_FAIR_PCT",
+      "kind": "ratio",
+      "numerator": "PAIRS_FAIR_OK",
+      "denominator": "PAIRS_FAIR_N",
+      "printed": 0.7143,
+      "tolerance": 0.0006
+    },
+    {
+      "id": "D_PERRISK_FAIRSPREAD",
+      "kind": "ratio",
+      "numerator": "PERRISK_FAIRBEST",
+      "denominator": "PERRISK_FAIRWORST",
+      "printed": 2.7,
+      "tolerance": 0.06
+    },
+    {
+      "id": "D38141_PERRISK_VS_IDX",
+      "kind": "ratio",
+      "numerator": "PERRISK_38141",
+      "denominator": "IDX_PERRISK",
+      "printed": 1.8,
+      "tolerance": 0.06
+    },
+    {
+      "id": "D38143_PERRISK_VS_IDX",
+      "kind": "ratio",
+      "numerator": "PERRISK_38143",
+      "denominator": "IDX_PERRISK",
+      "printed": 1.3,
+      "tolerance": 0.06
+    },
+    {
+      "id": "D_TWIN_RATE_D",
+      "kind": "sum",
+      "terms": [
+        "R38139_RATE",
+        "TWIN_RATE_D"
+      ],
+      "printed": 25,
+      "tolerance": 0.06
+    },
+    {
+      "id": "D_TWIN_LOSS_D",
+      "kind": "sum",
+      "terms": [
+        "R38139_MCLOSS",
+        "TWIN_LOSS_D"
+      ],
+      "printed": 24.3,
+      "tolerance": 0.11
+    },
+    {
+      "id": "D38133_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38133_SIMLOSS",
+        "R38133_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38134_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38134_SIMLOSS",
+        "R38134_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38135_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38135_SIMLOSS",
+        "R38135_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38136_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38136_SIMLOSS",
+        "R38136_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38137_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38137_SIMLOSS",
+        "R38137_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38138_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38138_SIMLOSS",
+        "R38138_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38139_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38139_SIMLOSS",
+        "R38139_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38140_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38140_SIMLOSS",
+        "R38140_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38141_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38141_SIMLOSS",
+        "R38141_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38142_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38142_SIMLOSS",
+        "R38142_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38143_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38143_SIMLOSS",
+        "R38143_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38144_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38144_SIMLOSS",
+        "R38144_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38145_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38145_SIMLOSS",
+        "R38145_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38146_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38146_SIMLOSS",
+        "R38146_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38147_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38147_SIMLOSS",
+        "R38147_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38148_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38148_SIMLOSS",
+        "R38148_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38149_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38149_SIMLOSS",
+        "R38149_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38150_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38150_SIMLOSS",
+        "R38150_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38151_SIMWIN",
+      "kind": "sum",
+      "terms": [
+        "R38151_SIMLOSS",
+        "R38151_SIMWIN"
+      ],
+      "printed": 100,
+      "tolerance": 0.01
+    },
+    {
+      "id": "D38141_PAYAMT1",
+      "kind": "product",
+      "a": "R38141_PAY1",
+      "b": 100,
+      "printed": 10800,
+      "tolerance": 0.5
+    },
+    {
+      "id": "D38143_PAYAMT1",
+      "kind": "product",
+      "a": "R38143_PAY1",
+      "b": 100,
+      "printed": 11250,
+      "tolerance": 0.5
     }
   ]
 }

@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 /**
- * ELS 표준 제안서 생성 — els-proposal.html
+ * ELS 주간 분석자료 생성 — els-analysis.html
  *
- *   node scripts/build_els_proposal.mjs [접수번호]
+ *   node scripts/build_els_analysis.mjs [접수번호]
  *
  * 접수번호를 생략하면 prospectus_parsed.json 에서 가장 최근 회차를 쓴다.
  * 매주 새 일괄신고추가서류가 들어오면 같은 명령으로 다시 돌리면 된다.
  *
- * els-sales.html(4면 분석 자료)이 "왜 그런가"를 다룬다면 이 문서는 "무엇을 권하는가"만 남긴다.
- * 상담 자리에서 그대로 펼쳐 놓고 읽을 수 있게 전문 용어를 전부 풀어쓰고,
- * 비율 대신 1만원당 금액으로 보여준다.
+ * 8장짜리 세일즈 덱(els-sales-deck.pptx)이 "무엇을 권하는가" 만 남긴 제안서라면,
+ * 이 문서는 그 결론이 어디서 나왔는지를 끝까지 펼쳐 보이는 분석자료다. 상담 자리에서
+ * 그대로 펼쳐 놓고 읽을 수 있게 전문 용어를 전부 풀어쓰고, 비율 대신 1만원당 금액으로
+ * 보여준다. 숫자는 덱과 같은 분석층에서만 가져온다 — 각자 계산하면 갈라진다.
  *
  * 입력
  *  - tools/discovery/prospectus_parsed.json : 일괄신고추가서류에서 뽑은 조건·공정가액·모의실험
@@ -22,7 +23,7 @@ import {
   analyze, kindOf, tierOf, KINDS, TIER_RULE, IDX, MC, money, baseOf, unitOf, josa,
 } from './lib/els-analysis.mjs';
 
-const OUT = 'els-proposal.html';
+const OUT = 'els-analysis.html';
 
 // 숫자·등급·추천은 전부 분석층에서 나온다. 이 파일은 그것을 문서로 옮기는 일만 한다.
 const A = await analyze(process.argv[2]).catch((e) => { console.error(e.message); process.exit(1); });
@@ -229,13 +230,76 @@ const avgLossOf = (kind) => {
 };
 const sensRow = (f) => CS.rows.map((r) => `<td class="num">${f(r)}</td>`).join('');
 
+/**
+ * "쿠폰과 위험이 어긋나는 이유" 세 가지 — 회차마다 셋 다 성립하지는 않는다.
+ *
+ * ① 은 같은 기초자산 묶음이 있어야 하고, ③ 은 원화 아닌 상품이 있어야 한다.
+ * 2026-09-21 회차는 전부 원화라 ③ 이 없고, 같은 기초자산 4종도 차수·낙인이
+ * 제각각이라 "위험까지 같은 짝"(twin)이 안 잡혔다. 예전에는 이 셋을 있다고 치고
+ * 문장에 박아 두어 빌드가 통째로 죽었다. 성립하는 것만 세어서 번호를 다시 매긴다.
+ */
+const whyItems = [];
+const T = CW.twin || CW.twinAny;
+if (T && CW.group.length >= 2) {
+  const rates = CW.group.map((i) => i.annualRate);
+  /**
+   * 위험이 사실상 같은 짝이면 "값만 다르다" 가 그대로 성립한다.
+   * 아닐 때는 수익률 차이를 위험 차이와 나란히 놓고, 위험당 대가가 어느 쪽으로
+   * 갔는지까지 적는다 — 수익률 차이만 크게 적으면 "더 받는다" 로만 읽힌다.
+   */
+  const gapText = CW.twin
+    ? `<b>손실 확률이 ${f1(T.gap, 1)}%p밖에 차이 안 나는데 수익률은 ${f1(T.d, 1)}%p 차이 납니다.</b>`
+    : `<b>수익률은 ${f1(T.d, 1)}%p 더 주지만 손실 확률은 ${f1(T.gap, 1)}%p나 더 집니다</b> — 손실 확률 1%마다 받는 돈으로 바꾸면 ${eff1(T.lo)}%에서 ${eff1(T.hi)}%로 오히려 줄어듭니다.`;
+  /**
+   * 무엇이 달라서 갈렸는지는 **실제로 다른 것만** 짚는다.
+   * 예전에는 주기·차수·낙인 세 가지를 고정으로 적었는데, 2026-09-21 회차의 짝
+   * (제38139·38143회)은 셋이 전부 같아서 "6개월마다냐 6개월마다냐, 35%냐 35%냐" 라는
+   * 문장이 나갔다. 조건이 같은데 다르다고 적으면 근거가 아니라 소음이다.
+   */
+  const diffs = [];
+  if (T.hi.every !== T.lo.every) diffs.push(`끝날 기회를 ${T.hi.every}개월마다 보느냐 ${T.lo.every}개월마다 보느냐`);
+  if (T.hi.steps !== T.lo.steps) diffs.push(`그 기회가 ${T.hi.steps}번이냐 ${T.lo.steps}번이냐`);
+  if (T.hi.floor !== T.lo.floor) diffs.push(`원금 지키는 선이 ${T.hi.floor}%냐 ${T.lo.floor}%냐`);
+  const bar = (i) => i.barriers.join('-');
+  if (bar(T.hi) !== bar(T.lo)) {
+    diffs.push(`미리 끝나는 기준선이 ${bar(T.hi)}이냐 ${bar(T.lo)}이냐`
+      + (T.hi.barriers[0] !== T.lo.barriers[0]
+        ? ` (첫 기준선만 봐도 ${T.hi.barriers[0]}% 대 ${T.lo.barriers[0]}%)` : ''));
+  }
+  const why = diffs.length
+    ? `${diffs.join(', ')}가 수익률과 손실 확률을 서로 다른 방향으로 흔들기 때문입니다.`
+    : '기초자산과 기간이 같아도 상환 조건이 조금씩 달라 값이 갈립니다.';
+  whyItems.push(`<b>상품 조건이 달라서.</b> ${esc(CW.group[0].underlyings.join('·'))}를 기초자산으로 삼는 ${CW.group.length}종은 <b>기초자산도, 적용 변동성(${f1(CW.group[0].vmax, 1)}%)도, 기간(${CW.group[0].months}개월)도 똑같은데</b> 수익률만 ${f1(Math.min(...rates), 1)}~${f1(Math.max(...rates), 1)}%로 갈립니다. 제${T.hi.no}회는 손실 확률 ${f1(T.hi.mcLoss, 1)}%에 수익률 ${f1(T.hi.annualRate, 1)}%, 제${T.lo.no}회는 손실 확률 ${f1(T.lo.mcLoss, 1)}%에 수익률 ${f1(T.lo.annualRate, 1)}% — ${gapText} ${why}`);
+}
+whyItems.push(`<b>값어치가 깎여서.</b> 제${CW.priced.no}회는 수익률 ${f1(CW.priced.annualRate, 1)}%인데 손실 확률이 <b>${f1(CW.priced.mcLoss, 1)}%</b>나 됩니다 — 손실 확률 1%마다 겨우 ${eff1(CW.priced)}%를 받는 셈으로 이번 회차 꼴찌입니다. 1만원을 넣는 순간의 값어치가 제값보다 ${f1(Math.abs(CW.priced.fairValueGap), 1)}%나 깎여 있어, 높은 수익률이 <b>위험을 진 대가가 아니라 비용으로 새어나간</b> 경우입니다. 이렇게 값어치가 많이 깎인 ${coupon.n - coupon.nFair}종만 빼도 수익률과 변동성의 관계가 ${f1(CR.vol.all.r, 2)}에서 <b>${f1(CR.vol.fair.r, 2)}</b>로 올라갑니다. 바꿔 말하면 <b>"높은 수익률 = 높은 위험"은 제값 받는 상품에서만 통합니다.</b>`);
+if (CW.fx) {
+  whyItems.push(`<b>돈의 종류가 달라서.</b> 제${CW.fx.fx.no}회(${CW.fx.fx.currency})는 수익률 ${f1(CW.fx.fx.annualRate, 1)}%에 손실 확률이 ${f1(CW.fx.fx.mcLoss, 1)}%로, 기초자산이 똑같은 원화 제${CW.fx.krw.no}회(${f1(CW.fx.krw.annualRate, 1)}%, ${f1(CW.fx.krw.mcLoss, 1)}%)보다 <b>더 주면서 덜 위험해 보입니다.</b> ${CW.fx.fx.currency} 이자가 수익률에 섞여 든 것이고, 대신 <b>이 손실 확률에 잡히지 않는 환율 위험</b>이 붙기 때문입니다.`);
+}
+const MARK = ['①', '②', '③'];
+const whyList = whyItems.map((t, i) => `    <li>${MARK[i]} ${t}</li>`).join('\n');
+const whyCount = ['한 가지', '두 가지', '세 가지'][whyItems.length - 1] || `${whyItems.length}가지`;
+
+/**
+ * "개별 종목이 들어간 건 더 위험하지 않나요?" 의 뒷말.
+ *
+ * 근거로 쓸 상품은 **종목이 섞인 추천 상품**이어야 한다. 1순위 카드를 그대로 쓰면
+ * 그게 지수형인 주에 질문과 답이 어긋나고(2026-09-21 제38133회), 기초자산이 하나뿐이면
+ * "두 자산이 같이 움직인다" 는 말이 성립하지 않아 상관계수 자리에 "–" 가 찍힌다.
+ */
+const stockRec = slots.map((s2) => s2.pick).find((i) => kindOf(i) !== '지수');
+const stockPick = !stockRec
+  ? `다만 이번 주 추천 ${slots.length}종은 모두 지수만 담은 상품이라, 그 걱정은 이 세 종에는 해당하지 않습니다.`
+  : `다만 제${stockRec.no}회는 ${stockRec.rho != null && stockRec.underlyings.length > 1
+      ? `두 자산이 거의 같이 움직이고(${f1(stockRec.rho, 2)}, 1이면 완전히 같이 움직임) `
+      : ''}원금 지키는 선이 ${stockRec.floor}%로 아래에 있어서, 위험을 지는 대가로 손실 확률 1%마다 연 ${f1(perRisk(stockRec), 2)}%를 줍니다 — 지수형 평균 ${f1(idxPerRisk, 2)}%보다 많습니다.`;
+
 const cautionCards = caution.map((it) => `        <div class="cau">
           <h4>제${it.no}회 <span class="cund">${esc(it.underlyings.join(' · '))}</span> <span class="crate">연 ${f1(it.annualRate, 1)}%</span></h4>
           <ul>${cautionReason(it).map((r) => `<li>${r}</li>`).join('')}</ul>
         </div>`).join('\n');
 
 // ── 문서 ─────────────────────────────────────────────────────────────────────
-const html = `<title>ELS 주간 제안서</title>
+const html = `<title>ELS 주간 분석자료</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -533,7 +597,7 @@ footer a{color:var(--muted)}
   <div class="wrap">
     <div>
       <p class="tag">MIRAE ASSET · ELS WEEKLY</p>
-      <h1>제${items[0].no}~${items[items.length - 1].no}회 ELS 제안서</h1>
+      <h1>제${items[0].no}~${items[items.length - 1].no}회 ELS 분석자료</h1>
       <p class="sub">투자설명서(일괄신고추가서류) ${filedOn} 공시 원문 기준 · 전 ${items.length}종 분석</p>
     </div>
     <dl class="offer">
@@ -643,7 +707,7 @@ ${byKind.map((r) => `        <tr><td><b>${r.key}형</b></td><td class="num">${r.
   <ul class="keys">
     <li><b>평균으로 보면 맞는 말입니다.</b> 개별 종목만 담은 상품이 손해 볼 가능성이 지수만 담은 것의 <b>${f1(kindRatio, 1)}배</b>입니다. 가격 출렁임도 ${f1(byKind.find((r) => r.key === '지수')?.vol, 0)}% 대 ${f1(byKind.find((r) => r.key === '종목')?.vol, 0)}%로 확연히 갈립니다. 자산 종류부터 보는 관행에는 근거가 있습니다.</li>
     <li><b>그런데 상품 하나하나로 내려가면 뒤집힙니다.</b> 지수만 담은 제${idxWorst.no}회(${esc(idxWorst.underlyings.join('·'))})가 ${f1(idxWorst.mcLoss, 1)}%로, 종목이 섞인 상품 대부분보다 오히려 위험합니다. 반대로 제${stockBest.no}회(${esc(stockBest.underlyings.join('·'))})는 ${f1(stockBest.mcLoss, 1)}%로 ${items.length}종 중 ${safest.findIndex((i) => i.no === stockBest.no) + 1}번째로 낮습니다.</li>
-    <li><b>실제로 갈라놓은 건 자산 종류가 아니라 두 가지였습니다.</b> 첫째, <b>원금 지키는 선이 얼마나 아래에 있는가</b> — 제${idxWorst.no}회는 그 선이 ${idxWorst.knockIn}%로 이번 주에서 가장 높아, 조금만 빠져도 닿습니다. 둘째, <b>두 자산이 얼마나 같이 움직이는가</b> — 따로 노는 자산끼리 묶으면 "둘 중 더 나쁜 쪽"으로 판정하는 구조에서 훨씬 불리해집니다. 이 값이 제${idxWorst.no}회는 ${f1(idxWorst.rho, 2)}, 제${stockBest.no}회는 ${f1(stockBest.rho, 2)}입니다(1이면 완전히 같이 움직임).</li>
+    <li><b>실제로 갈라놓은 건 자산 종류가 아니라 두 가지였습니다.</b> 첫째, <b>원금 지키는 선이 얼마나 아래에 있는가</b> — 제${idxWorst.no}회는 ${idxWorst.knockIn == null ? '낙인이 없는 대신 만기에 지켜야 하는 선이' : '그 선이'} ${idxWorst.floor}%로 이번 주에서 높은 축이라, 조금만 빠져도 닿습니다. 둘째, <b>두 자산이 얼마나 같이 움직이는가</b> — 따로 노는 자산끼리 묶으면 "둘 중 더 나쁜 쪽"으로 판정하는 구조에서 훨씬 불리해집니다.${idxWorst.rho != null && stockBest.rho != null ? ` 이 값이 제${idxWorst.no}회는 ${f1(idxWorst.rho, 2)}, 제${stockBest.no}회는 ${f1(stockBest.rho, 2)}입니다(1이면 완전히 같이 움직임).` : ''}</li>
     <li><b>그래서 이 문서는 자산 종류로 거르지 않고, B의 손해 볼 가능성만 보고 등급을 매겼습니다.</b> 대신 개별 종목이 섞인 상품을 권할 때는 <b>왜 관행을 거스르는지</b>를 카드마다 적어 두었습니다. 고객이 "종목이 들어갔는데 안전하다고요?" 하시면 그 문장을 그대로 읽으시면 됩니다.</li>
   </ul>
 </section>
@@ -672,11 +736,9 @@ ${rhoRow('참고 · 손실 확률 × 잃을 때의 크기', 'expLoss')}
     <li><b>그런데 정비례는 아닙니다.</b> 수익률만 알아서는 손실 확률을 <b>${f1(CG.r2 * 100, 0)}%밖에</b> 맞히지 못합니다. 수익률을 1%p 더 받을 때 손실 확률은 평균 ${f1(CG.slope, 2)}%p 오르지만, 상품마다 그 몇 배씩 들쭉날쭉합니다. 실무에서 제일 쓸모 있는 숫자는 이것입니다 — <b>손실 확률 1%마다 받는 연 수익률이 ${eff1(CE.worst)}%(제${CE.worst.no}회)에서 ${eff1(CE.best)}%(제${CE.best.no}회)까지 ${f1(CE.spread, 1)}배</b> 차이 납니다. 값어치가 멀쩡한 ${coupon.nFair}종만 추려도 ${f1(CE.fairSpread, 1)}배입니다. 정확히 비례한다면 이 값은 전부 같아야 합니다.</li>
   </ul>
 
-  <h3 class="sub3">어긋나는 이유는 세 가지입니다</h3>
+  <h3 class="sub3">어긋나는 이유는 ${whyCount}입니다</h3>
   <ul class="keys">
-    <li><b>① 상품 조건이 달라서.</b> ${esc(CW.group[0].underlyings.join('·'))}를 기초자산으로 삼는 ${CW.group.length}종은 <b>기초자산도, 적용 변동성(${f1(CW.group[0].vmax, 1)}%)도, 기간(${CW.group[0].months}개월)도 똑같은데</b> 수익률만 ${f1(Math.min(...CW.group.map((i) => i.annualRate)), 1)}~${f1(Math.max(...CW.group.map((i) => i.annualRate)), 1)}%로 갈립니다. 제${CW.twin.hi.no}회는 손실 확률 ${f1(CW.twin.hi.mcLoss, 1)}%에 수익률 ${f1(CW.twin.hi.annualRate, 1)}%, 제${CW.twin.lo.no}회는 손실 확률 ${f1(CW.twin.lo.mcLoss, 1)}%에 수익률 ${f1(CW.twin.lo.annualRate, 1)}% — <b>손실 확률이 ${f1(Math.abs(CW.twin.hi.mcLoss - CW.twin.lo.mcLoss), 1)}%p밖에 차이 안 나는데 수익률은 ${f1(CW.twin.d, 1)}%p 차이 납니다.</b> ${CW.twin.hi.every}개월마다 끝날 기회를 보느냐 ${CW.twin.lo.every}개월마다 보느냐(끝날 기회 ${CW.twin.hi.steps}번 대 ${CW.twin.lo.steps}번), 낙인이 ${CW.twin.hi.knockIn}%냐 ${CW.twin.lo.knockIn}%냐가 수익률과 손실 확률을 서로 다른 방향으로 흔들기 때문입니다.</li>
-    <li><b>② 값어치가 깎여서.</b> 제${CW.priced.no}회는 수익률 ${f1(CW.priced.annualRate, 1)}%인데 손실 확률이 <b>${f1(CW.priced.mcLoss, 1)}%</b>나 됩니다 — 손실 확률 1%마다 겨우 ${eff1(CW.priced)}%를 받는 셈으로 이번 회차 꼴찌입니다. 1만원을 넣는 순간의 값어치가 제값보다 ${f1(CW.priced.fairValueGap, 1)}%나 깎여 있어, 높은 수익률이 <b>위험을 진 대가가 아니라 비용으로 새어나간</b> 경우입니다. 이렇게 값어치가 많이 깎인 ${coupon.n - coupon.nFair}종만 빼도 수익률과 변동성의 관계가 ${f1(CR.vol.all.r, 2)}에서 <b>${f1(CR.vol.fair.r, 2)}</b>로 올라갑니다. 바꿔 말하면 <b>"높은 수익률 = 높은 위험"은 제값 받는 상품에서만 통합니다.</b></li>
-    <li><b>③ 돈의 종류가 달라서.</b> 제${CW.fx.fx.no}회(${CW.fx.fx.currency})는 수익률 ${f1(CW.fx.fx.annualRate, 1)}%에 손실 확률이 ${f1(CW.fx.fx.mcLoss, 1)}%로, 기초자산이 똑같은 원화 제${CW.fx.krw.no}회(${f1(CW.fx.krw.annualRate, 1)}%, ${f1(CW.fx.krw.mcLoss, 1)}%)보다 <b>더 주면서 덜 위험해 보입니다.</b> ${CW.fx.fx.currency} 이자가 수익률에 섞여 든 것이고, 대신 <b>이 손실 확률에 잡히지 않는 환율 위험</b>이 붙기 때문입니다.</li>
+${whyList}
   </ul>
 
   <h3 class="sub3">확률만 보면 왜 느슨해지나 — 잃을 때 잃는 크기가 다릅니다</h3>
@@ -695,7 +757,7 @@ ${rhoRow('참고 · 손실 확률 × 잃을 때의 크기', 'expLoss')}
   </div>
   <p class="tnote">같이 움직이는 정도를 ${f1(CS.rows[CS.rows.length - 1].rho, 2)}까지 억지로 낮춰도 손실 확률은 ${f1(CS.rows[0].loss, 1)}%에서 ${f1(CS.rows[CS.rows.length - 1].loss, 1)}%로 오르는 데 그치고, 손실 확률 1%당 수익률은 ${f1(CS.rows[CS.rows.length - 1].ratio, 2)}%로 <b>여전히 1등</b>입니다. 두 기초자산의 변동성이 ${f1(CS.volSpread, 1)}%p나 벌어져 <b>같이 움직이든 말든 "더 나쁜 쪽"이 거의 항상 같은 자산</b>이기 때문입니다.</p>
 
-  <p class="mnote"><b>상담에서 쓰실 한 줄</b> — 고객이 "연 ${f1(rateMax, 1)}%짜리도 있는데 왜 ${f1(CE.fairBest.annualRate, 1)}%짜리를 먼저 권하냐"고 물으시면: <b>"수익률이 높으면 위험도 큰 것, 맞습니다. 다만 같은 손실 확률을 지고도 남들보다 많이 받는 상품이 따로 있습니다. 이번 회차는 그 차이가 ${f1(CE.fairSpread, 1)}배까지 벌어집니다."</b> 수익률만 유난히 높고 손실 확률은 안 높은 상품을 만나면 셋 중 하나입니다 — 조건 덕이거나, 통화가 다르거나, <b>아직 못 본 위험이 있거나.</b> 앞의 둘로 설명이 안 되면 세 번째입니다.</p>
+  <p class="mnote"><b>상담에서 쓰실 한 줄</b> — 고객이 "연 ${f1(rateMax, 1)}%짜리도 있는데 왜 ${f1(CE.fairBest.annualRate, 1)}%짜리를 먼저 권하냐"고 물으시면: <b>"수익률이 높으면 위험도 큰 것, 맞습니다. 다만 같은 손실 확률을 지고도 남들보다 많이 받는 상품이 따로 있습니다. 이번 회차는 그 차이가 ${f1(CE.fairSpread, 1)}배까지 벌어집니다."</b> 수익률만 유난히 높고 손실 확률은 안 높은 상품을 만나면 ${CW.fx ? '넷' : '셋'} 중 하나입니다 — 조건 덕이거나, ${CW.fx ? '통화가 다르거나, ' : ''}값어치가 깎여 있거나, <b>아직 못 본 위험이 있거나.</b> 앞의 것들로 설명이 안 되면 마지막입니다.</p>
 </section>
 
 <section class="page-break">
@@ -778,7 +840,7 @@ ${cautionCards}
       <li>"${slots[0].pick.months}개월 동안 안 쓸 돈인지부터 확인해 주세요. 중간에 빼시면 그날 계산한 값어치의 95%만 받습니다."</li>
       ${plan.hasCooling ? `<li>"청약을 넣으셔도 바로 확정되는 게 아닙니다. 이틀 숙려기간을 거친 뒤 저희가 다시 연락드려 최종 의사를 확인합니다. 그때 확인이 안 되면 청약금은 ${dot(plan.payDate)}에 돌려드립니다."</li>` : ''}
     </ol>
-    <p class="qa"><b>"개별 종목이 들어간 건 더 위험하지 않나요?"</b> 라고 물으시면 — "맞습니다. 이번 주도 종목만 담은 상품의 손해 볼 가능성이 지수만 담은 것의 ${f1(kindRatio, 1)}배입니다. 다만 제${slots[0].pick.no}회는 두 자산이 거의 같이 움직이고(${f1(slots[0].pick.rho, 2)}, 1이면 완전히 같이 움직임) 원금 지키는 선도 ${slots[0].pick.knockIn}%로 훨씬 아래에 있어서, 같은 잣대로 재면 지수 상품 대부분보다 오히려 낮게 나옵니다." 라고 답하시면 됩니다.</p>
+    <p class="qa"><b>"개별 종목이 들어간 건 더 위험하지 않나요?"</b> 라고 물으시면 — "맞습니다. 이번 주도 종목만 담은 상품의 손해 볼 가능성이 지수만 담은 것의 ${f1(kindRatio, 1)}배입니다. ${stockPick}" 라고 답하시면 됩니다.</p>
   </div>
 </section>
 
@@ -820,7 +882,7 @@ ${[
   <p>과거 최저점과 자체 검증 수치는 ${dot(String(H.dates[0]))}~${dot(String(H.dates[H.dates.length - 1]))} 기준 자산의 일별 종가로, 매 거래일 가입했다고 치고 끝까지 돌린 결과입니다. 늦게 상장한 자산이 섞인 상품은 그만큼 돌려본 기간이 짧으며, 상품마다 실제 기간을 적어 두었습니다.</p>
   <p><b>B(같은 조건 시뮬레이션 손실)는 이 문서가 직접 계산한 값입니다.</b> 상품마다 앞으로 나올 법한 가격 흐름을 ${MC.paths.toLocaleString('ko-KR')}가지 만들어, 실제 확인일·원금 지키는 선·조기 종료 규칙을 그대로 적용해 셌습니다. 출렁임 정도와 두 자산이 같이 움직이는 정도는 지어내지 않고 <b>투자설명서에 회사가 적어 놓은 값</b>을 그대로 썼습니다(회사 표기 기준 — 해당 만기의 변동성, 같이 움직이는 정도는 최근 180영업일 실제 값). 어느 자산도 오르거나 내린다고 가정하지 않았고, 난수를 고정해 두어 같은 조건이면 언제 돌려도 같은 값이 나옵니다. 회사가 쓴 출렁임 수치는 실제보다 크게 잡히는 것이 보통이라 이 확률은 <b>넉넉하게 잡은 최대치</b>로 읽으셔야 하며, 회사의 상품 가격 계산이나 손익과는 무관한 별개 계산입니다.</p>
   <p>본 자료는 투자 권유를 위한 참고 자료입니다. 실제로 가입하시기 전에 <b>투자설명서와 간이투자설명서를 반드시 확인</b>하셔야 합니다. <b>원금 손실이 날 수 있는 상품입니다.</b></p>
-  <p>생성 ${builtOn} · scripts/build_els_proposal.mjs</p>
+  <p>생성 ${builtOn} · scripts/build_els_analysis.mjs</p>
 </footer>
 `;
 
