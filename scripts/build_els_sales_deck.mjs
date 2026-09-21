@@ -550,7 +550,7 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
   const C = A.coupon;
   const pts = A.items.filter((i) => i.mcLoss != null).sort((a, b) => a.mcLoss - b.mcLoss);
   const y0 = head(s, '수익률이 높다고 그만큼 위험한 것은 아닙니다',
-    `이번 회차 ${pts.length}종을 손실 확률(B)과 연 수익률로 흩어 놓았습니다. 왼쪽 위가 적은 위험에 많이 받는 자리, 오른쪽 아래가 위험만 큰 자리입니다.`);
+    `이번 회차 ${pts.length}종을 손실 확률(B)과 연 수익률로 흩어 놓았습니다. 왼쪽 위가 적은 위험에 많이 받는 자리, 오른쪽 아래가 위험만 큰 자리입니다. 점 위에 마우스를 올리면 회차와 기초자산이 뜹니다.`);
 
   // ── 산점도 ── 네이티브 차트라 파워포인트에서 데이터를 그대로 고칠 수 있다.
   const xs = pts.map((i) => +i.mcLoss.toFixed(1));
@@ -561,14 +561,30 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
   const yMin = step(Math.min(...pts.map((i) => i.annualRate)), 5, false);
   const yMax = step(Math.max(...pts.map((i) => i.annualRate)), 5, true);
 
-  s.addChart(pres.ChartType.scatter, [
-    { name: '손실 확률 B (%)', values: xs },
-    { name: `추천 ${REC.length}종`, values: ys((i) => REC.includes(i)) },
-    { name: '그 외', values: ys((i) => !REC.includes(i) && !CAU.includes(i)) },
-    { name: `권하지 않는 ${CAU.length}종`, values: ys((i) => CAU.includes(i)) },
-  ], {
-    x: M, y: y0, w: 7.25, h: 4.5,
-    chartColors: [ORANGE, '9AA6B2', BAD],
+  /**
+   * 점 하나에 회차 하나 — 계열을 회차별로 쪼갠다.
+   *
+   * 파워포인트가 점 위에서 보여 주는 풍선말은 **계열 이름**이다. 추천/그 외/주의
+   * 세 계열로 묶어 두면 "그 외 (14.7, 24.1)" 까지만 뜨고 정작 어느 회차인지가 안
+   * 나온다. 계열을 회차마다 하나씩 두면 그 자리에 회차와 기초자산이 뜬다.
+   * 값 배열은 자기 자리만 채우고 나머지는 null 이라 점은 하나씩만 찍힌다.
+   *
+   * 대신 자동 범례를 쓸 수 없다(19줄이 된다). 아래에 세 가지 색만 손으로 적는다.
+   */
+  const dot = (it) => (REC.includes(it) ? ORANGE : CAU.includes(it) ? BAD : '9AA6B2');
+  const series = [{ name: '손실 확률 B (%)', values: xs }];
+  const dotColors = [];
+  pts.forEach((it, k) => {
+    series.push({
+      name: `제${it.no}회 ${it.underlyings.join('·')}`,
+      values: pts.map((_, j) => (j === k ? +it.annualRate.toFixed(1) : null)),
+    });
+    dotColors.push(dot(it));
+  });
+
+  s.addChart(pres.ChartType.scatter, series, {
+    x: M, y: y0, w: 7.25, h: 4.24,
+    chartColors: dotColors,
     lineSize: 0, lineDataSymbol: 'circle', lineDataSymbolSize: 9,
     catAxisMinVal: 0, catAxisMaxVal: xMax, catAxisMajorUnit: 10,
     valAxisMinVal: yMin, valAxisMaxVal: yMax, valAxisMajorUnit: 5,
@@ -580,9 +596,20 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
     catAxisTitleFontSize: 9, valAxisTitleFontSize: 9,
     catAxisLineShow: true, valAxisLineShow: true,
     catGridLine: { style: 'none' }, valGridLine: { color: 'E5E4E1', style: 'dash', size: 0.5 },
-    showLegend: true, legendPos: 'b', legendFontFace: F, legendFontSize: 9,
+    showLegend: false,
     border: { pt: 0 }, fill: WHITE,
   });
+
+  // 손으로 적는 범례 — 자동 범례를 껐으므로 색의 뜻은 여기서만 읽힌다
+  const lgd = [[ORANGE, `추천 ${REC.length}종`], ['9AA6B2', `그 외 ${pts.length - REC.length - CAU.length}종`],
+    [BAD, `권하지 않는 ${CAU.length}종`]];
+  let lx = M + 0.5;
+  for (const [c, t] of lgd) {
+    s.addShape(pres.ShapeType.ellipse, { x: lx, y: y0 + 4.34, w: 0.11, h: 0.11, fill: { color: c }, line: { width: 0 } });
+    s.addText(t, { x: lx + 0.17, y: y0 + 4.26, w: 1.6, h: 0.26, fontFace: F, fontSize: 9, color: BODY, margin: 0, valign: 'middle' });
+    lx += 1.9;
+  }
+
 
   // ── 오른쪽: 흩어진 그림에서 읽히는 것 ──
   // 위험당 대가는 표(2장)에 인쇄된 소수 1자리 손실 확률로 나눈다. 원값으로 재면
