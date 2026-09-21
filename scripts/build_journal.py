@@ -266,8 +266,11 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
     if jr and jr_date != close_date:
         warn.append("순위 파일 기준일(%s)과 지수 종가일(%s)이 다릅니다 — 순위 표에는 순위 파일의 날짜를 답니다."
                     % (jr_date, close_date))
-    if jr and jr_status == "OPEN":
-        warn.append("순위 파일이 **장중**(%s)에 받아졌습니다. 순위·상한가는 그 시각의 잠정값입니다."
+    # **`market_status` 로 장중을 가리지 않는다.** 네이버는 시간외단일가
+    # (16:00~18:00)까지 OPEN 으로 준다. 가르는 것은 tradingSessionType 이다.
+    if jr and str(jr.get("session") or "") in (
+            "REGULAR_MARKET", "PRE_MARKET", "BEFORE_MARKET", "OPENING_AUCTION"):
+        warn.append("순위 파일이 **정규장 중**(%s)에 받아졌습니다. 순위·상한가는 그 시각의 잠정값입니다."
                     % (jr.get("generated_at_kst") or ""))
 
     mi_biz = ymd((mi.get("kospi") or {}).get("bizdate"))
@@ -435,6 +438,7 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
     # 보는 전부이므로, 「쌍매수」는 **두 명단에 함께 든 종목**으로 정의하고
     # 그렇게 적는다. 전체 종목에서 두 주체가 모두 순매수한 종목이 아니다.
     irank = (jr or {}).get("investor_rank") or {}
+    stale_tables: list[str] = []
 
     def flow_val(r):
         """금액이 왔으면 금액, 없으면 수량 × 종가로 어림한 값(꼬리표를 단다)."""
@@ -462,6 +466,12 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
         rows = sorted(s[direction], key=sort_key)[:cap]
         basis = s.get("rank_basis") or ""
         est = " · **장중 잠정치**" if s.get("estimated") else ""
+        sbd = ymd(s.get("bizdate") or "")
+        if sbd and sbd != close_date:
+            # 이 표만 날짜가 다르다. **이름에 박는다** — 각주는 읽히지 않는다.
+            title_ko += " (%s 기준)" % sbd
+            title_en += " (as of %s)" % sbd
+            stale_tables.append("%s %s %s" % (mkt, side_label, sbd))
         nt = ("원천 차례는 %s 기준 · 기준일 %s%s. 「≈」는 금액이 오지 않아 "
               "수량 × 종가로 어림한 값입니다."
               % (esc(basis), esc(ymd(s.get("bizdate")) or ""), est))
@@ -559,6 +569,12 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                          % esc(flows.get("bizdate")))
     else:
         warn.append("연속 순매수를 셀 누적 자료(data/flows/kr100.json)에 기준일 줄이 없습니다.")
+
+    if stale_tables:
+        warn.insert(0, "**종목별 수급 가운데 일부가 전 거래일 기준입니다** — "
+                    + ", ".join(sorted(set(stale_tables)))
+                    + ". 원천이 그날 안에 채우지 않아, 표 이름에 그 날짜를 달았습니다. "
+                    "나머지 수치는 모두 오늘 마감 기준입니다.")
 
     # ── ④ 순위 (전종목) ────────────────────────────────────────────
     def rank_block(market_key, kind, title_ko, title_en, col_ko, col_en, fmt, cap=8,
@@ -909,6 +925,7 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
     telegram = "\n".join(tl)
 
     claims["warnings"] = warn
+    claims["stale_investor"] = sorted(set(stale_tables))
     claims["close_date"] = close_date
     return html, telegram, claims
 
@@ -931,6 +948,9 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", help="기준일을 강제한다 (YYYY-MM-DD). 기본은 시세 파일의 종가일")
     ap.add_argument("--out", default=DOCS)
+    # 기관 종목별이 전 거래일 기준인 채로 내는 판. 표 이름에 그 날짜를 박고
+    # 머리말에 적는다. claims 에 mode=잠정 을 남겨 뒤에 덮을 수 있게 한다.
+    ap.add_argument("--allow-stale-investor", action="store_true")
     args = ap.parse_args()
 
     market = load(MARKET)
@@ -944,6 +964,7 @@ def main() -> int:
 
     now = datetime.datetime.now(KST)
     html, telegram, claims = build(market, jr, now)
+    claims["mode"] = "잠정" if claims.get("stale_investor") else "완전"
 
     os.makedirs(args.out, exist_ok=True)
     date = args.date or claims["close_date"]
