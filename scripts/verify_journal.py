@@ -134,8 +134,10 @@ def main() -> int:
     else:
         ok("표본 %s 종목 (코스피 %s · 코스닥 %s)"
            % (uni.get("표본"), uni.get("코스피"), uni.get("코스닥")))
-    if "전종목" in json.dumps(uni, ensure_ascii=False):
-        bad("universe 에 「전종목」이라 적혀 있다 — 표본이다. 이름을 고치십시오")
+    # 표본이 전종목인 양 실리는 것을 막는다. 자료에 「주의」 한 줄이 반드시
+    # 있어야 하고, 빌더는 그 줄을 각주로 옮겨 싣는다.
+    if not uni.get("주의"):
+        bad("universe 에 표본임을 밝히는 「주의」 줄이 없다 — 전종목으로 읽힐 수 있다")
 
     # ── ② 줄 안의 셈 ────────────────────────────────────────────────
     for mkt, kinds in (jr.get("rank") or {}).items():
@@ -185,10 +187,10 @@ def main() -> int:
             # 개인+외국인+기관+기타법인 은 0 이어야 한다. 크게 어긋나면
             # 장중 집계와 확정치를 섞은 것이다(지침 3-4절).
             if abs(tot) > max(200, scale * 0.03):
-                bad("%s 투자자별 순매수 합이 %+,.0f 억원 — 0 에서 너무 멀다. "
-                    "장중 집계와 확정치가 섞였을 수 있다" % (mkt, tot))
+                bad("%s 투자자별 순매수 합이 %s 억원 — 0 에서 너무 멀다. "
+                    "장중 집계와 확정치가 섞였을 수 있다" % (mkt, format(tot, "+,.0f")))
             else:
-                ok("%s 투자자별 순매수 합 %+,.0f 억원 — 0 언저리" % (mkt, tot))
+                ok("%s 투자자별 순매수 합 %s 억원 — 0 언저리" % (mkt, format(tot, "+,.0f")))
         # 기관 안쪽 합이 기관계와 맞는가
         det = row.get("detail") or {}
         inner = [det.get(k) for k in ("금융투자", "보험", "투신", "사모펀드",
@@ -196,8 +198,8 @@ def main() -> int:
         if row.get("institution") is not None and all(v is not None for v in inner):
             s = sum(inner)
             if abs(s - row["institution"]) > max(50, abs(row["institution"]) * 0.02):
-                bad("%s 기관 안쪽 합 %+,.0f 억원이 기관계 %+,.0f 억원과 다르다"
-                    % (mkt, s, row["institution"]))
+                bad("%s 기관 안쪽 합 %s 억원이 기관계 %s 억원과 다르다"
+                    % (mkt, format(s, "+,.0f"), format(row["institution"], "+,.0f")))
             else:
                 ok("%s 기관 안쪽 합이 기관계와 맞는다" % mkt)
 

@@ -362,11 +362,25 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                  "미국·유럽은 국내 마감 이전의 직전 거래일 종가입니다. 미국채는 재무부 곡선.")
 
     # ── ② 수급 합계 ────────────────────────────────────────────────
-    sup_rows = []
+    # **날짜가 붙은 계열을 먼저 쓴다.** market_internals 는 「지금」 한 점이라
+    # 장중에 받으면 오늘 진행분이 들어온다. 종가일 줄이 계열에 있으면 그것을
+    # 쓰고, 없을 때만 한 점짜리로 물러서되 그 날짜를 표에 적는다.
+    daily = (jr or {}).get("investor_daily") or {}
+    sup_rows, sup_basis, det_row = [], [], {}
     for mk, ko, en in (("kospi", "코스피", "KOSPI"), ("kosdaq", "코스닥", "KOSDAQ")):
         o = (mi.get(mk) or {})
-        fl = o.get("investor_flows") or {}
         pg = o.get("program_trading") or {}
+        ser = (daily.get(ko) or {}).get("rows") or []
+        hit = next((r for r in ser if r.get("date") == close_date), None)
+        if hit:
+            fl, asof = hit, close_date
+            det_row[ko] = hit.get("detail") or {}
+        else:
+            fl, asof = (o.get("investor_flows") or {}), (mi_biz or close_date)
+            if ser:
+                warn.append("%s 투자자별 계열에 %s 줄이 없어 %s 시점 한 점을 썼습니다."
+                            % (ko, close_date, asof))
+        sup_basis.append("%s %s" % (ko, asof))
         sup_rows.append([
             L(ko, en), eok(fl.get("retail")), eok(fl.get("foreign")),
             eok(fl.get("institution")), eok(pg.get("arb")), eok(pg.get("non_arb")),
@@ -376,8 +390,28 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                          ("외국인", "Foreign", "n"), ("기관", "Inst.", "n"),
                          ("차익", "Arb.", "n"), ("비차익", "Non-arb.", "n")], sup_rows),
                   VF_MD,
-                  "단위 억원 · 기준일 %s. 선물 외국인은 무료 원천이 없어 비차익을 대용으로 봅니다."
-                  % (mi_biz or close_date))
+                  "단위 억원 · 순매수 기준일 %s · 프로그램 %s. 선물 외국인은 무료 원천이 없어 "
+                  "비차익을 대용으로 봅니다."
+                  % (" / ".join(sup_basis), mi_biz or close_date))
+
+    # 기관 안쪽 — 시장일지가 묻는 「사모펀드 순매수」는 여기까지 받을 수 있다.
+    b_det = None
+    if det_row:
+        keys = ["금융투자", "보험", "투신", "사모펀드", "은행", "기타금융", "연기금"]
+        rows = []
+        for ko in ("코스피", "코스닥"):
+            dt = det_row.get(ko) or {}
+            if not dt:
+                continue
+            rows.append([L(ko, ko)] + [eok(dt.get(k)) for k in keys])
+        if rows:
+            b_det = block("기관 안쪽 순매수", "Institutional breakdown",
+                          table([("시장", "Market", "nm")]
+                                + [(k, k, "n") for k in keys], rows), VF_MD,
+                          "단위 억원 · 기준일 %s. **종목별 사모펀드 순매수는 거래소에만 있고 "
+                          "수집 서버가 막혀 있어 시장 합계까지만 싣습니다.**" % close_date)
+    if not b_det:
+        warn.append("기관 안쪽(사모펀드·연기금 등) 순매수를 받지 못했습니다.")
 
     # 등락 종목수
     br_rows = []
@@ -391,68 +425,119 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                         ("보합", "Unch", "n"), ("하락", "Dec", "n"), ("하한", "Lim↓", "n")],
                        br_rows), VF_MD)
 
-    # ── ③ 종목별 수급 (대형주 100) ──────────────────────────────────
-    flows = (jr or {}).get("flows_kr100")
-    b_frgn = b_inst = b_both = None
-    if flows and flows.get("rows"):
-        names = {}
-        for r in (jr or {}).get("rank", {}).values():
-            for lst in r.values():
-                if isinstance(lst, list):
-                    for s in lst:
-                        names[s.get("code")] = s
-        # 이름은 순위 파일에서 못 채운 것이 있으므로 시세 파일의 종목표로 보강한다.
-        for code, s in (market.get("stocks") or {}).items():
-            names.setdefault(str(code).split(".")[0], {"name": s.get("name_ko") or s.get("name")})
+    # ── ③ 종목별 수급 ───────────────────────────────────────────────
+    # 원천은 시장 × 투자자별로 매수·매도 상위 20 을 준다. 그 스무 줄이 우리가
+    # 보는 전부이므로, 「쌍매수」는 **두 명단에 함께 든 종목**으로 정의하고
+    # 그렇게 적는다. 전체 종목에서 두 주체가 모두 순매수한 종목이 아니다.
+    irank = (jr or {}).get("investor_rank") or {}
 
-        def label(row):
-            info = names.get(row["code"]) or {}
-            return '%s <span class="mut">%s</span>' % (
-                esc(info.get("name") or row["code"]), esc(row["code"]))
+    def flow_val(r):
+        """금액이 왔으면 금액, 없으면 수량 × 종가로 어림한 값(꼬리표를 단다)."""
+        if r.get("value_eok") is not None:
+            return eok(r["value_eok"], 0)
+        if r.get("value_eok_est") is not None:
+            return eok(r["value_eok_est"], 0) + '<span class="mut">≈</span>'
+        return '<span class="mut">&mdash;</span>'
 
-        rows = [r for r in flows["rows"] if r.get("foreign_eok") is not None]
-        f_top = sorted(rows, key=lambda r: -(r["foreign_eok"] or 0))[:10]
-        i_top = sorted([r for r in flows["rows"] if r.get("inst_eok") is not None],
-                       key=lambda r: -(r["inst_eok"] or 0))[:10]
-        cov = flows.get("coverage") or {}
-        note_uni = ("**대형주 100 종목 안에서의 순위입니다.** 전체 시장 매수상위가 아닙니다. "
-                    "원천 %s · 기준일 %s" % (esc(flows.get("source")), esc(flows.get("bizdate"))))
-        b_frgn = block("외국인 순매수 상위 (대형주 100 기준)",
-                       "Foreign net buy — top 100 caps only",
-                       table([("종목", "Name", "nm"), ("순매수", "Net", "n"),
-                              ("연속", "Days", "n"), ("종가", "Close", "n")],
-                             [[label(r), eok(r["foreign_eok"], 0),
-                               str(r.get("foreign_streak") or 0) + "일", won(r.get("close"))]
-                              for r in f_top]),
-                       VF_P, note_uni)
-        b_inst = block("기관 순매수 상위 (대형주 100 기준)",
-                       "Institutional net buy — top 100 caps only",
-                       table([("종목", "Name", "nm"), ("순매수", "Net", "n"),
-                              ("연속", "Days", "n"), ("종가", "Close", "n")],
-                             [[label(r), eok(r["inst_eok"], 0),
-                               str(r.get("inst_streak") or 0) + "일", won(r.get("close"))]
-                              for r in i_top]),
-                       VF_P, note_uni)
-        both_buy = sorted([r for r in flows["rows"]
-                           if (r.get("foreign_eok") or 0) > 0 and (r.get("inst_eok") or 0) > 0],
-                          key=lambda r: -((r["foreign_eok"]) + (r["inst_eok"])))[:8]
-        both_sell = sorted([r for r in flows["rows"]
-                            if (r.get("foreign_eok") or 0) < 0 and (r.get("inst_eok") or 0) < 0],
-                           key=lambda r: ((r["foreign_eok"]) + (r["inst_eok"])))[:8]
-        rows2 = [[L("쌍매수", "Both buy"), label(r), eok(r["foreign_eok"], 0), eok(r["inst_eok"], 0)]
-                 for r in both_buy]
-        rows2 += [[L("쌍매도", "Both sell"), label(r), eok(r["foreign_eok"], 0), eok(r["inst_eok"], 0)]
-                  for r in both_sell]
-        b_both = block("쌍매수 · 쌍매도 (대형주 100 기준)", "Both-side buy / sell — top 100 caps",
-                       table([("구분", "Side", "c"), ("종목", "Name", "nm"),
-                              ("외국인", "Foreign", "n"), ("기관", "Inst.", "n")], rows2),
-                       VF_P, note_uni + (" · 수록 %s" % esc(cov.get("to") or "")))
-    else:
+    def sort_key(r):
+        v = r.get("value_eok")
+        if v is None:
+            v = r.get("value_eok_est")
+        return -(v if v is not None else 0)
+
+    def flow_block(mkt, side_label, direction, title_ko, title_en, cap=10):
+        s = ((irank.get(mkt) or {}).get("sides") or {}).get(side_label)
+        if not s or not s.get(direction):
+            return None
+        rows = sorted(s[direction], key=sort_key)[:cap]
+        basis = s.get("rank_basis") or ""
+        est = " · **장중 잠정치**" if s.get("estimated") else ""
+        nt = ("원천 차례는 %s 기준 · 기준일 %s%s. 「≈」는 금액이 오지 않아 "
+              "수량 × 종가로 어림한 값입니다."
+              % (esc(basis), esc(ymd(s.get("bizdate")) or ""), est))
+        return block(title_ko, title_en,
+                     table([("종목", "Name", "nm"), ("순매수", "Net", "n"),
+                            ("종가", "Close", "n"), ("등락", "Chg", "n")],
+                           [[nm(dict(r, market=mkt)), flow_val(r),
+                             won(r.get("close")), pct(r.get("change_pct"))]
+                            for r in rows]),
+                     VF_MD if not s.get("estimated") else VF_P, nt)
+
+    b_frgn = flow_block("코스피", "외국인", "buy",
+                        "코스피 외국인 순매수 상위", "KOSPI — foreign net buy")
+    b_inst = flow_block("코스피", "기관", "buy",
+                        "코스피 기관 순매수 상위", "KOSPI — institutional net buy")
+    b_frgn_kq = flow_block("코스닥", "외국인", "buy",
+                           "코스닥 외국인 순매수 상위", "KOSDAQ — foreign net buy")
+    b_inst_kq = flow_block("코스닥", "기관", "buy",
+                           "코스닥 기관 순매수 상위", "KOSDAQ — institutional net buy")
+    b_frgn_sell = flow_block("코스피", "외국인", "sell",
+                             "코스피 외국인 순매도 상위", "KOSPI — foreign net sell")
+    b_inst_sell = flow_block("코스피", "기관", "sell",
+                             "코스피 기관 순매도 상위", "KOSPI — institutional net sell")
+
+    if b_frgn is None and b_inst is None:
         b_frgn = block("종목별 수급", "Net buying by stock",
                        empty("기관·외국인 종목별 순매수를 받지 못했습니다.",
                              "Per-stock investor flows unavailable."), VF_N,
-                       "무료 원천이 개편으로 끊겼습니다. data/journal/raw/journal_xhr*.txt 에 관찰 기록이 있습니다.")
+                       "관찰 기록은 data/journal/raw/journal_xhr*.txt 에 있습니다.")
         warn.append("종목별 기관·외국인 순매수를 채우지 못했습니다.")
+
+    # 쌍매수 · 쌍매도 — 두 명단의 교집합
+    def both(direction, ko, en):
+        rows = []
+        for mkt in ("코스피", "코스닥"):
+            sides = (irank.get(mkt) or {}).get("sides") or {}
+            fo = {r["code"]: r for r in ((sides.get("외국인") or {}).get(direction) or [])}
+            io = {r["code"]: r for r in ((sides.get("기관") or {}).get(direction) or [])}
+            for code in set(fo) & set(io):
+                rows.append((mkt, fo[code], io[code]))
+        rows.sort(key=lambda t: sort_key(t[1]) + sort_key(t[2]))
+        return [[L(ko, en), nm(dict(t[1], market=t[0])), flow_val(t[1]), flow_val(t[2])]
+                for t in rows[:9]]
+
+    rows2 = both("buy", "쌍매수", "Both buy") + both("sell", "쌍매도", "Both sell")
+    b_both = block("쌍매수 · 쌍매도", "Both-side buy / sell",
+                   table([("구분", "Side", "c"), ("종목", "Name", "nm"),
+                          ("외국인", "Foreign", "n"), ("기관", "Inst.", "n")], rows2)
+                   if rows2 else empty("겹친 종목이 없습니다.", "No overlap."),
+                   VF_C if rows2 else VF_N,
+                   "**두 주체의 상위 20 명단에 함께 든 종목**입니다. 전 종목에서 둘 다 "
+                   "순매수한 종목을 모두 센 것이 아닙니다.")
+
+    # 연속 순매수는 원천이 하루치만 주므로 대형주 100 누적본에서 가져온다.
+    flows = (jr or {}).get("flows_kr100")
+    b_streak = None
+    if flows and flows.get("rows"):
+        nmap = {}
+        for code, s in (market.get("stocks") or {}).items():
+            nmap[str(code).split(".")[0]] = s.get("name_ko") or s.get("name") or code
+        for mkt, kinds in ((jr or {}).get("rank") or {}).items():
+            for lst in kinds.values():
+                if isinstance(lst, list):
+                    for s in lst:
+                        nmap.setdefault(s.get("code"), s.get("name"))
+        fs = sorted([r for r in flows["rows"] if (r.get("foreign_streak") or 0) >= 3],
+                    key=lambda r: -(r["foreign_streak"]))[:8]
+        is_ = sorted([r for r in flows["rows"] if (r.get("inst_streak") or 0) >= 3],
+                     key=lambda r: -(r["inst_streak"]))[:8]
+        rows3 = [[L("외국인", "Foreign"),
+                  '%s <span class="mut">%s</span>' % (esc(nmap.get(r["code"], r["code"])), r["code"]),
+                  "%d일" % r["foreign_streak"], eok(r.get("foreign_eok"), 0)] for r in fs]
+        rows3 += [[L("기관", "Inst."),
+                   '%s <span class="mut">%s</span>' % (esc(nmap.get(r["code"], r["code"])), r["code"]),
+                   "%d일" % r["inst_streak"], eok(r.get("inst_eok"), 0)] for r in is_]
+        b_streak = block("연속 순매수 (3일 이상, 대형주 100 기준)",
+                         "Consecutive net buying (3d+, top 100 caps)",
+                         table([("주체", "Side", "c"), ("종목", "Name", "nm"),
+                                ("연속", "Days", "n"), ("당일", "Today", "n")], rows3)
+                         if rows3 else empty("3일 이상 이어 산 종목이 없습니다.", "None."),
+                         VF_P,
+                         "**시가총액 상위 100 종목 안에서만** 셉니다. 원천이 하루치만 주므로 "
+                         "누적본(data/flows/kr100.json)에서 이었습니다 · 기준일 %s"
+                         % esc(flows.get("bizdate")))
+    else:
+        warn.append("연속 순매수를 셀 누적 자료(data/flows/kr100.json)에 기준일 줄이 없습니다.")
 
     # ── ④ 순위 (전종목) ────────────────────────────────────────────
     def rank_block(market_key, kind, title_ko, title_en, col_ko, col_en, fmt, cap=10, note=""):
@@ -536,13 +621,18 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
 
     t_up = etf_tbl("상승률상위", "거래대금", "Turnover", lambda e: eok_plain(e.get("value_eok")) + "원")
     t_vl = etf_tbl("거래대금상위", "거래대금", "Turnover", lambda e: eok_plain(e.get("value_eok")) + "원")
+    etf_note = "레버리지·인버스는 이름으로 걸러 뺐습니다(레버리지·인버스·2X·곱버스)."
+    if str(etf.get("상승률_기준") or "").startswith("tradingValueDesc"):
+        etf_note += " **상승률 차례는 거래대금 상위 100 안에서 매긴 것**이라 전체 ETF 상승률 상위가 아닙니다."
+        warn.append("ETF 상승률 순위가 거래대금 상위 100 안에서 매겨졌습니다.")
     b_etf_up = block("ETF 상승률 상위 (레버리지·인버스 제외)", "ETF top gainers (ex-leveraged/inverse)",
                      t_up or empty("ETF 순위를 받지 못했습니다.", "ETF ranking unavailable."),
-                     VF_C if t_up else VF_N)
-    b_etf_vl = block("ETF 거래대금 상위", "ETF by turnover",
+                     VF_C if t_up else VF_N, etf_note)
+    b_etf_vl = block("ETF 거래대금 상위 (레버리지·인버스 제외)", "ETF by turnover (ex-leveraged/inverse)",
                      t_vl or empty("ETF 순위를 받지 못했습니다.", "ETF ranking unavailable."),
                      VF_C if t_vl else VF_N,
-                     "거래대금 상위는 레버리지·인버스를 뺀 뒤의 순위입니다.")
+                     "원천이 주는 위 100 줄에서 레버리지·인버스를 뺀 순위입니다(전체 %s 종목 가운데)."
+                     % esc(etf.get("종목수") or ""))
     if not t_up:
         warn.append("ETF 순위를 받지 못했습니다.")
 
@@ -616,31 +706,35 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                 % (L("확인해 주십시오 —", "Please note —"),
                    " / ".join(esc(w).replace("**", "") for w in warn)))
 
+    uni = (jr or {}).get("universe") or {}
     foot = (
         '<div class="foot">%s</div>'
         % L("수치 출처 — 지수·환율·금리·예탁금: 거래소·한국은행·네이버 시장지표 수집본"
-            "(data/market/latest.json). 종목 순위: 네이버 종목 목록 API 전종목 한 벌을 받아 "
-            "순위는 직접 매김(data/journal/latest.json). 종목별 기관·외국인 순매수는 "
-            "<b>시가총액 상위 100 종목 한정</b>입니다. 배지 — MARKET DATA 수집 원천 그대로 · "
-            "CALCULATED 원자료에서 우리가 셈 · PARTIAL 표본이 제한됨 · NOT FOUND 확보 실패. "
-            "이 자료는 정보 제공 목적이며 투자 권유가 아닙니다.",
-            "Sources — indices, FX, rates and deposits from the collected market file; "
-            "stock rankings computed in-house from the full KRX list. Per-stock investor "
-            "flows cover the <b>top 100 caps only</b>. Badges: MARKET DATA (as collected), "
-            "CALCULATED (computed here), PARTIAL (limited sample), NOT FOUND. "
-            "For information only; not investment advice."))
+            "(data/market/latest.json). 종목 순위: 네이버 종목 목록 API 에서 <b>시가총액 상위 "
+            "%s 종목</b>(코스피 %s · 코스닥 %s)을 받아 순위는 직접 매김 — 거래소 상장 전종목이 "
+            "아닙니다. 종목별 기관·외국인 순매수는 원천이 주는 <b>상위 20</b>이 전부입니다. "
+            "연속 순매수는 시가총액 상위 100 종목 한정. 배지 — MARKET DATA 수집 원천 그대로 · "
+            "CALCULATED 원자료에서 우리가 셈 · PARTIAL 표본·시점이 제한됨 · NOT FOUND 확보 실패. "
+            "이 자료는 정보 제공 목적이며 투자 권유가 아닙니다."
+            % (uni.get("표본", "?"), uni.get("코스피", "?"), uni.get("코스닥", "?")),
+            "Sources — indices, FX, rates and deposits from the collected market file. "
+            "Stock rankings computed in-house from the <b>top %s stocks by market cap</b> "
+            "(KOSPI %s, KOSDAQ %s), not the full listed universe. Per-stock investor flows "
+            "are the provider's <b>top 20</b> only. Badges: MARKET DATA, CALCULATED, "
+            "PARTIAL, NOT FOUND. For information only; not investment advice."
+            % (uni.get("표본", "?"), uni.get("코스피", "?"), uni.get("코스닥", "?"))))
 
     sheet1 = (
         '<article class="sheet">%s%s%s'
-        '<div class="g2"><div>%s%s</div><div>%s%s%s</div></div>'
         '<div class="g2"><div>%s%s</div><div>%s%s</div></div>'
-        '%s%s</article>'
+        '<div class="g2"><div>%s%s</div><div>%s%s</div></div>'
+        '%s%s%s</article>'
         % (hd, lede, strip,
            b_dom, b_sup,
-           b_ov, b_br, b_theme,
-           b_frgn, b_val_kp,
+           b_ov, b_br,
+           (b_frgn or ""), b_val_kp,
            (b_inst or ""), b_up_kq,
-           b_news, foot))
+           b_theme, b_news, foot))
 
     hd2 = (
         '<div class="hd"><div><div class="kicker">%s</div><h1>%s</h1></div>'
@@ -655,18 +749,14 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
 
     sheet2 = (
         '<article class="sheet">%s'
-        '<div class="g2"><div>%s</div><div>%s</div></div>'
-        '<div class="g2"><div>%s</div><div>%s</div></div>'
+        '<div class="g2"><div>%s%s</div><div>%s%s</div></div>'
+        '<div class="g2"><div>%s%s</div><div>%s%s</div></div>'
         '</article>'
         % (hd2,
-           wide("코스피", "상승률상위", "코스피 상승률 상위 20", "KOSPI top 20 gainers",
-                "거래대금", "Turnover", lambda s: eok_plain(s.get("value_eok")) + "원"),
-           wide("코스닥", "상승률상위", "코스닥 상승률 상위 20", "KOSDAQ top 20 gainers",
-                "거래대금", "Turnover", lambda s: eok_plain(s.get("value_eok")) + "원"),
-           wide("코스피", "거래대금상위", "코스피 거래대금 상위 20", "KOSPI top 20 by turnover",
-                "등락", "Chg", lambda s: sgn(s.get("volume_diff_pct"), 0, "%")),
-           wide("코스닥", "거래대금상위", "코스닥 거래대금 상위 20", "KOSDAQ top 20 by turnover",
-                "거래량증감", "Vol chg", lambda s: sgn(s.get("volume_diff_pct"), 0, "%"))))
+           (b_frgn_kq or ""), (b_frgn_sell or ""),
+           (b_inst_kq or ""), (b_inst_sell or ""),
+           b_both, (b_det or ""),
+           (b_streak or ""), b_sect))
 
     hd3 = (
         '<div class="hd"><div><div class="kicker">%s</div><h1>%s</h1></div>'
@@ -677,15 +767,38 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
 
     sheet3 = (
         '<article class="sheet">%s'
-        '<div class="g2"><div>%s%s</div><div>%s%s</div></div>'
         '<div class="g2"><div>%s</div><div>%s</div></div>'
-        '%s</article>'
-        % (hd3, b_etf_up, b_nh, b_etf_vl, b_lim,
-           b_qs, b_sect, (b_both or ""), ))
+        '<div class="g2"><div>%s%s</div><div>%s%s</div></div>'
+        '</article>'
+        % (hd3,
+           wide("코스피", "상승률상위", "코스피 상승률 상위 20", "KOSPI top 20 gainers",
+                "거래대금", "Turnover", lambda s: eok_plain(s.get("value_eok")) + "원"),
+           wide("코스닥", "상승률상위", "코스닥 상승률 상위 20", "KOSDAQ top 20 gainers",
+                "거래대금", "Turnover", lambda s: eok_plain(s.get("value_eok")) + "원"),
+           b_etf_up, b_nh, b_etf_vl, b_qs))
+
+    hd4 = (
+        '<div class="hd"><div><div class="kicker">%s</div><h1>%s</h1></div>'
+        '<div class="sub">%s</div></div>'
+        % (L("대시보드 · 거래대금과 특이 종목", "Dashboard · Turnover and outliers"),
+           L("%s 마감" % DK(cdate, True), "Close, %s" % DE(cdate, True)),
+           L("본지 1쪽 표를 상위 20 으로 넓힌 것입니다", "Page 1 tables widened to top 20")))
+
+    sheet4 = (
+        '<article class="sheet">%s'
+        '<div class="g2"><div>%s</div><div>%s</div></div>'
+        '<div class="g2"><div>%s</div><div>%s</div></div>'
+        '</article>'
+        % (hd4,
+           wide("코스피", "거래대금상위", "코스피 거래대금 상위 20", "KOSPI top 20 by turnover",
+                "거래량증감", "Vol chg", lambda s: sgn(s.get("volume_diff_pct"), 0, "%")),
+           wide("코스닥", "거래대금상위", "코스닥 거래대금 상위 20", "KOSDAQ top 20 by turnover",
+                "거래량증감", "Vol chg", lambda s: sgn(s.get("volume_diff_pct"), 0, "%")),
+           b_lim, b_etf_vl))
 
     html = page("국내 시장일지 %s" % close_date,
                 "Korea Market Journal %s" % close_date,
-                [sheet1, sheet2, sheet3])
+                [sheet1, sheet2, sheet3, sheet4])
 
     # ── 텔레그램 전송본 ────────────────────────────────────────────
     def t_pct(v):
@@ -712,25 +825,35 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                      mf.get("date")))
     tl.append("")
     for mk, ko in (("kospi", "코스피"), ("kosdaq", "코스닥")):
-        fl = ((mi.get(mk) or {}).get("investor_flows") or {})
+        ser = ((daily.get(ko) or {}).get("rows") or [])
+        fl = next((r for r in ser if r.get("date") == close_date), None) \
+            or ((mi.get(mk) or {}).get("investor_flows") or {})
         tl.append("· %s 수급 — 개인 %s / 외국인 %s / 기관 %s (억원)"
                   % (ko, n(fl.get("retail"), 0).replace("&mdash;", "—"),
                      n(fl.get("foreign"), 0).replace("&mdash;", "—"),
                      n(fl.get("institution"), 0).replace("&mdash;", "—")))
-    if flows and flows.get("rows"):
-        f_top3 = sorted([r for r in flows["rows"] if r.get("foreign_eok") is not None],
-                        key=lambda r: -(r["foreign_eok"]))[:5]
-        i_top3 = sorted([r for r in flows["rows"] if r.get("inst_eok") is not None],
-                        key=lambda r: -(r["inst_eok"]))[:5]
-        nmap = {}
-        for code, s in (market.get("stocks") or {}).items():
-            nmap[str(code).split(".")[0]] = s.get("name_ko") or s.get("name") or code
-        tl.append("· 외국인 순매수 상위(대형주100) — "
-                  + ", ".join("%s %+.0f억" % (nmap.get(r["code"], r["code"]), r["foreign_eok"])
-                              for r in f_top3))
-        tl.append("· 기관 순매수 상위(대형주100) — "
-                  + ", ".join("%s %+.0f억" % (nmap.get(r["code"], r["code"]), r["inst_eok"])
-                              for r in i_top3))
+        det = (fl.get("detail") or {}) if isinstance(fl, dict) else {}
+        if det.get("사모펀드") is not None:
+            tl.append("   (기관 안쪽 — 금융투자 %s / 투신 %s / 사모 %s / 연기금 %s)"
+                      % tuple(n(det.get(k), 0).replace("&mdash;", "—")
+                              for k in ("금융투자", "투신", "사모펀드", "연기금")))
+
+    def t_flow(mkt, side, direction, label):
+        s = ((irank.get(mkt) or {}).get("sides") or {}).get(side)
+        if not s or not s.get(direction):
+            return
+        rows = sorted(s[direction], key=sort_key)[:5]
+        est = "≈" if rows and rows[0].get("value_eok") is None else ""
+        tl.append("· %s — %s" % (label, ", ".join(
+            "%s %s%s억" % (r["name"], est,
+                          n(r.get("value_eok") if r.get("value_eok") is not None
+                            else r.get("value_eok_est"), 0).replace("&mdash;", "—"))
+            for r in rows)))
+
+    t_flow("코스피", "외국인", "buy", "코스피 외국인 순매수 상위")
+    t_flow("코스피", "기관", "buy", "코스피 기관 순매수 상위")
+    t_flow("코스닥", "외국인", "buy", "코스닥 외국인 순매수 상위")
+    t_flow("코스닥", "기관", "buy", "코스닥 기관 순매수 상위")
     tl.append("")
     for mkk, ko in (("코스피", "코스피"), ("코스닥", "코스닥")):
         r = ((jr or {}).get("rank") or {}).get(mkk) or {}
@@ -748,7 +871,9 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
     if lim:
         tl.append("· 상한가 — " + ", ".join(s["name"] for s in lim))
     tl.append("")
-    tl.append("※ 종목별 기관·외국인 순매수는 시가총액 상위 100종목 한정입니다.")
+    tl.append("※ 종목 순위는 시가총액 상위 %s종목 표본(거래소 전종목 아님), "
+              "종목별 수급은 원천이 주는 상위 20 이 전부입니다."
+              % (uni.get("표본", "?")))
     tl.append("※ 정보 제공 목적이며 투자 권유가 아닙니다. 미래에셋증권 마포WM")
     telegram = "\n".join(tl)
 

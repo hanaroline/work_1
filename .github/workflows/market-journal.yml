@@ -44,8 +44,13 @@ jobs:
       - name: 종목 순위 수집
         run: python3 scripts/fetch_journal.py
 
-      - name: 검산
-        run: python3 scripts/verify_journal.py
+      # **여기서는 막지 않는다.** 받은 것은 받은 대로 남기고, 발행을 막는
+      # 자리는 빌드 쪽이다(scripts/verify_journal.py 를 인자 없이 부른다).
+      # 장중에 확인하려고 돌리면 경고가 나는 것이 정상이라, 그때마다 수집분을
+      # 통째로 버리면 곤란하다.
+      - name: 검산 (경고만)
+        continue-on-error: true
+        run: python3 scripts/verify_journal.py --warn-only
 
       - name: 커밋
         run: |
