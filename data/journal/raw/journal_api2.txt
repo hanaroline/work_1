@@ -1,0 +1,63 @@
+손잡이 확인 2026-09-21 11:42 KST
+
+========== ① investorType ==========
+    FOREIGNER              200 · 매수 20 매도 20 · 삼성전자, 삼성전자우, LG디스플레이
+        첫 줄: {"itemcode": "005930", "itemname": "삼성전자", "bizdateFrom": "20260921", "bizdateTo": "20260921", "accTradeVolume": "2587761", "accTradeAmount": "0", "dailyTradeVolume": "2587761", "nowPrice": "272000", "prevChangeRate": "4.21", "prevChangePrice": "11000", "type": "ST", "estimated": true, "toRankingAt"
+    ORGANIZATION           200 · 매수 20 매도 20 · 삼성전자, SK하이닉스, 삼성전기
+        첫 줄: {"itemcode": "005930", "itemname": "삼성전자", "bizdateFrom": "20260918", "bizdateTo": "20260918", "accTradeVolume": "2746972", "accTradeAmount": "715414815000", "dailyTradeVolume": "15042569", "nowPrice": "272000", "prevChangeRate": "4.21", "prevChangePrice": "11000", "type": "ST", "estimated": null, "
+    ORGAN                  실패 400 {"detailCode":"HttpError","message":"Bad Request","result":"{\"type\":\"about:blank\",\"ti
+    INSTITUTION            실패 400 {"detailCode":"HttpError","message":"Bad Request","result":"{\"type\":\"about:blank\",\"ti
+    INSTITUTE              실패 400 {"detailCode":"HttpError","message":"Bad Request","result":"{\"type\":\"about:blank\",\"ti
+    INSTITUTIONAL          실패 400 {"detailCode":"HttpError","message":"Bad Request","result":"{\"type\":\"about:blank\",\"ti
+    ORG                    실패 400 {"detailCode":"HttpError","message":"Bad Request","result":"{\"type\":\"about:blank\",\"ti
+    PERSONAL               실패 400 {"detailCode":"HttpError","message":"Bad Request","result":"{\"type\":\"about:blank\",\"ti
+    PRIVATE_EQUITY         실패 400 {"detailCode":"HttpError","message":"Bad Request","result":"{\"type\":\"about:blank\",\"ti
+    PRIVATEEQUITY          실패 400 {"detailCode":"HttpError","message":"Bad Request","result":"{\"type\":\"about:blank\",\"ti
+    PENSION                실패 400 {"detailCode":"HttpError","message":"Bad Request","result":"{\"type\":\"about:blank\",\"ti
+    TRUST                  실패 400 {"detailCode":"HttpError","message":"Bad Request","result":"{\"type\":\"about:blank\",\"ti
+    INVESTMENT_TRUST       실패 400 {"detailCode":"HttpError","message":"Bad Request","result":"{\"type\":\"about:blank\",\"ti
+    FINANCIAL_INVESTMENT   실패 400 {"detailCode":"HttpError","message":"Bad Request","result":"{\"type\":\"about:blank\",\"ti
+
+========== ② pageSize ==========
+    pageSize=20   200 · 매수 20 줄
+    pageSize=30   200 · 매수 30 줄
+    pageSize=50   200 · 매수 50 줄
+    pageSize=100  200 · 매수 100 줄
+
+========== ③ periodType · marketType ==========
+    periodType=DAY          marketType=KOSPI   200 · 20 줄
+    periodType=DAY          marketType=KOSDAQ  200 · 20 줄
+    periodType=WEEK         marketType=KOSPI   200 · 20 줄
+    periodType=WEEK         marketType=KOSDAQ  200 · 20 줄
+    periodType=MONTH        marketType=KOSPI   200 · 20 줄
+    periodType=MONTH        marketType=KOSDAQ  200 · 20 줄
+    periodType=SEGMENT_1DAY marketType=KOSPI   400 · - 줄
+    periodType=SEGMENT_1DAY marketType=KOSDAQ  400 · - 줄
+
+    → api2_tfo_FOREIGNER_KOSPI.json 에 남겼다
+    → api2_tfo_FOREIGNER_KOSDAQ.json 에 남겼다
+
+========== ④ ETF ==========
+    listingType=tradingValueDesc     200 
+    listingType=changeRateDesc       400 {"detailCode":"invalid_enum_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"listingType\":[\"Invalid enum value. Expected 'tradingValueDesc' | 'aumDesc' | 'changeRateDescUpAll' | 'changeRateDe
+    listingType=changeRate           400 {"detailCode":"invalid_enum_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"listingType\":[\"Invalid enum value. Expected 'tradingValueDesc' | 'aumDesc' | 'changeRateDescUpAll' | 'changeRateDe
+    listingType=priceTop             400 {"detailCode":"invalid_enum_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"listingType\":[\"Invalid enum value. Expected 'tradingValueDesc' | 'aumDesc' | 'changeRateDescUpAll' | 'changeRateDe
+    listingType=marketCapDesc        200 
+    listingType=totalNetAssetsDesc   400 {"detailCode":"invalid_enum_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"listingType\":[\"Invalid enum value. Expected 'tradingValueDesc' | 'aumDesc' | 'changeRateDescUpAll' | 'changeRateDe
+    listingType=changeRateAsc        400 {"detailCode":"invalid_enum_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"listingType\":[\"Invalid enum value. Expected 'tradingValueDesc' | 'aumDesc' | 'changeRateDescUpAll' | 'changeRateDe
+    index=0     200 · 100 줄 · totalCount 1171 · hasNext True · 첫 줄 KODEX 200
+    index=100   200 · 0 줄 · totalCount 1171 · hasNext False
+    index=1000  200 · 0 줄 · totalCount 1171 · hasNext False
+    index=1100  200 · 0 줄 · totalCount 1171 · hasNext False
+
+========== ⑤ 전종목 목록 — 시장별 ==========
+    ALL startIdx=0 → 500 줄 (누적 500)
+    ALL startIdx=500 → 빈 응답 (여기서 끝)
+    ⇒ ALL 로 받을 수 있는 것은 500 종목
+    KOSPI startIdx=0 → 500 줄 (누적 500)
+    KOSPI startIdx=500 → 빈 응답 (여기서 끝)
+    ⇒ KOSPI 로 받을 수 있는 것은 500 종목
+    KOSDAQ startIdx=0 → 500 줄 (누적 500)
+    KOSDAQ startIdx=500 → 빈 응답 (여기서 끝)
+    ⇒ KOSDAQ 로 받을 수 있는 것은 500 종목
+
