@@ -324,6 +324,19 @@
       .toc { padding: 8px 11px; break-inside: avoid; }
       .toc ol { font-size: 8.5pt; }
       .grp { font-size: 10pt; margin: 10px 0 6px; break-after: avoid; page-break-after: avoid; }
+      /* 절이 바뀌면 종이도 바뀐다 — 「오늘자」가 끝난 자리에 「주간 인기」가
+         이어 붙으면, 종이로 넘기며 읽을 때 어디서 갈래가 바뀌었는지 눈에
+         걸리지 않는다. 세 덩이(오늘자 · 주간 인기 · 전체 목록)를 각각 새
+         쪽에서 연다. 「오늘자」는 늘 첫 쪽이라 따로 줄 것이 없다. */
+      #weekly-wrap, #listTop { break-before: page; page-break-before: always; }
+      /* 다만 주간본에서는 #weekly-wrap 이 **첫** 덩이다. 거기에 쪽 나눔을
+         걸어 두면 앞에 빈 쪽이 한 장 생긴다. 그 판에서만 되돌린다.
+         (요약본은 둘 다 display:none 이라 애초에 쪽을 만들지 않는다.) */
+      body.pdf-weekly #weekly-wrap { break-before: auto; page-break-before: auto; }
+      /* 전체본은 목록을 갈래로 묶는다. 묶음 제목(.grp)이 쪽 맨 아래에 홀로
+         남지 않게 이미 break-after:avoid 를 걸어 두었다 — 위의 쪽 나눔과
+         부딪히지 않는다. */
+
       /* 요약본에서는 전체 목록과 주간을 뺀다 — 그날 판만 담는다. */
       body.pdf-summary #listTop, body.pdf-summary #list, body.pdf-summary #hit,
       body.pdf-summary #weekly-wrap { display: none !important; }
