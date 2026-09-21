@@ -76,7 +76,7 @@ html[lang=en] [data-lang-en]{display:inline}
 .lt button:not([aria-checked=true]):hover{background:var(--surf);color:var(--ink)}
 
 .sheet{
-  width:210mm; min-height:297mm; margin:14px auto; padding:11mm 10mm 9mm;
+  width:210mm; min-height:297mm; margin:14px auto; padding:9mm 9mm 7mm;
   background:#fff; box-shadow:0 1px 10px rgba(0,0,0,.13);
 }
 /* 머리 */
@@ -88,21 +88,21 @@ html[lang=en] [data-lang-en]{display:inline}
         text-transform:uppercase;margin-bottom:2px}
 
 /* 두 칸 격자 */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 7mm;margin-top:7px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 6mm;margin-top:5px}
 .g1{margin-top:7px}
-.blk{break-inside:avoid;margin:0 0 7px}
+.blk{break-inside:avoid;margin:0 0 5px}
 .rule{height:1px;background:var(--orange);margin-bottom:4px}
-.blk h2{margin:0 0 3px;font-size:11.5px;font-weight:700;color:var(--ink);
+.blk h2{margin:0 0 2px;font-size:10.8px;font-weight:700;color:var(--ink);
         letter-spacing:-.1px;display:flex;align-items:center;gap:5px}
-.note{margin:2px 0 0;font-size:8.6px;color:var(--mut2);line-height:1.35}
+.note{margin:1px 0 0;font-size:7.9px;color:var(--mut2);line-height:1.3}
 .empty{margin:3px 0;font-size:9.5px;color:var(--mut)}
 
 /* 표 */
-table.dt{width:100%;border-collapse:collapse;font-size:9.3px;
+table.dt{width:100%;border-collapse:collapse;font-size:8.5px;
          border:1px solid var(--hair)}
 table.dt th{background:var(--soft);color:#2C2C2C;font-weight:700;
-  padding:2.5px 4px;border:1px solid var(--hair2);text-align:left;white-space:nowrap}
-table.dt td{padding:2.2px 4px;border:1px solid var(--hair2);color:var(--body);
+  padding:1.8px 4px;border:1px solid var(--hair2);text-align:left;white-space:nowrap}
+table.dt td{padding:1.5px 4px;border:1px solid var(--hair2);color:var(--body);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 table.dt tbody tr:nth-child(even){background:#FBFBFC}
 table.dt tbody tr:hover{background:var(--surf)}
@@ -112,6 +112,10 @@ table.dt td.nm{max-width:0;width:34%}
 table.dt tfoot td{background:var(--surf2);font-size:8.4px;color:var(--mut);
   white-space:normal;line-height:1.35}
 tr.hl td{background:#D7D7D7 !important;font-weight:700}
+/* 대시보드의 스무 줄짜리 표 — 한 쪽에 넷을 세우려면 한 단 더 조여야 한다 */
+table.dt.dense{font-size:7.7px}
+table.dt.dense td{padding:0.9px 3px}
+table.dt.dense th{padding:1.4px 3px}
 
 .up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--mut)}
 .mut{color:var(--mut2)}
@@ -124,19 +128,19 @@ tr.hl td{background:#D7D7D7 !important;font-weight:700}
 /* 한눈에 띠 */
 .strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;
        border:1px solid var(--hair);border-left:3px solid var(--orange)}
-.strip div{padding:4px 6px;border-right:1px solid var(--hair2)}
+.strip div{padding:3px 6px;border-right:1px solid var(--hair2)}
 .strip div:last-child{border-right:0}
 .strip .k{font-size:8.6px;color:var(--mut);letter-spacing:.3px}
-.strip .v{font-size:14px;font-weight:700;color:var(--ink);line-height:1.2}
+.strip .v{font-size:13px;font-weight:700;color:var(--ink);line-height:1.2}
 .strip .c{font-size:9px}
 
-.lede{font-size:10.4px;line-height:1.55;color:var(--body);margin:6px 0 0;
-      padding:6px 8px;background:var(--surf2);border-left:3px solid var(--blue)}
-ul.iss{margin:3px 0 0;padding-left:14px;font-size:9.6px;line-height:1.5}
-ul.iss li{margin-bottom:2px}
+.lede{font-size:9.2px;line-height:1.45;color:var(--body);margin:5px 0 0;
+      padding:5px 7px;background:var(--surf2);border-left:3px solid var(--blue)}
+ul.iss{margin:2px 0 0;padding-left:13px;font-size:8.8px;line-height:1.42}
+ul.iss li{margin-bottom:1px}
 
-.foot{margin-top:8px;border-top:1px solid var(--hair);padding-top:5px;
-      font-size:8.4px;color:var(--mut2);line-height:1.45}
+.foot{margin-top:6px;border-top:1px solid var(--hair);padding-top:4px;
+      font-size:7.6px;color:var(--mut2);line-height:1.38}
 
 @media (max-width:820px){
   .sheet{width:auto;min-height:0;margin:10px;padding:14px 16px}
@@ -451,7 +455,7 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
             v = r.get("value_eok_est")
         return -abs(v if v is not None else 0)
 
-    def flow_block(mkt, side_label, direction, title_ko, title_en, cap=10):
+    def flow_block(mkt, side_label, direction, title_ko, title_en, cap=8):
         s = ((irank.get(mkt) or {}).get("sides") or {}).get(side_label)
         if not s or not s.get(direction):
             return None
@@ -546,7 +550,8 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
         warn.append("연속 순매수를 셀 누적 자료(data/flows/kr100.json)에 기준일 줄이 없습니다.")
 
     # ── ④ 순위 (전종목) ────────────────────────────────────────────
-    def rank_block(market_key, kind, title_ko, title_en, col_ko, col_en, fmt, cap=10, note=""):
+    def rank_block(market_key, kind, title_ko, title_en, col_ko, col_en, fmt, cap=8,
+                   note="", cls="dt"):
         r = ((jr or {}).get("rank") or {}).get(market_key) or {}
         lst = (r.get(kind) or [])[:cap]
         if not lst:
@@ -555,23 +560,23 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                      table([("종목", "Name", "nm"), ("종가", "Close", "n"),
                             ("등락", "Chg", "n"), (col_ko, col_en, "n")],
                            [[nm(s), won(s.get("close")), pct(s.get("change_pct")), fmt(s)]
-                            for s in lst]),
+                            for s in lst], cls=cls),
                      VF_C, note)
 
     jr_tag = ("순위 기준 %s%s" % (jr_date or "", " · 장중 잠정" if jr_status == "OPEN" else "")) if jr else ""
 
     b_val_kp = rank_block("코스피", "거래대금상위", "코스피 거래대금 상위", "KOSPI by turnover",
                           "거래대금", "Turnover", lambda s: eok_plain(s.get("value_eok")) + "원",
-                          10, jr_tag)
+                          8, jr_tag)
     b_val_kq = rank_block("코스닥", "거래대금상위", "코스닥 거래대금 상위", "KOSDAQ by turnover",
                           "거래대금", "Turnover", lambda s: eok_plain(s.get("value_eok")) + "원",
-                          10, jr_tag)
+                          8, jr_tag)
     b_up_kp = rank_block("코스피", "상승률상위", "코스피 상승률 상위", "KOSPI top gainers",
                          "거래대금", "Turnover", lambda s: eok_plain(s.get("value_eok")) + "원",
-                         10, jr_tag)
+                         8, jr_tag)
     b_up_kq = rank_block("코스닥", "상승률상위", "코스닥 상승률 상위", "KOSDAQ top gainers",
                          "거래대금", "Turnover", lambda s: eok_plain(s.get("value_eok")) + "원",
-                         10, jr_tag)
+                         8, jr_tag)
 
     # 신고가·상한가·거래량급증은 두 시장을 합쳐 한 표로 — 자리를 아낀다.
     def merged(kind, cap, fmt, col_ko, col_en, key=None):
@@ -582,7 +587,7 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
             out.sort(key=key)
         return out[:cap]
 
-    nh = merged("신고가", 12, None, "", "", key=lambda s: -(s.get("value_eok") or 0))
+    nh = merged("신고가", 8, None, "", "", key=lambda s: -(s.get("value_eok") or 0))
     b_nh = block("52주 신고가 (종가 기준)", "52-week highs (close basis)",
                  table([("종목", "Name", "nm"), ("종가", "Close", "n"), ("등락", "Chg", "n"),
                         ("거래대금", "Turnover", "n")],
@@ -593,7 +598,7 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                  "**오늘 올라서** 종가가 52주 최고가에 닿은 종목 · 거래대금 순 · "
                  "원천의 52주 최고가 칸은 최근 며칠을 반영하지 못할 때가 있습니다 · " + jr_tag)
 
-    lim = merged("상한가", 10, None, "", "", key=lambda s: -(s.get("value_eok") or 0))
+    lim = merged("상한가", 6, None, "", "", key=lambda s: -(s.get("value_eok") or 0))
     b_lim = block("상한가", "Limit up",
                   table([("종목", "Name", "nm"), ("종가", "Close", "n"), ("등락", "Chg", "n"),
                          ("연속", "Days", "n")],
@@ -602,7 +607,7 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                   else empty("상한가 종목이 없습니다.", "None."),
                   VF_C if lim else VF_N, jr_tag)
 
-    qs = merged("거래량급증", 10, None, "", "", key=lambda s: -(s.get("volume_diff_pct") or 0))
+    qs = merged("거래량급증", 8, None, "", "", key=lambda s: -(s.get("volume_diff_pct") or 0))
     b_qs = block("거래량 급증", "Volume surge",
                  table([("종목", "Name", "nm"), ("등락", "Chg", "n"),
                         ("전일대비 거래량", "vs prev vol", "n"), ("거래대금", "Turnover", "n")],
@@ -617,7 +622,7 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
     etf = (jr or {}).get("etf") or {}
     LEV = re.compile(r"레버리지|인버스|2X|3X|곱버스|선물\s*ETF", re.I)
 
-    def etf_tbl(kind, col_ko, col_en, fmt, cap=10):
+    def etf_tbl(kind, col_ko, col_en, fmt, cap=8):
         lst = [e for e in (etf.get(kind) or []) if not LEV.search(e.get("name") or "")][:cap]
         if not lst:
             return None
@@ -684,7 +689,7 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                    VF_MD if s_rows else VF_N)
 
     # ── ⑦ 오늘의 이슈 ──────────────────────────────────────────────
-    arts = ((market.get("news") or {}).get("articles") or [])[:6]
+    arts = ((market.get("news") or {}).get("articles") or [])[:5]
     if arts:
         lis = "".join('<li>%s</li>' % esc(a.get("title")) for a in arts)
         b_news = block("오늘의 시장 이슈 (수집 기사 제목)", "Today's headlines (as collected)",
@@ -744,39 +749,45 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
            b_ov, b_br,
            (b_frgn or ""), b_val_kp,
            (b_inst or ""), b_up_kq,
-           b_theme, b_news, foot))
+           '<div class="g2"><div>' + b_theme + '</div><div>' + b_news + '</div></div>',
+           "", foot))
 
     hd2 = (
         '<div class="hd"><div><div class="kicker">%s</div><h1>%s</h1></div>'
         '<div class="sub">%s</div></div>'
         % (L("대시보드 · 수급과 순위", "Dashboard · Flows and rankings"),
            L("%s 마감" % DK(cdate, True), "Close, %s" % DE(cdate, True)),
-           L("본지 1쪽의 표를 넓혀 실은 것입니다", "Expanded tables from page 1")))
+           L("종목별 기관·외국인 매매와 기관 안쪽", "Per-stock flows and the institutional split")))
 
     # 대시보드 — 상위 20 로 넓힌 판
     def wide(market_key, kind, title_ko, title_en, col_ko, col_en, fmt):
-        return rank_block(market_key, kind, title_ko, title_en, col_ko, col_en, fmt, 20, jr_tag)
+        return rank_block(market_key, kind, title_ko, title_en, col_ko, col_en, fmt, 20,
+                          jr_tag, cls="dt dense")
 
     sheet2 = (
         '<article class="sheet">%s'
         '<div class="g2"><div>%s%s</div><div>%s%s</div></div>'
         '<div class="g2"><div>%s%s</div><div>%s%s</div></div>'
+        '<div class="g2"><div>%s</div><div>%s</div></div>'
         '</article>'
         % (hd2,
            (b_frgn_kq or ""), (b_frgn_sell or ""),
            (b_inst_kq or ""), (b_inst_sell or ""),
-           b_both, (b_det or ""),
-           (b_streak or ""), b_sect))
+           b_both, (b_streak or ""),
+           (b_det or ""), b_sect,
+           b_etf_up, b_etf_vl))
 
     hd3 = (
         '<div class="hd"><div><div class="kicker">%s</div><h1>%s</h1></div>'
         '<div class="sub">%s</div></div>'
         % (L("대시보드 · ETF와 시장 안쪽", "Dashboard · ETF and internals"),
            L("%s 마감" % DK(cdate, True), "Close, %s" % DE(cdate, True)),
-           L("레버리지·인버스는 상승률 표에서 뺐습니다", "Leveraged/inverse excluded from gainers")))
+           L("거래대금 10억원 이상 종목 기준 · 레버리지·인버스 제외",
+             "Turnover floor KRW 1bn · leveraged/inverse excluded")))
 
     sheet3 = (
         '<article class="sheet">%s'
+        '<div class="g2"><div>%s</div><div>%s</div></div>'
         '<div class="g2"><div>%s</div><div>%s</div></div>'
         '<div class="g2"><div>%s%s</div><div>%s%s</div></div>'
         '</article>'
@@ -785,30 +796,15 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                 "거래대금", "Turnover", lambda s: eok_plain(s.get("value_eok")) + "원"),
            wide("코스닥", "상승률상위", "코스닥 상승률 상위 20", "KOSDAQ top 20 gainers",
                 "거래대금", "Turnover", lambda s: eok_plain(s.get("value_eok")) + "원"),
-           b_etf_up, b_nh, b_etf_vl, b_qs))
-
-    hd4 = (
-        '<div class="hd"><div><div class="kicker">%s</div><h1>%s</h1></div>'
-        '<div class="sub">%s</div></div>'
-        % (L("대시보드 · 거래대금과 특이 종목", "Dashboard · Turnover and outliers"),
-           L("%s 마감" % DK(cdate, True), "Close, %s" % DE(cdate, True)),
-           L("본지 1쪽 표를 상위 20 으로 넓힌 것입니다", "Page 1 tables widened to top 20")))
-
-    sheet4 = (
-        '<article class="sheet">%s'
-        '<div class="g2"><div>%s</div><div>%s</div></div>'
-        '<div class="g2"><div>%s</div><div>%s</div></div>'
-        '</article>'
-        % (hd4,
            wide("코스피", "거래대금상위", "코스피 거래대금 상위 20", "KOSPI top 20 by turnover",
                 "거래량증감", "Vol chg", lambda s: sgn(s.get("volume_diff_pct"), 0, "%")),
            wide("코스닥", "거래대금상위", "코스닥 거래대금 상위 20", "KOSDAQ top 20 by turnover",
                 "거래량증감", "Vol chg", lambda s: sgn(s.get("volume_diff_pct"), 0, "%")),
-           b_lim, b_etf_vl))
+           b_nh, b_lim, b_qs, ""))
 
     html = page("국내 시장일지 %s" % close_date,
                 "Korea Market Journal %s" % close_date,
-                [sheet1, sheet2, sheet3, sheet4])
+                [sheet1, sheet2, sheet3])
 
     # ── 텔레그램 전송본 ────────────────────────────────────────────
     def t_pct(v):
