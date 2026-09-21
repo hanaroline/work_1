@@ -213,6 +213,8 @@ const rows = [...items].sort((a, b) => (a.mcLoss ?? 99) - (b.mcLoss ?? 99)).map(
             <td class="num">${it.floor}%${it.knockIn == null ? '<span class="nk">만기만</span>' : ''}</td>
             <td class="num">${f1(it.vmax, 1)}%</td>
             <td class="num ${['', 'warn', 'bad'][it.tier]}"><b>${f1(it.mcLoss, 1)}%</b>${tierChip(it)}</td>
+            <td class="num ok">${f1(it.mcByStep[0], 1)}%</td>
+            <td class="num">${f1(it.mcByStep.at(-1), 1)}%</td>
             <td class="num ${it.simShort ? 'bad' : ''}">${f1(it.simLoss, 2)}%<small class="sn">${it.simShort ? f1(it.simYears) : it.simYearsWhole}년</small></td>
             <td class="num ${(it.fairValueGap ?? 0) <= -10 ? 'bad' : (it.fairValueGap ?? 0) <= -5 ? 'warn' : ''}">${money(it, it.fairValue / 100)}</td>
           </tr>`).join('\n');
@@ -779,7 +781,9 @@ ${slots.map(card).join('\n')}
         <tr>
           <th>회차</th><th>기초자산</th><th class="num">연<br>수익률</th><th class="num">조기상환<br>주기 / 조건</th>
           <th class="num">낙인<br>배리어</th><th class="num">적용<br>변동성</th>
-          <th class="num nwh">B. 시뮬레이션<br>손실 확률 · 등급</th><th class="num nwh">A. 설명서상<br>백테스트 손실 확률</th><th class="num">1만원의<br>출발 가치</th>
+          <th class="num nwh">B. 시뮬레이션<br>손실 확률 · 등급</th>
+          <th class="num nwh">B. 1차에<br>끝날 확률</th><th class="num nwh">B. 만기까지<br>갈 확률</th>
+          <th class="num nwh">A. 설명서상<br>백테스트 손실 확률</th><th class="num">1만원의<br>출발 가치</th>
         </tr>
       </thead>
       <tbody>
@@ -787,7 +791,7 @@ ${rows}
       </tbody>
     </table>
   </div>
-  <p class="tnote">조기상환 = 이 주기로 확인해서 처음 가격의 이 수준 이상이면 그 자리에서 끝납니다(뒤 회차로 갈수록 낮아지며, 표는 첫 회 기준). 낙인 배리어 = 만기까지 이 아래로 종가가 내려간 적이 없으면 원금과 이자를 다 받습니다. <b>만기만</b> 표시가 붙은 상품은 낙인이 없어 중간 하락을 따지지 않고 만기 그날만 보며, 적힌 숫자는 그 만기 조건입니다. <b>B</b> = ${items.length}종을 같은 조건(${MC.paths.toLocaleString('ko-KR')}회)으로 돌린 손실 확률 — 상품끼리 견주는 용도입니다. <b>A</b> = 투자설명서에 실린 발행사 백테스트 손실 확률로, 과거 실제 시세에 이 상품을 매 영업일 얹어 본 결과입니다. 작은 글씨는 그 상품의 표본 구간 길이이며, <span class="bad">빨간 A</span>는 표본이 10년에 못 미쳐 다른 상품과 나란히 비교할 수 없다는 뜻입니다. ${TIER_RULE}</p>
+  <p class="tnote">조기상환 = 이 주기로 확인해서 처음 가격의 이 수준 이상이면 그 자리에서 끝납니다(뒤 회차로 갈수록 낮아지며, 표는 첫 회 기준). 낙인 배리어 = 만기까지 이 아래로 종가가 내려간 적이 없으면 원금과 이자를 다 받습니다. <b>만기만</b> 표시가 붙은 상품은 낙인이 없어 중간 하락을 따지지 않고 만기 그날만 보며, 적힌 숫자는 그 만기 조건입니다. <b>B. 1차에 끝날 확률</b> = 첫 확인일에 끝나 약정 수익을 받고 나갈 확률, <b>B. 만기까지 갈 확률</b> = 한 번도 조기상환되지 않고 만기를 맞을 확률입니다. 둘 사이(조기상환이 되긴 하되 2차 이후)가 나머지이고, <b>만기까지 간 것 안에 앞의 손실 확률이 들어 있습니다</b> — 만기 도달에서 손실 확률을 빼면 만기까지 가서도 조건을 지켜 약정 수익을 받는 몫입니다. 손실은 만기에만 확정되기 때문입니다. <b>B</b> = ${items.length}종을 같은 조건(${MC.paths.toLocaleString('ko-KR')}회)으로 돌린 손실 확률 — 상품끼리 견주는 용도입니다. <b>A</b> = 투자설명서에 실린 발행사 백테스트 손실 확률로, 과거 실제 시세에 이 상품을 매 영업일 얹어 본 결과입니다. 작은 글씨는 그 상품의 표본 구간 길이이며, <span class="bad">빨간 A</span>는 표본이 10년에 못 미쳐 다른 상품과 나란히 비교할 수 없다는 뜻입니다. ${TIER_RULE}</p>
 </section>
 
 <section>

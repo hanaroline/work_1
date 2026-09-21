@@ -139,7 +139,8 @@ for (const it of A.items) {
   // 차수별 조기상환 확률 — 합이 100 이 되는지도 검산한다
   it.mcByStep.forEach((v, k) => computed(`R${n}_STEP${k + 1}`, '조기상환 확률',
     `제${n}회 ${k + 1}차${k === it.mcByStep.length - 1 ? '(만기)' : ''} 상환 확률`,
-    +v.toFixed(1), '%', k === 0 || k === it.mcByStep.length - 1 ? page2.concat('p4-bar') : ['p4-bar']));
+    // 1차와 만기 칸은 덱 2장 표와 분석자료 전 종목 표 양쪽에 인쇄된다
+    +v.toFixed(1), '%', k === 0 || k === it.mcByStep.length - 1 ? page2.concat('p4-bar', 'h-table') : ['p4-bar']));
   derived.push({
     id: `D${n}_STEPSUM`, kind: 'sum',
     terms: it.mcByStep.map((_, k) => `R${n}_STEP${k + 1}`),
