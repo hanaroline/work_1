@@ -124,9 +124,21 @@ def table(headers, rows, cls: str = "dt", foot: str = "") -> str:
             % (cls, h, body, f))
 
 
+def strong(s: str) -> str:
+    """주석에 쓰는 **굵게** 를 태그로 바꾼다.
+
+    별표가 그대로 인쇄된 판이 나온 적이 있다. 주석은 사람이 쓰는 글이라
+    별표가 섞이기 쉬우므로 넘기는 자리에서 한 번에 처리한다.
+    """
+    out, parts = [], (s or "").split("**")
+    for i, p in enumerate(parts):
+        out.append(("<b>%s</b>" % p) if (i % 2 == 1 and p) else p)
+    return "".join(out)
+
+
 def block(title_ko: str, title_en: str, body: str, badge: str = "", note: str = "") -> str:
     """1px 오렌지 룰 + 제목 — 미래에셋 시그니처(§9.1)."""
-    nt = ('<p class="note">%s</p>' % note) if note else ""
+    nt = ('<p class="note">%s</p>' % strong(note)) if note else ""
     return (
         '<section class="blk">'
         '<div class="rule"></div>'

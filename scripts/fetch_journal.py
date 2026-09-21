@@ -169,9 +169,13 @@ INV_RETAIL = ("8000",)
 INV_FOREIGN = ("9000", "9001")
 INV_INST = ("1000", "2000", "3000", "3100", "4000", "5000", "6000")
 # 기관 안쪽 — 이름은 네이버 화면의 차례를 따른다. 값이 비면 비운다.
+# **7000 과 7100 은 둘 다 기관계 밖이다.** 7100 은 2026-09-17 에 +1조 7,046억으로
+# 기관계(+2,480억)보다 컸다 — 기관에 잘못 더하면 수급 해석이 통째로 뒤집힌다.
+# 합이 0 인지 검산하려면 둘을 모두 세야 한다.
 INV_DETAIL = {
     "금융투자": "1000", "보험": "2000", "투신": "3000", "사모펀드": "3100",
-    "은행": "4000", "기타금융": "5000", "연기금": "6000", "기타법인": "7000",
+    "은행": "4000", "기타금융": "5000", "연기금": "6000",
+    "기타법인": "7000", "기타법인2": "7100",
 }
 
 # 기관이 `investorType` 에 무엇으로 들어가는지는 관찰로 가린다. 먼저 되는
@@ -309,12 +313,19 @@ def fetch_flows_from_kr100(bizdate: str) -> dict | None:
         return None
     with open(path, encoding="utf-8") as fh:
         d = json.load(fh)
+    # 누적본은 하루 늦게 돌기도 한다. 기준일이 없으면 **가장 늦은 날**로
+    # 물러서되 그 날짜를 적어 산출물이 달고 다니게 한다. 날짜를 숨기고
+    # 어제 값을 오늘 것처럼 싣는 것이 가장 나쁘다.
+    have = sorted({x for s in (d.get("stocks") or {}).values() for x in (s.get("d") or [])})
+    use = bizdate if bizdate in have else (have[-1] if have else None)
+    if not use:
+        return None
     out = []
     for code, s in (d.get("stocks") or {}).items():
         days = s.get("d") or []
-        if bizdate not in days:
+        if use not in days:
             continue
-        k = days.index(bizdate)
+        k = days.index(use)
         row = {
             "code": code.split(".")[0],
             "foreign_eok": (s.get("f") or [None] * len(days))[k],
@@ -340,7 +351,8 @@ def fetch_flows_from_kr100(bizdate: str) -> dict | None:
         "universe": "시가총액 상위 100 종목",
         "coverage": d.get("coverage"),
         "unit": "억원",
-        "bizdate": bizdate,
+        "bizdate": use,
+        "stale": use != bizdate,
         "rows": out,
     }
 
@@ -479,18 +491,27 @@ def main() -> int:
     ranks: dict[str, dict] = {}
     for m in ("코스피", "코스닥"):
         pool = by_market(m)
+        # 상승률·하락률에는 **거래대금 문턱**을 둔다. 문턱이 없으면 하루에
+        # 몇백만원 거래되는 우선주와 잠든 종목이 상위 20 을 채우고, 그 줄은
+        # 「오늘 시장이 본 종목」이 아니다. 10억원으로 잡았다.
+        liquid = [r for r in pool if (r["value_eok"] or 0) >= 10]
         ranks[m] = {
             "종목수": len(pool),
-            "상승률상위": rank(pool, "change_pct", 20),
-            "하락률상위": rank(pool, "change_pct", 10, reverse=False),
+            "유동표본": len(liquid),
+            "문턱": "거래대금 10억원 이상(상승률·하락률·신고가에 적용)",
+            "상승률상위": rank(liquid, "change_pct", 20),
+            "하락률상위": rank(liquid, "change_pct", 10, reverse=False),
             "거래대금상위": rank(pool, "value_eok", 20),
             # 거래량 급증은 대금 문턱을 둔다. 문턱이 없으면 하루 3천만원
             # 거래되던 종목이 3억이 되어 1000% 로 1등을 하고, 그 줄은
             # 「오늘 시장이 본 종목」이 아니다.
             "거래량급증": rank(pool, "volume_diff_pct", 15,
                            where=lambda r: (r["value_eok"] or 0) >= 100),
+            # 「오늘 올라서 52주 최고가에 닿은」 종목만 센다. 원천의 52주
+            # 최고가 칸은 최근 며칠을 반영하지 못할 때가 있어, 오름세 조건이
+            # 없으면 이미 뚫고 내려온 종목이 며칠씩 이어서 잡힌다.
             "신고가": sorted(
-                [r for r in pool if r["new_high"]],
+                [r for r in liquid if r["new_high"] and (r["change_pct"] or 0) > 0],
                 key=lambda r: -(r["value_eok"] or 0),
             )[:20],
             "상한가": [r for r in pool if r["up_down_gb"] == "1"],
@@ -506,7 +527,8 @@ def main() -> int:
         etf_up, lt_up = rank(etf_val, "change_pct", 40), "tradingValueDesc 안에서 정렬"
     etf = {
         "종목수": len({e["code"] for e in etf_up + etf_val}),
-        "총상장": None,
+        "총상장": next((v.get("total") for k, v in sources.items()
+                     if k == "naver:etf:tradingValueDesc"), None),
         "상승률_기준": lt_up,
         "거래대금_기준": lt_val,
         # 레버리지·인버스 거르기는 **빌더가** 한다. 수집기는 원자료를 줄이지

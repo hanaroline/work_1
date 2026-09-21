@@ -180,9 +180,10 @@ def main() -> int:
             warn("%s 투자자별 계열에 기준일 %s 줄이 없다" % (mkt, bd))
             continue
         parts = [row.get("retail"), row.get("foreign"), row.get("institution")]
-        etc = (row.get("detail") or {}).get("기타법인")
-        if all(v is not None for v in parts) and etc is not None:
-            tot = sum(parts) + etc
+        dt = row.get("detail") or {}
+        etcs = [dt.get("기타법인"), dt.get("기타법인2")]
+        if all(v is not None for v in parts) and all(v is not None for v in etcs):
+            tot = sum(parts) + sum(etcs)
             scale = max(abs(v) for v in parts) or 1
             # 개인+외국인+기관+기타법인 은 0 이어야 한다. 크게 어긋나면
             # 장중 집계와 확정치를 섞은 것이다(지침 3-4절).
