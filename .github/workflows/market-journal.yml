@@ -1,0 +1,89 @@
+name: 시장일지 수집
+
+# 시장일지는 한국 정규장 마감(15:30 KST) 기준으로 16:00 에 나간다. 그 재료
+# 가운데 **종목 순위**는 이 워크플로가 받는다(지수·환율·금리·예탁금은
+# 「시세 수집」이 받는다). 세션은 네이버에 직접 못 붙으므로(CONNECT 403)
+# 러너가 대신 받아 저장소에 커밋하고, 세션은 커밋된 파일을 읽는다.
+#
+# 예약은 제때 돌지 않는다 — 「시세 수집」에서 95분 늦은 적이 있다. 그래서
+# 마감 뒤 판을 두 번 걸고, 세션은 예약을 믿지 말고 파일의 기준일을 직접
+# 확인한 뒤 낡았으면 data/journal/REFRESH 를 건드려 발동하십시오.
+#
+# schedule 은 기본 브랜치(main)에 있는 판만 돈다. 작업 브랜치에서는
+# push(REFRESH) 와 수동 실행만 된다.
+
+on:
+  schedule:
+    # 마감 직후 — 15:40 KST = 06:40 UTC
+    - cron: '40 6 * * 1-5'
+    # 위가 늦을 때를 대비한 두 번째 — 15:55 KST = 06:55 UTC
+    - cron: '55 6 * * 1-5'
+  push:
+    paths:
+      - 'data/journal/REFRESH'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-journal-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 종목 순위 수집
+        run: python3 scripts/fetch_journal.py
+
+      - name: 검산
+        run: python3 scripts/verify_journal.py
+
+      - name: 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/journal
+          if git diff --staged --quiet; then
+            echo "변경 없음"
+            exit 0
+          fi
+          git commit -m "시장일지 순위 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+          # 시세 수집·리포트 수집과 겹칠 수 있다. 되받아서 다시 민다 —
+          # 서로 다른 갈래를 건드리므로 되받기는 거의 언제나 깨끗하다.
+          BR="${GITHUB_REF_NAME}"
+          for i in 1 2 3 4 5; do
+            if git push origin "HEAD:$BR"; then echo "밀어 넣음 (시도 $i)"; exit 0; fi
+            echo "거절됨 — 되받아 다시 시도한다 ($i/5)"
+            if ! git pull --rebase --no-edit origin "$BR"; then
+              git rebase --abort || true
+              echo "::error::되받기 충돌 — 손으로 확인하십시오"
+              exit 1
+            fi
+            sleep $((i * 5))
+          done
+          echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"
+          exit 1
+
+      - name: 요약
+        if: always()
+        run: |
+          if [ -f data/journal/latest.json ]; then
+            python3 - <<'PY'
+          import json
+          d = json.load(open('data/journal/latest.json', encoding='utf-8'))
+          s = d.get('summary', {})
+          print(f"::notice::기준일 {d.get('bizdate')} · 원천 {s.get('sources_ok')}/{s.get('sources_tried')} 성공 · 표본 {d.get('universe', {}).get('표본')} 종목")
+          for k, v in sorted((d.get('sources') or {}).items()):
+              if not v.get('ok'):
+                  print(f"::warning::{k} 실패 — {v.get('error', '사유 없음')}")
+          PY
+          fi

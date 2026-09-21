@@ -88,34 +88,30 @@ def i(v, default=None):
 
 
 # ── ① 전종목 한 벌 ──────────────────────────────────────────────────
-def fetch_universe(market_type: str, page_size: int = 100, cap: int = 3200) -> list[dict]:
-    """시가총액 순으로 끝까지 넘겨 한 벌을 받는다.
+def fetch_universe(market_type: str) -> list[dict]:
+    """시가총액 순으로 한 벌을 받는다.
 
-    `cap` 은 안전장치다. 페이지가 끝나도 같은 줄을 계속 주는 원천을 만나면
-    무한히 돌 수 있으므로, 이미 본 종목코드가 다시 오면 거기서 끊는다.
+    **`startIdx` 로 넘길 수 없다.** 2026-09-21 확인 — `startIdx` 를 올리면
+    빈 응답이 오고, 한 번에 받는 양은 `pageSize` 가 정한다. 그래서 큰
+    `pageSize` 부터 내려가며 한 번에 받는다.
+
+    그러므로 이 자료는 **시가총액 상위 N 종목**이다. 전종목이 아니다. 받은
+    줄 수를 `universe` 에 적어 산출물이 그 사실을 달고 다니게 한다.
     """
-    rows: list[dict] = []
-    seen: set[str] = set()
-    idx = 0
-    while idx < cap:
-        url = (
-            f"{STOCKLIST}?tradeType=KRX&marketType={market_type}"
-            f"&orderType=marketSum&startIdx={idx}&pageSize={page_size}"
-        )
-        batch = get_json(url)
-        if not isinstance(batch, list) or not batch:
-            break
-        fresh = [r for r in batch if r.get("itemcode") not in seen]
-        if not fresh:
-            break
-        for r in fresh:
-            seen.add(r.get("itemcode"))
-        rows.extend(fresh)
-        if len(batch) < page_size:
-            break
-        idx += page_size
-        time.sleep(0.25)
-    return rows
+    last = ""
+    for size in (2000, 1000, 500):
+        url = (f"{STOCKLIST}?tradeType=KRX&marketType={market_type}"
+               f"&orderType=marketSum&startIdx=0&pageSize={size}")
+        try:
+            batch = get_json(url, tries=2)
+        except Exception as e:  # noqa: BLE001
+            last = str(e)
+            continue
+        if isinstance(batch, list) and batch:
+            note(f"naver:universe:{market_type}:pageSize", True, size=size, rows=len(batch))
+            return batch
+        last = f"pageSize={size} 가 빈 응답"
+    raise RuntimeError(last or "받지 못했다")
 
 
 def slim(r: dict) -> dict:
@@ -163,29 +159,142 @@ def rank(rows: list[dict], key: str, n: int = 20, reverse: bool = True,
 
 
 # ── ② 기관 · 외국인 종목별 순매수 ───────────────────────────────────
-def fetch_investor_rank(market: str) -> dict | None:
-    """되는 원천을 순서대로 찾는다. 모두 실패하면 None — 지어내지 않는다.
+TFO = "https://stock.naver.com/api/domestic/market/trend/trendForeignOrg"
 
-    `data/journal/raw/journal_api.txt` 에 어떤 자리가 열렸는지 기록이 남는다.
-    새 원천을 찾으면 이 목록 맨 앞에 넣으면 된다.
+# 투자자 구분 코드. **`scripts/fetch_market.py` 와 같은 묶음을 쓴다** — 두
+# 파일이 다른 셈을 하면 같은 판 안에서 코스피 수급이 두 값으로 갈린다.
+# 7000·7100(기타법인)은 기관이 아니다. 한때 7100 을 기관에 넣어 기관계가
+# 실제보다 훨씬 크게 나온 적이 있다.
+INV_RETAIL = ("8000",)
+INV_FOREIGN = ("9000", "9001")
+INV_INST = ("1000", "2000", "3000", "3100", "4000", "5000", "6000")
+# 기관 안쪽 — 이름은 네이버 화면의 차례를 따른다. 값이 비면 비운다.
+INV_DETAIL = {
+    "금융투자": "1000", "보험": "2000", "투신": "3000", "사모펀드": "3100",
+    "은행": "4000", "기타금융": "5000", "연기금": "6000", "기타법인": "7000",
+}
+
+# 기관이 `investorType` 에 무엇으로 들어가는지는 관찰로 가린다. 먼저 되는
+# 것을 쓰고 어느 이름이 먹었는지 산출물에 적는다 — 다음에 이름이 바뀌어도
+# 기록을 보고 고칠 수 있다.
+# 2026-09-21 확인 — 열리는 것은 이 둘뿐이다. INSTITUTION·PENSION·
+# PRIVATE_EQUITY 따위는 모두 400 이다. **종목별 사모펀드 순매수는 여기에
+# 없다** — 거래소에만 있고 거래소는 수집 서버 IP 를 막는다.
+INVESTOR_TYPES = {"외국인": ["FOREIGNER"], "기관": ["ORGANIZATION"]}
+
+
+def fetch_investor_rank(market: str) -> dict | None:
+    """종목별 기관·외국인 순매수·순매도 상위.
+
+    **금액이 아니라 수량 순위일 수 있다.** 장중에는 `accTradeAmount` 가 0 이고
+    `estimated` 가 참이다. 그래서 받은 값을 그대로 옮기되, 금액이 비어 있으면
+    빌더가 수량 × 종가로 어림하고 그렇게 적는다. 어림한 값을 확정치처럼
+    쓰지 않는다.
     """
-    sosok = "01" if market == "코스피" else "02"
-    cands = [
-        ("naver:aggregateInvestorRanking",
-         "https://stock.naver.com/api/domestic/home/marketaggregate/aggregateInvestorRanking"),
-        ("naver:dealrank",
-         "https://finance.naver.com/sise/sise_deal_rank.naver"
-         f"?investor_gubun=9000&type=buy&sosok={sosok}"),
-    ]
-    for name, url in cands:
-        try:
-            d = get_json(url, referer="https://stock.naver.com/")
-        except Exception as e:  # noqa: BLE001
-            note(f"investor:{market}:{name}", False, error=str(e)[:160])
+    mt = "KOSPI" if market == "코스피" else "KOSDAQ"
+    out: dict = {"market": market, "source_url_base": TFO, "sides": {}}
+    got = False
+    for label, cands in INVESTOR_TYPES.items():
+        for it in cands:
+            url = (f"{TFO}?investorType={it}&tradeType=KRX&marketType={mt}"
+                   f"&startIdx=0&pageSize=20&periodType=DAY")
+            try:
+                d = get_json(url)
+            except Exception as e:  # noqa: BLE001
+                note(f"investor:{market}:{label}:{it}", False, error=str(e)[:120])
+                continue
+            sec = (d or {}).get("sections") or {}
+            buy, sell = sec.get("buyRankList") or [], sec.get("sellRankList") or []
+            if not buy and not sell:
+                note(f"investor:{market}:{label}:{it}", False, error="빈 명단")
+                continue
+            note(f"investor:{market}:{label}:{it}", True, buy=len(buy), sell=len(sell))
+
+            def tidy(lst):
+                rows = []
+                for r in lst:
+                    amt = f(r.get("accTradeAmount"))
+                    qty = f(r.get("accTradeVolume"))
+                    px = f(r.get("nowPrice"))
+                    rows.append({
+                        "code": r.get("itemcode"),
+                        "name": r.get("itemname"),
+                        "bizdate": r.get("bizdateTo") or r.get("bizdateFrom"),
+                        "qty": qty,
+                        # 원천이 금액을 줬으면 그대로. 0 이면 장중이라 아직
+                        # 안 찬 것이므로 **어림했다고 이름표를 단다.**
+                        "value_eok": (round(amt / 1e8, 1) if amt else None),
+                        "value_eok_est": (round(qty * px / 1e8, 1)
+                                          if (not amt and qty and px) else None),
+                        "close": px,
+                        "change_pct": f(r.get("prevChangeRate")),
+                        "estimated": bool(r.get("estimated")),
+                    })
+                return rows
+
+            # 한쪽은 오늘, 다른 쪽은 어제일 수 있다(장중에 실제로 그랬다).
+            # 그래서 **줄마다** 기준일을 달아 둔다.
+            out["sides"][label] = {
+                "investor_type": it,
+                "source_url": url,
+                "estimated": bool(buy and buy[0].get("estimated")),
+                "bizdate": (buy or sell or [{}])[0].get("bizdateTo"),
+                "rank_basis": ("금액" if (buy and f(buy[0].get("accTradeAmount")))
+                               else "수량(금액 미제공)"),
+                "buy": tidy(buy),
+                "sell": tidy(sell),
+            }
+            got = True
+            break
+    return out if got else None
+
+
+def fetch_investor_daily(market: str, bizdate: str) -> dict | None:
+    """시장별 투자자 순매수 **합계**를 날짜별로 받는다.
+
+    `data/market/latest.json` 의 `market_internals` 는 「지금」 한 점이라
+    장중에 받으면 오늘 진행분이 들어온다. 시장일지는 마감 기준이므로 날짜가
+    붙은 계열이 필요하다. 코스피만 있던 것을 코스닥까지 받는다.
+    """
+    mt = "KOSPI" if market == "코스피" else "KOSDAQ"
+    url = ("https://stock.naver.com/api/domestic/market/trend/daily"
+           f"?tradeType=KRX&marketType={mt}&bizdate={bizdate.replace('-', '')}"
+           "&startIdx=0&pageSize=30")
+    try:
+        d = get_json(url)
+    except Exception as e:  # noqa: BLE001
+        note(f"trend_daily:{market}", False, error=str(e)[:160])
+        return None
+    rows = []
+    for c in (d or {}).get("content") or []:
+        amts = {str(a.get("investorGubun")): a.get("diffValue")
+                for a in (c.get("netAmounts") or [])}
+
+        def s(codes):
+            """원 → 억원. 한 코드라도 없으면 **0 으로 때우지 않고 None 을 낸다.**"""
+            got = [amts.get(x) for x in codes]
+            if any(v is None for v in got):
+                return None
+            return round(sum(float(v) for v in got) / 1e8)
+
+        b = str(c.get("bizdate") or "")
+        if len(b) != 8:
             continue
-        note(f"investor:{market}:{name}", True, bytes=len(json.dumps(d)))
-        return {"source": name, "source_url": url, "raw": d}
-    return None
+        rows.append({
+            "date": f"{b[:4]}-{b[4:6]}-{b[6:]}",
+            "retail": s(INV_RETAIL),
+            "foreign": s(INV_FOREIGN),
+            "institution": s(INV_INST),
+            # 기관 안쪽 — 시장일지가 묻는 「사모펀드 순매수」는 **시장 합계**까지만
+            # 받을 수 있다. 종목별 사모펀드 순매수는 거래소(KRX)에만 있고,
+            # KRX 는 수집 서버 IP 를 막는다.
+            "detail": {name: s((code,)) for name, code in INV_DETAIL.items()},
+        })
+    if not rows:
+        note(f"trend_daily:{market}", False, error="빈 응답")
+        return None
+    note(f"trend_daily:{market}", True, days=len(rows))
+    return {"source_url": url, "unit": "억원", "rows": rows}
 
 
 def fetch_flows_from_kr100(bizdate: str) -> dict | None:
@@ -236,7 +345,56 @@ def fetch_flows_from_kr100(bizdate: str) -> dict | None:
     }
 
 
-# ── ③ 테마 · 업종 ───────────────────────────────────────────────────
+# ── ③ ETF ───────────────────────────────────────────────────────────
+ETF_API = "https://stock.naver.com/api/stockSecurity/etfs/v2/domestic"
+
+
+def etf_slim(r: dict) -> dict:
+    price = f(r.get("currentPrice"))
+    amt = f(r.get("tradingValue"))
+    aum = f(r.get("totalNetAssets"))
+    return {
+        "code": r.get("itemCode"),
+        "name": r.get("itemName"),
+        "market": "ETF",
+        "close": price,
+        "change_pct": f(r.get("changeRate")),
+        "change": f(r.get("changePrice")),
+        "volume": f(r.get("tradingVolume")),
+        "value_eok": None if amt is None else round(amt / 1e8, 1),
+        "aum_eok": None if aum is None else round(aum / 1e8, 0),
+        "etf_type": r.get("etfType"),
+        "inav": f(r.get("iNav")),
+        "r1m": f(r.get("returnRate1m")),
+        "r3m": f(r.get("returnRate3m")),
+    }
+
+
+def fetch_etf_list(listing_types: list[str]) -> tuple[list[dict], str | None]:
+    """되는 `listingType` 을 앞에서부터 찾아 한 판(100 줄)을 받는다.
+
+    **`index` 로 넘길 수 없다**(2026-09-21 확인 — index=100 이면 빈 응답에
+    hasNext 도 거짓이다). 그래서 순위마다 판을 따로 받는다. 총 1,171 종목
+    가운데 각 순위의 **위 100 줄**이 우리가 보는 전부다.
+    """
+    for lt in listing_types:
+        url = f"{ETF_API}?listingType={lt}&size=100&index=0"
+        try:
+            d = get_json(url, tries=2)
+        except Exception as e:  # noqa: BLE001
+            note(f"naver:etf:{lt}", False, error=str(e)[:140])
+            continue
+        items = (d or {}).get("items") or []
+        if not items:
+            note(f"naver:etf:{lt}", False, error="빈 응답")
+            continue
+        note(f"naver:etf:{lt}", True, rows=len(items), total=(d or {}).get("totalCount"))
+        rows = [etf_slim(r) for r in items]
+        return [r for r in rows if r["close"] and r["change_pct"] is not None], lt
+    return [], None
+
+
+# ── ④ 테마 · 업종 ───────────────────────────────────────────────────
 def fetch_rankings(kind: str, size: int = 20) -> dict | None:
     url = (
         f"https://stock.naver.com/api/stockSecurity/rankings/v2/domestic/{kind}"
@@ -295,13 +453,15 @@ def main() -> int:
     now = datetime.now(KST)
     os.makedirs(OUTDIR, exist_ok=True)
 
-    # 전종목 한 벌.
-    try:
-        universe_raw = fetch_universe("ALL")
-        note("naver:universe", True, rows=len(universe_raw))
-    except Exception as e:  # noqa: BLE001
-        note("naver:universe", False, error=str(e)[:200])
-        universe_raw = []
+    # 전종목 한 벌 — 시장별로 받아 잇는다(ALL 은 1000 줄에서 끊긴다).
+    universe_raw: list[dict] = []
+    for mt in ("KOSPI", "KOSDAQ"):
+        try:
+            part = fetch_universe(mt)
+            note(f"naver:universe:{mt}", True, rows=len(part))
+            universe_raw += part
+        except Exception as e:  # noqa: BLE001
+            note(f"naver:universe:{mt}", False, error=str(e)[:200])
 
     market_status = None
     session_type = None
@@ -337,23 +497,22 @@ def main() -> int:
             "하한가": [r for r in pool if r["up_down_gb"] == "4"],
         }
 
-    # ETF 는 목록 API 의 다른 판을 쓴다. 안 되면 전종목에서 걸러 낸다.
-    etf_rows: list[dict] = []
-    try:
-        etf_raw = fetch_universe("ETF", page_size=100, cap=1200)
-        etf_rows = [slim(r) for r in etf_raw]
-        note("naver:etf", True, rows=len(etf_rows))
-    except Exception as e:  # noqa: BLE001
-        note("naver:etf", False, error=str(e)[:200])
-    if not etf_rows:
-        etf_rows = [r for r in rows if (r["type"] or "").upper() in ("EF", "ETF")]
-        note("naver:etf_fallback", bool(etf_rows), rows=len(etf_rows))
-
-    etf_live = [r for r in etf_rows if not r["halt"] and r["close"]]
+    # ETF — 순위마다 판을 따로 받는다(넘기기가 안 된다).
+    etf_up, lt_up = fetch_etf_list(["changeRateDescUpAll", "changeRateDesc"])
+    etf_val, lt_val = fetch_etf_list(["tradingValueDesc"])
+    if not etf_up and etf_val:
+        # 상승률 판이 막히면 거래대금 판 100 줄 안에서 매긴다 — 그 사실을
+        # 이름표로 달아 빌더가 표에 적을 수 있게 한다.
+        etf_up, lt_up = rank(etf_val, "change_pct", 40), "tradingValueDesc 안에서 정렬"
     etf = {
-        "종목수": len(etf_live),
-        "상승률상위": rank(etf_live, "change_pct", 30),
-        "거래대금상위": rank(etf_live, "value_eok", 20),
+        "종목수": len({e["code"] for e in etf_up + etf_val}),
+        "총상장": None,
+        "상승률_기준": lt_up,
+        "거래대금_기준": lt_val,
+        # 레버리지·인버스 거르기는 **빌더가** 한다. 수집기는 원자료를 줄이지
+        # 않는다 — 걸러 낸 뒤에 「왜 빠졌나」를 되짚을 수 없으면 곤란하다.
+        "상승률상위": rank(etf_up, "change_pct", 40),
+        "거래대금상위": rank(etf_val, "value_eok", 30),
     }
 
     bizdate = None
@@ -382,13 +541,16 @@ def main() -> int:
             "volume_diff_pct": "% (전일 거래량 대비)",
         },
         "basis": (
-            "전종목 한 벌을 시가총액 순으로 받아 순위는 우리가 매겼다. "
-            "「신고가」는 종가가 52주 최고가 이상인 종목이고, 장중 고가 기준이 아니다."
+            "시가총액 상위부터 한 벌을 받아 순위는 직접 매겼다. 원천이 "
+            "startIdx 로 넘기는 것을 받지 않아 **시장별 상위 N 종목이 표본**이다"
+            "(전종목이 아니다). 「신고가」는 종가가 52주 최고가 이상인 종목이고 "
+            "장중 고가 기준이 아니다. 거래량 급증은 전일 거래량 대비 증가율이다."
         ),
         "universe": {
-            "전체": len(rows),
+            "표본": len(rows),
             "코스피": len(by_market("코스피")),
             "코스닥": len(by_market("코스닥")),
+            "주의": "거래소 상장 전종목이 아니라 시가총액 상위 표본입니다.",
         },
         "rank": ranks,
         "etf": etf,
@@ -396,6 +558,9 @@ def main() -> int:
         "industries": fetch_rankings("industries"),
         "investor_rank": {
             m: fetch_investor_rank(m) for m in ("코스피", "코스닥")
+        },
+        "investor_daily": {
+            m: fetch_investor_daily(m, bizdate) for m in ("코스피", "코스닥")
         },
         "flows_kr100": fetch_flows_from_kr100(bizdate),
         "hscei": fetch_yahoo("^HSCE"),
