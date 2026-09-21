@@ -143,13 +143,14 @@ jobs:
         if: steps.gate.outputs.publish == 'yes'
         run: python3 scripts/build_journal.py
 
-      # 「A4 한 장」은 이 자료의 약속이다. 눈이 아니라 자로 잰다.
+      # 「A4 네 장」은 이 자료의 약속이다. 눈이 아니라 자로 잰다. 그리고
+      # 같은 크로미움으로 **PDF 를 굽는다** — 텔레그램으로 건네는 것이 이것이다.
       # 넘쳐도 발행은 막지 않되(경고만), 다음 판에서 줄 수를 줄인다.
       - uses: actions/setup-node@v4
         if: steps.gate.outputs.publish == 'yes'
         with:
           node-version: '20'
-      - name: 쪽 넘침 확인
+      - name: 쪽 넘침 확인 · PDF 굽기
         if: steps.gate.outputs.publish == 'yes'
         continue-on-error: true
         run: |
@@ -158,6 +159,10 @@ jobs:
           D=$(python3 -c "import json;print(json.load(open('data/market/latest.json'))['indices']['kospi']['date'])")
           node scripts/check_journal_fit.mjs "docs/journal/$D.html" \
             || echo "::warning::시장일지가 A4 를 넘쳤습니다 — 표의 줄 수를 줄이십시오"
+          # 구운 뒤 쪽 수를 세어 `.sheet` 개수와 맞는지 본다. 어긋나면 경고만
+          # 하고 PDF 는 남긴다 — 첨부가 없는 것보다 꼬리 쪽이 붙은 편이 낫다.
+          node scripts/journal_to_pdf.mjs "docs/journal/$D.html" \
+            || echo "::warning::PDF 쪽 수가 장 수와 다릅니다 — 표의 줄 수를 줄이십시오"
 
       # 텔레그램은 **비밀값이 있을 때만** 보낸다. 없으면 조용히 건너뛰고
       # 산출물은 저장소에 남는다 — 보내지 못한 것을 보낸 척하지 않는다.

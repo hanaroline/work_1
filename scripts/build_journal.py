@@ -142,7 +142,10 @@ ul.iss li{margin-bottom:1px}
 .foot{margin-top:6px;border-top:1px solid var(--hair);padding-top:4px;
       font-size:7.6px;color:var(--mut2);line-height:1.38}
 
-@media (max-width:820px){
+/* **screen 을 반드시 붙인다.** A4 쪽 상자의 안쪽 너비는 192mm = 726px 라,
+   그냥 (max-width:820px) 로 두면 인쇄할 때도 이 좁은 화면 규칙이 걸린다.
+   두 단이 한 단으로 풀리고 표가 11px 로 커져 네 장이 아홉 쪽이 됐다. */
+@media screen and (max-width:820px){
   .sheet{width:auto;min-height:0;margin:10px;padding:14px 16px}
   .g2{grid-template-columns:1fr;gap:0}
   table.dt{font-size:11px}
@@ -150,7 +153,10 @@ ul.iss li{margin-bottom:1px}
   .hd{flex-direction:column;align-items:flex-start;gap:4px}
   .hd .sub{text-align:left}
 }
-@page{size:A4;margin:9mm}
+/* 인쇄 여백을 .sheet 의 안쪽 여백과 **똑같이** 맞춘다(9/9/7mm). 어긋나면
+   화면에서 재어 「들어감」이던 장이 PDF 에서 2mm 넘쳐 꼬리 쪽이 생긴다 —
+   scripts/check_journal_fit.mjs 의 잰 값이 곧 인쇄의 참이 되게 한다. */
+@page{size:A4;margin:9mm 9mm 7mm}
 @media print{
   body{background:#fff;font-size:9pt}
   .bar{display:none}
@@ -934,8 +940,16 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
 def build_index() -> str:
     files = sorted((f for f in os.listdir(DOCS)
                     if re.fullmatch(r"\d{4}-\d{2}-\d{2}\.html", f)), reverse=True)
-    items = "".join(
-        '<li><a href="%s">%s</a></li>' % (f, DK(d(f[:10]), True)) for f in files)
+    # PDF 는 굽는 자리가 실패하면 없을 수 있다. **있는 것만 걸어 준다** —
+    # 없는 파일로 가는 고리를 놓아 두면 목록이 거짓말을 한다.
+    def row(f):
+        day, pdf = f[:10], f"{f[:10]}.pdf"
+        link = '<a href="%s">%s</a>' % (f, DK(d(day), True))
+        if os.path.exists(os.path.join(DOCS, pdf)):
+            link += ' <a href="%s" class="mut">[PDF]</a>' % pdf
+        return "<li>%s</li>" % link
+
+    items = "".join(row(f) for f in files)
     body = ('<article class="sheet"><div class="hd"><div>'
             '<div class="kicker">미래에셋증권 마포WM</div><h1>국내 시장일지</h1></div>'
             '<div class="sub">거래일마다 16:00 KST 발행</div></div>'
