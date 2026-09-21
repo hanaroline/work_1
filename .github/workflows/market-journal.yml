@@ -213,9 +213,18 @@ jobs:
           for i in 1 2 3 4 5; do
             if git push origin "HEAD:$BR"; then echo "밀어 넣음 (시도 $i)"; exit 0; fi
             echo "거절됨 — 되받아 다시 시도한다 ($i/5)"
-            if ! git pull --rebase --no-edit origin "$BR"; then
-              git rebase --abort || true
-              echo "::error::되받기 충돌 — 손으로 확인하십시오"
+            # **되받기(rebase)가 아니라 합치기(merge)로 받는다.**
+            # 되받기는 앞선 커밋을 다시 얹는데, 그 가운데 **병합 커밋**이 있으면
+            # 병합을 조각보처럼 다시 펴다가 add/add 충돌을 낸다. 2026-09-22
+            # 08:10 에 실제로 그랬다 — 사람이 main 을 가지에 합쳐 둔 자리에서
+            # 러너의 `git pull --rebase` 가 docs/briefings 의 파일마다 충돌을
+            # 냈고, 받아 둔 자료를 밀지 못한 채 멈췄다.
+            # 합치기는 지난 이력을 다시 얹지 않으므로 이 덫에 걸리지 않는다.
+            # 이 워크플로가 더하는 것은 서로 다른 갈래의 생성 파일뿐이라
+            # 합치기는 거의 언제나 깨끗하다.
+            if ! git pull --no-rebase --no-edit origin "$BR"; then
+              git merge --abort || true
+              echo "::error::합치기 충돌 — 손으로 확인하십시오"
               exit 1
             fi
             sleep $((i * 5))

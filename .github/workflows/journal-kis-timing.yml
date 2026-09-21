@@ -77,8 +77,10 @@ jobs:
           BR="${GITHUB_REF_NAME}"
           for i in 1 2 3 4 5; do
             if git push origin "HEAD:$BR"; then echo "밀어 넣음 (시도 $i)"; exit 0; fi
-            git pull --rebase --no-edit origin "$BR" || { git rebase --abort || true; \
-              echo "::error::되받기 충돌"; exit 1; }
+            # 되받기가 아니라 합치기로 받는다 — market-journal.yml 에 적은 까닭과
+            # 같다. 되받기는 앞선 **병합 커밋**을 다시 펴다가 충돌을 낸다.
+            git pull --no-rebase --no-edit origin "$BR" || { git merge --abort || true; \
+              echo "::error::합치기 충돌"; exit 1; }
             sleep $((i * 5))
           done
           echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"
