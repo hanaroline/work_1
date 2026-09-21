@@ -1,10 +1,10 @@
-시장일지 순위 원천 확인 2026-09-21 11:31 KST
+시장일지 순위 원천 확인 2026-09-21 11:35 KST
 
 ========== ① 전종목 넘기기 ==========
 
 ### 전종목 startIdx=0 pageSize=100
     https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=marketSum&startIdx=0&pageSize=100
-    200 · 171856 bytes
+    200 · 171855 bytes
     모양: ["[100개]", {"itemname": "str", "itemcode": "str", "sosok": "str", "upDownGb": "str", "type": "str", "upperLimitPrice": "str", "lowerLimitPrice": "str", "manageStatusGb": "str", "tradeStopYn": "str", "tradableStatus": "str", "tradableStatusCode": "str", "managementDate": "NoneType", "managementReasonCode": "NoneType", "tradingHaltDate": "NoneType"}]
     → 본문을 data/journal/raw/api_전종목_startIdx=0_pageSize=100.json 에 남겼다
 
@@ -12,17 +12,17 @@
 
 ### 전종목 startIdx=0 pageSize=300
     https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=marketSum&startIdx=0&pageSize=300
-    200 · 512330 bytes
+    200 · 512341 bytes
     모양: ["[300개]", {"itemname": "str", "itemcode": "str", "sosok": "str", "upDownGb": "str", "type": "str", "upperLimitPrice": "str", "lowerLimitPrice": "str", "manageStatusGb": "str", "tradeStopYn": "str", "tradableStatus": "str", "tradableStatusCode": "str", "managementDate": "NoneType", "managementReasonCode": "NoneType", "tradingHaltDate": "NoneType"}]
 
     → 실제로 300 줄 왔다 · 첫 줄 삼성전자 · 끝 줄 DL
 
 ### 전종목 startIdx=0 pageSize=1000
     https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=marketSum&startIdx=0&pageSize=1000
-    200 · 1694346 bytes
+    200 · 1694368 bytes
     모양: ["[1000개]", {"itemname": "str", "itemcode": "str", "sosok": "str", "upDownGb": "str", "type": "str", "upperLimitPrice": "str", "lowerLimitPrice": "str", "manageStatusGb": "str", "tradeStopYn": "str", "tradableStatus": "str", "tradableStatusCode": "str", "managementDate": "NoneType", "managementReasonCode": "NoneType", "tradingHaltDate": "NoneType"}]
 
-    → 실제로 1000 줄 왔다 · 첫 줄 삼성전자 · 끝 줄 에브리봇
+    → 실제로 1000 줄 왔다 · 첫 줄 삼성전자 · 끝 줄 큐알티
 
 ### 전종목 startIdx=2000 pageSize=100
     https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=marketSum&startIdx=2000&pageSize=100
@@ -40,14 +40,14 @@
 
 ========== ② orderType · marketType ==========
 
-    orderType=up                 200 · 네오사피엔스(172.5%, 대금 402239924000) / 수성웹툰(63.64%, 대금 609957000) / 시그네틱스(30.0%, 대금 3177908000)
-    orderType=down               200 · 오름테라퓨틱(-29.41%, 대금 73780893000) / 동양2우B(-19.94%, 대금 54000000) / 동양우(-18.37%, 대금 170000000)
+    orderType=up                 200 · 네오사피엔스(172.0%, 대금 404720657000) / 수성웹툰(63.64%, 대금 609957000) / 시그네틱스(30.0%, 대금 3179884000)
+    orderType=down               200 · 오름테라퓨틱(-28.21%, 대금 74178480000) / 금호건설우(-20.86%, 대금 107000000) / 동양2우B(-19.94%, 대금 54000000)
     orderType=quant              실패 400 HTTP Error 400: Bad Request
     orderType=amount             실패 400 HTTP Error 400: Bad Request
     orderType=tradeAmount        실패 400 HTTP Error 400: Bad Request
     orderType=tradeVolume        실패 400 HTTP Error 400: Bad Request
-    orderType=priceTop           200 · 삼성전자(4.21%, 대금 2876972000000) / SK하이닉스(0.59%, 대금 2424898000000) / 삼성전자우(5.56%, 대금 501948000000)
-    orderType=marketSum          200 · 삼성전자(4.21%, 대금 2876972000000) / SK하이닉스(0.59%, 대금 2424898000000) / 삼성전자우(5.56%, 대금 501948000000)
+    orderType=priceTop           200 · 삼성전자(4.02%, 대금 2906891000000) / SK하이닉스(0.54%, 대금 2445072000000) / 삼성전자우(5.81%, 대금 506187000000)
+    orderType=marketSum          200 · 삼성전자(4.02%, 대금 2906891000000) / SK하이닉스(0.54%, 대금 2445072000000) / 삼성전자우(5.81%, 대금 506187000000)
     orderType=quantDiff          실패 400 HTTP Error 400: Bad Request
     orderType=quantDiffRate      실패 400 HTTP Error 400: Bad Request
     orderType=per                실패 400 HTTP Error 400: Bad Request
@@ -57,7 +57,7 @@
     orderType=newHigh            실패 400 HTTP Error 400: Bad Request
 
     marketType=ALL      200 · 5 줄 · sosok={'1'} type={'ST'} · 네오사피엔스, 수성웹툰, 시그네틱스, 토마토시스템
-    marketType=KOSPI    200 · 5 줄 · sosok={'0'} type={'ST'} · 디아이, 에스엠벡셀, 케이씨, 현대그린푸드
+    marketType=KOSPI    200 · 5 줄 · sosok={'0'} type={'ST'} · 디아이, 에스엠벡셀, 녹십자홀딩스2우, 케이씨
     marketType=KOSDAQ   200 · 5 줄 · sosok={'1'} type={'ST'} · 네오사피엔스, 수성웹툰, 시그네틱스, 토마토시스템
     marketType=ETF      실패 400 HTTP Error 400: Bad Request
     marketType=ETN      실패 400 HTTP Error 400: Bad Request
@@ -111,13 +111,13 @@
 
 ### 테마 등락률
     https://stock.naver.com/api/stockSecurity/rankings/v2/domestic/themes?sortType=changeRate&size=20&excludeCodes=25&period=daily
-    200 · 42375 bytes
+    200 · 42316 bytes
     모양: {"hasNext": "bool", "items": ["[20개]", {"ranking": "…", "code": "…", "name": "…", "changeRate": "…", "risingCount": "…", "fallingCount": "…", "unchangedCount": "…", "totalMarketCap": "…", "totalTradingVolume": "…", "totalTradingValue": "…", "topByChangeRate": "…", "topByMarketCap": "…", "topByTradingValue": "…", "topByTradingVolume": "…"}], "cursor": "str"}
     → 본문을 data/journal/raw/api_테마_등락률.json 에 남겼다
 
 ### 업종 등락률
     https://stock.naver.com/api/stockSecurity/rankings/v2/domestic/industries?sortType=changeRate&size=20&excludeCodes=25&period=daily
-    200 · 39457 bytes
+    200 · 39469 bytes
     모양: {"hasNext": "bool", "items": ["[20개]", {"ranking": "…", "code": "…", "name": "…", "changeRate": "…", "risingCount": "…", "fallingCount": "…", "unchangedCount": "…", "totalMarketCap": "…", "totalTradingVolume": "…", "totalTradingValue": "…", "topByChangeRate": "…", "topByMarketCap": "…", "topByTradingValue": "…", "topByTradingVolume": "…"}], "cursor": "str"}
     → 본문을 data/journal/raw/api_업종_등락률.json 에 남겼다
 
