@@ -62,6 +62,12 @@ jobs:
       - name: 새것 가리기가 맞는가
         run: python3 scripts/keep_newer_snapshot.py --selftest
 
+      - name: 미국 긴 일봉 수집기를 망 없이 시험한다
+        # 해치를 물려받는가, 창이 미끄러진 것을 잘린 것으로 읽지 않는가,
+        # 정말 잘렸을 때 **쓰지 않고 멈추는가**. ETF 에서 이력을 한 번 잃고
+        # 세운 규칙이라 같은 잣대를 여기에도 건다.
+        run: python3 scripts/fetch_us_bars_long.py --selftest
+
       - name: 워크플로 YAML 이 읽히는가
         run: |
           python3 -m pip install --quiet pyyaml
@@ -314,6 +320,26 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           exit $code
 
+      - name: 건네는 한 장을 짓는다
+        run: python3 scripts/build_kr_etf_report.py --all --out /tmp/kis-timing-report.html
+
+      - name: 건네는 한 장을 거꾸로 되짚는다
+        # 위의 두 재검산은 **자료**를 본다. 사람이 읽는 것은 자료가 아니라 이
+        # 한 장이다. 자료가 옳아도 화면이 그것을 옳게 옮겼다는 보장은 없다 —
+        # 미국주식 판이 달러 값을 「238원」으로 찍은 적이 있고 자료에는 흠이
+        # 없었다. 화면에 찍힌 글자에서 출발해 자료로 되짚는다.
+        run: |
+          python3 scripts/verify_report_page.py /tmp/kis-timing-report.html \
+            | tee /tmp/verify-page.txt
+          code=${PIPESTATUS[0]}
+          {
+            echo '### 건네는 한 장 되짚기'
+            echo '```'
+            cat /tmp/verify-page.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $code
+
       - name: 브라우저 준비
         # 세션 시작 갈고리(.claude/hooks/session-start.sh)가 박아 쓰는 판과 같게
         # 맞춘다. 러너와 세션이 다른 판을 쓰면 한쪽에서 통과한 것이 다른 쪽에서 깨진다.
@@ -343,6 +369,20 @@ jobs:
           # 판정 화면도 같은 서버로 열어 본다. --offline 은 바깥으로 나가는
           # 요청을 전부 끊고도 온전히 그려지는지를 증명한다.
           node scripts/check_kis_verdict_page.mjs --offline
+
+      - name: 건네는 한 장을 화면으로 열어 본다
+        # **미리 보기 창 안에서도 연다.** 이 한 장은 메신저로 건네지는데, 그런
+        # 자리는 출처가 없는 문서(about:srcdoc)로 열리고 거기서는
+        # history.replaceState 가 SecurityError 를 던진다. file:// 로만 열어 보던
+        # 검사로는 한 번도 안 걸렸고, 받는 사람이 탭을 누를 때마다 붉은 줄이
+        # 쌓이는 것을 보고서야 알았다.
+        run: node scripts/check_report_page.mjs --file /tmp/kis-timing-report.html
+
+      - name: 건네는 한 장이 종이에서 어떻게 나뉘는가
+        # 인쇄를 「단추가 숨는가」로만 보다가 **첫 쪽이 통째로 빈 것**을 한참
+        # 지나쳤다. 탭마다 진짜로 PDF 를 떠서 쪽을 세고, 첫 쪽에 들어간 잉크를
+        # 나머지 쪽과 견준다. 눈으로 볼 수 없는 자리에서 쓸 수 있는 잣대다.
+        run: node scripts/check_report_print.mjs --file /tmp/kis-timing-report.html
 
       - name: 어긋났을 때 화면을 남긴다
         if: failure()
