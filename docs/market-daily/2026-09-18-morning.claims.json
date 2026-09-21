@@ -1,0 +1,1568 @@
+{
+ "deliverable": "MARKET DAILY 2026-09-18 모닝시황",
+ "as_of": "2026-09-21",
+ "series_policy": {
+  "다우": "야후 파이낸스 (수집기 data/market)",
+  "S&P 500": "야후 파이낸스 (수집기 data/market)",
+  "나스닥": "야후 파이낸스 (수집기 data/market)",
+  "러셀 2000": "야후 파이낸스 (수집기 data/market)",
+  "VIX": "야후 파이낸스 (수집기 data/market)",
+  "WTI": "야후 파이낸스 (수집기 data/market)",
+  "금": "야후 파이낸스 (수집기 data/market)",
+  "MSTR": "yahoo:quote (v7/finance/quote, 단일 응답)",
+  "COIN": "yahoo:quote (v7/finance/quote, 단일 응답)",
+  "SNDK": "yahoo:quote (v7/finance/quote, 단일 응답)",
+  "NVDA": "yahoo:quote (v7/finance/quote, 단일 응답)",
+  "MSFT": "yahoo:quote (v7/finance/quote, 단일 응답)",
+  "AAPL": "yahoo:quote (v7/finance/quote, 단일 응답)",
+  "GOOGL": "yahoo:quote (v7/finance/quote, 단일 응답)",
+  "AMZN": "yahoo:quote (v7/finance/quote, 단일 응답)",
+  "META": "yahoo:quote (v7/finance/quote, 단일 응답)",
+  "AVGO": "yahoo:quote (v7/finance/quote, 단일 응답)",
+  "TSLA": "yahoo:quote (v7/finance/quote, 단일 응답)",
+  "TSM": "yahoo:quote (v7/finance/quote, 단일 응답)",
+  "AMD": "yahoo:quote (v7/finance/quote, 단일 응답)",
+  "코스피": "야후 파이낸스 · 수집 스냅샷",
+  "코스닥": "야후 파이낸스 · 수집 스냅샷",
+  "삼성전자": "네이버 증시 · 수집 스냅샷",
+  "SK하이닉스": "네이버 증시 · 수집 스냅샷",
+  "코스피 외국인 순매수": "네이버 KRX 투자자별 일별동향",
+  "코스피 기관 순매수": "네이버 KRX 투자자별 일별동향",
+  "코스피 개인 순매수": "네이버 KRX 투자자별 일별동향",
+  "미국 기술 업종 ETF": "야후 파이낸스 · 업종 ETF",
+  "미국 소재 업종 ETF": "야후 파이낸스 · 업종 ETF",
+  "미국 유틸리티 업종 ETF": "야후 파이낸스 · 업종 ETF",
+  "미국 커뮤니케이션 업종 ETF": "야후 파이낸스 · 업종 ETF",
+  "다우 (9/17)": "야후 파이낸스 · 수집 스냅샷",
+  "S&P 500 (9/17)": "야후 파이낸스 · 수집 스냅샷",
+  "EFFR": "뉴욕 연준 공표",
+  "연방기금 목표범위 하단": "FOMC 공표",
+  "연방기금 목표범위 상단": "FOMC 공표",
+  "9월 인상폭": "FOMC 공표",
+  "EFFR 1주 변화": "뉴욕 연준 공표",
+  "점도표 2026년 말 중간값": "기관 전망",
+  "근원 PCE": "언론 보도",
+  "WTI (국내 마감 시점)": "야후 파이낸스 · 5분봉 (at_kr_close)",
+  "WTI (하루 뒤 수집분)": "야후 파이낸스 · 수집 스냅샷 (2026-09-20)",
+  "SNDK (보도)": "언론 보도",
+  "QCOM": "야후 파이낸스 · 수집 시세",
+  "NFLX": "야후 파이낸스 · 수집 시세",
+  "ACN": "야후 파이낸스 · 수집 시세",
+  "국내 통신장비 업종": "네이버 업종 등락률 · 기준일 스냅샷",
+  "국내 전기장비 업종": "네이버 업종 등락률 · 기준일 스냅샷"
+ },
+ "claims": [
+  {
+   "id": "BL_DOW",
+   "kind": "market_level",
+   "metric": "다우",
+   "text": "다우 종가",
+   "value": 51682.6406,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "baseline"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BLP_DOW",
+   "kind": "market_level",
+   "metric": "다우",
+   "text": "다우 전일 종가",
+   "value": 51778.0391,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BL_SP500",
+   "kind": "market_level",
+   "metric": "S&P 500",
+   "text": "S&P 500 종가",
+   "value": 7650.5,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "baseline"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BLP_SP500",
+   "kind": "market_level",
+   "metric": "S&P 500",
+   "text": "S&P 500 전일 종가",
+   "value": 7637.7598,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BL_NASDAQ",
+   "kind": "market_level",
+   "metric": "나스닥",
+   "text": "나스닥 종가",
+   "value": 26522.5449,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "baseline"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BLP_NASDAQ",
+   "kind": "market_level",
+   "metric": "나스닥",
+   "text": "나스닥 전일 종가",
+   "value": 26418.3008,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BL_RUSSELL",
+   "kind": "market_level",
+   "metric": "러셀 2000",
+   "text": "러셀 2000 종가",
+   "value": 2860.3965,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "baseline"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BLP_RUSSELL",
+   "kind": "market_level",
+   "metric": "러셀 2000",
+   "text": "러셀 2000 전일 종가",
+   "value": 2874.6299,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BL_VIX",
+   "kind": "market_level",
+   "metric": "VIX",
+   "text": "VIX 종가",
+   "value": 14.81,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "baseline"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BLP_VIX",
+   "kind": "market_level",
+   "metric": "VIX",
+   "text": "VIX 전일 종가",
+   "value": 15.44,
+   "unit": "pt",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BL_WTI",
+   "kind": "market_level",
+   "metric": "WTI",
+   "text": "WTI 종가",
+   "value": 95.47,
+   "unit": "USD/bbl",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "baseline"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BLP_WTI",
+   "kind": "market_level",
+   "metric": "WTI",
+   "text": "WTI 전일 종가",
+   "value": 101.91,
+   "unit": "USD/bbl",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BL_GOLD",
+   "kind": "market_level",
+   "metric": "금",
+   "text": "금 종가",
+   "value": 4415.8999,
+   "unit": "USD/oz",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "baseline"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BLP_GOLD",
+   "kind": "market_level",
+   "metric": "금",
+   "text": "금 전일 종가",
+   "value": 4399.7002,
+   "unit": "USD/oz",
+   "series": "야후 파이낸스 (수집기 data/market)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "MV_MSTR",
+   "kind": "market_level",
+   "metric": "MSTR",
+   "text": "MSTR 종가",
+   "value": 153.92,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "movers"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "MVP_MSTR",
+   "kind": "market_level",
+   "metric": "MSTR",
+   "text": "MSTR 전일 종가",
+   "value": 132.25,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "MV_COIN",
+   "kind": "market_level",
+   "metric": "COIN",
+   "text": "COIN 종가",
+   "value": 194.25,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "movers"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "MVP_COIN",
+   "kind": "market_level",
+   "metric": "COIN",
+   "text": "COIN 전일 종가",
+   "value": 173.97,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "MV_SNDK",
+   "kind": "market_level",
+   "metric": "SNDK",
+   "text": "SNDK 종가",
+   "value": 1791.82,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "movers"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "MVP_SNDK",
+   "kind": "market_level",
+   "metric": "SNDK",
+   "text": "SNDK 전일 종가",
+   "value": 1614.39,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_NVDA",
+   "kind": "market_level",
+   "metric": "NVDA",
+   "text": "NVDA 종가",
+   "value": 222.27,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_NVDA",
+   "kind": "market_level",
+   "metric": "NVDA",
+   "text": "NVDA 전일 종가",
+   "value": 219.34,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_MSFT",
+   "kind": "market_level",
+   "metric": "MSFT",
+   "text": "MSFT 종가",
+   "value": 493.78,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_MSFT",
+   "kind": "market_level",
+   "metric": "MSFT",
+   "text": "MSFT 전일 종가",
+   "value": 497.75,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_AAPL",
+   "kind": "market_level",
+   "metric": "AAPL",
+   "text": "AAPL 종가",
+   "value": 336.13,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_AAPL",
+   "kind": "market_level",
+   "metric": "AAPL",
+   "text": "AAPL 전일 종가",
+   "value": 337.0,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_GOOGL",
+   "kind": "market_level",
+   "metric": "GOOGL",
+   "text": "GOOGL 종가",
+   "value": 349.54,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_GOOGL",
+   "kind": "market_level",
+   "metric": "GOOGL",
+   "text": "GOOGL 전일 종가",
+   "value": 347.33,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_AMZN",
+   "kind": "market_level",
+   "metric": "AMZN",
+   "text": "AMZN 종가",
+   "value": 253.71,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_AMZN",
+   "kind": "market_level",
+   "metric": "AMZN",
+   "text": "AMZN 전일 종가",
+   "value": 251.19,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_META",
+   "kind": "market_level",
+   "metric": "META",
+   "text": "META 종가",
+   "value": 665.75,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_META",
+   "kind": "market_level",
+   "metric": "META",
+   "text": "META 전일 종가",
+   "value": 682.31,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_AVGO",
+   "kind": "market_level",
+   "metric": "AVGO",
+   "text": "AVGO 종가",
+   "value": 357.61,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_AVGO",
+   "kind": "market_level",
+   "metric": "AVGO",
+   "text": "AVGO 전일 종가",
+   "value": 347.3,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_TSLA",
+   "kind": "market_level",
+   "metric": "TSLA",
+   "text": "TSLA 종가",
+   "value": 364.27,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_TSLA",
+   "kind": "market_level",
+   "metric": "TSLA",
+   "text": "TSLA 전일 종가",
+   "value": 366.2,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_TSM",
+   "kind": "market_level",
+   "metric": "TSM",
+   "text": "TSM 종가",
+   "value": 434.67,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_TSM",
+   "kind": "market_level",
+   "metric": "TSM",
+   "text": "TSM 전일 종가",
+   "value": 430.26,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "BT_AMD",
+   "kind": "market_level",
+   "metric": "AMD",
+   "text": "AMD 종가",
+   "value": 559.82,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "printed_on": [
+    "board"
+   ],
+   "verdict": "confirmed",
+   "render": "assert"
+  },
+  {
+   "id": "BTP_AMD",
+   "kind": "market_level",
+   "metric": "AMD",
+   "text": "AMD 전일 종가",
+   "value": 545.09,
+   "unit": "USD",
+   "series": "yahoo:quote (v7/finance/quote, 단일 응답)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/",
+   "render": "omit",
+   "printed_on": [],
+   "verdict": "confirmed"
+  },
+  {
+   "id": "KOSPI_CLOSE",
+   "kind": "market_level",
+   "metric": "코스피",
+   "text": "코스피 종가",
+   "value": 6894.23,
+   "unit": "pt",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://www.etoday.co.kr/news/view/2627347",
+   "corroborating_urls": [
+    "https://www.news1.kr/finance/general-stock/6295494"
+   ],
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ]
+  },
+  {
+   "id": "KOSPI_PREV",
+   "kind": "market_level",
+   "metric": "코스피",
+   "text": "코스피 전일 종가",
+   "value": 6715.41,
+   "unit": "pt",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.etoday.co.kr/news/view/2627347",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "KOSDAQ_CLOSE",
+   "kind": "market_level",
+   "metric": "코스닥",
+   "text": "코스닥 종가",
+   "value": 827.12,
+   "unit": "pt",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://www.news1.kr/finance/general-stock/6295494",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ]
+  },
+  {
+   "id": "KOSDAQ_PREV",
+   "kind": "market_level",
+   "metric": "코스닥",
+   "text": "코스닥 전일 종가",
+   "value": 822.18,
+   "unit": "pt",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.news1.kr/finance/general-stock/6295494",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "SEC_CLOSE",
+   "kind": "market_level",
+   "metric": "삼성전자",
+   "text": "삼성전자 종가",
+   "value": 261000,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://www.etoday.co.kr/news/view/2627362",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ]
+  },
+  {
+   "id": "SEC_PREV",
+   "kind": "market_level",
+   "metric": "삼성전자",
+   "text": "삼성전자 전일 종가",
+   "value": 252500,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.etoday.co.kr/news/view/2627362",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "HYNIX_CLOSE",
+   "kind": "market_level",
+   "metric": "SK하이닉스",
+   "text": "SK하이닉스 종가",
+   "value": 1857000,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://www.etoday.co.kr/news/view/2627362",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ]
+  },
+  {
+   "id": "HYNIX_PREV",
+   "kind": "market_level",
+   "metric": "SK하이닉스",
+   "text": "SK하이닉스 전일 종가",
+   "value": 1745000,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.etoday.co.kr/news/view/2627362",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "FLOW_FOREIGN",
+   "kind": "market_level",
+   "metric": "코스피 외국인 순매수",
+   "text": "코스피 외국인 순매수 (확정)",
+   "value": 4486,
+   "unit": "억원",
+   "series": "네이버 KRX 투자자별 일별동향",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260921&startIdx=0&pageSize=30",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ],
+   "note": "일부 매체는 장중 집계로 외국인 +9,701억을 보도했습니다 — 계열이 다릅니다"
+  },
+  {
+   "id": "FLOW_INST",
+   "kind": "market_level",
+   "metric": "코스피 기관 순매수",
+   "text": "코스피 기관 순매수 (확정)",
+   "value": 15322,
+   "unit": "억원",
+   "series": "네이버 KRX 투자자별 일별동향",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260921&startIdx=0&pageSize=30",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ]
+  },
+  {
+   "id": "FLOW_RETAIL",
+   "kind": "market_level",
+   "metric": "코스피 개인 순매수",
+   "text": "코스피 개인 순매수 (확정)",
+   "value": -36359,
+   "unit": "억원",
+   "series": "네이버 KRX 투자자별 일별동향",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260921&startIdx=0&pageSize=30",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ]
+  },
+  {
+   "id": "US_SEC_TECH",
+   "kind": "market_level",
+   "metric": "미국 기술 업종 ETF",
+   "text": "미국 기술 업종 ETF 등락률",
+   "value": 0.82,
+   "unit": "%",
+   "series": "야후 파이낸스 · 업종 ETF",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/XLK/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-us"
+   ]
+  },
+  {
+   "id": "US_SEC_MAT",
+   "kind": "market_level",
+   "metric": "미국 소재 업종 ETF",
+   "text": "미국 소재 업종 ETF 등락률",
+   "value": -1.42,
+   "unit": "%",
+   "series": "야후 파이낸스 · 업종 ETF",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/XLB/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-us"
+   ]
+  },
+  {
+   "id": "US_SEC_UTIL",
+   "kind": "market_level",
+   "metric": "미국 유틸리티 업종 ETF",
+   "text": "미국 유틸리티 업종 ETF 등락률",
+   "value": -1.42,
+   "unit": "%",
+   "series": "야후 파이낸스 · 업종 ETF",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/XLU/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-us"
+   ]
+  },
+  {
+   "id": "US_SEC_COMM",
+   "kind": "market_level",
+   "metric": "미국 커뮤니케이션 업종 ETF",
+   "text": "미국 커뮤니케이션 업종 ETF 등락률",
+   "value": -1.37,
+   "unit": "%",
+   "series": "야후 파이낸스 · 업종 ETF",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/XLC/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-us"
+   ]
+  },
+  {
+   "id": "DOW_0917",
+   "kind": "market_level",
+   "metric": "다우 (9/17)",
+   "text": "다우 9월 17일 종가 — 국내 조간이 '9월 18일'로 실은 값",
+   "value": 51778.04,
+   "unit": "pt",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.newspim.com/news/view/20260918000207",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-us"
+   ]
+  },
+  {
+   "id": "SPX_0917",
+   "kind": "market_level",
+   "metric": "S&P 500 (9/17)",
+   "text": "S&P 500 9월 17일 종가 — 국내 조간이 '9월 18일'로 실은 값",
+   "value": 7637.76,
+   "unit": "pt",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.newspim.com/news/view/20260918000207",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-us"
+   ]
+  },
+  {
+   "id": "EFFR",
+   "kind": "policy_rate",
+   "metric": "EFFR",
+   "text": "실효 연방기금금리",
+   "value": 3.88,
+   "unit": "%",
+   "series": "뉴욕 연준 공표",
+   "as_of": "2026-09-17",
+   "tier": 1,
+   "source_url": "https://markets.newyorkfed.org/api/rates/unsecured/effr",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-fed"
+   ]
+  },
+  {
+   "id": "FFR_LOW",
+   "kind": "policy_rate",
+   "metric": "연방기금 목표범위 하단",
+   "text": "연방기금 목표범위 하단 (9월 16일 인상 후)",
+   "value": 3.75,
+   "unit": "%",
+   "series": "FOMC 공표",
+   "as_of": "2026-09-16",
+   "tier": 2,
+   "source_url": "https://www.cnbc.com/2026/09/16/fed-rate-decision-september-2026.html",
+   "corroborating_urls": [
+    "https://polymarkettrader.com/events/fed-fomc-september-2026/"
+   ],
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-fed",
+    "headline-2"
+   ]
+  },
+  {
+   "id": "FFR_HIGH",
+   "kind": "policy_rate",
+   "metric": "연방기금 목표범위 상단",
+   "text": "연방기금 목표범위 상단 (9월 16일 인상 후)",
+   "value": 4.0,
+   "unit": "%",
+   "series": "FOMC 공표",
+   "as_of": "2026-09-16",
+   "tier": 2,
+   "source_url": "https://www.cnbc.com/2026/09/16/fed-rate-decision-september-2026.html",
+   "corroborating_urls": [
+    "https://polymarkettrader.com/events/fed-fomc-september-2026/"
+   ],
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-fed",
+    "headline-2"
+   ]
+  },
+  {
+   "id": "FFR_HIKE_BP",
+   "kind": "policy_rate",
+   "metric": "9월 인상폭",
+   "text": "2026년 9월 FOMC 인상폭",
+   "value": 25,
+   "unit": "bp",
+   "series": "FOMC 공표",
+   "as_of": "2026-09-16",
+   "tier": 2,
+   "source_url": "https://www.cnbc.com/2026/09/16/fed-rate-decision-september-2026.html",
+   "corroborating_urls": [
+    "https://finance.yahoo.com/economy/policy/live/federal-reserve-meeting-live-updates-25-basis-point-interest-rate-hike-chairman-kevin-warsh-143452661.html"
+   ],
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-fed",
+    "headline-2"
+   ]
+  },
+  {
+   "id": "EFFR_W1",
+   "kind": "policy_rate",
+   "metric": "EFFR 1주 변화",
+   "text": "실효 연방기금금리 1주 변화",
+   "value": 25,
+   "unit": "bp",
+   "series": "뉴욕 연준 공표",
+   "as_of": "2026-09-17",
+   "tier": 1,
+   "source_url": "https://markets.newyorkfed.org/api/rates/unsecured/effr",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-fed"
+   ]
+  },
+  {
+   "id": "DOT_2026",
+   "kind": "institution_forecast",
+   "metric": "점도표 2026년 말 중간값",
+   "text": "FOMC 점도표 2026년 말 연방기금금리 중간값",
+   "value": 4.1,
+   "unit": "%",
+   "series": "기관 전망",
+   "as_of": "2026-09-21",
+   "tier": 2,
+   "source_url": "https://www.bondsavvy.com/fixed-income-investments-blog/fed-dot-plot",
+   "corroborating_urls": [
+    "https://www.kucoin.com/blog/september-2026-fomc-fed-hikes-25-bp-hawkish-dot-plot-is-this-a-new-hiking-cycle"
+   ],
+   "announced_on": "2026-09-16",
+   "attributed_to": "연방준비제도 (FOMC 경제전망요약 점도표 중간값)",
+   "target_period": "2026년 말",
+   "revision": "new",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-fed"
+   ]
+  },
+  {
+   "id": "CORE_PCE",
+   "kind": "market_level",
+   "metric": "근원 PCE",
+   "text": "근원 PCE 물가 (보도 기준)",
+   "value": 3.4,
+   "unit": "%",
+   "series": "언론 보도",
+   "as_of": "2026-09-21",
+   "tier": 2,
+   "source_url": "https://www.kucoin.com/blog/september-2026-fomc-fed-hikes-25-bp-hawkish-dot-plot-is-this-a-new-hiking-cycle",
+   "verdict": "unverified",
+   "render": "marked",
+   "printed_on": [
+    "card-fed"
+   ],
+   "note": "BEA 원문을 확인하지 못해 '보도됐습니다'로만 적었습니다"
+  },
+  {
+   "id": "WTI_KRCLOSE",
+   "kind": "market_level",
+   "metric": "WTI (국내 마감 시점)",
+   "text": "WTI 2026-09-18 15:30 KST 시점 가격",
+   "value": 100.08,
+   "unit": "USD/bbl",
+   "series": "야후 파이낸스 · 5분봉 (at_kr_close)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/CL=F/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-oil"
+   ]
+  },
+  {
+   "id": "WTI_LATER_SNAP",
+   "kind": "market_level",
+   "metric": "WTI (하루 뒤 수집분)",
+   "text": "WTI 2026-09-18 봉 — 9월 20일 수집분",
+   "value": 96.08,
+   "unit": "USD/bbl",
+   "series": "야후 파이낸스 · 수집 스냅샷 (2026-09-20)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/CL=F/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "verify"
+   ],
+   "note": "같은 날짜 봉이 수집 시각에 따라 손질된다는 것을 보이려고 실었습니다"
+  },
+  {
+   "id": "SNDK_PRESS_CLOSE",
+   "kind": "market_level",
+   "metric": "SNDK (보도)",
+   "text": "샌디스크 종가 — 매체 보도치",
+   "value": 1791.82,
+   "unit": "USD",
+   "series": "언론 보도",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://seekingalpha.com/news/4644535-sandisk-climbs-11-amid-storage-sector-strength",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-earnings"
+   ],
+   "note": "수집 시세와 소수점까지 일치 — 교차확인 근거로 실었습니다"
+  },
+  {
+   "id": "QCOM_CLOSE_N",
+   "kind": "market_level",
+   "metric": "QCOM",
+   "text": "퀄컴 종가",
+   "value": 177.72,
+   "unit": "USD",
+   "series": "야후 파이낸스 · 수집 시세",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://www.marketbeat.com/instant-alerts/price-qualcomm-nasdaq-qcom-stock-price-down-58-time-to-sell-2026-09-18/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-earnings"
+   ]
+  },
+  {
+   "id": "QCOM_PREV_N",
+   "kind": "market_level",
+   "metric": "QCOM",
+   "text": "퀄컴 전일 종가",
+   "value": 188.71,
+   "unit": "USD",
+   "series": "야후 파이낸스 · 수집 시세",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/QCOM/",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "NFLX_CLOSE_N",
+   "kind": "market_level",
+   "metric": "NFLX",
+   "text": "넷플릭스 종가",
+   "value": 71.79,
+   "unit": "USD",
+   "series": "야후 파이낸스 · 수집 시세",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/NFLX/",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "NFLX_PREV_N",
+   "kind": "market_level",
+   "metric": "NFLX",
+   "text": "넷플릭스 전일 종가",
+   "value": 75.31,
+   "unit": "USD",
+   "series": "야후 파이낸스 · 수집 시세",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/NFLX/",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "ACN_CLOSE_N",
+   "kind": "market_level",
+   "metric": "ACN",
+   "text": "액센츄어 종가",
+   "value": 181.29,
+   "unit": "USD",
+   "series": "야후 파이낸스 · 수집 시세",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/ACN/",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "ACN_PREV_N",
+   "kind": "market_level",
+   "metric": "ACN",
+   "text": "액센츄어 전일 종가",
+   "value": 190.29,
+   "unit": "USD",
+   "series": "야후 파이낸스 · 수집 시세",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/ACN/",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "KR_SECTOR_TELEQ",
+   "kind": "market_level",
+   "metric": "국내 통신장비 업종",
+   "text": "국내 통신장비 업종 등락률",
+   "value": 6.94,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ],
+   "note": "latest.json 의 sectors 에는 날짜가 없어 오늘 장중값이 섞인다 — 기준일 스냅샷에서 읽어야 한다"
+  },
+  {
+   "id": "KR_SECTOR_ELEC",
+   "kind": "market_level",
+   "metric": "국내 전기장비 업종",
+   "text": "국내 전기장비 업종 등락률",
+   "value": 5.1,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ]
+  }
+ ],
+ "derived": [
+  {
+   "id": "D_BL_DOW",
+   "kind": "pct_change",
+   "from": "BLP_DOW",
+   "to": "BL_DOW",
+   "printed": -0.18,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BL_SP500",
+   "kind": "pct_change",
+   "from": "BLP_SP500",
+   "to": "BL_SP500",
+   "printed": 0.17,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BL_NASDAQ",
+   "kind": "pct_change",
+   "from": "BLP_NASDAQ",
+   "to": "BL_NASDAQ",
+   "printed": 0.39,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BL_RUSSELL",
+   "kind": "pct_change",
+   "from": "BLP_RUSSELL",
+   "to": "BL_RUSSELL",
+   "printed": -0.5,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BL_VIX",
+   "kind": "pct_change",
+   "from": "BLP_VIX",
+   "to": "BL_VIX",
+   "printed": -4.08,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BL_WTI",
+   "kind": "pct_change",
+   "from": "BLP_WTI",
+   "to": "BL_WTI",
+   "printed": -6.32,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BL_GOLD",
+   "kind": "pct_change",
+   "from": "BLP_GOLD",
+   "to": "BL_GOLD",
+   "printed": 0.37,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_MV_MSTR",
+   "kind": "pct_change",
+   "from": "MVP_MSTR",
+   "to": "MV_MSTR",
+   "printed": 16.39,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_MV_COIN",
+   "kind": "pct_change",
+   "from": "MVP_COIN",
+   "to": "MV_COIN",
+   "printed": 11.66,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_MV_SNDK",
+   "kind": "pct_change",
+   "from": "MVP_SNDK",
+   "to": "MV_SNDK",
+   "printed": 10.99,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BT_NVDA",
+   "kind": "pct_change",
+   "from": "BTP_NVDA",
+   "to": "BT_NVDA",
+   "printed": 1.34,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BT_MSFT",
+   "kind": "pct_change",
+   "from": "BTP_MSFT",
+   "to": "BT_MSFT",
+   "printed": -0.8,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BT_AAPL",
+   "kind": "pct_change",
+   "from": "BTP_AAPL",
+   "to": "BT_AAPL",
+   "printed": -0.26,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BT_GOOGL",
+   "kind": "pct_change",
+   "from": "BTP_GOOGL",
+   "to": "BT_GOOGL",
+   "printed": 0.64,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BT_AMZN",
+   "kind": "pct_change",
+   "from": "BTP_AMZN",
+   "to": "BT_AMZN",
+   "printed": 1.0,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BT_META",
+   "kind": "pct_change",
+   "from": "BTP_META",
+   "to": "BT_META",
+   "printed": -2.43,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BT_AVGO",
+   "kind": "pct_change",
+   "from": "BTP_AVGO",
+   "to": "BT_AVGO",
+   "printed": 2.97,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BT_TSLA",
+   "kind": "pct_change",
+   "from": "BTP_TSLA",
+   "to": "BT_TSLA",
+   "printed": -0.53,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BT_TSM",
+   "kind": "pct_change",
+   "from": "BTP_TSM",
+   "to": "BT_TSM",
+   "printed": 1.02,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_BT_AMD",
+   "kind": "pct_change",
+   "from": "BTP_AMD",
+   "to": "BT_AMD",
+   "printed": 2.7,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_KOSPI",
+   "kind": "pct_change",
+   "from": "KOSPI_PREV",
+   "to": "KOSPI_CLOSE",
+   "printed": 2.66,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_KOSDAQ",
+   "kind": "pct_change",
+   "from": "KOSDAQ_PREV",
+   "to": "KOSDAQ_CLOSE",
+   "printed": 0.6,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_SEC",
+   "kind": "pct_change",
+   "from": "SEC_PREV",
+   "to": "SEC_CLOSE",
+   "printed": 3.37,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_HYNIX",
+   "kind": "pct_change",
+   "from": "HYNIX_PREV",
+   "to": "HYNIX_CLOSE",
+   "printed": 6.42,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_QCOM",
+   "kind": "pct_change",
+   "from": "QCOM_PREV_N",
+   "to": "QCOM_CLOSE_N",
+   "printed": -5.82,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_NFLX",
+   "kind": "pct_change",
+   "from": "NFLX_PREV_N",
+   "to": "NFLX_CLOSE_N",
+   "printed": -4.67,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_ACN",
+   "kind": "pct_change",
+   "from": "ACN_PREV_N",
+   "to": "ACN_CLOSE_N",
+   "printed": -4.73,
+   "tolerance": 0.02
+  }
+ ],
+ "unit_policy": {
+  "다우": "pt",
+  "S&P 500": "pt",
+  "나스닥": "pt",
+  "러셀 2000": "pt",
+  "VIX": "pt",
+  "WTI": "USD/bbl",
+  "금": "USD/oz",
+  "MSTR": "USD",
+  "COIN": "USD",
+  "SNDK": "USD",
+  "NVDA": "USD",
+  "MSFT": "USD",
+  "AAPL": "USD",
+  "GOOGL": "USD",
+  "AMZN": "USD",
+  "META": "USD",
+  "AVGO": "USD",
+  "TSLA": "USD",
+  "TSM": "USD",
+  "AMD": "USD",
+  "코스피": "pt",
+  "코스닥": "pt",
+  "삼성전자": "KRW",
+  "SK하이닉스": "KRW",
+  "코스피 외국인 순매수": "억원",
+  "코스피 기관 순매수": "억원",
+  "코스피 개인 순매수": "억원",
+  "미국 기술 업종 ETF": "%",
+  "미국 소재 업종 ETF": "%",
+  "미국 유틸리티 업종 ETF": "%",
+  "미국 커뮤니케이션 업종 ETF": "%",
+  "다우 (9/17)": "pt",
+  "S&P 500 (9/17)": "pt",
+  "EFFR": "%",
+  "연방기금 목표범위 하단": "%",
+  "연방기금 목표범위 상단": "%",
+  "9월 인상폭": "bp",
+  "EFFR 1주 변화": "bp",
+  "점도표 2026년 말 중간값": "%",
+  "근원 PCE": "%",
+  "WTI (국내 마감 시점)": "USD/bbl",
+  "WTI (하루 뒤 수집분)": "USD/bbl",
+  "SNDK (보도)": "USD",
+  "QCOM": "USD",
+  "NFLX": "USD",
+  "ACN": "USD",
+  "국내 통신장비 업종": "%",
+  "국내 전기장비 업종": "%"
+ }
+}

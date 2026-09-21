@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MARKET DAILY 2026-09-18 · 모닝시황</title>
+<meta name="description" content="미래에셋증권 내부 참고용 모닝시황 카드뉴스 (2026-09-18)">
+<style>
+:root{
+  --primary:#F58220; --second:#043B72; --up:#C62828;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C;
+  --hair:#CDCECB; --hair-soft:#E5E4E1; --soft:#F7F8FA; --tint:#ECEFF4;
+  --thead:#FAB072;
+  --font-ko:'Spoqa Han Sans Neo','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --font-en:'Inter','Aptos','Segoe UI',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:#fff;color:var(--body);font-family:var(--font-ko);
+     font-size:19px;line-height:1.65;-webkit-text-size-adjust:100%;
+     font-variant-numeric:tabular-nums}
+html[lang="en"] body{font-family:var(--font-en)}
+html[lang="ko"] .en{display:none}
+html[lang="en"] .ko{display:none}
+.wrap{max-width:900px;margin:0 auto;padding:0 24px}
+@media (max-width:768px){ .wrap{padding:0 16px} body{font-size:19px} }
+
+/* ---- 한/영 토글 : 우상단, 스크롤 따라 흐름 ---- */
+.topbar{display:flex;justify-content:flex-end;padding:14px 0 0}
+.lang{display:inline-flex;border:1px solid var(--hair);border-radius:2px;
+      overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);background:#fff}
+.lang button{font-family:var(--font-en);font-size:14px;font-weight:500;
+      letter-spacing:.5px;padding:10px 17px;border:0;background:#fff;
+      color:var(--muted);cursor:pointer}
+.lang button+button{border-left:1px solid var(--hair)}
+.lang button[aria-checked="true"]{background:var(--primary);color:#fff}
+.lang button:hover[aria-checked="false"]{background:var(--soft);color:var(--ink)}
+
+/* ---- 표지 ---- */
+.cover{background:var(--primary);color:#fff;padding:44px 0 48px;margin-top:14px}
+.cover .tag{font-size:14px;letter-spacing:1.4px;opacity:.92;margin:0 0 10px}
+.cover h1{font-family:var(--font-en);font-size:58px;line-height:1.02;
+      letter-spacing:-1px;font-weight:700;margin:0}
+@media (max-width:768px){ .cover h1{font-size:40px} }
+.cover .sub{font-size:21px;margin:12px 0 0;font-weight:500}
+.cover .meta{font-size:15px;opacity:.94;margin:4px 0 0}
+.heads{list-style:none;margin:26px 0 0;padding:0;counter-reset:h}
+.heads li{counter-increment:h;position:relative;padding:11px 0 11px 44px;
+      border-top:1px solid rgba(255,255,255,.34);font-size:19px;line-height:1.45}
+.heads li:last-child{border-bottom:1px solid rgba(255,255,255,.34)}
+.heads li::before{content:counter(h,decimal-leading-zero);position:absolute;
+      left:0;top:11px;font-family:var(--font-en);font-weight:700;font-size:15px;
+      opacity:.95;letter-spacing:.5px}
+
+/* ---- 카드 ---- */
+.card{padding:44px 0 0}
+.rule{height:1px;background:var(--primary);margin:0 0 16px}
+.card h2{font-size:26px;font-weight:700;color:var(--ink);margin:0 0 4px;letter-spacing:-.2px}
+@media (max-width:768px){ .card h2{font-size:22px} }
+.card h3{font-size:21px;font-weight:600;color:var(--ink);margin:30px 0 8px}
+.kicker{font-family:var(--font-en);font-size:13px;letter-spacing:1.3px;
+      color:var(--primary);font-weight:700;margin:0 0 6px}
+.asof{font-size:14px;color:var(--muted);margin:2px 0 14px;line-height:1.45}
+.lede{font-size:19px;margin:0 0 14px}
+
+/* ---- 표 ---- */
+table{width:100%;border-collapse:collapse;border:1px solid var(--hair);
+      font-size:17px;margin:0 0 10px}
+caption{caption-side:bottom;text-align:left;font-size:14px;color:var(--muted);
+      padding:8px 2px 0;line-height:1.5}
+th,td{padding:10px 12px;border-bottom:1px solid var(--hair-soft);text-align:left}
+thead th{background:var(--thead);color:#1A1A1A;font-weight:700;font-size:16px;
+      white-space:nowrap}
+tbody tr:hover{background:var(--soft)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.up{color:var(--up);font-weight:600}
+.down{color:var(--second);font-weight:600}
+.flat{color:var(--muted)}
+.nm{font-weight:600;color:var(--ink)}
+.nm .sub{display:block;font-weight:400;font-size:14px;color:var(--muted);
+      line-height:1.35;margin-top:2px}
+.note{font-size:15px;color:var(--body);line-height:1.5}
+@media (max-width:640px){
+  table{font-size:16px} th,td{padding:9px 8px}
+  .hide-sm{display:none}
+}
+
+/* ---- 무빙 카드 ---- */
+.movers{display:grid;gap:12px;grid-template-columns:repeat(3,1fr);margin:0 0 12px}
+@media (max-width:768px){ .movers{grid-template-columns:1fr} }
+.mv{border:1px solid var(--hair);border-radius:4px;padding:16px}
+.mv .rank{font-family:var(--font-en);font-size:12px;letter-spacing:1.2px;
+      color:var(--primary);font-weight:700}
+.mv .sym{font-size:22px;font-weight:700;color:var(--ink);margin:2px 0 0}
+.mv .co{font-size:14px;color:var(--muted);line-height:1.35;margin:1px 0 8px}
+.mv .pc{font-size:30px;font-weight:700;line-height:1.1;
+      font-variant-numeric:tabular-nums}
+.mv .px{font-size:15px;color:var(--muted);margin:2px 0 8px;
+      font-variant-numeric:tabular-nums}
+.mv .cm{font-size:15px;line-height:1.5;border-top:1px solid var(--hair-soft);
+      padding-top:8px}
+.mv dl{margin:8px 0 0;font-size:13px;color:var(--muted);display:flex;gap:14px}
+.mv dl div{display:flex;gap:5px}
+.mv dt{font-weight:500}
+.mv dd{margin:0;font-variant-numeric:tabular-nums}
+
+/* ---- 콜아웃 ---- */
+.common{background:var(--tint);border-left:3px solid var(--primary);
+      padding:14px 18px;font-size:18px;line-height:1.6;margin:0 0 6px}
+.points{background:var(--soft);border:1px solid var(--hair-soft);border-radius:4px;
+      padding:16px 20px;margin:12px 0 0}
+.points p{margin:0 0 8px;font-size:18px;line-height:1.6;padding-left:18px;
+      position:relative}
+.points p:last-child{margin-bottom:0}
+.points p::before{content:"";position:absolute;left:0;top:11px;width:7px;height:7px;
+      background:var(--primary);border-radius:50%}
+
+/* ---- 뉴스카드 ---- */
+.news{border:1px solid var(--hair);border-radius:4px;padding:22px 24px;margin:0 0 14px}
+.news .cat{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.6px;
+      color:#fff;background:var(--second);padding:3px 10px;border-radius:2px;
+      margin:0 0 10px}
+.news h3{margin:0 0 8px;font-size:21px}
+.news ul{margin:10px 0 0;padding:0;list-style:none}
+.news li{position:relative;padding:0 0 0 18px;margin:0 0 9px;font-size:18px;
+      line-height:1.6}
+.news li::before{content:"";position:absolute;left:0;top:11px;width:6px;height:6px;
+      background:var(--primary);border-radius:50%}
+.news li:last-child{margin-bottom:0}
+@media (max-width:640px){ .news{padding:18px 16px} }
+
+/* ---- 배지 ---- */
+.vf{display:inline-block;font-family:var(--font-en);font-size:11px;font-weight:700;
+    letter-spacing:.6px;padding:1px 6px;border-radius:2px;vertical-align:2px;
+    margin-left:6px;white-space:nowrap}
+.vf.ok{background:#E8F1E9;color:#2E8540;border:1px solid #BFD9C4}
+.vf.solo{background:#FBF2E0;color:#8A6400;border:1px solid #E6D3A3}
+.vf.none{background:#EFEFEF;color:#6C6C6C;border:1px solid #DDD}
+
+/* ---- 검증·고지 ---- */
+.verify{font-size:16px;line-height:1.6}
+.verify li{margin:0 0 8px}
+.foot{margin:44px 0 0;border-top:1px solid var(--hair);padding:18px 0 40px;
+      font-size:14px;color:var(--muted);line-height:1.6}
+.disc{border:1px solid var(--second);border-left-width:3px;border-radius:2px;
+      padding:14px 18px;margin:0 0 14px;font-size:15px;color:var(--ink);
+      line-height:1.6}
+
+@media print{
+  .lang,.topbar{display:none!important}
+  body{font-size:12pt;line-height:1.4}
+  .wrap{max-width:100%;padding:0}
+  .card,.news,table,.mv{page-break-inside:avoid}
+  h2,h3{page-break-after:avoid}
+  .cover{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head><body>
+<div class="wrap"><div class="topbar">
+<div class="lang" role="radiogroup" aria-label="Language">
+<button id="b-ko" role="radio" aria-checked="true">KO</button>
+<button id="b-en" role="radio" aria-checked="false">EN</button>
+</div></div></div>
+<header class="cover"><div class="wrap">
+<p class="tag"><span class="ko">미래에셋증권 · 내부 참고용</span><span class="en">Mirae Asset Securities · Internal reference</span></p>
+<h1>MARKET DAILY</h1>
+<p class="sub"><span class="ko">2026년 9월 18일(금) · 모닝시황</span><span class="en">September 18, 2026 (Fri) · Morning Brief</span></p>
+<p class="meta"><span class="ko">간밤 미국 마감 · 2026년 9월 21일(월) 07:30 배포 · 추석 휴장 9/24~9/25</span><span class="en">Overnight US close · distributed Mon 21 Sep 2026, 07:30 KST · KRX closed 24-25 Sep (Chuseok)</span></p>
+<ol class="heads">
+<li><span class="ko">지수는 제자리, 돈은 개별 재료주로 — 나스닥 +0.39%인데 러셀 2000은 −0.50%</span><span class="en">Flat indices, money into single-stock stories — Nasdaq +0.39% while Russell 2000 fell 0.50%</span></li>
+<li><span class="ko">연준 9월 16일 25bp 인상, 2023년 이후 첫 인상 — 점도표는 연내 한 차례 더</span><span class="en">Fed hiked 25bp on 16 Sep, its first since 2023 — dot plot implies one more this year</span></li>
+<li><span class="ko">WTI −6.32%로 95.47달러 — 사우디 송유관 복구 기대에 지정학 프리미엄이 빠졌습니다</span><span class="en">WTI fell 6.32% to $95.47 as Saudi pipeline recovery hopes drained the risk premium</span></li>
+<li><span class="ko">암호자산 관련주 급등 — SEC 토큰화 증권 한시 면제에 MSTR +16.39%, 코인베이스 +11.66%</span><span class="en">Crypto names surged on the SEC&#x27;s tokenized-securities relief — MSTR +16.39%, Coinbase +11.66%</span></li>
+<li><span class="ko">코스피 +2.66% 6,894.23 — 외국인·기관 동반 순매수, SK하이닉스 +6.42%</span><span class="en">KOSPI rose 2.66% to 6,894.23 on foreign and institutional buying; SK Hynix +6.42%</span></li>
+</ol>
+</div></header>
+<main class="wrap">
+<section class="card">
+<div class="rule"></div>
+<p class="kicker">MARKET BOARD</p>
+<h2><span class="ko">1단 · 기준선</span><span class="en">Part 1 · Benchmarks</span></h2>
+<p class="asof"><span class="ko">기준 시점 — 2026년 9월 18일(금) 마감</span><span class="en">As of — close, September 18, 2026 (Fri)</span></p>
+<table><thead><tr>
+<th><span class="ko">지표</span><span class="en">Index</span></th>
+<th class="num"><span class="ko">종가</span><span class="en">Close</span></th>
+<th class="num"><span class="ko">등락률</span><span class="en">Change</span></th>
+</tr></thead><tbody>
+<tr>
+<td class="nm"><span class="ko">다우</span><span class="en">Dow Jones</span></td>
+<td class="num">51,682.64</td>
+<td class="num down">-0.18%</td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">S&amp;P 500</span><span class="en">S&amp;P 500</span></td>
+<td class="num">7,650.50</td>
+<td class="num up">+0.17%</td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">나스닥</span><span class="en">Nasdaq Composite</span></td>
+<td class="num">26,522.54</td>
+<td class="num up">+0.39%</td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">러셀 2000</span><span class="en">Russell 2000</span></td>
+<td class="num">2,860.40</td>
+<td class="num down">-0.50%</td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">VIX</span><span class="en">VIX</span></td>
+<td class="num">14.81</td>
+<td class="num down">-4.08%</td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">WTI</span><span class="en">WTI crude</span></td>
+<td class="num">95.47</td>
+<td class="num down">-6.32%</td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">금</span><span class="en">Gold</span></td>
+<td class="num">4,415.90</td>
+<td class="num up">+0.37%</td>
+</tr>
+</tbody>
+<caption><span class="ko">출처: 야후 파이낸스 · 수집 스냅샷 data/market/2026-09-19.json (2026-09-19 10:10:04 수집). 표 안의 모든 값은 이 파일 하나에서 읽었습니다.</span><span class="en">Source: Yahoo Finance · snapshot data/market/2026-09-19.json (collected 2026-09-19 10:10:04). Every value in this table comes from that single file.</span></caption>
+</table>
+</section>
+<section class="card">
+<div class="rule"></div>
+<p class="kicker">TOP MOVERS</p>
+<h2><span class="ko">2단 · 어제의 무빙</span><span class="en">Part 2 · Yesterday&#x27;s movers</span></h2>
+<p class="asof"><span class="ko">기준 시점 — 미국 2026년 9월 18일(금) 정규장 마감 기준</span><span class="en">As of — US regular session close, September 18, 2026 (Fri)</span></p>
+<div class="movers">
+<div class="mv">
+<p class="rank">NO.1</p>
+<p class="sym"><span class="ko">MSTR</span><span class="en">MSTR</span></p>
+<p class="co"><span class="ko">Strategy Inc</span><span class="en">Strategy Inc</span></p>
+<p class="pc up">+16.39%</p>
+<p class="px"><span class="ko">$153.92</span><span class="en">$153.92</span></p>
+<p class="cm"><span class="ko">비트코인이 2주 만에 8만 달러를 되찾자 보유 코인 평가익 기대가 붙었습니다.</span><span class="en">Bitcoin reclaimed $80,000 for the first time in two weeks, lifting its coin-treasury valuation.</span></p>
+<dl>
+<div><dt><span class="ko">시총</span><span class="en">Cap</span></dt><dd><span class="ko">$611.5억</span><span class="en">$61.1B</span></dd></div>
+<div><dt><span class="ko">일평균 거래대금</span><span class="en">Avg $ volume</span></dt><dd><span class="ko">$36.6억</span><span class="en">$3.7B</span></dd></div>
+</dl>
+</div>
+<div class="mv">
+<p class="rank">NO.2</p>
+<p class="sym"><span class="ko">COIN</span><span class="en">COIN</span></p>
+<p class="co"><span class="ko">Coinbase Global, Inc.</span><span class="en">Coinbase Global, Inc.</span></p>
+<p class="pc up">+11.66%</p>
+<p class="px"><span class="ko">$194.25</span><span class="en">$194.25</span></p>
+<p class="cm"><span class="ko">SEC가 토큰화 증권 거래를 5년간 한시 허용하면서 거래소 사업 확장 기대가 실렸습니다.</span><span class="en">The SEC&#x27;s five-year exemption for tokenized-securities trading opened a new venue business.</span></p>
+<dl>
+<div><dt><span class="ko">시총</span><span class="en">Cap</span></dt><dd><span class="ko">$512.5억</span><span class="en">$51.3B</span></dd></div>
+<div><dt><span class="ko">일평균 거래대금</span><span class="en">Avg $ volume</span></dt><dd><span class="ko">$17.4억</span><span class="en">$1.7B</span></dd></div>
+</dl>
+</div>
+<div class="mv">
+<p class="rank">NO.3</p>
+<p class="sym"><span class="ko">SNDK</span><span class="en">SNDK</span></p>
+<p class="co"><span class="ko">Sandisk Corporation</span><span class="en">Sandisk Corporation</span></p>
+<p class="pc up">+10.99%</p>
+<p class="px"><span class="ko">$1,791.82</span><span class="en">$1,791.82</span></p>
+<p class="cm"><span class="ko">S&amp;P 100 편입이 9월 21일 개장 전 발효돼 지수 추종 자금의 기계적 매수가 붙었습니다.</span><span class="en">S&amp;P 100 inclusion takes effect before the 21 Sep open, forcing index-tracking funds to buy.</span></p>
+<dl>
+<div><dt><span class="ko">시총</span><span class="en">Cap</span></dt><dd><span class="ko">$2624억</span><span class="en">$262.4B</span></dd></div>
+<div><dt><span class="ko">일평균 거래대금</span><span class="en">Avg $ volume</span></dt><dd><span class="ko">$248.0억</span><span class="en">$24.8B</span></dd></div>
+</dl>
+</div>
+</div>
+<p class="common"><strong><span class="ko">공통 배경</span><span class="en">Common thread</span></strong> <span class="ko">셋 다 지수와 무관하게 자기 촉매로 움직였습니다 — 규제(SEC 면제)·수급(지수 편입)·가격(낸드 공급 부족)으로 재료는 서로 다르지만, 금리를 올리는 국면에서도 이야기가 분명한 곳에만 돈이 붙었다는 점이 같습니다.</span><span class="en">All three moved on their own catalyst rather than the index — regulation, index flows and NAND pricing. Different stories, one pattern: even in a hiking cycle, money went only where the story was specific.</span></p>
+<p class="asof"><span class="ko">대상: 미국 상장 보통주 중 시가총액 100억 달러 이상 · 일평균 거래대금(3개월) 3억 달러 이상. 971종목을 걸러 158종목이 통과했고 그중 상위 3종목입니다.</span><span class="en">Universe: US-listed common stocks with market cap ≥ $10B and 3-month average dollar volume ≥ $300M. 971 screened, 158 passed; top 3 shown.</span></p>
+</section>
+<section class="card">
+<div class="rule"></div>
+<p class="kicker">BIG TECH BOARD</p>
+<h2><span class="ko">빅테크 보드</span><span class="en">Big tech board</span></h2>
+<p class="asof"><span class="ko">기준 시점 — 미국 2026년 9월 18일(금) 정규장 마감 기준</span><span class="en">As of — US regular session close, September 18, 2026 (Fri)</span></p>
+<table><thead><tr>
+<th><span class="ko">종목</span><span class="en">Name</span></th>
+<th class="num"><span class="ko">종가</span><span class="en">Close</span></th>
+<th class="num"><span class="ko">등락률</span><span class="en">Change</span></th>
+<th class="hide-sm"><span class="ko">코멘트</span><span class="en">Comment</span></th>
+</tr></thead><tbody>
+<tr>
+<td class="nm"><span class="ko">엔비디아</span><span class="en">NVDA</span></td>
+<td class="num">222.27</td>
+<td class="num up">+1.34%</td>
+<td class="note hide-sm"><span class="ko">AI 가속기 GPU. 사흘 만에 반등하며 반도체 강세를 이끌었습니다.</span><span class="en">AI accelerator GPUs; led the semiconductor bid on the day.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">마이크로소프트</span><span class="en">MSFT</span></td>
+<td class="num">493.78</td>
+<td class="num down">-0.80%</td>
+<td class="note hide-sm"><span class="ko">애저 클라우드와 오피스. 금리 부담에 빅테크 중 약한 쪽에 섰습니다.</span><span class="en">Azure and Office; on the weaker side of big tech as rates pressed multiples.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">애플</span><span class="en">AAPL</span></td>
+<td class="num">336.13</td>
+<td class="num down">-0.26%</td>
+<td class="note hide-sm"><span class="ko">아이폰과 서비스. 모뎀 공급망 뉴스에도 등락은 제한적이었습니다.</span><span class="en">iPhone and services; little moved despite modem supply-chain news.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">알파벳</span><span class="en">GOOGL</span></td>
+<td class="num">349.54</td>
+<td class="num up">+0.64%</td>
+<td class="note hide-sm"><span class="ko">검색 광고와 구글 클라우드, 자체 TPU. 광고주 예산 논쟁 속 소폭 상승.</span><span class="en">Search ads, Google Cloud and in-house TPUs; modestly higher.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">아마존</span><span class="en">AMZN</span></td>
+<td class="num">253.71</td>
+<td class="num up">+1.00%</td>
+<td class="note hide-sm"><span class="ko">전자상거래와 AWS. 이익은 대부분 클라우드에서 납니다.</span><span class="en">E-commerce and AWS, where most of the profit comes from.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">메타</span><span class="en">META</span></td>
+<td class="num">665.75</td>
+<td class="num down">-2.43%</td>
+<td class="note hide-sm"><span class="ko">인스타그램·페이스북 광고. 빅테크 10종목 중 가장 크게 밀렸습니다.</span><span class="en">Instagram and Facebook advertising; the weakest of the ten.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">브로드컴</span><span class="en">AVGO</span></td>
+<td class="num">357.61</td>
+<td class="num up">+2.97%</td>
+<td class="note hide-sm"><span class="ko">맞춤형 AI 칩(ASIC)과 네트워크 반도체. 보드에서 가장 크게 올랐습니다.</span><span class="en">Custom AI silicon and networking; the biggest gainer on the board.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">테슬라</span><span class="en">TSLA</span></td>
+<td class="num">364.27</td>
+<td class="num down">-0.53%</td>
+<td class="note hide-sm"><span class="ko">전기차와 에너지 저장. 자율주행 소프트웨어가 변수입니다.</span><span class="en">EVs and storage; autonomy software remains the swing factor.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">TSMC</span><span class="en">TSM</span></td>
+<td class="num">434.67</td>
+<td class="num up">+1.02%</td>
+<td class="note hide-sm"><span class="ko">세계 최대 파운드리. 최선단 공정을 사실상 독점합니다.</span><span class="en">The largest foundry; effectively alone at the leading edge.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">AMD</span><span class="en">AMD</span></td>
+<td class="num">559.82</td>
+<td class="num up">+2.70%</td>
+<td class="note hide-sm"><span class="ko">서버 CPU와 AI 가속기. 반도체 강세에 함께 올랐습니다.</span><span class="en">Server CPUs and AI accelerators; rose with the semiconductor bid.</span></td>
+</tr>
+</tbody>
+<caption><span class="ko">출처: yahoo:quote (v7/finance/quote, 단일 응답). 표 안의 종가·등락률은 한 곳에서만 읽었습니다.</span><span class="en">Source: yahoo:quote (v7/finance/quote, 단일 응답). Closes and changes in this table were read from one place.</span></caption>
+</table>
+<div class="points">
+<p><span class="ko">반도체가 끌고 플랫폼이 눌렀습니다 — 브로드컴 +2.97%·AMD +2.70%·TSMC +1.03% 대 메타 −2.43%. 같은 &#x27;빅테크&#x27;라도 한 방향이 아닙니다.</span><span class="en">Semis pulled, platforms pushed back — Broadcom +2.97%, AMD +2.70%, TSMC +1.03% against Meta −2.43%. &#x27;Big tech&#x27; did not move as one.</span></p>
+<p><span class="ko">10종목 중 6종목이 올랐지만, 시총이 가장 큰 애플과 마이크로소프트가 내려 지수 기여는 크지 않았습니다.</span><span class="en">Six of ten rose, but the two largest — Apple and Microsoft — fell, so the index contribution was muted.</span></p>
+<p><span class="ko">연준이 금리를 올린 주에 멀티플이 높은 쪽(메타·마이크로소프트)이 먼저 눌린 점을 기억해 두십시오.</span><span class="en">In the week the Fed hiked, the higher-multiple names (Meta, Microsoft) gave way first.</span></p>
+<p><span class="ko">이 보드는 시황을 읽는 고정 10종목입니다. 편입·제외는 하지 않으므로 날짜별 비교가 그대로 됩니다.</span><span class="en">This board is a fixed ten names — no additions or deletions, so day-to-day comparison holds.</span></p>
+</div>
+</section>
+<section class="card">
+<div class="rule"></div>
+<p class="kicker">NEWS CARDS</p>
+<h2><span class="ko">뉴스카드 5장</span><span class="en">Five news cards</span></h2>
+<p class="asof"><span class="ko">기준 시점 — 2026년 9월 18일(금) 뉴욕 마감 및 같은 날 국내 마감. 시세는 수집 파일(거래소 원천), 배경은 표기된 매체입니다.</span><span class="en">As of — New York close and Korea close, Friday 18 September 2026. Prices from the collected exchange data; context from the outlets cited.</span></p>
+<article class="news">
+<span class="cat"><span class="ko">미국증시</span><span class="en">US equities</span></span>
+<h3><span class="ko">지수는 갈렸고, 변동성은 더 내렸습니다</span><span class="en">Indices split, volatility fell further</span></h3>
+<p class="lede"><span class="ko">대형 기술주가 지수를 떠받쳤지만 폭은 좁았습니다. 다우와 러셀 2000이 내린 반면 나스닥만 뚜렷이 올랐고, VIX는 14.81까지 내려 시장이 이번 인상을 놀라움으로 받아들이지 않았음을 보여 줍니다.</span><span class="en">Large-cap tech held the tape up, but breadth was narrow. The Dow and Russell 2000 fell while only the Nasdaq clearly rose, and the VIX slid to 14.81 — the market did not treat this hike as a surprise.</span></p>
+<ul>
+<li><span class="ko">업종에서는 기술만 뚜렷이 올랐고(+0.82%), 소재 −1.42%·유틸리티 −1.42%·커뮤니케이션 −1.37%로 경기·배당 성격이 함께 밀렸습니다.</span><span class="en">Technology was the only clear gainer (+0.82%); materials −1.42%, utilities −1.42% and communication services −1.37% all fell.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">러셀 2000이 대형주와 반대로 간 것은 금리를 올리는 국면에서 중소형주의 조달 비용 부담이 먼저 드러난다는 뜻입니다.</span><span class="en">The Russell 2000 diverging from large caps is the usual tell: small caps feel funding costs first when rates rise.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">국내 매체의 9월 18일자 조간은 전날(9월 17일) 뉴욕장을 다룹니다 — 다우 51,778.04·S&amp;P 7,637.76은 9월 17일 종가이며, 이 표의 9월 18일 종가와 다릅니다.</span><span class="en">Korean morning papers dated 18 Sep cover the 17 Sep session — Dow 51,778.04 and S&amp;P 7,637.76 are 17 Sep closes, not the 18 Sep figures in this table.</span><span class="vf ok">MARKET DATA</span></li>
+</ul>
+</article>
+<article class="news">
+<span class="cat"><span class="ko">물가·연준</span><span class="en">Inflation &amp; the Fed</span></span>
+<h3><span class="ko">9월 16일 25bp 인상 — 2023년 이후 첫 인상입니다</span><span class="en">A 25bp hike on 16 September — the first since 2023</span></h3>
+<p class="lede"><span class="ko">연준이 기준금리를 3.75~4.00%로 올렸습니다. 표결은 만장일치였고, 인하가 아니라 인상이 논의되는 국면으로 넘어갔다는 점이 이번 주 시장의 바탕입니다.</span><span class="en">The Fed raised its target range to 3.75–4.00% in a unanimous vote. The regime has shifted from debating cuts to debating further hikes, and that is the backdrop for this week.</span></p>
+<ul>
+<li><span class="ko">실효 연방기금금리(EFFR)는 3.88%로, 새 목표범위 안에 들어와 있습니다. 최근 1주 변화는 +25bp로 이번 인상이 그대로 반영됐습니다.</span><span class="en">The effective fed funds rate is 3.88%, inside the new range; it moved +25bp over the past week, reflecting the hike.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">점도표의 2026년 말 중간값은 4.1%로, 연내 25bp 한 차례를 더 가리킵니다.</span><span class="en">The dot plot&#x27;s end-2026 median is 4.1%, pointing to one more 25bp move this year.</span><span class="vf ok">2 SOURCES</span></li>
+<li><span class="ko">인상 배경으로는 목표를 웃도는 근원 물가와 에너지 가격 상승이 지목됐습니다. 근원 PCE는 3.4% 부근으로 보도됐습니다.</span><span class="en">Above-target core inflation and higher energy prices were cited; core PCE was reported near 3.4%.</span><span class="vf solo">1 SOURCE</span></li>
+<li><span class="ko">미 국채 수익률 곡선은 이 판의 기준일에 대해 재무부 확정치가 아직 수집되지 않아 싣지 않았습니다.</span><span class="en">The Treasury yield curve is omitted: the official series for this session was not yet in the collected file.</span><span class="vf none">NOT FOUND</span></li>
+</ul>
+</article>
+<article class="news">
+<span class="cat"><span class="ko">유가·원자재</span><span class="en">Oil &amp; commodities</span></span>
+<h3><span class="ko">WTI가 하루에 6% 넘게 빠졌습니다</span><span class="en">WTI lost more than 6% in a session</span></h3>
+<p class="lede"><span class="ko">사우디 송유관 복구와 대체 수송로 확대 기대가 자리 잡으면서, 지난 2주 유가에 얹혀 있던 지정학 프리미엄이 빠르게 빠졌습니다. 금은 소폭 올라 방향이 갈렸습니다.</span><span class="en">As expectations firmed for Saudi pipeline repairs and expanded alternative routes, the geopolitical premium of the past fortnight drained quickly. Gold edged higher, moving the other way.</span></p>
+<ul>
+<li><span class="ko">국내 장이 끝난 9월 18일 15:30(KST) 시점의 WTI는 100.08달러였습니다 — 뉴욕 정산가 95.47달러까지 그 뒤에 더 밀린 것입니다. 국내 마감 시황과 뉴욕 마감 시황의 유가가 다른 이유입니다.</span><span class="en">At the Korean close (15:30 KST on 18 Sep) WTI was $100.08; it fell further to the $95.47 New York settle. That is why a Korea-close note and a New York-close note quote different oil prices.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">같은 장을 두고 매체별 보도 폭이 −1.8%에서 −5%까지 갈렸습니다. 장중 시각이 서로 달랐기 때문이며, 이 표는 정산가 기준입니다.</span><span class="en">Outlets reported anywhere from −1.8% to −5% for the same session, reflecting different intraday timestamps; this table uses the settlement price.</span><span class="vf ok">2 SOURCES</span></li>
+<li><span class="ko">유가 하락은 물가 부담을 덜어 주는 쪽이지만, 연준이 인상을 결정한 뒤에 나온 움직임이라 이번 회의 결과에는 반영되지 않았습니다.</span><span class="en">Lower crude eases the inflation impulse, but this move came after the Fed decided, so it is not in this meeting&#x27;s outcome.</span><span class="vf ok">MARKET DATA</span></li>
+</ul>
+</article>
+<article class="news">
+<span class="cat"><span class="ko">기업·실적</span><span class="en">Companies &amp; earnings</span></span>
+<h3><span class="ko">메모리는 올라가고, 모뎀은 내려왔습니다</span><span class="en">Memory up, modems down</span></h3>
+<p class="lede"><span class="ko">개별 종목의 하루 폭이 지수보다 훨씬 컸습니다. 수급과 업황이 분명한 쪽은 크게 올랐고, 점유율 전망이 흔들린 쪽은 한 달 상승분을 하루에 되돌렸습니다.</span><span class="en">Single-stock ranges dwarfed the index. Where flows and pricing were clear, stocks jumped; where share guidance wobbled, a month of gains unwound in a day.</span></p>
+<ul>
+<li><span class="ko">샌디스크 +10.99% — S&amp;P 100 편입과 낸드 공급 부족이 겹쳤습니다. 기사에 적힌 종가 1,791.82달러가 수집 시세와 정확히 일치합니다.</span><span class="en">Sandisk +10.99% on S&amp;P 100 inclusion and NAND tightness; the $1,791.82 close quoted in coverage matches the collected price exactly.</span><span class="vf ok">2 SOURCES</span></li>
+<li><span class="ko">퀄컴 −5.82%, 177.72달러 — 아이폰 모뎀 점유율이 기존 추정보다 낮아질 것이라는 회사 설명과 한 달 랠리의 되돌림이 겹쳤습니다.</span><span class="en">Qualcomm −5.82% to $177.72, as guidance for a lower share of iPhone modems met profit-taking after a month-long rally.</span><span class="vf ok">2 SOURCES</span></li>
+<li><span class="ko">넷플릭스 −4.67%, 액센츄어 −4.73%로 크게 밀렸습니다. 두 종목의 하락 사유는 공개 자료에서 확인하지 못해 적지 않았습니다(2026-09-21 기준).</span><span class="en">Netflix −4.67% and Accenture −4.73% also fell sharply; we could not confirm the drivers in public sources as of 21 Sep 2026, so none are stated.</span><span class="vf none">NOT FOUND</span></li>
+</ul>
+</article>
+<article class="news">
+<span class="cat"><span class="ko">한국증시</span><span class="en">Korea equities</span></span>
+<h3><span class="ko">코스피 +2.66%, 7,000선을 다시 봅니다</span><span class="en">KOSPI +2.66%, 7,000 back in view</span></h3>
+<p class="lede"><span class="ko">외국인과 기관이 함께 사면서 지수가 크게 올랐습니다. 반도체 두 종목이 상승분의 대부분을 만들었고, 코스닥은 같은 날 +0.60%에 그쳐 두 시장의 온도가 달랐습니다.</span><span class="en">Foreign and institutional buyers pushed the index sharply higher. Two semiconductor names produced most of the gain, while the KOSDAQ added only 0.60% — the two markets ran at different temperatures.</span></p>
+<ul>
+<li><span class="ko">수급은 외국인 +4,486억원, 기관 +1조 5,322억원, 개인 −3조 6,359억원이었습니다(코스피, 확정치).</span><span class="en">KOSPI flows: foreigners +KRW 448.6bn, institutions +KRW 1,532.2bn, retail −KRW 3,635.9bn (final).</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">삼성전자 +3.37% 261,000원, SK하이닉스 +6.42% 1,857,000원으로 반도체가 지수를 끌었습니다.</span><span class="en">Samsung Electronics +3.37% at KRW 261,000 and SK Hynix +6.42% at KRW 1,857,000 led the index.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">업종에서는 통신장비 +6.94%, 전기장비 +5.10%가 앞섰습니다. 반도체·전력 설비 쪽으로 쏠린 하루였습니다.</span><span class="en">By sector, telecom equipment +6.94% and electrical equipment +5.10% led — the bid clustered in semis and power gear.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">이번 주는 9월 21일(월)부터 23일(수)까지 사흘만 열리고, 추석으로 24일(목)·25일(금)은 휴장입니다. 연휴를 앞둔 포지션 조정이 거래에 섞일 수 있습니다.</span><span class="en">KRX trades only Mon 21 – Wed 23 September this week; it is closed Thu 24 and Fri 25 for Chuseok. Pre-holiday position adjustment may colour the tape.</span><span class="vf ok">MARKET DATA</span></li>
+</ul>
+</article>
+</section>
+<section class="card">
+<div class="rule"></div>
+<p class="kicker">VERIFICATION</p>
+<h2><span class="ko">검증 노트</span><span class="en">Verification notes</span></h2>
+<ul class="verify">
+<li><span class="ko">기준선 7종은 스냅샷 한 파일에서만 읽었습니다. 표 안에서 출처를 섞지 않는다는 사양을 그대로 지킨 것입니다.</span><span class="en">All seven benchmarks were read from a single snapshot file, honouring the rule that one table must not mix sources.</span></li>
+<li><span class="ko">무빙 3종목과 빅테크 10종목의 종가·등락률은 모두 같은 시세 응답 한 번에서 나왔습니다. 종목마다 다른 사이트를 섞지 않았습니다.</span><span class="en">Closes and changes for the three movers and ten big-tech names all came from one quote response — no per-stock source mixing.</span></li>
+<li><span class="ko">유니버스를 고르는 데 쓴 스크리너 수치는 인쇄하지 않았습니다. 후보를 추리는 데만 쓰고, 표에 실린 값은 전부 시세 응답에서 다시 받은 것입니다.</span><span class="en">Screener figures were used only to shortlist candidates and are not printed; every number in the tables was re-fetched from the quote response.</span></li>
+<li><span class="ko">인쇄된 등락률은 모두 종가와 전일 종가로 다시 계산해 대조했습니다(주장 대장 검산).</span><span class="en">Every printed percentage change was recomputed from close and previous close and cross-checked (claim-ledger verification).</span></li>
+<li><span class="ko">검색이 9월 17일 뉴욕 마감을 &#x27;9월 18일&#x27;로 돌려준 사례가 있었습니다. 거래소 원천을 채택하고 기사 수치는 버렸습니다.</span><span class="en">A search returned the 17 September New York close labelled as 18 September. We kept the exchange data and discarded the article&#x27;s figures.</span></li>
+<li><span class="ko">암호자산 관련주의 등락률은 기사(장중 시점, +12~13%)와 마감 확정치(+16.39%)가 다릅니다. 표는 마감 확정치입니다.</span><span class="en">Crypto-name percentages differ between intraday coverage (+12–13%) and the final close (+16.39%). The table uses the close.</span></li>
+<li><span class="ko">WTI는 24시간 거래되는 연속선물이라 같은 날짜 봉이 수집 시각에 따라 손질됩니다. 마감 직후 수집분(9월 19일 10:10 KST)을 채택했으며, 하루 뒤 수집분은 96.08달러였습니다.</span><span class="en">WTI is a 24-hour continuous future, so the same daily bar is revised between collections. We used the snapshot taken right after the close (19 Sep, 10:10 KST); a day later it read $96.08.</span></li>
+<li><span class="ko">국내 수급은 확정치를 썼습니다. 일부 매체가 보도한 장중 집계와는 차이가 있습니다.</span><span class="en">Korean flow figures are final settlement values and differ from the intraday tallies some outlets reported.</span></li>
+<li><span class="ko">미 국채 수익률 곡선과 VKOSPI는 이 판의 기준일 자료가 없어 싣지 않았습니다. 없는 값을 채우지 않았습니다.</span><span class="en">The Treasury curve and VKOSPI are absent for this session and were left out rather than filled in.</span></li>
+<li><span class="ko">넷플릭스·액센츄어 하락 사유는 확인하지 못해 비워 두었습니다. &#x27;사유가 없다&#x27;가 아니라 &#x27;확인되지 않았다&#x27;입니다.</span><span class="en">Drivers for the Netflix and Accenture declines were not confirmed and are left blank — unverified, not non-existent.</span></li>
+<li><span class="ko">국내 업종 등락률은 기준일 스냅샷에서 읽었습니다. 최신 시세 파일의 업종 블록에는 날짜가 없어 당일 장중값이 섞이며, 초고에서 실제로 오늘 장중 수치를 9월 18일 값으로 적었다가 바로잡았습니다.</span><span class="en">Sector moves were read from the reference-day snapshot. The sector block in the newest price file carries no date and can contain live intraday values; an early draft did print today&#x27;s intraday figure as an 18 September number and it was corrected.</span></li>
+</ul>
+</section>
+<footer class="foot">
+<p class="disc"><strong><span class="ko">고지</span><span class="en">Disclaimer</span></strong> <span class="ko">본 자료는 내부 참고용으로 작성되었으며, 특정 종목의 매매를 권유하는 자료가 아닙니다. 수록된 시세와 정보는 작성 시점 기준이며 오류가 있을 수 있습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다.</span><span class="en">This material is prepared for internal reference only and is not a recommendation to buy or sell any security. Prices and information are as of the stated time and may contain errors. Investment decisions remain the sole responsibility of the investor.</span></p>
+<p><span class="ko">MARKET DAILY · 미래에셋증권 · 작성 2026-09-21 12:04 KST · 자료 data/market/2026-09-19.json / data/us_movers/latest.json</span><span class="en">MARKET DAILY · Mirae Asset Securities · compiled 2026-09-21 12:04 KST · data data/market/2026-09-19.json / data/us_movers/latest.json</span></p>
+</footer>
+</main>
+<script>
+(function(){
+  var K=document.getElementById('b-ko'), E=document.getElementById('b-en');
+  function set(l){
+    document.documentElement.lang=l;
+    K.setAttribute('aria-checked', String(l==='ko'));
+    E.setAttribute('aria-checked', String(l==='en'));
+    try{ localStorage.setItem('md-lang', l); }catch(e){}
+  }
+  K.addEventListener('click', function(){ set('ko'); });
+  E.addEventListener('click', function(){ set('en'); });
+  var saved=null; try{ saved=localStorage.getItem('md-lang'); }catch(e){}
+  set(saved==='en' ? 'en' : 'ko');
+})();
+</script>
+</body></html>

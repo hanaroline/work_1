@@ -1,0 +1,596 @@
+{
+ "_읽는 법": [
+  "MARKET DAILY 마감시황(국내 중심)의 글입니다. 표의 숫자는 여기 없습니다 — 수집 파일에서 바로 나옵니다.",
+  "글에 박은 숫자는 아래 claims/derived 에 등록해 두었습니다.",
+  "날짜 필드가 없는 블록(sectors·usdkrw_naver·rates_kr·market_internals)은 최신 파일에서 읽으면 당일 장중값이 섞입니다. 반드시 기준일 스냅샷에서 읽으십시오."
+ ],
+ "cover_meta": {
+  "ko": "국내 마감 · 2026년 9월 18일(금) 15:30 기준 · 다음 거래일 9월 21일(월), 추석 휴장 9/24~9/25",
+  "en": "Korea close · as of 15:30 KST, Friday 18 Sep 2026 · next session Mon 21 Sep; KRX closed 24-25 Sep"
+ },
+ "headlines": [
+  {
+   "ko": "코스피 +2.66% 6,894.23 — 반도체 둘이 지수를 거의 혼자 끌어올렸습니다",
+   "en": "KOSPI +2.66% to 6,894.23 — two semiconductor names did nearly all the lifting"
+  },
+  {
+   "ko": "외국인 +4,486억·기관 +1조 5,322억 동반 순매수, 개인은 3조 6,359억 순매도",
+   "en": "Foreigners +KRW 448.6bn and institutions +KRW 1,532.2bn bought; retail sold KRW 3,635.9bn"
+  },
+  {
+   "ko": "무빙 상위 셋이 모두 반도체 사슬 — SK스퀘어 +7.04%, SK하이닉스 +6.42%",
+   "en": "All three top movers sit in the semiconductor chain — SK Square +7.04%, SK Hynix +6.42%"
+  },
+  {
+   "ko": "코스닥은 +0.60%에 그쳐 — 대형주와 중소형주의 온도차가 뚜렷했습니다",
+   "en": "The KOSDAQ added only 0.60% — a clear gap between large caps and the rest"
+  },
+  {
+   "ko": "아시아 동반 상승, 대만 가권 +1.93% — 이번 주는 사흘만 열립니다",
+   "en": "Asia rose together, TAIEX +1.93% — and KRX trades only three days this week"
+  }
+ ],
+ "mover_comments": {
+  "SK스퀘어": {
+   "ko": "SK하이닉스 지분 가치가 그대로 반영되는 투자지주라, 하이닉스 강세를 지렛대처럼 받았습니다.",
+   "en": "A holding company whose value tracks its SK Hynix stake, so it geared the Hynix move."
+  },
+  "SK하이닉스": {
+   "ko": "간밤 미국 반도체주 반등이 그대로 옮겨왔고, HBM 수요 기대가 더해졌습니다.",
+   "en": "The overnight rebound in US semis carried over, with HBM demand expectations on top."
+  },
+  "리노공업": {
+   "ko": "반도체 검사용 프로브핀을 만듭니다. 후공정 투자 기대가 함께 붙었습니다.",
+   "en": "Makes probe pins for chip testing; back-end capex expectations lifted it with the group."
+  }
+ },
+ "movers_common": {
+  "ko": "셋 다 반도체 사슬 안에 있습니다 — 지주(SK스퀘어)·메모리(SK하이닉스)·검사부품(리노공업)으로 자리는 다르지만, 간밤 미국 반도체 반등이 국내 개장과 함께 그대로 옮겨온 하루였습니다. 지수 상승분의 대부분도 같은 자리에서 나왔습니다.",
+  "en": "All three sit in the semiconductor chain — holding company, memory maker and test-component supplier. Different positions, one driver: the overnight rebound in US semis transferred straight into the Korean open, and most of the index gain came from the same place."
+ },
+ "board_points": [
+  {
+   "ko": "지수는 +2.66%인데 보드 10종목 중 오른 것은 5종목뿐입니다. 삼성전자 +3.37%와 SK하이닉스 +6.42%가 지수를 끌었고 나머지는 갈렸습니다.",
+   "en": "The index rose 2.66% but only five of the ten board names rose. Samsung Electronics +3.37% and SK Hynix +6.42% did the lifting; the rest split."
+  },
+  {
+   "ko": "금융이 눌렸습니다 — KB금융 −2.40%로 보드에서 가장 크게 밀렸고, 업종으로도 은행이 −1.62%였습니다.",
+   "en": "Financials lagged — KB Financial −2.40% was the weakest on the board, and banks fell 1.62% as a sector."
+  },
+  {
+   "ko": "한화에어로스페이스 −1.73%로 방산도 밀렸고, 업종에서는 조선이 −1.64%로 가장 약했습니다. 지수가 크게 오른 날에도 업종별로는 방향이 갈렸습니다.",
+   "en": "Hanwha Aerospace −1.73% saw defence lag too, and shipbuilding was the weakest sector at −1.64%. Even on a strongly up day, sectors pointed different ways."
+  },
+  {
+   "ko": "이 보드는 시황을 읽는 고정 10종목입니다. 편입·제외를 하지 않으므로 날짜별 비교가 그대로 됩니다.",
+   "en": "This board is a fixed ten names — no additions or deletions, so day-to-day comparison holds."
+  }
+ ],
+ "news_asof": {
+  "ko": "기준 시점 — 2026년 9월 18일(금) 국내 정규장 마감(15:30 KST). 시세는 수집 파일(거래소 원천), 배경은 표기된 매체입니다.",
+  "en": "As of — Korean regular session close, 15:30 KST on Friday 18 September 2026. Prices from the collected exchange data; context from the outlets cited."
+ },
+ "cards": [
+  {
+   "cat": {
+    "ko": "코스피·코스닥",
+    "en": "KOSPI & KOSDAQ"
+   },
+   "title": {
+    "ko": "대형주가 끌고 중소형주는 따라가지 못했습니다",
+    "en": "Large caps pulled; the rest did not follow"
+   },
+   "lede": {
+    "ko": "코스피가 178.82포인트 올라 6,894.23으로 마쳤습니다. 코스피200이 +3.02%로 코스피보다 더 오른 것이 이날의 성격을 그대로 보여 줍니다 — 상승이 시가총액 상위에 몰렸다는 뜻입니다.",
+    "en": "The KOSPI closed 178.82 points higher at 6,894.23. That the KOSPI 200 rose 3.02% — more than the broad index — is the day in one number: the gain was concentrated in the largest names."
+   },
+   "bullets": [
+    {
+     "ko": "코스닥은 +0.60%로 827.12에 그쳤습니다. 코스피와 2.06%포인트 차이로, 두 시장의 방향이 아니라 폭이 갈린 하루입니다.",
+     "en": "The KOSDAQ added just 0.60% to 827.12 — 2.06 percentage points behind the KOSPI. The two markets agreed on direction but not on magnitude.",
+     "badge": "data"
+    },
+    {
+     "ko": "지수 하나로 '시장이 좋았다'고 말하기 어려운 날입니다. 대형주를 들고 있었는지 아닌지로 체감이 갈렸습니다.",
+     "en": "Hard to call this a good market on the headline index alone: what you held — large cap or not — decided the experience.",
+     "badge": "data"
+    },
+    {
+     "ko": "상승의 계기는 간밤 미국장이었습니다. 9월 17일 나스닥이 +1.69%로 마감하며 반도체가 반등했고, 국내는 개장부터 그 흐름을 이어받았습니다.",
+     "en": "The trigger was the overnight US session: the Nasdaq closed +1.69% on 17 September as semis rebounded, and Korea picked that up from the open.",
+     "badge": "ok"
+    }
+   ]
+  },
+  {
+   "cat": {
+    "ko": "수급",
+    "en": "Flows"
+   },
+   "title": {
+    "ko": "외국인과 기관이 함께 샀습니다",
+    "en": "Foreigners and institutions bought together"
+   },
+   "lede": {
+    "ko": "코스피에서 외국인이 4,486억원, 기관이 1조 5,322억원을 순매수했습니다. 개인은 3조 6,359억원을 순매도해 반대편에 섰습니다. 두 주체가 같은 방향으로 붙는 날은 지수의 폭이 커집니다.",
+    "en": "On the KOSPI, foreigners bought a net KRW 448.6bn and institutions KRW 1,532.2bn, while retail sold KRW 3,635.9bn. When those two line up on the same side, index moves get wider."
+   },
+   "bullets": [
+    {
+     "ko": "여기 적은 수급은 마감 확정치입니다. 일부 매체가 보도한 장중 집계(외국인 +9,701억원 등)와는 다릅니다 — 계열이 다른 값이므로 섞어 쓰지 마십시오.",
+     "en": "These are final settlement figures. They differ from the intraday tallies some outlets reported (e.g. foreigners +KRW 970.1bn); the two series should not be mixed.",
+     "badge": "data"
+    },
+    {
+     "ko": "전 거래일(9월 17일)에는 외국인이 2조 2,546억원을 순매도했습니다. 하루 만에 방향이 뒤집힌 셈입니다.",
+     "en": "On the prior session (17 September) foreigners sold a net KRW 2,254.6bn — the direction flipped in a single day.",
+     "badge": "data"
+    },
+    {
+     "ko": "추석 연휴를 앞둔 주간이라 연휴 전 포지션 조정이 수급에 섞일 수 있습니다. 다음 주 초 수급은 이 점을 감안해 읽으십시오.",
+     "en": "With Chuseok ahead, pre-holiday position adjustment may colour the flow data; read early next week with that in mind.",
+     "badge": "data"
+    }
+   ]
+  },
+  {
+   "cat": {
+    "ko": "업종·종목",
+    "en": "Sectors & stocks"
+   },
+   "title": {
+    "ko": "반도체 사슬이 앞섰고 조선·은행이 뒤졌습니다",
+    "en": "The semiconductor chain led; shipbuilding and banks lagged"
+   },
+   "lede": {
+    "ko": "업종 등락은 한 방향이 아니었습니다. 통신장비와 전기장비가 앞섰고, 조선과 은행이 뒤로 밀렸습니다. 같은 날 지수가 크게 올랐다는 사실만으로 보유 종목의 하루를 짐작하면 안 되는 이유입니다.",
+    "en": "Sectors did not move as one. Telecom and electrical equipment led while shipbuilding and banks fell back — a reminder that a strong index day says little about any given holding."
+   },
+   "bullets": [
+    {
+     "ko": "상위: 통신장비 +6.94%, 전기장비 +5.10%, 컴퓨터와주변기기 +4.63%. 반도체·전력 설비 쪽으로 쏠렸습니다.",
+     "en": "Leaders: telecom equipment +6.94%, electrical equipment +5.10%, computers and peripherals +4.63% — clustered in semis and power gear.",
+     "badge": "data"
+    },
+    {
+     "ko": "하위: 조선 −1.64%, 은행 −1.62%, 인터넷과카탈로그소매 −1.29%.",
+     "en": "Laggards: shipbuilding −1.64%, banks −1.62%, internet and catalogue retail −1.29%.",
+     "badge": "data"
+    },
+    {
+     "ko": "업종 수치는 기준일 스냅샷에서 읽었습니다. 최신 시세 파일의 업종 블록에는 날짜가 없어 당일 장중값이 섞입니다.",
+     "en": "Sector figures were read from the reference-day snapshot: the sector block in the newest price file carries no date and can hold live intraday values.",
+     "badge": "data"
+    }
+   ]
+  },
+  {
+   "cat": {
+    "ko": "금리·환율",
+    "en": "Rates & FX"
+   },
+   "title": {
+    "ko": "국고채 금리는 4%대에 올라 있습니다",
+    "en": "Korean government bond yields sit above 4%"
+   },
+   "lede": {
+    "ko": "국고채 3년물이 4.035%, 10년물이 4.466%입니다. 미 연준이 이틀 전 금리를 올린 국면이라 국내 금리도 눌려 있지 않습니다. 주식이 오른 날이었지만 할인율은 우호적이지 않았다는 뜻입니다.",
+    "en": "The 3-year KTB yields 4.035% and the 10-year 4.466%. With the Fed having hiked two days earlier, Korean yields are not being pressed down either — equities rose on a day when the discount rate was not helping."
+   },
+   "bullets": [
+    {
+     "ko": "3년–10년 구간은 43.1bp 벌어져 있습니다. 곡선이 뒤집혀 있지 않다는 점은 성장 기대가 아직 꺾이지 않았다는 뜻으로 읽힙니다.",
+     "en": "The 3s-10s spread is 43.1bp. An upward-sloping curve suggests growth expectations have not rolled over.",
+     "badge": "data"
+    },
+    {
+     "ko": "원/달러 매매기준율은 1,388.0원이었습니다. 이 값에는 날짜 필드가 없어 기준일 직후 수집분에서 읽었습니다.",
+     "en": "The USD/KRW reference rate was 1,388.0. This value carries no date field, so it was read from the collection taken right after the session.",
+     "badge": "solo"
+    },
+    {
+     "ko": "국내 기준금리는 수집 자료에 없습니다. 콜금리를 기준금리로 옮겨 적지 않았습니다 — 근처에서 움직일 뿐 같은 값이 아닙니다.",
+     "en": "The Bank of Korea policy rate is not in the collected data. We did not substitute the call rate for it: the two move nearby but are not the same number.",
+     "badge": "none"
+    }
+   ]
+  },
+  {
+   "cat": {
+    "ko": "아시아·다음 일정",
+    "en": "Asia & what's next"
+   },
+   "title": {
+    "ko": "아시아가 함께 올랐고, 이번 주는 사흘입니다",
+    "en": "Asia rose together; this week has three sessions"
+   },
+   "lede": {
+    "ko": "대만 가권이 +1.93%, 니케이 225가 +1.38%로 반도체 비중이 큰 시장이 앞섰습니다. 홍콩과 상하이도 함께 올라 지역 전체가 같은 방향이었습니다.",
+    "en": "Semiconductor-heavy markets led — the TAIEX +1.93% and the Nikkei 225 +1.38%. Hong Kong and Shanghai rose too, so the whole region pointed the same way."
+   },
+   "bullets": [
+    {
+     "ko": "국내는 9월 21일(월)부터 23일(수)까지 사흘만 열리고, 추석으로 24일(목)·25일(금)은 휴장합니다.",
+     "en": "KRX trades Mon 21 to Wed 23 September, then closes Thursday 24 and Friday 25 for Chuseok.",
+     "badge": "data"
+    },
+    {
+     "ko": "일본은 9월 21일부터 23일까지 사흘 연휴(경로의 날·국민의 휴일·추분)로 쉽니다. 그 사이 아시아 시간대의 거래는 얇아질 수 있습니다.",
+     "en": "Japan is closed 21-23 September (Respect for the Aged Day, Citizens' Holiday, Autumnal Equinox), so Asian-hours liquidity may thin.",
+     "badge": "data"
+    },
+    {
+     "ko": "아시아는 미국보다 먼저 닫습니다. 같은 날짜라도 미국 지표 발표 전에 거래를 끝내므로, 아시아 마감과 미국 마감을 같은 뉴스로 설명하면 어긋납니다.",
+     "en": "Asia closes before the US. Even on the same date it finishes trading before US data prints, so explaining both closes with one piece of news will mislead.",
+     "badge": "data"
+    }
+   ]
+  }
+ ],
+ "verify": [
+  {
+   "ko": "기준선 7종(코스피·코스닥·코스피200·니케이·항셍·상하이·대만)은 스냅샷 한 파일에서만 읽었습니다. 모두 같은 날 아시아 시간대에 닫히는 지수라 한 표에 나란히 놓아도 시점이 어긋나지 않습니다.",
+   "en": "All seven benchmarks were read from one snapshot file. They all close in the same Asian session, so putting them side by side does not mix timestamps."
+  },
+  {
+   "ko": "원/달러는 기준선에 넣지 않았습니다. 야후 KRW=X 는 24시간 시세라 서울 외환시장 마감이 아니며, 매매기준율은 금리·환율 카드에서 따로 다뤘습니다.",
+   "en": "USD/KRW is not in the benchmark table: Yahoo's KRW=X is a 24-hour quote, not the Seoul close. The official reference rate is handled separately in the rates card."
+  },
+  {
+   "ko": "국고채 금리는 날짜가 붙어 오는 한국은행 ECOS 계열(2026-09-18)을 썼습니다. 날짜 없이 오는 콜·CD·COFIX 는 싣지 않았습니다.",
+   "en": "Bond yields use the Bank of Korea ECOS series, which carries a date (2026-09-18). Call, CD and COFIX rates arrive undated and were left out."
+  },
+  {
+   "ko": "대형주 보드는 국내 스크리너의 시총 순위를 쓰지 않았습니다. 그 API 는 한 번에 100건까지만 주고 그 100건이 등락률 상위라, 시총으로 다시 세우면 '급등락한 종목 중 시총 상위'가 나옵니다. 실제로 삼성전자 대신 삼성전자우가 올라왔습니다.",
+   "en": "The large-cap board does not use the screener's market-cap ranking. That API returns at most 100 rows and those rows are the day's biggest movers, so re-sorting them by cap yields 'largest among the movers' — it surfaced Samsung Electronics preferred shares instead of the common stock."
+  },
+  {
+   "ko": "무빙 3종목은 시세 파일에 실린 국내 주요 종목 유니버스에서 골랐습니다. 전 종목 스크리너가 아니므로 '시장 전체 1위'가 아니며, 산출물에도 그렇게 적었습니다.",
+   "en": "The three movers were selected from the major-name universe carried in the price file, not a whole-market screener. They are not market-wide rankings and the page says so."
+  },
+  {
+   "ko": "인쇄된 등락률은 모두 종가와 전일 종가로 되짚어 검산했습니다.",
+   "en": "Every printed percentage change was recomputed from close and previous close."
+  },
+  {
+   "ko": "수급은 마감 확정치이며, 일부 매체의 장중 집계와 다릅니다. 두 계열을 섞지 않았습니다.",
+   "en": "Flow figures are final settlement values and differ from some outlets' intraday tallies; the two series are not mixed."
+  },
+  {
+   "ko": "업종·환율처럼 날짜 필드가 없는 블록은 최신 파일이 아니라 기준일 스냅샷에서 읽었습니다. 최신 파일에서 읽으면 당일 장중값이 섞입니다.",
+   "en": "Blocks without a date field (sectors, FX reference rate) were read from the reference-day snapshot rather than the newest file, which can contain live intraday values."
+  },
+  {
+   "ko": "코스피 등락 종목 수(breadth)는 날짜가 붙지 않아 싣지 않았습니다.",
+   "en": "KOSPI advance/decline breadth carries no date field and was left out."
+  },
+  {
+   "ko": "한국 기준금리는 수집 자료에 없어 적지 않았습니다. 콜금리로 대신하지 않았습니다.",
+   "en": "The Bank of Korea policy rate is absent from the collected data and was not printed; the call rate was not substituted for it."
+  }
+ ],
+ "claims": [
+  {
+   "id": "C_KOSPI_PTS",
+   "kind": "market_level",
+   "metric": "코스피 상승폭",
+   "text": "코스피 상승 포인트",
+   "value": 178.82,
+   "unit": "pt",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://www.etoday.co.kr/news/view/2627347",
+   "corroborating_urls": [
+    "https://www.news1.kr/finance/general-stock/6295494"
+   ],
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-index"
+   ]
+  },
+  {
+   "id": "C_GAP_PP",
+   "kind": "market_level",
+   "metric": "코스피-코스닥 격차",
+   "text": "코스피와 코스닥 등락률 차이",
+   "value": 2.06,
+   "unit": "%p",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://www.news1.kr/finance/general-stock/6295494",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-index"
+   ],
+   "note": "2.6628 − 0.6008 = 2.062"
+  },
+  {
+   "id": "C_NASDAQ_0917",
+   "kind": "market_level",
+   "metric": "나스닥 (9/17)",
+   "text": "나스닥 9월 17일 등락률 — 국내 9월 18일 장의 계기",
+   "value": 1.69,
+   "unit": "%",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.newspim.com/news/view/20260918000207",
+   "corroborating_urls": [
+    "https://www.etoday.co.kr/news/view/2627362"
+   ],
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-index"
+   ]
+  },
+  {
+   "id": "C_FLOW_FOREIGN",
+   "kind": "market_level",
+   "metric": "코스피 외국인 순매수",
+   "text": "코스피 외국인 순매수 (확정)",
+   "value": 4486,
+   "unit": "억원",
+   "series": "네이버 KRX 투자자별 일별동향",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260919&startIdx=0&pageSize=30",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-flows",
+    "headline-2"
+   ]
+  },
+  {
+   "id": "C_FLOW_INST",
+   "kind": "market_level",
+   "metric": "코스피 기관 순매수",
+   "text": "코스피 기관 순매수 (확정)",
+   "value": 15322,
+   "unit": "억원",
+   "series": "네이버 KRX 투자자별 일별동향",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260919&startIdx=0&pageSize=30",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-flows",
+    "headline-2"
+   ]
+  },
+  {
+   "id": "C_FLOW_RETAIL",
+   "kind": "market_level",
+   "metric": "코스피 개인 순매수",
+   "text": "코스피 개인 순매수 (확정)",
+   "value": -36359,
+   "unit": "억원",
+   "series": "네이버 KRX 투자자별 일별동향",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260919&startIdx=0&pageSize=30",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-flows",
+    "headline-2"
+   ]
+  },
+  {
+   "id": "C_FLOW_FOREIGN_PREV",
+   "kind": "market_level",
+   "metric": "코스피 외국인 순매수 (9/17)",
+   "text": "코스피 외국인 순매수 — 9월 17일",
+   "value": -22546,
+   "unit": "억원",
+   "series": "네이버 KRX 투자자별 일별동향",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260919&startIdx=0&pageSize=30",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-flows"
+   ]
+  },
+  {
+   "id": "C_FLOW_FOREIGN_PRESS",
+   "kind": "market_level",
+   "metric": "코스피 외국인 순매수 (장중 집계)",
+   "text": "코스피 외국인 순매수 — 일부 매체의 장중 집계",
+   "value": 9701,
+   "unit": "억원",
+   "series": "언론 보도 (장중 집계)",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://m.news.nate.com/view/20260918n25405",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-flows"
+   ],
+   "note": "확정치와 다른 계열임을 보이려고 나란히 실었습니다"
+  },
+  {
+   "id": "C_SEC_TELEQ",
+   "kind": "market_level",
+   "metric": "국내 통신장비 업종",
+   "text": "국내 통신장비 업종 등락률",
+   "value": 6.94,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-sector"
+   ]
+  },
+  {
+   "id": "C_SEC_ELEC",
+   "kind": "market_level",
+   "metric": "국내 전기장비 업종",
+   "text": "국내 전기장비 업종 등락률",
+   "value": 5.1,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-sector"
+   ]
+  },
+  {
+   "id": "C_SEC_COMP",
+   "kind": "market_level",
+   "metric": "국내 컴퓨터와주변기기 업종",
+   "text": "국내 컴퓨터와주변기기 업종 등락률",
+   "value": 4.63,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-sector"
+   ]
+  },
+  {
+   "id": "C_SEC_SHIP",
+   "kind": "market_level",
+   "metric": "국내 조선 업종",
+   "text": "국내 조선 업종 등락률",
+   "value": -1.64,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-sector",
+    "board-points"
+   ]
+  },
+  {
+   "id": "C_SEC_BANK",
+   "kind": "market_level",
+   "metric": "국내 은행 업종",
+   "text": "국내 은행 업종 등락률",
+   "value": -1.62,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-sector",
+    "board-points"
+   ]
+  },
+  {
+   "id": "C_SEC_NET",
+   "kind": "market_level",
+   "metric": "국내 인터넷과카탈로그소매 업종",
+   "text": "국내 인터넷과카탈로그소매 업종 등락률",
+   "value": -1.29,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-sector"
+   ]
+  },
+  {
+   "id": "C_KTB3Y",
+   "kind": "market_level",
+   "metric": "국고채 3년",
+   "text": "국고채 3년물 수익률",
+   "value": 4.035,
+   "unit": "%",
+   "series": "한국은행 ECOS",
+   "as_of": "2026-09-18",
+   "tier": 1,
+   "source_url": "https://ecos.bok.or.kr/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-rates"
+   ]
+  },
+  {
+   "id": "C_KTB10Y",
+   "kind": "market_level",
+   "metric": "국고채 10년",
+   "text": "국고채 10년물 수익률",
+   "value": 4.466,
+   "unit": "%",
+   "series": "한국은행 ECOS",
+   "as_of": "2026-09-18",
+   "tier": 1,
+   "source_url": "https://ecos.bok.or.kr/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-rates"
+   ]
+  },
+  {
+   "id": "C_USDKRW",
+   "kind": "market_level",
+   "metric": "원/달러 매매기준율",
+   "text": "원/달러 매매기준율",
+   "value": 1388.0,
+   "unit": "KRW/USD",
+   "series": "네이버 매매기준율 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://stock.naver.com/api/securityService/marketindex/majors/exchange",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-rates"
+   ],
+   "note": "이 값에는 날짜 필드가 없습니다. 서울 외환시장 마감 뒤 수집분이라 9월 18일 고시분으로 읽었으며, 산출물에도 그 사실을 적었습니다"
+  },
+  {
+   "id": "C_SPREAD_3_10",
+   "kind": "market_level",
+   "metric": "국고채 3년-10년 스프레드",
+   "text": "국고채 3년-10년 스프레드",
+   "value": 43.1,
+   "unit": "bp",
+   "series": "한국은행 ECOS",
+   "as_of": "2026-09-18",
+   "tier": 1,
+   "source_url": "https://ecos.bok.or.kr/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-rates"
+   ],
+   "note": "4.466 − 4.035 = 0.431%p = 43.1bp"
+  }
+ ],
+ "derived": []
+}

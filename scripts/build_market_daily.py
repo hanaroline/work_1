@@ -43,6 +43,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import glob
+import hashlib
 import html
 import json
 import os
@@ -73,6 +74,10 @@ BASELINE = {
         ("wti", "WTI", "WTI crude", "USD/bbl"),
         ("gold", "금", "Gold", "USD/oz"),
     ],
+    # 마감시황 기준선은 **아시아 마감**으로 맞춘다. 같은 날 같은 시간대에
+    # 닫히는 지수들이라 한 표에 나란히 놓아도 시점이 어긋나지 않는다.
+    # `usdkrw` 는 넣지 않는다 — 야후 `KRW=X` 는 24시간 시세라 서울 외환시장
+    # 마감이 아니다(플레이북 0-1절). 원/달러는 뉴스카드에서 매매기준율로 쓴다.
     "close": [
         ("kospi", "코스피", "KOSPI", "pt"),
         ("kosdaq", "코스닥", "KOSDAQ", "pt"),
@@ -80,9 +85,40 @@ BASELINE = {
         ("nikkei", "니케이 225", "Nikkei 225", "pt"),
         ("hangseng", "항셍", "Hang Seng", "pt"),
         ("shanghai", "상하이종합", "Shanghai Composite", "pt"),
-        ("usdkrw", "원/달러", "USD/KRW", "KRW/USD"),
+        ("taiwan", "대만 가권", "TAIEX", "pt"),
     ],
 }
+
+# 마감시황 대형주 보드 10종목. 미국판 빅테크 보드와 같이 **고정**이다 —
+# 편입·제외를 하지 않아야 날짜별 비교가 그대로 된다. 사업 설명은 시세
+# 파일의 `note_ko` 를 그대로 쓴다(지어내지 않는다).
+KR_BOARD = ["삼성전자", "SK하이닉스", "LG에너지솔루션", "삼성바이오로직스",
+            "현대차", "기아", "셀트리온", "KB금융", "NAVER", "한화에어로스페이스"]
+
+# 영문판 종목명. 없으면 한글을 그대로 두지만, 그러면 영문 모드에 한글이
+# 남으므로 자주 쓰는 이름은 여기에 채워 둔다.
+KR_NAME_EN = {
+    "삼성전자": "Samsung Electronics", "SK하이닉스": "SK Hynix",
+    "LG에너지솔루션": "LG Energy Solution", "삼성바이오로직스": "Samsung Biologics",
+    "현대차": "Hyundai Motor", "기아": "Kia", "셀트리온": "Celltrion",
+    "KB금융": "KB Financial", "NAVER": "NAVER",
+    "한화에어로스페이스": "Hanwha Aerospace", "SK스퀘어": "SK Square",
+    "리노공업": "Leeno Industrial", "삼성전기": "Samsung Electro-Mechanics",
+    "LG이노텍": "LG Innotek", "한미반도체": "Hanmi Semiconductor",
+    "POSCO홀딩스": "POSCO Holdings", "LG화학": "LG Chem", "삼성SDI": "Samsung SDI",
+    "신한지주": "Shinhan Financial", "하나금융지주": "Hana Financial",
+    "현대모비스": "Hyundai Mobis", "카카오": "Kakao", "크래프톤": "Krafton",
+    "삼성물산": "Samsung C&T", "SK이노베이션": "SK Innovation",
+    "한국전력": "KEPCO", "HMM": "HMM", "알테오젠": "Alteogen",
+    "에코프로비엠": "EcoPro BM", "에코프로": "EcoPro", "HLB": "HLB",
+    "두산에너빌리티": "Doosan Enerbility", "한화오션": "Hanwha Ocean",
+    "삼성중공업": "Samsung Heavy Industries", "HD현대중공업": "HD Hyundai Heavy",
+    "HD한국조선해양": "HD Korea Shipbuilding", "현대로템": "Hyundai Rotem",
+}
+
+
+def kr_en(name):
+    return KR_NAME_EN.get(name, name)
 
 EDITION_KO = {"morning": "모닝시황", "close": "마감시황"}
 EDITION_EN = {"morning": "Morning Brief", "close": "Closing Brief"}
@@ -248,7 +284,19 @@ class Ledger:
 
 
 def sid(prefix, key):
-    return (prefix + "_" + re.sub(r"[^A-Za-z0-9]+", "_", str(key))).upper()[:48]
+    """대장 항목 id. **한글 이름에서 충돌하지 않아야 한다.**
+
+    예전에는 영숫자가 아닌 글자를 `_` 로 바꾸기만 했다. 그러면 「삼성전자」·
+    「현대차」·「기아」가 **모두 `BT__` 한 덩어리**가 되어 서로를 덮어썼고,
+    검산기가 삼성전자의 등락률로 기아의 인쇄값을 대조하며 불일치를 냈다.
+    비ASCII가 섞이면 짧은 해시를 붙여 갈라 둔다.
+    """
+    key = str(key)
+    ascii_part = re.sub(r"[^A-Za-z0-9]+", "_", key).strip("_")
+    if re.search(r"[^\x00-\x7F]", key):
+        tag = hashlib.md5(key.encode("utf-8")).hexdigest()[:6]
+        ascii_part = (ascii_part + "_" + tag) if ascii_part else tag
+    return (prefix + "_" + ascii_part).upper()[:48]
 
 
 # ---------------------------------------------------------------- 표 세우기
@@ -287,6 +335,41 @@ def baseline_rows(snap, edition, target_date, led, extras):
                 "en": "%s left blank: the reference snapshot has no %s value (file date: %s)."
                       % (en, target_date, date or "none")})
     return rows
+
+
+def kr_stock_movers(snap, target, led, n=3):
+    """국내 전 종목 스크리너가 없을 때 쓰는 대체 유니버스.
+
+    시세 파일의 `stocks`(코스피 대형주 + 코스닥 상위)를 등락률로 세운다.
+    **전 종목이 아니므로** 산출물에 그 사실을 반드시 적는다 — 「시장 전체
+    1위」로 읽히면 틀린 말이 된다.
+    """
+    src = "네이버 증시 · 수집 스냅샷 (stocks)"
+    url = "https://stock.naver.com/"
+    rows = [(k, v) for k, v in (snap.get("stocks") or {}).items()
+            if v.get("date") == target and v.get("change_pct") is not None]
+    rows.sort(key=lambda kv: kv[1]["change_pct"], reverse=True)
+    out = []
+    for name, v in rows[:n]:
+        cid = sid("MV", name)
+        led.level(cid, metric=name, text="%s 종가" % name, value=round(v["close"], 2),
+                  unit="KRW", series=src, as_of=target, tier=2, source_url=url,
+                  where="movers")
+        prev = v.get("prev_close")
+        if prev:
+            pid = led.add(sid("MVP", name), kind="market_level", metric=name,
+                          text="%s 전일 종가" % name, value=round(prev, 2),
+                          unit="KRW", series=src, as_of=target, tier=2,
+                          source_url=url, render="omit", printed_on=[])
+            led.pct(sid("D_MV", name), pid, cid, v["change_pct"], tol=0.05)
+        out.append({"key": name, "name": name, "name_en": kr_en(name),
+                    "sub_ko": v.get("note_ko"),
+                    "sub_en": v.get("note_en") or kr_en(name),
+                    "price": v["close"], "pct": v["change_pct"],
+                    "cap_ko": "—", "cap_en": "—",
+                    "liq_ko": "—", "liq_en": "—",
+                    "date": target, "ccy": "KRW"})
+    return out
 
 
 def movers_rows(mv, led, edition):
@@ -333,7 +416,10 @@ def movers_rows(mv, led, edition):
                           source_url=url, render="omit", printed_on=[])
             led.pct(sid("D_MV", r["code"]), pid, cid, r["change_pct"], tol=0.05)
             out.append({"key": r["code"], "name": r["name"],
-                        "sub_ko": r.get("market"), "sub_en": r.get("market"),
+                        "name_en": kr_en(r["name"]),
+                        "sub_ko": r.get("market"),
+                        "sub_en": {"코스피": "KOSPI", "코스닥": "KOSDAQ"}.get(
+                            r.get("market"), r.get("market")),
                         "price": r["price"], "pct": r["change_pct"],
                         "cap_ko": money_krw(r.get("cap")),
                         "cap_en": money_krw(r.get("cap")),
@@ -366,26 +452,40 @@ def board_rows(mv, led, edition):
                         "name_en": r["sym"], "price": r["price"],
                         "pct": r["change_pct"], "note": r.get("note_ko"),
                         "date": r["date"], "ccy": "USD"})
-    else:
-        src = mv.get("printed_from", "naver:stocklist")
-        url = "https://stock.naver.com/"
-        for r in (mv.get("top_cap") or [])[:10]:
-            cid = sid("BT", r["code"])
-            led.level(cid, metric=r["name"], text="%s 종가" % r["name"],
-                      value=round(r["price"], 2), unit="KRW", series=src,
-                      as_of=mv.get("trade_date_kst"), tier=2, source_url=url,
-                      where="board")
-            prev = r["price"] - (r.get("change") or 0)
-            pid = led.add(sid("BTP", r["code"]), kind="market_level",
-                          metric=r["name"], text="%s 전일 종가" % r["name"],
-                          value=round(prev, 2), unit="KRW", series=src,
-                          as_of=mv.get("trade_date_kst"), tier=2, source_url=url,
-                          render="omit", printed_on=[])
-            led.pct(sid("D_BT", r["code"]), pid, cid, r["change_pct"], tol=0.05)
-            out.append({"key": r["code"], "name_ko": r["name"],
-                        "name_en": r["name"], "price": r["price"],
-                        "pct": r["change_pct"], "note": None,
-                        "date": mv.get("trade_date_kst"), "ccy": "KRW"})
+    return out
+
+
+def kr_board_rows(snap, target, led):
+    """마감시황 대형주 보드 — 고정 10종목을 시세 파일 한 곳에서 읽는다.
+
+    국내 스크리너의 `top_cap` 을 쓰지 않는 이유가 있다. 네이버 목록 API 는
+    한 번에 100건까지만 주고 그 100건은 **등락률 상위**라, 거기서 시총으로
+    다시 세우면 「급등락한 종목 중 시총 상위」가 나온다. 실제로 삼성전자
+    대신 삼성전자우·가온전선이 올라왔다. 시총 상위 보드가 아니다.
+    """
+    src = "네이버 증시 · 수집 스냅샷 (stocks)"
+    url = "https://stock.naver.com/"
+    out = []
+    for name in KR_BOARD:
+        v = (snap.get("stocks") or {}).get(name)
+        if not v or v.get("date") != target or v.get("close") is None:
+            log("  ! 대형주 보드 결측: %s" % name)
+            continue
+        cid = sid("BT", name)
+        led.level(cid, metric=name, text="%s 종가" % name, value=round(v["close"], 2),
+                  unit="KRW", series=src, as_of=target, tier=2, source_url=url,
+                  where="board")
+        prev = v.get("prev_close")
+        if prev:
+            pid = led.add(sid("BTP", name), kind="market_level", metric=name,
+                          text="%s 전일 종가" % name, value=round(prev, 2),
+                          unit="KRW", series=src, as_of=target, tier=2,
+                          source_url=url, render="omit", printed_on=[])
+            led.pct(sid("D_BT", name), pid, cid, v["change_pct"], tol=0.05)
+        out.append({"key": name, "name_ko": name, "name_en": kr_en(name),
+                    "price": v["close"], "pct": v["change_pct"],
+                    "note": v.get("note_ko"), "note_en": v.get("note_en"),
+                    "date": target, "ccy": "KRW"})
     return out
 
 
@@ -632,7 +732,7 @@ def render(ctx):
     for i, m in enumerate(ctx["movers"], 1):
         a('<div class="mv">')
         a('<p class="rank">NO.%d</p>' % i)
-        a('<p class="sym">%s</p>' % esc(m["name"]))
+        a('<p class="sym">%s</p>' % bi(m["name"], m.get("name_en") or m["name"]))
         a('<p class="co">%s</p>' % bi(m["sub_ko"] or "", m["sub_en"] or ""))
         a('<p class="pc %s">%s</p>' % (cls_of(m["pct"]), fmt_pct(m["pct"])))
         a('<p class="px">%s</p>' % bi(
@@ -785,6 +885,17 @@ def build(edition, date_arg):
     movers = movers_rows(mv, led, edition)
     board = board_rows(mv, led, edition)
 
+    # 마감시황은 보드를 시세 파일의 고정 10종목에서 읽는다(kr_board_rows 주석 참고).
+    # 무빙은 전 종목 스크리너가 있으면 그것을, 없으면 시세 파일 유니버스를 쓴다.
+    movers_narrow = False
+    if edition == "close":
+        board = kr_board_rows(snap, target, led)
+        if not movers:
+            movers = kr_stock_movers(snap, target, led)
+            movers_narrow = bool(movers)
+            if movers_narrow:
+                log("무빙을 시세 파일 유니버스(stocks)로 대체했다 — 전 종목이 아니다")
+
     # narrative 의 코멘트를 붙인다. 없으면 빈 칸으로 두고 경고한다.
     mc = narr.get("mover_comments") or {}
     for m in movers:
@@ -797,7 +908,8 @@ def build(edition, date_arg):
     for r in board:
         c = bc.get(r["key"]) or {}
         r["comment_ko"] = c.get("ko") or (r.get("note") or "")
-        r["comment_en"] = c.get("en") or c.get("ko") or (r.get("note") or "")
+        r["comment_en"] = (c.get("en") or r.get("note_en") or c.get("ko")
+                           or (r.get("note") or ""))
 
     # narrative 가 직접 등록한 주장(글에 박힌 숫자)을 대장에 합친다.
     # 단위·계열 정책은 여기서 함께 채운다 — 손으로 적게 두면 빠뜨리고,
@@ -837,11 +949,25 @@ def build(edition, date_arg):
         mv_asof_en = "Korea regular session close, %s" % date_en
         liq_ko, liq_en = "거래대금(당일)", "Turnover (day)"
         movers_title_ko, movers_title_en = "2단 · 오늘의 무빙", "Part 2 · Today's movers"
-        board_title_ko, board_title_en = "시총 상위 보드", "Large cap board"
-        filt_ko = ("대상: 국내 상장 보통주 중 시가총액 1조원 이상 · "
-                   "당일 거래대금 300억원 이상. **평균이 아니라 당일 거래대금**입니다.")
-        filt_en = ("Universe: KRX-listed common stocks with market cap ≥ KRW 1tn and "
-                   "same-day turnover ≥ KRW 30bn. This is same-day turnover, not an average.")
+        board_title_ko, board_title_en = "대형주 보드", "Large cap board"
+        if movers_narrow:
+            # 좁은 유니버스를 넓은 것처럼 적으면 「시장 1위」라는 틀린 말이 된다.
+            filt_ko = ("대상: 시세 파일에 실린 국내 주요 %d종목(코스피 대형주·코스닥 상위)입니다. "
+                       "**시장 전체 순위가 아닙니다** — 전 종목 스크리너(시가총액 1조원 이상 · "
+                       "당일 거래대금 300억원 이상)는 다음 마감 수집분부터 적용됩니다."
+                       % len([1 for v in (snap.get("stocks") or {}).values()
+                              if v.get("date") == target]))
+            filt_en = ("Universe: the %d major Korean names carried in the price file "
+                       "(KOSPI large caps and KOSDAQ leaders). This is NOT a whole-market "
+                       "ranking — the full screener (cap ≥ KRW 1tn, turnover ≥ KRW 30bn) "
+                       "applies from the next post-close collection."
+                       % len([1 for v in (snap.get("stocks") or {}).values()
+                              if v.get("date") == target]))
+        else:
+            filt_ko = ("대상: 국내 상장 보통주 중 시가총액 1조원 이상 · "
+                       "당일 거래대금 300억원 이상. 평균이 아니라 **당일** 거래대금입니다.")
+            filt_en = ("Universe: KRX-listed common stocks with market cap ≥ KRW 1tn and "
+                       "same-day turnover ≥ KRW 30bn. This is same-day turnover, not an average.")
 
     ctx = {
         "edition": edition,
@@ -867,10 +993,12 @@ def build(edition, date_arg):
         "board_title_ko": board_title_ko, "board_title_en": board_title_en,
         "board_asof_ko": "기준 시점 — %s" % mv_asof_ko,
         "board_asof_en": "As of — %s" % mv_asof_en,
-        "board_cap_ko": "출처: %s. 표 안의 종가·등락률은 한 번의 응답에서 나왔습니다."
-                        % ((mv or {}).get("printed_from", "—")),
-        "board_cap_en": "Source: %s. Closes and changes in this table come from one response."
-                        % ((mv or {}).get("printed_from", "—")),
+        "board_cap_ko": ("출처: %s. 표 안의 종가·등락률은 한 곳에서만 읽었습니다."
+                         % ((mv or {}).get("printed_from") if edition == "morning"
+                            else "네이버 증시 · 수집 스냅샷 %s" % snap_path)),
+        "board_cap_en": ("Source: %s. Closes and changes in this table were read from one place."
+                         % ((mv or {}).get("printed_from") if edition == "morning"
+                            else "Naver · snapshot %s" % snap_path)),
         "board_points": narr["board_points"],
         "cards": narr["cards"],
         "news_asof_ko": narr.get("news_asof", {}).get("ko", ""),
@@ -893,8 +1021,10 @@ def build(edition, date_arg):
     log("씀: %s (주장 %d · 파생 %d)"
         % (os.path.relpath(claims_path, ROOT),
            len(led.doc["claims"]), len(led.doc["derived"])))
-    if not mv:
-        log("  ! 무빙·보드 자료가 없어 해당 절이 비었습니다")
+    if not movers:
+        log("  ! 무빙 절이 비었습니다")
+    if not board:
+        log("  ! 보드 절이 비었습니다")
     return html_path, claims_path
 
 

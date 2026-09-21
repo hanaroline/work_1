@@ -4,360 +4,989 @@
   "글에 박은 숫자는 아래 claims/derived 에 등록해 두었습니다. 등록하지 않은 숫자를 글에 쓰지 마십시오.",
   "파일 이름의 날짜는 그 판이 다루는 **거래일**입니다(2026-09-18 금요일 마감). 배포일은 그 다음 거래일 아침입니다."
  ],
-
  "cover_meta": {
   "ko": "간밤 미국 마감 · 2026년 9월 21일(월) 07:30 배포 · 추석 휴장 9/24~9/25",
   "en": "Overnight US close · distributed Mon 21 Sep 2026, 07:30 KST · KRX closed 24-25 Sep (Chuseok)"
  },
-
  "headlines": [
-  {"ko": "지수는 제자리, 돈은 개별 재료주로 — 나스닥 +0.39%인데 러셀 2000은 −0.50%",
-   "en": "Flat indices, money into single-stock stories — Nasdaq +0.39% while Russell 2000 fell 0.50%"},
-  {"ko": "연준 9월 16일 25bp 인상, 2023년 이후 첫 인상 — 점도표는 연내 한 차례 더",
-   "en": "Fed hiked 25bp on 16 Sep, its first since 2023 — dot plot implies one more this year"},
-  {"ko": "WTI −6.32%로 95.47달러 — 사우디 송유관 복구 기대에 지정학 프리미엄이 빠졌습니다",
-   "en": "WTI fell 6.32% to $95.47 as Saudi pipeline recovery hopes drained the risk premium"},
-  {"ko": "암호자산 관련주 급등 — SEC 토큰화 증권 한시 면제에 MSTR +16.39%, 코인베이스 +11.66%",
-   "en": "Crypto names surged on the SEC's tokenized-securities relief — MSTR +16.39%, Coinbase +11.66%"},
-  {"ko": "코스피 +2.66% 6,894.23 — 외국인·기관 동반 순매수, SK하이닉스 +6.42%",
-   "en": "KOSPI rose 2.66% to 6,894.23 on foreign and institutional buying; SK Hynix +6.42%"}
+  {
+   "ko": "지수는 제자리, 돈은 개별 재료주로 — 나스닥 +0.39%인데 러셀 2000은 −0.50%",
+   "en": "Flat indices, money into single-stock stories — Nasdaq +0.39% while Russell 2000 fell 0.50%"
+  },
+  {
+   "ko": "연준 9월 16일 25bp 인상, 2023년 이후 첫 인상 — 점도표는 연내 한 차례 더",
+   "en": "Fed hiked 25bp on 16 Sep, its first since 2023 — dot plot implies one more this year"
+  },
+  {
+   "ko": "WTI −6.32%로 95.47달러 — 사우디 송유관 복구 기대에 지정학 프리미엄이 빠졌습니다",
+   "en": "WTI fell 6.32% to $95.47 as Saudi pipeline recovery hopes drained the risk premium"
+  },
+  {
+   "ko": "암호자산 관련주 급등 — SEC 토큰화 증권 한시 면제에 MSTR +16.39%, 코인베이스 +11.66%",
+   "en": "Crypto names surged on the SEC's tokenized-securities relief — MSTR +16.39%, Coinbase +11.66%"
+  },
+  {
+   "ko": "코스피 +2.66% 6,894.23 — 외국인·기관 동반 순매수, SK하이닉스 +6.42%",
+   "en": "KOSPI rose 2.66% to 6,894.23 on foreign and institutional buying; SK Hynix +6.42%"
+  }
  ],
-
  "mover_comments": {
   "MSTR": {
    "ko": "비트코인이 2주 만에 8만 달러를 되찾자 보유 코인 평가익 기대가 붙었습니다.",
-   "en": "Bitcoin reclaimed $80,000 for the first time in two weeks, lifting its coin-treasury valuation."},
+   "en": "Bitcoin reclaimed $80,000 for the first time in two weeks, lifting its coin-treasury valuation."
+  },
   "COIN": {
    "ko": "SEC가 토큰화 증권 거래를 5년간 한시 허용하면서 거래소 사업 확장 기대가 실렸습니다.",
-   "en": "The SEC's five-year exemption for tokenized-securities trading opened a new venue business."},
+   "en": "The SEC's five-year exemption for tokenized-securities trading opened a new venue business."
+  },
   "SNDK": {
    "ko": "S&P 100 편입이 9월 21일 개장 전 발효돼 지수 추종 자금의 기계적 매수가 붙었습니다.",
-   "en": "S&P 100 inclusion takes effect before the 21 Sep open, forcing index-tracking funds to buy."}
+   "en": "S&P 100 inclusion takes effect before the 21 Sep open, forcing index-tracking funds to buy."
+  }
  },
-
  "movers_common": {
   "ko": "셋 다 지수와 무관하게 자기 촉매로 움직였습니다 — 규제(SEC 면제)·수급(지수 편입)·가격(낸드 공급 부족)으로 재료는 서로 다르지만, 금리를 올리는 국면에서도 이야기가 분명한 곳에만 돈이 붙었다는 점이 같습니다.",
   "en": "All three moved on their own catalyst rather than the index — regulation, index flows and NAND pricing. Different stories, one pattern: even in a hiking cycle, money went only where the story was specific."
  },
-
  "board_comments": {
-  "NVDA":  {"ko": "AI 가속기 GPU. 사흘 만에 반등하며 반도체 강세를 이끌었습니다.",
-            "en": "AI accelerator GPUs; led the semiconductor bid on the day."},
-  "MSFT":  {"ko": "애저 클라우드와 오피스. 금리 부담에 빅테크 중 약한 쪽에 섰습니다.",
-            "en": "Azure and Office; on the weaker side of big tech as rates pressed multiples."},
-  "AAPL":  {"ko": "아이폰과 서비스. 모뎀 공급망 뉴스에도 등락은 제한적이었습니다.",
-            "en": "iPhone and services; little moved despite modem supply-chain news."},
-  "GOOGL": {"ko": "검색 광고와 구글 클라우드, 자체 TPU. 광고주 예산 논쟁 속 소폭 상승.",
-            "en": "Search ads, Google Cloud and in-house TPUs; modestly higher."},
-  "AMZN":  {"ko": "전자상거래와 AWS. 이익은 대부분 클라우드에서 납니다.",
-            "en": "E-commerce and AWS, where most of the profit comes from."},
-  "META":  {"ko": "인스타그램·페이스북 광고. 빅테크 10종목 중 가장 크게 밀렸습니다.",
-            "en": "Instagram and Facebook advertising; the weakest of the ten."},
-  "AVGO":  {"ko": "맞춤형 AI 칩(ASIC)과 네트워크 반도체. 보드에서 가장 크게 올랐습니다.",
-            "en": "Custom AI silicon and networking; the biggest gainer on the board."},
-  "TSLA":  {"ko": "전기차와 에너지 저장. 자율주행 소프트웨어가 변수입니다.",
-            "en": "EVs and storage; autonomy software remains the swing factor."},
-  "TSM":   {"ko": "세계 최대 파운드리. 최선단 공정을 사실상 독점합니다.",
-            "en": "The largest foundry; effectively alone at the leading edge."},
-  "AMD":   {"ko": "서버 CPU와 AI 가속기. 반도체 강세에 함께 올랐습니다.",
-            "en": "Server CPUs and AI accelerators; rose with the semiconductor bid."}
+  "NVDA": {
+   "ko": "AI 가속기 GPU. 사흘 만에 반등하며 반도체 강세를 이끌었습니다.",
+   "en": "AI accelerator GPUs; led the semiconductor bid on the day."
+  },
+  "MSFT": {
+   "ko": "애저 클라우드와 오피스. 금리 부담에 빅테크 중 약한 쪽에 섰습니다.",
+   "en": "Azure and Office; on the weaker side of big tech as rates pressed multiples."
+  },
+  "AAPL": {
+   "ko": "아이폰과 서비스. 모뎀 공급망 뉴스에도 등락은 제한적이었습니다.",
+   "en": "iPhone and services; little moved despite modem supply-chain news."
+  },
+  "GOOGL": {
+   "ko": "검색 광고와 구글 클라우드, 자체 TPU. 광고주 예산 논쟁 속 소폭 상승.",
+   "en": "Search ads, Google Cloud and in-house TPUs; modestly higher."
+  },
+  "AMZN": {
+   "ko": "전자상거래와 AWS. 이익은 대부분 클라우드에서 납니다.",
+   "en": "E-commerce and AWS, where most of the profit comes from."
+  },
+  "META": {
+   "ko": "인스타그램·페이스북 광고. 빅테크 10종목 중 가장 크게 밀렸습니다.",
+   "en": "Instagram and Facebook advertising; the weakest of the ten."
+  },
+  "AVGO": {
+   "ko": "맞춤형 AI 칩(ASIC)과 네트워크 반도체. 보드에서 가장 크게 올랐습니다.",
+   "en": "Custom AI silicon and networking; the biggest gainer on the board."
+  },
+  "TSLA": {
+   "ko": "전기차와 에너지 저장. 자율주행 소프트웨어가 변수입니다.",
+   "en": "EVs and storage; autonomy software remains the swing factor."
+  },
+  "TSM": {
+   "ko": "세계 최대 파운드리. 최선단 공정을 사실상 독점합니다.",
+   "en": "The largest foundry; effectively alone at the leading edge."
+  },
+  "AMD": {
+   "ko": "서버 CPU와 AI 가속기. 반도체 강세에 함께 올랐습니다.",
+   "en": "Server CPUs and AI accelerators; rose with the semiconductor bid."
+  }
  },
-
  "board_points": [
-  {"ko": "반도체가 끌고 플랫폼이 눌렀습니다 — 브로드컴 +2.97%·AMD +2.70%·TSMC +1.03% 대 메타 −2.43%. 같은 '빅테크'라도 한 방향이 아닙니다.",
-   "en": "Semis pulled, platforms pushed back — Broadcom +2.97%, AMD +2.70%, TSMC +1.03% against Meta −2.43%. 'Big tech' did not move as one."},
-  {"ko": "10종목 중 6종목이 올랐지만, 시총이 가장 큰 애플과 마이크로소프트가 내려 지수 기여는 크지 않았습니다.",
-   "en": "Six of ten rose, but the two largest — Apple and Microsoft — fell, so the index contribution was muted."},
-  {"ko": "연준이 금리를 올린 주에 멀티플이 높은 쪽(메타·마이크로소프트)이 먼저 눌린 점을 기억해 두십시오.",
-   "en": "In the week the Fed hiked, the higher-multiple names (Meta, Microsoft) gave way first."},
-  {"ko": "이 보드는 시황을 읽는 고정 10종목입니다. 편입·제외는 하지 않으므로 날짜별 비교가 그대로 됩니다.",
-   "en": "This board is a fixed ten names — no additions or deletions, so day-to-day comparison holds."}
+  {
+   "ko": "반도체가 끌고 플랫폼이 눌렀습니다 — 브로드컴 +2.97%·AMD +2.70%·TSMC +1.03% 대 메타 −2.43%. 같은 '빅테크'라도 한 방향이 아닙니다.",
+   "en": "Semis pulled, platforms pushed back — Broadcom +2.97%, AMD +2.70%, TSMC +1.03% against Meta −2.43%. 'Big tech' did not move as one."
+  },
+  {
+   "ko": "10종목 중 6종목이 올랐지만, 시총이 가장 큰 애플과 마이크로소프트가 내려 지수 기여는 크지 않았습니다.",
+   "en": "Six of ten rose, but the two largest — Apple and Microsoft — fell, so the index contribution was muted."
+  },
+  {
+   "ko": "연준이 금리를 올린 주에 멀티플이 높은 쪽(메타·마이크로소프트)이 먼저 눌린 점을 기억해 두십시오.",
+   "en": "In the week the Fed hiked, the higher-multiple names (Meta, Microsoft) gave way first."
+  },
+  {
+   "ko": "이 보드는 시황을 읽는 고정 10종목입니다. 편입·제외는 하지 않으므로 날짜별 비교가 그대로 됩니다.",
+   "en": "This board is a fixed ten names — no additions or deletions, so day-to-day comparison holds."
+  }
  ],
-
  "news_asof": {
   "ko": "기준 시점 — 2026년 9월 18일(금) 뉴욕 마감 및 같은 날 국내 마감. 시세는 수집 파일(거래소 원천), 배경은 표기된 매체입니다.",
   "en": "As of — New York close and Korea close, Friday 18 September 2026. Prices from the collected exchange data; context from the outlets cited."
  },
-
  "cards": [
   {
-   "cat": {"ko": "미국증시", "en": "US equities"},
-   "title": {"ko": "지수는 갈렸고, 변동성은 더 내렸습니다", "en": "Indices split, volatility fell further"},
-   "lede": {"ko": "대형 기술주가 지수를 떠받쳤지만 폭은 좁았습니다. 다우와 러셀 2000이 내린 반면 나스닥만 뚜렷이 올랐고, VIX는 14.81까지 내려 시장이 이번 인상을 놀라움으로 받아들이지 않았음을 보여 줍니다.",
-            "en": "Large-cap tech held the tape up, but breadth was narrow. The Dow and Russell 2000 fell while only the Nasdaq clearly rose, and the VIX slid to 14.81 — the market did not treat this hike as a surprise."},
+   "cat": {
+    "ko": "미국증시",
+    "en": "US equities"
+   },
+   "title": {
+    "ko": "지수는 갈렸고, 변동성은 더 내렸습니다",
+    "en": "Indices split, volatility fell further"
+   },
+   "lede": {
+    "ko": "대형 기술주가 지수를 떠받쳤지만 폭은 좁았습니다. 다우와 러셀 2000이 내린 반면 나스닥만 뚜렷이 올랐고, VIX는 14.81까지 내려 시장이 이번 인상을 놀라움으로 받아들이지 않았음을 보여 줍니다.",
+    "en": "Large-cap tech held the tape up, but breadth was narrow. The Dow and Russell 2000 fell while only the Nasdaq clearly rose, and the VIX slid to 14.81 — the market did not treat this hike as a surprise."
+   },
    "bullets": [
-    {"ko": "업종에서는 기술만 뚜렷이 올랐고(+0.82%), 소재 −1.42%·유틸리티 −1.42%·커뮤니케이션 −1.37%로 경기·배당 성격이 함께 밀렸습니다.", "en": "Technology was the only clear gainer (+0.82%); materials −1.42%, utilities −1.42% and communication services −1.37% all fell.", "badge": "data"},
-    {"ko": "러셀 2000이 대형주와 반대로 간 것은 금리를 올리는 국면에서 중소형주의 조달 비용 부담이 먼저 드러난다는 뜻입니다.", "en": "The Russell 2000 diverging from large caps is the usual tell: small caps feel funding costs first when rates rise.", "badge": "data"},
-    {"ko": "국내 매체의 9월 18일자 조간은 전날(9월 17일) 뉴욕장을 다룹니다 — 다우 51,778.04·S&P 7,637.76은 9월 17일 종가이며, 이 표의 9월 18일 종가와 다릅니다.", "en": "Korean morning papers dated 18 Sep cover the 17 Sep session — Dow 51,778.04 and S&P 7,637.76 are 17 Sep closes, not the 18 Sep figures in this table.", "badge": "data"}
+    {
+     "ko": "업종에서는 기술만 뚜렷이 올랐고(+0.82%), 소재 −1.42%·유틸리티 −1.42%·커뮤니케이션 −1.37%로 경기·배당 성격이 함께 밀렸습니다.",
+     "en": "Technology was the only clear gainer (+0.82%); materials −1.42%, utilities −1.42% and communication services −1.37% all fell.",
+     "badge": "data"
+    },
+    {
+     "ko": "러셀 2000이 대형주와 반대로 간 것은 금리를 올리는 국면에서 중소형주의 조달 비용 부담이 먼저 드러난다는 뜻입니다.",
+     "en": "The Russell 2000 diverging from large caps is the usual tell: small caps feel funding costs first when rates rise.",
+     "badge": "data"
+    },
+    {
+     "ko": "국내 매체의 9월 18일자 조간은 전날(9월 17일) 뉴욕장을 다룹니다 — 다우 51,778.04·S&P 7,637.76은 9월 17일 종가이며, 이 표의 9월 18일 종가와 다릅니다.",
+     "en": "Korean morning papers dated 18 Sep cover the 17 Sep session — Dow 51,778.04 and S&P 7,637.76 are 17 Sep closes, not the 18 Sep figures in this table.",
+     "badge": "data"
+    }
    ]
   },
   {
-   "cat": {"ko": "물가·연준", "en": "Inflation & the Fed"},
-   "title": {"ko": "9월 16일 25bp 인상 — 2023년 이후 첫 인상입니다", "en": "A 25bp hike on 16 September — the first since 2023"},
-   "lede": {"ko": "연준이 기준금리를 3.75~4.00%로 올렸습니다. 표결은 만장일치였고, 인하가 아니라 인상이 논의되는 국면으로 넘어갔다는 점이 이번 주 시장의 바탕입니다.",
-            "en": "The Fed raised its target range to 3.75–4.00% in a unanimous vote. The regime has shifted from debating cuts to debating further hikes, and that is the backdrop for this week."},
+   "cat": {
+    "ko": "물가·연준",
+    "en": "Inflation & the Fed"
+   },
+   "title": {
+    "ko": "9월 16일 25bp 인상 — 2023년 이후 첫 인상입니다",
+    "en": "A 25bp hike on 16 September — the first since 2023"
+   },
+   "lede": {
+    "ko": "연준이 기준금리를 3.75~4.00%로 올렸습니다. 표결은 만장일치였고, 인하가 아니라 인상이 논의되는 국면으로 넘어갔다는 점이 이번 주 시장의 바탕입니다.",
+    "en": "The Fed raised its target range to 3.75–4.00% in a unanimous vote. The regime has shifted from debating cuts to debating further hikes, and that is the backdrop for this week."
+   },
    "bullets": [
-    {"ko": "실효 연방기금금리(EFFR)는 3.88%로, 새 목표범위 안에 들어와 있습니다. 최근 1주 변화는 +25bp로 이번 인상이 그대로 반영됐습니다.", "en": "The effective fed funds rate is 3.88%, inside the new range; it moved +25bp over the past week, reflecting the hike.", "badge": "data"},
-    {"ko": "점도표의 2026년 말 중간값은 4.1%로, 연내 25bp 한 차례를 더 가리킵니다.", "en": "The dot plot's end-2026 median is 4.1%, pointing to one more 25bp move this year.", "badge": "ok"},
-    {"ko": "인상 배경으로는 목표를 웃도는 근원 물가와 에너지 가격 상승이 지목됐습니다. 근원 PCE는 3.4% 부근으로 보도됐습니다.", "en": "Above-target core inflation and higher energy prices were cited; core PCE was reported near 3.4%.", "badge": "solo"},
-    {"ko": "미 국채 수익률 곡선은 이 판의 기준일에 대해 재무부 확정치가 아직 수집되지 않아 싣지 않았습니다.", "en": "The Treasury yield curve is omitted: the official series for this session was not yet in the collected file.", "badge": "none"}
+    {
+     "ko": "실효 연방기금금리(EFFR)는 3.88%로, 새 목표범위 안에 들어와 있습니다. 최근 1주 변화는 +25bp로 이번 인상이 그대로 반영됐습니다.",
+     "en": "The effective fed funds rate is 3.88%, inside the new range; it moved +25bp over the past week, reflecting the hike.",
+     "badge": "data"
+    },
+    {
+     "ko": "점도표의 2026년 말 중간값은 4.1%로, 연내 25bp 한 차례를 더 가리킵니다.",
+     "en": "The dot plot's end-2026 median is 4.1%, pointing to one more 25bp move this year.",
+     "badge": "ok"
+    },
+    {
+     "ko": "인상 배경으로는 목표를 웃도는 근원 물가와 에너지 가격 상승이 지목됐습니다. 근원 PCE는 3.4% 부근으로 보도됐습니다.",
+     "en": "Above-target core inflation and higher energy prices were cited; core PCE was reported near 3.4%.",
+     "badge": "solo"
+    },
+    {
+     "ko": "미 국채 수익률 곡선은 이 판의 기준일에 대해 재무부 확정치가 아직 수집되지 않아 싣지 않았습니다.",
+     "en": "The Treasury yield curve is omitted: the official series for this session was not yet in the collected file.",
+     "badge": "none"
+    }
    ]
   },
   {
-   "cat": {"ko": "유가·원자재", "en": "Oil & commodities"},
-   "title": {"ko": "WTI가 하루에 6% 넘게 빠졌습니다", "en": "WTI lost more than 6% in a session"},
-   "lede": {"ko": "사우디 송유관 복구와 대체 수송로 확대 기대가 자리 잡으면서, 지난 2주 유가에 얹혀 있던 지정학 프리미엄이 빠르게 빠졌습니다. 금은 소폭 올라 방향이 갈렸습니다.",
-            "en": "As expectations firmed for Saudi pipeline repairs and expanded alternative routes, the geopolitical premium of the past fortnight drained quickly. Gold edged higher, moving the other way."},
+   "cat": {
+    "ko": "유가·원자재",
+    "en": "Oil & commodities"
+   },
+   "title": {
+    "ko": "WTI가 하루에 6% 넘게 빠졌습니다",
+    "en": "WTI lost more than 6% in a session"
+   },
+   "lede": {
+    "ko": "사우디 송유관 복구와 대체 수송로 확대 기대가 자리 잡으면서, 지난 2주 유가에 얹혀 있던 지정학 프리미엄이 빠르게 빠졌습니다. 금은 소폭 올라 방향이 갈렸습니다.",
+    "en": "As expectations firmed for Saudi pipeline repairs and expanded alternative routes, the geopolitical premium of the past fortnight drained quickly. Gold edged higher, moving the other way."
+   },
    "bullets": [
-    {"ko": "국내 장이 끝난 9월 18일 15:30(KST) 시점의 WTI는 100.08달러였습니다 — 뉴욕 정산가 95.47달러까지 그 뒤에 더 밀린 것입니다. 국내 마감 시황과 뉴욕 마감 시황의 유가가 다른 이유입니다.", "en": "At the Korean close (15:30 KST on 18 Sep) WTI was $100.08; it fell further to the $95.47 New York settle. That is why a Korea-close note and a New York-close note quote different oil prices.", "badge": "data"},
-    {"ko": "같은 장을 두고 매체별 보도 폭이 −1.8%에서 −5%까지 갈렸습니다. 장중 시각이 서로 달랐기 때문이며, 이 표는 정산가 기준입니다.", "en": "Outlets reported anywhere from −1.8% to −5% for the same session, reflecting different intraday timestamps; this table uses the settlement price.", "badge": "ok"},
-    {"ko": "유가 하락은 물가 부담을 덜어 주는 쪽이지만, 연준이 인상을 결정한 뒤에 나온 움직임이라 이번 회의 결과에는 반영되지 않았습니다.", "en": "Lower crude eases the inflation impulse, but this move came after the Fed decided, so it is not in this meeting's outcome.", "badge": "data"}
+    {
+     "ko": "국내 장이 끝난 9월 18일 15:30(KST) 시점의 WTI는 100.08달러였습니다 — 뉴욕 정산가 95.47달러까지 그 뒤에 더 밀린 것입니다. 국내 마감 시황과 뉴욕 마감 시황의 유가가 다른 이유입니다.",
+     "en": "At the Korean close (15:30 KST on 18 Sep) WTI was $100.08; it fell further to the $95.47 New York settle. That is why a Korea-close note and a New York-close note quote different oil prices.",
+     "badge": "data"
+    },
+    {
+     "ko": "같은 장을 두고 매체별 보도 폭이 −1.8%에서 −5%까지 갈렸습니다. 장중 시각이 서로 달랐기 때문이며, 이 표는 정산가 기준입니다.",
+     "en": "Outlets reported anywhere from −1.8% to −5% for the same session, reflecting different intraday timestamps; this table uses the settlement price.",
+     "badge": "ok"
+    },
+    {
+     "ko": "유가 하락은 물가 부담을 덜어 주는 쪽이지만, 연준이 인상을 결정한 뒤에 나온 움직임이라 이번 회의 결과에는 반영되지 않았습니다.",
+     "en": "Lower crude eases the inflation impulse, but this move came after the Fed decided, so it is not in this meeting's outcome.",
+     "badge": "data"
+    }
    ]
   },
   {
-   "cat": {"ko": "기업·실적", "en": "Companies & earnings"},
-   "title": {"ko": "메모리는 올라가고, 모뎀은 내려왔습니다", "en": "Memory up, modems down"},
-   "lede": {"ko": "개별 종목의 하루 폭이 지수보다 훨씬 컸습니다. 수급과 업황이 분명한 쪽은 크게 올랐고, 점유율 전망이 흔들린 쪽은 한 달 상승분을 하루에 되돌렸습니다.",
-            "en": "Single-stock ranges dwarfed the index. Where flows and pricing were clear, stocks jumped; where share guidance wobbled, a month of gains unwound in a day."},
+   "cat": {
+    "ko": "기업·실적",
+    "en": "Companies & earnings"
+   },
+   "title": {
+    "ko": "메모리는 올라가고, 모뎀은 내려왔습니다",
+    "en": "Memory up, modems down"
+   },
+   "lede": {
+    "ko": "개별 종목의 하루 폭이 지수보다 훨씬 컸습니다. 수급과 업황이 분명한 쪽은 크게 올랐고, 점유율 전망이 흔들린 쪽은 한 달 상승분을 하루에 되돌렸습니다.",
+    "en": "Single-stock ranges dwarfed the index. Where flows and pricing were clear, stocks jumped; where share guidance wobbled, a month of gains unwound in a day."
+   },
    "bullets": [
-    {"ko": "샌디스크 +10.99% — S&P 100 편입과 낸드 공급 부족이 겹쳤습니다. 기사에 적힌 종가 1,791.82달러가 수집 시세와 정확히 일치합니다.", "en": "Sandisk +10.99% on S&P 100 inclusion and NAND tightness; the $1,791.82 close quoted in coverage matches the collected price exactly.", "badge": "ok"},
-    {"ko": "퀄컴 −5.82%, 177.72달러 — 아이폰 모뎀 점유율이 기존 추정보다 낮아질 것이라는 회사 설명과 한 달 랠리의 되돌림이 겹쳤습니다.", "en": "Qualcomm −5.82% to $177.72, as guidance for a lower share of iPhone modems met profit-taking after a month-long rally.", "badge": "ok"},
-    {"ko": "넷플릭스 −4.67%, 액센츄어 −4.73%로 크게 밀렸습니다. 두 종목의 하락 사유는 공개 자료에서 확인하지 못해 적지 않았습니다(2026-09-21 기준).", "en": "Netflix −4.67% and Accenture −4.73% also fell sharply; we could not confirm the drivers in public sources as of 21 Sep 2026, so none are stated.", "badge": "none"}
+    {
+     "ko": "샌디스크 +10.99% — S&P 100 편입과 낸드 공급 부족이 겹쳤습니다. 기사에 적힌 종가 1,791.82달러가 수집 시세와 정확히 일치합니다.",
+     "en": "Sandisk +10.99% on S&P 100 inclusion and NAND tightness; the $1,791.82 close quoted in coverage matches the collected price exactly.",
+     "badge": "ok"
+    },
+    {
+     "ko": "퀄컴 −5.82%, 177.72달러 — 아이폰 모뎀 점유율이 기존 추정보다 낮아질 것이라는 회사 설명과 한 달 랠리의 되돌림이 겹쳤습니다.",
+     "en": "Qualcomm −5.82% to $177.72, as guidance for a lower share of iPhone modems met profit-taking after a month-long rally.",
+     "badge": "ok"
+    },
+    {
+     "ko": "넷플릭스 −4.67%, 액센츄어 −4.73%로 크게 밀렸습니다. 두 종목의 하락 사유는 공개 자료에서 확인하지 못해 적지 않았습니다(2026-09-21 기준).",
+     "en": "Netflix −4.67% and Accenture −4.73% also fell sharply; we could not confirm the drivers in public sources as of 21 Sep 2026, so none are stated.",
+     "badge": "none"
+    }
    ]
   },
   {
-   "cat": {"ko": "한국증시", "en": "Korea equities"},
-   "title": {"ko": "코스피 +2.66%, 7,000선을 다시 봅니다", "en": "KOSPI +2.66%, 7,000 back in view"},
-   "lede": {"ko": "외국인과 기관이 함께 사면서 지수가 크게 올랐습니다. 반도체 두 종목이 상승분의 대부분을 만들었고, 코스닥은 같은 날 +0.60%에 그쳐 두 시장의 온도가 달랐습니다.",
-            "en": "Foreign and institutional buyers pushed the index sharply higher. Two semiconductor names produced most of the gain, while the KOSDAQ added only 0.60% — the two markets ran at different temperatures."},
+   "cat": {
+    "ko": "한국증시",
+    "en": "Korea equities"
+   },
+   "title": {
+    "ko": "코스피 +2.66%, 7,000선을 다시 봅니다",
+    "en": "KOSPI +2.66%, 7,000 back in view"
+   },
+   "lede": {
+    "ko": "외국인과 기관이 함께 사면서 지수가 크게 올랐습니다. 반도체 두 종목이 상승분의 대부분을 만들었고, 코스닥은 같은 날 +0.60%에 그쳐 두 시장의 온도가 달랐습니다.",
+    "en": "Foreign and institutional buyers pushed the index sharply higher. Two semiconductor names produced most of the gain, while the KOSDAQ added only 0.60% — the two markets ran at different temperatures."
+   },
    "bullets": [
-    {"ko": "수급은 외국인 +4,486억원, 기관 +1조 5,322억원, 개인 −3조 6,359억원이었습니다(코스피, 확정치).", "en": "KOSPI flows: foreigners +KRW 448.6bn, institutions +KRW 1,532.2bn, retail −KRW 3,635.9bn (final).", "badge": "data"},
-    {"ko": "삼성전자 +3.37% 261,000원, SK하이닉스 +6.42% 1,857,000원으로 반도체가 지수를 끌었습니다.", "en": "Samsung Electronics +3.37% at KRW 261,000 and SK Hynix +6.42% at KRW 1,857,000 led the index.", "badge": "data"},
-    {"ko": "업종에서는 소프트웨어가 +10.27%로 가장 크게 올랐습니다.", "en": "By sector, software led with +10.27%.", "badge": "data"},
-    {"ko": "이번 주는 9월 21일(월)부터 23일(수)까지 사흘만 열리고, 추석으로 24일(목)·25일(금)은 휴장입니다. 연휴를 앞둔 포지션 조정이 거래에 섞일 수 있습니다.", "en": "KRX trades only Mon 21 – Wed 23 September this week; it is closed Thu 24 and Fri 25 for Chuseok. Pre-holiday position adjustment may colour the tape.", "badge": "data"}
+    {
+     "ko": "수급은 외국인 +4,486억원, 기관 +1조 5,322억원, 개인 −3조 6,359억원이었습니다(코스피, 확정치).",
+     "en": "KOSPI flows: foreigners +KRW 448.6bn, institutions +KRW 1,532.2bn, retail −KRW 3,635.9bn (final).",
+     "badge": "data"
+    },
+    {
+     "ko": "삼성전자 +3.37% 261,000원, SK하이닉스 +6.42% 1,857,000원으로 반도체가 지수를 끌었습니다.",
+     "en": "Samsung Electronics +3.37% at KRW 261,000 and SK Hynix +6.42% at KRW 1,857,000 led the index.",
+     "badge": "data"
+    },
+    {
+     "ko": "업종에서는 통신장비 +6.94%, 전기장비 +5.10%가 앞섰습니다. 반도체·전력 설비 쪽으로 쏠린 하루였습니다.",
+     "en": "By sector, telecom equipment +6.94% and electrical equipment +5.10% led — the bid clustered in semis and power gear.",
+     "badge": "data"
+    },
+    {
+     "ko": "이번 주는 9월 21일(월)부터 23일(수)까지 사흘만 열리고, 추석으로 24일(목)·25일(금)은 휴장입니다. 연휴를 앞둔 포지션 조정이 거래에 섞일 수 있습니다.",
+     "en": "KRX trades only Mon 21 – Wed 23 September this week; it is closed Thu 24 and Fri 25 for Chuseok. Pre-holiday position adjustment may colour the tape.",
+     "badge": "data"
+    }
    ]
   }
  ],
-
  "verify": [
-  {"ko": "기준선 7종은 스냅샷 한 파일에서만 읽었습니다. 표 안에서 출처를 섞지 않는다는 사양을 그대로 지킨 것입니다.",
-   "en": "All seven benchmarks were read from a single snapshot file, honouring the rule that one table must not mix sources."},
-  {"ko": "무빙 3종목과 빅테크 10종목의 종가·등락률은 모두 같은 시세 응답 한 번에서 나왔습니다. 종목마다 다른 사이트를 섞지 않았습니다.",
-   "en": "Closes and changes for the three movers and ten big-tech names all came from one quote response — no per-stock source mixing."},
-  {"ko": "유니버스를 고르는 데 쓴 스크리너 수치는 인쇄하지 않았습니다. 후보를 추리는 데만 쓰고, 표에 실린 값은 전부 시세 응답에서 다시 받은 것입니다.",
-   "en": "Screener figures were used only to shortlist candidates and are not printed; every number in the tables was re-fetched from the quote response."},
-  {"ko": "인쇄된 등락률은 모두 종가와 전일 종가로 다시 계산해 대조했습니다(주장 대장 검산).",
-   "en": "Every printed percentage change was recomputed from close and previous close and cross-checked (claim-ledger verification)."},
-  {"ko": "검색이 9월 17일 뉴욕 마감을 '9월 18일'로 돌려준 사례가 있었습니다. 거래소 원천을 채택하고 기사 수치는 버렸습니다.",
-   "en": "A search returned the 17 September New York close labelled as 18 September. We kept the exchange data and discarded the article's figures."},
-  {"ko": "암호자산 관련주의 등락률은 기사(장중 시점, +12~13%)와 마감 확정치(+16.39%)가 다릅니다. 표는 마감 확정치입니다.",
-   "en": "Crypto-name percentages differ between intraday coverage (+12–13%) and the final close (+16.39%). The table uses the close."},
-  {"ko": "WTI는 24시간 거래되는 연속선물이라 같은 날짜 봉이 수집 시각에 따라 손질됩니다. 마감 직후 수집분(9월 19일 10:10 KST)을 채택했으며, 하루 뒤 수집분은 96.08달러였습니다.",
-   "en": "WTI is a 24-hour continuous future, so the same daily bar is revised between collections. We used the snapshot taken right after the close (19 Sep, 10:10 KST); a day later it read $96.08."},
-  {"ko": "국내 수급은 확정치를 썼습니다. 일부 매체가 보도한 장중 집계와는 차이가 있습니다.",
-   "en": "Korean flow figures are final settlement values and differ from the intraday tallies some outlets reported."},
-  {"ko": "미 국채 수익률 곡선과 VKOSPI는 이 판의 기준일 자료가 없어 싣지 않았습니다. 없는 값을 채우지 않았습니다.",
-   "en": "The Treasury curve and VKOSPI are absent for this session and were left out rather than filled in."},
-  {"ko": "넷플릭스·액센츄어 하락 사유는 확인하지 못해 비워 두었습니다. '사유가 없다'가 아니라 '확인되지 않았다'입니다.",
-   "en": "Drivers for the Netflix and Accenture declines were not confirmed and are left blank — unverified, not non-existent."}
+  {
+   "ko": "기준선 7종은 스냅샷 한 파일에서만 읽었습니다. 표 안에서 출처를 섞지 않는다는 사양을 그대로 지킨 것입니다.",
+   "en": "All seven benchmarks were read from a single snapshot file, honouring the rule that one table must not mix sources."
+  },
+  {
+   "ko": "무빙 3종목과 빅테크 10종목의 종가·등락률은 모두 같은 시세 응답 한 번에서 나왔습니다. 종목마다 다른 사이트를 섞지 않았습니다.",
+   "en": "Closes and changes for the three movers and ten big-tech names all came from one quote response — no per-stock source mixing."
+  },
+  {
+   "ko": "유니버스를 고르는 데 쓴 스크리너 수치는 인쇄하지 않았습니다. 후보를 추리는 데만 쓰고, 표에 실린 값은 전부 시세 응답에서 다시 받은 것입니다.",
+   "en": "Screener figures were used only to shortlist candidates and are not printed; every number in the tables was re-fetched from the quote response."
+  },
+  {
+   "ko": "인쇄된 등락률은 모두 종가와 전일 종가로 다시 계산해 대조했습니다(주장 대장 검산).",
+   "en": "Every printed percentage change was recomputed from close and previous close and cross-checked (claim-ledger verification)."
+  },
+  {
+   "ko": "검색이 9월 17일 뉴욕 마감을 '9월 18일'로 돌려준 사례가 있었습니다. 거래소 원천을 채택하고 기사 수치는 버렸습니다.",
+   "en": "A search returned the 17 September New York close labelled as 18 September. We kept the exchange data and discarded the article's figures."
+  },
+  {
+   "ko": "암호자산 관련주의 등락률은 기사(장중 시점, +12~13%)와 마감 확정치(+16.39%)가 다릅니다. 표는 마감 확정치입니다.",
+   "en": "Crypto-name percentages differ between intraday coverage (+12–13%) and the final close (+16.39%). The table uses the close."
+  },
+  {
+   "ko": "WTI는 24시간 거래되는 연속선물이라 같은 날짜 봉이 수집 시각에 따라 손질됩니다. 마감 직후 수집분(9월 19일 10:10 KST)을 채택했으며, 하루 뒤 수집분은 96.08달러였습니다.",
+   "en": "WTI is a 24-hour continuous future, so the same daily bar is revised between collections. We used the snapshot taken right after the close (19 Sep, 10:10 KST); a day later it read $96.08."
+  },
+  {
+   "ko": "국내 수급은 확정치를 썼습니다. 일부 매체가 보도한 장중 집계와는 차이가 있습니다.",
+   "en": "Korean flow figures are final settlement values and differ from the intraday tallies some outlets reported."
+  },
+  {
+   "ko": "미 국채 수익률 곡선과 VKOSPI는 이 판의 기준일 자료가 없어 싣지 않았습니다. 없는 값을 채우지 않았습니다.",
+   "en": "The Treasury curve and VKOSPI are absent for this session and were left out rather than filled in."
+  },
+  {
+   "ko": "넷플릭스·액센츄어 하락 사유는 확인하지 못해 비워 두었습니다. '사유가 없다'가 아니라 '확인되지 않았다'입니다.",
+   "en": "Drivers for the Netflix and Accenture declines were not confirmed and are left blank — unverified, not non-existent."
+  },
+  {
+   "ko": "국내 업종 등락률은 기준일 스냅샷에서 읽었습니다. 최신 시세 파일의 업종 블록에는 날짜가 없어 당일 장중값이 섞이며, 초고에서 실제로 오늘 장중 수치를 9월 18일 값으로 적었다가 바로잡았습니다.",
+   "en": "Sector moves were read from the reference-day snapshot. The sector block in the newest price file carries no date and can contain live intraday values; an early draft did print today's intraday figure as an 18 September number and it was corrected."
+  }
  ],
-
  "claims": [
-  {"id": "KOSPI_CLOSE", "kind": "market_level", "metric": "코스피", "text": "코스피 종가",
-   "value": 6894.23, "unit": "pt", "series": "야후 파이낸스 · 수집 스냅샷", "as_of": "2026-09-18",
-   "tier": 2, "source_url": "https://www.etoday.co.kr/news/view/2627347",
-   "corroborating_urls": ["https://www.news1.kr/finance/general-stock/6295494"],
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-korea"]},
-  {"id": "KOSPI_PREV", "kind": "market_level", "metric": "코스피", "text": "코스피 전일 종가",
-   "value": 6715.41, "unit": "pt", "series": "야후 파이낸스 · 수집 스냅샷", "as_of": "2026-09-17",
-   "tier": 2, "source_url": "https://www.etoday.co.kr/news/view/2627347",
-   "verdict": "confirmed", "render": "omit", "printed_on": []},
-
-  {"id": "KOSDAQ_CLOSE", "kind": "market_level", "metric": "코스닥", "text": "코스닥 종가",
-   "value": 827.12, "unit": "pt", "series": "야후 파이낸스 · 수집 스냅샷", "as_of": "2026-09-18",
-   "tier": 2, "source_url": "https://www.news1.kr/finance/general-stock/6295494",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-korea"]},
-  {"id": "KOSDAQ_PREV", "kind": "market_level", "metric": "코스닥", "text": "코스닥 전일 종가",
-   "value": 822.18, "unit": "pt", "series": "야후 파이낸스 · 수집 스냅샷", "as_of": "2026-09-17",
-   "tier": 2, "source_url": "https://www.news1.kr/finance/general-stock/6295494",
-   "verdict": "confirmed", "render": "omit", "printed_on": []},
-
-  {"id": "SEC_CLOSE", "kind": "market_level", "metric": "삼성전자", "text": "삼성전자 종가",
-   "value": 261000, "unit": "KRW", "series": "네이버 증시 · 수집 스냅샷", "as_of": "2026-09-18",
-   "tier": 2, "source_url": "https://www.etoday.co.kr/news/view/2627362",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-korea"]},
-  {"id": "SEC_PREV", "kind": "market_level", "metric": "삼성전자", "text": "삼성전자 전일 종가",
-   "value": 252500, "unit": "KRW", "series": "네이버 증시 · 수집 스냅샷", "as_of": "2026-09-17",
-   "tier": 2, "source_url": "https://www.etoday.co.kr/news/view/2627362",
-   "verdict": "confirmed", "render": "omit", "printed_on": []},
-
-  {"id": "HYNIX_CLOSE", "kind": "market_level", "metric": "SK하이닉스", "text": "SK하이닉스 종가",
-   "value": 1857000, "unit": "KRW", "series": "네이버 증시 · 수집 스냅샷", "as_of": "2026-09-18",
-   "tier": 2, "source_url": "https://www.etoday.co.kr/news/view/2627362",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-korea"]},
-  {"id": "HYNIX_PREV", "kind": "market_level", "metric": "SK하이닉스", "text": "SK하이닉스 전일 종가",
-   "value": 1745000, "unit": "KRW", "series": "네이버 증시 · 수집 스냅샷", "as_of": "2026-09-17",
-   "tier": 2, "source_url": "https://www.etoday.co.kr/news/view/2627362",
-   "verdict": "confirmed", "render": "omit", "printed_on": []},
-
-  {"id": "FLOW_FOREIGN", "kind": "market_level", "metric": "코스피 외국인 순매수",
-   "text": "코스피 외국인 순매수 (확정)", "value": 4486, "unit": "억원",
-   "series": "네이버 KRX 투자자별 일별동향", "as_of": "2026-09-18", "tier": 2,
+  {
+   "id": "KOSPI_CLOSE",
+   "kind": "market_level",
+   "metric": "코스피",
+   "text": "코스피 종가",
+   "value": 6894.23,
+   "unit": "pt",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://www.etoday.co.kr/news/view/2627347",
+   "corroborating_urls": [
+    "https://www.news1.kr/finance/general-stock/6295494"
+   ],
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ]
+  },
+  {
+   "id": "KOSPI_PREV",
+   "kind": "market_level",
+   "metric": "코스피",
+   "text": "코스피 전일 종가",
+   "value": 6715.41,
+   "unit": "pt",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.etoday.co.kr/news/view/2627347",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "KOSDAQ_CLOSE",
+   "kind": "market_level",
+   "metric": "코스닥",
+   "text": "코스닥 종가",
+   "value": 827.12,
+   "unit": "pt",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://www.news1.kr/finance/general-stock/6295494",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ]
+  },
+  {
+   "id": "KOSDAQ_PREV",
+   "kind": "market_level",
+   "metric": "코스닥",
+   "text": "코스닥 전일 종가",
+   "value": 822.18,
+   "unit": "pt",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.news1.kr/finance/general-stock/6295494",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "SEC_CLOSE",
+   "kind": "market_level",
+   "metric": "삼성전자",
+   "text": "삼성전자 종가",
+   "value": 261000,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://www.etoday.co.kr/news/view/2627362",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ]
+  },
+  {
+   "id": "SEC_PREV",
+   "kind": "market_level",
+   "metric": "삼성전자",
+   "text": "삼성전자 전일 종가",
+   "value": 252500,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.etoday.co.kr/news/view/2627362",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "HYNIX_CLOSE",
+   "kind": "market_level",
+   "metric": "SK하이닉스",
+   "text": "SK하이닉스 종가",
+   "value": 1857000,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://www.etoday.co.kr/news/view/2627362",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ]
+  },
+  {
+   "id": "HYNIX_PREV",
+   "kind": "market_level",
+   "metric": "SK하이닉스",
+   "text": "SK하이닉스 전일 종가",
+   "value": 1745000,
+   "unit": "KRW",
+   "series": "네이버 증시 · 수집 스냅샷",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.etoday.co.kr/news/view/2627362",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "FLOW_FOREIGN",
+   "kind": "market_level",
+   "metric": "코스피 외국인 순매수",
+   "text": "코스피 외국인 순매수 (확정)",
+   "value": 4486,
+   "unit": "억원",
+   "series": "네이버 KRX 투자자별 일별동향",
+   "as_of": "2026-09-18",
+   "tier": 2,
    "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260921&startIdx=0&pageSize=30",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-korea"],
-   "note": "일부 매체는 장중 집계로 외국인 +9,701억을 보도했습니다 — 계열이 다릅니다"},
-  {"id": "FLOW_INST", "kind": "market_level", "metric": "코스피 기관 순매수",
-   "text": "코스피 기관 순매수 (확정)", "value": 15322, "unit": "억원",
-   "series": "네이버 KRX 투자자별 일별동향", "as_of": "2026-09-18", "tier": 2,
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ],
+   "note": "일부 매체는 장중 집계로 외국인 +9,701억을 보도했습니다 — 계열이 다릅니다"
+  },
+  {
+   "id": "FLOW_INST",
+   "kind": "market_level",
+   "metric": "코스피 기관 순매수",
+   "text": "코스피 기관 순매수 (확정)",
+   "value": 15322,
+   "unit": "억원",
+   "series": "네이버 KRX 투자자별 일별동향",
+   "as_of": "2026-09-18",
+   "tier": 2,
    "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260921&startIdx=0&pageSize=30",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-korea"]},
-  {"id": "FLOW_RETAIL", "kind": "market_level", "metric": "코스피 개인 순매수",
-   "text": "코스피 개인 순매수 (확정)", "value": -36359, "unit": "억원",
-   "series": "네이버 KRX 투자자별 일별동향", "as_of": "2026-09-18", "tier": 2,
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ]
+  },
+  {
+   "id": "FLOW_RETAIL",
+   "kind": "market_level",
+   "metric": "코스피 개인 순매수",
+   "text": "코스피 개인 순매수 (확정)",
+   "value": -36359,
+   "unit": "억원",
+   "series": "네이버 KRX 투자자별 일별동향",
+   "as_of": "2026-09-18",
+   "tier": 2,
    "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260921&startIdx=0&pageSize=30",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-korea"]},
-
-  {"id": "KR_SECTOR_SW", "kind": "market_level", "metric": "국내 소프트웨어 업종",
-   "text": "국내 소프트웨어 업종 등락률", "value": 10.27, "unit": "%",
-   "series": "네이버 업종 등락률", "as_of": "2026-09-18", "tier": 2,
-   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-korea"]},
-
-  {"id": "US_SEC_TECH", "kind": "market_level", "metric": "미국 기술 업종 ETF",
-   "text": "미국 기술 업종 ETF 등락률", "value": 0.82, "unit": "%",
-   "series": "야후 파이낸스 · 업종 ETF", "as_of": "2026-09-18", "tier": 2,
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ]
+  },
+  {
+   "id": "US_SEC_TECH",
+   "kind": "market_level",
+   "metric": "미국 기술 업종 ETF",
+   "text": "미국 기술 업종 ETF 등락률",
+   "value": 0.82,
+   "unit": "%",
+   "series": "야후 파이낸스 · 업종 ETF",
+   "as_of": "2026-09-18",
+   "tier": 2,
    "source_url": "https://finance.yahoo.com/quote/XLK/",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-us"]},
-  {"id": "US_SEC_MAT", "kind": "market_level", "metric": "미국 소재 업종 ETF",
-   "text": "미국 소재 업종 ETF 등락률", "value": -1.42, "unit": "%",
-   "series": "야후 파이낸스 · 업종 ETF", "as_of": "2026-09-18", "tier": 2,
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-us"
+   ]
+  },
+  {
+   "id": "US_SEC_MAT",
+   "kind": "market_level",
+   "metric": "미국 소재 업종 ETF",
+   "text": "미국 소재 업종 ETF 등락률",
+   "value": -1.42,
+   "unit": "%",
+   "series": "야후 파이낸스 · 업종 ETF",
+   "as_of": "2026-09-18",
+   "tier": 2,
    "source_url": "https://finance.yahoo.com/quote/XLB/",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-us"]},
-  {"id": "US_SEC_UTIL", "kind": "market_level", "metric": "미국 유틸리티 업종 ETF",
-   "text": "미국 유틸리티 업종 ETF 등락률", "value": -1.42, "unit": "%",
-   "series": "야후 파이낸스 · 업종 ETF", "as_of": "2026-09-18", "tier": 2,
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-us"
+   ]
+  },
+  {
+   "id": "US_SEC_UTIL",
+   "kind": "market_level",
+   "metric": "미국 유틸리티 업종 ETF",
+   "text": "미국 유틸리티 업종 ETF 등락률",
+   "value": -1.42,
+   "unit": "%",
+   "series": "야후 파이낸스 · 업종 ETF",
+   "as_of": "2026-09-18",
+   "tier": 2,
    "source_url": "https://finance.yahoo.com/quote/XLU/",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-us"]},
-  {"id": "US_SEC_COMM", "kind": "market_level", "metric": "미국 커뮤니케이션 업종 ETF",
-   "text": "미국 커뮤니케이션 업종 ETF 등락률", "value": -1.37, "unit": "%",
-   "series": "야후 파이낸스 · 업종 ETF", "as_of": "2026-09-18", "tier": 2,
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-us"
+   ]
+  },
+  {
+   "id": "US_SEC_COMM",
+   "kind": "market_level",
+   "metric": "미국 커뮤니케이션 업종 ETF",
+   "text": "미국 커뮤니케이션 업종 ETF 등락률",
+   "value": -1.37,
+   "unit": "%",
+   "series": "야후 파이낸스 · 업종 ETF",
+   "as_of": "2026-09-18",
+   "tier": 2,
    "source_url": "https://finance.yahoo.com/quote/XLC/",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-us"]},
-
-  {"id": "DOW_0917", "kind": "market_level", "metric": "다우 (9/17)",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-us"
+   ]
+  },
+  {
+   "id": "DOW_0917",
+   "kind": "market_level",
+   "metric": "다우 (9/17)",
    "text": "다우 9월 17일 종가 — 국내 조간이 '9월 18일'로 실은 값",
-   "value": 51778.04, "unit": "pt", "series": "야후 파이낸스 · 수집 스냅샷",
-   "as_of": "2026-09-17", "tier": 2,
+   "value": 51778.04,
+   "unit": "pt",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-17",
+   "tier": 2,
    "source_url": "https://www.newspim.com/news/view/20260918000207",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-us"]},
-  {"id": "SPX_0917", "kind": "market_level", "metric": "S&P 500 (9/17)",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-us"
+   ]
+  },
+  {
+   "id": "SPX_0917",
+   "kind": "market_level",
+   "metric": "S&P 500 (9/17)",
    "text": "S&P 500 9월 17일 종가 — 국내 조간이 '9월 18일'로 실은 값",
-   "value": 7637.76, "unit": "pt", "series": "야후 파이낸스 · 수집 스냅샷",
-   "as_of": "2026-09-17", "tier": 2,
+   "value": 7637.76,
+   "unit": "pt",
+   "series": "야후 파이낸스 · 수집 스냅샷",
+   "as_of": "2026-09-17",
+   "tier": 2,
    "source_url": "https://www.newspim.com/news/view/20260918000207",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-us"]},
-
-  {"id": "EFFR", "kind": "policy_rate", "metric": "EFFR",
-   "text": "실효 연방기금금리", "value": 3.88, "unit": "%",
-   "series": "뉴욕 연준 공표", "as_of": "2026-09-17", "tier": 1,
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-us"
+   ]
+  },
+  {
+   "id": "EFFR",
+   "kind": "policy_rate",
+   "metric": "EFFR",
+   "text": "실효 연방기금금리",
+   "value": 3.88,
+   "unit": "%",
+   "series": "뉴욕 연준 공표",
+   "as_of": "2026-09-17",
+   "tier": 1,
    "source_url": "https://markets.newyorkfed.org/api/rates/unsecured/effr",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-fed"]},
-  {"id": "FFR_LOW", "kind": "policy_rate", "metric": "연방기금 목표범위 하단",
-   "text": "연방기금 목표범위 하단 (9월 16일 인상 후)", "value": 3.75, "unit": "%",
-   "series": "FOMC 공표", "as_of": "2026-09-16", "tier": 2,
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-fed"
+   ]
+  },
+  {
+   "id": "FFR_LOW",
+   "kind": "policy_rate",
+   "metric": "연방기금 목표범위 하단",
+   "text": "연방기금 목표범위 하단 (9월 16일 인상 후)",
+   "value": 3.75,
+   "unit": "%",
+   "series": "FOMC 공표",
+   "as_of": "2026-09-16",
+   "tier": 2,
    "source_url": "https://www.cnbc.com/2026/09/16/fed-rate-decision-september-2026.html",
-   "corroborating_urls": ["https://polymarkettrader.com/events/fed-fomc-september-2026/"],
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-fed", "headline-2"]},
-  {"id": "FFR_HIGH", "kind": "policy_rate", "metric": "연방기금 목표범위 상단",
-   "text": "연방기금 목표범위 상단 (9월 16일 인상 후)", "value": 4.00, "unit": "%",
-   "series": "FOMC 공표", "as_of": "2026-09-16", "tier": 2,
+   "corroborating_urls": [
+    "https://polymarkettrader.com/events/fed-fomc-september-2026/"
+   ],
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-fed",
+    "headline-2"
+   ]
+  },
+  {
+   "id": "FFR_HIGH",
+   "kind": "policy_rate",
+   "metric": "연방기금 목표범위 상단",
+   "text": "연방기금 목표범위 상단 (9월 16일 인상 후)",
+   "value": 4.0,
+   "unit": "%",
+   "series": "FOMC 공표",
+   "as_of": "2026-09-16",
+   "tier": 2,
    "source_url": "https://www.cnbc.com/2026/09/16/fed-rate-decision-september-2026.html",
-   "corroborating_urls": ["https://polymarkettrader.com/events/fed-fomc-september-2026/"],
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-fed", "headline-2"]},
-  {"id": "FFR_HIKE_BP", "kind": "policy_rate", "metric": "9월 인상폭",
-   "text": "2026년 9월 FOMC 인상폭", "value": 25, "unit": "bp",
-   "series": "FOMC 공표", "as_of": "2026-09-16", "tier": 2,
+   "corroborating_urls": [
+    "https://polymarkettrader.com/events/fed-fomc-september-2026/"
+   ],
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-fed",
+    "headline-2"
+   ]
+  },
+  {
+   "id": "FFR_HIKE_BP",
+   "kind": "policy_rate",
+   "metric": "9월 인상폭",
+   "text": "2026년 9월 FOMC 인상폭",
+   "value": 25,
+   "unit": "bp",
+   "series": "FOMC 공표",
+   "as_of": "2026-09-16",
+   "tier": 2,
    "source_url": "https://www.cnbc.com/2026/09/16/fed-rate-decision-september-2026.html",
-   "corroborating_urls": ["https://finance.yahoo.com/economy/policy/live/federal-reserve-meeting-live-updates-25-basis-point-interest-rate-hike-chairman-kevin-warsh-143452661.html"],
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-fed", "headline-2"]},
-  {"id": "EFFR_W1", "kind": "policy_rate", "metric": "EFFR 1주 변화",
-   "text": "실효 연방기금금리 1주 변화", "value": 25, "unit": "bp",
-   "series": "뉴욕 연준 공표", "as_of": "2026-09-17", "tier": 1,
+   "corroborating_urls": [
+    "https://finance.yahoo.com/economy/policy/live/federal-reserve-meeting-live-updates-25-basis-point-interest-rate-hike-chairman-kevin-warsh-143452661.html"
+   ],
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-fed",
+    "headline-2"
+   ]
+  },
+  {
+   "id": "EFFR_W1",
+   "kind": "policy_rate",
+   "metric": "EFFR 1주 변화",
+   "text": "실효 연방기금금리 1주 변화",
+   "value": 25,
+   "unit": "bp",
+   "series": "뉴욕 연준 공표",
+   "as_of": "2026-09-17",
+   "tier": 1,
    "source_url": "https://markets.newyorkfed.org/api/rates/unsecured/effr",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-fed"]},
-  {"id": "DOT_2026", "kind": "institution_forecast", "metric": "점도표 2026년 말 중간값",
-   "text": "FOMC 점도표 2026년 말 연방기금금리 중간값", "value": 4.1, "unit": "%",
-   "series": "기관 전망", "as_of": "2026-09-21", "tier": 2,
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-fed"
+   ]
+  },
+  {
+   "id": "DOT_2026",
+   "kind": "institution_forecast",
+   "metric": "점도표 2026년 말 중간값",
+   "text": "FOMC 점도표 2026년 말 연방기금금리 중간값",
+   "value": 4.1,
+   "unit": "%",
+   "series": "기관 전망",
+   "as_of": "2026-09-21",
+   "tier": 2,
    "source_url": "https://www.bondsavvy.com/fixed-income-investments-blog/fed-dot-plot",
-   "corroborating_urls": ["https://www.kucoin.com/blog/september-2026-fomc-fed-hikes-25-bp-hawkish-dot-plot-is-this-a-new-hiking-cycle"],
-   "announced_on": "2026-09-16", "attributed_to": "연방준비제도 (FOMC 경제전망요약 점도표 중간값)",
-   "target_period": "2026년 말", "revision": "new",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-fed"]},
-  {"id": "CORE_PCE", "kind": "market_level", "metric": "근원 PCE",
-   "text": "근원 PCE 물가 (보도 기준)", "value": 3.4, "unit": "%",
-   "series": "언론 보도", "as_of": "2026-09-21", "tier": 2,
+   "corroborating_urls": [
+    "https://www.kucoin.com/blog/september-2026-fomc-fed-hikes-25-bp-hawkish-dot-plot-is-this-a-new-hiking-cycle"
+   ],
+   "announced_on": "2026-09-16",
+   "attributed_to": "연방준비제도 (FOMC 경제전망요약 점도표 중간값)",
+   "target_period": "2026년 말",
+   "revision": "new",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-fed"
+   ]
+  },
+  {
+   "id": "CORE_PCE",
+   "kind": "market_level",
+   "metric": "근원 PCE",
+   "text": "근원 PCE 물가 (보도 기준)",
+   "value": 3.4,
+   "unit": "%",
+   "series": "언론 보도",
+   "as_of": "2026-09-21",
+   "tier": 2,
    "source_url": "https://www.kucoin.com/blog/september-2026-fomc-fed-hikes-25-bp-hawkish-dot-plot-is-this-a-new-hiking-cycle",
-   "verdict": "unverified", "render": "marked", "printed_on": ["card-fed"],
-   "note": "BEA 원문을 확인하지 못해 '보도됐습니다'로만 적었습니다"},
-
-  {"id": "WTI_KRCLOSE", "kind": "market_level", "metric": "WTI (국내 마감 시점)",
-   "text": "WTI 2026-09-18 15:30 KST 시점 가격", "value": 100.08, "unit": "USD/bbl",
-   "series": "야후 파이낸스 · 5분봉 (at_kr_close)", "as_of": "2026-09-18", "tier": 2,
+   "verdict": "unverified",
+   "render": "marked",
+   "printed_on": [
+    "card-fed"
+   ],
+   "note": "BEA 원문을 확인하지 못해 '보도됐습니다'로만 적었습니다"
+  },
+  {
+   "id": "WTI_KRCLOSE",
+   "kind": "market_level",
+   "metric": "WTI (국내 마감 시점)",
+   "text": "WTI 2026-09-18 15:30 KST 시점 가격",
+   "value": 100.08,
+   "unit": "USD/bbl",
+   "series": "야후 파이낸스 · 5분봉 (at_kr_close)",
+   "as_of": "2026-09-18",
+   "tier": 2,
    "source_url": "https://finance.yahoo.com/quote/CL=F/",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-oil"]},
-  {"id": "WTI_LATER_SNAP", "kind": "market_level", "metric": "WTI (하루 뒤 수집분)",
-   "text": "WTI 2026-09-18 봉 — 9월 20일 수집분", "value": 96.08, "unit": "USD/bbl",
-   "series": "야후 파이낸스 · 수집 스냅샷 (2026-09-20)", "as_of": "2026-09-18", "tier": 2,
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-oil"
+   ]
+  },
+  {
+   "id": "WTI_LATER_SNAP",
+   "kind": "market_level",
+   "metric": "WTI (하루 뒤 수집분)",
+   "text": "WTI 2026-09-18 봉 — 9월 20일 수집분",
+   "value": 96.08,
+   "unit": "USD/bbl",
+   "series": "야후 파이낸스 · 수집 스냅샷 (2026-09-20)",
+   "as_of": "2026-09-18",
+   "tier": 2,
    "source_url": "https://finance.yahoo.com/quote/CL=F/",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["verify"],
-   "note": "같은 날짜 봉이 수집 시각에 따라 손질된다는 것을 보이려고 실었습니다"},
-
-  {"id": "SNDK_PRESS_CLOSE", "kind": "market_level", "metric": "SNDK (보도)",
-   "text": "샌디스크 종가 — 매체 보도치", "value": 1791.82, "unit": "USD",
-   "series": "언론 보도", "as_of": "2026-09-18", "tier": 2,
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "verify"
+   ],
+   "note": "같은 날짜 봉이 수집 시각에 따라 손질된다는 것을 보이려고 실었습니다"
+  },
+  {
+   "id": "SNDK_PRESS_CLOSE",
+   "kind": "market_level",
+   "metric": "SNDK (보도)",
+   "text": "샌디스크 종가 — 매체 보도치",
+   "value": 1791.82,
+   "unit": "USD",
+   "series": "언론 보도",
+   "as_of": "2026-09-18",
+   "tier": 2,
    "source_url": "https://seekingalpha.com/news/4644535-sandisk-climbs-11-amid-storage-sector-strength",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-earnings"],
-   "note": "수집 시세와 소수점까지 일치 — 교차확인 근거로 실었습니다"},
-  {"id": "QCOM_CLOSE_N", "kind": "market_level", "metric": "QCOM", "text": "퀄컴 종가",
-   "value": 177.72, "unit": "USD", "series": "야후 파이낸스 · 수집 시세", "as_of": "2026-09-18",
-   "tier": 2, "source_url": "https://www.marketbeat.com/instant-alerts/price-qualcomm-nasdaq-qcom-stock-price-down-58-time-to-sell-2026-09-18/",
-   "verdict": "confirmed", "render": "assert", "printed_on": ["card-earnings"]},
-  {"id": "QCOM_PREV_N", "kind": "market_level", "metric": "QCOM", "text": "퀄컴 전일 종가",
-   "value": 188.71, "unit": "USD", "series": "야후 파이낸스 · 수집 시세", "as_of": "2026-09-17",
-   "tier": 2, "source_url": "https://finance.yahoo.com/quote/QCOM/",
-   "verdict": "confirmed", "render": "omit", "printed_on": []},
-  {"id": "NFLX_CLOSE_N", "kind": "market_level", "metric": "NFLX", "text": "넷플릭스 종가",
-   "value": 71.79, "unit": "USD", "series": "야후 파이낸스 · 수집 시세", "as_of": "2026-09-18",
-   "tier": 2, "source_url": "https://finance.yahoo.com/quote/NFLX/",
-   "verdict": "confirmed", "render": "omit", "printed_on": []},
-  {"id": "NFLX_PREV_N", "kind": "market_level", "metric": "NFLX", "text": "넷플릭스 전일 종가",
-   "value": 75.31, "unit": "USD", "series": "야후 파이낸스 · 수집 시세", "as_of": "2026-09-17",
-   "tier": 2, "source_url": "https://finance.yahoo.com/quote/NFLX/",
-   "verdict": "confirmed", "render": "omit", "printed_on": []},
-  {"id": "ACN_CLOSE_N", "kind": "market_level", "metric": "ACN", "text": "액센츄어 종가",
-   "value": 181.29, "unit": "USD", "series": "야후 파이낸스 · 수집 시세", "as_of": "2026-09-18",
-   "tier": 2, "source_url": "https://finance.yahoo.com/quote/ACN/",
-   "verdict": "confirmed", "render": "omit", "printed_on": []},
-  {"id": "ACN_PREV_N", "kind": "market_level", "metric": "ACN", "text": "액센츄어 전일 종가",
-   "value": 190.29, "unit": "USD", "series": "야후 파이낸스 · 수집 시세", "as_of": "2026-09-17",
-   "tier": 2, "source_url": "https://finance.yahoo.com/quote/ACN/",
-   "verdict": "confirmed", "render": "omit", "printed_on": []}
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-earnings"
+   ],
+   "note": "수집 시세와 소수점까지 일치 — 교차확인 근거로 실었습니다"
+  },
+  {
+   "id": "QCOM_CLOSE_N",
+   "kind": "market_level",
+   "metric": "QCOM",
+   "text": "퀄컴 종가",
+   "value": 177.72,
+   "unit": "USD",
+   "series": "야후 파이낸스 · 수집 시세",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://www.marketbeat.com/instant-alerts/price-qualcomm-nasdaq-qcom-stock-price-down-58-time-to-sell-2026-09-18/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-earnings"
+   ]
+  },
+  {
+   "id": "QCOM_PREV_N",
+   "kind": "market_level",
+   "metric": "QCOM",
+   "text": "퀄컴 전일 종가",
+   "value": 188.71,
+   "unit": "USD",
+   "series": "야후 파이낸스 · 수집 시세",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/QCOM/",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "NFLX_CLOSE_N",
+   "kind": "market_level",
+   "metric": "NFLX",
+   "text": "넷플릭스 종가",
+   "value": 71.79,
+   "unit": "USD",
+   "series": "야후 파이낸스 · 수집 시세",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/NFLX/",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "NFLX_PREV_N",
+   "kind": "market_level",
+   "metric": "NFLX",
+   "text": "넷플릭스 전일 종가",
+   "value": 75.31,
+   "unit": "USD",
+   "series": "야후 파이낸스 · 수집 시세",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/NFLX/",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "ACN_CLOSE_N",
+   "kind": "market_level",
+   "metric": "ACN",
+   "text": "액센츄어 종가",
+   "value": 181.29,
+   "unit": "USD",
+   "series": "야후 파이낸스 · 수집 시세",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/ACN/",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "ACN_PREV_N",
+   "kind": "market_level",
+   "metric": "ACN",
+   "text": "액센츄어 전일 종가",
+   "value": 190.29,
+   "unit": "USD",
+   "series": "야후 파이낸스 · 수집 시세",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/quote/ACN/",
+   "verdict": "confirmed",
+   "render": "omit",
+   "printed_on": []
+  },
+  {
+   "id": "KR_SECTOR_TELEQ",
+   "kind": "market_level",
+   "metric": "국내 통신장비 업종",
+   "text": "국내 통신장비 업종 등락률",
+   "value": 6.94,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ],
+   "note": "latest.json 의 sectors 에는 날짜가 없어 오늘 장중값이 섞인다 — 기준일 스냅샷에서 읽어야 한다"
+  },
+  {
+   "id": "KR_SECTOR_ELEC",
+   "kind": "market_level",
+   "metric": "국내 전기장비 업종",
+   "text": "국내 전기장비 업종 등락률",
+   "value": 5.1,
+   "unit": "%",
+   "series": "네이버 업종 등락률 · 기준일 스냅샷",
+   "as_of": "2026-09-18",
+   "tier": 2,
+   "source_url": "https://finance.naver.com/sise/sise_group.naver?type=upjong",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "card-korea"
+   ]
+  }
  ],
-
  "derived": [
-  {"id": "D_KOSPI", "kind": "pct_change", "from": "KOSPI_PREV", "to": "KOSPI_CLOSE",
-   "printed": 2.66, "tolerance": 0.02},
-  {"id": "D_KOSDAQ", "kind": "pct_change", "from": "KOSDAQ_PREV", "to": "KOSDAQ_CLOSE",
-   "printed": 0.60, "tolerance": 0.02},
-  {"id": "D_SEC", "kind": "pct_change", "from": "SEC_PREV", "to": "SEC_CLOSE",
-   "printed": 3.37, "tolerance": 0.02},
-  {"id": "D_HYNIX", "kind": "pct_change", "from": "HYNIX_PREV", "to": "HYNIX_CLOSE",
-   "printed": 6.42, "tolerance": 0.02},
-  {"id": "D_QCOM", "kind": "pct_change", "from": "QCOM_PREV_N", "to": "QCOM_CLOSE_N",
-   "printed": -5.82, "tolerance": 0.02},
-  {"id": "D_NFLX", "kind": "pct_change", "from": "NFLX_PREV_N", "to": "NFLX_CLOSE_N",
-   "printed": -4.67, "tolerance": 0.02},
-  {"id": "D_ACN", "kind": "pct_change", "from": "ACN_PREV_N", "to": "ACN_CLOSE_N",
-   "printed": -4.73, "tolerance": 0.02}
+  {
+   "id": "D_KOSPI",
+   "kind": "pct_change",
+   "from": "KOSPI_PREV",
+   "to": "KOSPI_CLOSE",
+   "printed": 2.66,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_KOSDAQ",
+   "kind": "pct_change",
+   "from": "KOSDAQ_PREV",
+   "to": "KOSDAQ_CLOSE",
+   "printed": 0.6,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_SEC",
+   "kind": "pct_change",
+   "from": "SEC_PREV",
+   "to": "SEC_CLOSE",
+   "printed": 3.37,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_HYNIX",
+   "kind": "pct_change",
+   "from": "HYNIX_PREV",
+   "to": "HYNIX_CLOSE",
+   "printed": 6.42,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_QCOM",
+   "kind": "pct_change",
+   "from": "QCOM_PREV_N",
+   "to": "QCOM_CLOSE_N",
+   "printed": -5.82,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_NFLX",
+   "kind": "pct_change",
+   "from": "NFLX_PREV_N",
+   "to": "NFLX_CLOSE_N",
+   "printed": -4.67,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_ACN",
+   "kind": "pct_change",
+   "from": "ACN_PREV_N",
+   "to": "ACN_CLOSE_N",
+   "printed": -4.73,
+   "tolerance": 0.02
+  }
  ]
 }
