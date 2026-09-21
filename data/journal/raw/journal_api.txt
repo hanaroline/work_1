@@ -1,0 +1,123 @@
+시장일지 순위 원천 확인 2026-09-21 11:31 KST
+
+========== ① 전종목 넘기기 ==========
+
+### 전종목 startIdx=0 pageSize=100
+    https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=marketSum&startIdx=0&pageSize=100
+    200 · 171856 bytes
+    모양: ["[100개]", {"itemname": "str", "itemcode": "str", "sosok": "str", "upDownGb": "str", "type": "str", "upperLimitPrice": "str", "lowerLimitPrice": "str", "manageStatusGb": "str", "tradeStopYn": "str", "tradableStatus": "str", "tradableStatusCode": "str", "managementDate": "NoneType", "managementReasonCode": "NoneType", "tradingHaltDate": "NoneType"}]
+    → 본문을 data/journal/raw/api_전종목_startIdx=0_pageSize=100.json 에 남겼다
+
+    → 실제로 100 줄 왔다 · 첫 줄 삼성전자 · 끝 줄 이오테크닉스
+
+### 전종목 startIdx=0 pageSize=300
+    https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=marketSum&startIdx=0&pageSize=300
+    200 · 512330 bytes
+    모양: ["[300개]", {"itemname": "str", "itemcode": "str", "sosok": "str", "upDownGb": "str", "type": "str", "upperLimitPrice": "str", "lowerLimitPrice": "str", "manageStatusGb": "str", "tradeStopYn": "str", "tradableStatus": "str", "tradableStatusCode": "str", "managementDate": "NoneType", "managementReasonCode": "NoneType", "tradingHaltDate": "NoneType"}]
+
+    → 실제로 300 줄 왔다 · 첫 줄 삼성전자 · 끝 줄 DL
+
+### 전종목 startIdx=0 pageSize=1000
+    https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=marketSum&startIdx=0&pageSize=1000
+    200 · 1694346 bytes
+    모양: ["[1000개]", {"itemname": "str", "itemcode": "str", "sosok": "str", "upDownGb": "str", "type": "str", "upperLimitPrice": "str", "lowerLimitPrice": "str", "manageStatusGb": "str", "tradeStopYn": "str", "tradableStatus": "str", "tradableStatusCode": "str", "managementDate": "NoneType", "managementReasonCode": "NoneType", "tradingHaltDate": "NoneType"}]
+
+    → 실제로 1000 줄 왔다 · 첫 줄 삼성전자 · 끝 줄 에브리봇
+
+### 전종목 startIdx=2000 pageSize=100
+    https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=marketSum&startIdx=2000&pageSize=100
+    200 · 2 bytes
+    모양: "[]"
+
+    → 실제로 0 줄 왔다
+
+### 전종목 startIdx=2600 pageSize=100
+    https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=marketSum&startIdx=2600&pageSize=100
+    200 · 2 bytes
+    모양: "[]"
+
+    → 실제로 0 줄 왔다
+
+========== ② orderType · marketType ==========
+
+    orderType=up                 200 · 네오사피엔스(172.5%, 대금 402239924000) / 수성웹툰(63.64%, 대금 609957000) / 시그네틱스(30.0%, 대금 3177908000)
+    orderType=down               200 · 오름테라퓨틱(-29.41%, 대금 73780893000) / 동양2우B(-19.94%, 대금 54000000) / 동양우(-18.37%, 대금 170000000)
+    orderType=quant              실패 400 HTTP Error 400: Bad Request
+    orderType=amount             실패 400 HTTP Error 400: Bad Request
+    orderType=tradeAmount        실패 400 HTTP Error 400: Bad Request
+    orderType=tradeVolume        실패 400 HTTP Error 400: Bad Request
+    orderType=priceTop           200 · 삼성전자(4.21%, 대금 2876972000000) / SK하이닉스(0.59%, 대금 2424898000000) / 삼성전자우(5.56%, 대금 501948000000)
+    orderType=marketSum          200 · 삼성전자(4.21%, 대금 2876972000000) / SK하이닉스(0.59%, 대금 2424898000000) / 삼성전자우(5.56%, 대금 501948000000)
+    orderType=quantDiff          실패 400 HTTP Error 400: Bad Request
+    orderType=quantDiffRate      실패 400 HTTP Error 400: Bad Request
+    orderType=per                실패 400 HTTP Error 400: Bad Request
+    orderType=pbr                실패 400 HTTP Error 400: Bad Request
+    orderType=foreignRate        실패 400 HTTP Error 400: Bad Request
+    orderType=high52             실패 400 HTTP Error 400: Bad Request
+    orderType=newHigh            실패 400 HTTP Error 400: Bad Request
+
+    marketType=ALL      200 · 5 줄 · sosok={'1'} type={'ST'} · 네오사피엔스, 수성웹툰, 시그네틱스, 토마토시스템
+    marketType=KOSPI    200 · 5 줄 · sosok={'0'} type={'ST'} · 디아이, 에스엠벡셀, 케이씨, 현대그린푸드
+    marketType=KOSDAQ   200 · 5 줄 · sosok={'1'} type={'ST'} · 네오사피엔스, 수성웹툰, 시그네틱스, 토마토시스템
+    marketType=ETF      실패 400 HTTP Error 400: Bad Request
+    marketType=ETN      실패 400 HTTP Error 400: Bad Request
+    marketType=KONEX    200 · 5 줄 · sosok={'1'} type={'ST'} · 네오사피엔스, 수성웹툰, 시그네틱스, 토마토시스템
+
+### ETF 상승률
+    https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ETF&orderType=up&startIdx=0&pageSize=100
+    실패 400 HTTP Error 400: Bad Request
+
+========== ③ 기관·외국인 종목별 순매수 순위 ==========
+
+### aggregateInvestorRanking
+    https://stock.naver.com/api/domestic/home/marketaggregate/aggregateInvestorRanking
+    실패 404 HTTP Error 404: Not Found
+
+### aggregateInvestor
+    https://stock.naver.com/api/domestic/home/marketaggregate/aggregateInvestor
+    실패 404 HTTP Error 404: Not Found
+
+### 옛 투자자별매매상위 외국인매수 코스피
+    https://finance.naver.com/sise/sise_deal_rank.naver?investor_gubun=9000&type=buy&sosok=01
+    200 · 164043 bytes
+    JSON 아님 · 머리 200자: '<!DOCTYPE html><html lang="ko" class="" data-theme="light"><head><meta charSet="utf-8"/><meta name="viewport" content="width=1366, initial-scale=1.0, user-scalable=yes"/><meta name="viewport" content='
+    → 본문을 data/journal/raw/api_옛_투자자별매매상위_외국인매수_코스피.json 에 남겼다
+
+### investor_ranking
+    https://stock.naver.com/api/domestic/market/investor/ranking?tradeType=KRX&marketType=KOSPI&investorGubun=9000&type=buy&startIdx=0&pageSize=20
+    실패 404 HTTP Error 404: Not Found
+
+### trend_investorRanking
+    https://stock.naver.com/api/domestic/market/trend/investorRanking?tradeType=KRX&marketType=KOSPI&startIdx=0&pageSize=20
+    실패 404 HTTP Error 404: Not Found
+
+### stock_investor
+    https://stock.naver.com/api/domestic/market/stock/investor?tradeType=KRX&marketType=KOSPI&startIdx=0&pageSize=20
+    실패 404 HTTP Error 404: Not Found
+
+### foreigner_KOSPI
+    https://m.stock.naver.com/api/stocks/investor/foreigner/KOSPI?page=1&pageSize=20
+    실패 404 HTTP Error 404: 404
+
+### investor_ranks
+    https://finance.daum.net/api/trend/investor/ranks?market=KOSPI&investor=FOREIGN&perPage=20
+    실패 500 HTTP Error 500: 
+
+### investors_ranks
+    https://finance.daum.net/api/investors/ranks?market=KOSPI&investor=foreign&perPage=20
+    실패 500 HTTP Error 500: 
+
+========== ④ 테마 · 업종 ==========
+
+### 테마 등락률
+    https://stock.naver.com/api/stockSecurity/rankings/v2/domestic/themes?sortType=changeRate&size=20&excludeCodes=25&period=daily
+    200 · 42375 bytes
+    모양: {"hasNext": "bool", "items": ["[20개]", {"ranking": "…", "code": "…", "name": "…", "changeRate": "…", "risingCount": "…", "fallingCount": "…", "unchangedCount": "…", "totalMarketCap": "…", "totalTradingVolume": "…", "totalTradingValue": "…", "topByChangeRate": "…", "topByMarketCap": "…", "topByTradingValue": "…", "topByTradingVolume": "…"}], "cursor": "str"}
+    → 본문을 data/journal/raw/api_테마_등락률.json 에 남겼다
+
+### 업종 등락률
+    https://stock.naver.com/api/stockSecurity/rankings/v2/domestic/industries?sortType=changeRate&size=20&excludeCodes=25&period=daily
+    200 · 39457 bytes
+    모양: {"hasNext": "bool", "items": ["[20개]", {"ranking": "…", "code": "…", "name": "…", "changeRate": "…", "risingCount": "…", "fallingCount": "…", "unchangedCount": "…", "totalMarketCap": "…", "totalTradingVolume": "…", "totalTradingValue": "…", "topByChangeRate": "…", "topByMarketCap": "…", "topByTradingValue": "…", "topByTradingVolume": "…"}], "cursor": "str"}
+    → 본문을 data/journal/raw/api_업종_등락률.json 에 남겼다
+
