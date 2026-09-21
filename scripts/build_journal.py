@@ -56,7 +56,16 @@ CSS = """
 html{-webkit-text-size-adjust:100%}
 body{
   margin:0; background:#E9EAEC; color:var(--body);
-  font-family:'Spoqa Han Sans Neo','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  /* **'Noto Sans CJK KR' 을 반드시 넣는다.** 리눅스(러너·서버)에는 위의
+     어느 것도 없어서 `sans-serif` 로 흘러가는데, 그 끝에 무엇이 걸리는지는
+     기계마다 다르다. 실제로 러너는 **Noto Sans KR Thin**(굵기 100)을 골라
+     7.4px 표 글자가 종잇장처럼 나왔고, 굵은 제목도 굵어지지 않았다.
+     여기 세션은 중국어 글꼴(WenQuanYi Zen Hei)을 골랐다. 데비안 꾸러미
+     `fonts-noto-cjk` 가 주는 이름은 'Noto Sans KR' 이 아니라
+     **'Noto Sans CJK KR'** 이고, 이것만이 Regular·Bold 를 함께 준다. */
+  font-family:'Spoqa Han Sans Neo','Pretendard','Noto Sans KR',
+              'Apple SD Gothic Neo','Malgun Gothic','맑은 고딕',
+              'Noto Sans CJK KR','나눔고딕','NanumGothic',sans-serif;
   font-size:13px; line-height:1.45; font-variant-numeric:tabular-nums;
 }
 html[lang=en] body{font-family:'Inter','Aptos','Segoe UI',system-ui,sans-serif}
