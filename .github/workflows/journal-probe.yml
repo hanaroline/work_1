@@ -39,6 +39,11 @@ jobs:
         continue-on-error: true
         run: python3 scripts/probe_journal_api.py
 
+      # 2차 관찰로 찾은 자리의 손잡이(investorType·pageSize·ETF 넘기기)를 확인한다.
+      - name: 찾은 자리의 손잡이 확인
+        continue-on-error: true
+        run: python3 scripts/probe_journal_api2.py
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
