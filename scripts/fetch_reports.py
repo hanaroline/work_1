@@ -1930,6 +1930,17 @@ def main():
                                         "— 상세 페이지 구조가 바뀐 듯하다")
 
     reports.sort(key=lambda r: (r.get("date") or "", r.get("views") or 0), reverse=True)
+    # 애널리스트 실명은 싣지 않는다. 원천(미래에셋·하나)이 목록에 함께 주고
+    # 앞선 판에서 물려받기(_CARRY)까지 해서 여러 길로 들어오므로, 길목마다
+    # 막지 않고 **파일로 쓰기 직전 한 자리**에서 턴다. 새 원천이 늘어도
+    # 여기만 지나면 되니 빠뜨릴 구석이 없다.
+    # desc 도 함께 턴다. 하나증권이 주는 그날 목차 글인데, 화면도 검산기도
+    # 빌더도 쓰지 않으면서 「제목 [김상만]」처럼 **다른 리포트의 애널리스트
+    # 실명**을 줄줄이 달고 있다. 그리지 않아도 한 파일 HTML 에는 자료가
+    # 통째로 박히므로, 파일 안에 이름이 남는다. 쓰지 않는 칸이니 버린다.
+    for r in reports:
+        r.pop("analyst", None)
+        r.pop("desc", None)
     out["reports"] = reports
     out["summary"] = digest(reports, day)
     out["highlights"] = pick_highlights(reports, day)

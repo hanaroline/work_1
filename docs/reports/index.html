@@ -674,7 +674,9 @@
     } else {
       sum = '<div class="sum none">본문 요약을 아직 받지 못했습니다 — 제목과 원문으로 확인하십시오.</div>';
     }
-    var who = r.broker + (r.analyst ? " " + r.analyst : "");
+    // 증권사까지만 적는다. 애널리스트 실명은 싣지 않는다 — 수집기가 저장
+    // 직전에 털어내므로 지난 판을 열어도 이 자리에 이름이 오지 않는다.
+    var who = r.broker;
     var meta = [who, r.date, r.views != null ? "조회 " + nf.format(r.views) : null, r.source]
       .filter(Boolean).map(esc).join(' <span class="sep">·</span> ');
 
@@ -859,7 +861,7 @@
       if (state.cat !== "전체" && r.category !== state.cat) return false;
       if (state.broker !== "전체" && r.broker !== state.broker) return false;
       if (!q) return true;
-      var hay = [r.title, r.broker, r.analyst, r.summary, r.sector,
+      var hay = [r.title, r.broker, r.summary, r.sector,
                  (r.stock || {}).name, (r.stock || {}).code]
         .filter(Boolean).join(" ").toLowerCase();
       return hay.indexOf(q) >= 0;
