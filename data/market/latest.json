@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-09-23 07:40:27",
-  "generated_at_utc": "2026-09-22 22:40:27",
+  "generated_at_kst": "2026-09-23 08:36:26",
+  "generated_at_utc": "2026-09-22 23:36:26",
   "sources": {
     "yahoo:kospi": {
       "ok": true
@@ -583,7 +583,8 @@
       "error": "ValueError: 네이버는 VKOSPI 를 취급하지 않는다(지수 코드가 KOSPI/KOSDAQ/FUT/KPI100/KPI200/KVALUE 뿐). 야후 미수록, 인베스팅 403, stooq 자바스크립트 차단. KRX 오픈API 무료 인증키(KRX_AUTH_KEY)를 넣으면 열린다. 시도: VKOSPI -> HTTP Error 409: 409; VKOSPI200 -> HTTP Error 409: 409"
     },
     "naver:sectors": {
-      "ok": true
+      "ok": false,
+      "error": "ValueError: 업종 등락률이 전부 0 — 개장 전 응답이다(79개)"
     },
     "naver:investors": {
       "ok": true
@@ -593,6 +594,10 @@
     },
     "naver:market_api:KOSDAQ": {
       "ok": true
+    },
+    "carry:used": {
+      "ok": true,
+      "note": "직전 마감분 이어 붙임: kospi, kosdaq, sectors"
     },
     "naver:rates": {
       "ok": true
@@ -630,17 +635,16 @@
       "error": "ValueError: 종목 006800 뉴스 목록: HTTP Error 410: 410"
     },
     "derived:sector_issues": {
-      "ok": true,
-      "count": 1
+      "ok": false,
+      "count": 0,
+      "error": "오늘 기사에 증권업 전반 이슈가 없다(말투로만 쓰인 것은 세지 않는다)"
     },
     "derived:ib_mentions": {
       "ok": true,
-      "count": 6,
+      "count": 4,
       "names": [
         "JP모간",
         "JP모건",
-        "UBS",
-        "골드만삭스",
         "제이미 다이먼"
       ]
     },
@@ -679,7 +683,7 @@
     },
     "derived:earnings": {
       "ok": true,
-      "found": 4
+      "found": 3
     }
   },
   "indices": {
@@ -734,22 +738,22 @@
     "usdkrw": {
       "symbol": "KRW=X",
       "date": "2026-09-23",
-      "close": 1355.4,
+      "close": 1353.22,
       "open": 1355.54,
-      "high": 1355.63,
-      "low": 1354.21,
+      "high": 1355.64,
+      "low": 1352.92,
       "volume": 0,
       "prev_close": 1373.6801,
-      "change": -18.28,
-      "change_pct": -1.3307,
+      "change": -20.4601,
+      "change_pct": -1.4894,
       "currency": "KRW",
       "perf": {
-        "w1": 0.73,
-        "m1": -2.54,
-        "m3": -11.49,
-        "m6": -9.02,
-        "y1": -2.92,
-        "ytd": -5.74,
+        "w1": -0.76,
+        "m1": -2.7,
+        "m3": -12.07,
+        "m6": -10.04,
+        "y1": -2.6,
+        "ytd": -5.89,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -895,22 +899,22 @@
     "usdjpy": {
       "symbol": "JPY=X",
       "date": "2026-09-23",
-      "close": 157.432,
+      "close": 157.448,
       "open": 157.343,
-      "high": 157.48,
+      "high": 157.504,
       "low": 157.29,
       "volume": 0,
       "prev_close": 157.369,
-      "change": 0.063,
-      "change_pct": 0.04,
+      "change": 0.079,
+      "change_pct": 0.0502,
       "currency": "JPY",
       "perf": {
-        "w1": 1.97,
-        "m1": -0.91,
-        "m3": -2.48,
-        "m6": -0.31,
-        "y1": 6.3,
-        "ytd": 0.65,
+        "w1": 1.41,
+        "m1": -0.9,
+        "m3": -2.55,
+        "m6": -1.12,
+        "y1": 6.58,
+        "ytd": 0.66,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -918,22 +922,22 @@
     "wti": {
       "symbol": "CL=F",
       "date": "2026-09-22",
-      "close": 89.68,
+      "close": 89.71,
       "open": 89.89,
       "high": 90.0,
-      "low": 89.63,
-      "volume": 825,
+      "low": 89.62,
+      "volume": 1451,
       "prev_close": 95.78,
-      "change": -6.1,
-      "change_pct": -6.3688,
+      "change": -6.07,
+      "change_pct": -6.3374,
       "currency": "USD",
       "perf": {
-        "w1": -15.26,
-        "m1": 3.01,
-        "m3": 19.86,
-        "m6": -8.79,
-        "y1": 43.17,
-        "ytd": 56.18,
+        "w1": -15.23,
+        "m1": 3.04,
+        "m3": 19.9,
+        "m6": -8.76,
+        "y1": 43.22,
+        "ytd": 56.23,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -941,22 +945,22 @@
     "brent": {
       "symbol": "BZ=F",
       "date": "2026-09-22",
-      "close": 98.5,
+      "close": 98.52,
       "open": 99.05,
       "high": 99.05,
       "low": 98.44,
-      "volume": 43,
+      "volume": 51,
       "prev_close": 100.34,
-      "change": -1.84,
-      "change_pct": -1.8338,
+      "change": -1.82,
+      "change_pct": -1.8138,
       "currency": "USD",
       "perf": {
-        "w1": -9.43,
-        "m1": 4.35,
-        "m3": 26.44,
-        "m6": -12.2,
-        "y1": 47.96,
-        "ytd": 61.87,
+        "w1": -9.41,
+        "m1": 4.38,
+        "m3": 26.47,
+        "m6": -12.18,
+        "y1": 47.99,
+        "ytd": 61.91,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -964,21 +968,21 @@
     "gold": {
       "symbol": "GC=F",
       "date": "2026-09-22",
-      "close": 4401.6001,
+      "close": 4401.3999,
       "open": 4394.7002,
-      "high": 4403.5,
+      "high": 4404.1001,
       "low": 4394.7002,
-      "volume": 1288,
+      "volume": 2700,
       "prev_close": 4383.8999,
-      "change": 17.7002,
-      "change_pct": 0.4038,
+      "change": 17.5,
+      "change_pct": 0.3992,
       "currency": "USD",
       "perf": {
-        "w1": 1.59,
-        "m1": -5.96,
+        "w1": 1.58,
+        "m1": -5.97,
         "m3": 4.73,
         "m6": -3.79,
-        "y1": 16.6,
+        "y1": 16.59,
         "ytd": 1.39,
         "unit": "%",
         "from": "2024-09-23"
@@ -1110,22 +1114,22 @@
     "silver": {
       "symbol": "SI=F",
       "date": "2026-09-22",
-      "close": 67.815,
+      "close": 67.925,
       "open": 67.61,
-      "high": 67.88,
+      "high": 68.01,
       "low": 67.61,
-      "volume": 436,
+      "volume": 830,
       "prev_close": 65.825,
-      "change": 1.99,
-      "change_pct": 3.0232,
+      "change": 2.1,
+      "change_pct": 3.1903,
       "currency": "USD",
       "perf": {
-        "w1": 7.24,
-        "m1": -2.38,
-        "m3": 3.49,
-        "m6": -2.23,
-        "y1": 54.83,
-        "ytd": -3.31,
+        "w1": 7.42,
+        "m1": -2.22,
+        "m3": 3.66,
+        "m6": -2.07,
+        "y1": 55.08,
+        "ytd": -3.15,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -1133,22 +1137,22 @@
     "copper": {
       "symbol": "HG=F",
       "date": "2026-09-22",
-      "close": 6.905,
+      "close": 6.9085,
       "open": 6.901,
-      "high": 6.9095,
+      "high": 6.91,
       "low": 6.886,
-      "volume": 148,
+      "volume": 362,
       "prev_close": 6.6865,
-      "change": 0.2185,
-      "change_pct": 3.2678,
+      "change": 0.222,
+      "change_pct": 3.3201,
       "currency": "USD",
       "perf": {
-        "w1": 8.42,
-        "m1": 4.95,
-        "m3": 8.63,
-        "m6": 29.25,
-        "y1": 50.99,
-        "ytd": 22.65,
+        "w1": 8.48,
+        "m1": 5.0,
+        "m3": 8.68,
+        "m6": 29.31,
+        "y1": 51.07,
+        "ytd": 22.71,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -1156,22 +1160,22 @@
     "natgas": {
       "symbol": "NG=F",
       "date": "2026-09-22",
-      "close": 3.172,
+      "close": 3.179,
       "open": 3.161,
-      "high": 3.173,
+      "high": 3.179,
       "low": 3.157,
-      "volume": 486,
+      "volume": 1029,
       "prev_close": 2.836,
-      "change": 0.336,
-      "change_pct": 11.8477,
+      "change": 0.343,
+      "change_pct": 12.0945,
       "currency": "USD",
       "perf": {
-        "w1": 8.67,
-        "m1": 14.39,
-        "m3": -2.49,
-        "m6": 2.49,
-        "y1": 13.04,
-        "ytd": -13.94,
+        "w1": 8.91,
+        "m1": 14.64,
+        "m3": -2.27,
+        "m6": 2.71,
+        "y1": 13.29,
+        "ytd": -13.75,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -1322,15 +1326,16 @@
     "ftse": {
       "symbol": "^FTSE",
       "date": "2026-09-22",
-      "close": 10708.3301,
+      "close": 10708.33,
       "open": 10738.9697,
       "high": 10771.6396,
       "low": 10708.3301,
       "volume": 0,
       "prev_close": 10739.0,
-      "change": -30.6699,
+      "change": -30.67,
       "change_pct": -0.2856,
       "currency": "GBP",
+      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 0.47,
         "m1": -1.0,
@@ -1348,18 +1353,18 @@
       "close": 1.1451,
       "open": 1.1453,
       "high": 1.1455,
-      "low": 1.1451,
+      "low": 1.145,
       "volume": 0,
       "prev_close": 1.1465,
       "change": -0.0014,
       "change_pct": -0.1202,
       "currency": "USD",
       "perf": {
-        "w1": -0.85,
+        "w1": -0.75,
         "m1": -2.03,
-        "m3": -0.1,
-        "m6": -1.09,
-        "y1": -2.44,
+        "m3": 0.21,
+        "m6": -0.95,
+        "y1": -2.97,
         "ytd": -2.52,
         "unit": "%",
         "from": "2024-09-23"
@@ -1367,23 +1372,23 @@
     },
     "usdcny": {
       "symbol": "CNY=X",
-      "date": "2026-09-23",
-      "close": 6.6991,
-      "open": 6.6948,
-      "high": 6.7018,
-      "low": 6.6839,
+      "date": "2026-09-22",
+      "close": 6.6953,
+      "open": 6.6953,
+      "high": 6.6953,
+      "low": 6.6953,
       "volume": 0,
-      "prev_close": 6.6953,
-      "change": 0.0038,
-      "change_pct": 0.0568,
+      "prev_close": 6.6975,
+      "change": -0.0022,
+      "change_pct": -0.0328,
       "currency": "CNY",
       "perf": {
-        "w1": -0.14,
-        "m1": -0.35,
-        "m3": -1.03,
-        "m6": -2.91,
-        "y1": -5.82,
-        "ytd": -4.25,
+        "w1": -0.19,
+        "m1": -0.4,
+        "m3": -1.08,
+        "m6": -2.96,
+        "y1": -5.87,
+        "ytd": -4.3,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -1391,22 +1396,22 @@
     "btc": {
       "symbol": "BTC-USD",
       "date": "2026-09-22",
-      "close": 86237.5625,
+      "close": 86184.0781,
       "open": 86597.8203,
       "high": 86597.8203,
       "low": 85158.6875,
-      "volume": 40844767232,
+      "volume": 40632786944,
       "prev_close": 86602.9141,
-      "change": -365.3516,
-      "change_pct": -0.4219,
+      "change": -418.8359,
+      "change_pct": -0.4836,
       "currency": "USD",
       "perf": {
-        "w1": 14.05,
-        "m1": 11.88,
-        "m3": 34.85,
-        "m6": 27.11,
-        "y1": -23.51,
-        "ytd": -1.45,
+        "w1": 13.98,
+        "m1": 11.81,
+        "m3": 34.76,
+        "m6": 27.03,
+        "y1": -23.56,
+        "ytd": -1.51,
         "unit": "%",
         "from": "2024-09-22"
       }
@@ -1606,22 +1611,22 @@
     "eth": {
       "symbol": "ETH-USD",
       "date": "2026-09-22",
-      "close": 2753.3899,
+      "close": 2752.1299,
       "open": 2775.9639,
       "high": 2776.6077,
       "low": 2718.927,
-      "volume": 15005889536,
+      "volume": 15253533696,
       "prev_close": 2776.4683,
-      "change": -23.0784,
-      "change_pct": -0.8312,
+      "change": -24.3384,
+      "change_pct": -0.8766,
       "currency": "USD",
       "perf": {
-        "w1": 14.77,
-        "m1": 13.58,
-        "m3": 59.48,
-        "m6": 34.11,
-        "y1": -34.49,
-        "ytd": -7.2,
+        "w1": 14.72,
+        "m1": 13.52,
+        "m3": 59.4,
+        "m6": 34.05,
+        "y1": -34.52,
+        "ytd": -7.24,
         "unit": "%",
         "from": "2024-09-22"
       }
@@ -1629,22 +1634,22 @@
     "platinum": {
       "symbol": "PL=F",
       "date": "2026-09-22",
-      "close": 1838.2,
+      "close": 1843.5,
       "open": 1839.6,
-      "high": 1839.6,
+      "high": 1843.9,
       "low": 1836.8,
-      "volume": 55,
+      "volume": 141,
       "prev_close": 1798.5,
-      "change": 39.7,
-      "change_pct": 2.2074,
+      "change": 45.0,
+      "change_pct": 2.5021,
       "currency": "USD",
       "perf": {
-        "w1": 3.67,
-        "m1": -2.6,
-        "m3": 10.05,
-        "m6": -6.72,
-        "y1": 29.11,
-        "ytd": -9.65,
+        "w1": 3.96,
+        "m1": -2.32,
+        "m3": 10.37,
+        "m6": -6.45,
+        "y1": 29.49,
+        "ytd": -9.39,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -1652,22 +1657,22 @@
     "usdtwd": {
       "symbol": "TWD=X",
       "date": "2026-09-23",
-      "close": 31.676,
+      "close": 31.702,
       "open": 31.664,
-      "high": 31.68,
+      "high": 31.705,
       "low": 31.664,
       "volume": 0,
       "prev_close": 31.7384,
-      "change": -0.0624,
-      "change_pct": -0.1966,
+      "change": -0.0364,
+      "change_pct": -0.1147,
       "currency": "TWD",
       "perf": {
-        "w1": -0.13,
-        "m1": -0.51,
-        "m3": -0.08,
-        "m6": -0.4,
-        "y1": 4.83,
-        "ytd": 1.38,
+        "w1": -0.22,
+        "m1": -0.43,
+        "m3": 0.05,
+        "m6": -1.0,
+        "y1": 4.91,
+        "ytd": 1.47,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -1675,22 +1680,22 @@
     "gbpusd": {
       "symbol": "GBPUSD=X",
       "date": "2026-09-23",
-      "close": 1.3345,
+      "close": 1.3344,
       "open": 1.3345,
       "high": 1.3346,
       "low": 1.3341,
       "volume": 0,
       "prev_close": 1.3371,
-      "change": -0.0026,
-      "change_pct": -0.1944,
+      "change": -0.0027,
+      "change_pct": -0.2038,
       "currency": "USD",
       "perf": {
-        "w1": -1.16,
-        "m1": -2.19,
-        "m3": 1.04,
-        "m6": -0.6,
-        "y1": -0.89,
-        "ytd": -0.91,
+        "w1": -0.96,
+        "m1": -2.2,
+        "m3": 0.73,
+        "m6": 0.09,
+        "y1": -1.27,
+        "ytd": -0.92,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -1721,22 +1726,22 @@
     "sp500_fut": {
       "symbol": "ES=F",
       "date": "2026-09-22",
-      "close": 7833.0,
+      "close": 7832.25,
       "open": 7830.0,
       "high": 7834.0,
       "low": 7829.0,
-      "volume": 3339,
+      "volume": 5830,
       "prev_close": 7833.5,
-      "change": -0.5,
-      "change_pct": -0.0064,
+      "change": -1.25,
+      "change_pct": -0.016,
       "currency": "USD",
       "perf": {
-        "w1": 3.21,
-        "m1": 1.84,
-        "m3": 3.87,
-        "m6": 18.78,
-        "y1": 16.0,
-        "ytd": 13.65,
+        "w1": 3.2,
+        "m1": 1.83,
+        "m3": 3.86,
+        "m6": 18.77,
+        "y1": 15.99,
+        "ytd": 13.63,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -1744,14 +1749,14 @@
     "nasdaq_fut": {
       "symbol": "NQ=F",
       "date": "2026-09-22",
-      "close": 31051.25,
+      "close": 31051.5,
       "open": 31008.5,
-      "high": 31058.5,
+      "high": 31061.75,
       "low": 30997.5,
-      "volume": 2923,
+      "volume": 6637,
       "prev_close": 30784.75,
-      "change": 266.5,
-      "change_pct": 0.8657,
+      "change": 266.75,
+      "change_pct": 0.8665,
       "currency": "USD",
       "perf": {
         "w1": 7.24,
@@ -1767,22 +1772,22 @@
     "dow_fut": {
       "symbol": "YM=F",
       "date": "2026-09-22",
-      "close": 52265.0,
+      "close": 52261.0,
       "open": 52255.0,
       "high": 52298.0,
       "low": 52255.0,
-      "volume": 276,
+      "volume": 504,
       "prev_close": 52475.0,
-      "change": -210.0,
-      "change_pct": -0.4002,
+      "change": -214.0,
+      "change_pct": -0.4078,
       "currency": "USD",
       "perf": {
-        "w1": 0.29,
-        "m1": -2.04,
-        "m3": 0.28,
+        "w1": 0.28,
+        "m1": -2.05,
+        "m3": 0.27,
         "m6": 13.87,
-        "y1": 11.86,
-        "ytd": 8.13,
+        "y1": 11.85,
+        "ytd": 8.12,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -1790,22 +1795,22 @@
     "russell_fut": {
       "symbol": "RTY=F",
       "date": "2026-09-22",
-      "close": 2914.7,
+      "close": 2913.8,
       "open": 2912.0,
-      "high": 2915.0,
+      "high": 2915.2,
       "low": 2911.8999,
-      "volume": 331,
+      "volume": 658,
       "prev_close": 2897.3999,
-      "change": 17.3,
-      "change_pct": 0.5971,
+      "change": 16.4001,
+      "change_pct": 0.566,
       "currency": "USD",
       "perf": {
-        "w1": 1.45,
-        "m1": -3.55,
-        "m3": -3.62,
-        "m6": 16.76,
-        "y1": 17.44,
-        "ytd": 16.68,
+        "w1": 1.42,
+        "m1": -3.58,
+        "m3": -3.65,
+        "m6": 16.72,
+        "y1": 17.4,
+        "ytd": 16.65,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -1817,7 +1822,7 @@
       "open": 95.98,
       "high": 95.98,
       "low": 95.98,
-      "volume": 1078,
+      "volume": 1094,
       "prev_close": 96.2525,
       "change": -0.2725,
       "change_pct": -0.2831,
@@ -3448,23 +3453,23 @@
   "fx_pairs": {
     "usdbrl": {
       "symbol": "BRL=X",
-      "date": "2026-09-23",
-      "close": 5.1015,
-      "open": 5.1015,
-      "high": 5.1015,
-      "low": 5.1015,
+      "date": "2026-09-22",
+      "close": 5.1104,
+      "open": 5.1106,
+      "high": 5.1336,
+      "low": 5.1014,
       "volume": 0,
-      "prev_close": 5.1104,
-      "change": -0.0089,
-      "change_pct": -0.1742,
+      "prev_close": 5.1407,
+      "change": -0.0303,
+      "change_pct": -0.5894,
       "currency": "BRL",
       "perf": {
-        "w1": -0.71,
-        "m1": -1.76,
-        "m3": -0.97,
-        "m6": -2.27,
-        "y1": -4.12,
-        "ytd": -6.84,
+        "w1": -0.54,
+        "m1": -1.59,
+        "m3": -0.8,
+        "m6": -2.1,
+        "y1": -3.95,
+        "ytd": -6.68,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -3472,22 +3477,22 @@
     "audusd": {
       "symbol": "AUDUSD=X",
       "date": "2026-09-23",
-      "close": 0.7117,
+      "close": 0.7116,
       "open": 0.7121,
       "high": 0.7121,
-      "low": 0.7117,
+      "low": 0.7115,
       "volume": 0,
       "prev_close": 0.7119,
-      "change": -0.0002,
-      "change_pct": -0.029,
+      "change": -0.0003,
+      "change_pct": -0.0433,
       "currency": "USD",
       "perf": {
-        "w1": -0.29,
-        "m1": -0.03,
-        "m3": 1.63,
-        "m6": 0.51,
-        "y1": 8.01,
-        "ytd": 6.25,
+        "w1": -0.13,
+        "m1": -0.05,
+        "m3": 1.73,
+        "m6": 1.54,
+        "y1": 7.78,
+        "ytd": 6.24,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -3502,61 +3507,61 @@
       "volume": 0,
       "prev_close": 0.8208,
       "change": -0.0002,
-      "change_pct": -0.0305,
+      "change_pct": -0.0195,
       "currency": "CHF",
       "perf": {
-        "w1": 0.42,
-        "m1": 2.62,
-        "m3": 1.56,
-        "m6": 4.04,
-        "y1": 3.05,
-        "ytd": 3.64,
+        "w1": 0.19,
+        "m1": 2.63,
+        "m3": 1.46,
+        "m6": 4.17,
+        "y1": 3.57,
+        "ytd": 3.66,
         "unit": "%",
         "from": "2024-09-23"
       }
     },
     "usdinr": {
       "symbol": "INR=X",
-      "date": "2026-09-23",
-      "close": 95.58,
-      "open": 95.805,
-      "high": 95.855,
-      "low": 95.575,
+      "date": "2026-09-22",
+      "close": 95.712,
+      "open": 95.712,
+      "high": 95.835,
+      "low": 95.4673,
       "volume": 0,
-      "prev_close": 95.712,
-      "change": -0.132,
-      "change_pct": -0.1379,
+      "prev_close": 96.0131,
+      "change": -0.3011,
+      "change_pct": -0.3136,
       "currency": "INR",
       "perf": {
-        "w1": -0.27,
-        "m1": -0.2,
-        "m3": 1.32,
-        "m6": 2.68,
-        "y1": 8.49,
-        "ytd": 6.47,
+        "w1": -0.13,
+        "m1": -0.06,
+        "m3": 1.46,
+        "m6": 2.83,
+        "y1": 8.64,
+        "ytd": 6.62,
         "unit": "%",
         "from": "2024-09-23"
       }
     },
     "usdvnd": {
       "symbol": "VND=X",
-      "date": "2026-09-23",
-      "close": 26013.0,
+      "date": "2026-09-22",
+      "close": 26020.0,
       "open": 26020.0,
-      "high": 26020.0,
-      "low": 26013.0,
+      "high": 26027.0,
+      "low": 26000.0,
       "volume": 0,
-      "prev_close": 26020.0,
-      "change": -7.0,
-      "change_pct": -0.0269,
+      "prev_close": 26019.0,
+      "change": 1.0,
+      "change_pct": 0.0038,
       "currency": "VND",
       "perf": {
-        "w1": 0.11,
-        "m1": -0.33,
-        "m3": -0.96,
-        "m6": -0.92,
-        "y1": -1.3,
-        "ytd": -0.81,
+        "w1": 0.14,
+        "m1": -0.3,
+        "m3": -0.93,
+        "m6": -0.9,
+        "y1": -1.27,
+        "ytd": -0.78,
         "unit": "%",
         "from": "2024-09-23"
       }
@@ -4607,7 +4612,7 @@
       "open": 76.73,
       "high": 77.57,
       "low": 76.55,
-      "volume": 1932946,
+      "volume": 1933488,
       "prev_close": 77.1,
       "change": -0.01,
       "change_pct": -0.013,
@@ -4664,6 +4669,7 @@
       "change": 21.5,
       "change_pct": 0.6163,
       "currency": "GBp",
+      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -3.9,
         "m1": 2.95,
@@ -4689,6 +4695,7 @@
       "change": 112.0,
       "change_pct": 0.8917,
       "currency": "GBp",
+      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 4.59,
         "m1": 3.53,
@@ -4714,6 +4721,7 @@
       "change": -24.4,
       "change_pct": -1.5908,
       "currency": "GBp",
+      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 0.37,
         "m1": -0.59,
@@ -4734,7 +4742,7 @@
       "open": 115.58,
       "high": 116.68,
       "low": 114.86,
-      "volume": 2904594,
+      "volume": 2904708,
       "prev_close": 116.14,
       "change": 0.32,
       "change_pct": 0.2755,
@@ -5509,6 +5517,26 @@
     "note": "기대인플레이션(브레이크이븐) = 명목 국채금리 − 물가연동채(TIPS) 실질금리",
     "source_url": "https://home.treasury.gov (명목·실질 곡선 차)",
     "perf": {
+      "ust5y": {
+        "w1": -9.0,
+        "m1": -2.0,
+        "m3": 4.0,
+        "m6": -31.0,
+        "y1": -10.0,
+        "ytd": 6.0,
+        "unit": "bp",
+        "basis": "명목 기간변화 − 실질 기간변화"
+      },
+      "ust20y": {
+        "w1": -5.0,
+        "m1": -2.0,
+        "m3": 6.0,
+        "m6": -3.0,
+        "y1": -3.0,
+        "ytd": 5.0,
+        "unit": "bp",
+        "basis": "명목 기간변화 − 실질 기간변화"
+      },
       "ust10y": {
         "w1": -5.0,
         "m1": -1.0,
@@ -5536,26 +5564,6 @@
         "m6": -16.0,
         "y1": -4.0,
         "ytd": 8.0,
-        "unit": "bp",
-        "basis": "명목 기간변화 − 실질 기간변화"
-      },
-      "ust5y": {
-        "w1": -9.0,
-        "m1": -2.0,
-        "m3": 4.0,
-        "m6": -31.0,
-        "y1": -10.0,
-        "ytd": 6.0,
-        "unit": "bp",
-        "basis": "명목 기간변화 − 실질 기간변화"
-      },
-      "ust20y": {
-        "w1": -5.0,
-        "m1": -2.0,
-        "m3": 6.0,
-        "m6": -3.0,
-        "y1": -3.0,
-        "ytd": 5.0,
         "unit": "bp",
         "basis": "명목 기간변화 − 실질 기간변화"
       }
@@ -6337,6 +6345,314 @@
       "ytd": 29.8,
       "unit": "bp",
       "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
+    }
+  },
+  "investors_kospi": [
+    {
+      "date": "26.09.22",
+      "retail": -15643,
+      "foreign": 494,
+      "institution": -1295,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.09.21",
+      "retail": -31850,
+      "foreign": 117,
+      "institution": 15162,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.09.18",
+      "retail": -36359,
+      "foreign": 4486,
+      "institution": 15322,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.09.17",
+      "retail": 3020,
+      "foreign": -22546,
+      "institution": 2480,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.09.16",
+      "retail": -12061,
+      "foreign": -16726,
+      "institution": 12251,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.09.15",
+      "retail": 8596,
+      "foreign": -15458,
+      "institution": -9585,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.09.14",
+      "retail": 30351,
+      "foreign": -33363,
+      "institution": -11869,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.09.11",
+      "retail": 18675,
+      "foreign": -22984,
+      "institution": -12184,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.09.10",
+      "retail": 3802,
+      "foreign": -26217,
+      "institution": 5744,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.09.09",
+      "retail": -22879,
+      "foreign": -4348,
+      "institution": 9422,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.09.08",
+      "retail": -30329,
+      "foreign": 6316,
+      "institution": 6427,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.09.07",
+      "retail": -68374,
+      "foreign": 25532,
+      "institution": 26491,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.09.04",
+      "retail": -37229,
+      "foreign": 4796,
+      "institution": 16694,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.09.03",
+      "retail": -9552,
+      "foreign": 414,
+      "institution": 9143,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.09.02",
+      "retail": 23029,
+      "foreign": -19173,
+      "institution": -20361,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.09.01",
+      "retail": -5402,
+      "foreign": -4968,
+      "institution": -6286,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.08.31",
+      "retail": -1464,
+      "foreign": -6434,
+      "institution": -7891,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.08.28",
+      "retail": 4194,
+      "foreign": -8525,
+      "institution": -11876,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.08.27",
+      "retail": -19116,
+      "foreign": 1333,
+      "institution": 1835,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.08.26",
+      "retail": -22461,
+      "foreign": -1148,
+      "institution": 7615,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.08.25",
+      "retail": 10509,
+      "foreign": -38140,
+      "institution": 11711,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.08.24",
+      "retail": 33217,
+      "foreign": -36691,
+      "institution": -12901,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.08.21",
+      "retail": -11652,
+      "foreign": -1760,
+      "institution": 2481,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.08.20",
+      "retail": -22712,
+      "foreign": 17068,
+      "institution": -4895,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.08.19",
+      "retail": 46357,
+      "foreign": -34726,
+      "institution": -13390,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.08.18",
+      "retail": 7420,
+      "foreign": 914,
+      "institution": -7951,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.08.14",
+      "retail": -19820,
+      "foreign": 30387,
+      "institution": -10298,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.08.13",
+      "retail": -27410,
+      "foreign": 21102,
+      "institution": 6834,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.08.12",
+      "retail": -31911,
+      "foreign": 28354,
+      "institution": 5279,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    },
+    {
+      "date": "26.08.11",
+      "retail": -708,
+      "foreign": 535,
+      "institution": 212,
+      "unit": "억원",
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
+    }
+  ],
+  "market_internals": {
+    "kospi": {
+      "source_url": "https://m.stock.naver.com/api/index/KOSPI/integration",
+      "unit": "억원",
+      "breadth": {
+        "limit_up": 0,
+        "advancing": 383,
+        "unchanged": 68,
+        "declining": 463,
+        "limit_down": 0
+      },
+      "bizdate": "20260923",
+      "investor_flows": {
+        "retail": -15643.0,
+        "foreign": 494.0,
+        "institution": -1295.0
+      },
+      "program_trading": {
+        "arb": 689.0,
+        "non_arb": 1125.0,
+        "total": 1814.0
+      },
+      "intraday": {
+        "high": 7171.44,
+        "low": 6986.27
+      },
+      "fifty_two_week": {
+        "high": 9385.59,
+        "low": 3365.73
+      },
+      "carried_from": "20260922",
+      "carried_note": "개장 전이라 20260922 마감분을 이어 붙였다"
+    },
+    "kosdaq": {
+      "source_url": "https://m.stock.naver.com/api/index/KOSDAQ/integration",
+      "unit": "억원",
+      "breadth": {
+        "limit_up": 6,
+        "advancing": 625,
+        "unchanged": 107,
+        "declining": 1002,
+        "limit_down": 2
+      },
+      "bizdate": "20260923",
+      "investor_flows": {
+        "retail": 1548.0,
+        "foreign": -545.0,
+        "institution": -953.0
+      },
+      "program_trading": {
+        "arb": -80.0,
+        "non_arb": -743.0,
+        "total": -823.0
+      },
+      "intraday": {
+        "high": 847.1,
+        "low": 831.13
+      },
+      "fifty_two_week": {
+        "high": 1229.42,
+        "low": 630.99
+      },
+      "carried_from": "20260922",
+      "carried_note": "개장 전이라 20260922 마감분을 이어 붙였다"
     }
   },
   "sectors": {
@@ -7858,311 +8174,9 @@
           "basis": "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
         }
       }
-    ]
-  },
-  "investors_kospi": [
-    {
-      "date": "26.09.22",
-      "retail": -15643,
-      "foreign": 494,
-      "institution": -1295,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.09.21",
-      "retail": -31850,
-      "foreign": 117,
-      "institution": 15162,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.09.18",
-      "retail": -36359,
-      "foreign": 4486,
-      "institution": 15322,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.09.17",
-      "retail": 3020,
-      "foreign": -22546,
-      "institution": 2480,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.09.16",
-      "retail": -12061,
-      "foreign": -16726,
-      "institution": 12251,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.09.15",
-      "retail": 8596,
-      "foreign": -15458,
-      "institution": -9585,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.09.14",
-      "retail": 30351,
-      "foreign": -33363,
-      "institution": -11869,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.09.11",
-      "retail": 18675,
-      "foreign": -22984,
-      "institution": -12184,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.09.10",
-      "retail": 3802,
-      "foreign": -26217,
-      "institution": 5744,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.09.09",
-      "retail": -22879,
-      "foreign": -4348,
-      "institution": 9422,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.09.08",
-      "retail": -30329,
-      "foreign": 6316,
-      "institution": 6427,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.09.07",
-      "retail": -68374,
-      "foreign": 25532,
-      "institution": 26491,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.09.04",
-      "retail": -37229,
-      "foreign": 4796,
-      "institution": 16694,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.09.03",
-      "retail": -9552,
-      "foreign": 414,
-      "institution": 9143,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.09.02",
-      "retail": 23029,
-      "foreign": -19173,
-      "institution": -20361,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.09.01",
-      "retail": -5402,
-      "foreign": -4968,
-      "institution": -6286,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.08.31",
-      "retail": -1464,
-      "foreign": -6434,
-      "institution": -7891,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.08.28",
-      "retail": 4194,
-      "foreign": -8525,
-      "institution": -11876,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.08.27",
-      "retail": -19116,
-      "foreign": 1333,
-      "institution": 1835,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.08.26",
-      "retail": -22461,
-      "foreign": -1148,
-      "institution": 7615,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.08.25",
-      "retail": 10509,
-      "foreign": -38140,
-      "institution": 11711,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.08.24",
-      "retail": 33217,
-      "foreign": -36691,
-      "institution": -12901,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.08.21",
-      "retail": -11652,
-      "foreign": -1760,
-      "institution": 2481,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.08.20",
-      "retail": -22712,
-      "foreign": 17068,
-      "institution": -4895,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.08.19",
-      "retail": 46357,
-      "foreign": -34726,
-      "institution": -13390,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.08.18",
-      "retail": 7420,
-      "foreign": 914,
-      "institution": -7951,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.08.14",
-      "retail": -19820,
-      "foreign": 30387,
-      "institution": -10298,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.08.13",
-      "retail": -27410,
-      "foreign": 21102,
-      "institution": 6834,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.08.12",
-      "retail": -31911,
-      "foreign": 28354,
-      "institution": 5279,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    },
-    {
-      "date": "26.08.11",
-      "retail": -708,
-      "foreign": 535,
-      "institution": 212,
-      "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260923&startIdx=0&pageSize=30"
-    }
-  ],
-  "market_internals": {
-    "kospi": {
-      "source_url": "https://m.stock.naver.com/api/index/KOSPI/integration",
-      "unit": "억원",
-      "breadth": {
-        "limit_up": 0,
-        "advancing": 383,
-        "unchanged": 68,
-        "declining": 463,
-        "limit_down": 0
-      },
-      "bizdate": "20260922",
-      "investor_flows": {
-        "retail": -15643.0,
-        "foreign": 494.0,
-        "institution": -1295.0
-      },
-      "program_trading": {
-        "arb": 689.0,
-        "non_arb": 1125.0,
-        "total": 1814.0
-      },
-      "intraday": {
-        "high": 7171.44,
-        "low": 6986.27
-      },
-      "fifty_two_week": {
-        "high": 9385.59,
-        "low": 3365.73
-      }
-    },
-    "kosdaq": {
-      "source_url": "https://m.stock.naver.com/api/index/KOSDAQ/integration",
-      "unit": "억원",
-      "breadth": {
-        "limit_up": 6,
-        "advancing": 625,
-        "unchanged": 107,
-        "declining": 1002,
-        "limit_down": 2
-      },
-      "bizdate": "20260922",
-      "investor_flows": {
-        "retail": 1548.0,
-        "foreign": -545.0,
-        "institution": -953.0
-      },
-      "program_trading": {
-        "arb": -80.0,
-        "non_arb": -743.0,
-        "total": -823.0
-      },
-      "intraday": {
-        "high": 847.1,
-        "low": 831.13
-      },
-      "fifty_two_week": {
-        "high": 1229.42,
-        "low": 630.99
-      }
-    }
+    ],
+    "carried_from": "20260922",
+    "carried_note": "개장 전이라 20260922 마감분을 이어 붙였다"
   },
   "rates_kr": {
     "call": 3.078,
@@ -8183,7 +8197,31 @@
       "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(135785 bytes)",
       "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
     ],
+    "ktb1y": 3.674,
+    "ktb5y": 4.267,
+    "ktb10y": 4.461,
     "perf": {
+      "ktb1y": {
+        "w1": 6.1,
+        "m1": 25.8,
+        "unit": "bp",
+        "from": "2026-08-14",
+        "basis": "네이버 시장지표 누적본(history.json) 대비"
+      },
+      "ktb5y": {
+        "w1": -2.1,
+        "m1": 15.6,
+        "unit": "bp",
+        "from": "2026-08-14",
+        "basis": "네이버 시장지표 누적본(history.json) 대비"
+      },
+      "ktb10y": {
+        "w1": -8.6,
+        "m1": 8.5,
+        "unit": "bp",
+        "from": "2026-08-14",
+        "basis": "네이버 시장지표 누적본(history.json) 대비"
+      },
       "cd91": {
         "w1": 3.0,
         "m1": 25.0,
@@ -8235,41 +8273,326 @@
     }
   },
   "usdkrw_naver": {
-    "rate": 1355.5,
+    "rate": 1353.0,
     "source_url": "https://stock.naver.com/api/securityService/marketindex/majors/exchange",
     "note": "매매기준율"
   },
   "rates_ecos": {
+    "ktb1y": {
+      "value": 3.674,
+      "date": "20260922",
+      "item": "국고채(1년)",
+      "code": "010190000",
+      "series": [
+        {
+          "date": "20260911",
+          "value": 3.56
+        },
+        {
+          "date": "20260914",
+          "value": 3.573
+        },
+        {
+          "date": "20260915",
+          "value": 3.609
+        },
+        {
+          "date": "20260916",
+          "value": 3.613
+        },
+        {
+          "date": "20260917",
+          "value": 3.666
+        },
+        {
+          "date": "20260918",
+          "value": 3.67
+        },
+        {
+          "date": "20260921",
+          "value": 3.676
+        },
+        {
+          "date": "20260922",
+          "value": 3.674
+        }
+      ],
+      "perf": {
+        "m1": 25.8,
+        "m3": 37.4,
+        "ytd": 112.4,
+        "unit": "bp",
+        "basis": "일별 실측 대비 (한국은행 ECOS 817Y002)",
+        "w1": 6.5
+      }
+    },
+    "ktb3y": {
+      "value": 4.04,
+      "date": "20260922",
+      "item": "국고채(3년)",
+      "code": "010200000",
+      "series": [
+        {
+          "date": "20260911",
+          "value": 4.014
+        },
+        {
+          "date": "20260914",
+          "value": 4.025
+        },
+        {
+          "date": "20260915",
+          "value": 4.091
+        },
+        {
+          "date": "20260916",
+          "value": 4.053
+        },
+        {
+          "date": "20260917",
+          "value": 4.063
+        },
+        {
+          "date": "20260918",
+          "value": 4.035
+        },
+        {
+          "date": "20260921",
+          "value": 4.056
+        },
+        {
+          "date": "20260922",
+          "value": 4.04
+        }
+      ],
+      "perf": {
+        "m1": 18.6,
+        "m3": 25.6,
+        "m6": 63.0,
+        "y1": 159.9,
+        "ytd": 110.1,
+        "unit": "bp",
+        "basis": "일별 실측 대비 (한국은행 ECOS 817Y002)",
+        "w1": -5.1
+      }
+    },
+    "ktb5y": {
+      "value": 4.267,
+      "date": "20260922",
+      "item": "국고채(5년)",
+      "code": "010200001",
+      "series": [
+        {
+          "date": "20260911",
+          "value": 4.267
+        },
+        {
+          "date": "20260914",
+          "value": 4.279
+        },
+        {
+          "date": "20260915",
+          "value": 4.345
+        },
+        {
+          "date": "20260916",
+          "value": 4.288
+        },
+        {
+          "date": "20260917",
+          "value": 4.262
+        },
+        {
+          "date": "20260918",
+          "value": 4.225
+        },
+        {
+          "date": "20260921",
+          "value": 4.275
+        },
+        {
+          "date": "20260922",
+          "value": 4.267
+        }
+      ],
+      "perf": {
+        "m1": 15.6,
+        "m3": 26.2,
+        "ytd": 104.1,
+        "unit": "bp",
+        "basis": "일별 실측 대비 (한국은행 ECOS 817Y002)",
+        "w1": -7.8
+      }
+    },
+    "ktb10y": {
+      "value": 4.461,
+      "date": "20260922",
+      "item": "국고채(10년)",
+      "code": "010210000",
+      "series": [
+        {
+          "date": "20260911",
+          "value": 4.54
+        },
+        {
+          "date": "20260914",
+          "value": 4.536
+        },
+        {
+          "date": "20260915",
+          "value": 4.6
+        },
+        {
+          "date": "20260916",
+          "value": 4.547
+        },
+        {
+          "date": "20260917",
+          "value": 4.506
+        },
+        {
+          "date": "20260918",
+          "value": 4.466
+        },
+        {
+          "date": "20260921",
+          "value": 4.457
+        },
+        {
+          "date": "20260922",
+          "value": 4.461
+        }
+      ],
+      "perf": {
+        "m1": 8.5,
+        "m3": 29.0,
+        "m6": 72.5,
+        "y1": 164.6,
+        "ytd": 110.7,
+        "unit": "bp",
+        "basis": "일별 실측 대비 (한국은행 ECOS 817Y002)",
+        "w1": -13.9
+      }
+    },
+    "corp3y_bbb": {
+      "value": 10.514,
+      "date": "20260922",
+      "item": "회사채(3년, BBB-)",
+      "code": "010320000",
+      "series": [
+        {
+          "date": "20260911",
+          "value": 10.486
+        },
+        {
+          "date": "20260914",
+          "value": 10.493
+        },
+        {
+          "date": "20260915",
+          "value": 10.542
+        },
+        {
+          "date": "20260916",
+          "value": 10.51
+        },
+        {
+          "date": "20260917",
+          "value": 10.523
+        },
+        {
+          "date": "20260918",
+          "value": 10.505
+        },
+        {
+          "date": "20260921",
+          "value": 10.523
+        },
+        {
+          "date": "20260922",
+          "value": 10.514
+        }
+      ],
+      "perf": {
+        "m1": 15.8,
+        "m3": 27.1,
+        "ytd": 120.8,
+        "unit": "bp",
+        "basis": "일별 실측 대비 (한국은행 ECOS 817Y002)",
+        "w1": -2.8
+      }
+    },
+    "cd91": {
+      "value": 3.21,
+      "date": "20260922",
+      "item": "CD(91일)",
+      "code": "010502000",
+      "series": [
+        {
+          "date": "20260911",
+          "value": 3.14
+        },
+        {
+          "date": "20260914",
+          "value": 3.16
+        },
+        {
+          "date": "20260915",
+          "value": 3.17
+        },
+        {
+          "date": "20260916",
+          "value": 3.21
+        },
+        {
+          "date": "20260917",
+          "value": 3.2
+        },
+        {
+          "date": "20260918",
+          "value": 3.2
+        },
+        {
+          "date": "20260921",
+          "value": 3.2
+        },
+        {
+          "date": "20260922",
+          "value": 3.21
+        }
+      ],
+      "perf": {
+        "m1": 26.0,
+        "m3": 29.0,
+        "ytd": 34.0,
+        "unit": "bp",
+        "basis": "일별 실측 대비 (한국은행 ECOS 817Y002)",
+        "w1": 4.0
+      }
+    },
     "notes": [
-      "ktb1y(010190000) -> <urlopen error timed out>",
-      "ktb3y(010200000) -> <urlopen error timed out>",
-      "ktb5y(010200001) -> <urlopen error timed out>",
-      "ktb10y(010210000) -> <urlopen error timed out>",
-      "corp3y_bbb(010320000) -> <urlopen error timed out>",
-      "corp3y_aa -> 항목목록에서 회사채(3년,AA-) 를 찾지 못했다",
-      "cd91(010502000) -> <urlopen error timed out>"
+      "corp3y_aa -> 항목목록에서 회사채(3년,AA-) 를 찾지 못했다"
     ],
     "source": "한국은행 ECOS 817Y002 (샘플 인증키)"
   },
   "futures": {
-    "bizdate": "20260922",
+    "bizdate": "20260923",
     "month": "26.12.",
     "investors": {
-      "retail": 2748.0,
-      "foreign": 5120.0,
-      "institution": -9191.0
+      "retail": 0.0,
+      "foreign": 0.0,
+      "institution": 0.0
     },
     "investor_unit": "억원",
-    "prev_close": 1115.1,
-    "open": 1139.45,
-    "high": 1142.9,
-    "low": 1110.1,
-    "volume_contracts": 81190.0,
-    "value_mn_krw": 22901707.0,
+    "prev_close": 1112.0,
+    "open": null,
+    "high": null,
+    "low": null,
+    "volume_contracts": null,
+    "value_mn_krw": null,
     "source_url": "https://m.stock.naver.com/api/index/FUT/integration",
     "close_note": "이 응답에는 현재가 필드가 없다. 지수 코스피200(indices.kospi200)으로 대신 보십시오",
-    "perf_note": "이 응답에는 일별 계열이 없어 기간 수익률을 낼 수 없다. 현물 코스피200 지수(indices.kospi200)로 대신 보십시오",
-    "implied_multiplier": 252960
+    "perf_note": "이 응답에는 일별 계열이 없어 기간 수익률을 낼 수 없다. 현물 코스피200 지수(indices.kospi200)로 대신 보십시오"
   },
   "money_flow": {
     "latest": {
@@ -8638,6 +8961,125 @@
     },
     "articles": [
       {
+        "title": "“삼성전자, 메모리 사이클 장기화…목표가 63만원 상향”-유안타",
+        "url": "https://n.news.naver.com/mnews/article/018/0006374741",
+        "chars": 1781,
+        "extracted": "id=\"dic_area\"",
+        "body": "[이데일리 박민 기자] 유안타증권은 23일 삼성전자(005930)에 대해 메모리 반도체 가격 상승폭의 단기적 둔화 우려보다 사이클의 장기화에 주목해야 한다며 투자의견 ‘매수(BUY)’를 유지하고 목표주가를 기존 53만원에서 63만원으로 18.9% 상향 조정했다. 전 거래일(9월 22일) 종가 27만6500원 대비 상승여력은 128%에 달한다.\n\n백길현 유안타증권 연구원은 이날 발간한 보고서에서 “시장은 신규 증설과 고대역폭메모리(HBM) 관련 노이즈로 인한 2028년 피크아웃(정점 통과) 가능성을 우려하고 있으나, HBM의 범용 D램 생산능력 잠식과 인공지능(AI) 추론 확산에 따른 고용량 메모리 수요를 감안하면 공급 제약의 해소 시점은 예상보다 늦어질 가능성이 높다”라고 말했다. \n\n이어 “업사이클 장기화로 잉여현금흐름(FCF)이 구조적으로 확대돼 2027년 1월 발표 예정인 차기 3개년(2027~2029년) 주주환원 정책이 더욱 강화될 수 있는 만큼, 최근의 주가 조정은 중장기 관점에서 매수 기회”라고 말했다.\n\n삼성전자(005930)의 올해 3분기 연결 기준 매출액은 212조1920억원, 영업이익은 99조8600억원으로 추정됐다. 전년 동기 대비 각각 146.6%, 720.8% 급증하는 수준이다.\n\n실적 개선의 견인차는 단연 반도체(DS) 부문이다. 유안타증권은 DS부문의 3분기 영업이익이 100조원에 달할 것으로 전망했다. HBM4 판매 본격화에 힘입어 전분기 대비 D램과 낸드의 평균판매단가(ASP)가 각각 18.0%, 16.0% 상승하면서 메모리 사업부에서만 102조원의 영업이익을 창출할 것이라는 분석이다. 비메모리(시스템LSI·파운드리)는 2조원대 영업손실로 적자 기조가 이어지겠으나, 특별성과급 충당금 영향을 제외하고 선단공정 중심의 가동률 개선을 고려하면 실질적인 적자 폭은 유의미하게 축소된 것으로 파악됐다.\n\n디스플레이(SDC)와 완제품(DX) 부문은 원가 부담과 투자 비용이 상존하고 있다. SDC 부문 3분기 영업이익은 1조1000억원으로 예상됐다. 주력 고객사의 폴더블폰 판매 호조에도 불구하고 8.6세대 IT OLED 패널 양산 개시에 따른 감가상각비(약 3000억원)와 북미 고객 중심의 판가 인하 압박으로 전년 동기 대비 영업이익률이 2%포인트가량 하락할 것으로 관측됐다. DX 부문은 부품 가격 상승 부담으로 인해 모바일(MX) -9000억원, 영상디스플레이·가전(VD/DA) -2000억원 등 총 1조1000억원의 영업적자를 기록할 것으로 전망됐다.\n\n유안타증권은 삼성전자 의 2026년 연간 매출액을 745조9870억원, 영업이익을 358조4850억원으로 예상했다. 지난해 대비 매출은 123.6%, 영업이익은 722.2% 늘어나는 규모다. 이어 2027년에는 연간 매출액 1193조5080억원, 영업이익 590조4920억원을 기록하며 사상 최대 실적 흐름을 이어갈 것으로 내다봤다.\n\n백길현 연구원은 “2027년 주당순자산가치(BPS) 17만9148원에 타깃 주가순자산비율(Target PBR) 3.5배를 적용해 목표주가를 63만원으로 상향했다”라며 “메모리 반도체의 타이트한 수급 여건이 2027~2028년까지 이어지며 높은 수익성과 안정적인 현금 창출력을 입증할 것”이라고 말했다.\n\n \n \n \n \n\n \n 삼성전자 역대 최대 주주환원 결정 임박…100조+α 보따리 푸나_(서울=연합뉴스) 윤동진 기자 = 21일 업계에 따르면 삼성전자는 이르면 이날 또는 내주에 이사회를 열어 특별배당을 포함한 주주환원 계획을 공개할 것이라는 관측이 흘러나오고 있다. 사진은 이날 삼성 서초사옥. 2026.8.21 mon@yna.co.kr"
+      },
+      {
+        "title": "[클릭 e종목]\"티로보틱스, 진공로봇·ESS·휴머노이드 '삼각편대'…2027년 이익 성장 본격화\"",
+        "url": "https://n.news.naver.com/mnews/article/277/0005820255",
+        "chars": 1508,
+        "extracted": "id=\"dic_area\"",
+        "body": "티로보틱스가 디스플레이용 진공로봇 출하 회복에 이어 에너지저장장치(ESS) 관련 신규 매출과 산업형 휴머노이드 사업을 본격화하면서 2027년 실적 성장세가 가팔라질 것이라는 전망이 나왔다.\n\n허선재 SK증권 연구원은 23일 보고서를 통해 티로보틱스의 2027년 매출액을 983억원, 영업이익을 71억원으로 전망했다. 투자의견과 목표주가는 제시하지 않았다.\n\n티로보틱스는 디스플레이와 반도체 공정에 사용되는 진공로봇과 자율이동로봇(AMR)을 주력으로 생산한다. 주요 고객사로는 미국 A사와 삼성디스플레이, LG디스플레이, BOE, 포드에너지 등이 있다.\n\n올해는 중화권 디스플레이 업체의 투자 재개가 진공로봇 사업 회복을 이끌 것으로 예상된다. 허 연구원은 \"티로보틱스는 지난 1분기 고객사 투자 공백으로 부진했으나 3분기부터 BOE 등 중화권 패널업체향 출하가 급증하며 올해 연간 진공로봇 매출은 약 424억원\"이라며 \"전년 대비 25.8% 증가한 수치로 2023년부터 2025년 평균 매출액인 300억원대를 크게 상회할 것\"이라고 말했다.\n\nESS 사업도 새로운 성장축으로 부상하고 있다. 티로보틱스는 올해 포드에너지를 신규 고객사로 확보했으며, 9월까지 누적 186억원의 수주를 확보했다. 이에 따라 올해 자율이동로봇 매출액은 전년 대비 133.3% 증가한 98억원을 기록할 것으로 전망됐다.\n\n휴머노이드 사업의 상용화도 가시화되고 있다. 티로보틱스는 과학기술정보통신부 지원을 받아 추진되는 피지컬 인공지능(AI) 다크팩토리 실증 플랫폼 '카이로스(KAIROS)'에서 자체 개발한 산업형 휴머노이드 '티알웍스(TR-WORKS)'의 현장 테스트를 진행하고 있다.\n\n티알웍스는 자율이동로봇 플랫폼에 진공로봇 기술을 기반으로 한 상체를 결합한 형태로, 공정 사이의 물류 이송과 적재 작업에 특화된 산업형 휴머노이드다. 회사는 내년부터 관련 제품을 공급할 것으로 예상된다.\n\n허 연구원은 \"카이로스 실증을 계기로 전북 AX 사업과 새만금 피지컬AI 클러스터로 이어지는 공급 확대가 기대된다\"며 \"특히 전북 새만금에는 현대차 그룹이 로봇 제조·부품 클러스터를 포함한 AI 산업 거점 조성을 추진하고 있어 중장기적인 공급 확대 기반이 마련되고 있다\"고 분석했다.\n\n실적 개선도 본격화될 전망이다. 허 연구원은 티로보틱스의 올해 연결 매출액이 전년 대비 41.8% 증가한 621억원을 기록할 것으로 내다봤다. 특히 3분기에는 영업이익 17억원을 기록해 6분기 만에 흑자전환할 것으로 예상했다.\n\n내년에는 기존 진공로봇 사업의 회복에 ESS와 휴머노이드 사업이 더해지면서 성장폭이 확대될 것으로 전망됐다. 허 연구원은 \"신규 ESS 고객사 확보, 휴머노이드 공급 시작, 에이아이로보틱스의 고객사 확대에 따른 외형 성장에 따라 2027년 매출액은 전년 대비 58.1% 성장한 983억원, 영업이익은 흑자전환 후 71억원을 기록할 것\"이라고 전망했다.\n\n티로보틱스는 기존 진공로봇 사업의 출하 회복을 기반으로 ESS와 산업형 휴머노이드까지 사업 영역을 넓히며 2027년 실적 개선을 본격화할 것으로 전망된다."
+      },
+      {
+        "title": "추석 선물 때문에 1000억 날렸다…재개발 판결 '주목' [Invest&Law]",
+        "url": "https://n.news.naver.com/mnews/article/277/0005820254",
+        "chars": 1811,
+        "extracted": "id=\"dic_area\"",
+        "body": "1심 \"사전 내정으로 경쟁 훼손\" 지적\n약 974억 청구 모두 기각…내달 2심 시작 재개발 시공사로 선정됐다가 교체된 건설사들이 재개발조합을 상대로 손해배상과 입찰보증금 반환 등 약 1000억원을 요구하며 소송을 벌이고 있다. 시공사 사전 내정과 추석 선물 등 금품 제공이 쟁점이다.\n\n23일 법조계에 따르면 서울고법 민사 13-2부(재판장 이규흥)는 국내 건설사 4곳이 부산의 한 재개발 재정비사업조합을 상대로 낸 손해배상 및 부당이득반환 청구 소송의 항소심 첫 변론기일을 내달 16일 진행한다.\n\n 압도적 표차로 시공사 선정됐는데…교체 통보에 소송 \n \n \n \n\n \n\n앞서 이들 건설사 측은 컨소시엄을 구성해 2018년 입찰에 참여했다. 이 과정에서 시공사 선정 전후를 불문하고 조합 임원·대의원·조합원에게 금품이나 향응을 제공하지 않겠다는 이행각서와 서약서를 제출했다. 위반하면 시공자 지위 박탈과 입찰보증금의 조합 귀속에 이의를 제기하지 않기로 했다.\n\n컨소시엄은 그해 11월 조합 총회에서 1229표를 얻어 55표에 그친 경쟁 사업단을 이겼다. 당시 지상 49층 아파트 26개동, 4568가구를 짓는 약 9000억원짜리 공사로 알려진 사업이었다. 건설사들은 이후 입찰보증금 60억원을 납부했다.\n\n건설사들과 조합 간 분쟁은 금품 제공 등 문제가 불거지며 시작됐다. 조합은 2021년 계약 해지를 통보하고 다른 시공사를 선정했다. 기존 컨소시엄 건설사들이 낸 입찰보증금도 돌려주지 않았다. 건설사들은 정당한 이유 없이 시공사를 교체했다며 소송을 제기했다. 공사를 수행했다면 얻었을 이익의 배상과 입찰보증금 반환을 요구한 것이다.\n\n1심은 \"입찰 자체가 무효\"라며 건설사들의 청구를 모두 기각했다. 시공사 사전 내정과 금품 제공 등으로 입찰의 공정성이 훼손됐다는 이유에서다.\n\n특히 전 조합장이 입찰 공고 전부터 특정 건설사를 시공사로 내정한 듯한 발언을 하고, 내부 정보와 임원·대의원 명단을 제공한 점 등이 판단 근거로 작용했다. 실제로 당초 200억원이던 입찰보증금도 건설사들의 반발로 60억원으로 낮아진 것으로 나타났다. 건설사들이 입찰공고 전부터 조건에 의견을 내고 요구를 관철한 점을 사전 내정을 뒷받침하는 정황으로 판단한 것이다.\n\n1심 재판부는 컨소시엄의 압도적인 득표에 대해 \"공정한 경쟁이 불가능한 상태임을 피고 조합원들이 알지 못했기 때문으로 보인다\"며 \"시공자 선정에 관한 조합원들의 자유로운 결정권과 선택권이 중대하게 침해됐다\"고 지적했다.\n\n 서약 전 선물이라 괜찮다?…외주 홍보 담당자 행위도 책임 판단 \n \n \n \n\n \n\n추석 선물은 입찰보증금 반환 청구 주장을 배척하는 근거가 됐다. 1심 재판부는 건설사들이 2018년 8~9월 대의원회에 다과와 비품을 제공하고, 그 무렵 조합 임직원에게 추석 선물로 과일과 육류를 준 사실을 인정했다. 홍보 담당자가 전 조합장을 위해 회의 식대 137만원을 대신 낸 사실도 언급했다.\n\n건설사들은 \"서약서를 제출하기 전의 일이었고, 액수가 작아 선정 결과에 미친 영향도 미미하다\"는 취지로 항변했지만, 1심 재판부는 약정상 시공사 선정 전후의 금품 제공이 모두 금지된다고 짚었다. 수주 목적으로 제공했다면 서약서 제출 전이라는 이유로 책임을 피할 수 없다는 것이다.\n\n식대를 낸 홍보 담당자가 외부 용역업체 소속이라는 주장도 받아들여지지 않았다. 1심 재판부는 해당 담당자가 건설사 명함을 사용해 활동하고, 대의원 접촉 지시를 받아 내부 회의에서 업무를 보고한 점 등에 주목했다. 그러면서 \"객관적으로 지휘·감독해야 할 관계에 있었다\"고 판시했다.\n\n아울러 입찰의 공정성 훼손과 금품 제공 금지 약정 위반 등을 이유로 보증금도 전액 조합에 귀속된다고 결론 내렸다."
+      },
+      {
+        "title": "삼성전자 낙수효과 어디까지…코스피 배당 최대 60% 늘어난다",
+        "url": "https://n.news.naver.com/mnews/article/018/0006374732",
+        "chars": 2107,
+        "extracted": "id=\"dic_area\"",
+        "body": "현대차증권 보고서 [이데일리 김경은 기자] 삼성전자(005930)의 대규모 주주환원 확대가 삼성생명(032830)·삼성화재(000810)·삼성물산(028260)·KCC(002380) 등 관계사를 넘어 코스피 전체 배당 증가로 이어질 수 있다는 전망이 나왔다. 삼성전자의 올해 현금배당 규모가 최대 110조원에 이를 경우 코스피 보통주 배당액은 현재 예상보다 최대 60% 늘어날 수 있다는 분석이다.\n\n \n \n \n \n\n \n \n 김중원 현대차증권 연구원은 23일 보고서에서 “삼성전자 배당 확대가 삼성생명·삼성화재·삼성물산을 거쳐 KCC까지 전달되는 배당 낙수효과 예상된다”며 이같이 밝혔다. \n\n삼성전자는 지난달 21일 이사회에서 올해 총주주환원 규모를 90조~110조원으로 제시했다. 2024~2026년 누적 잉여현금흐름(FCF)의 50%를 환원하는 기존 정책에 따른 것으로, 2020년 주주환원 규모의 약 5배에 달하는 사상 최대 수준이다. 삼성전자는 3분기 약 30조원의 현금배당을 실시하고 세부 규모는 10월 말 확정할 예정이다. 나머지 52조6500억~72조6500억원의 주주환원 방식과 규모는 내년 1월 결정한다.\n\n관건은 남은 주주환원 재원 가운데 얼마를 현금배당에 사용할지다. 삼성생명과 삼성화재가 보유한 삼성전자 보통주 지분은 각각 8.51%, 1.49%로 합산 약 10%다. 삼성전자가 보통주 자사주를 대규모로 소각하면 발행주식 수가 줄어 두 금융계열사의 지분율이 높아질 수 있어 지분 조정 부담이 발생할 수 있다. 현대차증권은 이 때문에 남은 주주환원 재원에서 현금배당 비중이 높아질 가능성이 있다고 분석했다.\n\n현대차증권은 삼성전자의 총주주환원 규모를 각각 90조원, 100조원, 110조원으로 놓고 현금배당액을 70조원, 90조원, 110조원으로 가정했다. 자사주 매입·소각 규모는 각각 20조원, 10조원, 0원으로 설정했다. 이에 따른 추가 결산 특별배당 규모는 32조6500억원에서 최대 72조6500억원에 달할 것으로 추정했다.\n\n삼성전자의 배당 확대는 관계사로도 이어질 전망이다. 삼성전자 지분을 보유한 삼성생명·삼성화재·삼성물산은 현금배당이 늘어나면 보유 지분에 비례해 배당 수입이 증가한다. KCC는 삼성전자 주식을 직접 보유하지 않지만 삼성물산 지분 10.49%를 보유하고 있어 삼성물산이 늘어난 배당 수입을 자체 주주에게 재배당할 경우 간접적인 수혜가 가능하다.\n\n다만 관계사가 삼성전자로부터 받은 배당금을 모두 주주에게 돌려주는 것은 아니다. 삼성생명과 삼성화재는 순이익과 총주주환원율을 기준으로 배당을 결정하는 반면 삼성물산은 관계사 배당수익의 60~70%를 재배당하는 정책을 두고 있다. KCC도 삼성물산에서 받는 특별배당의 50% 이상을 특별배당 재원으로 활용한다. 이에 따라 현대차증권은 삼성물산과 KCC에서 상대적으로 배당 낙수효과가 크게 나타날 것으로 내다봤다.\n\n삼성전자 배당 확대가 현실화하면 코스피 전체 배당 규모에도 상당한 영향을 미칠 것으로 분석됐다. 현재 시장이 예상하는 올해 코스피 보통주 배당액은 97조3000억원이다. 삼성전자 현금배당을 70조~110조원으로 가정하면 삼성전자 보통주 배당은 기존 전망보다 17조3400억~52조7400억원 늘어난다. 삼성생명·삼성화재·삼성물산·KCC 등 관계사 4곳의 재배당 증가분도 1조5200억~5조6900억원으로 추산됐다.\n\n이를 모두 반영한 코스피 보통주 배당액은 116조1600억~155조7300억원으로 현재 전망치보다 19.4~60.0% 늘어날 것으로 예상했다. 코스피 배당수익률 역시 현재 예상되는 1.7%에서 2.08~2.79%로 높아질 것으로 추정했다.\n\n삼성전자 자체의 배당 매력도 높아진다. 현금배당 규모가 70조~110조원일 경우 예상 주당배당금(DPS)은 1만660~1만6752원으로 추정됐다. 지난 21일 주가를 기준으로 보통주 배당수익률은 3.9~6.1%, 우선주는 5.1~8.1%다. 동일한 DPS가 적용되는 만큼 주가가 낮은 우선주의 배당수익률이 더 높다.\n\n배당 낙수효과가 한꺼번에 나타나는 것은 아니다. 삼성전자의 현금배당 이후 삼성생명·삼성화재·삼성물산이 올해 결산배당과 내년 이후 배당을 통해 추가 수익을 순차적으로 재배당할 전망이다. 삼성물산을 거치는 KCC는 효과가 나타나는 시점이 한 단계 더 늦어질 수 있다는 설명이다."
+      },
+      {
+        "title": "[굿모닝 증시]美 반도체주 강세…코스피 상승 출발 전망",
+        "url": "https://n.news.naver.com/mnews/article/277/0005820248",
+        "chars": 1522,
+        "extracted": "id=\"dic_area\"",
+        "body": "나스닥 상승 속 혼조 마감\n에이전트 AI 기대 속 반도체↑\n미국-이란 상황에 시장 주목\n\"국내 증시 상승 출발할 듯\" 간밤 미국 증시가 반도체주 강세, 금융주 약세 등 혼조세로 마감했다. 지정학적 갈등 완화 기대감으로 국내 증시도 상승 출발할 것으로 전망된다.\n\n22일(현지시간) 미국 증시에서 나스닥지수는 전 거래일보다 0.45% 오른 2만7244.28에 거래를 마쳤다. 종가 기준 또다시 사상 최고치를 경신했다. S&P500 지수는 전장 대비 0.06포인트(0.00%) 내린 7764.64, 다우존스30 산업평균지수는 185.14포인트(0.36%) 내린 5만1863.69에 마감하며 혼조세를 보였다.\n\n \n \n \n \n\n 코스피 지수가 전 거래일 대비 153.89포인트 상승한 7161.61로 장을 시작한 22일 서울 중구 하나은행 본점 딜링룸 전광판에 국내증시 현황이 표시돼 있다. 2026.9.22. 강진형 기자 \n\n메타의 에이전트 AI 흥행에 따른 성장 기대감이 커지면서 마이크론(+5.0%), 샌디스크(+6.8%) 등 반도체주가 강세를 보였다. 필라델피아 반도체 지수는 2.06% 오른 1만2689.82로 마감했다.\n\n반면 미국 금융주는 실적 불안과 절세 이슈 등으로 하락했다. 서상영 미래에셋증권 연구원은 \"지난주 바클레이즈 컨퍼런스에서 제기됐던 실적 둔화 불안이 재부각되며 하락했다\"며 \"특히 제인스트리트 이슈로 인한 레버리지 등에 대한 점검이 강화되자 트레이딩 부문 매출 위축 가능성이 제기된 점도 하락 요인\"이라고 짚었다.\n\n전날 미국-이란의 갈등 완화 기대감을 불러일으키는 발언도 등장해 주목된다. 도널드 트럼프 미국 대통령은 이날 뉴욕 유엔총회에서 \"(이란과의 회담이) 아주 좋은 회담이었다\"며 \"매우 생산적인 회담을 했으며, 아주 가까운 시일 안에 추가 회담이 예정돼 있다\"고 했다. 여기에 중동 지역 원유 공급 차질이 해소될 조짐을 보이면서 서부텍사스유(WTI)는 1.2% 하락한 배럴당 94.59달러, 브렌트유는 1.1% 내린 99.25달러로 거래를 마쳤다.\n\n23일 국내 증시는 미국 반도체지수 강세와 코스피 200 야간선물 2%대 강세 등에 힘입어 상승 출발할 것으로 예상된다. 한지영 키움증권 연구원은 \"장중에는 연휴 관망 심리와 맞물린 차익 실현 압력을 받는 과정에서 증시 상단은 제한된 채, 개별 이슈에 따른 종목 장세로 전환할 듯싶다\"며 \"전날 코스피가 전강후약 장세를 보였지만 7000선을 지켜냈다. 이 부근에서 매물 부담은 아직 높은 편임에도, 상단 저항이 이전보다 약해지고 있음을 보여주는 대목\"이라고 전했다.\n\n지정학적 긴장 완화가 유가 약세로 이어지고, 기대인플레이션 둔화, 시장 금리 하락, 증시 할인율 부담 완화 등의 경로로 이어진다면 추석 연휴 이후 국내 증시에도 상승 탄력이 붙을 것이라는 전망도 나온다. 한 연구원은 \"이번 주 남은 기간에 미중 정상회담에서 관세 휴전 연장 여부, AI 및 반도체 기술경쟁 규제 등장 여부 등을 확인하는 것도 중요하지만, 미국-이란의 외교적 대화 재개 여부 및 호르무즈 해협 물동량 변화 등 중동 사태도 주시해야 할 것\"이라고 했다."
+      },
+      {
+        "title": "태양광, 美국가안보 전략자산으로 격상…\"연말 정책 시행 전 매수 기회\"",
+        "url": "https://n.news.naver.com/mnews/article/018/0006374728",
+        "chars": 2422,
+        "extracted": "id=\"dic_area\"",
+        "body": "하나증권 보고서\nAI·반도체 전력 수요에 국방·우주까지…태양광 전략적 중요성 확대\n탈중국·업스트림 공급망 구축 본격화…'톱픽' OCI홀딩스·한화솔루션 [이데일리 신하연 기자] 하나증권은 23일 태양광 산업에 대해 인공지능(AI)·반도체발 전력 수요 증가와 국방·우주산업 성장으로 단순한 탈탄소 산업을 넘어 미국의 국가안보 전략자산으로 격상됐다고 평가했다. \n\n미국 내 탈중국 태양광 공급망 구축이 중장기적으로 이어질 가능성이 높은 만큼 최근 주가 조정을 매수 기회로 활용할 필요가 있다는 분석이다. 업종 투자의견 ‘비중확대(Overweight)’를 유지하고 최선호주로 OCI홀딩스(010060)와 한화솔루션(009830)을 제시했다.\n\n \n \n \n \n\n \n [본 이미지는 AI 기술을 활용해 제작되었습니다.] \n \n 윤재성 하나증권 연구원은 “AI·반도체발 전력 부족 및 방산·우주산업의 개화와 더불어 미국에 있어 태양광 산업의 의미는 단순히 ‘탈탄소’를 넘어 ‘미중 패권경쟁의 핵심 전략자산’으로 진화했다”고 밝혔다.\n\n우선 AI와 반도체 패권 경쟁에서 전력 확보가 핵심 병목으로 부상하면서 태양광의 중요성이 커졌다는 분석이다. 미국에서 올해 계획된 유틸리티급 신규 발전원 가운데 태양광은 43.4기가와트(GW)로 전체의 51%를 차지한다.\n\n윤 연구원은 “AI·반도체 패권 경쟁의 병목인 전력원 구축의 핵심”이라며 “미국 내 2026년 계획된 유틸리티급 신규 발전원 중 51%인 43.4GW가 태양광이라는 점이 이를 증명한다”고 설명했다.\n\n태양광 공급망이 반도체와 국방산업에도 직결된다는 점에 주목했다. 일부 태양광 업체는 반도체용 폴리실리콘과 웨이퍼 사업을 동시에 영위하고 있어 미국이 반도체 업스트림 생태계를 구축하려면 이들 기업의 생산 기반을 유지할 필요가 있다는 설명이다.\n\n특히 반도체용 폴리실리콘과 웨이퍼는 레이더와 미사일, 드론, 통신장비 등 국방용 전자부품의 핵심 소재이기도 하다. 여기에 우주 태양광 시장까지 확대될 경우 탈중국 공급망의 전략적 가치는 더욱 커질 것으로 전망했다. 미국 항공우주국(NASA)은 중국과의 협력을 금지하고 있으며 스페이스X 역시 중국을 배제한 공급망을 구축하고 있다는 설명이다.\n\n윤 연구원은 “태양광 산업은 전력-AI-반도체-국방-우주를 하나로 엮는 국가안보 전략자산이 됐다”며 “따라서 태양광 공급망의 탈중국·국산화는 초당적 지지를 받을 수 있게 됐다”고 진단했다.\n\n미국의 정책 흐름도 이 같은 방향성을 뒷받침한다고 봤다. 지난해 3월 미국 민주·공화 양당 의원의 폴리실리콘 수입 금지 요구를 시작으로 같은 해 7월 상무부의 무역확장법 232조(Section 232) 조사 개시, 올해 8월 도널드 트럼프 대통령의 최종 서명까지 탈중국 태양광 공급망 구축을 위한 정책이 이어졌다는 설명이다.\n\n구체적인 정책 방향으로는 최소수입가격(MIP)과 모듈을 제외한 업스트림 제조 인센티브 제공 등이 거론된다. 하나증권은 이들 정책의 궁극적인 목표가 미국 내 업스트림 산업의 수익성을 보장해 자체 공급망을 육성하는 데 있다고 분석했다.\n\n윤 연구원은 “Section 232의 구체적 지침인 최소수입가격(MIP) 및 모듈을 제외한 업스트림(Upstream) 제조 인센티브 제공 등도 결국 ‘미국 내 Upstream 구축을 위한 수익성 보장’이라는 구체적이고 일관된 목표로 귀결된다”며 “미국은 태양광 공급망 구축을 중장기 육성 대상으로 보고 있다는 뜻”이라고 짚었다.\n\n미중 정상회담을 앞두고 제기되는 중국 태양광 규제 완화 가능성에 대해서는 낮게 봤다. 미국이 중국산 태양광 제품에 대한 규제를 완화할 경우 국가안보 전략자산으로 격상된 자국 공급망 구축 정책과 배치되기 때문이다.\n\n윤 연구원은 “이번 미중 정상회담에서 만약 중국 태양광에 대한 규제를 완화한다면 이는 결국 미국 내 국가안보 전략자산에 대한 공급망 구축의 끈을 놓아버린다는 의미이므로 현실적으로 실현 가능성이 매우 낮다”고 판단했다. 이어 “이번 실무회담에서 논의되는 관세 인하 대상이 비전략자산(Non-strategic goods)에 국한될 것으로 예측된다는 점도 감안할 필요가 있다”고 설명했다.\n\n최근 태양광주 약세는 금리 상승에 따른 수요 둔화 우려와 단기 실적 부진 가능성, 미중 정상회담을 앞둔 경계감 등이 복합적으로 반영된 결과라고 분석했다. 다만 오는 12월4일 Section 232 정책이 시행되면 가파른 가격 상승이 나타날 가능성이 있다고 전망했다.\n\n윤 연구원은 “9월 말~10월 말은 2027년부터 이어질 대세 상승 사이클 이전에 가장 저렴하게 태양광 업체를 매수할 수 있는 마지막 기회”라며 “최선호주(Top Picks)는 OCI홀딩스와 한화솔루션”이라고 강조했다.\n\n하나증권은 OCI홀딩스에 투자의견 ‘매수’와 목표주가 55만원을 제시했다. 지난 22일 종가 18만8000원 기준이다. 한화솔루션 역시 투자의견 ‘매수’를 제시했으며 목표주가는 6만원, 지난 22일 종가는 2만7450원이다."
+      },
+      {
+        "title": "나스닥 또 사상 최고치…美 증시 혼조 속 반도체주 강세[뉴스새벽배송]",
+        "url": "https://n.news.naver.com/mnews/article/018/0006374725",
+        "chars": 2487,
+        "extracted": "id=\"dic_area\"",
+        "body": "다우 0.36%↓ S&P500 0.01%↓ 나스닥 0.45%↑\n美·이란 대화 재개 기대에 브렌트유 100달러 하회\n연준 인사들 인플레이션 위험 잇달아 경고 [이데일리 김형일 기자] 미국 뉴욕증시가 22일(현지시간) 미국과 이란 간 갈등 완화 기대 속에 혼조세로 마감했다. 기술주 중심의 나스닥지수는 반도체주 강세에 힘입어 종가 기준 사상 최고치를 다시 경신했다. 국제유가는 미·이란 간 외교 재개 가능성과 중동 원유 공급 회복 기대에 배럴당 100달러 아래로 내려왔다. 연준 인사들은 인플레이션 위험이 여전히 크다고 경고하며 추가 긴축 가능성을 열어뒀다.\n\n \n \n \n \n\n \n 미국 뉴욕증권거래소(NYSE).(사진=연합뉴스) \n \n 다음은 23일 개장 전 주목할 뉴스다.\n\n 뉴욕증시 혼조…나스닥 사상 최고치 경신 \n\n-뉴욕증시가 22일(현지시간) 혼조세로 마감. 다우존스30산업평균지수는 0.36% 내린 5만1863.69에 스탠다드앤드푸어스(S&P)500지수는 0.6포인트 하락한 7764.64에 마감했고 나스닥지수는 0.45% 오른 2만7244.28을 기록.\n\n-나스닥은 전날에 이어 종가 기준 사상 최고치를 경신. 샌디스크가 6.82% 급등했고 마이크론도 5% 상승하는 등 반도체주가 강세를 보이며 지수 상승을 견인.\n\n-메타의 AI 어시스턴트 ‘뮤즈’가 소비자들에게 좋은 반응을 얻으면서 AI 관련 기대감이 반도체주에 유입. 반면 AI 서비스가 기존 소비자 서비스를 대체할 가능성이 부각되며 우버와 리프트 등은 하락.\n\n 美 연은 인사들 잇단 인플레 경고 \n\n-미 연방준비제도(Fed·연준)가 지난주 기준금리를 0.25%포인트 인상한 데 이어 연반준비은행(연은) 총재들이 인플레이션 위험을 잇달아 경고. 노동시장이 견조한 가운데 물가 상승 압력이 예상보다 광범위하고 지속될 가능성을 제기. \n\n-수전 콜린스 보스턴 연은 총재는 인플레이션이 2%를 상당폭 웃도는 수준에서 지속될 가능성이 커졌다고 평가. 노동시장이 안정적인 만큼 통화정책이 물가 안정에 더욱 집중할 여지가 있다고 언급.\n\n-톰 바킨 리치먼드 연은 총재도 인플레이션 위험이 최대고용과 관련한 위험보다 여전히 크다고 평가. 개인소비지출(PCE) 물가지수 구성 항목 가운데 60% 이상이 연율 3%를 웃도는 속도로 상승하고 있다고 지적.\n\n-다만 바킨 총재는 추가 금리 인상이 필요한지와 인상 횟수에 대해서는 구체적인 방향을 제시하지 않음. 시장은 10월 27~28일 열리는 미국 연방공개시장위원회(FOMC)를 앞두고 물가와 고용 지표에 주목할 전망.\n\n 美·이란 대화 재개 조짐에 국제유가 100달러 아래로 \n\n-도널드 트럼프 미국 대통령이 미국과 이란이 대화를 이어가고 있다고 밝힌 가운데 국제유가가 하락. 트럼프 대통령은 이날 “아주 좋은 회담”과 “매우 생산적인 회담”이 있었다며 가까운 시일 내 추가 회담이 예정돼 있다고 언급.\n\n-이란 고위 당국자는 미국이 군사적 압박을 완화하고 이란 항구 봉쇄를 해제할 경우 7일 안에 호르무즈 해협을 재개방할 수 있다는 제안을 전달했다고 밝힘.\n\n-다만 이란 반관영 파르스통신은 호르무즈 해협 재개방 제안 보도를 부인. 실제 미·이란 당국자 간 대면협상이 이뤄졌는지도 확인되지 않아 외교적 진전 여부는 불확실한 상황.\n\n-브렌트유 11월물은 1.1% 내린 배럴당 99.25달러에 마감하며 8일 이후 처음으로 100달러를 하회. 서부텍사스산원유(WTI) 10월물도 1.2% 내린 배럴당 94.59달러를 기록.\n\n 美 의원 “AI·로봇에도 세금 부과해야” \n\n-로 카나 미국 민주당 하원의원이 자율형 인공지능(AI)과 로봇에 세금을 부과해 기업이 인간 노동자를 AI로 대체하려는 유인을 줄여야 한다고 주장.\n\n-카나 의원은 현재 조세체계가 인간 노동자보다 AI를 활용하는 방식에 유리하게 작용한다며 AI가 인간을 대체하지 않도록 조세체계를 중립적으로 바꿔야 한다고 제안.\n\n-AI로 생산성이 높아질 경우 노동자에게 이익의 일부나 주식을 제공하고 근로시간을 줄이는 방안도 제시. 기업이 노동자의 업무 데이터를 AI 학습에 활용한 뒤 해당 노동자를 대체하는 것도 제한해야 한다고 주장.\n\n-카나 의원은 AI 규제를 기업 자율에만 맡겨서는 안 된다며 독립적인 연방 규제기관을 설립하고 기술 전문가들이 AI 산업을 관리해야 한다고 강조.\n\n 국제유가 추가 하락 대비 옵션 거래 급증 \n\n-원유 옵션시장에서 국제유가 추가 하락에 대비한 거래가 급증. 22일(현지시간) 브렌트유 풋옵션 거래량은 약 76만 4000계약으로 사상 최대를 기록.\n\n-특히 12월물에서는 브렌트유가 배럴당 70달러 안팎까지 떨어질 경우에 대비한 풋옵션이 11만계약 이상 거래. 11월물에서는 92~93달러 수준에 대비한 거래가 4만 계약 체결.\n\n-유가 상승에 대한 기대도 약화. 브렌트유 콜옵션 프리미엄은 6월 이후 가장 낮은 수준으로 떨어지며 상승 위험에 대비하기 위해 지불하는 비용도 감소.\n\n-다만 풋옵션 거래량 전체를 유가 하락에 대한 투기적 베팅으로 보기는 어렵다는 관측. 기존 투자에서 발생할 수 있는 손실을 줄이기 위한 위험회피 목적의 거래도 포함."
+      },
+      {
+        "title": "삼성물산, 삼성전자 배당 확대 수혜…내년 DPS 8550원 전망-SK",
+        "url": "https://n.news.naver.com/mnews/article/018/0006374724",
+        "chars": 1331,
+        "extracted": "id=\"dic_area\"",
+        "body": "[이데일리 김윤정 기자] SK증권은 삼성물산(028260)에 대해 본업 실적 개선과 삼성전자의 배당 확대에 힘입어 시장 기대치를 웃도는 주주환원이 가능할 것으로 전망했다. 투자의견 ‘매수(Buy)’와 목표주가 55만원을 유지했다.\n\n \n \n \n \n\n \n (자료 제공=SK증권) \n \n 23일 최관순 SK증권 연구원은 삼성물산의 올해 매출액을 45조8000억원으로 전년 대비 12.3% 증가하고, 영업이익은 3조8000억원으로 15.1% 늘어날 것으로 전망했다.\n\n건설부문이 실적 개선을 주도할 것으로 봤다. 올해 건설부문 매출액은 15조9000억원으로 전년 대비 12.5%, 영업이익은 7360억원으로 37.3% 증가할 것으로 예상했다. 지난해 삼성물산 별도 매출에서 삼성전자향 매출이 차지하는 비중은 16.1%였지만 올해 상반기에는 29.2%까지 높아졌다. 최 연구원은 하반기에도 하이테크 공정이 본격화하면서 실적개선이 이어질 것으로 전망했다.\n\n삼성전자의 배당 확대가 삼성물산의 주주환원 확대로 이어질 가능성에도 주목했다. 최 연구원에 따르면, 삼성물산은 관계사로부터 받는 배당수입의 60~70%를 재배당하고 있다. 이에 삼성전자 배당이 늘어나면 삼성물산의 현금배당에 대한 기대치도 높아질 수 있다는 분석이다.\n\n삼성물산이 2027년 초 지급하는 배당금은 올해 지급받는 관계사 배당수입에 연동되고, 삼성전자의 3분기 배당금도 여기에 포함될 예정이다. 최 연구원은 이를 삼성물산의 주당배당금(DPS)으로 환산하면 내년 초 예상 DPS는 8550원으로 시장 전망치인 3882원을 크게 웃돌 것으로 전망했다.\n\n삼성생명의 배당 확대 가능성도 추가적인 배당 재원 증가 요인으로 꼽았다. 삼성전자 배당 확대에 따라 삼성생명의 배당이 늘어날 경우 삼성물산의 배당 재원도 추가로 증가할 수 있다는 설명이다.\n\n상장 자회사 지분가치가 크게 늘었음에도 삼성물산의 순자산가치(NAV) 대비 할인율 축소 폭은 크지 않다고 분석했다. 현재 삼성물산의 지분가치는 삼성전자 62.0%, 삼성바이오로직스 21.4%, 삼성생명 8.6% 등으로 구성돼 있다고 봤다.\n\n올해 들어 삼성바이오로직스 주가가 17.9% 하락했지만 삼성전자는 127.8%, 삼성생명은 84.6% 상승하면서 상장 자회사 지분가치는 48.2% 증가했다. 2분기 재무구조도 순현금으로 전환됐다.\n\n지난 8월 삼성전자의 대규모 주주환원 정책 발표로 삼성물산의 주주환원 확대가 가시화됐지만 NAV 대비 할인율은 57.8%로 연초 58.5%와 비교해 개선 폭은 미미하다고 평가했다.\n\n최 연구원은 “10월 삼성전자의 분기배당이 확정되고, 삼성물산의 양호한 실적이 확인된다면 삼성물산 NAV 대비 할인율의 추가적인 축소를 예상한다”고 밝혔다."
+      },
+      {
+        "title": "\"삼성전자, 목표가 63만원으로 상향…조정은 매수 기회\"-유안타",
+        "url": "https://n.news.naver.com/mnews/article/008/0005417678",
+        "chars": 1245,
+        "extracted": "id=\"dic_area\"",
+        "body": "(서울=뉴스1) 안은나 기자 = 삼성전자 임단협이 최종 타결된 27일 서울 삼성전자 서초사옥에 깃발이 나부끼고 있다. 삼성전자 노동조합 공동교섭단은 이날 '2026년 임금·단체협약 잠정 합의안' 찬반 투표 결과 73.7%의 찬성률로 가결됐다고 밝혔다. 2026.5.27/뉴스1 Copyright (C) 뉴스1. All rights reserved. 무단 전재 및 재배포, AI학습 이용 금지. /사진=(서울=뉴스1) 안은나 기자 유안타증권은 23일 2028년까지 메모리 반도체의 빠듯한 수급 환경이 이어질 것이라며, 삼성전자의 내년 연간 실적 추정치를 상향했다. 이에 따라 목표주가를 기존 53만원에서 63만원으로 올려잡고, 투자의견 '매수'를 유지했다. \n\n백길현 유안타증권 연구원은 \"메모리 반도체의 가격 상승 폭이 다소 둔화하겠지만, 2027~2028년에도 빠듯한 수급 환경이 이어질 전망이라는 점을 주목한다\"며 \"시장은 신규 증설과 HBM(고대역폭메모리) 관련 노이즈로 인한 2028년 피크아웃 가능성을 우려하고 있으나, HBM의 범용 DRAM (D램) 생산능력 잠식과 AI(인공지능) 추론 확산에 따른 고용량 메모리 수요를 감안하면 공급 제약의 해소 시점은 예상보다 늦어질 가능성이 높기 때문\"이라고 분석했다. \n\n이어 \"메모리 업사이클이 장기화할 경우 삼성전자 FCF(잉여현금흐름)는 과거 대비 구조적으로 확대돼 보다 친화적인 주주환원 정책을 제시할 가능성도 배제할 수 없다\"며 \"내년 연간 실적 추정치 상향 조정에 따라 목표주가를 63만원으로 상향 조정한다. 피크아웃 우려에 따른 주가 조정은 중장기 관점에서 매수 기회\"라고 말했다. \n\n올해 3분기 삼성전자가 영업이익 100조원을 기록할 것이라고 전망했다. \n\n백 연구원은 \"DS(반도체)부문 예상 영업이익은 전년 동기 대비 1538.5% 증가한 100조원으로, 메모리반도체 가격 상승세가 이어지는 상황에서 HBM4 판매 본격화에 따른 영향을 고려하면 D램·NAND(낸드) 분기 평균 가격 상승 폭은 각각 18.0%, 16.0%로 추정한다\"고 설명했다. \n\n그는 \"SDC(디스플레이)부문 예상 영업이익은 9.6% 감소한 1조1000억원으로 국내 주력 고객사향 폴더블 스마트폰 판매 호조가 사업부의 외형 성장에 긍정적으로 작용했을 것으로 추정됨에도 불구하고, 8.6세대 IT(정보기술) OLED(유기발광다이오드) 패널 양산 개시에 따른 감가상각비와 북미 고객 중심의 판가 인하 압박 영향으로 전년동기대비 수익성은 약 2%포인트 훼손이 불가피할 전망\"이라고 했다."
+      },
+      {
+        "title": "\"삼성전자, 전망보다 3분기 실적 밑돌 것…파운드리 주목해야 \"-키움",
+        "url": "https://n.news.naver.com/mnews/article/015/0005335464",
+        "chars": 1308,
+        "extracted": "id=\"dic_area\"",
+        "body": "삼성전자 평택캠퍼스 / 2026.5.19 평택=이솔 기자 \n키움증권은 23일 삼성전자에 대해 \"고대역폭메모리(HBM)와 파운드리(반도체 수탁생산) 중장기 성장성에 주목해야 한다\"고 말했다. 투자의견 '매수'와 목표주가 35만원도 유지했다.\n\n이 증권사 박유악 연구원은 \"삼성전자는 올해 3분기 매출과 영업이익이 각각 전 분기 대비 15%, 19% 증가한 198조원과 107조원을 기록할 것으로 전망된다\"며 \"키움증권의 기존 전망치인 매출 213조원, 영업이익 122조원을 밑도는 것\"이라고 말했다.\n\n이어 \"원달러 평균 환율 하락이 예상보다 급격히 발생했고, 범용 D램 가격 상승률 기대치가 기존 20%에서 12%로 밑돌 것이라는 판단에 따른 것\"이라고 근거를 댔다.\n\n박 연구원은 \"다만 HBM 부문의 실적은 예상대로 큰 폭의 성장세를 보이고 있는 데다 파운드리 부문 역시 HBM4 베이스 다이 양산 및 엑시노스 2700 생산 확대에 힘입어 수익성 개선을 이룰 것으로 보여 긍정적\"이라고 짚었다.\n\n그러면서 \"3분기 사업 부문별 영업이익은 DS가 전 분기 대비 20% 증가한 107조3000억원, 삼성디스플레이가 51% 증가한 1조1000억원, MX·NW -1.7조원(적자지속), VD ·DA -0.1조원(적자지속)을 각각 기록할 것으로 예상된다\"고 점쳤다.\n\n키움증권은 삼성전자가 올해 4분기 매출과 영업이익이 각각 전 분기 대비 1%, 4% 증가한 200조원과 111조원을 기록하며 소폭 성장할 것으로 전망했다. 박 연구원은 \"그 동안 전사 실적을 견인했던 범용 D램과 낸드플래시의 가격이 고객사의 가격 저항 및 컨슈머 수요 부진 영향으로 인해 각각 전 분기 대비 3%와 12% 상승하는데 그칠 것으로 판단하기 때문\"이라고 분석했다.\n\n다만 \"HBM 부문은 HBM4의 제품 판매 비중이 과반수를 넘어가며 큰 폭의 성장세를 이어가고, 파운드리와 시스템LSI 부문 역시 엑시노스 2800의 대량 양산이 시작되며 매출 증가를 이어갈 전망\"이라고 내다봤다.\n\n박 연구원은 \"삼성전자의 주가는 그 동안 실적 성장을 견인했던 범용 메모리 부문에 대한 시장의 우려 속에서 급락한 뒤 회복세를 보이고 있다\"며 \"키움증권은 범용 메모리의 경우 중국 CXMT, YMTC와의 점유율 경쟁 하에서 가격의 하락 압력이 높아질 것으로 예상되지만 삼성전자의 HBM과 파운드리 부문은 시장 점유율 확대를 이루며 신성장 동력으로 자리 매김해 나아갈 것으로 판단한다\"고 강조했다.\n\n그러면서 \"삼성전자에 대한 투자 포인트를 '범용 메모리 가격 상승'에서 'HBM과 파운드리의 시장 점유율 확대로 옮기고, 중장기적 관점에서 매수 접근할 것을 추천한다\"고 마무리했다."
+      },
+      {
+        "title": "[기로의상장사]랩지노믹스②3년 만에 사라진 900억…적자에 수사까지 '설상가상'",
+        "url": "https://n.news.naver.com/mnews/article/277/0005820234",
+        "chars": 2073,
+        "extracted": "id=\"dic_area\"",
+        "body": "코로나 특수로 쌓은 현금 90% 감소\n美클리아랩 부진에 영업권 손상 우려\n'사무장병원' 수사에 인력 이탈까지 겹악재 \n \n \n \n\n \n\n코스닥 상장사 랩지노믹스가 사모펀드(PEF)로 주인이 바뀐 후 줄곧 내리막길을 걷고 있는 것으로 나타났다. 코로나19 팬데믹 시절 축적했던 막대한 현금은 불과 3년여 만에 10분의 1 수준으로 줄었고 주요 사업과 관련해서 경찰의 수사까지 받고 있는 상황이다. 시장에서는 안팎으로 겹친 악재와 핵심 인력의 이탈로 향후 턴어라운드마저 불투명하다는 우려가 나오고 있다.\n\n23일 금융감독원 전자공시시스템에 따르면 랩지노믹스는 2023년 1월 창업주인 진승현 전 대표에서 루하PE(루하갈락티코스 유한회사)로 최대주주가 변경됐다. 매각 직전인 2022년 당시 랩지노믹스는 코로나19 진단키트 특수에 힘입어 사상 최대 실적을 올리며 곳간을 두둑이 채운 상태였다. 2022년 말 기준 랩지노믹스의 연결 기준 현금성 자산은 985억원에 달했다.\n\n하지만 주인이 바뀐 뒤 현금은 썰물처럼 빠져나갔다. 올 상반기 말 기준 랩지노믹스의 현금성 자산은 약 93억원으로 쪼그라들었다. 불과 3년 반 만에 현금 보유량이 10분의 1토막 수준으로 급감한 것이다.\n\n현금이 급감한 가장 큰 원인은 본업인 진단 사업의 부진이다. 2022년 662억원의 영업이익을 냈던 랩지노믹스는 2023년부터 실적이 꺾이기 시작해 2024년 185억원, 2025년 535억원의 대규모 영업손실을 기록했다.\n\n특히 지난해에는 랩지노믹스의 주요 검체 수탁을 도맡아 하던 '랩지노믹스진단검사의학과의원'이 폐업하면서 매출채권 손상이 생겨 대규모 적자를 기록했다. 랩지노믹스는 지난해 약 400억원 규모의 매출채권 손상(대손상각비)을 일시에 비용으로 반영했다.\n\n사모펀드 인수 후 신성장 동력으로 추진했던 미국 클리아랩(CLIA Lab, 진단수탁기관) 인수 역시 실적 갉아먹기의 주범이 됐다. 랩지노믹스는 2023년 8월 큐디엑스(QDx)와 2024년 10월 아이엠디(IMD)를 잇달아 인수했으나, 두 곳 모두 수십억원의 적자를 내고 있다. 올 상반기 기준 큐디엑스는 약 29억원, 아이엠디는 약 32억원의 당기순손실을 기록했다.\n\n클리아랩이 적자에 허덕이는 이유는 복합적이다. 코로나19 관련 매출이 급감한 상황에서 병리학 및 암 진단 분야로 사업 구조를 전환하는 과정에 막대한 통합·운영 비용이 발생했다. 또한 마진율이 높은 자체개발검사(LDT) 시약 도입이 지연되면서 비싼 상용 체외진단키트(IVD)에 의존해야 했던 탓에 수익성이 크게 악화된 것으로 분석된다.\n\n시장에서는 랩지노믹스가 겪고 있는 위기가 단기간에 해소되기 어려울 것으로 보고 있다. 가장 큰 뇌관은 최근 불거진 '랩지노믹스의원'에 대한 수사당국의 압수수색이다. 현재 해당 의원은 비의료인이 불법으로 운영하는 이른바 '사무장 병원' 혐의를 받고 있다. 만약 수사 결과 이 혐의가 사실로 드러날 경우 수사당국의 범죄수익 환수 조치가 뒤따를 가능성도 제기된다.\n\n미국 클리아랩의 상황도 여전히 살얼음판이다. 랩지노믹스는 LDT 시약 적용 확대를 통해 원가를 50% 이상 절감해 흑자로 돌려세우겠다는 계획이지만, 진입장벽이 높고 보험 네트워크 영업이 필수적인 미국 의료 시장 특성상 단기간의 실적 개선은 쉽지 않을 것으로 분석된다.\n\n클리아랩을 인수하면서 설정한 영업권도 불안 요소다. 랩지노믹스는 올 상반기 말 기준 약 550억원 규모의 영업권을 갖고 있다. 클리아랩의 적자가 계속돼 미래 수익 가치가 떨어질 경우, 이 영업권은 연말 결산 시점마다 손상차손으로 처리될 수 있다. 실제 랩지노믹스는 클리아랩 인수 후 100억원이 넘는 영업권 손상차손을 반영한 바 있다.\n\n이런 상황에서 랩지노믹스의 내부 조직력도 약화되고 있는 것으로 파악된다. 지난해 류재학 대표이사가 합류한 후 166명 수준이던 직원은 최근 58명 수준까지 급감했다. 실제 영업 전방에서 활동하는 직원들이 60여명 수준에서 10여명으로 감축된 것으로 전해졌다. 심지어 영업조직 일부가 경쟁사로 단체 이직을 감행한 사례까지 발생한 것으로 알려졌다. 신규 영업을 창출해야 할 핵심 인원이 줄어든 셈이다.\n\n이 같은 상황에 대한 대응 방안을 랩지노믹스 측에 수차례 문의했지만 답변하지 않았다."
+      },
+      {
+        "title": "“35만전자 간다” 믿는 구석 뭐길래…실적 전망 낮춰도 ‘매수’",
+        "url": "https://n.news.naver.com/mnews/article/018/0006374718",
+        "chars": 1364,
+        "extracted": "id=\"dic_area\"",
+        "body": "키움증권 보고서 [이데일리 김경은 기자] 키움증권은 23일 삼성전자(005930)에 대해 범용 메모리 가격 상승세 둔화로 3분기 실적이 기존 기대치를 밑돌 것이라는 전망을 내놨다. 다만 고대역폭메모리(HBM)와 파운드리 사업의 시장 점유율 확대가 새로운 성장 동력이 될 것이라며 투자의견 ‘매수’와 목표주가 35만원을 유지했다.\n\n \n \n \n \n\n \n 서울시 서초구 삼성전자 서초사옥에 사기가 펄럭이고 있다. (사진=방인권 기자) \n \n 박유악 키움증권 연구원은 이날 보고서에서 박 연구원은 “삼성전자에 대한 투자 포인트를 ‘범용 메모리 가격 상승’에서 ‘HBM과 파운드리의 시장 점유율 확대’로 옮기고 중장기적 관점에서 매수 접근할 것을 추천한다”며 이같이 밝혔다.\n\n키움증권은 삼성전자의 3분기 매출액을 198조원, 영업이익을 107조원으로 전망했다. 전 분기 대비 각각 15%, 19% 증가하는 수준이지만 기존 전망치인 매출액 213조원, 영업이익 122조원에는 못 미친다.\n\n실적 전망치를 낮춘 배경으로는 원·달러 평균 환율 하락과 범용 D램 가격 상승세 둔화를 꼽았다. 3분기 범용 D램 가격 상승률 전망치를 기존 전 분기 대비 20%에서 12%로 낮췄다.\n\n반면 HBM과 파운드리 사업은 성장세가 이어질 것으로 내다봤다. HBM 부문은 예상대로 큰 폭의 실적 성장을 이어가고 있다. 파운드리 부문도 HBM4 베이스 다이 양산과 엑시노스 2700 생산 확대에 힘입어 수익성이 개선될 것으로 예상했다. 3분기 반도체(DS) 부문의 영업이익은 전 분기 대비 20% 증가한 107조3000억원으로 추정했다.\n\n4분기에는 매출액 200조원, 영업이익 111조원을 기록해 전 분기 대비 각각 1%, 4% 증가할 것으로 전망했다. 그동안 실적을 견인해 온 범용 D램과 낸드 가격 상승세는 고객사의 가격 저항과 소비자 수요 부진으로 한풀 꺾일 것으로 봤다. 4분기 D램과 낸드 가격 상승률은 전 분기 대비 각각 3%, 12%에 그칠 것으로 예상했다.\n\n범용 메모리의 빈자리는 HBM과 파운드리가 채울 것으로 전망했다. 4분기 HBM 부문에서는 HBM4의 제품 판매 비중이 절반을 넘어서면서 높은 성장세를 이어갈 것으로 봤다. 파운드리·시스템LSI 역시 엑시노스 2800의 대량 양산이 시작되면서 매출 증가세가 이어질 것으로 예상했다.\n\n박 연구원은 “삼성전자의 주가는 그 동안 실적 성장을 견인했던 범용 메모리 부문에 대한 시장의 우려 속에서 급락한 뒤 회복세를 보이고 있다”고 진단했다. 이어 “범용 메모리의 경우 중국 CXMT, YMTC와의 점유율 경쟁 하에서 가격의 하락 압력이 높아질 것으로 예상된다”면서 “삼성전자의 HBM과 파운드리 부문은 시장 점유율 확대를 이루며 신성장 동력으로 자리 매김해 나아갈 것으로 판단한다”고 말했다."
+      },
+      {
+        "title": "메리츠證 “삼성전기, AI 가속기 넘어 CPU까지 수혜 확대…목표가 220만원”",
+        "url": "https://n.news.naver.com/mnews/article/366/0001194084",
+        "chars": 1206,
+        "extracted": "id=\"dic_area\"",
+        "body": "삼성전기가 개발한 라이다(LiDAR)용 초소형·고전압 MLCC. /삼성전기 제공 \n 메리츠증권이 삼성전기의 인공지능(AI) 관련 수혜가 기존 AI 가속기에서 서버용 중앙처리장치(CPU)까지 확대되고 있다고 분석했다. CPU 수요 증가가 적층세라믹콘덴서(MLCC)와 반도체 패키지 기판(ABF) 사업 모두에 긍정적으로 작용할 것이란 전망이다.\n\n목표주가는 기존 210만원에서 220만원으로 올리고 투자의견 ‘매수’를 유지했다. 삼성전기의 전 거래일 종가는 148만6000원이다.\n\n23일 양승수 메리츠증권 연구원은 삼성전기의 올해 3분기 매출액을 3조8200억원, 영업이익을 6571억원으로 전망했다. 전년 동기 대비 각각 32.2%, 152.4% 증가한 수준이다. 영업이익은 시장 전망치 6010억원을 9.3% 웃돌 것으로 예상했다.\n\n유통채널 가격 인상과 AI 중심의 고부가 제품 비중 확대가 실적 개선을 이끌 것으로 봤다. 컴포넌트 사업부 영업이익률은 2022년 1분기 이후 18개 분기 만에 20%를 넘어설 것으로 전망했다. ABF 역시 높은 가동률과 북미 고객사를 대상으로 한 AI 반도체·서버용 CPU 기판 공급 확대에 힘입어 영업이익률이 30%를 웃돌 것으로 예상했다.\n\n특히 양 연구원은 최근 ‘에이전틱 AI’가 부각되면서 AI 시스템을 조율하는 역할을 맡는 CPU의 중요성도 다시 커지고 있다고 분석했다. 이에 따라 삼성전기의 MLCC와 ABF가 모두 CPU 수요 확대의 수혜를 받을 가능성이 높다고 봤다.\n\nMLCC는 고성능 반도체 주변에서 전원을 안정적으로 공급하는 부품이다. 기존 AI 가속기 중심이던 적용처가 서버용 CPU까지 넓어지고 있으며, 양 연구원에 따르면 삼성전기는 이미 북미 CPU 업체와 AI용 초소형·고용량 MLCC 장기 공급계약을 체결한 것으로 파악됐다.\n\nABF는 CPU와 같은 고성능 반도체를 메인보드와 연결하는 패키지 기판이다. 삼성전기는 다수의 CPU 고객사에 ABF를 공급하고 있으며, PC용까지 포함하면 전체 ABF 매출에서 CPU 관련 비중이 45%를 웃도는 것으로 추정됐다. 베트남 공장에서도 북미 CPU 업체의 6세대 서버용 ABF 공급 물량이 늘고 있다는 설명이다.\n\n양 연구원은 “최근 환율 환경이 급격히 비우호적으로 전환됐음에도 불구하고 이익 눈높이가 지속적으로 상향 조정되고 있다는 점이 핵심”이라며 “향후에도 가파른 이익 성장의 기울기를 바탕으로 투자 매력이 지속 부각될 전망”이라고 말했다."
+      },
+      {
+        "title": "추석 연휴에도 나스닥은 오를까…국채 '플래트닝'에도 견고한 AI 투자심리 [마켓무버의 국장 힌트]",
+        "url": "https://n.news.naver.com/mnews/article/215/0001266963",
+        "chars": 2064,
+        "extracted": "id=\"dic_area\"",
+        "body": "미 증시 살펴보며 한국 증시 투자아이디어까지 찾는 마켓무버입니다.\n\n간밤 뉴욕 증시 3대 지수는 혼조세로 거래를 마쳤습니다. 다우 지수는 0.36% 하락했고, S&P 500은 보합권에 마감한 가운데 나스닥은 0.45% 상승하며 사상 사상 최고치 경신 행진을 이어갔습니다. \n\n간밤 짚어볼 이벤트는 미국 뉴욕에서 개최된 유엔 총회였습니다. 이 자리에선 도널드 트럼프 대통령의 연설이 있었습니다. 3선에 도전할 생각이 없고, 이란 전쟁은 미국 중간 선거 이후에 끝날 것으로 믿는다는 발언이 있었습니다. \n\n이와 함께 스티브 위트코프 중동 특사와 이란 외무장관이 세 시간에 걸친 회담도 진행됐다는 소식도 알려졌습니다. 유엔 총회 밖에선 사우디아라비아가 동서 가스관 가동을 재개하고 현지시간 22일부터 홍해 연안의 얀부항을 통한 수출도 재개할 수 있다는 보도가 있었지요. 국제유가 벤치마크인 브렌트유는 1.78% 하락하며 배럴당 98.5달러선으로 내려왔습니다. \n\n오늘의 유가 하락에도 시장이 아직 안정을 찾았다고 확신하기는 어려운 상황입니다. 트럼프 미 대통령은 이란과 협상을 통해 합의를 도출할지, 아니면 이란을 절멸시킬지를 두고 중대한 결정을 내려야 한다며 시장에 던진 선택지를 좁히지 않았습니다. \n\n유가와 함께 글로벌 증시를 이해하는 또 하나의 틀이 미 국채 수익률, 즉 국채 금리입니다. 오늘은 연준 인사들의 발언이 여럿 있었습니다. 토마스 바킨 리치먼드 연은 총재는 “공급 충격이 더는 일시적이지 않다”면서, “인플레이션 충격이 가라앉는데 시간이 걸릴 수 있고 고물가가 고착화될 위험이 있다”고 경고했습니다. \n\n보스턴 연은의 수잔 콜린스 총재도 “향후 인플레이션이 2%를 상당 폭 웃도는 수준에 머물 가능성이 커졌다”고 평가했는데요. 노동시장이 보다 견조한 기반을 갖춘 만큼 연준이 물가 안정이란 목표에 더 집중할 여지가 생겼다는 설명입니다. \n\n존 윌리엄스 뉴욕 연은 총재도 입을 열었는데요. 금리 통제 수단이 잘 작동하고 있다면서 금융 시장 변화에 맞춰 미세 조정하는 것도 가능하다고 밝혔습니다. \n\n이러한 가운데 미국의 2년 만기 국채와 10년 만기 국채 수익률 간의 격차가 지난해 3월 이후 가장 좁혀졌습니다. \n\n \n \n \n \n\n \n업계에선 이것을 국채 수익률 곡선의 평탄화, 플래트닝이 일어나고 있다고 표현합니다. 이 플래트닝이 의미하는 바는 무엇일까요. \n\n지금의 플래트닝은 2년물 국채 금리가 오르고 있기 때문입니다. 2년물 국채 금리가 높아지니까 10년물과의 금리차가 줄어드는 국면이지요. 그리고 2년물 국채 금리는 미국의 기준금리에 가장 민감하게 움직이는 지표입니다. \n\n시장 참여자들은 앞으로 1년 동안 미국의 금리가 75bp 높아질 것으로 전망합니다. 연준이 내놓은 자체 전망보다도 높은 수준의 금리 인상이 있을 것이라고 본 겁니다. \n\n추석연휴 미-중 정상회담이라는 국제정치의 빅 이벤트를 어떻게 소화할지가 관건이 되겠지만요. 월가에선 고금리 시대에도 기술주에 대한 믿음이 높아지는 것으로 보이는 장면들도 확인됐습니다. \n\n로젠블랫 증권은 샌디스크를 커버리지에 편입하며, 즉 앞으로 분석 리포트를 내놓는 대상으로 포함하며 목표가를 주당 2,400달러로 제시했습니다. 샌디스크 주가는 6.8% 오른 주당 1,887달러에 마감했습니다. \n\n블룸버그는 스페이스XAI의 AI 모델 '그록 봇'이 출시 약 한 달 만에 주간 사용자 수 40만 명을 넘어섰다고 보도했습니다. 지난 14일 기준 사용자는 41만8000명으로 전주 대비 24% 증가한 것으로 집계됐습니다.\n\n메타의 AI 에이전트 '뮤즈'가 앱스토어에서 흥행하면서 AI 관련주 투자심리가 다시 높아졌죠. 메타 뿐 아니라 구글, 애플 그리고 틱톡에서도 에이전트가 등장하는 건 시간 문제라고 봐야겠습니다. \n\n월가는 AI 에이전트가 만들어낼 시장이 얼마나 커질지, 그래서 AI가 무엇을 바꿀지에 대해 점치고 있습니다. JP모간은 'AI 에이전트의 전체 시장 규모가 장기적으로 미국 연간 GDP와 비슷한 수준인 수십 조달러에 이를 것'으로 전망했고요. 골드만삭스 역시 스포츠 티켓 예매나 호텔 예약 같은 복잡한 연쇄 작업을 AI가 알아서 처리하면서, 기본 데이터 단위인 토큰 사용량이 폭발할 것이라고 관측했습니다."
+      },
+      {
+        "title": "“대미투자 2호는 ‘대형 원전’…두산에너빌리티·한전기술 주목”",
+        "url": "https://n.news.naver.com/mnews/article/018/0006374714",
+        "chars": 1509,
+        "extracted": "id=\"dic_area\"",
+        "body": "KB증권 보고서 [이데일리 김경은 기자] 한국의 미국 원전 시장 진출이 가시화하면서 이르면 내년 상반기 미국 신규 원전 건설이 본격화할 수 있다는 전망이 나왔다. 대미투자 프로젝트 후보에 대형 원전 8기 건설이 포함된 가운데 두산에너빌리티(034020)와 한전기술(052690), 현대건설(000720) 등 국내 원전 관련 기업의 수혜 기대도 커질 것으로 예상된다.\n\n \n \n \n \n\n \n 김정관 산업통상부 장관이 22일 국회 산업통상중소벤처기업위원회에 '대한민국과 미합중국 간 전략적투자의 운영 및 관리를 위한 특별법'에 따른 대미투자 사전보고를 하고 있다. (사진=연합뉴스) \n \n 정혜정 KB증권 연구원은 23일 보고서에서 “한국의 미국 원전 시장 진출 형태는 아직 확정되지 않았지만 국내 업체들의 미국 원전 프로젝트 참여 가시성이 높아지고 있다는 점에 주목할 필요가 있다”며 이같이 밝혔다.\n\n산업통상부는 전날 대미투자 프로젝트 1호로 미국 텍사스 엔시날 가스복합화력발전 프로젝트를 확정 발표했다. 총 223억달러를 투입해 1.4기가와트(GW) 규모의 가스터빈 발전소를 선제적으로 건설하고 향후 20년 동안 원리금을 회수하는 사업이다.\n\n아직 구체적인 추진이 결정된 것은 아니지만 후속 프로젝트로는 대형 원전 8기 건설과 알래스카 액화천연가스(LNG) 개발 사업이 거론된다. 정부 발표와 보도에 따르면 미국에 총 8기의 신규 원전을 건설하는 방안과 웨스팅하우스 지분 취득 등이 논의되고 있다. \n\n한국 정부는 신규 원전 8기 가운데 2기를 한국형 원전인 APR1400으로 건설하고 웨스팅하우스 지분 5~10%를 국내 민간기업을 중심으로 나눠 확보하는 방안을 추진 중인 것으로 전해졌다. 다만 아직 미국과 합의가 이뤄지지 않아 확정 발표 시기는 정해지지 않은 상태다.\n\nKB증권은 미국 원전 건설의 걸림돌로 꼽혔던 리스크 분산과 자금 조달 문제도 점차 해소될 것으로 내다봤다. 미국은 현재 에너지부(DOE)와 상무부(DOC)를 중심으로 원전 산업을 지원하고 있다. 현재 논의되는 원전 프로젝트는 상무부 중심으로 추진되는 만큼 에너지부가 장납기 대출 프로그램을 통해 지원하는 원전 10기 건설 프로젝트와 일부 겹칠 수 있지만 대부분 별도로 진행될 가능성이 높다는 분석이다.\n\n정 연구원은 “그간 미국 원전 건설의 가장 큰 병목으로 지목됐던 리스크 분산 및 자금 조달을 두 경로를 통해 보완하고 있다”며 “내년 상반기 이전 미국의 신규 원전 건설이 본격화될 수 있을 것으로 기대한다”고 말했다.\n\n이에 국내 원전 관련 기업에 대한 관심도 이어질 것으로 전망했다. 아직 구체적인 진출 구조와 규모가 확정되지 않아 관련주 주가 변동성은 클 수 있지만 한국이 참여하는 미국 원전 프로젝트의 시작 시점 자체가 가까워지고 있다는 판단이다.\n\n정 연구원은 “몇 달 전까지만 해도 대미투자에 대형 원전이 포함될지 불분명했으나 이제는 참여 가능성이 높아지면서 어떤 방식으로 진행될지가 관건”이라며 “두산에너빌리티와 한전기술, 현대건설 등 국내 원전 관련 기업 전반에 대한 관심이 유효한 국면”이라고 평가했다."
+      },
+      {
+        "title": "[이주의 관.종]'전자'가 견인하는 두산…AI 사이클 탑승",
+        "url": "https://n.news.naver.com/mnews/article/277/0005820227",
+        "chars": 2702,
+        "extracted": "id=\"dic_area\"",
+        "body": "자체사업 '전자BG' 수익성 ↑\n9684억 규모 대규모 증설 발표\n자사주 3조원 소각 주주환원도\nSK실트론 인수로 사업영역 확장 두산이 '반도체 회사'로 본격적인 변신에 나서면서 주목받고 있다. 중공업 이미지가 강했던 두산이지만, 자체 사업인 전자BG가 CCL(동박적층판)을 토대로 가파르게 성장하고 있다. 전자BG가 최근 대규모 증설을 결정한 데 이어 주주환원 소식까지 맞물리며 주가도 재평가받고 있다.\n\n \n \n \n \n\n \n\n두산은 두산그룹의 사실상 지주사 역할을 하는 기업이다. 두산에너빌리티, 두산로보틱스, 두산테스나 등 지분을 30% 이상 보유하고 있다. 동시에 자체사업으로 전자BG와 디지털이노베이션BU(DDI), 두타몰 등을 갖췄다.\n\n올해 2분기 연결기준 매출은 5조5861억원으로 전년 동기 대비 5.0% 증가했고, 영업이익은 4884억원으로 같은 기간 37.8% 늘어 시장 예상치를 웃돌았다. 매출 '효자'는 자체 사업 중 하나인 전자BG 부문이다. 전자BG 영업이익이 2013억원으로, 두산 전체 영업이익의 41.2%를 차지했다.\n\n 역대급 증설·주주환원…주가↑ \n\n23일 한국거래소에 따르면 최근 1개월간 두산 주가는 21.56% 상승했다. 지난달 21일 107만8000원에 장을 마감했는데, 이달 21일에는 143만2000원에 거래를 마쳤다. 지난 18일 장중에는 150만원을 넘어서기도 했다.\n\n \n \n \n \n\n \n\n전자BG의 대규모 증설 발표가 이같은 상승세를 이끌었다. 두산은 지난 18일 9684억원 규모 CCL(동박적층판) 생산 능력 확대 투자를 발표했다. CCL은 PCB(인쇄회로기판)의 기초 소재로 AI 가속기, 네트워크 스위치, 광모듈 등에 활용된다. 이번 증설은 국내에 직접 수행하는 4210억원, 100% 종속회사인 중국 창수법인을 통한 해외 투자 5474억원 등으로 구성됐다.\n\n결국 이번 증설은 시장에서 부족했던 CCL 물량을 공급하면서 수익성을 끌어올리는 역할을 할 것이라는 전망이 나온다. CCL 수요는 AI 데이터센터 투자 확대와 함께 늘어나고 있고, 가격 역시 상승세이기 때문이다. 그간 전자BG는 기존 공장 가동률이 100%를 넘어서는 등 생산능력이 제한돼 수요 증가 대응이 어려운 점이 있었다. 조현지 DB증권 연구원은 \"두산은 이번 증설을 통해 기존 고객사의 물동량 증가에 대응하는 동시에 신규 주문형반도체(ASIC) 고객사 확보 역시 가능할 것으로 예상한다\"며 \"특히 고객사 다변화는 중장기적으로 가격 및 물량 협상력을 강화하는 중요한 기반으로 작용할 전망\"이라고 내다봤다.\n\n업계는 증설 후 전자BG의 매출액 기준 생산능력(Capa)이 7조원까지 늘어날 것으로 예상하고 있다. 권민규 키움증권 연구원은 현재 2조6000억원 수준인 생산능력이 2029년에는 7조원으로 약 2.7배 확대될 것으로 예측했다. 그는 \"기존 투자 계획은 2028년까지 7500억원의 매출 생산능력 증가였지만, 이번 발표를 통해 기존 투자 대비 483%가 증가했다\"며 \"중장기 성장성을 큰 폭으로 상향시키는 공시\"라고 평가했다.\n\n \n \n \n \n\n \n\n두산은 주주환원 면에서도 긍정적인 평가를 받고 있다. 두산은 지난 17일 3조원 규모의 자사주 전량 소각을 결정했다. 김수현 DS투자증권 연구원은 \"공정거래법상 지주회사 중 주주환원과 기업가치 제고에 가장 적극적인 회사로 평가한다\"며 \"증설, 연내 자사주 전량 소각, SK실트론 인수 등 시장과 약속한 밸류업 이행 신뢰도가 상장사 중 가장 높다\"고 했다.\n\n여기에 SK실트론 인수까지 완료되면 두산은 반도체 후공정(두산테스나), CCL(전자BG)에 이어 웨이퍼까지 진출하며 반도체 사업 영역을 확장할 예정이다.\n\n 대규모 투자, 부담은 없나 \n\n두산 전자BG의 이번 증설은 사내 보유 현금 및 차입으로 진행된다. 별도의 유상증자나 메자닌 등 자금조달은 없는 것으로 알려졌다. 2조3000억원 규모의 SK실트론 인수에 더하면 차입 조달이 증가하는 셈이다.\n\n현재로서는 두산의 자금 대응 여력이 충분할 것이라는 게 신용평가사의 의견이다. 채선영 한국신용평가 수석애널리스트는 \"전자BG의 제고된 이익창출력과 보유 자산가치, 두산그룹 최상위 지배기업으로서의 대외신인도 등에 기반한 재무 융통성으로 투자자금 소요에 대응할 수 있을 것\"이라며 \"우수한 사업경쟁력과 증설 후 현금창출력 확대 전망을 고려할 때 증설 투자로 늘어난 차입 부담 또한 점차 완화될 것으로 전망된다\"고 전했다.\n\n \n \n \n \n\n \n\n다만 'AI 수요 폭증'이라는 전제가 흔들릴 경우 재무 부담이 발생할 수 있다고 덧붙였다. 채 수석은 \"이번 투자 결정이 AI 관련 고성장 수요에 대한 전망을 바탕으로 이뤄진 점을 고려할 때 향후 수요 환경 변화에 따른 실적 변동 가능성은 상존한다\"며 \"증설 이후 수요 증가세가 기대에 미치지 못할 경우 가동률 저하로 투자회수 기간이 장기화할 수 있으며, 이에 따라 증설 과정에서 확대된 재무 부담의 완화 시점 또한 지연될 가능성이 내재한다\"고 했다.\n\nCCL의 대체 소재로 떠오르는 '폴리테트라플루오로에틸렌(PTFE)'에 대한 위기감도 있다. 최근 엔비디아의 차세대 '루빈 울트라'에 PTFE가 적용될 가능성이 제기된 바 있다. 이에 대해 양승수 메리츠증권 연구원은 \"PTFE의 부상은 기존 고사양 CCL의 전면 대체가 아닌, AI PCB 고도화에 따른 소재의 용도별 세분화 과정으로 판단한다\"며 \"블랙웰, 루빈까지 컴퓨터 보드 솔벤더 지위를 유지하는 두산 전자BG의 차별화된 CCL 기술력과 높은 진입장벽이 재차 부각될 전망\"이라고 짚었다."
+      },
+      {
+        "title": "[IPO현미경] AI 열풍 타고 상장하는 디티에스, '중복상장 1호' 꼬리표 뗄까",
+        "url": "https://n.news.naver.com/mnews/article/277/0005820226",
+        "chars": 2423,
+        "extracted": "id=\"dic_area\"",
+        "body": "공랭식 열교환기 기술 기반 2년새 매출 2배\nAI 데이터센터 냉각·전력 인프라 등 확대\n중복상장 1호 논란에 \"경영 독립성 강화\" 공랭식 열교환기(AFC) 제조사 디티에스가 중복상장 예외허용 1호 사례로 코스닥 상장을 추진한다. 매출이 2년 새 두 배 가까이 늘었고 인공지능(AI)발 전력 수요 확대로 신규 시장 진출도 준비하고 있다. 다만 다산그룹 3단 지배구조 최하단에 있는 자회사라는 점, 특정 국가에 쏠린 매출 등은 상장 이후 주가에 영향을 줄 수 있는 변수다.\n\n23일 금융감독원 전자공시시스템에 따르면 디티에스는 지난 11일 증권신고서를 제출하고 코스닥 상장 절차에 착수했다. 디티에스는 정유·석유화학·발전 플랜트에 쓰이는 공랭식 AFC와 복수기(ACC)를 만든다. 2000년 설립돼 2013년 다산그룹에 편입됐다. 회사는 공랭식 열교환기 시장이 \"전 세계적으로 소수의 업체가 경쟁하는 과점 체제\"이며, 상위 15개 EPC(설계·조달·시공) 기업의 공급망 등록을 마쳤다고 밝혔다. AI 확산으로 전력 수요가 늘자 AI 데이터센터(AIDC) 열관리·발전 설비 시장 진출도 준비하고 있다.\n\n \n \n \n \n\n \n\n매출은 2023년 758억원에서 2025년 1427억원으로 늘었고, 영업이익률은 17.5~21.6%를 유지했다. 올해 상반기 매출은 791억원, 영업이익은 150억원으로 전년 동기보다 각각 26.2%, 42.9% 증가했다. 상반기 말 부채비율은 73.22%로 업종평균(88.65%)보다 낮다.\n\n 중복상장 1호…\"경영 독립성 강화\" 약속 \n\n디티에스의 최대주주는 코스닥 상장사 다산네트웍스(공모 전 지분 37.69%)다. 다산네트웍스의 최대주주는 다산솔루에타, 다산솔루에타의 최대주주는 다산인베스트다.\n\n상장사의 자회사가 별도 상장하면 모회사 주주의 지분가치가 희석될 수 있다는 우려에 금융위원회와 한국거래소는 지난 7월 '중복상장 원칙금지·예외허용' 가이드라인을 내놨다. 디티에스는 지난달 20일 덕산하이메탈의 자회사 덕산넵코어스와 함께 이 기준의 첫 승인 사례가 됐다.\n\n디티에스는 지난해 다산네트웍스 연결 영업이익(385억원)의 약 65%를 벌어들인 핵심 자회사다. 다산네트웍스 일부 소액주주들은 \"디티에스가 따로 상장하면 모회사 주가가 자회사 가치를 온전히 반영하지 못하는 '지주사 디스카운트'가 커질 수 있다\"며 반대 목소리를 내왔다.\n\n디티에스는 이러한 우려에 대해 \"이번 상장은 최대주주등이 보유주식을 매각하여 투자 차익을 실현하는 구조가 아니라, 공모자금 전액이 신주 발행을 통해 당사에 신규 자본으로 유입되는 구조\"라고 설명했다. 다산네트웍스 특별위원회도 두 회사가 \"사업 영역, 고객, 공급망, R&D, 생산 전 과정에서 명확히 구분된 독립적 사업 주체로 운영되고 있다\"고 밝혔다.\n\n디티에스는 경영 독립성을 강화하는 차원에서 \"다산그룹 특수관계인의 이사회 참여를 상장 후 36개월간 제한하고, 다산네트웍스와 지급보증·담보를 주고받지 않으며, 상표권 사용료도 지급하지 않겠다\"고 밝혔다.\n\n PER 끌어올린 비교기업 1곳…UAE 매출 비중 45% \n\n공모가 산정에 쓰인 비교기업은 SNT에너지(PER 5.29배), 비에이치아이(34.88배), 한텍(8.26배) 3곳이다. 대표주관사 대신증권은 세 수치의 단순평균 16.14배로 주당 평가가액 2만6419원을 산출했고, 여기에 29.98~35.65%를 할인해 희망 공모가를 정했다.\n\n평균을 끌어올린 건 비에이치아이다. PER이 나머지 두 곳의 4~6배이고, 매출도 배열회수보일러(HRSG) 65.4%, 보일러 21.6%로 열교환기가 주력인 디티에스와 구성이 다르다. 비에이치아이를 빼면 평균 PER은 6.8배로 낮아지고 주당 평가가액은 약 1만1100원이 된다. \n\n \n \n \n \n\n \n\n디티에스는 \"3개사와 사업의 연관성이 존재하고, 매출 구성 측면에서 유사성이 일정 수준 존재한다\"면서도 \"상대가치 평가방법의 특성상 적합한 비교기업 선정 및 과정에 대한 완전성을 보장할 수는 없다\"고 설명했다.\n\n매출은 해외 소수 국가에 몰려 있다. 올해 상반기 수출 비중은 97.24%이고, 이 가운데 아랍에미리트(UAE) 한 곳이 전체 매출의 45.4%를 차지했다. UAE 비중은 2023년 2.9%에서 2024년 23.3%, 2025년 26.8%, 2026년 반기 약 45.4%로 매년 커졌다.\n\n한편 디티에스는 신주 222만8917주를 전량 모집하며, 희망 공모가는 1만7000~1만8500원, 예정 공모금액은 379억~412억원이다. 수요예측은 10월 1~8일, 청약은 13~14일이다.\n\n상장 직후 유통 가능한 물량은 공모주식에 우리사주·소액주주 보유분을 더한 225만787주로, 상장예정주식수의 15.15%다. 최대주주 다산네트웍스와 특수관계인 스타콜라보 지분(공모 후 44.24%)은 30개월간 묶인다. 다만 상장 6개월 뒤에는 재무적투자자(FI) 보유분 등 약 379만주의 의무보유가 풀리면서 유통 가능 물량이 47.52%까지 늘어난다."
+      },
+      {
         "title": "키움證 “삼성전자 3분기 영업익 기대치 하회 전망…범용 메모리보다 HBM·파운드리 주목해야”",
         "url": "https://n.news.naver.com/mnews/article/366/0001194082",
         "chars": 1133,
@@ -8685,179 +9127,38 @@
         "chars": 1315,
         "extracted": "id=\"dic_area\"",
         "body": "하반기 47%로 압도적 선두\n236일만에 8만7천弗 돌파\n삼성전자는 14%대 떨어져\n\n \n \n \n \n\n 22일 오전 서울 강남구 빗썸라운지 강남점 전광판에 비트코인 등 가상화폐 시세가 표시돼 있다. [뉴스1] 비트코인이 하루에만 7% 급등하며 236일 만에 8만7000달러를 기록했다. 하반기 들어 수익률도 주요 시장 대표 종목 가운데 압도적인 1위를 달리고 있다.\n\n지난달 초 2조달러까지 감소했던 가상자산 시장 전체 시가총액은 어느새 3조달러를 눈앞에 두면서 긴 하락장이 끝났다는 기대감이 커지고 있다.\n\n22일 비트코인은 세계 최대 가상자산 거래소인 바이낸스에서 이날 오후 3시 기준 8만5399달러에 거래되고 있다. 비트코인은 전날 6.70% 상승하며 8만7395달러까지 오르기도 했다.\n\n \n \n \n \n\n 지난달 중순만 해도 6만2000달러 선에 머물던 비트코인은 같은 달 17일 급등하기 시작해 이날 8만7000달러 선을 넘어섰다. 비트코인이 8만7000달러를 상회한 건 지난 1월 29일 이후 처음이다.\n\n비트코인이 치솟으면서 가상자산 전체 시총은 2조9300억달러를 기록했다. 하반기 들어서만 9000억달러가 늘었다.\n\n비트코인은 한·미·일·원자재 등 주요 시장 대장주와 비교해도 압도적인 성과를 기록하고 있다. 뉴욕증시 시총 1위인 엔비디아는 하반기 들어 14.76% 올랐고 도쿄증시 대장주인 미쓰비시와 원자재 대표 종목 금이 각각 11%, 8% 상승했다. 국내 증시 대표주인 삼성전자는 하반기 14%가량 하락했다.\n\n비트코인이 급등하면서 세계 최대 비트코인 보유 기업 스트레티지는 12조7000억원가량의 평가 수익을 기록했다. 7월 초만 해도 평가손이 20조원에 달했는데 이를 모두 만회한 것이다. 지표가 회복된 스트레티지는 지난 21일 비트코인 950개를 추가 매입했다.\n\n가상자산 시장의 전반적인 회복세를 이끈 건 미국 제도화 소식이다. 미국 증권거래위원회(SEC)는 지난 17일 ‘혁신 면제’를 발표하고 일정 조건을 충족한 플랫폼에서 미국 상장주식을 토큰화해 블록체인 기반으로 거래할 수 있도록 했다. 면제 기간은 5년이다.\n\n당초 가상자산 구조화 법안인 ‘클래리티법’이 미 국회에서 좌초되면서 가상자산 시장의 암흑기가 지속될 것이라는 우려가 나왔지만 SEC와 상품선물거래위원회(CFTC) 등이 기존 권한을 활용해 독자적으로 가상자산 규제를 정비하고 완화하자 분위기가 반전됐다.\n\n맷 호건 비트와이즈 최고투자책임자(CIO)는 “가상자산 침체기는 끝났다고 생각한다”며 “이제 봄이다. 봄을 알리는 꽃이 피고 있다”고 말했다. 그는 이어 “이번 상승장이 가상자산 역사상 가장 강하고 오래 지속되는 강세장이 될 것”이라고 낙관했다."
-      },
-      {
-        "title": "‘삼전닉스’ 자사주도 끝난다…또 외국인 눈치보는 코스피",
-        "url": "https://n.news.naver.com/mnews/article/366/0001194072",
-        "chars": 1801,
-        "extracted": "id=\"dic_area\"",
-        "body": "삼성전자 78%·SK하이닉스 61% 완료\n9월 기타법인 23조원으로 수급 공백 메워\n외국인 순매수 이어가지만…전쟁·매크로 변수 남아\n \n \n \n \n \n\n 삼성전자·SK하이닉스./연합뉴스 \n 삼성전자와 SK하이닉스의 대규모 자사주 매입이 막바지에 접어들면서 국내 증시의 수급 공백에 대한 우려가 커지고 있다. 외국인과 개인이 동시에 팔아치울 때도 두 대형주의 자사주 매입이 코스피 수급을 떠받쳐왔지만, 예정된 물량을 모두 채우면 이 매수세도 사라지기 때문이다. 최근 외국인이 다시 순매수에 나서고 있지만 전쟁과 금리, 환율 등 변수가 많아 안심하긴 이르다는 지적이 나온다.\n\n23일 한국거래소 기업공시채널 KIND에 따르면 삼성전자는 지난달 24일부터 이달 21일까지 21거래일 동안 자사주 4180만주를 매입했다. 전체 예정 물량 5328만5968주의 78.44%로 누적 매입액은 10조8525억원이다.\n\nSK하이닉스도 지난달 20일부터 23거래일 동안 예정 물량의 61.28%인 1475만주를 사들였다. 누적 매입액은 25조5131억원이다. 두 회사의 자사주 매입액만 36조3656억원에 달한다.\n\n당초 삼성전자는 11월 21일, SK하이닉스는 11월 19일까지 자사주를 매입할 계획이었다. 현재 속도가 이어지면 삼성전자는 남은 1149만여 주를 5~6거래일, SK하이닉스는 932만주를 14~15거래일 안에 채울 수 있다. 예정 시점보다 매입이 조기에 끝날 가능성이 있는 것이다.\n\n최근 코스피 수급은 자사주 매입에 의존해왔다. 한국거래소에 따르면 9월 15영업일 동안 외국인과 개인은 각각 12조8137억원, 16조2822억원을 순매도했다. 기관 순매수는 5조9079억원에 그쳤지만 기타법인이 23조1881억원을 순매수하며 매도 물량을 받아냈다. 이 기타법인 매수에 삼성전자와 SK하이닉스의 자사주 매입이 상당 부분 포함돼 있다.\n\n \n \n \n \n\n 그래픽=정서희 \n 자사주 매입 종료가 가까워지면서 코스피는 다시 외국인에게 손을 뻗어야 할 처지가 됐다.\n\n다행히 최근 들어 외국인이 다시 매수세로 돌아설 조짐이 나타나고 있다. 금융감독원에 따르면 외국인은 지난 8월 국내 상장 주식을 3440억원 순매수해 올해 처음 월간 기준 매수 우위를 기록했다. 이달 9~17일에는 약 14조원을 순매도했지만 18일 유가증권시장에서 4486억원을 사들이며 8거래일 만에 순매수로 돌아섰다. 외국인은 21일에 이어 전날까지 3거래일째 매수세를 이어가고 있다.\n\n외국인이 다시 국내 주식을 사들일 여건도 갖춰지고 있다는 분석이 나온다. 신영증권은 과거 외국인의 대규모 순매수가 나타났던 시기에 코스피200변동성지수(VKOSPI) 하락, 개인 매수세 약화와 매물 출회, 새로운 재료 등장이라는 세 가지 특징이 반복됐다고 분석했다.\n\n이상연 신영증권 연구원은 “외국인의 대량 매수는 단순히 주가가 많이 하락했을 때보다 변동성이 진정되고 개인의 매물이 나오는 가운데 새로운 매수 근거가 더해졌을 때 두드러졌다”며 “VKOSPI는 7월 고점 89.3에서 42.42까지 낮아졌고 개인도 9월 순매도로 돌아섰다”고 말했다.\n\n여기에 다가오는 미·중 정상회담과 마이크론 실적, 삼성전자 3분기 잠정실적 등은 외국인 매수를 자극할 수 있는 재료로 꼽힌다.\n\n다만 외국인 수급을 낙관하기에는 변수가 남아 있다. 유가증권시장 시가총액 기준 외국인 보유 비중은 22일 39.92%로 연초 36~37%보다 여전히 높다. 이미 보유 비중이 커진 만큼 대규모 추가 매수가 이어질지는 지켜봐야 한다.\n\n또한 미·이란 전쟁이 다시 격화해 유가와 미국 국채 금리가 오르거나 원·달러 환율이 재차 상승할 경우 외국인의 위험 자산 선호가 약해질 가능성도 있다."
-      },
-      {
-        "title": "\"1000주 사면 460만원 받는다\"…역대급 배당에 두근두근",
-        "url": "https://n.news.naver.com/mnews/article/015/0005335437",
-        "chars": 2145,
-        "extracted": "id=\"dic_area\"",
-        "body": "\"역대급 배당 막차타자\"\n삼전·삼전우 동반 강세\n\n3분기 30조 주주환원 \n28일까지 매수해야 배당금\n\n1000주 보유땐 460만원 받을 듯\n배당소득 분리과세 혜택도 유력\n\n4분기 최소 40조 추가 현금배당 \n본주 대신 우선주 소각 가능성 한국경제신문의 투자 전문 유료 플랫폼 '한경 프리미엄9' (www.hankyung.com/premium9)에 실린 기사입니다. '한경 프리미엄9' 을 구독하시면 더 많은 주식 투자 기사를 찾아볼 수 있습니다.\n\n \n \n \n \n\n 사진=게티이미지뱅크 \n삼성전자의 역대급 배당을 받을 수 있는 기준일이 1주일 앞으로 다가오자 삼성전자 주가가 사흘 연속 상승 곡선을 그리고 있다. 특히 배당수익률에서 유리한 우선주 상승폭이 보통주를 웃돈다. 내년 초 70조원 규모 이상 주주환원책이 추가로 나올 예정이어서 삼성전자 주가 매력도가 한층 커졌다는 분석이 제기된다. ◇삼전 수익률 웃돈 ‘삼전우’ \n22일 삼성전자 보통주는 전날보다 0.91% 오른 27만6500원, 우선주는 1.68% 상승한 21만1500원에 마감했다. 지난 18일부터 3거래일 연속 상승세를 나타냈다. 특히 21일과 22일에는 우선주가 보통주 상승폭을 소폭 웃돌았다. 금리, 유가 등 거시경제 부담이 완화된 데다 오는 30일로 다가온 삼성전자 3분기 배당기준일에 맞춰 매수세가 몰린 것으로 분석된다.\n\n국내 시스템상 삼성전자 주식을 매수한 날로부터 2영업일 뒤 결제가 이뤄지는 만큼 투자자는 28일까지 주식을 사야 배당을 받을 수 있다. 추석 연휴 휴장일을 고려하면 앞으로 매수할 수 있는 날은 23일과 28일뿐이다. 실제 배당은 11월에 이뤄진다.\n\n \n \n \n \n\n \n이번 배당금은 30조원에 달한다. 분기 최대 규모다. 다만 보통주 및 우선주의 구체적인 배당 비중과 주당 배당금은 10월 말 이사회에서 확정된다. 증권가에선 보통주와 우선주에 동일한 금액을 배당한다는 가정하에 주당 배당금을 4500~4654원으로 추정한다. 1000주 보유 시 450만~460만원을 배당받을 수 있는 것이다. 우선주는 본주 대비 가격이 낮아 배당수익률 측면에서 유리하다. 주당 배당금을 4654원으로 가정하면 이날 종가 기준 삼성전자 보통주의 배당수익률은 1.7%, 우선주는 2.2%다.\n\n세제 혜택도 있다. 삼성전자는 올해 신설된 ‘고배당 기업 배당소득 분리과세’ 혜택 대상에 포함될 가능성이 높다. 이재용 회장 등 대규모 배당을 받는 오너 일가를 위해서라도 혜택이 필요하기 때문이다. 고배당 기업으로 지정되면 일반 투자자 또한 배당소득이 이자소득과 합산해 2000만원을 넘어도 종합과세 대상에서 제외될 수 있다. 올해 보건복지부가 고배당 기업의 분리과세 배당소득을 건강보험료 산정 소득에서 전액 제외하기로 한 점도 호재다. 기존에는 연간 금융소득 1000만원을 초과하면 피부양자 자격이 박탈되고 지역가입자로 전환됐지만 올해는 부담이 완화된다. ◇우선주, 자사주 매입 효과 볼까 \n4분기에는 이보다 더 큰 규모의 주주환원책이 예정돼 있다. 삼성전자가 올해 연간 주주환원 규모를 90조~110조원으로 밝힌 만큼 1·2분기 배당액(4조9000억원)과 이번 현금배당(30조원)을 제외한 약 75조원을 현금배당과 자사주 매입 재원으로 쓸 수 있다. 구체적인 가이드라인은 내년 1월 이사회에서 확정되지만 증권가에선 삼성전자가 고배당 기업 지정 요건인 배당성향(당기순이익 대비 배당금 비율) 25% 이상을 맞추기 위해 기말배당 규모를 최소 40조원 이상으로 책정할 것으로 보고 있다. 통상 기말배당은 12월 말 주식을 보유한 투자자가 대상이다. 이 경우 주당 배당금은 9000~1만원 이상, 우선주 배당수익률은 4%대 중후반이 된다.\n\n나머지는 자사주 매입·소각이다. 이때도 우선주가 상대적으로 유리할 수 있다. 삼성전자가 보통주를 매입·소각하면 현행법에 따라 금융 계열사인 삼성생명과 삼성화재는 삼성전자 지분이 10%를 넘지 않도록 주식을 팔아야 한다. 이 경우 ‘이 회장→삼성물산→삼성생명→삼성전자’로 이어지는 그룹 지배구조가 흔들릴 수 있다. 이 때문에 우선주 소각이 대안으로 거론된다. 라이프자산운용도 이 같은 이유로 최근 삼성전자 이사회와 경영진에게 우선주 매입·소각을 요구하는 주주서한을 보냈다. 다만 배당만을 목적으로 한 단기 매수 전략은 유의해야 한다. 배당받을 권리가 사라지는 배당락일인 29일에는 주가가 예상 배당금만큼 떨어질 수 있다."
-      },
-      {
-        "title": "불장 멈추자 증권株도 브레이크…이젠 '옥석 가리기'",
-        "url": "https://n.news.naver.com/mnews/article/421/0009187733",
-        "chars": 1823,
-        "extracted": "id=\"dic_area\"",
-        "body": "KRX 증권지수 46% '뚝'…주요 증권사 주가도 대폭 하락\n증시 부진에 거래대금 급감…\"회사별 역량 따라 차별화\" \n \n \n \n\n 증권사 본사들이 위치한 서울 여의도 전경 2019.10.23 ⓒ 뉴스1 안은나 기자 \n\n(서울=뉴스1) 문창석 기자 = 올해 상반기 증시 활황으로 역대급 실적을 거둔 증권주의 상승세가 하반기 들어 크게 위축되고 있다. 증시 부진으로 거래대금이 대폭 감소하며 3분기 실적 전망치가 낮아진 여파다. 다만 증권사들의 사업 확장 추세를 고려하면 증권주의 매력은 여전하기에 각 사별 역량에 따른 수익성 차별화를 주목해야 한다는 지적이 나온다.\n\n23일 한국거래소에 따르면 지난 22일 기준 KRX 증권지수는 1809.41를 기록해 올해 최고점이었던 5월 6일(3362.84) 대비 46% 하락했다. 같은 기간 △미래에셋증권 -61% △키움증권 -46% △삼성증권 -40% △한국금융지주 -36% △NH투자증권 -32% 등 주요 증권주 주가도 큰 하락세를 보였다.\n\n상반기 코스피가 가파르게 상승하며 거래대금이 크게 늘자 위탁매매 수수료 수익 등이 증가한 증권사들의 주가도 높아졌다. 하지만 하반기 들어 증시가 조정을 받으면서 거래대금이 줄어들자 증권사들의 실적 부진도 불가피할 것이란 전망이 커진 것이다.\n\n금융투자협회에 따르면 국내 주식시장의 일평균 거래대금은 지난 6월 약 136조 원으로 정점을 찍은 후 △7월 100조 원 △8월 67조 원 △9월 56조 원 등 점점 줄어드는 추세다. 지난 22일에는 31조 9609억 원에 그치기도 했다. 증시 매수 대기자금인 투자자예탁금도 21일 기준 98조 1386억 원으로 100조 원 아래로 내려왔다.\n\n증시 부진은 증권사들의 트레이딩(운용) 및 투자은행(IB) 부문에도 부담이다. 증권사가 자체적으로 주식·채권 등에 투자하는 운용 부문의 경우 하반기 들어 증시 조정 및 금리 상승으로 투자자산 손실 및 채권 운용 손익 부진 등 실적 가뭄을 겪는 상황이다.\n\n실적 전망치도 대폭 하향 조정 중이다. 금융정보업체 에프앤가이드에 따르면 미래에셋증권의 3분기 영업이익 컨센서스(증권사 전망치 평균)는 2983억 원으로 집계됐다. 이는 지난 2분기(2조 4899억 원) 대비 88% 감소한 수치다. 한국금융지주도 3분기 영업이익 컨센서스가 8147억 원으로 전 분기(1조 3442억 원) 대비 39% 줄었다.\n\n증권가에서도 목표주가를 내리고 있다. 최근 신한투자증권은 미래에셋증권의 목표주가를 5만 원에서 3만 7000원으로 26% 낮췄다. 이 밖에 한국금융지주 17%, NH투자증권 15%, 삼성증권 15%, 키움증권 14%씩 낮췄다. 유안타증권도 NH투자증권·미래에셋증권 18%, 키움증권·삼성증권 14%, 한국금융지주 6%씩 하향 조정했다.\n\n임희연 신한투자증권 연구원은 \"주도주 부재 및 주식시장 변동성 확대에 따라 회전율이 급감했다. 전 영업부문의 영업실적 부진이 예상된다\"며 \"높은 배당수익률에도 실적 불확실성이 해소되기 전까지 보수적 접근이 유효하다\"고 말했다.\n\n다만 지난해와 비교하면 거래대금이 여전히 높은 수준인 만큼 증권주의 매력은 분명하다는 지적이다. 특히 증권사의 사업 영역이 브로커리지뿐만 아니라 자산관리(WM)·퇴직연금·디지털자산 등으로 확대되고 있는 점도 주가 하방을 지지할 수 있다는 평가다. 신한투자증권의 경우 주요 증권사의 목표주가를 대거 낮췄지만 매수 의견은 유지하고 있다.\n\n김성훈 현대차증권 연구원은 \"금융상품 판매 및 WM은 브로커리지와 비교해 시황 민감도가 낮고, 장기적으로 축적한 고객 네트워크와 금융상품 공급 역량을 바탕으로 성장할 수 있는 사업\"이라며 \"증권사별 리테일 역량에 따라 이익 기여도와 수익성의 차별화가 만들어질 수 있다\"고 말했다."
-      },
-      {
-        "title": "추석 휴장 기간 '미중회담' 빅이벤트…금리·유가도 변수",
-        "url": "https://n.news.naver.com/mnews/article/421/0009187715",
-        "chars": 1552,
-        "extracted": "id=\"dic_area\"",
-        "body": "中반도체 규제·관세휴전 연장 여부 변수\n휴장 기간 유가 추이…재개장 직후 PCE물가·마이크론 실적 \n \n \n \n\n 22일 오후 서울 중구 하나은행 본점 딜링룸 전광판에 코스피 등 종가가 표시되고 있다. 이날 코스피는 전 거래일 대비 0.15% 오른 7017.91, 코스닥은 0.23% 내린 834.38, 서울외환시장 달러·원 환율은 전일 오후 3시 30분 주간 종가 대비 22.8원 내린 1358.2원을 각각 기록했다. 2026.9.22 ⓒ 뉴스1 오대일 기자 \n\n(서울=뉴스1) 한유주 기자 = 추석 연휴 기간 미중 정상회담, 중동 상황 등 대외 변수가 몰리며 코스피 재개장 이후 변동성에 유의해야 한다는 분석이 나온다.\n\n23일 증권가에 따르면 추석 연휴 국내 증시는 휴장해 28일 다시 문을 연다. 코스피 휴장 기간 미국 증시는 거래가 계속되는 만큼 연휴 직후 밀렸던 이슈들이 한 번에 증시에 반영되며 높은 변동성을 보일 것이란 전망이 나온다.\n\n특히 올해 추석 연휴에는 국내 증시에 큰 영향을 미칠 대외 변수들이 산재해 있다.\n\n오는 24일에는 미중 정상회담이 열린다. 11월 만료되는 관세 휴전 연장 여부는 이번 회담의 최대 관심사로 꼽힌다. 미국과 중국은 지난해 11월 10일부터 1년 간 상호관세와 보복관세, 중국의 대미 희토류 수출 통제 조치 등을 유예하고 있다.\n\n국내 증시에는 미국이 중국 반도체 규제를 완화할지 여부가 가장 큰 변수다. 창신메모리 등 중국 메모리 기업들이 추격해 오는 상황에서 미국이 첨단 반도체·장비의 대중 수출 통제를 완화할 경우 국내 반도체주 투심에는 악영향을 줄 수 있다.\n\n이번 회담에서 양국 간 무역 갈등이 해소되지 않고 중국산 반도체 통제가 유지된다면 코스피에는 최선의 시나리오가 될 수 있다는 분석이 나온다.\n\n문남중 대신증권 연구원은 \"이번 G2 정상회담 결과가 원론적 수준에 그친다 해도 미국의 중국에 대한 고율과세 부과 유예 시 글로벌 증시에 미치는 영향력은 상당할 것\"이라며 \"미국이 양안 문제에 한발 물러서고 중국은 그 대가로 트럼프에게 중간선거를 앞둔 에너지, 농산물 구입 등 상업적 합의, 이란전쟁 중재를 선물할 가능성도 있다\"고 전망했다.\n\n휴장 기간 중동 정세도 주요 변수다. 트럼프 대통령이 중간선거를 앞두고 이란과의 대화 가능성을 언급하면서 이란 전쟁을 외교적으로 풀 수 있다는 기대감이 형성됐다. 이에 국제유가는 급락해 다시 100달러 밑으로 내려왔고, 미 국채 금리도 오름세가 다소 진정됐다. 하지만 홍해 인근까지 전장이 확장되며 언제든 상황이 급변할 수 있다는 점은 변수다.\n\n연휴 직후 30일에는 미국 8월 PCE(개인소비지출) 물가와 마이크론 실적이 연달아 발표된다. PCE 결과에선 연준의 추가 긴축 가능성과 금리 경로를, 마이크론 실적에선 메모리 산업 수익성을 재확인할 수 있을 전망이다.\n\n이경민 대신증권 연구원은 \"만약 휴전 연장+관세인하+반도체 통제 현상 유지 시 코스피는 연휴 기간 갭업(휴장 이후 재개장 시 주가가 올라감) 이후 7100~7300선 돌파를 시도하겠지만, 소득 없는 무난한 결과를 낼 경우 박스권 재개 이후 30일 마이크론 실적이 방향성을 결정할 것\"이라고 전망했다."
-      },
-      {
-        "title": "13년 '욜로' 후 남은 5000만원, 15억 됐다…40대 교사 '무지출' 투자법",
-        "url": "https://n.news.naver.com/mnews/article/008/0005417655",
-        "chars": 1899,
-        "extracted": "id=\"dic_area\"",
-        "body": "[편집자주] 싱글파이어는 경제적 자유와 행복한 일상을 위한 꿀정보를 제공하는 경제·재테크·라이프스타일 채널입니다.\n \n \"결혼생활 전반부 13년은 탕진 라이프였고 후반부 10년은 파이어를 위한 처절한 준비 과정이었다.\" \n\n교직, 연구기관 등에 몸 담았던 24년차 직장인 투자자 팝팝은 자신의 지난 시간을 이렇게 정리했다. 아내와 함께 무급휴직하고 세계여행을 다니고 있는 그는 내년에는 직장을 그만두고 본격적으로 파이어족으로 살 계획이다.\n\n출발부터 순탄했던 것은 아니었다. 일찍 결혼한 부부는 300만원짜리 사글세방에서 신혼생활을 시작했다. 이후 둘 다 직장을 얻고 소득도 빠르게 늘며 형편이 나아졌다. 팝팝의 연소득이 1억원을 넘어서는 시기도 있었다. 하지만 자산관리는 뒷전이었다. \n\n그는 \"5년 동안 가스레인지 불 한 번 켜지 않고 매일 외식을 했다\"며 \"매 주말마다 국내여행을 다녔고 매년 유럽여행을 갔다. 그냥 돈을 흥청망청 쓰고 살았다\"라고 당시 생활을 돌아봤다.\n\n전환점은 결혼 13년째 찾아왔다. 오랫동안 준비했던 국립대 교수 임용에 실패하고 건강까지 나빠졌다. 처음으로 자산을 확인했다. 남은 돈은 5000만원이 전부였다. 그때부터 팝팝은 직접 돈을 관리하기 시작했다. 예금 풍차돌리기로 종잣돈을 만들기 시작했고 해외여행도 10년간 끊었다. \n\n이른바 '무지출' 짠테크도 이때부터 시작했다. 그는 \"월급이 들어오면 바로 그 금액 그대로 예금으로 넘겼다\"며 \"그때부터 마이너스통장을 썼다\"고 말했다. 피치 못하게 쓸 돈은 쓰더라도 '나 지금 마이너스통장 쓰고 있지'라는 스트레스를 받게 되니 지출을 더 줄이게 됐다고 했다.\n\n생활비도 항목별로 표를 만들어 불필요한 지출을 하나씩 줄였다. 휴대전화는 출시된 지 2년가량 지난 중고폰을 구매해 썼고 머리는 1만원짜리 동네 미용실에서 잘랐다. 옷도 4~5년째 같은 것만 입는다. 드라이클리닝을 맡기던 정장도 모두 버렸다.\n\n \n \n \n \n\n 10년 동안 절약과 부동산, 주식 투자를 통해 5000만원에서 순자산 15억원을 일군 40대 교사 팝팝 \n그렇게 모은 종잣돈으로 부동산 투자를 시작했다. 지방 아파트 청약과 갈아타기를 통해 자산의 뼈대를 만들었고 대출을 갚은 뒤에는 여유자금을 금융자산으로 옮겼다. 2021년부터 주식투자를 본격화해 2024년 1월 주식자산이 처음 1억원을 넘어섰다. \n\n현금과 월급의 대부분을 주식시장에 쏟아부으면서 주식 자산은 불과 10개월 만인 2024년 말 4억6000만원, 2025년 11월에는 6억원까지 불어났다. 특히 지난해 말부터 매수를 시작한 지수 레버리지 투자가 자산증식에 큰 도움을 줬다. 기존에 보유하던 ETF를 팔고 대출까지 더해 산 KODEX 레버리지에서 큰 수익을 봤다. 여기에 총 9억원 규모의 아파트 2채를 보유하며 총 15억원 가량의 자산을 모았다.\n\n여행을 다니고 파이어를 계획하면서 은퇴 후 투자방식도 바꾸게 됐다. 그동안 주식을 팔지 않았던 팝팝에게 매달 일정 금액을 현금화하는 것은 생각보다 어려운 일이었다. 주가가 떨어지면 팔기 싫었고 오르면 더 오를 것 같아 매도 시점을 늦췄다. 매달 15일 주식을 팔기로 했지만 실제로는 상승을 기다리다 월말에야 생활비를 마련하는 일이 반복됐다. 이에 연말부터는 배당주와 커버드콜 ETF의 비중을 높여 월 400만원가량의 안정적인 현금흐름을 만드는 쪽으로 포트폴리오를 바꿀 계획이다.\n\n팝팝은 \"지금은 연봉이 적더라도 '이 시기를 어떻게 보냈느냐'가 누적돼 삶에 영향을 미친다\"며 \"파이어가 어렵지만 10년간 꾸준히 준비한다면 평범한 맞벌이 직장인도 도전해볼 수 있다\"고 말했다.\n\n ※이 기사는 2030 세대의 경제적 자유를 위한 투자 정보를 제공하는 유튜브 채널 '싱글파이어'에 업로드된 영상을 바탕으로 작성됐습니다. 팝팝이 설명하는 더 구체적인 노하우는 영상을 참고해 주세요. 오는 9월24일 2편 영상이 공개될 예정입니다."
-      },
-      {
-        "title": "7000포인트 회복했지만 쪼그라든 투심…거래대금 연중 '최저'",
-        "url": "https://n.news.naver.com/mnews/article/003/0014209450",
-        "chars": 2102,
-        "extracted": "id=\"dic_area\"",
-        "body": "9월 일평균 21조2000억 수준…5·6월 50조 대비 급감\n유가·금리 등 증시에 부담…AI속도조절론까지 가세 \n\"심리가 지수 짓누르는 상황…반도체 호황은 지속\" \n \n \n \n\n [서울=뉴시스] 고승민 기자 = 코스피가 전일 대비 10.19포인트(0.15%) 상승한 7017.91로 거래를 마친 지난 22일 서울 하나은행 딜링룸에서 딜러들이 업무를 보고 있다.코스닥은 전일 대비 1.89포인트(0.23%) 하락한 834.38로 마감했다. 서울 외환시장에서 원·달러 환율은 전 거래일 주간종가 대비 22.8원 내린 달러당 1358.2원에 마감했다. kkssmm99@newsis.com \n\n[서울=뉴시스] 김진아 기자 = 박스권에 머물던 코스피가 최근 중동 리스크 완화와 국제유가 하락 등에 힘입어 7000포인트를 탈환했으나, 시장의 체력을 나타내는 거래대금은 연중 최저 수준으로 쪼그라든 것으로 나타났다. 1만 포인트 돌파에 대한 기대감이 확산했던 지난 6월 대비 거래대금은 반토막 수준으로 꺾였다. \n\n23일 한국거래소에 따르면 이달 코스피 일평균 거래대금은 21조2925억원으로 올들어 월별 기준 가장 적은 규모를 기록했다. \n\n상반기 증시 활황과 함께 50조원을 웃돌던 일평균 거래대금은 지수가 급락을 거쳐 박스권 횡보세를 이어가면서 급격히 축소되는 양상이다.\n\n실제로 코스피 일평균 거래대금은 ▲1월 27조561억원 ▲2월 32조2337억원 ▲3월 30조1429억원 ▲4월 29조5506억원에서, 지수가 크게 치솟았던 5월과 6월 각각 50조2147억원, 50조3471억원으로 정점을 찍었다. 이후 지난 7월 말 급락장을 거치며 25조8460억원으로 내려앉은 뒤 이달 들어 더욱 위축됐다.\n\n거래대금이 급격하게 줄어든 데는 대내외 매크로(거시경제) 불확실성이 커지며 증시 전반에 부담이 커진 점이 영향을 미친 것으로 보인다. \n\n최근 미국과 이란의 협상 가능성이 거론되며 진정 국면에 접어들었지만, 중동 지역의 지정학적 리스크로 인해 국제유가는 배럴당 100달러선을 호가했으며, 대표적인 안전자산으로 여겨지는 미국 10년물 국채금리가 5%대를 웃돌면서 위험자산 선호 심리를 떨어뜨렸다. \n\n여기에 미 연방준비제도(Fed)는 매파적 기조를 시장에 확인시키며 기준금리 인상 조치를 단행했으며, 상반기 증시에 불안 요소로 작동했던 'AI 버블론'은 최근 '속도조절론'으로 이어지며 반도체 투자 심리를 위축시키는 요인으로 작용했다.\n\n다만 증권가에서는 추석 연휴를 앞두고 시장의 수급이 보수적으로 전환한 만큼, 기업의 펀더멘털보다는 경계 심리가 지수를 짓누르는 국면이라고 해석한다.\n\n시장이 불안을 키웠던 'AI 속도조절론'의 경우 빅테크들이 실제 우려하는 대목은 추론에 투입되는 비용 부담이라는 해석이 분분한 데다 미·중 양국이 AI 패권 경쟁을 지속하고 있다는 점에서 투심이 식기는 어렵다는 분석이다. 국내 역시 반도체를 중심으로 한 수출 호조가 견고하게 AI 모멘텀을 지탱하고 있다.\n\n김대준 한국투자증권 연구원은 \"한국 증시 관련 내부 리스크는 크지 않고, 극단적 변동성은 진정된 가운데 외부 충격을 견딜 수 있는 펀더멘털도 양호한 상황\"이라며 \"반도체는 AI 모멘텀이 지속되는 가운데 수출 호조가 상승세를 뒷받침할 전망\"이라고 분석했다. \n\n그는 이달 말 예정된 마이크론의 실적과 관련해서도 \"계단식 우상향 기조를 유지할 것으로 전망되며 AI 투자 모멘텀은 약해지지 않을 것\"이라며 \"원·달러 환율 반등은 외국인 수급 측면에서는 불안 요인이나 수출 기업의 채산성과 원화 환산 이익 개선에는 긍정적\"이라고 덧붙였다.\n\n코스피가 저평가 구간에 머물러 있다는 점도 여전히 매력적인 요인으로 꼽힌다. 코스피 12개월 선행 주가수익비율(PER)이 역사적 저점권인 5배 수준에 머무르고 있는 만큼, 단기 변동성 확대는 오히려 비중 확대의 기회로 삼아야 한다는 제언이다.\n\n이경민 대신증권 연구원은 \"매파적 연방공개시장위원회(FOMC) 여파와 연휴 이전 수급 공백이 맞물리며 단기적으로 증시가 부진할 경우, 연휴 이후 반등을 노린 매수 전략은 여전히 유효하다\"며 \"한편으로는 AI 속도조절론으로 위축된 반도체 투심 속에서도 메타가 매년 개최하는 '메타 커넥트 2026'이 AI 확산에 대한 긍정적 기대를 이끌어낼 경우 투심 회복의 계기가 될 수 있다\"고 했다．"
-      },
-      {
-        "title": "美·이란 대화 재개에 나스닥 이틀 연속 사상 최고 [월스트리트in]",
-        "url": "https://n.news.naver.com/mnews/article/018/0006374679",
-        "chars": 2064,
-        "extracted": "id=\"dic_area\"",
-        "body": "뉴욕증시 혼조…다우 0.36%↓·나스닥 0.45%↑\n반도체株 6거래일 연속 상승…샌디스크 7% 급등\n트럼프 \"이란과 좋은 회담\" 국제유가 100달러 아래로 [이데일리 김겨레 기자] 뉴욕증시가 22일(현지시간) 혼조세를 보인 가운데 나스닥지수가 이틀 연속 사상 최고치를 경신했다. 미국과 이란이 대화를 재개하면서 국제유가가 배럴당 100달러 이하로 하락, 위험 선호 심리가 개선됐다. \n\n \n \n \n \n\n \n 뉴욕증권거래소. (사진=AFP) \n \n 이날 뉴욕증권거래소에서 블루칩을 모아놓은 다우존스 30산업평균지수는 전거래일 대비 0.36% 내린 5만1863.69에 마감했다. 대형주 벤치마크인 스탠다드앤드푸어스(S&P)500지수는 약보합인 7764.64로 마무리됐다. 기술주 위주의 나스닥지수는 0.45% 오른 2만7244.28에 거래를 마쳤다.\n\n 반도체주 6거래일 연속 상승 \n\n이날 나스닥 지수 상승을 이끈 것은 인공지능(AI) 반도체주였다. 엔비디아(0.66%), 마이크론(5.0%), AMD(1.34%) 샌디스크(6.82%) 등이 일제히 상승했다. 필라델피아 반도체 지수는 2.06% 올라 이날까지 6거래일 연속 상승세를 이어갔다.\n\n전날 AI 에이전트 ‘뮤즈’에 대한 기대로 11% 급등했던 메타는 이날 0.63% 하락했다. 온라인 쇼핑 플랫폼 쇼피파이는 뮤즈와 협력해 자동 결제 시스템을 도입한다 소식에 7.4% 급등했다.\n\n울리케 호프만-부르하르디 UBS 미 최고투자책임자(CIO) 겸 글로벌 주식 부문 총괄은 “인공지능(AI) 산업에 대한 긍정적인 전망을 유지하고 있다”며 “AI 도입 및 수익 창출 증가와 자본 지출 확대에 힘입은 바가 크다”고 말했다.\n\n 유가 100달러 아래로…美·이란 3시간 회담 \n\n이날 미국과 이란의 대화 재개와 중동 원유 공급 개선 기대가 맞물리면서 국제유가는 배럴당 100달러 이하로 하락했다. 런던 ICE 선물거래소에서 브렌트유 11월물은 전장 대비 1.1% 하락한 배럴당 99.25달러로 거래를 마쳤다. 브렌트유의 가격이 100달러 아래로 내려간 것은 지난 8일 이후 처음이다. 뉴욕상업거래소에서 미국 서부텍사스산원유(WTI) 10월물은 전날 대비 1.2% 내린 배럴당 94.59달러에 거래됐다.\n\n미국과 이란 대표단은 이날 미국 뉴욕 유엔본부에서 열린 유엔총회를 계기로 3시간가량 회담했다. 도널드 트럼프 대통령은 “매우 생산적인 회담을 했으며, 아주 가까운 시일 안에 추가 회담이 예정돼 있다”고 밝혔다. \n\n이란 고위 관료는 이날 미국이 이란 해상 봉쇄를 해제할 경우 일주일 내로 호르무즈 해협을 재개방할 수 있다고 밝혔다. 사우디아라비아는 동서 송유관 가동을 재개하면서 공급 차질 우려가 일부 해소됐다.\n\n 연준 인사 금리 인상 지지 발언에 은행주 약세 \n\n연방준비제도(연준) 주요 인사들이 매파적인 발언을 하면서 JP모간(-3.43%), 골드만삭스(-0.88%), 뱅크오브아메리카(-3.04%), 웰스파고(-3.92%) 등 은행주는 전반적으로 하락했다. 미 10년 만기 국채 금리는 소폭 상승해 4.962%를 나타냈다. \n\n이날 톰 바킨 리치먼드 연방준비은행 총재는 “인플레이션 위험이 완전고용에 대한 위험보다 크다. 인플레이션이 완전히 잦아드는 데 시간이 더 걸릴 수 있다”며 “이제는 불확실성이 새로운 기본 조건”이라고 말했다. 수잔 콜린스 보스턴 연방준비은행 총재 역시 “물가 상승률을 목표치로 되돌리기 위해 지난주 기준금리 인상을 단행한 연준 결정을 강력히 지지한다”고 밝혔다.\n\n 미중 정상회담 주목…만찬에 빅테크 CEO 대거 참석 \n\n시장의 관심은 오는 24일 도널드 트럼프 미국 대통령과 시진핑 중국 국가주석의 정상회담으로 쏠리고 있다. 11년 만에 미국을 국빈 방문하는 시 주석은 오는 23일 오후 미 워싱턴D.C에 도착할 예정이다. \n\n시장은 미중 정상회담에서 무역 휴전을 연장하고 AI 분야 협력을 발표할지 주목하고 있다. 정상회담 후 시 주석을 위한 국빈 만찬에는 마크 저커버그 메타 최고경영자(CEO)와 젠슨 황 엔비디아 CEO, 사티아 나델라 마이크로소프트 CEO, 일론 머스크 테슬라 CEO, 크리스티아노 아몬 퀄컴 CEO, 샘 올트먼 오픈AI CEO, 제프 베이조스 아마존 창업 등이 참석할 예정이다."
-      },
-      {
-        "title": "[뉴욕증시]미·이란 주시하며 혼조 마감…나스닥 이틀 연속 최고치 경신",
-        "url": "https://n.news.naver.com/mnews/article/277/0005820203",
-        "chars": 1801,
-        "extracted": "id=\"dic_area\"",
-        "body": "국제유가 5거래일 연속 하락 22일(현지시간) 뉴욕증시의 3대 지수는 미국과 이란의 협상 상황을 주시하며 혼조세로 마감했다. 국제유가가 5거래일 연속 하락한 가운데 반도체주가 강세를 보이며 나스닥 종합지수는 이틀 연속 사상 최고치를 경신했다.\n\n뉴욕증권거래소(NYSE)에서 다우존스30산업평균지수(다우지수)는 전 거래일보다 185.14포인트(0.36%) 하락한 5만1863.69에 마쳤다. 대형주 중심의 S&P500지수는 0.06포인트(0.00%) 내린 7764.64, 기술주 중심의 나스닥종합지수는 122.18포인트(0.45%) 오른 2만7244.27에 마무리했다.\n\n \n \n \n \n\n 뉴욕증권거래소 모습. 뉴욕(미국)=황윤주 특파원 \n\n이날 시장은 미국과 이란의 협상 상황을 주시하며 지수별로 등락이 갈렸다. 도널드 트럼프 미국 대통령은 유엔총회가 열린 뉴욕에서 미국과 이란 당국자들이 약 3시간 동안 회담했다며 \"매우 좋고 생산적인 회담이었다\"고 밝혔다. 가까운 시일 안에 후속 회담도 열릴 예정이라고 말했지만 구체적인 합의 내용은 공개하지 않았다. \n\n트럼프 대통령은 앞서 유엔총회 연설에서는 이란 핵 문제를 놓고 합의를 추진할지, 이란을 \"섬멸\"할지를 결정해야 한다며 군사 행동 가능성을 열어뒀다. 그러면서 이란이 미국 중간선거 결과를 기다리고 있다며 \"선거 직후 합의할 것으로 믿는다\"고 말했다. \n\n국제유가는 미·이란 회담 소식 이후 하락했다. 뉴욕상업거래소에서 미국 서부텍사스산원유(WTI)는 전날 대비 1.2% 내린 배럴당 94.59달러에 마감했다. ICE선물거래소에서 11월 인도분 브렌트유는 전장보다 1.1% 내린 배럴당 99.25달러로 마무리했다. 두 유종 모두 5거래일 연속 하락했다.\n\n이란이 미국의 군사적 압박 완화와 이란 항구 봉쇄 해제를 조건으로 7일 안에 호르무즈 해협을 다시 열 준비가 돼 있다는 보도도 유가를 끌어내렸다. 사우디아라비아가 드론 공격으로 중단된 동서 송유관을 이르면 이번 주 재가동할 계획이라는 보도도 공급 우려를 낮췄다. 다만 호르무즈 해협 재개는 아직 합의된 사안이 아니다. \n\n미 국채 금리는 소폭 상승했다. 미 10년 만기 국채 금리는 장중 4.955% 수준을 나타냈다. 지난주 Fed가 3년여 만에 기준금리를 인상한 가운데 시장에서는 추가 인상과 장기금리 상승에 대한 경계감이 이어졌다.\n\nFed 고위 인사들이 연이어 인플레이션 우려를 언급한 점도 한몫했다. 수전 콜린스 보스턴 연방준비은행(연은) 총재는 지난주 기준금리 인상을 지지했다며 다소 긴축적인 금리가 물가상승률을 목표 수준으로 되돌리는 데 도움이 될 것이라고 밝혔다. 톰 바킨 리치먼드 연은 총재는 최근의 물가 충격이 해소되는 데 시간이 걸릴 수 있다고 경고했다.\n\n톰 개럿슨 RBC 웰스매니지먼트 채권전략 수석 포트폴리오 전략가는 \"시장이 높은 금리 환경에서 금리 인상 주기가 가져올 영향을 충분히 반영하지 않았다고 본다\"며 \"10년물 금리가 5%를 넘어설 가능성과 Fed가 두 차례 이상 추가로 금리를 올릴 위험에 대해 시장이 여전히 안이한 모습을 보이고 있다\"고 말했다.\n\n종목별로는 샌디스크가 로젠블랫의 긍정적인 투자의견에 힘입어 6.82% 상승하며 나스닥지수를 끌어올렸다. 로젠블랫은 샌디스크에 대한 기업 분석을 시작하면서 매수 의견과 2400달러의 목표주가를 제시했다. 이밖에 엔비디아 0.66%, AMD 1.34%, 인텔 1.71%, 마이크론테크놀로지 5.00% 등의 상승률도 두드러졌다. \n\n한편, 시장은 이번 주 워싱턴D.C에서 열릴 트럼프 대통령과 시진핑 중국 국가주석의 정상회담도 주시하고 있다. 양측은 인공지능(AI), 관세, 희토류와 이란 전쟁 등을 논의할 것으로 예상된다."
-      },
-      {
-        "title": "샌디스크 6.8% 뛰었다…나스닥, 나홀로 '사상 최고치'",
-        "url": "https://n.news.naver.com/mnews/article/215/0001266946",
-        "chars": 1169,
-        "extracted": "id=\"dic_area\"",
-        "body": "나스닥. 사진=연합뉴스 \n\n뉴욕증시가 미국과 이란 간의 갈등이 완화될 수 있다는 기대감이 피어오르는 가운데 혼조세로 마감했다. 나스닥 지수는 전날에 이어 사상 최고치를 경신했다. \n\n22일(현지시간) 뉴욕증권거래소(NYSE)에서 다우존스30산업평균지수는 전 거래일보다 185.14포인트(0.36%) 떨어진 5만1,863.69에 마감했다. \n\n스탠더드앤드푸어스(S&P) 500지수는 약보합으로 소폭 내려 7,764.64에 마쳤고, 기술주 중심의 나스닥 종합지수는 122.18포인트(0.45%) 상승해 2만7,244.28에 마쳤다. \n\n이로써 나스닥은 종가 기준 사상 최고치를 경신한 전날에 이어 랠리를 지속했다. \n\n특히 샌디스크는 투자은행 로젠블랫의 낙관적 전망에 힘입어 6.82% 급등해 상승을 주도했다. \n\n메타의 AI 어시스턴트 '뮤즈'가 소비자들에게 좋은 반응을 얻으면서 전날에 이어 반도체 기업 주가가 큰 폭으로 올랐다. 마이크론도 5.0% 뛰었다.\n\n뮤즈는 이메일 작성부터 예약, 일정 관리 등 비서 역할을 할 수 있는 AI 서비스다.\n\n반면, 뮤즈가 기존 서비스를 대체할 가능성이 커지면서 우버와 리프트, 익스피디아 등 소비자를 상대로 하는 기술주는 주춤하는 모습이었다. \n\n우버가 1.34%, 리프트도 2.42% 각각 하락했다.\n\n국제유가는 중동 지역 원유 공급량 회복 기대 속에 배럴당 100달러 아래로 내려갔다.\n\n이날 런던 ICE 선물거래소에서 브렌트유 11월물은 전장 대비 1.1% 하락한 배럴당 99.25달러로 거래를 마쳤다.\n\n글로벌 벤치마크인 브렌트유의 가격이 100달러 아래로 내려간 것은 지난 8일(97.92달러) 이래로 처음이다.\n\n뉴욕상업거래소에서 미국 서부텍사스산원유(WTI) 10월물 종가는 전날 대비 1.2% 내린 배럴당 94.59달러였다.\n\n이날 뉴욕 유엔총회에서는 시장이 주목할만한 발언이 이어졌다.\n\n도널드 트럼프 미국 대통령 뉴욕 유엔총회에서 기자들과 만나 \"(이란과의 회담이) 아주 좋은 회담이었다\"며 \"매우 생산적인 회담을 했으며, 아주 가까운 시일 안에 추가 회담이 예정돼 있다\"고 말했다.\n\n이보다 앞서 트럼프 대통령은 기조연설에서 \"중대한 결정을 내려야 한다\"며 이란과의 합의와 공격 가능성을 동시에 거론하기도 했다.\n\n이외에도 이란이 미국의 군사적 압박 완화를 조건으로 7일 이내 호르무즈 해협 재개방안을 제안했다는 보도도 나왔다."
-      },
-      {
-        "title": "1000억 증자에 자금표는 석 달치…한앤코 SK디앤디 '반쪽 답변' 논란",
-        "url": "https://n.news.naver.com/mnews/article/629/0000536415",
-        "chars": 2649,
-        "extracted": "id=\"dic_area\"",
-        "body": "내년까지 자금수지 요구했에도 올해 10~12월 잔액만 제시\nSK디앤디 측 \"채무불이행 위험 없다\" \n\n \n \n \n \n\n SK디앤디는 유상증자 관련 주주 답변서에 요청받은 내년까지의 월별 자금수지 대신 올해 10~12월 예상 현금 잔액만 제시했다. /SK디앤디 홈페이지 갈무리 \n\n[더팩트｜윤정원 기자] 한앤컴퍼니가 경영권을 쥔 SK디앤디가 유상증자를 앞두고 내놓은 주주 답변이 요구받은 정보에 못 미쳤다. 주주들은 내년까지의 자금 흐름과 최대주주 지원 조건을 물었지만, 회사는 단기 현금 잔액과 기존 투자설명서를 중심으로 답해 빈축을 사고 있다.\n\n ◆ 내년 자금 흐름 물었지만…현금 잔액표는 올해 말까지 \n\nSK디앤디가 지난 18일 공시를 통해 공개한 '유상증자 관련 주주 요청사항에 대한 회사 답변'을 보면, 개인주주들은 이달 1일 회사에 10개 항목의 설명을 요청했다. 첫 질문은 증자 이후 자금 사정이 어떻게 달라지는지 확인하기 위한 2026~2027년 월별 자금수지표였다.\n\n주주들은 청약률 100%·90%·80%와 최대주주가 기본 배정분만 청약하는 경우를 나눠 달라고 했다. 회사는 자구계획이 예정대로 실행되면 모든 경우에서 \"2026년 이후 월별 기말현금은 양(+)의 수준을 유지할 수 있을 것으로 예상된다\"고 답했다. 그러나 첨부한 표의 범위는 올해 10~12월에 한정됐다.\n\n청약률이 100%이면 예상 현금 잔액은 10월 말 397억원에서 12월 말 795억원으로 늘어난다. 최대주주가 기본 배정분만 청약하면 같은 기간 183억원에서 580억원으로 증가한다. 표는 증자 납입액과 월말 잔액을 비교하는 형태다. 매각대금이 언제 들어오고 차입금 상환과 사업비로 얼마가 나가는지는 구분하지 않아 이번 답변만으로는 현금이 늘어나는 과정을 확인하기 어렵다.\n\n회사는 주요 자금조달 변수가 해소됐다는 입장이다. 답변에 따르면 군포 본 프로젝트파이낸싱(PF) 재구조화에 따른 1800억원의 추가 대출은 지난 11일 실행됐다. SK디앤디는 <더팩트>에도 \"각 청약률별로 채무불이행 위험이 존재하지 않는다\"며 \"본PF 재구조화 실행이 확정돼 올해 하반기 자금수지표에 대해 답변했다\"고 설명했다.\n\n다만 진행 사업의 일정은 올해 말 이후로 이어진다. 답변서에 담긴 11개 프로젝트의 7월 말 누적 자기자본 투입액을 합산하면 3855억원, 당시 잔여 출자의무는 333억원이다. 준공 예정 시점은 당산역이 2027년 3분기로 가장 빠르고 나머지는 2028~2031년에 걸쳐 있다. 사업별 추가 출자 시점은 따로 적지 않아 연말 예상 현금과 이후 필요한 자금을 연결해 살펴보기 힘들다.\n\n ◆ 매각대금은 \"협상 영향\"…추가 지원 질문엔 기존 자료 안내 \n\n앞으로 투입할 돈이 남아 있는 만큼 주주들은 진행 사업에서 자금을 확보할 시점과 규모도 물었다. 사업별 예상 순회수액과 가장 이른 회수 시점, 내년까지 추가로 유동화할 수 있는 금액을 요청했다. SK디앤디는 사업별 대출 방식을 안내했지만 회수액에 대해서는 \"구체적인 매각금액 및 순회수액은 향후 매각 협상, 조건 등에 영향을 미칠 수 있어 기재가 어려운 사항\"이라고 답했다.\n\n회사도 매각 일정의 불확실성을 인정했다. 목표 시점에 맞춰 거래를 추진하고 있다면서도 \"최근 시장환경 특성상 매각이 지연되거나 무산될 수 있다\"고 밝혔다. 현금이 남는다는 전망은 자구계획의 정상 실행을 전제로 하지만, 매각이 늦어지면 자금 유입 일정도 달라질 수 있는 것이다.\n\n매각이나 청약이 예상에 못 미치면 부족한 돈을 어떻게 마련할지도 주주들의 질문이었다. 회사가 최소한 확보해야 할 금액과 추가 차입·자산 매각의 실행 기준을 물었고, 최대주주에게는 이번 증자 참여를 넘어선 지원계획을 요청했다. 한앤코개발홀딩스의 배정 신주 전량 청약 계획과 별개로, 이후에도 돈이 부족하면 얼마를 어떤 조건에서 더 부담하기로 했는지 확인하려는 것이다.\n\n자금조달 대안에 관해 SK디앤디는 \"이사회와 ESG위원회에서 가능한 자본확충 방안을 종합적으로 비교·검토했다\"고 설명했다. 하지만 다른 조달 방안을 선택하지 않은 이유와 증자 납입액이 줄었을 때의 대응책, 최대주주에게 확인한 내용은 투자설명서의 '유상증자 추진 배경'과 '투자위험요소'를 참고하도록 했다. 주주들이 요청한 '구속력 있는 부족자금 지원계획과 조건'에 대해서도 이번 답변서에서 직접 설명하기보다 기존 공시를 안내한 셈이다.\n\n<더팩트>는 자산 매각 지연이나 청약 미달에 대비한 대책과 최대주주의 추가 지원 약정 여부를 재차 확인했으나 SK디앤디는 \"자구계획이 정상적으로 이행될 수 있도록 최선의 노력을 다하고 있다\"며 \"최대주주의 계획에 대해서는 당사가 말하기 어렵다\"고 답했다. 한앤컴퍼니 측도 내년 자금계획의 보완 공개와 추가 지원 약정, 주주 소통 방침에 관한 질의에 답변할 수 있는 내용이 없다는 입장을 전달했다.\n\n이번 증자의 모집 예정액은 1차 발행가 2260원 기준 약 1010억원이다. 기존 발행주식의 약 2.4배에 해당하는 신주를 발행한다. 신주인수권증서는 오는 29일까지 거래되며, 구주주 청약은 다음 달 12~13일 진행된다.\n\n주주들은 서면답변과 함께 추가 설명회도 요청했지만, 회사는 이번 자료로 설명을 대신한 상태다. SK디앤디는 그 이유에 대해 \"상세한 내용을 확인할 수 있도록 서면으로 답변했다\"며 \"향후에도 주주들과의 소통에 성실히 임할 것\"이라고 밝혔다.\n\n 발로 뛰는 더팩트는 24시간 여러분의 제보를 기다립니다."
-      },
-      {
-        "title": "[뉴욕증시]2거래일 연속 유가 하락…나스닥 장중 최고치",
-        "url": "https://n.news.naver.com/mnews/article/277/0005820175",
-        "chars": 1355,
-        "extracted": "id=\"dic_area\"",
-        "body": "호르무즈 해협 재개방 기대 2거래일 연속 국제유가가 하락하면서 22일(현지시간) 미국 뉴욕증시의 3대 지수는 일제히 상승 중이다. 나스닥지수는 장중 최고치를 다시 경신했다. \n\n뉴욕증권거래소(NYSE)에서 오전 9시 37분 현재 다우지수는 전 거래일보다 69.43포인트(0.13%) 올라간 5만2118.26에 거래 중이다. 대형주 중심의 S&P500지수는 15.01포인트(0.19%) 상승한 7779.71, 기술주 중심의 나스닥지수는 114.92포인트(0.43%) 오른 2만7237.01을 나타내고 있다.\n\n \n \n \n \n\n \n\n이날 시장은 원유 공급 차질이 완화될 수 있다는 기대에 위험자산 투자심리가 확대되는 모습이다. 이란이 미국이 군사적 압박을 낮추는 초기 조치에 나선다면 7일 안에 호르무즈 해협을 다시 열겠다고 제안했다는 보도가 나오면서 유가가 하락했다. 미국이 이 조건을 수용하거나 해협 재개에 합의한 것은 아니다. \n\n미국과 이란의 대화 가능성도 거론된다. 도널드 트럼프 미 대통령이 유엔 총회가 열리는 뉴욕에서 이란 측과 회담하고 싶어한다고 CNN이 미 당국자를 인용해 보도했다. 이란 측 유엔 대표단은 마수드 페제시키안 대통령이 이끌고 있으며, 아바스 아라그치 외무장관도 포함됐다. \n\n다만 미국과 이란의 회담이 예정된 것은 없으며, 이란 측이 회담 가능성에 열려있는지도 불분명하다고 이 당국자는 덧붙였다. \n\n마코 루비오 미 국무장관도 NBC 방송 인터뷰에서 유엔총회 고위급 회기 주간을 계기로 이란과의 대화를 재개할 수 있다고 말했다. 그는 \"현시점에서는 어떤 것도 예정돼 있지 않다\"면서도 \"그것이 무언가 긍정적인 결과로 이어질 수 있다면, 궁극적으로 이 모든 일의 핵심적인 목표를 달성할 수 있다는 전망이 있다면, 우리는 분명 그것에(대화에) 열려 있다\"고 강조했다. \n\n그러면서 \"그것은(목표는) 바로 이란이 결코 핵무기를 가질 수 없다는 사실\"이라고 덧붙였다. 앞서 이란 정부 역시 이번 유엔총회를 계기로 미국과 대화 가능성을 시사한 바 있다. \n\n이에 뉴욕상업거래소에서 10월 인도분 미국 서부텍사스산원유(WTI)는 전장 대비 1.70% 하락한 배럴당 94.15달러를 기록했다. ICE선물거래소에서 11월 인도분 브렌트유는 전장보다 1.67% 떨어진 배럴당 98.66달러를 가리키고 있다. 두 유종 모두 이대로 마감하면 5거래일 연속 하락이다. \n\n한편 시장은 이번 주 예정된 도널드 트럼프 미국 대통령과 시진핑 중국 국가주석의 회담, 뉴욕·리치먼드 연방준비은행(연은) 총재의 발언 등을 주시하고 있다.\n\n종목별로 보면 기술주와 반도체주가 상승하고 있다. 엔비디아 0.12%, 인텔 0.33%, 마이크론테크놀로지 1.76%, TSMC 0.24%, SK하이닉스ADR 2.28% 등이 오름세다."
-      },
-      {
-        "title": "실적 폭증에 PER 10여년 최저 수준…월가가 본 엔비디아 역설",
-        "url": "https://n.news.naver.com/mnews/article/018/0006374626",
-        "chars": 2575,
-        "extracted": "id=\"dic_area\"",
-        "body": "12개월 선행 PER 17배 미만…작년의 절반 수준\nTCW “이익 지속 가능성에 상당한 회의론 반영”\n메모리값 상승·빅테크 자체칩 개발에 마진 우려\n“AI 투자 둔화 가능성 낮아…현재 밸류 매력적” [뉴욕=이데일리 성주원 특파원] 인공지능(AI) 대장주 엔비디아의 실적은 폭발적으로 성장하고 있지만 월가가 부여하는 기업가치는 오히려 10여년 만에 가장 낮은 수준으로 떨어졌다. AI 투자 확대가 지속될 것이라는 낙관론과 비용 상승·경쟁 격화로 지금의 높은 수익성을 유지하기 어려울 것이라는 경계론이 맞서면서다. 일각에서는 시장의 우려가 주가에 과도하게 반영된 만큼 현재 밸류에이션이 오히려 매력적인 진입 기회를 제공한다는 평가도 나온다.\n\n \n \n \n \n\n \n 젠슨 황 엔비디아 최고경영자(CEO) (사진=로이터) \n \n 22일(현지시간) 블룸버그에 따르면 엔비디아 주가는 향후 12개월 예상 순이익 기준 주가수익비율(PER)이 17배를 밑돌고 있다. 이는 10여년 만의 최저 수준에 근접한 것이다. 지난해 엔비디아가 받았던 밸류에이션의 절반 수준이며 지난 5월까지만 해도 25배를 웃돌았다.\n\n엘리 호턴 TCW 테마주·장기성장주 담당 선임 포트폴리오 매니저는 “주가의 밸류에이션이 상당히 낮아졌다는 것은 현재의 이익 창출력이 지속 가능하느냐에 대해 시장에 상당한 회의론이 있다는 의미”라고 진단했다. 그는 “놀라울 정도로 강한 펀더멘털을 고려하면 주가 흐름은 의외”라면서도 “시장은 현재 컨센서스가 예상하는 것보다 낮은 실적을 기대하고 있다는 뜻”이라고 설명했다.\n\n실적만 보면 이 같은 할인은 이례적이다. 블룸버그가 집계한 월가 전망에 따르면 내년 1월 끝나는 2027회계연도 엔비디아의 매출과 순이익은 각각 90%, 99% 증가할 것으로 예상된다. 직전 회계연도의 증가율은 각각 65%였다. 젠슨 황 엔비디아 최고경영자(CEO)는 이달 골드만삭스 기술 콘퍼런스에서 2028회계연도에도 매출이 약 70% 증가할 것으로 전망했다. 실제 엔비디아의 2분기 매출은 962억달러(약 130조8400억원)로 전년 동기 대비 106% 급증했고 데이터센터 매출은 117% 늘었다.\n\n올해 엔비디아 주가는 22% 올랐지만 반도체 업종 내에서는 상대적으로 부진하다. 필라델피아 반도체지수(SOX)는 올해 약 76% 올랐고 마이크론과 인텔, AMD는 각각 180% 넘게 급등했다. 엔비디아는 SOX 구성 종목 가운데 상승률이 다섯 번째로 낮다.\n\n월가가 가장 우려하는 부분은 수익성이다. AI 인프라 투자 확대가 메모리 수요를 폭발적으로 늘리면서 메모리 가격이 급등했고 이는 엔비디아의 원가 부담으로 돌아오고 있다. 엔비디아의 2분기 매출총이익률은 75%에 달했지만 블룸버그가 집계한 애널리스트 전망에 따르면 4분기에는 72% 아래로 떨어진 뒤 이후 다시 반등할 것으로 예상된다.\n\n데이비드 러셀 트레이드스테이션 글로벌 시장전략 책임자는 매출총이익률 압박이 엔비디아 주가의 발목을 잡는 핵심 요인이라고 분석했다. 특히 메타와 알파벳 등 엔비디아의 주요 고객들이 자체 AI 칩 개발에 속도를 내면서 경쟁은 더욱 거세질 수 있다고 봤다.\n\n러셀은 “기업들은 엔비디아에 대한 의존도를 줄이기를 원한다”며 “시간이 흐르면서 엔비디아의 시장 지위가 약해질 가능성이 충분하고, 이는 매출총이익률이 개선되기보다 하락할 가능성이 크다는 의미”라고 말했다. 이어 “기업의 상황이 앞으로 더 좋아질 가능성이 있을 때 밸류에이션은 높아지는데 현재 엔비디아에는 그런 기대가 부족하다”고 평가했다.\n\n \n \n \n \n\n \n 엔비디아의 예상 주가수익비율(PER) 추이. 최근 10여년 만에 최저 수준으로 떨어졌다. (단위: 배, 자료: 블룸버그) \n \n 엔비디아가 이미 너무 커졌다는 점도 투자자들의 고민이다. 엔비디아 주가는 지난 4년간 1600% 넘게 상승하며 세계 최대 시가총액 기업으로 올라섰다. 2023회계연도 약 270억달러에 불과했던 매출은 2027회계연도 약 4100억달러에 이를 것으로 예상된다. 젠슨 황 엔비디아 최고경영자(CEO)가 이달 골드만삭스 기술 콘퍼런스에서 엔비디아를 “세계 최초이자 유일한 성장 가치주(growth value stock)”라고 부르며 “엄청나게 오해받고 있다”고 말한 것도 이 같은 시장의 시각을 겨냥한 발언이다.\n\n반대로 현재 주가에 시장의 우려가 지나치게 반영됐다는 시각도 있다. 엔비디아의 낮은 밸류에이션이 정당화되려면 AI 설비투자가 크게 둔화돼야 하지만 현재로서는 그런 징후가 뚜렷하지 않다는 것이다. AI 데이터센터 건설에 대한 반발과 높은 금리에도 주요 기술기업들의 AI 인프라 투자는 여전히 이어지고 있다.\n\nTCW의 호턴은 “이 정도 지출이 지속 가능한지 한 번 물러서서 생각해보는 것은 신중한 접근”이라면서도 엔비디아의 현재 밸류에이션은 AI 자본지출 둔화를 상당 부분 전제로 하고 있다고 분석했다. 그러면서 AI 투자가 실제로 줄려면 대형 클라우드업체들이 투자를 축소하거나 규제로 AI 개발이 지연돼야 하지만 현재로서는 어느 쪽도 가능성이 높지 않다고 봤다.\n\n그는 “현재의 투자 구도는 매우 매력적”이라며 “밸류에이션이 앞으로 더 낮아지기보다 다시 높아지는 쪽에 베팅하겠다”고 말했다. 이어 현재 수준을 엔비디아 주식에 진입하기에 “매우 유리한 밸류에이션”이라고 평가했다."
-      },
-      {
-        "title": "엔비디아·MS가 날개 달았다…한풀 꺾였던 LG그룹주 '들썩' [종목+]",
-        "url": "https://n.news.naver.com/mnews/article/015/0005335392",
-        "chars": 1805,
-        "extracted": "id=\"dic_area\"",
-        "body": "LG·전자·이노텍, 4~6%대 상승\nLG전자, 엔비디아용 대용량 냉각장치 승인\nLG·MS, AI 데이터센터·AX·피지컬 AI 협력 확대 \n \n \n \n\n 서울 여의도 LG전자 사옥. / 사진=연합뉴스 \n22일 주식시장에서 LG그룹 주요 계열사 주가가 동반 강세를 나타냈다. 인공지능(AI) 데이터센터 냉각 장비가 엔비디아 규격 승인을 받은 데 이어 마이크로소프트(MS)와의 AI 협력 확대 소식까지 더해진 영향이다. 지난 6월 연중 고점 이후 큰 폭으로 조정받았던 만큼, 빅테크 협력 구체화에 따른 기대감이 다시 커지는 모습이다.\n\n한국거래소에 따르면 이날 LG전자는 전 거래일보다 6.91% 오른 21만6500원에 정규장 거래를 마쳤다. LG는 4.67% 상승한 11만6500원, LG이노텍은 4.43% 오른 54만2000원에 마감했다. LG우는 2.86%, LG CNS는 3.02%, LG유플러스는 0.55% 각각 올랐다. \n\n이들 종목은 지난 6월 초 엔비디아와의 협력 기대가 커지면서 나란히 연중 고점을 기록했다. 당시 젠슨 황 엔비디아 최고경영자(CEO)의 방한과 구광모 LG 대표와의 회동 가능성이 전해지자 협력 기대가 주가를 끌어올렸다.\n\nLG전자는 5월29일과 6월1일 이틀 연속 상한가를 기록한 뒤 6월2일 39만2500원까지 올랐다. LG와 LG이노텍도 6월1일 각각 16만5800원과 153만원으로 종가 기준 연중 고점을 찍었다.\n\n이후 단기 급등에 따른 차익실현 매물이 나오면서 주가는 큰 폭으로 조정받았다. 이날 동반 강세에도 현재 종가는 그때보다 LG전자 44.84%, LG 29.73%, LG이노텍 64.58% 낮은 수준이다.\n\n이날은 사업 협력 소식이 주가를 자극했다. LG전자는 이날 2.5메가와트(MW)급 냉각수 분배장치(CDU)가 엔비디아의 AI 팩토리 관련 규격과 추가 요건을 충족해 'DSX 레디 CDU' 제품으로 승인됐다고 밝혔다. 여러 서버 랙을 행 단위로 묶어 한 번에 냉각하는 '인로우' 방식의 제품이다.\n\nLG전자는 지난 7월 600킬로와트(kW)급, 이달 1MW급 CDU에 이어 2.5MW급 제품까지 엔비디아 규격 승인을 받았다. LG에너지솔루션의 배터리 에너지저장장치(BESS)도 DSX 레디 제품에 포함됐다.\n\n이재성 LG전자 ES사업본부장 사장은 \"이번 엔비디아 DSX 규격 승인을 계기로 더욱 신뢰성이 높고 효율적인 냉각 솔루션을 글로벌 빅테크 기업들에 본격 공급하며, 차세대 액체냉각 시장의 주도권을 확보해 나갈 것\"이라고 밝혔다.\n\nLG와 MS의 협력 확대도 투자심리를 자극했다. LG는 지난 21일(현지시간) 미국 워싱턴주 레드먼드 MS 본사에서 구 대표와 사티아 나델라 MS CEO 등이 참석한 가운데 최고경영진 회의를 열었다. 양사는 AI 데이터센터 인프라와 인공지능 전환(AX), 피지컬 AI 분야에서 협력 기회를 찾기로 했다. LG전자의 냉난방공조 기술과 LG CNS의 데이터센터 구축·운영 역량 등을 결합하는 방식이다.\n\n증권가는 주요 자회사의 매출 증가가 지주사 LG의 자회사 지분가치와 브랜드 사용료 수익 확대로 이어질 것으로 보고 있다.\n\n안영준 키움증권 연구원은 \"핵심 자회사의 양호한 흐름이 이어지는 가운데 AI 모델 개발 역량이 부각될 것\"이라며 \"장기적으로는 피지컬 AI 시대의 수혜도 기대할 수 있다\"고 말했다.\n\n박종렬 흥국증권 연구원은 LG의 올 3분기 연결 영업이익이 전년 동기 대비 4.8% 증가한 4392억원에 이를 것으로 예상했다. 올 연간 영업이익은 66.3% 늘어난 1조5170억원으로 전망했다.\n\n박 연구원은 \"LG전자와 LG화학, LG생활건강, LG유플러스 등의 실적 호조에 따라 지분법이익이 크게 증가할 것\"이라고 말했다."
-      },
-      {
-        "title": "“아침에 분명 다 빨간색이었잖아”…메타에 웃고 유가에 발목잡힌 코스피",
-        "url": "https://n.news.naver.com/mnews/article/009/0005739256",
-        "chars": 2102,
-        "extracted": "id=\"dic_area\"",
-        "body": "메타 AI에이전트 뮤즈 열풍에\n장초반 반도체株 중심 급등세\n7100 돌파 후 유가급등에 주춤\n추석연휴 앞두고 개인 매도세\n5거래일새 9조 넘게 주식 팔아\n\n \n \n \n \n\n 22일 오후 서울 중구 하나은행 본점 딜링룸 전광판에 코스피 등 종가가 표시되고 있는 가운데 견학을 온 매일경제 수습기자들이 딜링룸을 둘러보고 있다. [이승환 기자] 메타의 인공지능(AI)에이전트 열풍에 강한 상승세로 출발했던 코스피가 유가 상승이란 암초를 만나 강보합세로 마감했다. 배당기준일을 앞둔 삼성전자가 강세를 보이며 7000선을 지켰다.\n\n22일 코스피는 전일 대비 0.15% 하락한 7017.91에 거래를 마감했다. 코스닥은 0.23% 하락한 834.38에 마쳤다.\n\n21일(현지시간) 메타의 AI에이전트 뮤즈가 최근 3일 연속 미국 아이폰 무료 앱 다운로드 1위를 기록하며 빠르게 확산되자 메모리 수요 확대 기대에 아시아 반도체들이 일제히 상승했다. 필라델피아반도체지수가 4.29% 상승하면서 SK하이닉스가 장초반 전일대비 5% 넘게 오르며 190만원 선을 돌파하는 등 반도체와 소부장(소재부품장비)까지 동반 강세를 보였다.\n\n \n \n \n \n\n 특히 SK하이닉스는 ADR이 미국 반도체 상장지수펀드(ETF)에 조기편입되었다는 호재성 뉴스까지 나오며 주가가 올랐다. 22일 미국 자산운용업계에 따르면 대표적인 반도체 패시브 ETF ‘아이셰어즈 반도체(SOXX)’ 구성 종목에 SK하이닉스 ADR이 신규 편입됐다. 펀드 내 비중은 3.32%다. 이는 30개 구성 종목 중 13번째 규모로 대만 TSMC(3.05%)보다 높다.\n\n하지만 전일 5% 가까이 급락했던 국제 유가가 지정학적 갈등에 반등하자 오후 들어 증시 분위기는 달라졌다.\n\n이경민 대신증권 연구원은 “91달러까지 하락했던 서부텍사스중질유(WTI)가 반등하며 국내 증시에서 전강후약 흐름이 나왔다”며 “유가 단기 낙폭 확대에 따른 되돌림이 나타나며 증시에 부담으로 작용했다”고 말했다.\n\n추석 연휴를 앞두고 주식 비중을 축소하려는 관망심리 때문에 개인 투자자들의 순매도 물량이 계속 나오는 것도 증시 약세 요인이다. 지난 18일 코스피에서 3조9300억원을 순매도했던 개인들은 21일엔 3조4000억원, 22일엔 1조6500억원을 추가로 순매도하고 있다.\n\n \n \n \n \n\n 그나마 오는 28일 배당기준일을 앞둔 삼성전자에 배당투자 수요가 유입되며 코스피가 7000선을 지켰다. 장초반엔 7171.44까지 올랐던 코스피는 오후 한때 6986.27까지 빠지며 장중 한때 7000선이 무너졌다. 삼성전자는 배당소득 분리과세 종목으로 배당소득이 지역가입자 건강보험료 산정대상이 아니라 실질적 배당수익률이 높아지는 측면이 있다. 이날 삼성전자 본주는 0.91%, 삼성전자 우선주는 1.68% 올랐다.\n\n한편 메타 AI 뮤즈 효과에 13일(현지시간) 뉴욕증시에서 반도체주 AMD 주가는 전 거래일 대비 9.95% 급등한 615.52달러에 거래를 마치며 시가총액 1조 달러 고지를 넘어섰다. 미국 반도체 기업 중 시총 1조 달러를 돌파한 것은 엔비디아, 브로드컴, 마이크론에 이어 이번이 네 번째다. 전 세계 시가총액 순위로는 마이크론, 일라이릴리에 이어 15위에 자리 잡았다.\n\n \n \n \n \n\n 기자가 메타 ‘뮤즈’를 통해 치킨을 주문했다. 단계를 몇 차례 거친 후 결제 직전 마지막으로 이대로 주문할지 묻고 있는 모습. [실리콘밸리 = 원호섭 특파원] AI 인프라 시장의 병목에서 그래픽처리장치(GPU)에 이어 CPU가 주목받기 시작하면서 AMD는 연초대비 주가가 175% 뛰었다. 최근 AI 에이전트 활용이 급증하면서 데이터 학습에 특화된 GPU뿐만 아니라 빠른 연산과 추론에 적합한 CPU의 중요성이 부각됐다.그래픽처리장치(GPU) 중심인 엔비디아와 달리, AMD는 GPU와 중앙처리장치(CPU)를 모두 아우르는 포트폴리오를 갖추고 있기 때문이다. CPU 관련주인 인텔 역시 12.1% 상승했다.\n\n아시아 증시에서 일본이 휴장한 가운데 중국, 홍콩, 대만의 주요 주가지수들이 모두 올랐다. 특히 대만 자취엔은 5거래일 연속 상승하며 전일 대비 0.17% 오른 4만7800.17에 장을 마감했다. 지난 6월 22일 기록한 4만7741.51을 깬 기록이다. 장중 48601.53까지 올랐지만 상승폭을 다소 축소했다."
-      },
-      {
-        "title": "삼성이 찜했다더니…하루 만에 '34%' 폭등한 회사",
-        "url": "https://n.news.naver.com/mnews/article/215/0001266936",
-        "chars": 1185,
-        "extracted": "id=\"dic_area\"",
-        "body": "사진=삼성물산 \n다중 암 조기진단 검사 '갤러리'에 대한 미국 식품의약국(FDA)의 긍정적인 심사 결과가 나오면서, 이를 개발한 미국 암 진단기업 그레일의 주가가 하루 만에 34% 가까이 폭등했다. \n\n22일 한국경제신문에 따르면 그레일 주가는 21일(현지시간) 나스닥시장에서 전날보다 33.56% 오른 107.97달러에 마감했다. \n\n23일로 예정된 외부 전문가 자문위원회를 앞두고 FDA가 공개한 심사자료가 주목받았다. 이 자료에서 FDA 심사관들은 갤러리의 분석 성능, 임상시험 설계, 핵심 안전성 분석과 관련해 별다른 우려를 표하지 않은 것으로 나타났다.\n\n심사의 초점도 임상자료가 갤러리를 '조기진단 검사'로 규정할 수 있는지, 암 종류별 성능 차이를 제품 설명에 어떻게 담을지에 맞춰졌다. 업계에서는 이를 두고 FDA가 검사의 정확성과 안전성을 인정한 것으로 해석하며, 자문위 표결 역시 우호적일 것이라는 전망을 내놓고 있다.\n\n그레일은 혈액 내 수억 개의 DNA 조각 중 암과 연관된 미세한 DNA 조각을 최적으로 선별하고 이를 인공지능(AI) 기반 유전체 데이터 기술로 분석해 암 발병 유무, 위치까지 예측할 수 있는 기술을 보유했다. 이 업체가 출시한 갤러리는 단 한 번의 혈액검사로 50여종의 암을 조기에 발견할 수 있다.\n\n다만 갤러리는 FDA 품목 승인을 받기 전에 판매를 해왔다. 가격은 건당 949달러(137만원)이며, 거의 모든 보험사가 이를 보험 미적용 품목으로 분류해놓고 있어 이용자들이 고액의 검사비를 부담해야 하는 상황이다. 지난해 갤러리의 미국 매출은 1억3680만달러를 기록했는데, 정식 허가가 나오면 병원을 통한 보급 경로가 넓어지고 보험 적용도 수월해지는 만큼 시장 규모가 한층 커질 것으로 예상된다.\n\n그레일은 삼성으로부터도 투자를 유치한 바 있다. 삼성물산과 삼성전자는 지난 6월 25일 그레일 주식 157만308주를 주당 70.05달러에 사들이며 총 1억1,000만달러를 투자한 바 있다. 투자 석 달 만에 평가이익만 약 5,950만달러에 달하는 성과를 거둔 셈이다.\n\n삼성물산은 그레일과 협력해 갤러리를 국내에서 독점적으로 상용화하는 방안을 추진하고 일본과 싱가포르 등지로 사업 영역을 넓히는 방안을 검토 중인 것으로 알려졌다. 삼성전자 역시 갤러리가 보유한 임상 유전체 데이터를 갤럭시 기기 생태계와 결합해 개인 맞춤형 건강관리 서비스를 내놓는 방안을 모색하고 있다."
-      },
-      {
-        "title": "‘회생’ 제이알글로벌리츠에 또 악재…감사의견 거절로 상폐 사유",
-        "url": "https://n.news.naver.com/mnews/article/011/0004664705",
-        "chars": 1311,
-        "extracted": "id=\"dic_area\"",
-        "body": "외부감사인, 상반기 재무제표 ‘의견거절’\n249억 흑자서 1007억 적자로 실적 정정\n1256억 영업권 전액 손상, 거래정지 지속 \n \n \n \n\n 벨기에 파이낸스 타워. 제이알글로벌리츠 회생 절차를 밟고 있는 제이알글로벌리츠(348950) 에 또 악재가 발생했다. 외부감사인이 상반기 감사보고서에 감사의견 ‘거절’을 내면서 상장폐지 사유가 발생한 것이다. 올 4월 회생절차 개시 신청으로 주식 거래가 정지된 데 이어 상장 유지 여부까지 불투명해졌다.\n\n22일 금융감독원 전자공시시스템에 따르면 한울회계법인은 제이알글로벌리츠의 올해 상반기 제14기 연결·별도 재무제표에 대해 모두 감사의견을 ‘거절’로 제시했다. 감사인은 ‘계속기업 가정에 대한 중요한 불확실성’을 의견거절 사유로 들었다. 직전 사업연도 감사의견은 ‘적정’이었다.\n\n한국거래소는 이에 따라 제이알글로벌리츠가 유가증권시장 상장 규정상 상장폐지 기준에 해당한다고 안내했다. 회사는 다음 달 19일까지 이의를 신청할 수 있다. 감사의견 거절로 상장폐지 사유가 발생했지만 곧바로 상장폐지가 확정되는 것은 아니다.\n\n제이알글로벌리츠는 올 4월27일 서울회생법원에 회생절차 개시를 신청했다. 다음 날인 28일부터 주식 거래가 정지된 상태다. 이번 상장폐지 사유 발생 이후에도 거래정지는 이어진다.\n\n감사 과정에서는 실적도 크게 수정됐다. 회사는 외부감사 결과를 반영해 올해 상반기 당기순이익을 당초 249억 원 흑자에서 1007억 원 적자로 정정했다. 실적이 1256억 원가량 뒤집힌 것은 장부에 무형자산으로 잡혀 있던 영업권 1256억 원을 전액 손상 처리했기 때문이다. 영업권을 자산에서 제외하는 동시에 같은 금액이 손상차손으로 비용 처리되면서 순손실이 크게 늘었다.\n\n영업권 손상은 실제 현금이 새로 빠져나가는 거래가 아니기는 하다. 회사 측은 “과거 사업결합 과정에서 인식된 자산의 장부가치를 조정하는 비현금성 회계처리”라며 “현재 진행 중인 자율구조조정지원(ARS) 절차와 채무변제계획의 실행 재원에는 직접적인 영향을 주지 않는다”고 했다.\n\n회사 측은 “감사의견 거절로 상장폐지 사유가 발생했지만 상장폐지가 즉시 확정되는 것은 아니다”라며 “기한 내 이의신청과 개선계획 제출을 진행하고 재감사 또는 차기 사업연도 감사를 통해 사유 해소를 추진할 예정”이라고 밝혔다.\n\n제이알글로벌리츠는 조만간 채권자들에게 변제계획안을 제시하고 사채권자집회 등 관련 절차를 거쳐 ARS 절차 종료와 재무구조 정상화를 추진한다는 계획이다. 제이알글로벌리츠는 벨기에 브뤼셀 파이낸스타워와 미국 뉴욕 맨해튼 498 세븐스애비뉴 등에 투자한 해외 부동산 공모 리츠다. 2020년 유가증권시장에 상장했다."
-      },
-      {
-        "title": "“수도권 데이터센터, 크게 짓기 어렵다”…하남 물류센터의 ‘작은 변신’",
-        "url": "https://n.news.naver.com/mnews/article/018/0006374592",
-        "chars": 2231,
-        "extracted": "id=\"dic_area\"",
-        "body": "하남 물류센터 용도변경…엣지DC로 개발\n440억 브릿지론 이어 1620억 본PF 조달\n본PF, 선순위 1420억·후순위 200억 구성\nCJ대한통운 건설부문 시공…내년 8월 준공\n수도권 전력망 포화…소규모 DC 개발 확대 이 기사는 2026년09월22일 17시28분에 마켓인 프리미엄 콘텐츠 로 선공개 되었습니다.\n\n[이데일리 마켓in 김성수 기자] 경기도 하남시의 한 물류센터가 데이터센터(DC)로 탈바꿈한다. 수도권 내 하이퍼스케일(대규모) 데이터센터 개발이 갈수록 어려워지는 만큼 기존 건물을 활용해서 상대적으로 규모가 작은 ‘엣지 데이터센터’를 개발하는 사례다.\n\n업계에서는 수도권의 데이터센터 전력·인허가 제약이 이어질 경우 기존 건축물이나 소규모 부지를 활용한 엣지 데이터센터 개발이 더욱 늘어날 것으로 보고 있다.\n\n \n\n 하남 물류센터 용도변경…엣지DC로 개발 \n\n22일 금융투자업계에 따르면 시행사 하남엣지센터피에프브이(PFV)는 경기도 하남시 풍산동 595번지 일원에 위치한 물류센터를 엣지 데이터센터로 용도변경하는 개발사업을 추진하고 있다.\n\n기존 물류센터를 허물고 새로 짓는 대신 건물의 용도변경과 대수선을 거쳐 데이터센터로 활용하는 방식이다. 완공 후에는 데이터센터를 임대해 운영·관리할 계획이다.\n\n \n \n \n \n\n \n 하남 풍산동 엣지 데이터센터 리모델링 (사진=CJ대한통운 건설 부문) \n \n 개발되는 엣지 데이터센터는 지하 3층~지상 8층, 연면적 2만403㎡(약 6172평) 규모다. 현재 착공에 들어갔으며 시공은 CJ대한통운 건설 부문이 맡았다. 내년 8월 준공을 목표로 하고 있다.\n\n자금 조달도 마무리됐다. 하남엣지센터PFV는 지난 2월 440억원 규모의 브릿지론을 조달한 데 이어 지난 7월 총 1620억원 규모의 본 프로젝트파이낸싱(PF)을 확보했다. 해당 대출의 만기는 오는 2028년 1월 27일이다.\n\n1620억원 규모 본PF는 선순위인 트랜치A 1420억원과 후순위인 트랜치B 200억원으로 구성됐다. 주관사는 교보증권이 맡았다. 트랜치A는 1000억원 규모 한도대출과 420억원 일시대출로, 트랜치B는 200억원 전액 일시대출로 구성됐다.\n\n이번 사업은 최근 수도권 데이터센터 개발 시장의 변화를 보여주는 사례로도 꼽힌다.\n\n이전에는 수백 MW(메가와트)급 전력을 사용하는 하이퍼스케일 데이터센터 개발이 시장의 관심을 받았다면, 최근에는 10MW 이내 소규모 데이터센터 개발이 확대되는 분위기다. 대규모 데이터센터를 새로 짓기 위한 부지와 전력을 확보하는 일이 갈수록 어려워지고 있기 때문이다.\n\n \n\n 수도권 전력망 포화…소규모 DC 개발 확대 \n\n특히 '전력 확보'가 데이터센터 개발의 핵심 변수로 떠올랐다. 수도권 전력망이 포화하면서 데이터센터 인허가를 받은 뒤에도 실제 전력을 확보하지 못하는 사례가 나오고 있어서다.\n\n올해 3월 누적 기준 수도권 데이터센터 전력계통영향평가 기술검토 신청(522건) 가운데 절반 이상(279건)이 '공급 불가' 판정을 받았다. 건수 기준 공급불가 비율은 53.4%에 이른다. \n\n \n \n \n \n\n \n (자료=CBRE) \n \n '데이터센터 전력계통영향평가 기술검토'는 10MW 이상의 대규모 전력 소비가 예상되는 데이터센터 등이 전력망에 미치는 영향을 사전에 정량·정성적으로 심사해서 전기 공급 가능 여부를 결정하는 제도다.\n\n다만 수도권 등 전력 포화 지역은 전력계통영향평가 기술검토 합격 기준이 강화되고 통과율이 매우 낮아졌다. 정부 역시 수도권 전력 수요 부담을 낮추기 위해 데이터센터의 지방 이전을 유도하고 있다.\n\n민원과 인허가 문제도 변수다. 데이터센터는 대규모 전력을 사용하는 만큼 발열과 전자파 등에 대한 지역 주민들의 우려가 제기될 가능성이 있다. 데이터센터 규모가 커질수록 전력과 민원 문제를 동시에 해결해야 하는 부담도 커진다.\n\n이 때문에 수도권에서는 기존 시설을 활용하거나 상대적으로 개발 부담이 적은 지역에 소규모 데이터센터를 조성하는 방식이 주목받고 있다. 강남 등 도심의 기존 시설이나 중공업지역을 활용해 400~500평 안팎의 소규모 데이터센터를 개발하는 사례도 늘고 있다.\n\n하남 사업도 이런 흐름과 맞닿아 있다. 이미 지어진 물류센터를 활용해 대규모 신규 개발에 필요한 부담을 낮추고, 수도권이라는 입지적 장점을 살리는 방식이다.\n\n금융투자업계 관계자는 \"인공지능(AI) 확산으로 데이터센터 수요가 커지는 상황\"이라며 \"수도권의 데이터센터 전력·인허가 제약이 이어질 경우 기존 건축물이나 소규모 부지를 활용한 엣지 데이터센터 개발이 더욱 늘어날 것\"이라고 말했다."
       }
     ],
     "futures_mentions": [],
-    "credit_mentions": [
-      {
-        "title": "불장 멈추자 증권株도 브레이크…이젠 '옥석 가리기'",
-        "url": "https://n.news.naver.com/mnews/article/421/0009187733",
-        "sentence": "증시 매수 대기자금인 투자자예탁금도 21일 기준 98조 1386억 원으로 100조 원 아래로 내려왔다"
-      }
-    ]
-  },
-  "broker_news": {
-    "sector_issues": [
-      {
-        "title": "불장 멈추자 증권株도 브레이크…이젠 '옥석 가리기'",
-        "url": "https://n.news.naver.com/mnews/article/421/0009187733",
-        "words": [
-          "브로커리지",
-          "위탁매매"
-        ],
-        "in_title": [],
-        "sentence": "특히 증권사의 사업 영역이 브로커리지뿐만 아니라 자산관리(WM)·퇴직연금·디지털자산 등으로 확대되고 있는 점도 주가 하방을 지지할 수 있다는 평가다",
-        "rank": 2
-      }
-    ]
+    "credit_mentions": []
   },
   "ib_mentions": {
-    "count": 6,
+    "count": 4,
     "names": [
       "JP모간",
       "JP모건",
-      "UBS",
-      "골드만삭스",
       "제이미 다이먼"
     ],
     "by_name": {
       "JP모간": [
-        1
+        0,
+        2
       ],
       "JP모건": [
-        0
-      ],
-      "UBS": [
-        3
-      ],
-      "골드만삭스": [
-        4,
-        5
+        1
       ],
       "제이미 다이먼": [
-        2
+        3
       ]
     },
     "mentions": [
+      {
+        "who": "JP모간",
+        "sentence": "JP모간은 'AI 에이전트의 전체 시장 규모가 장기적으로 미국 연간 GDP와 비슷한 수준인 수십 조달러에 이를 것'으로 전망했고요",
+        "also": [],
+        "title": "추석 연휴에도 나스닥은 오를까…국채 '플래트닝'에도 견고한 AI 투자심리 [마켓무버의 국장 힌트]",
+        "url": "https://n.news.naver.com/mnews/article/215/0001266963"
+      },
       {
         "who": "JP모건",
         "sentence": "이미 파이낸셜타임스(FT) 등에 따르면 스콧 베선트 미국 재무장관은 뉴욕 맨해튼 JP모건 본사에서 허리펑 중국 국무원 부총리가 이끄는 대표단과 회담한 뒤 양국이 'AI 대화 채널'을 구축하기로 합의했다고 밝혔다",
@@ -8880,116 +9181,29 @@
         ],
         "title": "나스닥, 연이틀 사상 최고치...美·이란 만남 성사 [굿모닝 글로벌이슈]",
         "url": "https://n.news.naver.com/mnews/article/215/0001266956"
-      },
-      {
-        "who": "UBS",
-        "sentence": "울리케 호프만-부르하르디 UBS 미 최고투자책임자(CIO) 겸 글로벌 주식 부문 총괄은 “인공지능(AI) 산업에 대한 긍정적인 전망을 유지하고 있다”며 “AI 도입 및 수익 창출 증가와 자본 지출 확대에 힘입은 바가 크다”고 말했다",
-        "also": [],
-        "title": "美·이란 대화 재개에 나스닥 이틀 연속 사상 최고 [월스트리트in]",
-        "url": "https://n.news.naver.com/mnews/article/018/0006374679"
-      },
-      {
-        "who": "골드만삭스",
-        "sentence": "젠슨 황 엔비디아 최고경영자(CEO)는 이달 골드만삭스 기술 콘퍼런스에서 2028회계연도에도 매출이 약 70% 증가할 것으로 전망했다",
-        "also": [],
-        "title": "실적 폭증에 PER 10여년 최저 수준…월가가 본 엔비디아 역설",
-        "url": "https://n.news.naver.com/mnews/article/018/0006374626"
-      },
-      {
-        "who": "골드만삭스",
-        "sentence": "젠슨 황 엔비디아 최고경영자(CEO)가 이달 골드만삭스 기술 콘퍼런스에서 엔비디아를 “세계 최초이자 유일한 성장 가치주(growth value stock)”라고 부르며 “엄청나게 오해받고 있다”고 말한 것도 이 같은 시장의 시각을 겨냥한 발언이다",
-        "also": [],
-        "title": "실적 폭증에 PER 10여년 최저 수준…월가가 본 엔비디아 역설",
-        "url": "https://n.news.naver.com/mnews/article/018/0006374626"
       }
     ]
   },
   "limit_names": {
     "upper": {
-      "names": [
-        {
-          "code": "393210",
-          "name": "토마토시스템",
-          "change_pct": 30.0,
-          "price": 3315.0,
-          "market": "코스닥",
-          "continual": 1.0
-        },
-        {
-          "code": "303810",
-          "name": "동국생명과학",
-          "change_pct": 29.98,
-          "price": 3035.0,
-          "market": "코스닥",
-          "continual": 0.0
-        },
-        {
-          "code": "486990",
-          "name": "노타",
-          "change_pct": 29.97,
-          "price": 22550.0,
-          "market": "코스닥",
-          "continual": 0.0
-        },
-        {
-          "code": "299660",
-          "name": "셀리드",
-          "change_pct": 29.95,
-          "price": 2885.0,
-          "market": "코스닥",
-          "continual": 0.0
-        },
-        {
-          "code": "299170",
-          "name": "더블유에스아이",
-          "change_pct": 29.94,
-          "price": 1545.0,
-          "market": "코스닥",
-          "continual": 0.0
-        },
-        {
-          "code": "109670",
-          "name": "씨싸이트",
-          "change_pct": 29.93,
-          "price": 8770.0,
-          "market": "코스닥",
-          "continual": 0.0
-        }
-      ],
-      "count": 6,
-      "scanned": 100,
+      "names": [],
+      "count": 0,
+      "scanned": 0,
       "source_url": "https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=up&startIdx=0&pageSize=100",
-      "market_status": "CLOSE",
-      "session": "AFTER_MARKET",
+      "market_status": null,
+      "session": null,
       "basis": "화면이 부르는 API 에서 upDownGb=1(상한) 로 골라냈다 — 등락률 문턱이 아니라 거래소가 매긴 구분이다",
-      "note": null
+      "note": "해당 종목 없음"
     },
     "lower": {
-      "names": [
-        {
-          "code": "101000",
-          "name": "KS인더스트리",
-          "change_pct": -30.0,
-          "price": 1379.0,
-          "market": "코스닥",
-          "continual": 0.0
-        },
-        {
-          "code": "067770",
-          "name": "세진티에스",
-          "change_pct": -29.9,
-          "price": 1700.0,
-          "market": "코스닥",
-          "continual": 0.0
-        }
-      ],
-      "count": 2,
-      "scanned": 100,
+      "names": [],
+      "count": 0,
+      "scanned": 0,
       "source_url": "https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=down&startIdx=0&pageSize=100",
-      "market_status": "CLOSE",
-      "session": "AFTER_MARKET",
+      "market_status": null,
+      "session": null,
       "basis": "화면이 부르는 API 에서 upDownGb=4(하한) 로 골라냈다 — 등락률 문턱이 아니라 거래소가 매긴 구분이다",
-      "note": null
+      "note": "해당 종목 없음"
     }
   },
   "fx": {
@@ -9000,18 +9214,18 @@
         "name_en": "KRW/USD",
         "symbol": "KRW=X",
         "date": "2026-09-23",
-        "close": 1355.4,
+        "close": 1353.22,
         "prev_close": 1373.6801,
-        "change": -18.28,
-        "change_pct": -1.3307,
+        "change": -20.4601,
+        "change_pct": -1.4894,
         "basis": "야후 직접",
         "perf": {
-          "w1": 0.73,
-          "m1": -2.54,
-          "m3": -11.49,
-          "m6": -9.02,
-          "y1": -2.92,
-          "ytd": -5.74,
+          "w1": -0.76,
+          "m1": -2.7,
+          "m3": -12.07,
+          "m6": -10.04,
+          "y1": -2.6,
+          "ytd": -5.89,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9024,18 +9238,18 @@
         "name_en": "KRW/100JPY",
         "symbol": "KRW=X ÷ JPY=X",
         "date": "2026-09-23",
-        "close": 860.94,
+        "close": 859.47,
         "prev_close": 872.9,
-        "change": -11.96,
-        "change_pct": -1.3702,
+        "change": -13.43,
+        "change_pct": -1.5389,
         "basis": "재정환율(USD 경유 계산)",
         "perf": {
-          "w1": -1.22,
-          "m1": -1.64,
-          "m3": -9.24,
-          "m6": -8.74,
-          "y1": -8.67,
-          "ytd": -6.35,
+          "w1": -2.14,
+          "m1": -1.82,
+          "m3": -9.77,
+          "m6": -9.02,
+          "y1": -8.61,
+          "ytd": -6.51,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9050,21 +9264,22 @@
         "name_en": "KRW/CNY",
         "symbol": "KRW=X ÷ CNY=X",
         "date": "2026-09-23",
-        "close": 202.3257,
-        "prev_close": 205.1708,
-        "change": -2.8451,
-        "change_pct": -1.3867,
+        "close": 202.1149,
+        "prev_close": 205.1034,
+        "change": -2.9885,
+        "change_pct": -1.4571,
         "basis": "재정환율(USD 경유 계산)",
         "perf": {
-          "w1": 0.87,
-          "m1": -2.2,
-          "m3": -10.57,
-          "m6": -6.29,
-          "y1": 3.08,
-          "ytd": -1.56,
+          "w1": -0.57,
+          "m1": -2.31,
+          "m3": -11.11,
+          "m6": -7.3,
+          "y1": 3.47,
+          "ytd": -1.66,
           "unit": "%",
           "from": "2024-09-23"
         },
+        "date_note": "두 다리의 기준일이 다르다: 2026-09-23 / 2026-09-22",
         "note_ko": "중국 경기와 원화가 같이 움직인다. 원화의 대리 통화로 읽힌다",
         "note_en": "Won tracks the yuan; the won trades as a China proxy"
       },
@@ -9074,18 +9289,18 @@
         "name_en": "KRW/EUR",
         "symbol": "KRW=X × EURUSD=X",
         "date": "2026-09-23",
-        "close": 1552.0685,
+        "close": 1549.5722,
         "prev_close": 1574.9242,
-        "change": -22.8557,
-        "change_pct": -1.4512,
+        "change": -25.352,
+        "change_pct": -1.6097,
         "basis": "재정환율(USD 경유 계산)",
         "perf": {
-          "w1": -0.13,
-          "m1": -4.52,
-          "m3": -11.58,
-          "m6": -10.01,
-          "y1": -5.29,
-          "ytd": -8.12,
+          "w1": -1.5,
+          "m1": -4.68,
+          "m3": -11.89,
+          "m6": -10.89,
+          "y1": -5.49,
+          "ytd": -8.26,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9098,21 +9313,22 @@
         "name_en": "KRW/BRL",
         "symbol": "KRW=X ÷ BRL=X",
         "date": "2026-09-23",
-        "close": 265.6866,
-        "prev_close": 268.8009,
-        "change": -3.1143,
-        "change_pct": -1.1586,
+        "close": 264.7973,
+        "prev_close": 267.2165,
+        "change": -2.4193,
+        "change_pct": -0.9054,
         "basis": "재정환율(USD 경유 계산)",
         "perf": {
-          "w1": 1.45,
-          "m1": -0.79,
-          "m3": -10.62,
-          "m6": -6.91,
-          "y1": 1.25,
-          "ytd": 1.18,
+          "w1": -0.22,
+          "m1": -1.13,
+          "m3": -11.36,
+          "m6": -8.11,
+          "y1": 1.41,
+          "ytd": 0.85,
           "unit": "%",
           "from": "2024-09-23"
         },
+        "date_note": "두 다리의 기준일이 다르다: 2026-09-23 / 2026-09-22",
         "note_ko": "브라질 국채 투자의 손익을 실제로 가르는 환율. 이자보다 크게 움직인다",
         "note_en": "The rate that actually decides Brazilian bond P&L — it swings more than the coupon"
       },
@@ -9122,18 +9338,18 @@
         "name_en": "KRW/AUD",
         "symbol": "KRW=X × AUDUSD=X",
         "date": "2026-09-23",
-        "close": 964.6382,
+        "close": 962.9514,
         "prev_close": 977.9229,
-        "change": -13.2847,
-        "change_pct": -1.3585,
+        "change": -14.9715,
+        "change_pct": -1.531,
         "basis": "재정환율(USD 경유 계산)",
         "perf": {
-          "w1": 0.44,
-          "m1": -2.57,
-          "m3": -10.05,
-          "m6": -8.56,
-          "y1": 4.86,
-          "ytd": 0.15,
+          "w1": -0.89,
+          "m1": -2.75,
+          "m3": -10.55,
+          "m6": -8.65,
+          "y1": 4.98,
+          "ytd": -0.02,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9176,11 +9392,11 @@
         "change_pct": -0.1202,
         "basis": "야후 직접",
         "perf": {
-          "w1": -0.85,
+          "w1": -0.75,
           "m1": -2.03,
-          "m3": -0.1,
-          "m6": -1.09,
-          "y1": -2.44,
+          "m3": 0.21,
+          "m6": -0.95,
+          "y1": -2.97,
           "ytd": -2.52,
           "unit": "%",
           "from": "2024-09-23"
@@ -9194,18 +9410,18 @@
         "name_en": "USD/JPY",
         "symbol": "JPY=X",
         "date": "2026-09-23",
-        "close": 157.432,
+        "close": 157.448,
         "prev_close": 157.369,
-        "change": 0.063,
-        "change_pct": 0.04,
+        "change": 0.079,
+        "change_pct": 0.0502,
         "basis": "야후 직접",
         "perf": {
-          "w1": 1.97,
-          "m1": -0.91,
-          "m3": -2.48,
-          "m6": -0.31,
-          "y1": 6.3,
-          "ytd": 0.65,
+          "w1": 1.41,
+          "m1": -0.9,
+          "m3": -2.55,
+          "m6": -1.12,
+          "y1": 6.58,
+          "ytd": 0.66,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9217,19 +9433,19 @@
         "name_ko": "달러/위안",
         "name_en": "USD/CNY",
         "symbol": "CNY=X",
-        "date": "2026-09-23",
-        "close": 6.6991,
-        "prev_close": 6.6953,
-        "change": 0.0038,
-        "change_pct": 0.0568,
+        "date": "2026-09-22",
+        "close": 6.6953,
+        "prev_close": 6.6975,
+        "change": -0.0022,
+        "change_pct": -0.0328,
         "basis": "야후 직접",
         "perf": {
-          "w1": -0.14,
-          "m1": -0.35,
-          "m3": -1.03,
-          "m6": -2.91,
-          "y1": -5.82,
-          "ytd": -4.25,
+          "w1": -0.19,
+          "m1": -0.4,
+          "m3": -1.08,
+          "m6": -2.96,
+          "y1": -5.87,
+          "ytd": -4.3,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9241,19 +9457,19 @@
         "name_ko": "달러/헤알",
         "name_en": "USD/BRL",
         "symbol": "BRL=X",
-        "date": "2026-09-23",
-        "close": 5.1015,
-        "prev_close": 5.1104,
-        "change": -0.0089,
-        "change_pct": -0.1742,
+        "date": "2026-09-22",
+        "close": 5.1104,
+        "prev_close": 5.1407,
+        "change": -0.0303,
+        "change_pct": -0.5894,
         "basis": "야후 직접",
         "perf": {
-          "w1": -0.71,
-          "m1": -1.76,
-          "m3": -0.97,
-          "m6": -2.27,
-          "y1": -4.12,
-          "ytd": -6.84,
+          "w1": -0.54,
+          "m1": -1.59,
+          "m3": -0.8,
+          "m6": -2.1,
+          "y1": -3.95,
+          "ytd": -6.68,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9266,18 +9482,18 @@
         "name_en": "GBP/USD",
         "symbol": "GBPUSD=X",
         "date": "2026-09-23",
-        "close": 1.3345,
+        "close": 1.3344,
         "prev_close": 1.3371,
-        "change": -0.0026,
-        "change_pct": -0.1944,
+        "change": -0.0027,
+        "change_pct": -0.2038,
         "basis": "야후 직접",
         "perf": {
-          "w1": -1.16,
-          "m1": -2.19,
-          "m3": 1.04,
-          "m6": -0.6,
-          "y1": -0.89,
-          "ytd": -0.91,
+          "w1": -0.96,
+          "m1": -2.2,
+          "m3": 0.73,
+          "m6": 0.09,
+          "y1": -1.27,
+          "ytd": -0.92,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9293,15 +9509,15 @@
         "close": 0.8206,
         "prev_close": 0.8208,
         "change": -0.0002,
-        "change_pct": -0.0305,
+        "change_pct": -0.0195,
         "basis": "야후 직접",
         "perf": {
-          "w1": 0.42,
-          "m1": 2.62,
-          "m3": 1.56,
-          "m6": 4.04,
-          "y1": 3.05,
-          "ytd": 3.64,
+          "w1": 0.19,
+          "m1": 2.63,
+          "m3": 1.46,
+          "m6": 4.17,
+          "y1": 3.57,
+          "ytd": 3.66,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9314,18 +9530,18 @@
         "name_en": "USD/TWD",
         "symbol": "TWD=X",
         "date": "2026-09-23",
-        "close": 31.676,
+        "close": 31.702,
         "prev_close": 31.7384,
-        "change": -0.0624,
-        "change_pct": -0.1966,
+        "change": -0.0364,
+        "change_pct": -0.1147,
         "basis": "야후 직접",
         "perf": {
-          "w1": -0.13,
-          "m1": -0.51,
-          "m3": -0.08,
-          "m6": -0.4,
-          "y1": 4.83,
-          "ytd": 1.38,
+          "w1": -0.22,
+          "m1": -0.43,
+          "m3": 0.05,
+          "m6": -1.0,
+          "y1": 4.91,
+          "ytd": 1.47,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9337,19 +9553,19 @@
         "name_ko": "달러/루피",
         "name_en": "USD/INR",
         "symbol": "INR=X",
-        "date": "2026-09-23",
-        "close": 95.58,
-        "prev_close": 95.712,
-        "change": -0.132,
-        "change_pct": -0.1379,
+        "date": "2026-09-22",
+        "close": 95.712,
+        "prev_close": 96.0131,
+        "change": -0.3011,
+        "change_pct": -0.3136,
         "basis": "야후 직접",
         "perf": {
-          "w1": -0.27,
-          "m1": -0.2,
-          "m3": 1.32,
-          "m6": 2.68,
-          "y1": 8.49,
-          "ytd": 6.47,
+          "w1": -0.13,
+          "m1": -0.06,
+          "m3": 1.46,
+          "m6": 2.83,
+          "y1": 8.64,
+          "ytd": 6.62,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9361,19 +9577,19 @@
         "name_ko": "달러/동",
         "name_en": "USD/VND",
         "symbol": "VND=X",
-        "date": "2026-09-23",
-        "close": 26013.0,
-        "prev_close": 26020.0,
-        "change": -7.0,
-        "change_pct": -0.0269,
+        "date": "2026-09-22",
+        "close": 26020.0,
+        "prev_close": 26019.0,
+        "change": 1.0,
+        "change_pct": 0.0038,
         "basis": "야후 직접",
         "perf": {
-          "w1": 0.11,
-          "m1": -0.33,
-          "m3": -0.96,
-          "m6": -0.92,
-          "y1": -1.3,
-          "ytd": -0.81,
+          "w1": 0.14,
+          "m1": -0.3,
+          "m3": -0.93,
+          "m6": -0.9,
+          "y1": -1.27,
+          "ytd": -0.78,
           "unit": "%",
           "from": "2024-09-23"
         },
@@ -9505,24 +9721,25 @@
   "earnings": {
     "items": [
       {
-        "company": "LG전자",
-        "title": "엔비디아·MS가 날개 달았다…한풀 꺾였던 LG그룹주 '들썩' [종목+]",
-        "url": "https://n.news.naver.com/mnews/article/015/0005335392",
+        "company": "삼성물산",
+        "title": "삼성물산, 삼성전자 배당 확대 수혜…내년 DPS 8550원 전망-SK",
+        "url": "https://n.news.naver.com/mnews/article/018/0006374724",
         "quotes": [
-          "박 연구원은 \"LG전자와 LG화학, LG생활건강, LG유플러스 등의 실적 호조에 따라 지분법이익이 크게 증가할 것\"이라고 말했다."
+          "[이데일리 김윤정 기자] SK증권은 삼성물산(028260)에 대해 본업 실적 개선과 삼성전자의 배당 확대에 힘입어 시장 기대치를 웃도는 주주환원이 가능할 것으로 전망했다",
+          "23일 최관순 SK증권 연구원은 삼성물산의 올해 매출액을 45조8000억원으로 전년 대비 12.3% 증가하고, 영업이익은 3조8000억원으로 15.1% 늘어날 것으로 전망했다",
+          "지난해 삼성물산 별도 매출에서 삼성전자향 매출이 차지하는 비중은 16.1%였지만 올해 상반기에는 29.2%까지 높아졌다"
         ],
         "call_quotes": [],
         "has_call": false,
-        "verdict": null
+        "verdict": "beat"
       },
       {
-        "company": "마이크론",
-        "title": "추석 휴장 기간 '미중회담' 빅이벤트…금리·유가도 변수",
-        "url": "https://n.news.naver.com/mnews/article/421/0009187715",
+        "company": "삼성전기",
+        "title": "메리츠證 “삼성전기, AI 가속기 넘어 CPU까지 수혜 확대…목표가 220만원”",
+        "url": "https://n.news.naver.com/mnews/article/366/0001194084",
         "quotes": [
-          "휴장 기간 유가 추이…재개장 직후 PCE물가·마이크론 실적",
-          "연휴 직후 30일에는 미국 8월 PCE(개인소비지출) 물가와 마이크론 실적이 연달아 발표된다",
-          "PCE 결과에선 연준의 추가 긴축 가능성과 금리 경로를, 마이크론 실적에선 메모리 산업 수익성을 재확인할 수 있을 전망이다"
+          "23일 양승수 메리츠증권 연구원은 삼성전기의 올해 3분기 매출액을 3조8200억원, 영업이익을 6571억원으로 전망했다",
+          "삼성전기는 다수의 CPU 고객사에 ABF를 공급하고 있으며, PC용까지 포함하면 전체 ABF 매출에서 CPU 관련 비중이 45%를 웃도는 것으로 추정됐다"
         ],
         "call_quotes": [],
         "has_call": false,
@@ -9530,36 +9747,24 @@
       },
       {
         "company": "삼성전자",
-        "title": "키움證 “삼성전자 3분기 영업익 기대치 하회 전망…범용 메모리보다 HBM·파운드리 주목해야”",
-        "url": "https://n.news.naver.com/mnews/article/366/0001194082",
+        "title": "\"삼성전자, 목표가 63만원으로 상향…조정은 매수 기회\"-유안타",
+        "url": "https://n.news.naver.com/mnews/article/008/0005417678",
         "quotes": [
-          "키움증권이 삼성전자의 올해 3분기 영업이익이 기존 기대치에 못 미칠 것으로 전망했다",
-          "23일 박유악 키움증권 연구원은 삼성전자의 3분기 매출액을 198조원, 영업이익을 107조원으로 전망했다"
+          "2026.5.27/뉴스1 Copyright (C) 뉴스1. All rights reserved. 무단 전재 및 재배포, AI학습 이용 금지. /사진=(서울=뉴스1) 안은나 기자 유안타증권은 23일 2028년까지 메모리 반도체의 빠듯한 수급 환경이 이어질 것이라며, 삼성전자의 내년 연간 실적 추정치를 상향했다",
+          "이어 \"메모리 업사이클이 장기화할 경우 삼성전자 FCF(잉여현금흐름)는 과거 대비 구조적으로 확대돼 보다 친화적인 주주환원 정책을 제시할 가능성도 배제할 수 없다\"며 \"내년 연간 실적 추정치 상향 조정에 따라 목표주가를 63만원으로 상향 조정한다",
+          "올해 3분기 삼성전자가 영업이익 100조원을 기록할 것이라고 전망했다"
         ],
         "call_quotes": [],
         "has_call": false,
-        "verdict": "miss"
-      },
-      {
-        "company": "엔비디아",
-        "title": "실적 폭증에 PER 10여년 최저 수준…월가가 본 엔비디아 역설",
-        "url": "https://n.news.naver.com/mnews/article/018/0006374626",
-        "quotes": [
-          "“AI 투자 둔화 가능성 낮아…현재 밸류 매력적” [뉴욕=이데일리 성주원 특파원] 인공지능(AI) 대장주 엔비디아의 실적은 폭발적으로 성장하고 있지만 월가가 부여하는 기업가치는 오히려 10여년 만에 가장 낮은 수준으로 떨어졌다",
-          "블룸버그가 집계한 월가 전망에 따르면 내년 1월 끝나는 2027회계연도 엔비디아의 매출과 순이익은 각각 90%, 99% 증가할 것으로 예상된다",
-          "젠슨 황 엔비디아 최고경영자(CEO)는 이달 골드만삭스 기술 콘퍼런스에서 2028회계연도에도 매출이 약 70% 증가할 것으로 전망했다"
-        ],
-        "call_quotes": [],
-        "has_call": false,
-        "verdict": "beat"
+        "verdict": null
       }
     ],
-    "count": 4,
+    "count": 3,
     "with_call": 0,
     "basis": "그날 수집한 기사 본문에서 회사 이름과 실적 표현이 같은 문장에 있는 대목만 뽑았다. 문장은 원문 그대로다"
   },
   "summary": {
-    "sources_tried": 219,
-    "sources_ok": 214
+    "sources_tried": 220,
+    "sources_ok": 213
   }
 }
