@@ -325,6 +325,100 @@ function buildSchedule(cfg) {
 }
 
 /* ================================================================
+   3-2. 저장 - 상담 케이스 보관, 파일 내보내기/가져오기, CSV
+   ================================================================ */
+
+const STORE_KEY = 'mas-retirement-cases-v1';
+const CASE_FORMAT = 'mas-retirement-case';
+
+/** localStorage 는 file:// 이나 사내 정책에 따라 막힐 수 있어 항상 감싼다 */
+function loadCases() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveCases(list) {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(list));
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, reason: e && e.name === 'QuotaExceededError' ? '저장 공간이 가득 찼습니다.' : '이 브라우저에서 저장이 차단되어 있습니다.' };
+  }
+}
+
+function storageAvailable() {
+  try {
+    localStorage.setItem('__mas_probe', '1');
+    localStorage.removeItem('__mas_probe');
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/** Blob 을 내려받는다. file:// 에서도 동작한다 */
+function downloadBlob(filename, mime, text) {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+const safeName = (s) => (s || '무명').replace(/[\\/:*?"<>|]/g, '').slice(0, 30);
+
+/**
+ * 다운로드 파일명은 ASCII 로만 만든다.
+ * file:// 에서 열면 크롬이 비ASCII 파일명을 통째로 버리고 확장자 없는 'download' 로
+ * 저장해 버린다. 고객명은 파일 안(JSON 의 custName, CSV 의 고객명 행)에 들어간다.
+ */
+const asciiSlug = (s) => String(s || '').replace(/[^A-Za-z0-9._-]/g, '').slice(0, 20);
+
+const downloadName = (prefix, name, ext) => {
+  const slug = asciiSlug(name);
+  return prefix + (slug ? '_' + slug : '') + '_' + stamp() + '.' + ext;
+};
+
+const stamp = () => {
+  const p = (n) => String(n).padStart(2, '0');
+  const d = new Date();
+  return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes());
+};
+
+/** 인출 스케줄 CSV. 엑셀에서 한글이 깨지지 않도록 UTF-8 BOM 을 붙인다 */
+function scheduleCsv(rows, meta) {
+  const esc = (v) => {
+    const s = String(v === null || v === undefined ? '' : v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const lines = [];
+  meta.forEach((m) => lines.push(esc(m[0]) + ',' + esc(m[1])));
+  lines.push('');
+  lines.push(['회차', '연도', '나이', '한도 연차', '실제 연차', '기초자산', '연금수령한도',
+    '연간 인출액', '월 환산', '감면율', '예상 세액', '기말잔액'].map(esc).join(','));
+  rows.forEach((r) => lines.push([
+    r.k, r.year, r.age,
+    r.limitYear + '년차' + (r.unlimited ? '(한도해제)' : ''),
+    r.actualYear + '년차',
+    Math.round(r.begin),
+    r.unlimited ? '전액' : Math.round(r.limit),
+    Math.round(r.draw), Math.round(r.monthly),
+    r.drawRet > 0 ? Math.round(r.reduction * 100) + '%' : '-',
+    Math.round(r.tax), Math.round(r.end)
+  ].map(esc).join(',')));
+  return '﻿' + lines.join('\r\n');
+}
+
+/* ================================================================
    4. UI 프리미티브
    ================================================================ */
 
@@ -341,6 +435,36 @@ function Field({ label, hint, children, className = '' }) {
 const inputCls =
   'w-full h-[42px] px-3 border border-hair rounded-xs bg-white text-[15px] text-ink ' +
   'focus:outline-none focus:border-mas-orange focus:ring-2 focus:ring-mas-orange/25 transition';
+
+const TODAY_STR = (() => {
+  const p = (n) => String(n).padStart(2, '0');
+  return TODAY.getFullYear() + '-' + p(TODAY.getMonth() + 1) + '-' + p(TODAY.getDate());
+})();
+
+/**
+ * 날짜 입력.
+ *
+ * 브라우저 기본 date 입력은 연도 칸에 6자리(예: 200700)까지 받아들여
+ * 200700-02-01 같은 값이 들어온다. 연도를 앞 4자리로 자르고 범위를 눌러
+ * 가입일이 오늘을 넘지 않게 한다.
+ */
+function DateInput({ value, onChange }) {
+  const handle = (e) => {
+    const v = e.target.value;
+    if (!v) { onChange(''); return; }
+    const m = v.match(/^(\d+)-(\d{2})-(\d{2})$/);
+    if (!m) { onChange(v); return; }
+    let y = m[1].length > 4 ? m[1].slice(0, 4) : m[1];   // 6자리 입력 → 앞 4자리
+    y = Math.min(TODAY.getFullYear(), Math.max(1900, +y));
+    let next = String(y).padStart(4, '0') + '-' + m[2] + '-' + m[3];
+    if (next > TODAY_STR) next = TODAY_STR;              // 가입일은 미래일 수 없다
+    onChange(next);
+  };
+  return (
+    <input type="date" className={inputCls} value={value}
+      min="1900-01-01" max={TODAY_STR} onChange={handle} />
+  );
+}
 
 function MoneyInput({ value, onChange, placeholder }) {
   return (
@@ -462,6 +586,65 @@ function App() {
   const [mode, setMode] = useState('even');             // even | max
   const [years, setYears] = useState(10);
   const [rate, setRate] = useState(3);
+
+  // ---- 저장 ----
+  const [cases, setCases] = useState(() => loadCases());
+  const [storeOk] = useState(() => storageAvailable());
+  const [notice, setNotice] = useState(null);
+  const fileRef = React.useRef(null);
+
+  const say = (text, tone) => {
+    setNotice({ text, tone: tone || 'ok' });
+    setTimeout(() => setNotice(null), 4000);
+  };
+
+  /** 화면의 모든 입력을 한 덩어리로 모은다 (저장·내보내기 공통) */
+  const collectState = () => ({
+    custName, birthRaw, system, systemJoinStr,
+    amtSingle, amtLegal, amtHonor, deferredTax,
+    hasPension, pensionJoinStr, pensionBal,
+    hasIrp, irpJoinStr, irpBal,
+    pastCount, fees, manualPick, pickedId, scope, mode, years, rate
+  });
+
+  // 우리 형식인지 최소한의 확인. 아니면 폼을 건드리지 않는다
+  const looksLikeCase = (d) => {
+    if (!d || typeof d !== 'object' || Array.isArray(d)) return false;
+    const keys = ['custName', 'birthRaw', 'system', 'systemJoinStr', 'amtSingle',
+      'amtLegal', 'amtHonor', 'deferredTax', 'years', 'rate', 'scope', 'mode'];
+    return keys.filter((k) => Object.prototype.hasOwnProperty.call(d, k)).length >= 4;
+  };
+
+  const applyState = (d) => {
+    if (!looksLikeCase(d)) return false;
+    const str = (v, f) => (typeof v === 'string' ? v : f);
+    const num = (v, f) => (typeof v === 'number' && isFinite(v) ? v : f);
+    const bool = (v, f) => (typeof v === 'boolean' ? v : f);
+    setCustName(str(d.custName, ''));
+    setBirthRaw(str(d.birthRaw, ''));
+    setSystem(['DB', 'DC', 'SEV'].indexOf(d.system) >= 0 ? d.system : 'DC');
+    setSystemJoinStr(str(d.systemJoinStr, ''));
+    setAmtSingle(num(d.amtSingle, 0));
+    setAmtLegal(num(d.amtLegal, 0));
+    setAmtHonor(num(d.amtHonor, 0));
+    setDeferredTax(num(d.deferredTax, 0));
+    setHasPension(bool(d.hasPension, false));
+    setPensionJoinStr(str(d.pensionJoinStr, ''));
+    setPensionBal(num(d.pensionBal, 0));
+    setHasIrp(bool(d.hasIrp, false));
+    setIrpJoinStr(str(d.irpJoinStr, ''));
+    setIrpBal(num(d.irpBal, 0));
+    setPastCount(num(d.pastCount, 0));
+    setFees(Object.assign({ 'ex-pension': 0, 'ex-irp': 0, 'new-irp': 0, 'new-pension': 0 },
+      d.fees && typeof d.fees === 'object' ? d.fees : {}));
+    setManualPick(d.manualPick && typeof d.manualPick === 'object' ? d.manualPick : {});
+    setPickedId(typeof d.pickedId === 'string' ? d.pickedId : null);
+    setScope(['alone', 'pension', 'irp', 'all'].indexOf(d.scope) >= 0 ? d.scope : 'alone');
+    setMode(d.mode === 'max' ? 'max' : 'even');
+    setYears(Math.min(30, Math.max(5, num(d.years, 10))));
+    setRate(Math.min(8, Math.max(0, num(d.rate, 3))));
+    return true;
+  };
 
   const birth = useMemo(() => parseBirth(birthRaw), [birthRaw]);
   const age = useMemo(() => ageOn(birth, TODAY), [birth]);
@@ -613,6 +796,74 @@ function App() {
     }
   }, [scope, hasPension, hasIrp]);
 
+  // ---- 저장 동작 ----
+  const doSaveCase = () => {
+    const name = safeName(custName) + ' · ' + (birth ? birth.getFullYear() + '년생' : '생년월일 미입력');
+    const entry = { id: 'c' + Date.now(), name, savedAt: new Date().toISOString(), data: collectState() };
+    const next = [entry].concat(cases.filter((c) => c.name !== name)).slice(0, 50);
+    const r = saveCases(next);
+    if (r.ok) { setCases(next); say('저장했습니다 - ' + name); }
+    else say(r.reason + ' 파일로 내보내기를 쓰세요.', 'err');
+  };
+
+  const doLoadCase = (id) => {
+    const c = cases.find((x) => x.id === id);
+    if (!c) return;
+    applyState(c.data);
+    say('불러왔습니다 - ' + c.name);
+  };
+
+  const doDeleteCase = (id) => {
+    const c = cases.find((x) => x.id === id);
+    const next = cases.filter((x) => x.id !== id);
+    const r = saveCases(next);
+    if (r.ok) { setCases(next); say('삭제했습니다' + (c ? ' - ' + c.name : '')); }
+    else say(r.reason, 'err');
+  };
+
+  const doExport = () => {
+    const payload = { format: CASE_FORMAT, version: 1, savedAt: new Date().toISOString(), data: collectState() };
+    const fn = downloadName('retirement-case', custName, 'json');
+    downloadBlob(fn, 'application/json;charset=utf-8', JSON.stringify(payload, null, 2));
+    say('내보냈습니다 - ' + fn);
+  };
+
+  const doImport = (file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const obj = JSON.parse(String(reader.result));
+        const d = obj && obj.format === CASE_FORMAT ? obj.data : obj && obj.data ? obj.data : obj;
+        if (!applyState(d)) throw new Error('형식 오류');
+        say('가져왔습니다 - ' + (file.name || ''));
+      } catch (e) {
+        say('이 파일은 상담 케이스 형식이 아닙니다.', 'err');
+      }
+    };
+    reader.onerror = () => say('파일을 읽지 못했습니다.', 'err');
+    reader.readAsText(file, 'utf-8');
+  };
+
+  const doCsv = () => {
+    if (!sim) return;
+    const meta = [
+      ['고객명', custName || '-'],
+      ['생년월일', birthRaw || '-'],
+      ['퇴직제도', system === 'SEV' ? '퇴직금제도' : system],
+      ['수령 계좌', picked ? picked.label : '-'],
+      ['한도 기산', picked ? picked.startLimitYear + '년차' : '-'],
+      ['대상 자산(원)', Math.round(picked.allocatedAmount + otherPrincipal)],
+      ['수령 기간(년)', years],
+      ['운용수익률(%)', rate],
+      ['계좌 수수료(%)', (picked.feeRate * 100).toFixed(2)],
+      ['작성일', TODAY_STR]
+    ];
+    const fn = downloadName('retirement-schedule', custName, 'csv');
+    downloadBlob(fn, 'text/csv;charset=utf-8', scheduleCsv(sim.rows, meta));
+    say('CSV 로 내보냈습니다 - ' + fn);
+  };
+
   const scopeOptions = [
     { value: 'alone', label: '퇴직금 단독' },
     { value: 'pension', label: '기존 연금저축 합산', disabled: !hasPension },
@@ -642,6 +893,61 @@ function App() {
 
             {/* ---------- 입력 (데스크탑에서는 스크롤에 따라붙는다) ---------- */}
             <div className="lg:sticky lg:top-5 lg:max-h-[calc(100vh_-_2.5rem)] lg:overflow-y-auto lg:pr-3 lg:-mr-3">
+
+              {/* ---------- 저장 ---------- */}
+              <div className="border border-hair rounded-sm bg-white p-3 mb-7">
+                <div className="flex gap-2 mb-2">
+                  <button type="button" onClick={doSaveCase}
+                    className="flex-1 h-[38px] text-[14px] font-medium bg-mas-orange text-white rounded-xs hover:bg-mas-active transition">
+                    상담 저장
+                  </button>
+                  <button type="button" onClick={doExport}
+                    className="flex-1 h-[38px] text-[14px] font-medium bg-white text-ink-body border border-hair rounded-xs hover:bg-surf-subtle transition">
+                    파일로 내보내기
+                  </button>
+                  <button type="button" onClick={() => fileRef.current && fileRef.current.click()}
+                    className="flex-1 h-[38px] text-[14px] font-medium bg-white text-ink-body border border-hair rounded-xs hover:bg-surf-subtle transition">
+                    가져오기
+                  </button>
+                  <input ref={fileRef} type="file" accept="application/json,.json" className="hidden"
+                    onChange={(e) => { doImport(e.target.files && e.target.files[0]); e.target.value = ''; }} />
+                </div>
+
+                {cases.length > 0 && (
+                  <div className="border-t border-hair-soft pt-2">
+                    <div className="text-[12px] font-medium text-ink-soft mb-1.5">저장된 상담 {cases.length}건</div>
+                    <div className="max-h-[132px] overflow-y-auto space-y-1">
+                      {cases.map((c) => (
+                        <div key={c.id} className="flex items-center gap-2 text-[13px]">
+                          <button type="button" onClick={() => doLoadCase(c.id)}
+                            className="flex-1 text-left px-2 py-1 rounded-xs hover:bg-surf-subtle transition truncate"
+                            title={'불러오기 · ' + new Date(c.savedAt).toLocaleString('ko-KR')}>
+                            {c.name}
+                            <span className="text-[11px] text-ink-soft ml-1.5">
+                              {new Date(c.savedAt).toLocaleDateString('ko-KR')}
+                            </span>
+                          </button>
+                          <button type="button" onClick={() => doDeleteCase(c.id)}
+                            className="shrink-0 px-2 py-1 text-[12px] text-ink-soft hover:text-sig-err transition"
+                            title="삭제">삭제</button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {!storeOk && (
+                  <p className="text-[12px] text-sig-err mt-2 leading-snug">
+                    이 브라우저에서는 상담 저장이 차단되어 있습니다. '파일로 내보내기'를 사용하세요.
+                  </p>
+                )}
+                {notice && (
+                  <p className={'text-[12px] mt-2 leading-snug ' + (notice.tone === 'err' ? 'text-sig-err' : 'text-sig-ok')}>
+                    {notice.text}
+                  </p>
+                )}
+              </div>
+
               <Section title="1 · 고객 및 퇴직 정보">
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
@@ -679,8 +985,7 @@ function App() {
                     hint={system === 'SEV'
                       ? '법정퇴직금은 연금계좌 이체 제한을 받지 않습니다.'
                       : CUTOFF_LABEL + ' 이후 가입이면 구 연금계좌로 이전할 수 없습니다.'}>
-                    <input type="date" className={inputCls} value={systemJoinStr}
-                      onChange={(e) => setSystemJoinStr(e.target.value)} />
+                    <DateInput value={systemJoinStr} onChange={setSystemJoinStr} />
                   </Field>
 
                   {system === 'SEV' ? (
@@ -724,8 +1029,7 @@ function App() {
                         {a.on && (
                           <div className="grid grid-cols-2 gap-3">
                             <Field label="가입일">
-                              <input type="date" className={inputCls} value={a.joinStr}
-                                onChange={(e) => a.setJoin(e.target.value)} />
+                              <DateInput value={a.joinStr} onChange={a.setJoin} />
                             </Field>
                             <Field label="현재 평가액">
                               <MoneyInput value={a.bal} onChange={a.setBal} />
@@ -1106,7 +1410,13 @@ function App() {
 
               <div style={{ display: tab === 'schedule' ? 'block' : 'none' }}>
               {ready && sim && (
-                <Section title={'인출 시뮬레이션 - ' + picked.label}>
+                <Section title={'인출 시뮬레이션 - ' + picked.label}
+                  right={
+                    <button type="button" onClick={doCsv}
+                      className="h-[38px] px-4 text-[14px] font-medium bg-white text-ink-body border border-hair rounded-xs hover:bg-surf-subtle transition">
+                      CSV 내보내기
+                    </button>
+                  }>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
                     <Stat label="시뮬레이션 대상 자산" value={krw(picked.allocatedAmount + otherPrincipal)} tone="brand" />
                     <Stat label={'총 인출액 (' + sim.totals.spanYears + '년)'} value={krw(sim.totals.totalDraw)} />
