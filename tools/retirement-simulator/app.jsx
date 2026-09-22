@@ -130,7 +130,7 @@ function buildSources(input) {
 
 /** 계좌 후보 생성 및 평가 */
 function buildCandidates(input, sources) {
-  const { age, hasPension, pensionJoin, pensionBal, hasIrp, irpJoin, irpBal } = input;
+  const { age, hasPension, pensionJoin, pensionBal, hasIrp, irpJoin, irpBal, fees } = input;
 
   const targets = [];
   if (hasPension) targets.push({ id: 'ex-pension', type: 'pension', isNew: false, joinDate: pensionJoin, balance: pensionBal, label: '기존 연금저축' });
@@ -157,7 +157,8 @@ function buildCandidates(input, sources) {
       acceptAmount,
       legacy,
       startLimitYear,
-      minYears
+      minYears,
+      feeRate: ((fees && fees[t.id]) || 0) / 100   // 입력은 %, 계산은 소수
     };
   });
 }
@@ -182,6 +183,11 @@ function accountScore(c, source) {
     // 법정·명예퇴직금은 회사가 직접 지급하므로 어느 계좌든 입금할 수 있다. IRP 를 기본으로 둔다.
     if (c.type === 'irp') score += 10; else score += 8;
   }
+
+  // 수수료. 연 0.3% 차이면 위의 이전 절차 이점(30점)과 맞먹고, 0.5% 차이면 뒤집는다.
+  // 한도 기산(1000점)은 뒤집지 못한다 - 구조적 차이가 수수료보다 크기 때문.
+  score -= (c.feeRate || 0) * 10000;
+
   return score;
 }
 
@@ -190,19 +196,25 @@ function accountScore(c, source) {
  * 법정퇴직금은 IRP, 명예퇴직금은 구 연금저축처럼 분할 입금이 유리한 경우를 잡아낸다.
  * 세법상 동점인 계좌가 여럿이면 tiedWith 로 알려 상담자가 직접 고르게 한다.
  */
-function buildAllocation(candidates, sources) {
+function buildAllocation(candidates, sources, manualPick) {
   return sources.map((s) => {
     const options = candidates.filter((c) => c.perSource.some((p) => p.source.kind === s.kind && p.ok));
-    if (!options.length) return { source: s, target: null, tiedWith: [] };
+    if (!options.length) return { source: s, target: null, options: [], tiedWith: [], manual: false };
     const scored = options.map((c) => ({ c, score: accountScore(c, s) }));
     scored.sort((a, b) => b.score - a.score);
-    const top = scored[0];
+    const auto = scored[0].c;
+
+    // 상담자가 투자 가능 상품·중도인출 조건 등을 보고 직접 고른 계좌가 있으면 그것을 따른다
+    const forcedId = manualPick && manualPick[s.kind];
+    const forced = forcedId ? options.find((c) => c.id === forcedId) : null;
+    const target = forced || auto;
+
     // 한도 기산이 같은 기존 계좌들 = 세법상 우열 없음
     const tiedWith = scored
-      .slice(1)
-      .filter((x) => !x.c.isNew && x.c.startLimitYear === top.c.startLimitYear)
+      .filter((x) => x.c.id !== target.id && !x.c.isNew && x.c.startLimitYear === target.startLimitYear)
       .map((x) => x.c);
-    return { source: s, target: top.c, tiedWith };
+
+    return { source: s, target, auto, options: scored.map((x) => x.c), tiedWith, manual: !!forced && forced.id !== auto.id };
   });
 }
 
@@ -229,18 +241,33 @@ function buildSchedule(cfg) {
     deferredTax,       // 이연 퇴직소득세
     startLimitYear,    // 한도 연차 기산 (1 또는 6)
     pastCount,         // 과거 실제 연금수령 횟수
+    feeRate,           // 계좌 연간 수수료율 (적립금 대비, 소수)
     years, mode, rate, startYear, startAge
   } = cfg;
+
+  const fRate = feeRate || 0;
 
   let P = retirePrincipal;   // 퇴직소득 재원 (운용수익은 G로 분리)
   let G = otherPrincipal;    // 기타 재원 (세액공제 납입분 + 운용수익)
   const P0 = retirePrincipal;
 
   const rows = [];
-  let totalDraw = 0, totalTax = 0, totalRetTax = 0, totalFullRetTax = 0, totalOtherTax = 0;
+  let totalDraw = 0, totalTax = 0, totalRetTax = 0, totalFullRetTax = 0, totalOtherTax = 0, totalFee = 0;
 
   for (let k = 1; k <= years; k++) {
     if (k > 1) { G += (P + G) * rate; }             // 운용수익은 기타 재원으로 귀속
+
+    // 계좌 수수료는 매년 적립금 기준으로 차감한다.
+    // 운용수익·세액공제분에서 먼저 빼고, 모자라면 퇴직소득 재원에서 뺀다
+    // (이연퇴직소득세는 실제 인출한 퇴직소득분에만 비례하므로 그만큼 세액도 줄어든다).
+    if (fRate > 0) {
+      const fee = Math.max(0, (P + G) * fRate);
+      const fromG = Math.min(fee, Math.max(0, G));
+      G -= fromG;
+      P = Math.max(0, P - (fee - fromG));
+      totalFee += fee;
+    }
+
     const begin = P + G;
     if (begin <= 1) break;
 
@@ -255,7 +282,10 @@ function buildSchedule(cfg) {
     const drawRet = Math.min(draw, P);
     const drawG = draw - drawRet;
 
-    const factor = actualYear <= 10 ? 0.7 : 0.6;    // 30% vs 40% 감면
+    // 이연퇴직소득세 감면 (소득세법 §129①5의3). 실제 연금수령연차 기준 3단계.
+    // 1~10년차 70% 과세(30% 감면) / 11~20년차 60%(40% 감면) / 21년차~ 50%(50% 감면).
+    // 20년 초과 구간은 2025년 세법개정으로 신설되어 2026.1.1 이후 연금수령분부터 적용된다.
+    const factor = actualYear <= 10 ? 0.7 : actualYear <= 20 ? 0.6 : 0.5;
     const fullRetTax = P0 > 0 ? deferredTax * (drawRet / P0) : 0;
     const retTax = fullRetTax * factor;
 
@@ -269,7 +299,7 @@ function buildSchedule(cfg) {
       k, year: startYear + k - 1, age: ageK,
       limitYear, actualYear, unlimited,
       begin, limit, draw, monthly: draw / 12,
-      reduction: actualYear <= 10 ? 0.3 : 0.4,
+      reduction: actualYear <= 10 ? 0.3 : actualYear <= 20 ? 0.4 : 0.5,
       drawRet,                                   // 이 회차에 인출된 이연퇴직소득 (0이면 감면 대상 없음)
       retTax, otherTax, tax: retTax + otherTax,
       end: P + G,
@@ -285,7 +315,7 @@ function buildSchedule(cfg) {
   return {
     rows,
     totals: {
-      totalDraw, totalTax, totalRetTax, totalOtherTax,
+      totalDraw, totalTax, totalRetTax, totalOtherTax, totalFee,
       afterTax: totalDraw - totalTax,
       taxSaved: totalFullRetTax - totalRetTax,
       residual: P + G,
@@ -411,6 +441,13 @@ function App() {
   const [irpBal, setIrpBal] = useState(0);
   const [pastCount, setPastCount] = useState(0);
 
+  // 재원별 수동 선택 - 투자 가능 상품·중도인출 조건 등 앱이 판단하지 않는 기준으로 상담자가 직접 고른다
+  const [manualPick, setManualPick] = useState({});
+
+  // 계좌별 연간 수수료율 (%, 적립금 대비). 상품마다 달라 기본값은 0으로 두고 상담자가 입력한다.
+  const [fees, setFees] = useState({ 'ex-pension': 0, 'ex-irp': 0, 'new-irp': 0, 'new-pension': 0 });
+  const setFee = (id, v) => setFees((f) => Object.assign({}, f, { [id]: v }));
+
   // --- 시뮬레이션 옵션
   const [pickedId, setPickedId] = useState(null);
   const [scope, setScope] = useState('alone');          // alone | pension | irp | all
@@ -431,16 +468,17 @@ function App() {
     age, system, systemJoin,
     amtSingle, amtLegal, amtHonor,
     hasPension, pensionJoin, pensionBal,
-    hasIrp, irpJoin, irpBal
+    hasIrp, irpJoin, irpBal,
+    fees
   };
 
   const sources = useMemo(() => buildSources(input), [system, systemJoinStr, amtSingle, amtLegal, amtHonor]);
 
   const { candidates, allocation } = useMemo(() => {
     const base = buildCandidates(input, sources);
-    const alloc = buildAllocation(base, sources);
+    const alloc = buildAllocation(base, sources, manualPick);
     return { candidates: applyAllocation(base, alloc), allocation: alloc };
-  }, [sources, age, hasPension, pensionJoinStr, pensionBal, hasIrp, irpJoinStr, irpBal]);
+  }, [sources, age, hasPension, pensionJoinStr, pensionBal, hasIrp, irpJoinStr, irpBal, fees, manualPick]);
 
   // 배정액이 가장 큰 계좌를 기본 시뮬레이션 대상으로 삼는다
   const best = useMemo(() => {
@@ -510,9 +548,41 @@ function App() {
       deferredTax: allocatedDeferredTax,
       startLimitYear: picked.startLimitYear,
       pastCount,
+      feeRate: picked.feeRate,
       years, mode, rate: rate / 100, startYear, startAge
     });
   }, [picked, otherPrincipal, allocatedDeferredTax, pastCount, years, mode, rate, startYear, startAge]);
+
+  /**
+   * 계좌별 비교 - 퇴직급여를 어느 계좌로 받느냐만 바꾸고 나머지 조건은 동일하게 두어
+   * 총 수수료와 세후 수령액을 나란히 본다. 기존 잔고 합산은 빼고 퇴직급여 단독으로 비교한다.
+   */
+  const comparison = useMemo(() => {
+    if (!(retireTotal > 0)) return [];
+    return candidates
+      .filter((c) => c.acceptAmount > 0)
+      .map((c) => {
+        const s = buildSchedule({
+          retirePrincipal: c.acceptAmount,
+          otherPrincipal: 0,
+          deferredTax: deferredTax * (c.acceptAmount / retireTotal),
+          startLimitYear: c.startLimitYear,
+          pastCount,
+          feeRate: c.feeRate,
+          years, mode, rate: rate / 100, startYear, startAge
+        });
+        return {
+          c,
+          amount: c.acceptAmount,
+          partial: c.acceptAmount < retireTotal,
+          totalFee: s.totals.totalFee,
+          totalTax: s.totals.totalTax,
+          afterTax: s.totals.afterTax,
+          residual: s.totals.residual
+        };
+      })
+      .sort((a, b) => (b.afterTax + b.residual) - (a.afterTax + a.residual));
+  }, [candidates, retireTotal, deferredTax, pastCount, years, mode, rate, startYear, startAge]);
 
   // 수령 기간이 최소 권장보다 짧으면 경고
   const shortSpan = picked && years < picked.minYears;
@@ -657,7 +727,7 @@ function App() {
                   })}
 
                   <Field label="과거 연금 수령 횟수"
-                    hint="퇴직소득세 40% 감면은 '실제' 연금수령 누적 횟수 10회 초과분부터 적용됩니다.">
+                    hint="감면율은 '실제' 연금수령 누적 횟수 기준입니다 (10회 이하 30% · 11~20회 40% · 21회부터 50%).">
                     <input type="number" min="0" max="30" className={inputCls + ' num'} value={pastCount}
                       onChange={(e) => setPastCount(Math.max(0, Math.min(30, +e.target.value || 0)))} />
                   </Field>
@@ -717,6 +787,29 @@ function App() {
                         onChange={(e) => setRate(+e.target.value)} />
                     </div>
                   </Field>
+
+                  <Field label="계좌별 연간 수수료"
+                    hint="적립금 대비 연 요율(운용관리+자산관리). 상품마다 다르니 실제 요율을 넣으세요. 온라인 전용 IRP는 면제인 경우가 많고, 연금저축펀드는 계좌 수수료가 없습니다.">
+                    <div className="space-y-2">
+                      {[
+                        { id: 'ex-pension', label: '기존 연금저축', on: hasPension },
+                        { id: 'ex-irp', label: '기존 IRP', on: hasIrp },
+                        { id: 'new-irp', label: '신규 IRP', on: true },
+                        { id: 'new-pension', label: '신규 연금저축', on: true }
+                      ].filter((r) => r.on).map((r) => (
+                        <div key={r.id} className="flex items-center gap-2">
+                          <span className="text-[13px] text-ink-body flex-1">{r.label}</span>
+                          <div className="relative w-[110px]">
+                            <input type="number" min="0" max="3" step="0.01"
+                              className={inputCls + ' num pr-7 text-right h-[38px]'}
+                              value={fees[r.id]}
+                              onChange={(e) => setFee(r.id, Math.max(0, Math.min(3, +e.target.value || 0)))} />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[13px] text-ink-soft pointer-events-none">%</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Field>
                 </div>
               </Section>
             </div>
@@ -744,24 +837,50 @@ function App() {
                     {best && (
                       <div className="bg-mas-orange text-white rounded-sm px-6 py-5 mb-5">
                         <div className="text-[12px] font-medium tracking-wider opacity-90 mb-1.5">
-                          {isSplit ? '최적 추천 - 분할 입금' : '최적 추천'}
+                          {(allocation.some((a) => a.manual) ? '상담자 선택' : '최적 추천') + (isSplit ? ' - 분할 입금' : '')}
                         </div>
                         <div className="text-[26px] font-bold leading-tight mb-3">
                           {isSplit ? '재원별로 나누어 입금하세요' : best.label}
                         </div>
-                        <div className="space-y-1.5 mb-3">
+                        <div className="space-y-2 mb-3">
                           {allocation.map((a, i) => (
-                            <div key={i} className="flex items-baseline gap-2 text-[15px]">
+                            <div key={i} className="flex items-center gap-2 flex-wrap text-[15px]">
                               <span className="opacity-90 shrink-0">{a.source.label}</span>
                               <span className="num font-bold shrink-0">{krw(a.source.amount)}</span>
                               <span className="opacity-75 shrink-0">→</span>
-                              <span className="font-bold">{a.target ? a.target.label : '입금 가능한 계좌 없음'}</span>
-                              {a.target && a.target.legacy ? (
-                                <span className="text-[12px] bg-white/25 px-1.5 py-[1px] rounded-xs shrink-0">6년차 기산</span>
-                              ) : null}
+                              {a.target ? (
+                                <select
+                                  value={a.target.id}
+                                  onChange={(e) => setManualPick((m) => Object.assign({}, m, { [a.source.kind]: e.target.value }))}
+                                  className="h-[34px] px-2 pr-7 bg-white text-ink text-[14px] font-bold border border-white rounded-xs
+                                             focus:outline-none focus:ring-2 focus:ring-white/60 cursor-pointer max-w-full">
+                                  {a.options.map((o) => (
+                                    <option key={o.id} value={o.id}>
+                                      {o.label}
+                                      {o.startLimitYear === 6 ? ' · 6년차 기산' : ' · 1년차 기산'}
+                                      {o.feeRate > 0 ? ' · 연 ' + (o.feeRate * 100).toFixed(2) + '%' : ' · 수수료 없음'}
+                                    </option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <span className="font-bold">입금 가능한 계좌 없음</span>
+                              )}
+                              {a.manual
+                                ? <span className="text-[12px] bg-white text-mas-active font-bold px-1.5 py-[2px] rounded-xs shrink-0">수동 선택</span>
+                                : a.target && a.target.legacy
+                                  ? <span className="text-[12px] bg-white/25 px-1.5 py-[1px] rounded-xs shrink-0">6년차 기산</span>
+                                  : null}
                             </div>
                           ))}
                         </div>
+
+                        {allocation.some((a) => a.manual) && (
+                          <button type="button" onClick={() => setManualPick({})}
+                            className="mb-3 h-[32px] px-3 text-[13px] font-medium bg-white/20 hover:bg-white/30
+                                       border border-white/50 rounded-xs transition">
+                            자동 추천으로 되돌리기
+                          </button>
+                        )}
                         <p className="text-[14px] leading-relaxed opacity-95">
                           {best.legacy
                             ? CUTOFF_LABEL + ' 이전 가입 계좌에 잔고가 남아 있어 연금수령연차가 6년차부터 기산됩니다. 신규 계좌 대비 5년 빠르게 한도 제한이 해제됩니다.'
@@ -846,6 +965,98 @@ function App() {
                 )}
               </Section>
 
+              {ready && comparison.length > 1 && (
+                <Section title="계좌별 비교">
+                  <p className="text-[13px] text-ink-muted mb-3 leading-relaxed">
+                    퇴직급여를 받는 계좌만 바꾸고 나머지 조건({years}년 · 연 {rate.toFixed(1)}% ·
+                    {mode === 'max' ? ' 한도 내 최대' : ' 균등 분할'})은 동일하게 둔 결과입니다. 기존 잔고 합산은 제외했습니다.
+                  </p>
+                  <div className="overflow-x-auto border border-hair rounded-sm bg-white">
+                    <table className="w-full text-[13px] num">
+                      <thead>
+                        <tr className="bg-mas-soft text-ink">
+                          {['계좌', '한도 기산', '입금액', '연 수수료', '총 수수료', '총 세액', '세후 수령액'].map((h) => (
+                            <th key={h} className="px-2 py-2 font-bold text-[12px] whitespace-nowrap border-b border-hair">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {comparison.map((r, i) => {
+                          const on = picked && picked.id === r.c.id;
+                          return (
+                            <tr key={r.c.id} className={'border-b border-hair-soft ' + (on ? 'bg-[#FDEEDF]' : '')}>
+                              <td className="px-2 py-2 text-left whitespace-nowrap">
+                                <span className={on ? 'font-bold text-mas-active' : 'text-ink'}>{r.c.label}</span>
+                                {r.partial ? <span className="text-[11px] text-sig-err ml-1">일부만</span> : null}
+                              </td>
+                              <td className="px-2 py-2 text-center">
+                                <span className={r.c.legacy ? 'text-sig-ok font-bold' : 'text-ink-muted'}>
+                                  {r.c.startLimitYear}년차
+                                </span>
+                              </td>
+                              <td className="px-2 py-2 text-right">{man(r.amount)}</td>
+                              <td className="px-2 py-2 text-right text-ink-muted">{(r.c.feeRate * 100).toFixed(2)}%</td>
+                              <td className="px-2 py-2 text-right">{r.totalFee > 0 ? man(r.totalFee) : '-'}</td>
+                              <td className="px-2 py-2 text-right">{man(r.totalTax)}</td>
+                              <td className="px-2 py-2 text-right font-bold text-mas-blue">
+                                {man(r.afterTax)}
+                                {r.residual > 1 ? <span className="text-[11px] text-sig-err font-normal ml-1">+잔액 {man(r.residual)}</span> : null}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <p className="text-[12px] text-ink-soft mt-2 leading-relaxed">
+                    단위: 만원 · 수수료는 매년 적립금 기준으로 차감 · '일부만'은 그 계좌가 퇴직급여 전액을 받을 수 없는 경우 ·
+                    '+잔액'은 수령 기간 내 전액 인출이 안 되어 남는 금액
+                    <br />
+                    <strong className="text-ink-muted">한도 기산 차이는 세후 수령액이 아니라 인출 속도(유동성) 차이입니다.</strong>{' '}
+                    6년차 기산은 5년 만에 한도가 풀려 급히 목돈이 필요할 때 꺼낼 수 있다는 뜻이고, 이 표의 세후 수령액은
+                    선택한 수령 기간 안에서 계산한 값입니다.
+                  </p>
+
+                  {/* 세액·수수료로 가려지지 않는 계좌 유형의 차이 - 수동 선택의 판단 근거 */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                    {[
+                      {
+                        t: 'IRP',
+                        rows: [
+                          ['투자 가능 상품', '위험자산 70% 한도. 예금·채권 등 안전자산을 30% 이상 담아야 합니다.'],
+                          ['중도인출', '법정 사유(무주택자 주택구입, 6개월 이상 요양, 개인회생·파산 등)만 가능합니다.'],
+                          ['퇴직급여 이전', 'DB·DC 지급액을 퇴직연금사업자가 직접 이전합니다.']
+                        ]
+                      },
+                      {
+                        t: '연금저축',
+                        rows: [
+                          ['투자 가능 상품', '위험자산 한도가 없어 주식형 비중을 100%까지 가져갈 수 있습니다.'],
+                          ['중도인출', '사유 제한 없이 가능하나 인출액에 기타소득세 16.5%가 붙습니다.'],
+                          ['퇴직급여 이전', '퇴직급여를 수령한 뒤 60일 내에 납입해야 과세이연됩니다(소득세법 §146).']
+                        ]
+                      }
+                    ].map((b) => (
+                      <div key={b.t} className="border border-hair rounded-sm bg-white px-4 py-3">
+                        <div className="text-[14px] font-bold text-ink mb-2">{b.t}</div>
+                        <dl className="space-y-1.5">
+                          {b.rows.map((r) => (
+                            <div key={r[0]}>
+                              <dt className="text-[12px] font-medium text-mas-blue">{r[0]}</dt>
+                              <dd className="text-[12px] text-ink-muted leading-snug">{r[1]}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[12px] text-ink-soft mt-3 leading-relaxed">
+                    이 차이는 세액 계산에 들어가지 않습니다. 위 추천 카드의 계좌 선택 상자에서 직접 바꾸면
+                    시뮬레이션과 인쇄물에 그대로 반영됩니다.
+                  </p>
+                </Section>
+              )}
+
               {ready && sim && (
                 <Section title={'인출 시뮬레이션 - ' + picked.label}>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
@@ -855,13 +1066,26 @@ function App() {
                     <Stat label="세후 수령액" value={krw(sim.totals.afterTax)} tone="brand" />
                   </div>
 
-                  {deferredTax > 0 && (
-                    <div className="border border-mas-soft bg-[#FDEEDF] rounded-sm px-4 py-3 mb-5">
-                      <span className="text-[14px] text-ink-body">일시금 수령 대비 퇴직소득세 절감액</span>
-                      <span className="num text-[22px] font-bold text-mas-active ml-3">{krw(sim.totals.taxSaved)}</span>
-                      <span className="text-[12px] text-ink-muted ml-2">
-                        (연금수령 1~10년차 30% · 11년차부터 40% 감면)
-                      </span>
+                  {(deferredTax > 0 || sim.totals.totalFee > 0) && (
+                    <div className="flex flex-wrap gap-3 mb-5">
+                      {deferredTax > 0 && (
+                        <div className="flex-1 min-w-[280px] border border-mas-soft bg-[#FDEEDF] rounded-sm px-4 py-3">
+                          <span className="text-[14px] text-ink-body">일시금 수령 대비 퇴직소득세 절감액</span>
+                          <span className="num text-[20px] font-bold text-mas-active ml-3">{krw(sim.totals.taxSaved)}</span>
+                          <div className="text-[12px] text-ink-muted mt-1">
+                            연금수령 1~10년차 30% · 11~20년차 40% · 21년차부터 50% 감면
+                          </div>
+                        </div>
+                      )}
+                      {sim.totals.totalFee > 0 && (
+                        <div className="flex-1 min-w-[280px] border border-hair bg-surf-subtle rounded-sm px-4 py-3">
+                          <span className="text-[14px] text-ink-body">{sim.totals.spanYears}년간 총 수수료</span>
+                          <span className="num text-[20px] font-bold text-ink ml-3">{krw(sim.totals.totalFee)}</span>
+                          <div className="text-[12px] text-ink-muted mt-1">
+                            연 {(picked.feeRate * 100).toFixed(2)}% · 적립금 기준 차감
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -906,7 +1130,7 @@ function App() {
                             </td>
                             <td className="px-2 py-1.5 text-center">
                               {r.drawRet > 0 ? (
-                                <span className={r.reduction === 0.4 ? 'text-sig-ok font-bold' : 'text-ink-muted'}>
+                                <span className={r.reduction > 0.3 ? 'text-sig-ok font-bold' : 'text-ink-muted'}>
                                   {Math.round(r.reduction * 100)}%
                                 </span>
                               ) : (
@@ -947,6 +1171,7 @@ function App() {
         amtLegal={amtLegal} amtHonor={amtHonor} deferredTax={deferredTax}
         candidates={candidates} best={best} picked={picked}
         allocation={allocation} isSplit={isSplit} allocatedDeferredTax={allocatedDeferredTax}
+        comparison={comparison}
         scope={scope} scopeOptions={scopeOptions} mode={mode} years={years} rate={rate}
         otherPrincipal={otherPrincipal} sim={sim} startYear={startYear}
         hasPension={hasPension} pensionJoin={pensionJoin} pensionBal={pensionBal}
@@ -964,7 +1189,7 @@ function PrintSheet(props) {
   const {
     ready, custName, birth, age, system, systemJoin, retireTotal,
     amtLegal, amtHonor, deferredTax, best, picked, scope, scopeOptions,
-    allocation, isSplit, allocatedDeferredTax, mode, years, rate, otherPrincipal, sim,
+    allocation, isSplit, allocatedDeferredTax, comparison, mode, years, rate, otherPrincipal, sim,
     hasPension, pensionJoin, pensionBal, hasIrp, irpJoin, irpBal
   } = props;
 
@@ -987,7 +1212,10 @@ function PrintSheet(props) {
     ['기존 연금저축', hasPension ? fmtDate(pensionJoin) + ' 가입 · ' + krw(pensionBal) : '없음'],
     ['기존 IRP', hasIrp ? fmtDate(irpJoin) + ' 가입 · ' + krw(irpBal) : '없음'],
     ['합산 범위 / 인출 방식', scopeLabel + ' / ' + (mode === 'max' ? '세법 한도 내 최대' : '기간 균등 분할')],
-    ['수령 기간 / 운용수익률', years + '년 / 연 ' + rate.toFixed(1) + '%']
+    ['수령 기간 / 운용수익률', years + '년 / 연 ' + rate.toFixed(1) + '%'],
+    ['계좌 수수료 / 총 수수료', picked.feeRate > 0
+      ? '연 ' + (picked.feeRate * 100).toFixed(2) + '% / ' + krw(sim.totals.totalFee)
+      : '없음']
   ];
 
   const stats = [
@@ -1017,12 +1245,13 @@ function PrintSheet(props) {
       {/* 판정 결론 - 재원별 배정 */}
       <div style={{ background: '#F58220', color: '#fff', padding: '2mm 2.5mm', marginBottom: '2.4mm' }}>
         <div style={{ fontSize: '6.6pt', opacity: 0.9, marginBottom: '0.6mm' }}>
-          {isSplit ? '판정 결과 - 재원별 분할 입금' : '판정 결과'}
+          {((allocation || []).some((a) => a.manual) ? '판정 결과 - 상담자 선택' : '판정 결과') + (isSplit ? ' · 재원별 분할 입금' : '')}
         </div>
         {(allocation || []).map((a, i) => (
           <div key={i} style={{ fontSize: '9.5pt', fontWeight: 700, lineHeight: 1.3 }}>
             {a.source.label} {krw(a.source.amount)} → {a.target ? a.target.label : '입금 가능한 계좌 없음'}
             {a.target && a.target.legacy ? ' (6년차 기산)' : ''}
+            {a.manual ? <span style={{ fontSize: '6.6pt', fontWeight: 400, marginLeft: '1mm' }}>· 상담자 수동 선택</span> : null}
           </div>
         ))}
         <div style={{ fontSize: '7pt', marginTop: '0.8mm', lineHeight: 1.35 }}>
@@ -1055,10 +1284,43 @@ function PrintSheet(props) {
             ))}
           </div>
           {deferredTax > 0 && (
-            <div style={{ border: '0.5pt solid #FAB072', background: '#FDEEDF', padding: '1.4mm 1.6mm' }}>
+            <div style={{ border: '0.5pt solid #FAB072', background: '#FDEEDF', padding: '1.4mm 1.6mm', marginBottom: '1.6mm' }}>
               <div style={{ fontSize: '6.4pt', color: '#3D3D3D' }}>일시금 수령 대비 퇴직소득세 절감액</div>
               <div style={{ fontSize: '10.5pt', fontWeight: 700, color: '#CB6015' }}>{krw(sim.totals.taxSaved)}</div>
             </div>
+          )}
+
+          {/* 계좌별 비교 - 높이를 늘리지 않도록 우측 열 안에 둔다 */}
+          {comparison && comparison.length > 1 && (
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '6.2pt' }}>
+              <thead>
+                <tr>
+                  {['계좌', '기산', '연 수수료', '총 수수료', '세후 수령액'].map((h) => (
+                    <th key={h} style={{ border: '0.5pt solid #CDCECB', background: '#FAB072', padding: '0.7mm 0.6mm', fontWeight: 700 }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {comparison.map((r) => {
+                  const on = r.c.id === picked.id;
+                  const cell = {
+                    border: '0.5pt solid #E5E4E1', padding: '0.6mm', textAlign: 'right',
+                    background: on ? '#FDEEDF' : '#fff', fontWeight: on ? 700 : 400
+                  };
+                  return (
+                    <tr key={r.c.id}>
+                      <td style={Object.assign({}, cell, { textAlign: 'left' })}>
+                        {r.c.label}{r.partial ? ' (일부)' : ''}
+                      </td>
+                      <td style={Object.assign({}, cell, { textAlign: 'center' })}>{r.c.startLimitYear}년차</td>
+                      <td style={cell}>{(r.c.feeRate * 100).toFixed(2)}%</td>
+                      <td style={cell}>{r.totalFee > 0 ? man(r.totalFee) : '-'}</td>
+                      <td style={cell}>{man(r.afterTax)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           )}
         </div>
       </div>
@@ -1088,8 +1350,8 @@ function PrintSheet(props) {
               <td style={Object.assign({}, td, { fontWeight: 700, color: '#043B72' })}>{man(r.draw)}</td>
               <td style={Object.assign({}, td, { color: '#6C6C6C' })}>{man(r.monthly)}</td>
               <td style={Object.assign({}, tdC, {
-                color: r.drawRet > 0 ? (r.reduction === 0.4 ? '#2E8540' : '#3D3D3D') : '#84888B',
-                fontWeight: r.drawRet > 0 && r.reduction === 0.4 ? 700 : 400
+                color: r.drawRet > 0 ? (r.reduction > 0.3 ? '#2E8540' : '#3D3D3D') : '#84888B',
+                fontWeight: r.drawRet > 0 && r.reduction > 0.3 ? 700 : 400
               })}>
                 {r.drawRet > 0 ? Math.round(r.reduction * 100) + '%' : '-'}
               </td>
@@ -1109,7 +1371,7 @@ function PrintSheet(props) {
 
       <p style={{ fontSize: '6.2pt', color: '#6C6C6C', lineHeight: 1.35, margin: '1.6mm 0 0' }}>
         연금수령한도 = 과세기간 개시일 현재 평가액 ÷ (11 - 연금수령연차) × 120%. {CUTOFF_LABEL} 이전 가입 연금계좌는 연금수령연차를 6년차부터 기산합니다.
-        퇴직소득세는 실제 연금수령 1~10년차 30%, 11년차부터 40% 감면됩니다. 인출은 이연퇴직소득 → 세액공제 납입분·운용수익 순으로 이루어집니다(소득세법 시행령 §40의3).
+        퇴직소득세는 실제 연금수령 1~10년차 30%, 11~20년차 40%, 21년차부터 50% 감면됩니다(소득세법 §129①5의3). 인출은 이연퇴직소득 → 세액공제 납입분·운용수익 순으로 이루어집니다(소득세법 시행령 §40의3).
         사적연금 연 1,500만원 초과 수령 시 종합과세 또는 16.5% 분리과세 선택 대상입니다.
         본 자료는 상담 보조용 추정치로 실제 세액 및 수령액과 다를 수 있으며, 최종 판단은 원천징수영수증과 금융기관 확인을 거쳐야 합니다.
       </p>
