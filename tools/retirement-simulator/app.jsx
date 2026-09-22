@@ -419,6 +419,13 @@ function Stat({ label, value, tone }) {
    5. 메인 앱
    ================================================================ */
 
+// 결과 탭 - 상담 진행 순서와 같다
+const TABS = [
+  { id: 'verdict', label: '판정' },
+  { id: 'compare', label: '계좌 비교' },
+  { id: 'schedule', label: '인출 스케줄' }
+];
+
 function App() {
   // --- 고객 정보
   const [birthRaw, setBirthRaw] = useState('');
@@ -450,6 +457,7 @@ function App() {
 
   // --- 시뮬레이션 옵션
   const [pickedId, setPickedId] = useState(null);
+  const [tab, setTab] = useState('verdict');
   const [scope, setScope] = useState('alone');          // alone | pension | irp | all
   const [mode, setMode] = useState('even');             // even | max
   const [years, setYears] = useState(10);
@@ -589,6 +597,13 @@ function App() {
 
   const ready = !!birth && retireTotal > 0;
 
+  // 보고 있던 탭의 내용이 사라지면 판정 탭으로 되돌린다 (빈 화면 방지)
+  useEffect(() => {
+    if (!ready && tab !== 'verdict') setTab('verdict');
+    else if (tab === 'compare' && comparison.length < 2) setTab('verdict');
+    else if (tab === 'schedule' && !sim) setTab('verdict');
+  }, [ready, tab, comparison.length, sim]);
+
   // 선택한 합산 범위가 더 이상 유효하지 않으면 단독으로 되돌린다
   useEffect(() => {
     if ((scope === 'pension' && !hasPension) ||
@@ -623,10 +638,10 @@ function App() {
         </header>
 
         <main className="max-w-[1200px] mx-auto px-6 py-10">
-          <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-8 items-start">
 
-            {/* ---------- 입력 ---------- */}
-            <div>
+            {/* ---------- 입력 (데스크탑에서는 스크롤에 따라붙는다) ---------- */}
+            <div className="lg:sticky lg:top-5 lg:max-h-[calc(100vh_-_2.5rem)] lg:overflow-y-auto lg:pr-3 lg:-mr-3">
               <Section title="1 · 고객 및 퇴직 정보">
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
@@ -816,17 +831,45 @@ function App() {
 
             {/* ---------- 결과 ---------- */}
             <div>
-              <Section
-                title="판정 결과"
-                right={
-                  <button type="button" onClick={() => window.print()} disabled={!ready}
-                    className={
-                      'h-[42px] px-5 text-[15px] font-medium rounded-xs transition ' +
-                      (ready ? 'bg-mas-orange text-white hover:bg-mas-active' : 'bg-mas-gray text-white cursor-not-allowed')
-                    }>
-                    고객용 A4 1장 인쇄
-                  </button>
-                }>
+              {/*
+                결과는 상담 순서(판정 → 비교 → 인출)대로 탭으로 나눈다.
+                인쇄물은 화면과 별개의 PrintSheet 가 상태에서 직접 만들기 때문에
+                어느 탭을 보고 있든 항상 전체 내용이 인쇄된다.
+              */}
+              <div className="rule mb-3" />
+              <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
+                <div className="flex border border-hair rounded-xs overflow-hidden bg-white">
+                  {TABS.map((t, i) => {
+                    const on = tab === t.id;
+                    const dim = !ready || (t.id === 'compare' && comparison.length < 2) || (t.id === 'schedule' && !sim);
+                    return (
+                      <button key={t.id} type="button" onClick={() => setTab(t.id)} disabled={dim}
+                        className={
+                          'h-[44px] px-5 text-[15px] font-medium transition ' +
+                          (i > 0 ? 'border-l border-hair ' : '') +
+                          (dim ? 'bg-surf-subtle text-mas-gray cursor-not-allowed'
+                            : on ? 'bg-mas-orange text-white'
+                              : 'bg-white text-ink-muted hover:bg-surf-subtle hover:text-ink')
+                        }>
+                        {t.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <button type="button" onClick={() => window.print()} disabled={!ready}
+                  className={
+                    'h-[44px] px-5 text-[15px] font-medium rounded-xs transition ' +
+                    (ready ? 'bg-mas-orange text-white hover:bg-mas-active' : 'bg-mas-gray text-white cursor-not-allowed')
+                  }>
+                  고객용 A4 1장 인쇄
+                </button>
+              </div>
+              <p className="text-[12px] text-ink-soft mb-5 -mt-2">
+                인쇄물에는 보고 있는 탭과 무관하게 판정 · 계좌 비교 · 인출 스케줄이 모두 담깁니다.
+              </p>
+
+              <div style={{ display: tab === 'verdict' ? 'block' : 'none' }}>
+              <Section title="판정 결과">
 
                 {!ready ? (
                   <div className="border border-dashed border-hair rounded-sm bg-white px-6 py-12 text-center">
@@ -964,7 +1007,9 @@ function App() {
                   </React.Fragment>
                 )}
               </Section>
+              </div>
 
+              <div style={{ display: tab === 'compare' ? 'block' : 'none' }}>
               {ready && comparison.length > 1 && (
                 <Section title="계좌별 비교">
                   <p className="text-[13px] text-ink-muted mb-3 leading-relaxed">
@@ -1057,6 +1102,9 @@ function App() {
                 </Section>
               )}
 
+              </div>
+
+              <div style={{ display: tab === 'schedule' ? 'block' : 'none' }}>
               {ready && sim && (
                 <Section title={'인출 시뮬레이션 - ' + picked.label}>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
@@ -1152,6 +1200,7 @@ function App() {
                   </p>
                 </Section>
               )}
+              </div>
             </div>
           </div>
 
