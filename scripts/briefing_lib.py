@@ -330,16 +330,24 @@ def assemble(chrome_dir, doc, title, hero, now, title_en=None):
                   head, count=1, flags=re.S)
 
     # 꼬리말 작성일 — 시계에서 읽는다. 손으로 적으면 예정 시각을 적게 된다.
+    #
+    # **작성자 이름은 싣지 않는다.** 2026-09-23 에 뺐다 — 이 판은 사내 배포를
+    # 거쳐 아티팩트 링크로도 나가는데, 거기 실린 사람 이름은 개인정보다.
+    # 부서(미래에셋증권 마포WM)만으로 어디서 나온 자료인지는 충분히 밝혀진다.
+    # 같은 날 지난 판 145 개와 껍데기에서도 함께 지웠으므로, 이름이 박힌
+    # 꼴을 받아 주는 가지는 두지 않는다 — 두면 이름이 코드에 남는다.
+    # 아래 「마포WM 다음의 가운뎃점부터 작성까지」를 통째로 갈아 끼우는 꼴이라,
+    # 혹 이름이 박힌 껍데기를 물려받더라도 그 자리가 함께 지워진다.
     hhmm = now.strftime("%H:%M")
-    bko = ("미래에셋증권 마포WM · 송재섭 · %d년 %s %s KST 작성."
+    bko = ("미래에셋증권 마포WM · %d년 %s %s KST 작성."
            % (now.year, DK(now.date(), True), hhmm))
-    ben = ("Mirae Asset Securities, Mapo WM · Jaeseop Song · Compiled %s KST, %s %d."
+    ben = ("Mirae Asset Securities, Mapo WM · Compiled %s KST, %s %d."
            % (hhmm, DE(now.date(), True), now.year))
     dot = r'(?:&middot;|·)'
     for pat, rep, what in (
-            (r'미래에셋증권 마포WM\s*' + dot + r'\s*송재섭\s*' + dot + r'\s*[^<]*작성\.', bko, "국문"),
-            (r'Mirae Asset Securities, Mapo WM\s*' + dot + r'\s*Jaeseop Song\s*'
-             + dot + r'\s*Compiled[^<]*\.', ben, "영문")):
+            (r'미래에셋증권 마포WM\s*' + dot + r'\s*[^<]*작성\.', bko, "국문"),
+            (r'Mirae Asset Securities, Mapo WM\s*' + dot + r'\s*[^<]*Compiled[^<]*\.',
+             ben, "영문")):
         cnt = len(re.findall(pat, tail))
         assert cnt == 1, "꼬리말의 %s 작성일 줄을 %d 개 찾았다 — 1 개여야 한다" % (what, cnt)
         tail = re.sub(pat, rep, tail, count=1)

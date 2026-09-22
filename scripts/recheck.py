@@ -244,9 +244,12 @@ def check_dates(h, d, path=None):
                  "국내 마감 시각에는 갱신되지 않습니다. 표에 그 사실을 적으십시오" % (eu, dx))
 
 
-BYLINE = re.compile(r'미래에셋증권 마포WM\s*(?:&middot;|·)\s*송재섭\s*(?:&middot;|·)\s*'
+# 꼬리말에는 **부서만** 싣고 사람 이름은 싣지 않는다(2026-09-23 · 개인정보).
+# 지난 판 145 개에서도 같은 날 지웠으므로 이름이 든 꼴은 더 이상 받지 않는다 —
+# 받아 주면 이 검사기 안에 이름이 남는다.
+BYLINE = re.compile(r'미래에셋증권 마포WM\s*(?:&middot;|·)\s*'
                     r'(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일\([^)]*\)\s*(\d{1,2}):(\d{2})\s*KST 작성')
-BYLINE_EN = re.compile(r'Jaeseop Song\s*(?:&middot;|·)\s*Compiled\s*(\d{1,2}):(\d{2})\s*KST')
+BYLINE_EN = re.compile(r'Mapo WM\s*(?:&middot;|·)\s*Compiled\s*(\d{1,2}):(\d{2})\s*KST')
 HEROMETA = re.compile(r'작성\s*(\d{4})-(\d{2})-(\d{2})\([^)]*\)\s*(\d{1,2}):(\d{2})\s*KST')
 
 

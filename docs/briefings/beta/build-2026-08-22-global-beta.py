@@ -1713,12 +1713,12 @@ head = re.sub(r"<title>.*?</title>",
               "<title>해외 증시 브리핑 (베타) · 2026년 8월 22일 (토) | 미래에셋증권 마포WM</title>",
               head, count=1, flags=re.S)
 
-BYLINE_KO = "미래에셋증권 마포WM · 송재섭 · 2026년 8월 22일(토) " + HHMM + " KST 작성."
-BYLINE_EN = ("Mirae Asset Securities, Mapo WM · Jaeseop Song · "
+BYLINE_KO = "미래에셋증권 마포WM · 2026년 8월 22일(토) " + HHMM + " KST 작성."
+BYLINE_EN = ("Mirae Asset Securities, Mapo WM · "
              "Compiled " + HHMM + " KST, Saturday 22 August 2026.")
 DOT = r'(?:&middot;|·)'
-_pk = r'미래에셋증권 마포WM\s*' + DOT + r'\s*송재섭\s*' + DOT + r'\s*[^<]*작성\.'
-_pe = r'Mirae Asset Securities, Mapo WM\s*' + DOT + r'\s*Jaeseop Song\s*' + DOT + r'\s*Compiled[^<]*\.'
+_pk = r'미래에셋증권 마포WM\s*' + DOT + r'\s*[^<]*작성\.'
+_pe = r'Mirae Asset Securities, Mapo WM\s*' + DOT + r'\s*[^<]*Compiled[^<]*\.'
 for _pat, _rep, _what in ((_pk, BYLINE_KO, "국문"), (_pe, BYLINE_EN, "영문")):
     _n = len(re.findall(_pat, tail))
     assert _n == 1, "꼬리말의 %s 작성일 줄을 %d 개 찾았다 — 1 개여야 한다" % (_what, _n)
