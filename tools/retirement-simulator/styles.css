@@ -20,9 +20,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* 숫자는 Inter 의 고정폭 숫자, 섞여 있는 한글은 Spoqa 로 떨어지게 한다 */
 .num {
   font-variant-numeric: tabular-nums;
-  font-family: 'Inter', 'SF Mono', monospace;
+  font-family: 'Inter', 'Spoqa Han Sans Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
 }
 
 /* 시그니처 1px 오렌지 섹션 룰 */

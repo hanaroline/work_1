@@ -14,7 +14,7 @@ const man = (n) => {
   return (Math.round(n / 10000)).toLocaleString('ko-KR');
 };
 
-/** 읽기 쉬운 한글 금액 — 3억 2,400만원 형태 */
+/** 읽기 쉬운 한글 금액 - 3억 2,400만원 형태 */
 const krw = (n) => {
   if (n === null || n === undefined || !isFinite(n)) return '-';
   const v = Math.round(n);
@@ -81,7 +81,7 @@ const fmtDate = (d) => (d ? d.getFullYear() + '.' + (d.getMonth() + 1) + '.' + d
 const pensionRateByAge = (age) => (age >= 80 ? 0.033 : age >= 70 ? 0.044 : 0.055);
 
 /* ================================================================
-   2. 판정 로직 — 퇴직제도 × 계좌 가입일 × 연령
+   2. 판정 로직 - 퇴직제도 × 계좌 가입일 × 연령
    ================================================================ */
 
 /**
@@ -92,9 +92,9 @@ const pensionRateByAge = (age) => (age >= 80 ? 0.033 : age >= 70 ? 0.044 : 0.055
 function transferBlockers(target, source, age) {
   const reasons = [];
 
-  // (1) 만 55세 미만 — 근퇴법상 퇴직급여는 IRP 의무이전. 법정외(명예)퇴직금은 예외.
+  // (1) 만 55세 미만 - 근퇴법상 퇴직급여는 IRP 의무이전. 법정외(명예)퇴직금은 예외.
   if (target.type === 'pension' && age !== null && age < 55 && source.kind !== 'HONOR') {
-    reasons.push('만 55세 미만 퇴직급여는 IRP 의무이전 대상(근퇴법 §17·§20) — 연금저축 입금 불가');
+    reasons.push('만 55세 미만 퇴직급여는 IRP 의무이전 대상(근퇴법 §17·§20) - 연금저축 입금 불가');
   }
 
   // (2) 퇴직연금(DB/DC) → 구 연금계좌 이체 제한 (소득세법 시행령 §40의4)
@@ -107,9 +107,9 @@ function transferBlockers(target, source, age) {
     }
   }
 
-  // (3) 기존 계좌 잔고 요건 — 잔고가 없으면 구계좌 가입일 승계 효과를 인정받을 수 없음
+  // (3) 기존 계좌 잔고 요건 - 잔고가 없으면 구계좌 가입일 승계 효과를 인정받을 수 없음
   if (!target.isNew && isLegacyDate(target.joinDate) && !(target.balance > 0)) {
-    reasons.push('기존 계좌 잔고가 0원 — ' + CUTOFF_LABEL + ' 이전 가입 특례(6년차 기산) 적용 불가');
+    reasons.push('기존 계좌 잔고가 0원 - ' + CUTOFF_LABEL + ' 이전 가입 특례(6년차 기산) 적용 불가');
   }
 
   return reasons;
@@ -162,7 +162,7 @@ function buildCandidates(input, sources) {
   });
 }
 
-/** 계좌 우열 점수 — 한도 기산이 빠른 계좌가 압도적으로 유리 */
+/** 계좌 우열 점수 - 한도 기산이 빠른 계좌가 압도적으로 유리 */
 function accountScore(c) {
   let score = 0;
   if (c.legacy) score += 1000;                     // 6년차 기산
@@ -173,7 +173,7 @@ function accountScore(c) {
 }
 
 /**
- * 재원별 최적 배정 — 재원마다 입금 가능한 계좌 중 가장 유리한 곳으로 보낸다.
+ * 재원별 최적 배정 - 재원마다 입금 가능한 계좌 중 가장 유리한 곳으로 보낸다.
  * 법정퇴직금은 IRP, 명예퇴직금은 구 연금저축처럼 분할 입금이 유리한 경우를 잡아낸다.
  */
 function buildAllocation(candidates, sources) {
@@ -428,7 +428,7 @@ function App() {
     return used.slice().sort((a, b) => b.allocatedAmount - a.allocatedAmount)[0];
   }, [candidates]);
 
-  // 분할 입금 여부 — 재원이 서로 다른 계좌로 배정되면 분할
+  // 분할 입금 여부 - 재원이 서로 다른 계좌로 배정되면 분할
   const isSplit = useMemo(() => {
     const ids = allocation.filter((a) => a.target).map((a) => a.target.id);
     return new Set(ids).size > 1;
@@ -539,7 +539,7 @@ function App() {
                     <span className="text-[13px] text-ink-muted">세</span>
                     {age !== null && (age >= 55
                       ? <Badge tone="good">연금수령 개시 가능</Badge>
-                      : <Badge tone="warn">만 55세까지 {55 - age}년 — 과세이연 후 대기</Badge>)}
+                      : <Badge tone="warn">만 55세까지 {55 - age}년 - 과세이연 후 대기</Badge>)}
                   </div>
 
                   <Field label="퇴직제도">
@@ -657,7 +657,7 @@ function App() {
                       ]} />
                   </Field>
 
-                  <Field label={'수령 기간 — ' + years + '년'}>
+                  <Field label={'수령 기간 - ' + years + '년'}>
                     <div className="pt-2">
                       <input type="range" min="5" max="30" step="1" value={years} className="w-full"
                         onChange={(e) => setYears(+e.target.value)} />
@@ -674,7 +674,7 @@ function App() {
                     )}
                   </Field>
 
-                  <Field label={'운용수익률 — 연 ' + rate.toFixed(1) + '%'}>
+                  <Field label={'운용수익률 - 연 ' + rate.toFixed(1) + '%'}>
                     <div className="pt-2">
                       <input type="range" min="0" max="8" step="0.5" value={rate} className="w-full"
                         onChange={(e) => setRate(+e.target.value)} />
@@ -707,7 +707,7 @@ function App() {
                     {best && (
                       <div className="bg-mas-orange text-white rounded-sm px-6 py-5 mb-5">
                         <div className="text-[12px] font-medium tracking-wider opacity-90 mb-1.5">
-                          {isSplit ? '최적 추천 — 분할 입금' : '최적 추천'}
+                          {isSplit ? '최적 추천 - 분할 입금' : '최적 추천'}
                         </div>
                         <div className="text-[26px] font-bold leading-tight mb-3">
                           {isSplit ? '재원별로 나누어 입금하세요' : best.label}
@@ -767,7 +767,7 @@ function App() {
                                   </span>
                                   <span className="text-ink-muted shrink-0">{p.source.label}</span>
                                   <span className="num text-ink-body shrink-0">{krw(p.source.amount)}</span>
-                                  {!p.ok && <span className="text-sig-err">— {p.blockers[0]}</span>}
+                                  {!p.ok && <span className="text-sig-err">- {p.blockers[0]}</span>}
                                 </div>
                               ))}
                               {!c.perSource.length && (
@@ -790,7 +790,7 @@ function App() {
               </Section>
 
               {ready && sim && (
-                <Section title={'인출 시뮬레이션 — ' + picked.label}>
+                <Section title={'인출 시뮬레이션 - ' + picked.label}>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
                     <Stat label="시뮬레이션 대상 자산" value={krw(picked.allocatedAmount + otherPrincipal)} tone="brand" />
                     <Stat label={'총 인출액 (' + sim.totals.spanYears + '년)'} value={krw(sim.totals.totalDraw)} />
@@ -851,7 +851,7 @@ function App() {
                     </table>
                   </div>
                   <p className="text-[12px] text-ink-soft mt-3 leading-relaxed">
-                    단위: 만원 · 연금수령한도 = 과세기간 개시일 평가액 ÷ (11 − 연금수령연차) × 120% ·
+                    단위: 만원 · 연금수령한도 = 과세기간 개시일 평가액 ÷ (11 - 연금수령연차) × 120% ·
                     {CUTOFF_LABEL} 이전 가입 연금계좌는 6년차부터 기산 ·
                     인출 순서는 이연퇴직소득 → 세액공제 납입분·운용수익 순(소득세법 시행령 §40의3) ·
                     사적연금 연 1,500만원 초과 시 종합과세 또는 16.5% 분리과세 선택 대상입니다.
@@ -887,7 +887,7 @@ function App() {
 }
 
 /* ================================================================
-   6. 인쇄 시트 — A4 단면 1장 고정
+   6. 인쇄 시트 - A4 단면 1장 고정
    ================================================================ */
 
 function PrintSheet(props) {
@@ -907,8 +907,8 @@ function PrintSheet(props) {
   const rows = sim.rows;
 
   const info = [
-    ['고객명', custName || '—'],
-    ['생년월일 / 만 나이', (birth ? birth.getFullYear() + '.' + (birth.getMonth() + 1) + '.' + birth.getDate() : '—') + ' / 만 ' + (age !== null ? age : '—') + '세'],
+    ['고객명', custName || '-'],
+    ['생년월일 / 만 나이', (birth ? birth.getFullYear() + '.' + (birth.getMonth() + 1) + '.' + birth.getDate() : '-') + ' / 만 ' + (age !== null ? age : '-') + '세'],
     ['퇴직제도 / 가입일', systemLabel + ' / ' + fmtDate(systemJoin)],
     ['퇴직급여 총액', krw(retireTotal) + (system === 'SEV' && amtHonor > 0 ? ' (법정 ' + krw(amtLegal) + ' · 명예 ' + krw(amtHonor) + ')' : '')],
     ['이연 퇴직소득세', deferredTax > 0
@@ -944,10 +944,10 @@ function PrintSheet(props) {
         </div>
       </div>
 
-      {/* 판정 결론 — 재원별 배정 */}
+      {/* 판정 결론 - 재원별 배정 */}
       <div style={{ background: '#F58220', color: '#fff', padding: '2mm 2.5mm', marginBottom: '2.4mm' }}>
         <div style={{ fontSize: '6.6pt', opacity: 0.9, marginBottom: '0.6mm' }}>
-          {isSplit ? '판정 결과 — 재원별 분할 입금' : '판정 결과'}
+          {isSplit ? '판정 결과 - 재원별 분할 입금' : '판정 결과'}
         </div>
         {(allocation || []).map((a, i) => (
           <div key={i} style={{ fontSize: '9.5pt', fontWeight: 700, lineHeight: 1.3 }}>
@@ -995,7 +995,7 @@ function PrintSheet(props) {
 
       {/* 상세 인출 스케줄 */}
       <h2 style={{ fontSize: '8.4pt', fontWeight: 700, margin: '0 0 1.2mm', paddingTop: '0.8mm', borderTop: '1pt solid #F58220' }}>
-        연차별 인출 스케줄 — {picked.label}
+        연차별 인출 스케줄 - {picked.label}
         <span style={{ fontWeight: 400, fontSize: '6.6pt', color: '#6C6C6C' }}> (단위: 만원)</span>
       </h2>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '6.8pt' }}>
@@ -1027,7 +1027,7 @@ function PrintSheet(props) {
           <tr>
             <td style={Object.assign({}, tdC, { background: '#D7D7D7', fontWeight: 700 })} colSpan={6}>합계</td>
             <td style={Object.assign({}, td, { background: '#D7D7D7', fontWeight: 700 })} colSpan={2}>{man(sim.totals.totalDraw)}</td>
-            <td style={Object.assign({}, tdC, { background: '#D7D7D7' })}>—</td>
+            <td style={Object.assign({}, tdC, { background: '#D7D7D7' })}>-</td>
             <td style={Object.assign({}, td, { background: '#D7D7D7', fontWeight: 700 })}>{man(sim.totals.totalTax)}</td>
             <td style={Object.assign({}, td, { background: '#D7D7D7' })}>{man(sim.totals.residual)}</td>
           </tr>
@@ -1035,7 +1035,7 @@ function PrintSheet(props) {
       </table>
 
       <p style={{ fontSize: '6.2pt', color: '#6C6C6C', lineHeight: 1.35, margin: '1.6mm 0 0' }}>
-        연금수령한도 = 과세기간 개시일 현재 평가액 ÷ (11 − 연금수령연차) × 120%. {CUTOFF_LABEL} 이전 가입 연금계좌는 연금수령연차를 6년차부터 기산합니다.
+        연금수령한도 = 과세기간 개시일 현재 평가액 ÷ (11 - 연금수령연차) × 120%. {CUTOFF_LABEL} 이전 가입 연금계좌는 연금수령연차를 6년차부터 기산합니다.
         퇴직소득세는 실제 연금수령 1~10년차 30%, 11년차부터 40% 감면됩니다. 인출은 이연퇴직소득 → 세액공제 납입분·운용수익 순으로 이루어집니다(소득세법 시행령 §40의3).
         사적연금 연 1,500만원 초과 수령 시 종합과세 또는 16.5% 분리과세 선택 대상입니다.
         본 자료는 상담 보조용 추정치로 실제 세액 및 수령액과 다를 수 있으며, 최종 판단은 원천징수영수증과 금융기관 확인을 거쳐야 합니다.

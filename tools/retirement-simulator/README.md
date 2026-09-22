@@ -3,15 +3,16 @@
 퇴직 시 퇴직급여를 **어느 연금계좌로 받아야 유리한지** 판정하고, 연차별 인출 한도와
 세액을 시뮬레이션해 고객에게 A4 1장으로 출력해 주는 상담 도구.
 
-산출물: 저장소 루트의 `retirement-simulator.html` — **외부 네트워크 없이 열리는 단일 파일**
-(React·Tailwind·앱 코드가 모두 인라인되어 있어 지점 PC에서 그대로 열림).
+산출물: 저장소 루트의 `retirement-simulator.html` (약 1MB) — **외부 네트워크 없이 열리는 단일 파일**.
+React·Tailwind·웹폰트·앱 코드가 모두 인라인되어 있어 지점 PC에서 파일만 열면 동작한다.
 
 ## 빌드
 
 이 저장소는 `package.json` 이 `.gitignore` 대상이라 빌드 의존성을 직접 설치해야 한다.
 
 ```bash
-npm install --no-save react@18.3.1 react-dom@18.3.1 @babel/standalone@7.25.6 tailwindcss@3.4.16
+npm install --no-save react@18.3.1 react-dom@18.3.1 @babel/standalone@7.25.6 \
+  tailwindcss@3.4.16 spoqa-han-sans@3.3.0 @fontsource/inter@5.3.0
 node scripts/build-retirement-simulator.js
 ```
 
@@ -21,9 +22,27 @@ node scripts/build-retirement-simulator.js
 | `styles.css` | 미래에셋 디자인 토큰 + A4 인쇄 스타일 |
 | `tailwind.config.js` | 브랜드 컬러/라운드/폰트 토큰 |
 | `shell.html` | 인라인 대상 자리표시자를 가진 HTML 껍데기 |
-| `../../scripts/build-retirement-simulator.js` | Tailwind 추출 → JSX 트랜스파일 → 단일 HTML 조립 |
+| `fonts/` | 임베드 폰트의 OFL 라이선스 사본 |
+| `../../scripts/build-retirement-simulator.js` | 폰트 인라인 → Tailwind 추출 → JSX 트랜스파일 → 단일 HTML 조립 |
 
 `retirement-simulator.html` 을 직접 고치지 말 것 — 빌드 산출물이라 덮어써진다.
+
+## 임베드 폰트
+
+지점 PC에 승인 폰트가 설치되어 있지 않아도 동일하게 렌더링되도록 woff2 를 base64 로 심는다.
+
+| 폰트 | 용도 | 굵기 | 크기 |
+|---|---|---|---|
+| Spoqa Han Sans Neo (KS X 1001 서브셋) | 한글·본문 | 400 / 500 / 700 | 약 544KB |
+| Inter (latin 서브셋) | 숫자·영문 | 400 / 500 / 700 | 약 72KB |
+
+- 둘 다 **SIL Open Font License 1.1** 이라 임베딩·재배포가 허용된다. 라이선스 사본은 `fonts/` 에 있고,
+  저작권 고지는 산출물 CSS 상단 주석에도 들어간다.
+- Spoqa 서브셋본은 한글 2,574 음절을 담고 있어 고객명 입력까지 커버한다.
+- 표의 숫자 정렬은 Inter 의 `tabular-nums` 에 의존한다. `.num` 폰트 스택은
+  `Inter → Spoqa Han Sans Neo` 순서라 숫자 칸에 섞인 한글('전액', '6년차')도 같은 폰트로 떨어진다.
+- 서브셋본에 em dash(`—`)와 수학 마이너스(`−`)가 없어 앱 텍스트는 하이픈(`-`)을 쓴다.
+  새 문구를 넣을 때 이 두 글자는 피할 것.
 
 ## 판정 로직의 근거
 
@@ -68,7 +87,11 @@ Playwright 로 다음을 확인했다.
 - 구 연금저축(2013 이전·잔고 보유) 보유 시 6년차 기산 추천, 5년 수령으로 잔액 0 소진
 - 2016년 가입 DC → 구 연금저축 이전 불가 판정 후 신규 IRP 추천
 - 만 50세: 법정퇴직금 → 신규 IRP, 명예퇴직금 → 구 연금저축 분할 배정
-- 수령 기간 30년(표 최대 길이)에서도 인쇄가 A4 단면 1장 (콘텐츠 1,007px / 1,062px)
+- 수령 기간 30년(표 최대 길이)에서도 인쇄가 A4 단면 1장 (콘텐츠 995px / 1,062px)
+- 네트워크 전면 차단(`offline: true` + `file://` 외 요청 abort) 상태에서 마운트·판정·시뮬레이션·인쇄까지
+  정상 동작, 외부 요청 시도 0건
+- 임베드 폰트가 실제 렌더링에 쓰이는지 측정으로 확인(Spoqa 폭 188px ≠ 시스템 sans 211px),
+  `.num` 의 고정폭 숫자 정렬 확인(`111111` 과 `888888` 의 폭이 동일)
 
 ## 한계
 
