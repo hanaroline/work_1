@@ -162,27 +162,47 @@ function buildCandidates(input, sources) {
   });
 }
 
-/** 계좌 우열 점수 - 한도 기산이 빠른 계좌가 압도적으로 유리 */
-function accountScore(c) {
+/**
+ * 계좌 우열 점수.
+ *
+ * 한도 기산(6년차 vs 1년차)만이 세법상 결정적 차이다. 2013.3.1 이전 가입이기만 하면
+ * 되므로 가입일의 선후(2002년 vs 2003년)는 우열을 가르지 않는다 - 둘 다 6년차 기산이다.
+ * 그래서 구계좌끼리는 세법상 동점이고, 그 아래는 이전 절차의 편의로만 순위를 매긴다.
+ */
+function accountScore(c, source) {
   let score = 0;
-  if (c.legacy) score += 1000;                     // 6년차 기산
-  if (c.isNew && c.type === 'irp') score += 20;    // 동률이면 퇴직금 전용 신규 IRP
-  if (c.isNew && c.type === 'pension') score += 5;
-  if (!c.isNew) score += 10;
+  if (c.legacy) score += 1000;        // 6년차 기산 - 유일한 결정적 차이
+  if (!c.isNew) score += 100;         // 기존 계좌 우선 (신규는 1년차 기산)
+
+  if (source.kind === 'DB' || source.kind === 'DC') {
+    // 퇴직연금 지급액은 IRP 로 직접 이전된다. 연금저축은 퇴직급여를 수령한 뒤
+    // 60일 내에 다시 납입해야 과세이연되므로(소득세법 §146) 절차상 번거롭고 기한 위험이 있다.
+    if (c.type === 'irp') score += 30;
+  } else {
+    // 법정·명예퇴직금은 회사가 직접 지급하므로 어느 계좌든 입금할 수 있다. IRP 를 기본으로 둔다.
+    if (c.type === 'irp') score += 10; else score += 8;
+  }
   return score;
 }
 
 /**
  * 재원별 최적 배정 - 재원마다 입금 가능한 계좌 중 가장 유리한 곳으로 보낸다.
  * 법정퇴직금은 IRP, 명예퇴직금은 구 연금저축처럼 분할 입금이 유리한 경우를 잡아낸다.
+ * 세법상 동점인 계좌가 여럿이면 tiedWith 로 알려 상담자가 직접 고르게 한다.
  */
 function buildAllocation(candidates, sources) {
   return sources.map((s) => {
     const options = candidates.filter((c) => c.perSource.some((p) => p.source.kind === s.kind && p.ok));
-    if (!options.length) return { source: s, target: null };
-    const scored = options.map((c) => ({ c, score: accountScore(c) }));
+    if (!options.length) return { source: s, target: null, tiedWith: [] };
+    const scored = options.map((c) => ({ c, score: accountScore(c, s) }));
     scored.sort((a, b) => b.score - a.score);
-    return { source: s, target: scored[0].c };
+    const top = scored[0];
+    // 한도 기산이 같은 기존 계좌들 = 세법상 우열 없음
+    const tiedWith = scored
+      .slice(1)
+      .filter((x) => !x.c.isNew && x.c.startLimitYear === top.c.startLimitYear)
+      .map((x) => x.c);
+    return { source: s, target: top.c, tiedWith };
   });
 }
 
@@ -250,6 +270,7 @@ function buildSchedule(cfg) {
       limitYear, actualYear, unlimited,
       begin, limit, draw, monthly: draw / 12,
       reduction: actualYear <= 10 ? 0.3 : 0.4,
+      drawRet,                                   // 이 회차에 인출된 이연퇴직소득 (0이면 감면 대상 없음)
       retTax, otherTax, tax: retTax + otherTax,
       end: P + G,
       over1500: draw > 15000000
@@ -450,6 +471,22 @@ function App() {
     if (scope === 'all') return p + i;
     return 0;
   }, [scope, hasPension, pensionBal, hasIrp, irpBal]);
+
+  /**
+   * 합산 경고 - 연금수령한도는 계좌별로 따로 산정된다.
+   * 기산 연차가 다른 계좌를 합산하면 한도가 한쪽 기준으로 계산되어 부정확해진다.
+   */
+  const mixedBasis = useMemo(() => {
+    if (!picked || scope === 'alone') return [];
+    const inScope = [];
+    if (hasPension && (scope === 'pension' || scope === 'all') && pensionBal > 0) {
+      inScope.push({ id: 'ex-pension', label: '기존 연금저축', legacy: isLegacyDate(pensionJoin) });
+    }
+    if (hasIrp && (scope === 'irp' || scope === 'all') && irpBal > 0) {
+      inScope.push({ id: 'ex-irp', label: '기존 IRP', legacy: isLegacyDate(irpJoin) });
+    }
+    return inScope.filter((a) => a.id !== picked.id && a.legacy !== picked.legacy);
+  }, [picked, scope, hasPension, pensionJoinStr, pensionBal, hasIrp, irpJoinStr, irpBal]);
 
   // 연금 개시 시점
   const startYear = useMemo(() => {
@@ -730,6 +767,19 @@ function App() {
                             ? CUTOFF_LABEL + ' 이전 가입 계좌에 잔고가 남아 있어 연금수령연차가 6년차부터 기산됩니다. 신규 계좌 대비 5년 빠르게 한도 제한이 해제됩니다.'
                             : '연금수령연차가 1년차부터 기산됩니다. 퇴직급여를 세액공제 납입분과 분리해 관리할 수 있습니다.'}
                         </p>
+                        {allocation.some((a) => a.tiedWith && a.tiedWith.length > 0) && (
+                          <div className="mt-3 pt-3 border-t border-white/30 text-[13px] leading-relaxed">
+                            <strong className="font-bold">세법상 동점 안내</strong>{' · '}
+                            {allocation.filter((a) => a.tiedWith && a.tiedWith.length).map((a) => (
+                              <span key={a.source.kind}>
+                                {[a.target.label].concat(a.tiedWith.map((t) => t.label)).join(' / ')}
+                              </span>
+                            ))}
+                            {' 은 모두 ' + CUTOFF_LABEL + ' 이전 가입이라 한도 기산이 똑같이 6년차입니다. '}
+                            <strong className="font-bold">가입일이 더 빠르다고 유리하지 않습니다.</strong>
+                            {' 세법상 우열이 없으므로 수수료 · 투자 가능 상품 · 중도인출 조건을 보고 고르시고, 아래에서 계좌를 눌러 시뮬레이션을 바꿔 볼 수 있습니다.'}
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -776,9 +826,16 @@ function App() {
                             </div>
                             {!blocked && (
                               <div className="text-[12px] text-ink-soft mt-2">
-                                최소 권장 수령 기간 <strong className="text-ink-body">{c.minYears}년</strong>
-                                {' · '}한도 기산 <strong className="text-ink-body">{c.startLimitYear}년차</strong>부터
-                                {!allocated ? ' · 더 유리한 계좌가 있어 배정되지 않았습니다' : ''}
+                                한도 기산 <strong className="text-ink-body">{c.startLimitYear}년차</strong>부터
+                                {' ('}
+                                {c.isNew
+                                  ? '신규 개설'
+                                  : c.legacy
+                                    ? fmtDate(c.joinDate) + ' 가입 · ' + CUTOFF_LABEL + ' 이전'
+                                    : fmtDate(c.joinDate) + ' 가입 · ' + CUTOFF_LABEL + ' 이후'}
+                                {')'}
+                                {' · '}최소 권장 수령 기간 <strong className="text-ink-body">{c.minYears}년</strong>
+                                {!allocated ? ' · 더 유리하거나 동등한 계좌가 배정되었습니다' : ''}
                               </div>
                             )}
                           </div>
@@ -805,6 +862,15 @@ function App() {
                       <span className="text-[12px] text-ink-muted ml-2">
                         (연금수령 1~10년차 30% · 11년차부터 40% 감면)
                       </span>
+                    </div>
+                  )}
+
+                  {mixedBasis.length > 0 && (
+                    <div className="border border-[#E8D49A] bg-[#FBF3DF] rounded-sm px-4 py-3 mb-5 text-[13px] text-[#8A6A0B] leading-relaxed">
+                      <strong className="font-bold">합산 주의</strong>{' · '}
+                      {mixedBasis.map((a) => a.label).join(' / ')}는 한도 기산이{' '}
+                      {picked.label}({picked.startLimitYear}년차)과 달라 실제로는 한도가 계좌별로 따로 산정됩니다.
+                      아래 표는 {picked.startLimitYear}년차 기준으로 합산해 계산한 값이라 참고용입니다.
                     </div>
                   )}
 
@@ -839,9 +905,13 @@ function App() {
                               <span className="text-[11px] text-ink-soft font-normal ml-1">({man(r.monthly)})</span>
                             </td>
                             <td className="px-2 py-1.5 text-center">
-                              <span className={r.reduction === 0.4 ? 'text-sig-ok font-bold' : 'text-ink-muted'}>
-                                {Math.round(r.reduction * 100)}%
-                              </span>
+                              {r.drawRet > 0 ? (
+                                <span className={r.reduction === 0.4 ? 'text-sig-ok font-bold' : 'text-ink-muted'}>
+                                  {Math.round(r.reduction * 100)}%
+                                </span>
+                              ) : (
+                                <span className="text-mas-gray" title="이연퇴직소득이 모두 인출되어 감면 대상이 없습니다">-</span>
+                              )}
                             </td>
                             <td className="px-2 py-1.5 text-right">{man(r.tax)}</td>
                             <td className="px-2 py-1.5 text-right text-ink-muted">{man(r.end)}</td>
@@ -1017,8 +1087,11 @@ function PrintSheet(props) {
               <td style={td}>{r.unlimited ? '전액' : man(r.limit)}</td>
               <td style={Object.assign({}, td, { fontWeight: 700, color: '#043B72' })}>{man(r.draw)}</td>
               <td style={Object.assign({}, td, { color: '#6C6C6C' })}>{man(r.monthly)}</td>
-              <td style={Object.assign({}, tdC, { color: r.reduction === 0.4 ? '#2E8540' : '#3D3D3D', fontWeight: r.reduction === 0.4 ? 700 : 400 })}>
-                {Math.round(r.reduction * 100)}%
+              <td style={Object.assign({}, tdC, {
+                color: r.drawRet > 0 ? (r.reduction === 0.4 ? '#2E8540' : '#3D3D3D') : '#84888B',
+                fontWeight: r.drawRet > 0 && r.reduction === 0.4 ? 700 : 400
+              })}>
+                {r.drawRet > 0 ? Math.round(r.reduction * 100) + '%' : '-'}
               </td>
               <td style={td}>{man(r.tax)}</td>
               <td style={Object.assign({}, td, { color: '#6C6C6C' })}>{man(r.end)}</td>
