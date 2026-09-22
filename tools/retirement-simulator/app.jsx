@@ -329,6 +329,7 @@ function buildSchedule(cfg) {
    ================================================================ */
 
 const STORE_KEY = 'mas-retirement-cases-v1';
+const MEMO_MAX = 500;
 const CASE_FORMAT = 'mas-retirement-case';
 
 /** localStorage 는 file:// 이나 사내 정책에 따라 막힐 수 있어 항상 감싼다 */
@@ -591,6 +592,9 @@ function App() {
   const [cases, setCases] = useState(() => loadCases());
   const [storeOk] = useState(() => storageAvailable());
   const [notice, setNotice] = useState(null);
+  const [memo, setMemo] = useState('');
+  const [editingId, setEditingId] = useState(null);   // 목록에서 메모를 고치는 중인 항목
+  const [editingText, setEditingText] = useState('');
   const fileRef = React.useRef(null);
 
   const say = (text, tone) => {
@@ -604,7 +608,7 @@ function App() {
     amtSingle, amtLegal, amtHonor, deferredTax,
     hasPension, pensionJoinStr, pensionBal,
     hasIrp, irpJoinStr, irpBal,
-    pastCount, fees, manualPick, pickedId, scope, mode, years, rate
+    pastCount, fees, manualPick, pickedId, scope, mode, years, rate, memo
   });
 
   // 우리 형식인지 최소한의 확인. 아니면 폼을 건드리지 않는다
@@ -643,6 +647,7 @@ function App() {
     setMode(d.mode === 'max' ? 'max' : 'even');
     setYears(Math.min(30, Math.max(5, num(d.years, 10))));
     setRate(Math.min(8, Math.max(0, num(d.rate, 3))));
+    setMemo(str(d.memo, '').slice(0, MEMO_MAX));
     return true;
   };
 
@@ -799,7 +804,8 @@ function App() {
   // ---- 저장 동작 ----
   const doSaveCase = () => {
     const name = safeName(custName) + ' · ' + (birth ? birth.getFullYear() + '년생' : '생년월일 미입력');
-    const entry = { id: 'c' + Date.now(), name, savedAt: new Date().toISOString(), data: collectState() };
+    const entry = { id: 'c' + Date.now(), name, savedAt: new Date().toISOString(),
+      memo: memo.trim().slice(0, MEMO_MAX), data: collectState() };
     const next = [entry].concat(cases.filter((c) => c.name !== name)).slice(0, 50);
     const r = saveCases(next);
     if (r.ok) { setCases(next); say('저장했습니다 - ' + name); }
@@ -810,7 +816,21 @@ function App() {
     const c = cases.find((x) => x.id === id);
     if (!c) return;
     applyState(c.data);
+    setMemo(String(c.memo || (c.data && c.data.memo) || '').slice(0, MEMO_MAX));
     say('불러왔습니다 - ' + c.name);
+  };
+
+  /** 목록에서 메모만 고친다 (입력값은 건드리지 않는다) */
+  const doSaveMemo = (id) => {
+    const next = cases.map((c) => (c.id === id
+      ? Object.assign({}, c, {
+          memo: editingText.trim().slice(0, MEMO_MAX),
+          data: Object.assign({}, c.data, { memo: editingText.trim().slice(0, MEMO_MAX) })
+        })
+      : c));
+    const r = saveCases(next);
+    if (r.ok) { setCases(next); setEditingId(null); say('메모를 수정했습니다.'); }
+    else say(r.reason, 'err');
   };
 
   const doDeleteCase = (id) => {
@@ -857,7 +877,8 @@ function App() {
       ['수령 기간(년)', years],
       ['운용수익률(%)', rate],
       ['계좌 수수료(%)', (picked.feeRate * 100).toFixed(2)],
-      ['작성일', TODAY_STR]
+      ['작성일', TODAY_STR],
+      ['상담 메모', memo.trim() || '-']
     ];
     const fn = downloadName('retirement-schedule', custName, 'csv');
     downloadBlob(fn, 'text/csv;charset=utf-8', scheduleCsv(sim.rows, meta));
@@ -896,6 +917,20 @@ function App() {
 
               {/* ---------- 저장 ---------- */}
               <div className="border border-hair rounded-sm bg-white p-3 mb-7">
+                <label className="block mb-2">
+                  <span className="block text-[12px] font-medium text-ink-body mb-1">
+                    상담 메모 <span className="text-ink-soft font-normal">(선택 · 저장·내보내기에 함께 담깁니다)</span>
+                  </span>
+                  <textarea rows={2} maxLength={MEMO_MAX} value={memo}
+                    onChange={(e) => setMemo(e.target.value)}
+                    placeholder="고객 요청사항, 다음 상담 시 확인할 점 등"
+                    className="w-full px-3 py-2 border border-hair rounded-xs bg-white text-[13px] text-ink leading-snug
+                               resize-y focus:outline-none focus:border-mas-orange focus:ring-2 focus:ring-mas-orange/25 transition" />
+                  {memo.length > 0 && (
+                    <span className="block text-[11px] text-ink-soft mt-0.5 text-right num">{memo.length} / {MEMO_MAX}</span>
+                  )}
+                </label>
+
                 <div className="flex gap-2 mb-2">
                   <button type="button" onClick={doSaveCase}
                     className="flex-1 h-[38px] text-[14px] font-medium bg-mas-orange text-white rounded-xs hover:bg-mas-active transition">
@@ -916,22 +951,61 @@ function App() {
                 {cases.length > 0 && (
                   <div className="border-t border-hair-soft pt-2">
                     <div className="text-[12px] font-medium text-ink-soft mb-1.5">저장된 상담 {cases.length}건</div>
-                    <div className="max-h-[132px] overflow-y-auto space-y-1">
-                      {cases.map((c) => (
-                        <div key={c.id} className="flex items-center gap-2 text-[13px]">
-                          <button type="button" onClick={() => doLoadCase(c.id)}
-                            className="flex-1 text-left px-2 py-1 rounded-xs hover:bg-surf-subtle transition truncate"
-                            title={'불러오기 · ' + new Date(c.savedAt).toLocaleString('ko-KR')}>
-                            {c.name}
-                            <span className="text-[11px] text-ink-soft ml-1.5">
-                              {new Date(c.savedAt).toLocaleDateString('ko-KR')}
-                            </span>
-                          </button>
-                          <button type="button" onClick={() => doDeleteCase(c.id)}
-                            className="shrink-0 px-2 py-1 text-[12px] text-ink-soft hover:text-sig-err transition"
-                            title="삭제">삭제</button>
-                        </div>
-                      ))}
+                    <div className="max-h-[190px] overflow-y-auto space-y-1">
+                      {cases.map((c) => {
+                        const note = c.memo || (c.data && c.data.memo) || '';
+                        const editing = editingId === c.id;
+                        return (
+                          <div key={c.id} className="border-b border-hair-soft last:border-b-0 pb-1">
+                            <div className="flex items-center gap-1 text-[13px]">
+                              <button type="button" onClick={() => doLoadCase(c.id)}
+                                className="flex-1 text-left px-2 py-1 rounded-xs hover:bg-surf-subtle transition truncate"
+                                title={'불러오기 · ' + new Date(c.savedAt).toLocaleString('ko-KR')}>
+                                {c.name}
+                                <span className="text-[11px] text-ink-soft ml-1.5">
+                                  {new Date(c.savedAt).toLocaleDateString('ko-KR')}
+                                </span>
+                              </button>
+                              <button type="button"
+                                onClick={() => {
+                                  if (editing) { setEditingId(null); return; }
+                                  setEditingId(c.id); setEditingText(note);
+                                }}
+                                className={'shrink-0 px-2 py-1 text-[12px] transition ' +
+                                  (note ? 'text-mas-active font-medium' : 'text-ink-soft hover:text-ink')}
+                                title={note ? '메모 수정' : '메모 추가'}>
+                                {editing ? '닫기' : note ? '메모 ✎' : '메모 +'}
+                              </button>
+                              <button type="button" onClick={() => doDeleteCase(c.id)}
+                                className="shrink-0 px-2 py-1 text-[12px] text-ink-soft hover:text-sig-err transition"
+                                title="삭제">삭제</button>
+                            </div>
+
+                            {editing ? (
+                              <div className="px-2 pb-1">
+                                <textarea rows={2} maxLength={MEMO_MAX} value={editingText} autoFocus
+                                  onChange={(e) => setEditingText(e.target.value)}
+                                  className="w-full px-2 py-1.5 border border-hair rounded-xs text-[12px] leading-snug resize-y
+                                             focus:outline-none focus:border-mas-orange focus:ring-2 focus:ring-mas-orange/25" />
+                                <div className="flex gap-2 mt-1">
+                                  <button type="button" onClick={() => doSaveMemo(c.id)}
+                                    className="h-[28px] px-3 text-[12px] font-medium bg-mas-orange text-white rounded-xs hover:bg-mas-active transition">
+                                    메모 저장
+                                  </button>
+                                  <button type="button" onClick={() => setEditingId(null)}
+                                    className="h-[28px] px-3 text-[12px] text-ink-muted border border-hair rounded-xs hover:bg-surf-subtle transition">
+                                    취소
+                                  </button>
+                                </div>
+                              </div>
+                            ) : note ? (
+                              <p className="px-2 pb-1 text-[12px] text-ink-muted leading-snug whitespace-pre-wrap break-words">
+                                {note}
+                              </p>
+                            ) : null}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
