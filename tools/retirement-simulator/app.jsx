@@ -1367,29 +1367,6 @@ function App() {
                     onChange={(e) => { doImport(e.target.files && e.target.files[0]); e.target.value = ''; }} />
                 </div>
 
-                {/* 전체 초기화 - 실수로 상담 내용을 날리지 않도록 두 번 누르게 한다 */}
-                {confirmReset ? (
-                  <div className="flex items-center gap-2 mb-2 px-2 py-1.5 border border-[#E8D49A] bg-[#FBF3DF] rounded-xs">
-                    <span className="flex-1 text-[12px] text-[#8A6A0B] leading-snug">
-                      입력한 내용이 모두 지워집니다. 저장된 상담은 남습니다.
-                    </span>
-                    <button type="button" onClick={doReset} aria-label="초기화 확인"
-                      className="shrink-0 h-[30px] px-3 text-[12px] font-medium bg-sig-err text-white rounded-xs hover:opacity-90 transition">
-                      초기화
-                    </button>
-                    <button type="button" onClick={() => setConfirmReset(false)} aria-label="초기화 취소"
-                      className="shrink-0 h-[30px] px-3 text-[12px] text-ink-muted border border-hair bg-white rounded-xs hover:bg-surf-subtle transition">
-                      취소
-                    </button>
-                  </div>
-                ) : (
-                  <button type="button" onClick={() => setConfirmReset(true)}
-                    className="w-full h-[32px] mb-2 text-[13px] text-ink-muted border border-hair rounded-xs
-                               hover:bg-surf-subtle hover:text-ink transition">
-                    전체 초기화
-                  </button>
-                )}
-
                 {cases.length > 0 && (
                   <div className="border-t border-hair-soft pt-2">
                     <div className="text-[12px] font-medium text-ink-soft mb-1.5">저장된 상담 {cases.length}건</div>
@@ -1853,6 +1830,46 @@ function App() {
                   </Field>
                 </div>
               </Section>
+
+              {/*
+                전체 초기화.
+
+                이 단추는 원래 맨 위 '상담 메모·저장' 카드 안에 있었다. 그러니 메모 칸 바로
+                아래에 붙어 보여서 '메모를 지우는 단추' 로 읽혔다 - 실제로는 1·2·3 의 입력을
+                전부 지우는데도. 지우는 대상(위의 세 묶음) 바로 밑으로 내려서 범위가 눈에
+                보이게 한다.
+
+                실수로 상담 내용을 날리지 않도록 두 번 누르게 하는 것은 그대로 둔다.
+                다만 한 번만 누르고 끝내면 아무 일도 일어나지 않으므로, 두 번째 단추를
+                눈에 띄게 하고 무엇이 지워지는지 묶음 이름으로 적는다.
+              */}
+              <div className="mt-6 pt-5 border-t border-hair">
+                {confirmReset ? (
+                  <div className="px-3 py-3 border border-sig-err rounded-sm bg-[#FDF2F2]">
+                    <p className="text-[13px] text-ink-body leading-relaxed mb-2.5">
+                      <strong className="text-sig-err">1 · 2 · 3 에 입력한 값이 모두 지워집니다.</strong><br />
+                      고객 정보 · 퇴직급여 · 보유 계좌 · 시뮬레이션 옵션과 상담 메모가 비워집니다.
+                      <strong> 저장된 상담은 남습니다.</strong>
+                    </p>
+                    <div className="flex gap-2">
+                      <button type="button" onClick={doReset} aria-label="초기화 확인"
+                        className="flex-1 h-[38px] text-[14px] font-bold bg-sig-err text-white rounded-xs hover:opacity-90 transition">
+                        지웁니다
+                      </button>
+                      <button type="button" onClick={() => setConfirmReset(false)} aria-label="초기화 취소"
+                        className="flex-1 h-[38px] text-[14px] text-ink-body border border-hair bg-white rounded-xs hover:bg-surf-subtle transition">
+                        취소
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => setConfirmReset(true)} aria-label="전체 초기화"
+                    className="w-full h-[38px] text-[13px] text-ink-muted border border-hair rounded-xs
+                               hover:bg-surf-subtle hover:text-ink transition">
+                    1 · 2 · 3 입력 전체 초기화
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* ---------- 결과 ---------- */}

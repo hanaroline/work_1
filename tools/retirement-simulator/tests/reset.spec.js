@@ -36,6 +36,12 @@ module.exports = async function run(t) {
     t.is(await field(page, '고객명').inputValue(), '홍길동', '확인 전에는 입력이 유지됨');
     t.is(await button(page, '초기화 확인').count(), 1, '확인 버튼이 나타남');
 
+    // 확인 문구가 '무엇이 지워지는지' 를 묶음 이름으로 말해야 한다.
+    // 단추가 상담 메모 카드 안에 있던 동안은 '메모를 지우는 단추' 로 읽혔다.
+    const confirmBox = await page.locator('.screen-only').first().innerText();
+    t.includes(confirmBox, '1 · 2 · 3', '지워지는 범위를 묶음 번호로 밝힘');
+    t.includes(confirmBox, '저장된 상담은 남습니다', '저장본은 남는다고 밝힘');
+
     // --- 취소하면 그대로 ---
     await button(page, '초기화 취소').click();
     await page.waitForTimeout(300);
@@ -52,6 +58,9 @@ module.exports = async function run(t) {
     t.is(await field(page, '생년월일').inputValue(), '', '생년월일 비움');
     t.is(await field(page, '제도 가입일').inputValue(), '', '제도 가입일 비움');
     t.is(await field(page, '이연 퇴직소득세').inputValue(), '', '이연 퇴직소득세 비움');
+    // 금액 칸은 '있는가' 만 보고 '비었는가' 를 안 보고 있었다. 제도가 DC 로 돌아가면서
+    // 칸이 새로 그려지는 바람에 값이 남아도 검사가 눈치채지 못하는 자리였다.
+    t.is(await field(page, '퇴직급여').inputValue(), '', '퇴직급여 금액 비움');
     t.is(await field(page, '과거 연금 수령 횟수').inputValue(), '0', '과거 수령 횟수 0');
     t.is(await field(page, '상담 메모').inputValue(), '', '메모 비움');
     t.is(await field(page, '상담 메모 인쇄물 포함').isChecked(), false, '메모 인쇄 체크 해제');
