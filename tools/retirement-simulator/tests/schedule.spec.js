@@ -43,7 +43,7 @@ module.exports = async function run(t) {
       name: '검산', birth: '680410', system: 'SEV', joinDate: '1995-03-02',
       legal: 300000000, honor: 0, deferredTax: 12000000,
       pension: { join: '2010-06-15', balance: 1 },
-      scope: '퇴직금 단독', mode: '기간 균등 분할', years: 15, rate: 3
+      mode: '기간 균등 분할', years: 15, rate: 3
     });
 
     const rows = await scheduleRows(page);
@@ -98,7 +98,7 @@ module.exports = async function run(t) {
     await fillCase(page, {
       name: '한도초과', birth: '990101', system: 'SEV', joinDate: '2015-01-02',
       legal: 300000000, honor: 0, deferredTax: 30000000,
-      scope: '퇴직금 단독', mode: '기간 균등 분할', years: 5, rate: 0
+      mode: '기간 균등 분할', years: 5, rate: 0
     });
     const over = await scheduleRows(page);
     t.is(over[0][1], '1년차', '55세 미만 + 신규계좌라 1년차');
@@ -120,16 +120,16 @@ module.exports = async function run(t) {
     t.near(num(capped[0][7]), 252, 1, '3,600만 × 0.1 × 0.7 = 252만원');
 
     // ── 세액공제 받지 않은 금액은 가장 먼저, 세금 없이 빠진다 ──────
-    // 기존 연금저축 평가액 1억 중 4,000만이 세액공제를 받지 않은 금액.
+    // 연금저축 1 평가액 1억 중 4,000만이 세액공제를 받지 않은 금액.
     // 1회차 인출분은 이 재원에서 먼저 나가므로 그만큼 세금이 붙지 않는다.
     await fillCase(page, {
       name: '과세제외', birth: '990101', system: 'SEV', joinDate: '2015-01-02',
       legal: 0, honor: 100000000, deferredTax: 20000000,
-      pension: { join: '2016-01-04', balance: 100000000, exempt: 0 },
-      scope: '기존 연금저축 합산', mode: '세법 한도 내 최대', years: 10, rate: 0
+      pension: { join: '2016-01-04', balance: 100000000, exempt: 0, merge: true },
+      mode: '세법 한도 내 최대', years: 10, rate: 0
     });
     const noExempt = await scheduleRows(page);
-    await field(page, '기존 연금저축 세액공제 받지 않은 금액').fill('40000000');
+    await field(page, '연금저축 1 세액공제 받지 않은 금액').fill('40000000');
     await page.waitForTimeout(500);
     const withExempt = await scheduleRows(page);
     t.is(num(withExempt[0][5]), num(noExempt[0][5]), '과세제외 재원이 있어도 인출액은 같다');

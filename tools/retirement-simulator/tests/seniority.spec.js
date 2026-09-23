@@ -9,7 +9,7 @@
  * 퇴직 시점으로 보므로 2026년에 실행할 때만 같은 값이 나온다.
  * 다른 해에 실행하면 기준연도가 달라지므로 연차를 보정해 비교한다.
  */
-const { openApp, fillCase, field, button, scheduleRows } = require('./helpers');
+const { openApp, fillCase, field, button, scheduleRows, pickAccount, selectedAccount } = require('./helpers');
 
 const num = (s) => {
   const m = String(s).replace(/,/g, '').match(/-?\d+(\.\d+)?/);
@@ -35,7 +35,7 @@ module.exports = async function run(t) {
     await fillCase(page, {
       name: 'Q63', birth: BIRTH, system: 'SEV', joinDate: '2000-01-03',
       legal: 100000000, honor: 0, deferredTax: 0,
-      scope: '퇴직금 단독', mode: '기간 균등 분할', years: 30, rate: 0
+      mode: '기간 균등 분할', years: 30, rate: 0
     });
     let r = await firstRow(page);
     t.is(r.limitYear, 1, '퇴직금제도 + 신규계좌 → 1년차');
@@ -64,14 +64,13 @@ module.exports = async function run(t) {
     await fillCase(page, {
       name: 'Q66', birth: BIRTH, system: 'DB', joinDate: '2011-11-01',
       amount: 100000000, deferredTax: 0,
-      pension: { join: '2022-01-03', balance: 10000000 },
-      scope: '기존 연금저축 합산', mode: '기간 균등 분할', years: 30, rate: 0
+      pension: { join: '2022-01-03', balance: 10000000, merge: true },
+      mode: '기간 균등 분할', years: 30, rate: 0
     });
     // 자동 추천은 6년차인 신규 계좌다. 기존 계좌를 일부러 골라 비교한다.
     await button(page, '판정').click();
     await page.waitForTimeout(300);
-    await page.locator('select').first().selectOption('ex-pension');
-    await page.waitForTimeout(500);
+    await pickAccount(page, '연금저축 1');
     r = await firstRow(page);
     t.is(r.limitYear, 1, '2013.3.1 이전 DB 라도 기존 계좌 입금이면 1년차');
     t.near(r.limit, 1320, 1, '1년차 한도 1,320만원 (퇴직금 1억 + 기존 1천만)');
@@ -81,6 +80,7 @@ module.exports = async function run(t) {
     await page.waitForTimeout(300);
     await page.getByRole('button', { name: '자동 추천으로 되돌리기', exact: true }).click();
     await page.waitForTimeout(500);
+    t.includes(await selectedAccount(page), '신규', '자동 추천은 신규 계좌');
     r = await firstRow(page);
     t.is(r.limitYear, 6, '자동 추천은 6년차를 살리는 신규 계좌');
 
@@ -91,8 +91,8 @@ module.exports = async function run(t) {
     await fillCase(page, {
       name: 'Q67', birth: BIRTH, system: 'SEV', joinDate: '2000-01-03',
       legal: 200000000, honor: 0, deferredTax: 0,
-      pension: { join: '2008-03-03', balance: 60000000 },
-      scope: '기존 연금저축 합산', mode: '기간 균등 분할', years: 30, rate: 0
+      pension: { join: '2008-03-03', balance: 60000000, merge: true },
+      mode: '기간 균등 분할', years: 30, rate: 0
     });
     const accrued = 6 + (THIS_YEAR - Y55);        // 2026년이면 9
     r = await firstRow(page);
@@ -110,7 +110,7 @@ module.exports = async function run(t) {
       name: '과거퇴직', birth: BIRTH, system: 'SEV', joinDate: '2000-01-03',
       retireDate: twoYearsAgo + '-03-02',
       legal: 100000000, honor: 0, deferredTax: 0, pension: false, irp: false,
-      scope: '퇴직금 단독', mode: '기간 균등 분할', years: 30, rate: 0
+      mode: '기간 균등 분할', years: 30, rate: 0
     });
     r = await firstRow(page);
     t.is(r.limitYear, 3, twoYearsAgo + '년 퇴직 → 올해는 3년차');
@@ -146,7 +146,7 @@ module.exports = async function run(t) {
       name: '전환', birth: BIRTH, system: 'DC', joinDate: '2022-01-03',
       retireDate: THIS_YEAR + '-03-02',
       amount: 100000000, deferredTax: 0,
-      scope: '퇴직금 단독', mode: '기간 균등 분할', years: 30, rate: 0
+      mode: '기간 균등 분할', years: 30, rate: 0
     });
     r = await firstRow(page);
     t.is(r.limitYear, 1, '전환 표시 전에는 DC 가입일(2022) 기준이라 1년차');
