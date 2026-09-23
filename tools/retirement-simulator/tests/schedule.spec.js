@@ -49,9 +49,11 @@ module.exports = async function run(t) {
     const rows = await scheduleRows(page);
     t.is(rows.length, 15, '15회차가 생성됨');
 
+    // 1968년생이 2026년에 퇴직. 2010년 가입 계좌라 기산연차는 6년차지만,
+    // 만 55세가 된 2023년에 이미 연금개시 요건을 갖춰 연차가 3년 누적되어 9년차로 시작한다.
     const exp = expected({
       P0: 300000000, G0: 0, tax0: 12000000,
-      startLimitYear: 6, years: 15, rate: 0.03, startAge: 58, pastCount: 0
+      startLimitYear: 9, years: 15, rate: 0.03, startAge: 58, pastCount: 0
     });
 
     // 만원 단위 반올림 표시이므로 1만원 오차 허용
@@ -89,6 +91,52 @@ module.exports = async function run(t) {
     t.is(past[0][2], '10년차', '과거 9회 + 1회차 = 실제 10년차');
     t.is(past[0][6], '30%', '10년차까지는 30%');
     t.is(past[1][6], '40%', '11년차부터 40%');
+
+    // ── 한도는 인출 상한이 아니다 - 넘겨 빼면 연금외수령으로 과세된다 ──
+    // 1년차 기산 · 3억 · 5년 균등이면 1회차 균등분(6,000만)이 한도(3,600만)를 넘는다.
+    // 한도 = 3억 ÷ (11-1) × 120% = 3,600만원, 초과분 2,400만원.
+    await fillCase(page, {
+      name: '한도초과', birth: '990101', system: 'SEV', joinDate: '2015-01-02',
+      legal: 300000000, honor: 0, deferredTax: 30000000,
+      scope: '퇴직금 단독', mode: '기간 균등 분할', years: 5, rate: 0
+    });
+    const over = await scheduleRows(page);
+    t.is(over[0][1], '1년차', '55세 미만 + 신규계좌라 1년차');
+    t.near(num(over[0][4]), 3600, 1, '1회차 한도 3,600만원');
+    t.near(num(over[0][5]), 6000, 1, '한도를 넘겨 6,000만원을 인출 (한도로 잘리지 않음)');
+    t.includes(over[0][5], '연금외', '한도 초과분이 연금외수령으로 표시됨');
+    t.includes(over[0][5], '2,400', '초과분 2,400만원');
+
+    // 세액 검산: 퇴직소득 1원당 이연세액 0.1.
+    // 연금수령분 3,600만 × 0.1 × 0.7(30% 감면) + 초과분 2,400만 × 0.1(감면 없음) = 492만원
+    t.near(num(over[0][7]), 492, 1, '연금수령분만 감면되고 초과분은 전액 과세');
+
+    // 같은 조건에서 '세법 한도 내 최대'로 바꾸면 한도까지만 빠진다
+    await button(page, '세법 한도 내 최대').click();
+    await page.waitForTimeout(500);
+    const capped = await scheduleRows(page);
+    t.near(num(capped[0][5]), 3600, 1, '한도 내 최대는 한도까지만 인출');
+    t.excludes(capped[0][5], '연금외', '한도 내 최대에는 연금외수령이 없음');
+    t.near(num(capped[0][7]), 252, 1, '3,600만 × 0.1 × 0.7 = 252만원');
+
+    // ── 세액공제 받지 않은 금액은 가장 먼저, 세금 없이 빠진다 ──────
+    // 기존 연금저축 평가액 1억 중 4,000만이 세액공제를 받지 않은 금액.
+    // 1회차 인출분은 이 재원에서 먼저 나가므로 그만큼 세금이 붙지 않는다.
+    await fillCase(page, {
+      name: '과세제외', birth: '990101', system: 'SEV', joinDate: '2015-01-02',
+      legal: 0, honor: 100000000, deferredTax: 20000000,
+      pension: { join: '2016-01-04', balance: 100000000, exempt: 0 },
+      scope: '기존 연금저축 합산', mode: '세법 한도 내 최대', years: 10, rate: 0
+    });
+    const noExempt = await scheduleRows(page);
+    await field(page, '기존 연금저축 세액공제 받지 않은 금액').fill('40000000');
+    await page.waitForTimeout(500);
+    const withExempt = await scheduleRows(page);
+    t.is(num(withExempt[0][5]), num(noExempt[0][5]), '과세제외 재원이 있어도 인출액은 같다');
+    t.ok(num(withExempt[0][7]) < num(noExempt[0][7]),
+      '과세제외 재원이 먼저 빠져 1회차 세액이 줄어든다 (' +
+      num(noExempt[0][7]) + ' → ' + num(withExempt[0][7]) + '만원)');
+    t.is(num(withExempt[0][7]), 0, '1회차 인출이 전액 과세제외 재원이면 세금 0');
 
     t.is(errors.length, 0, '런타임 에러 없음');
   } finally {

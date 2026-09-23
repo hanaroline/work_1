@@ -7,8 +7,8 @@ const savedCases = (page) =>
 const CASE = {
   name: '홍길동', birth: '710315', system: 'SEV', joinDate: '2000-07-01',
   legal: 150000000, honor: 50000000, deferredTax: 7500000,
-  pension: { join: '2003-03-02', balance: 75000000 },
-  irp: { join: '2002-03-02', balance: 85000000 },
+  pension: { join: '2003-03-02', balance: 75000000, exempt: 12000000, started: true },
+  irp: { join: '2002-03-02', balance: 85000000, exempt: 9000000 },
   pastCount: 3, fees: { '기존 IRP': 0.3 },
   scope: '전체 전액 합산', mode: '세법 한도 내 최대', years: 25, rate: 5,
   memo: '초기화 테스트용 메모', memoOnPrint: true
@@ -49,6 +49,7 @@ module.exports = async function run(t) {
     t.is(await field(page, '상담 메모 인쇄물 포함').isChecked(), false, '메모 인쇄 체크 해제');
     t.is(await field(page, '기존 연금저축 보유').isChecked(), false, '연금저축 보유 해제');
     t.is(await field(page, '기존 IRP 보유').isChecked(), false, 'IRP 보유 해제');
+    t.is(await field(page, 'DB 에서 DC 로 전환').isChecked(), false, 'DB → DC 전환 표시 해제');
     t.is(await field(page, '수령 기간').inputValue(), '10', '수령 기간 기본값 10년');
     t.is(await field(page, '운용수익률').inputValue(), '3', '운용수익률 기본값 3%');
     t.is(await field(page, '신규 IRP 연간 수수료').inputValue(), '0', '수수료 기본값 0');
@@ -73,6 +74,11 @@ module.exports = async function run(t) {
     await page.waitForTimeout(600);
     t.is(await field(page, '고객명').inputValue(), '홍길동', '초기화 후에도 불러오기로 복원');
     t.is(await field(page, '수령 기간').inputValue(), '25', '수령 기간까지 복원');
+    // 새로 붙은 칸들도 저장·복원 경로를 타는지 (초기화로 비워졌다가 되살아나야 한다)
+    t.is((await field(page, '기존 연금저축 세액공제 받지 않은 금액').inputValue()).replace(/,/g, ''),
+      '12000000', '세액공제 받지 않은 금액까지 복원');
+    t.is(await field(page, '기존 연금저축 연금개시됨').isChecked(), true, '연금개시 표시까지 복원');
+    t.is(await field(page, '기존 IRP 연금개시됨').isChecked(), false, 'IRP 는 개시 표시가 꺼진 채로 복원');
 
     t.is(errors.length, 0, '런타임 에러 없음');
   } finally {

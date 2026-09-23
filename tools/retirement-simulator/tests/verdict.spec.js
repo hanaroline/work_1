@@ -18,50 +18,45 @@ module.exports = async function run(t) {
     t.includes(v, '기존 연금저축', '구 연금저축 보유 시 기존 계좌 추천');
     t.includes(v, '6년차', '6년차 기산으로 판정');
 
-    // --- 2013.3 이후 가입 DC 는 구 연금계좌로 이전 불가 ---
+    // --- DC 는 연금저축계좌로 직접 입금할 수 없다 (연령 불문) ---
+    // 소득세법이 퇴직연금계좌(DC·IRP)와 연금저축계좌 간 상호 이체를 금지한다(시행령 §40의4①1).
+    // 더해서 2016년 가입 DC 는 2013.3.1 전 가입 계좌로도 입금할 수 없다(§40의4①2).
     await button(page, 'DC').click();
     await field(page, '제도 가입일').fill('2016-04-01');
     await field(page, '퇴직급여').fill('300000000');
     await page.waitForTimeout(500);
     const cs = await cards(page);
     const legacyCard = cs.find((c) => c.startsWith('기존 연금저축'));
-    // 직접 이체는 §40의4①2 로 막히지만, 60일 내 입금 경로(§146②)가 있어 단정하지 않고 조건부로 둔다
-    t.includes(legacyCard, '조건부', '2016년 가입 DC → 구 연금저축은 조건부');
-    t.includes(legacyCard, '직접 이체는 불가', '직접 이체가 막힌다는 점을 명시');
+    t.includes(legacyCard, '불가', '2016년 가입 DC → 구 연금저축은 불가');
     t.includes(legacyCard, '§40의4', '근거 조문을 표시');
-    t.includes(legacyCard, '60일', '대체 경로(60일 내 입금)를 안내');
+    t.includes(legacyCard, '2단계', '만 55세 이상이므로 IRP 경유 경로를 안내');
+    // 신규 연금저축도 마찬가지로 막힌다 - 구/신규의 문제가 아니라 계좌 종류의 문제다
+    t.includes(cs.find((c) => c.startsWith('신규 연금저축')), '불가',
+      'DC 는 신규 연금저축으로도 입금 불가');
     t.includes(await verdictText(page), '신규 IRP', '자동 추천은 신규 IRP');
 
-    // 조건부는 자동 배정에서 빠지되, 상담자가 수동으로 고를 수는 있어야 한다
+    // 막힌 계좌는 수동 선택 상자에도 올라오지 않는다
     const opts = await page.locator('select').first().locator('option').allInnerTexts();
-    t.ok(opts.some((o) => o.includes('기존 연금저축') && o.includes('조건부')),
-      '조건부 계좌가 수동 선택 상자에 조건부 표시와 함께 올라옴');
-    await page.locator('select').first().selectOption('ex-pension');
-    await page.waitForTimeout(500);
-    t.includes(await verdictText(page), '기존 연금저축', '수동으로 조건부 계좌를 고를 수 있음');
-    t.includes(await verdictText(page), '수동 선택', '수동 선택 표시가 붙음');
-    await page.getByRole('button', { name: '자동 추천으로 되돌리기', exact: true }).click();
-    await page.waitForTimeout(500);
-    t.includes(await verdictText(page), '신규 IRP', '되돌리면 다시 자동 추천');
+    t.ok(!opts.some((o) => o.includes('연금저축')),
+      '입금 불가한 연금저축은 수동 선택 상자에서 제외');
 
     // --- DB 는 같은 제한을 받지 않는다 ---
-    // 소득세법 시행령 §40의2①2 의 '퇴직연금계좌' 열거에 확정급여형(DB)은 없다.
-    // DB 는 가입자별 계좌가 없어 퇴직급여 지급이 '연금계좌 간 이체'가 아니라
-    // '퇴직소득의 연금계좌 입금'이므로 §40의4 이체 제한 대상이 아니다.
+    // 소득세법상 '연금계좌'는 DC·IRP·연금저축계좌·과학기술인연금·중소기업퇴직연금이고
+    // DB 는 여기 없다. DB 퇴직금 지급은 '연금계좌 간 이체'가 아니라 '퇴직소득의 입금'이므로
+    // 가입일자와 무관하게 어느 계좌로든 넣을 수 있다.
     await button(page, 'DB').click();
     await page.waitForTimeout(400);
     const dbCards = await cards(page);
     const dbLegacy = dbCards.find((c) => c.startsWith('기존 연금저축'));
-    t.excludes(dbLegacy, '조건부', '2016년 가입 DB 는 조건 없이 구 연금저축으로 이전 가능');
+    t.excludes(dbLegacy, '불가', '2016년 가입 DB 는 구 연금저축으로 입금 가능');
     t.excludes(dbLegacy, '§40의4', 'DB 에는 이체 제한 사유가 붙지 않음');
-    t.includes(dbLegacy, '6년차', 'DB 도 구계좌의 6년차 기산을 쓸 수 있음');
     t.includes(await verdictText(page), '기존', 'DB 는 기존 구계좌가 추천됨');
 
     // 같은 조건에서 DC 로 바꾸면 다시 막혀야 한다 (두 제도가 실제로 다르게 판정되는지)
     await button(page, 'DC').click();
     await page.waitForTimeout(400);
-    t.includes((await cards(page)).find((c) => c.startsWith('기존 연금저축')), '조건부',
-      'DC 로 바꾸면 같은 조건에서 조건부로 판정');
+    t.includes((await cards(page)).find((c) => c.startsWith('기존 연금저축')), '불가',
+      'DC 로 바꾸면 같은 조건에서 불가로 판정');
 
     // --- 만 55세 미만: 법정퇴직금은 IRP 의무이전, 명예퇴직금만 연금저축 가능 ---
     await fillCase(page, {
@@ -77,15 +72,16 @@ module.exports = async function run(t) {
     t.includes(penCard, '만 55세 미만', '55세 미만 사유를 표시');
     t.includes(penCard, '근퇴법', '근거 법령을 표시');
 
-    // --- 가입일 선후는 우열을 가르지 않는다 (둘 다 2013 이전이면 동점) ---
+    // --- 가입일 선후는 우열을 가르지 않는다 (둘 다 2013 이전이면 연차가 같다) ---
+    // DB 로 두어야 연금저축과 IRP 가 모두 후보로 남는다 (DC 는 연금저축이 막힌다).
     await fillCase(page, {
-      name: '홍길동', birth: '710315', system: 'DC', joinDate: '2000-07-01',
+      name: '홍길동', birth: '710315', system: 'DB', joinDate: '2000-07-01',
       amount: 350000000, deferredTax: 7500000,
       pension: { join: '2003-03-02', balance: 75000000 },
       irp: { join: '2002-03-02', balance: 85000000 }
     });
     v = await verdictText(page);
-    t.includes(v, '기존 IRP', 'DC 는 IRP 로 직접 이전되므로 IRP 우선');
+    t.includes(v, '기존 IRP', '퇴직연금 지급액은 IRP 로 직접 이전되므로 IRP 우선');
     t.includes(v, '동점', '세법상 동점임을 안내');
     t.includes(v, '가입일이 더 빠르다고 유리하지 않습니다', '가입일 선후는 무관함을 명시');
 
@@ -96,6 +92,40 @@ module.exports = async function run(t) {
     await field(page, '기존 연금저축 연간 수수료').fill('0.4');
     await page.waitForTimeout(500);
     t.includes(await verdictText(page), '기존 IRP', '둘 다 0.4% → 다시 IRP');
+
+    // --- 연금이 개시된 계좌는 조건부 ---
+    // 연금개시 계좌는 원칙적으로 추가 입금이 막히지만, 당사 계좌라면 퇴직금에 한해
+    // 입금할 수 있어 단정하지 않는다. 자동 배정에서는 빼되 수동 선택은 열어 둔다.
+    await fillCase(page, {
+      name: '개시', birth: '680410', system: 'DB', joinDate: '2016-04-01',
+      amount: 200000000, deferredTax: 5000000, pension: false,
+      irp: { join: '2005-06-15', balance: 50000000, started: true },
+      fees: { '기존 IRP': 0 }
+    });
+    const startedCard = (await cards(page)).find((c) => c.startsWith('기존 IRP'));
+    t.includes(startedCard, '조건부', '연금개시된 계좌는 조건부');
+    t.includes(startedCard, '연금이 개시된 계좌', '연금개시를 사유로 표시');
+    t.includes(startedCard, '퇴직금에 한해', '당사 계좌의 예외를 안내');
+    // verdictText 에는 선택 상자의 option 들도 섞여 들어오므로 '선택된 값'을 직접 본다
+    t.is(await page.locator('select').first().inputValue(), 'new-irp',
+      '조건부 계좌는 자동 배정에서 빠지고 신규 IRP 가 잡힘');
+
+    const startedOpts = await page.locator('select').first().locator('option').allInnerTexts();
+    t.ok(startedOpts.some((o) => o.includes('기존 IRP') && o.includes('조건부')),
+      '조건부 계좌는 수동 선택 상자에 조건부 표시와 함께 올라옴');
+    await page.locator('select').first().selectOption('ex-irp');
+    await page.waitForTimeout(500);
+    t.is(await page.locator('select').first().inputValue(), 'ex-irp', '확인 후 수동으로 고를 수 있음');
+    t.includes(await verdictText(page), '수동 선택', '수동 선택 표시가 붙음');
+
+    // 개시 표시를 풀면 다시 자동 배정 대상이 된다 (음성 대조)
+    await page.getByRole('button', { name: '자동 추천으로 되돌리기', exact: true }).click();
+    await field(page, '기존 IRP 연금개시됨').uncheck();
+    await page.waitForTimeout(500);
+    t.is(await page.locator('select').first().inputValue(), 'ex-irp',
+      '개시 표시를 풀면 기존 IRP 가 자동 배정됨');
+    t.excludes((await cards(page)).find((c) => c.startsWith('기존 IRP')), '조건부',
+      '개시 표시를 풀면 조건부도 사라짐');
 
     t.is(errors.length, 0, '런타임 에러 없음');
   } finally {

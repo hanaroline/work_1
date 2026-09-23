@@ -23,7 +23,26 @@ module.exports = async function run(t) {
     await button(page, 'DC').click();
     await page.waitForTimeout(250);
     for (const name of FIELDS.whenDbDc) t.is(await field(page, name).count(), 1, 'DC 라벨 고유: ' + name);
+    for (const name of FIELDS.whenDc) t.is(await field(page, name).count(), 1, 'DC 라벨 고유: ' + name);
     t.is(await field(page, '법정퇴직금').count(), 0, 'DC 에서는 법정퇴직금 칸이 없다');
+
+    // DB → DC 전환을 켜야 전환 전 가입일 칸이 나온다
+    for (const name of FIELDS.whenConverted) {
+      t.is(await field(page, name).count(), 0, '전환 표시 전에는 없다: ' + name);
+    }
+    await field(page, 'DB 에서 DC 로 전환').check();
+    await page.waitForTimeout(250);
+    for (const name of FIELDS.whenConverted) {
+      t.is(await field(page, name).count(), 1, '전환 라벨 고유: ' + name);
+    }
+    await field(page, 'DB 에서 DC 로 전환').uncheck();
+    await page.waitForTimeout(200);
+
+    await button(page, 'DB').click();
+    await page.waitForTimeout(250);
+    for (const name of FIELDS.whenDc) {
+      t.is(await field(page, name).count(), 0, 'DB 에서는 전환 칸이 없다: ' + name);
+    }
 
     await button(page, '퇴직금제도').click();
     await page.waitForTimeout(250);
@@ -49,8 +68,10 @@ module.exports = async function run(t) {
       ['이연 퇴직소득세', '333000'],
       ['기존 연금저축 가입일', '2003-03-02'],
       ['기존 연금저축 평가액', '444000000'],
+      ['기존 연금저축 세액공제 받지 않은 금액', '12000000'],
       ['기존 IRP 가입일', '2002-03-02'],
       ['기존 IRP 평가액', '555000000'],
+      ['기존 IRP 세액공제 받지 않은 금액', '34000000'],
       ['과거 연금 수령 횟수', '7'],
       ['상담 메모', '메모확인용']
     ];
@@ -76,6 +97,30 @@ module.exports = async function run(t) {
     await page.waitForTimeout(300);
     t.is(await field(page, '수령 기간').inputValue(), '23', '수령 기간 슬라이더');
     t.is(await field(page, '운용수익률').inputValue(), '4.5', '운용수익률 슬라이더');
+
+    // 체크박스 4개가 서로 독립인지 - 하나만 켜고 나머지가 꺼져 있는지 본다
+    const boxes = ['기존 연금저축 연금개시됨', '기존 IRP 연금개시됨', '상담 메모 인쇄물 포함'];
+    for (const name of boxes) {
+      await field(page, name).check();
+      await page.waitForTimeout(150);
+      for (const other of boxes) {
+        t.is(await field(page, other).isChecked(), other === name,
+          name + ' 을 켰을 때 ' + other + ' 상태');
+      }
+      await field(page, name).uncheck();
+      await page.waitForTimeout(150);
+    }
+
+    // 설명 버튼은 눌러야 열리고, 열려도 입력 칸을 가로채지 않는다
+    const help = page.getByRole('button', { name: '퇴직제도 설명', exact: true });
+    t.is(await help.count(), 1, '설명 버튼이 라벨로 잡힘');
+    t.is(await page.getByRole('note').count(), 0, '처음에는 설명이 닫혀 있음');
+    await help.click();
+    await page.waitForTimeout(200);
+    t.is(await page.getByRole('note').count(), 1, '누르면 설명이 열림');
+    await page.getByRole('button', { name: '퇴직제도 설명 닫기', exact: true }).click();
+    await page.waitForTimeout(200);
+    t.is(await page.getByRole('note').count(), 0, '닫기로 다시 닫힘');
 
     t.is(errors.length, 0, '런타임 에러 없음');
   } finally {
