@@ -80,10 +80,11 @@ module.exports = async function run(t) {
     // --- 수동 선택이 인쇄물에 반영 ---
     await button(page, '판정').click();
     await page.waitForTimeout(300);
-    await page.locator('select').first().selectOption('new-pension');
+    // DC 는 연금저축계좌로 입금할 수 없으므로 고를 수 있는 것은 IRP 뿐이다
+    await page.locator('select').first().selectOption('new-irp');
     await page.waitForTimeout(500);
     s = await printSheet(page);
-    t.includes(s.text, '신규 연금저축', '수동 선택한 계좌가 인쇄물에 반영');
+    t.includes(s.text, '신규 IRP', '수동 선택한 계좌가 인쇄물에 반영');
     t.includes(s.text, '수동 선택', '수동 선택 표시가 인쇄물에 남음');
 
     t.is(errors.length, 0, '런타임 에러 없음');

@@ -82,47 +82,71 @@ const pensionRateByAge = (age) => (age >= 80 ? 0.033 : age >= 70 ? 0.044 : 0.055
 
 /* ================================================================
    2. 판정 로직 - 퇴직제도 × 계좌 가입일 × 연령
+
+   근거 : 근로자퇴직급여보장법 §17·§20
+          소득세법 §129①5의3, §146②
+          소득세법 시행령 §40의2(연금계좌·기산연차) · §40의3(인출순서) · §40의4(계좌 이체)
    ================================================================ */
 
 /**
  * 퇴직급여 재원(source)을 대상 계좌(target)에 입금·이전할 수 있는지 판정.
- * source.kind : 'LEGAL'(법정퇴직금) | 'HONOR'(명예/법정외 퇴직금) | 'DB' | 'DC'
- * target      : { type:'pension'|'irp', isNew:boolean, joinDate:Date|null }
+ *
+ * source.kind : 'LEGAL'(법정퇴직금) | 'HONOR'(명예·법정외 퇴직금) | 'DB' | 'DC'
+ * target      : { type:'pension'|'irp', isNew, joinDate, balance, started }
+ *
+ * blockers = 아예 막힘(자동 배정·수동 선택 모두 제외)
+ * cautions = 조건부(자동 배정에서는 빼되 상담자가 확인 후 수동 선택 가능)
  */
 function transferBlockers(target, source, age) {
-  const blockers = [];   // 막힘 - 자동 배정에서도 수동 선택에서도 제외
-  const cautions = [];   // 조건부 - 자동 배정에서는 빼되, 상담자가 확인 후 수동 선택은 가능
+  const blockers = [];
+  const cautions = [];
 
-  // (1) 만 55세 미만 - 근퇴법상 퇴직급여는 IRP 의무이전. 법정외(명예)퇴직금은 예외.
+  // (1) 만 55세 미만 - 법정퇴직급여는 IRP 로만 지급된다(근퇴법 §17·§20).
+  //     2022.4.13 이후로는 퇴직금제도의 법정퇴직금도 IRP 의무이전 대상이다.
+  //     명예퇴직금·위로금 등 법정외 퇴직금은 근퇴법상 퇴직급여가 아니라 이 제한을 받지 않는다.
   if (target.type === 'pension' && age !== null && age < 55 && source.kind !== 'HONOR') {
-    blockers.push('만 55세 미만 퇴직급여는 IRP 의무이전 대상(근퇴법 §17·§20) - 연금저축 입금 불가');
+    blockers.push('만 55세 미만 법정퇴직급여는 IRP 의무이전 대상(근퇴법 §17·§20) - 연금저축계좌 입금 불가');
   }
 
-  // (2) DC → 구 연금계좌 (소득세법 시행령 §40의4①2)
-  //
-  //     §40의4① 은 연금계좌 간 이체를 인출로 보지 않되, 각 호를 예외로 둔다. 그중 2호가
-  //     '2013.3.1 이후 가입한 연금계좌의 금액을 2013.3.1 전에 가입한 연금계좌로 이체하는 경우'다.
-  //     따라서 DC 에서 구 연금계좌로 '직접 이체'하면 인출로 간주되어 과세이연이 깨진다.
-  //
-  //     다만 완전히 막힌 것은 아니다. 퇴직급여를 수령한 날부터 60일 내에 연금계좌에 '입금'하면
-  //     과세이연되는 별도 경로가 있고(소득세법 §146②), 그 대상에는 연금저축계좌도 포함된다.
-  //     이 경로는 §40의4 의 '이체'가 아니므로 2호에 걸리지 않는다는 해석이 가능하다.
-  //     국세청 유권해석과 금융기관 수용 여부를 확인하지 못했으므로 단정하지 않고 조건부로 둔다.
-  //
-  //     DB 는 애초에 여기에 걸리지 않는다. §40의2①2 가 '퇴직연금계좌' 로 열거하는 것은
-  //     DC·IRP·중소기업퇴직연금기금·과학기술인공제회 계좌뿐이고 확정급여형(DB)은 빠져 있다.
-  //     DB 는 가입자별 계좌 자체가 없어 지급이 '이체'가 아니라 '퇴직소득 입금'이다.
-  //     법정퇴직금·명예퇴직금도 같은 이유로 제한을 받지 않는다.
+  // (2) DC → 연금저축계좌는 연령 불문 불가.
+  //     소득세법이 퇴직연금계좌(DC·IRP·과학기술인연금)와 연금저축계좌 사이의 상호 이체를
+  //     금지하기 때문이다(시행령 §40의4①1). DC 는 그 자체가 퇴직연금계좌라 여기에 걸린다.
+  //     다만 연금수령요건을 갖춘 계좌끼리는 IRP↔연금저축 계약이전이 허용되므로,
+  //     만 55세 이상이면 DC → IRP → 연금저축계좌 2단계 경로가 열린다.
+  if (source.kind === 'DC' && target.type === 'pension') {
+    blockers.push(
+      'DC 퇴직급여는 연금저축계좌로 직접 입금 불가 - 퇴직연금계좌와 연금저축계좌 간 상호 이체 금지(소득세법 시행령 §40의4①1)'
+      + (age !== null && age >= 55
+        ? '. 만 55세 이상이므로 IRP 로 먼저 수령한 뒤 연금저축계좌로 계약이전하는 2단계 경로는 가능합니다'
+        : ''));
+  }
+
+  // (3) 2013.3.1 이후 가입 연금계좌 → 2013.3.1 전 가입 연금계좌 이체 금지(시행령 §40의4①2).
+  //     여기서 '연금계좌'는 DC·IRP·연금저축계좌·과학기술인연금·중소기업퇴직연금이다.
+  //     DB 와 퇴직금제도는 연금계좌가 아니므로 이 제한을 받지 않는다. 지급 자체가
+  //     '연금계좌 간 이체'가 아니라 '퇴직소득의 입금'이기 때문이다.
+  //     막히더라도 1사 1IRP 예외사유라서 IRP 를 추가로 개설하면 된다.
   if (source.kind === 'DC' && !target.isNew &&
       isLegacyDate(target.joinDate) && !isLegacyDate(source.joinDate)) {
-    cautions.push(CUTOFF_LABEL + ' 이후 설정된 DC 계좌에서 ' + CUTOFF_LABEL +
-      ' 이전 가입 연금계좌로 직접 이체는 불가 (소득세법 시행령 §40의4①2). ' +
-      '퇴직급여 수령 후 60일 내 입금 경로(소득세법 §146②)는 가능할 수 있으니 금융기관에 확인하세요.');
+    blockers.push(CUTOFF_LABEL + ' 이후 가입한 DC 의 퇴직급여는 ' + CUTOFF_LABEL +
+      ' 전 가입 연금계좌로 입금 불가(소득세법 시행령 §40의4①2) - 1사 1IRP 예외사유이므로 IRP 를 추가 개설하면 됩니다');
   }
 
-  // (3) 기존 계좌 잔고 요건 - 잔고가 없으면 구계좌 가입일 승계 효과를 인정받을 수 없음
+  // (4) 연금이 개시된 계좌 - 원칙적으로 추가 입금·이체가 막힌다.
+  //     연금개시 시점에 재원별 금액을 확정해 국세청에 통보하기 때문이다.
+  //     다만 당사에서 연금개시한 IRP·연금저축계좌는 '퇴직금에 한해' 입금할 수 있어
+  //     단정하지 않고 조건부로 둔다. 타사 계좌라면 수관이 필요한데 연금개시 계좌로의
+  //     계약이전은 제한되므로(신규 개설 + 가입일자 승계 방식만 가능) 확인이 필요하다.
+  if (!target.isNew && target.started) {
+    cautions.push('연금이 개시된 계좌 - 원칙적으로 추가 입금 불가. ' +
+      '당사에서 연금개시한 IRP·연금저축계좌는 퇴직금에 한해 입금할 수 있으니 계좌 소재와 개시 형태를 확인하세요');
+  }
+
+  // (5) 평가액이 0원인 구 계좌 - 가입일자가 살아 있으면 6년차 기산은 그대로 쓸 수 있다.
+  //     해지된 계좌라면 가입일자도 사라지므로 계좌가 유효한지만 확인하면 된다.
   if (!target.isNew && isLegacyDate(target.joinDate) && !(target.balance > 0)) {
-    blockers.push('기존 계좌 잔고가 0원 - ' + CUTOFF_LABEL + ' 이전 가입 특례(6년차 기산) 적용 불가');
+    cautions.push('평가액이 0원 - 계좌가 해지되지 않고 살아 있는지 확인하세요. 유효하다면 ' +
+      CUTOFF_LABEL + ' 이전 가입 특례(6년차 기산)가 그대로 적용됩니다');
   }
 
   return { blockers, cautions };
@@ -130,26 +154,93 @@ function transferBlockers(target, source, age) {
 
 /** 퇴직급여 재원 구성 */
 function buildSources(input) {
-  const { system, systemJoin } = input;
+  const { system, systemJoin, dbConverted, dbJoin } = input;
+
+  // 기산연차 특례(시행령 §40의2④1)가 보는 '퇴직연금 가입일'.
+  // 임금피크제 등으로 DB → DC 로 전환했다면 DC 가입일은 전환 시점이지만,
+  // 신규 계좌로 전액 이체할 때는 전환 전 DB 가입일 정보를 반영해 준다.
+  const seniorityDate = (system === 'DC' && dbConverted && dbJoin) ? dbJoin : systemJoin;
+
   const sources = [];
   if (system === 'SEV') {
-    if (input.amtLegal > 0) sources.push({ kind: 'LEGAL', label: '법정퇴직금', amount: input.amtLegal, joinDate: systemJoin });
-    if (input.amtHonor > 0) sources.push({ kind: 'HONOR', label: '명예(법정외)퇴직금', amount: input.amtHonor, joinDate: systemJoin });
-  } else {
-    if (input.amtSingle > 0) sources.push({ kind: system, label: system + ' 퇴직급여', amount: input.amtSingle, joinDate: systemJoin });
+    // 퇴직금제도의 퇴직금과 명예퇴직금은 '가입일자' 개념이 없어 기산연차 특례가 없다.
+    if (input.amtLegal > 0) {
+      sources.push({ kind: 'LEGAL', label: '법정퇴직금', amount: input.amtLegal, joinDate: systemJoin, seniorityDate: null });
+    }
+    if (input.amtHonor > 0) {
+      sources.push({ kind: 'HONOR', label: '명예(법정외)퇴직금', amount: input.amtHonor, joinDate: systemJoin, seniorityDate: null });
+    }
+  } else if (input.amtSingle > 0) {
+    sources.push({
+      kind: system, label: system + ' 퇴직급여', amount: input.amtSingle,
+      joinDate: systemJoin, seniorityDate,
+      seniorityFromDB: system === 'DC' && !!dbConverted && !!dbJoin
+    });
   }
   return sources;
 }
 
+/**
+ * 연금수령연차의 기산연차와 기산연도.
+ *
+ * 기산연차 : 1 이 원칙이고, 다음 두 경우에만 6 부터 시작한다(시행령 §40의2④).
+ *            2013.3.1 전에는 연금수령 요건이 '10년 이상 가입하고 5년 이상 수령'이었기 때문에
+ *            기존 계약자가 5년만 받아도 연금소득으로 인정해 주려는 경과조치다.
+ *              ① 연금계좌 가입일자가 2013.3.1 이전인 경우
+ *              ② 2013.3.1 전에 퇴직연금(DB·DC)에 가입한 사람이 퇴직급여 전액을
+ *                 '신규 개설' 연금계좌에 입금하는 경우. 기존 계좌에 넣으면 적용되지 않는다.
+ *
+ * 기산연도 : 최초로 연금개시 요건을 갖춘 날이 속하는 해.
+ *            요건 = 만 55세 이상 + 가입일로부터 5년 경과, 그리고 계좌에 자금이 있을 것.
+ *            이연퇴직소득이 들어 있으면 가입 5년 요건은 면제된다.
+ *            연금개시를 신청하지 않아도 이 해부터 연차는 해마다 자동으로 누적된다.
+ */
+function seniorityOf(target, sources, opts) {
+  const { birthYear, depositYear } = opts;
+
+  let index = 1;
+  let basis = CUTOFF_LABEL + ' 이후 가입 계좌';
+  if (!target.isNew && isLegacyDate(target.joinDate)) {
+    index = 6;
+    basis = fmtDate(target.joinDate) + ' 가입 · ' + CUTOFF_LABEL + ' 이전 계좌';
+  } else if (target.isNew && sources.length === 1 && isLegacyDate(sources[0].seniorityDate)) {
+    index = 6;
+    basis = CUTOFF_LABEL + ' 이전 ' + (sources[0].seniorityFromDB ? 'DB' : sources[0].kind) +
+      ' 가입(' + fmtDate(sources[0].seniorityDate) + ') · 신규계좌 전액 입금';
+  } else if (target.isNew) {
+    basis = '신규 개설 · 기산연차 특례 대상 아님';
+  }
+
+  // 만 55세가 되는 해. 생년월일이 없으면 판단할 수 없어 입금 연도로 둔다.
+  const y55 = birthYear !== null ? birthYear + 55 : depositYear;
+
+  // 신규 계좌이거나 잔고가 없던 계좌는 퇴직급여가 들어온 해부터 요건이 선다.
+  let baseYear = Math.max(y55, depositYear);
+
+  // 이미 잔고가 있던 기존 계좌는 퇴직급여 입금 전에도 요건을 갖출 수 있었다.
+  // 만 55세와 가입 5년을 모두 채운 해가 더 빠르면 그 해가 기산연도가 된다.
+  if (!target.isNew && target.balance > 0 && target.joinDate) {
+    baseYear = Math.min(baseYear, Math.max(y55, target.joinDate.getFullYear() + 5));
+  }
+
+  return { index, basis, baseYear };
+}
+
 /** 계좌 후보 생성 및 평가 */
 function buildCandidates(input, sources) {
-  const { age, hasPension, pensionJoin, pensionBal, hasIrp, irpJoin, irpBal, fees } = input;
+  const { age, hasPension, pensionJoin, pensionBal, hasIrp, irpJoin, irpBal, fees, startYear, birthYear } = input;
 
   const targets = [];
-  if (hasPension) targets.push({ id: 'ex-pension', type: 'pension', isNew: false, joinDate: pensionJoin, balance: pensionBal, label: '기존 연금저축' });
-  if (hasIrp) targets.push({ id: 'ex-irp', type: 'irp', isNew: false, joinDate: irpJoin, balance: irpBal, label: '기존 IRP' });
-  targets.push({ id: 'new-irp', type: 'irp', isNew: true, joinDate: TODAY, balance: 0, label: '신규 IRP 개설' });
-  targets.push({ id: 'new-pension', type: 'pension', isNew: true, joinDate: TODAY, balance: 0, label: '신규 연금저축 개설' });
+  if (hasPension) {
+    targets.push({ id: 'ex-pension', type: 'pension', isNew: false, joinDate: pensionJoin, balance: pensionBal, started: !!input.pensionStarted, label: '기존 연금저축' });
+  }
+  if (hasIrp) {
+    targets.push({ id: 'ex-irp', type: 'irp', isNew: false, joinDate: irpJoin, balance: irpBal, started: !!input.irpStarted, label: '기존 IRP' });
+  }
+  targets.push({ id: 'new-irp', type: 'irp', isNew: true, joinDate: TODAY, balance: 0, started: false, label: '신규 IRP 개설' });
+  targets.push({ id: 'new-pension', type: 'pension', isNew: true, joinDate: TODAY, balance: 0, started: false, label: '신규 연금저축 개설' });
+
+  const opts = { birthYear: birthYear === undefined ? null : birthYear, depositYear: TODAY.getFullYear() };
 
   return targets.map((t) => {
     const perSource = sources.map((s) => {
@@ -165,9 +256,11 @@ function buildCandidates(input, sources) {
     });
     const acceptable = perSource.filter((p) => p.ok);
     const acceptAmount = acceptable.reduce((a, p) => a + p.source.amount, 0);
-    const legacy = !t.isNew && isLegacyDate(t.joinDate) && t.balance > 0;
-    const startLimitYear = legacy ? 6 : 1;   // 구 연금계좌는 연금수령연차 6년차부터 기산
-    const minYears = legacy ? 5 : 10;        // 한도 내 전액 인출에 필요한 최소 기간
+
+    const sen = seniorityOf(t, sources, opts);
+    // 연금 개시 첫 해의 연금수령연차 - 기산연도부터 해마다 1씩 누적된다.
+    const startLimitYear = Math.max(1, sen.index + (startYear - sen.baseYear));
+    const minYears = Math.max(1, 11 - startLimitYear);   // 한도 안에서 전액 인출에 필요한 기간
 
     return {
       ...t,
@@ -175,8 +268,12 @@ function buildCandidates(input, sources) {
       canAcceptAll: sources.length > 0 && acceptable.length === sources.length,
       canAcceptAny: acceptable.length > 0,
       acceptAmount,
-      legacy,
+      seniorityIndex: sen.index,
+      seniorityBasis: sen.basis,
+      baseYear: sen.baseYear,
+      legacy: sen.index === 6,
       startLimitYear,
+      unlimited: startLimitYear >= 11,
       minYears,
       feeRate: ((fees && fees[t.id]) || 0) / 100   // 입력은 %, 계산은 소수
     };
@@ -186,28 +283,26 @@ function buildCandidates(input, sources) {
 /**
  * 계좌 우열 점수.
  *
- * 한도 기산(6년차 vs 1년차)만이 세법상 결정적 차이다. 2013.3.1 이전 가입이기만 하면
- * 되므로 가입일의 선후(2002년 vs 2003년)는 우열을 가르지 않는다 - 둘 다 6년차 기산이다.
- * 그래서 구계좌끼리는 세법상 동점이고, 그 아래는 이전 절차의 편의로만 순위를 매긴다.
+ * 연금수령연차가 클수록 그해 한도가 커지고, 11년차에 닿으면 한도가 아예 사라진다.
+ * 이것만이 세법상 결정적 차이다. 2013.3.1 이전 가입이기만 하면 6년차이므로
+ * 가입일의 선후(2002년 vs 2003년)는 우열을 가르지 않는다 - 둘 다 똑같다.
+ * 그 아래는 이전 절차의 편의와 수수료로만 순위를 매긴다.
  */
 function accountScore(c, source) {
-  let score = 0;
-  if (c.legacy) score += 1000;        // 6년차 기산 - 유일한 결정적 차이
-  if (!c.isNew) score += 100;         // 기존 계좌 우선 (신규는 1년차 기산)
+  // 연차 1년 차이가 수수료 2%p 와 맞먹는다. 구조적 차이라 수수료로 뒤집히지 않게 둔다.
+  let score = Math.min(c.startLimitYear, 11) * 200;
+  if (!c.isNew) score += 100;         // 계좌 수를 늘리지 않는 쪽
 
   if (source.kind === 'DB' || source.kind === 'DC') {
     // 퇴직연금 지급액은 IRP 로 직접 이전된다. 연금저축은 퇴직급여를 수령한 뒤
-    // 60일 내에 다시 납입해야 과세이연되므로(소득세법 §146) 절차상 번거롭고 기한 위험이 있다.
+    // 60일 내에 다시 납입해야 과세이연되므로 절차상 번거롭고 기한 위험이 있다.
     if (c.type === 'irp') score += 30;
   } else {
     // 법정·명예퇴직금은 회사가 직접 지급하므로 어느 계좌든 입금할 수 있다. IRP 를 기본으로 둔다.
     if (c.type === 'irp') score += 10; else score += 8;
   }
 
-  // 수수료. 연 0.3% 차이면 위의 이전 절차 이점(30점)과 맞먹고, 0.5% 차이면 뒤집는다.
-  // 한도 기산(1000점)은 뒤집지 못한다 - 구조적 차이가 수수료보다 크기 때문.
   score -= (c.feeRate || 0) * 10000;
-
   return score;
 }
 
@@ -232,9 +327,9 @@ function buildAllocation(candidates, sources, manualPick) {
     const target = forced || auto;
     if (!target) return { source: s, target: null, options: manualOptions, tiedWith: [], manual: false };
 
-    // 한도 기산이 같은 기존 계좌들 = 세법상 우열 없음
+    // 연금수령연차가 같은 계좌들 = 세법상 우열 없음
     const tiedWith = scored
-      .filter((x) => x.c.id !== target.id && !x.c.isNew && x.c.startLimitYear === target.startLimitYear)
+      .filter((x) => x.c.id !== target.id && x.c.startLimitYear === target.startLimitYear)
       .map((x) => x.c);
 
     return {
@@ -260,93 +355,131 @@ function applyAllocation(candidates, allocation) {
 
 /* ================================================================
    3. 인출 시뮬레이션
+
+   재원과 인출 순서 (소득세법 시행령 §40의3)
+     ① 세액공제 받지 않은 납입액  → 언제 빼도 과세제외
+     ② 이연퇴직소득(퇴직금)       → 연금수령분은 퇴직소득세 감면, 연금외수령분은 감면 없음
+     ③ 세액공제 받은 납입액·운용수익 → 연금수령분은 연금소득세 3.3~5.5%,
+                                      연금외수령분은 기타소득세 16.5%
+
+   연금수령한도(시행령 §40의2③)
+     한도 = 과세기간 개시일 평가액 ÷ (11 - 연금수령연차) × 120%
+     이것은 인출 금액의 상한이 아니라 연금수령과 연금외수령을 가르는 기준선이다.
+     한도를 넘겨 인출할 수 있고, 넘은 부분만 연금외수령으로 과세된다.
+     연금수령연차가 11년차에 닿으면 한도가 사라져 전액이 연금수령으로 인정된다.
    ================================================================ */
 
 function buildSchedule(cfg) {
   const {
-    retirePrincipal,   // 이연퇴직소득 원금
-    otherPrincipal,    // 합산한 기존 자산(세액공제분 + 운용수익)
+    exemptPrincipal,   // ① 세액공제 받지 않은 납입액 (과세제외)
+    retirePrincipal,   // ② 이연퇴직소득 원금
+    otherPrincipal,    // ③ 세액공제 받은 납입액 + 기존 운용수익
     deferredTax,       // 이연 퇴직소득세
-    startLimitYear,    // 한도 연차 기산 (1 또는 6)
-    pastCount,         // 과거 실제 연금수령 횟수
+    startLimitYear,    // 연금 개시 첫 해의 연금수령연차
+    pastCount,         // 과거 실제 연금수령 횟수 (감면율 판정용)
     feeRate,           // 계좌 연간 수수료율 (적립금 대비, 소수)
     years, mode, rate, startYear, startAge
   } = cfg;
 
   const fRate = feeRate || 0;
 
-  let P = retirePrincipal;   // 퇴직소득 재원 (운용수익은 G로 분리)
-  let G = otherPrincipal;    // 기타 재원 (세액공제 납입분 + 운용수익)
+  let E = exemptPrincipal || 0;   // 과세제외 재원
+  let P = retirePrincipal;        // 퇴직소득 재원
+  let G = otherPrincipal;         // 세액공제분 + 운용수익
   const P0 = retirePrincipal;
+  const taxPerWon = P0 > 0 ? deferredTax / P0 : 0;   // 퇴직소득 1원당 이연세액
 
   const rows = [];
-  let totalDraw = 0, totalTax = 0, totalRetTax = 0, totalFullRetTax = 0, totalOtherTax = 0, totalFee = 0;
+  let totalDraw = 0, totalTax = 0, totalRetTax = 0, totalFullRetTax = 0, totalOtherTax = 0;
+  let totalFee = 0, totalOver = 0;
 
   for (let k = 1; k <= years; k++) {
-    if (k > 1) { G += (P + G) * rate; }             // 운용수익은 기타 재원으로 귀속
+    if (k > 1) { G += (E + P + G) * rate; }         // 운용수익은 기타 재원으로 귀속
 
-    // 계좌 수수료는 매년 적립금 기준으로 차감한다.
-    // 운용수익·세액공제분에서 먼저 빼고, 모자라면 퇴직소득 재원에서 뺀다
-    // (이연퇴직소득세는 실제 인출한 퇴직소득분에만 비례하므로 그만큼 세액도 줄어든다).
+    // 계좌 수수료는 매년 적립금 기준으로 차감한다. 운용수익·세액공제분에서 먼저 빼고,
+    // 모자라면 퇴직소득 재원에서 뺀다(이연퇴직소득세는 실제 인출한 퇴직소득분에만
+    // 비례하므로 재원이 줄면 그만큼 세액도 줄어든다).
     if (fRate > 0) {
-      const fee = Math.max(0, (P + G) * fRate);
+      const fee = Math.max(0, (E + P + G) * fRate);
       const fromG = Math.min(fee, Math.max(0, G));
       G -= fromG;
-      P = Math.max(0, P - (fee - fromG));
+      const rest = fee - fromG;
+      const fromP = Math.min(rest, Math.max(0, P));
+      P -= fromP;
+      E = Math.max(0, E - (rest - fromP));
       totalFee += fee;
     }
 
-    const begin = P + G;
+    const begin = E + P + G;
     if (begin <= 1) break;
 
     const limitYear = startLimitYear + k - 1;
-    const actualYear = pastCount + k;
+    const actualYear = pastCount + k;               // 감면율은 '실제' 연금수령 횟수 기준
     const unlimited = limitYear >= 11;
     const limit = unlimited ? Infinity : (begin / (11 - limitYear)) * 1.2;
 
-    const want = mode === 'max' ? begin : begin / (years - k + 1);
-    const draw = Math.max(0, Math.min(want, limit, begin));
+    // 한도는 인출 상한이 아니다. 균등 분할이 한도를 넘으면 넘은 만큼 연금외수령이 된다.
+    const want = mode === 'max' ? limit : begin / (years - k + 1);
+    const draw = Math.max(0, Math.min(want, begin));
 
-    const drawRet = Math.min(draw, P);
-    const drawG = draw - drawRet;
+    const pensionPart = Math.min(draw, limit);      // 연금수령으로 인정되는 부분
+    const overPart = draw - pensionPart;            // 한도 초과 = 연금외수령
 
-    // 이연퇴직소득세 감면 (소득세법 §129①5의3). 실제 연금수령연차 기준 3단계.
-    // 1~10년차 70% 과세(30% 감면) / 11~20년차 60%(40% 감면) / 21년차~ 50%(50% 감면).
-    // 20년 초과 구간은 2025년 세법개정으로 신설되어 2026.1.1 이후 연금수령분부터 적용된다.
+    // 인출 순서 ① → ② → ③. 먼저 빠져나가는 돈이 먼저 연금수령 한도를 채운다.
+    const takeE = Math.min(draw, E);
+    const takeP = Math.min(draw - takeE, P);
+    const takeG = draw - takeE - takeP;
+
+    const penE = Math.min(pensionPart, takeE);
+    const penP = Math.min(pensionPart - penE, takeP);
+    const penG = pensionPart - penE - penP;
+    const ovP = takeP - penP;
+    const ovG = takeG - penG;
+
+    // ② 퇴직소득 - 연금수령분만 감면(소득세법 §129①5의3).
+    //    1~10년차 70% 과세(30% 감면) / 11~20년차 60%(40% 감면) / 21년차~ 50%(50% 감면).
+    //    20년 초과 구간은 2025년 세법개정으로 신설되어 2026.1.1 이후 연금수령분부터 적용된다.
+    //    한도를 넘겨 뺀 부분은 연금외수령이라 감면 없이 퇴직소득세를 전액 낸다.
     const factor = actualYear <= 10 ? 0.7 : actualYear <= 20 ? 0.6 : 0.5;
-    const fullRetTax = P0 > 0 ? deferredTax * (drawRet / P0) : 0;
-    const retTax = fullRetTax * factor;
+    const fullRetTax = taxPerWon * takeP;           // 일시금으로 받았을 때의 퇴직소득세
+    const retTax = taxPerWon * (penP * factor + ovP);
 
+    // ③ 세액공제분·운용수익 - 연금수령분은 연령별 연금소득세, 초과분은 기타소득세 16.5%
     const ageK = startAge + k - 1;
-    const pRate = pensionRateByAge(ageK);
-    const otherTax = drawG * pRate;
+    const otherTax = penG * pensionRateByAge(ageK) + ovG * 0.165;
 
-    P -= drawRet; G -= drawG;
+    E -= takeE; P -= takeP; G -= takeG;
 
     rows.push({
       k, year: startYear + k - 1, age: ageK,
       limitYear, actualYear, unlimited,
       begin, limit, draw, monthly: draw / 12,
       reduction: actualYear <= 10 ? 0.3 : actualYear <= 20 ? 0.4 : 0.5,
-      drawRet,                                   // 이 회차에 인출된 이연퇴직소득 (0이면 감면 대상 없음)
+      drawExempt: takeE,                         // ① 과세제외로 빠진 금액
+      drawRet: takeP,                            // ② 이 회차에 인출된 이연퇴직소득
+      drawOther: takeG,                          // ③ 세액공제분 + 운용수익
+      pensionPart, overPart,                     // 연금수령 / 연금외수령
       retTax, otherTax, tax: retTax + otherTax,
-      end: P + G,
-      over1500: draw > 15000000
+      end: E + P + G,
+      // 사적연금 분리과세 한도는 ③ 재원의 연금수령분에만 걸린다.
+      // 퇴직소득 재원의 연금수령분은 금액과 무관하게 분리과세된다.
+      over1500: penG > 15000000
     });
 
     totalDraw += draw; totalTax += retTax + otherTax;
     totalRetTax += retTax; totalFullRetTax += fullRetTax; totalOtherTax += otherTax;
+    totalOver += overPart;
 
-    if (P + G <= 1) break;
+    if (E + P + G <= 1) break;
   }
 
   return {
     rows,
     totals: {
-      totalDraw, totalTax, totalRetTax, totalOtherTax, totalFee,
+      totalDraw, totalTax, totalRetTax, totalOtherTax, totalFee, totalOver,
       afterTax: totalDraw - totalTax,
       taxSaved: totalFullRetTax - totalRetTax,
-      residual: P + G,
+      residual: E + P + G,
       spanYears: rows.length
     }
   };
@@ -451,10 +584,51 @@ function scheduleCsv(rows, meta) {
    4. UI 프리미티브
    ================================================================ */
 
-function Field({ label, hint, children, className = '' }) {
+/**
+ * 눌러서 펼치는 설명. 상담 중에 근거를 바로 보여줄 수 있도록 라벨 옆에 붙인다.
+ * 인쇄물에는 나오지 않는다(.screen-only 안에서만 쓴다).
+ *
+ * title 은 한 줄 요약, children 은 근거 조문까지 담은 본문.
+ */
+function Help({ title, children }) {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <span className="relative inline-block align-middle">
+      <button
+        type="button"
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen((v) => !v); }}
+        aria-label={title + ' 설명'}
+        aria-expanded={open}
+        className={'ml-1 w-[16px] h-[16px] leading-[15px] text-[11px] font-bold rounded-full border align-middle transition ' +
+          (open
+            ? 'bg-mas-orange text-white border-mas-orange'
+            : 'bg-white text-ink-soft border-hair hover:border-mas-orange hover:text-mas-orange')}>
+        ?
+      </button>
+      {open && (
+        <span
+          role="note"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+          className="absolute z-30 left-0 top-[22px] w-[300px] max-w-[78vw] p-3 bg-ink text-white
+                     text-[12px] leading-relaxed font-normal rounded-sm shadow-lg cursor-default block">
+          <span className="block font-bold mb-1 text-[12px]">{title}</span>
+          <span className="block opacity-90">{children}</span>
+          <button type="button" aria-label={title + ' 설명 닫기'}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(false); }}
+            className="absolute top-1 right-2 text-white/70 hover:text-white text-[14px] leading-none">×</button>
+        </span>
+      )}
+    </span>
+  );
+}
+
+function Field({ label, hint, help, children, className = '' }) {
   return (
     <label className={'block ' + className}>
-      <span className="block text-[13px] font-medium text-ink-body mb-1.5">{label}</span>
+      <span className="block text-[13px] font-medium text-ink-body mb-1.5">
+        {label}
+        {help ? <Help title={label}>{help}</Help> : null}
+      </span>
       {children}
       {hint ? <span className="block text-[11px] text-ink-soft mt-1 leading-snug">{hint}</span> : null}
     </label>
@@ -601,6 +775,9 @@ function App() {
   // --- 퇴직제도
   const [system, setSystem] = useState('DC');          // 'DB' | 'DC' | 'SEV'
   const [systemJoinStr, setSystemJoinStr] = useState('');
+  // 임금피크제 등으로 DB → DC 로 전환한 경우. 신규 계좌 전액 이체 시 DB 가입일이 기산연차를 가른다.
+  const [dbConverted, setDbConverted] = useState(false);
+  const [dbJoinStr, setDbJoinStr] = useState('');
   const [amtSingle, setAmtSingle] = useState(0);
   const [amtLegal, setAmtLegal] = useState(0);
   const [amtHonor, setAmtHonor] = useState(0);
@@ -610,9 +787,13 @@ function App() {
   const [hasPension, setHasPension] = useState(false);
   const [pensionJoinStr, setPensionJoinStr] = useState('');
   const [pensionBal, setPensionBal] = useState(0);
+  const [pensionExempt, setPensionExempt] = useState(0);    // 세액공제 받지 않은 납입액
+  const [pensionStarted, setPensionStarted] = useState(false);
   const [hasIrp, setHasIrp] = useState(false);
   const [irpJoinStr, setIrpJoinStr] = useState('');
   const [irpBal, setIrpBal] = useState(0);
+  const [irpExempt, setIrpExempt] = useState(0);
+  const [irpStarted, setIrpStarted] = useState(false);
   const [pastCount, setPastCount] = useState(0);
 
   // 재원별 수동 선택 - 투자 가능 상품·중도인출 조건 등 앱이 판단하지 않는 기준으로 상담자가 직접 고른다
@@ -648,10 +829,10 @@ function App() {
 
   /** 화면의 모든 입력을 한 덩어리로 모은다 (저장·내보내기 공통) */
   const collectState = () => ({
-    custName, birthRaw, system, systemJoinStr,
+    custName, birthRaw, system, systemJoinStr, dbConverted, dbJoinStr,
     amtSingle, amtLegal, amtHonor, deferredTax,
-    hasPension, pensionJoinStr, pensionBal,
-    hasIrp, irpJoinStr, irpBal,
+    hasPension, pensionJoinStr, pensionBal, pensionExempt, pensionStarted,
+    hasIrp, irpJoinStr, irpBal, irpExempt, irpStarted,
     pastCount, fees, manualPick, pickedId, scope, mode, years, rate, memo, memoOnPrint
   });
 
@@ -672,6 +853,8 @@ function App() {
     setBirthRaw(str(d.birthRaw, ''));
     setSystem(['DB', 'DC', 'SEV'].indexOf(d.system) >= 0 ? d.system : 'DC');
     setSystemJoinStr(str(d.systemJoinStr, ''));
+    setDbConverted(bool(d.dbConverted, false));
+    setDbJoinStr(str(d.dbJoinStr, ''));
     setAmtSingle(num(d.amtSingle, 0));
     setAmtLegal(num(d.amtLegal, 0));
     setAmtHonor(num(d.amtHonor, 0));
@@ -679,9 +862,13 @@ function App() {
     setHasPension(bool(d.hasPension, false));
     setPensionJoinStr(str(d.pensionJoinStr, ''));
     setPensionBal(num(d.pensionBal, 0));
+    setPensionExempt(num(d.pensionExempt, 0));
+    setPensionStarted(bool(d.pensionStarted, false));
     setHasIrp(bool(d.hasIrp, false));
     setIrpJoinStr(str(d.irpJoinStr, ''));
     setIrpBal(num(d.irpBal, 0));
+    setIrpExempt(num(d.irpExempt, 0));
+    setIrpStarted(bool(d.irpStarted, false));
     setPastCount(num(d.pastCount, 0));
     setFees(Object.assign({ 'ex-pension': 0, 'ex-irp': 0, 'new-irp': 0, 'new-pension': 0 },
       d.fees && typeof d.fees === 'object' ? d.fees : {}));
@@ -700,26 +887,38 @@ function App() {
   const age = useMemo(() => ageOn(birth, TODAY), [birth]);
 
   const systemJoin = useMemo(() => parseDate(systemJoinStr), [systemJoinStr]);
+  const dbJoin = useMemo(() => parseDate(dbJoinStr), [dbJoinStr]);
   const pensionJoin = useMemo(() => parseDate(pensionJoinStr), [pensionJoinStr]);
   const irpJoin = useMemo(() => parseDate(irpJoinStr), [irpJoinStr]);
 
   const retireTotal = system === 'SEV' ? amtLegal + amtHonor : amtSingle;
 
+  // 연금 개시 시점 - 퇴직 연도와 만 55세 도달 연도 중 늦은 쪽
+  const startYear = useMemo(() => {
+    const retireY = TODAY.getFullYear();
+    if (!birth) return retireY;
+    return Math.max(retireY, birth.getFullYear() + 55);
+  }, [birth]);
+  const startAge = age !== null ? Math.max(age, 55) : 55;
+
   const input = {
-    age, system, systemJoin,
+    age, birthYear: birth ? birth.getFullYear() : null, startYear,
+    system, systemJoin, dbConverted, dbJoin,
     amtSingle, amtLegal, amtHonor,
-    hasPension, pensionJoin, pensionBal,
-    hasIrp, irpJoin, irpBal,
+    hasPension, pensionJoin, pensionBal, pensionStarted,
+    hasIrp, irpJoin, irpBal, irpStarted,
     fees
   };
 
-  const sources = useMemo(() => buildSources(input), [system, systemJoinStr, amtSingle, amtLegal, amtHonor]);
+  const sources = useMemo(() => buildSources(input),
+    [system, systemJoinStr, dbConverted, dbJoinStr, amtSingle, amtLegal, amtHonor]);
 
   const { candidates, allocation } = useMemo(() => {
     const base = buildCandidates(input, sources);
     const alloc = buildAllocation(base, sources, manualPick);
     return { candidates: applyAllocation(base, alloc), allocation: alloc };
-  }, [sources, age, hasPension, pensionJoinStr, pensionBal, hasIrp, irpJoinStr, irpBal, fees, manualPick]);
+  }, [sources, age, birth, startYear, hasPension, pensionJoinStr, pensionBal, pensionStarted,
+    hasIrp, irpJoinStr, irpBal, irpStarted, fees, manualPick]);
 
   // 배정액이 가장 큰 계좌를 기본 시뮬레이션 대상으로 삼는다
   const best = useMemo(() => {
@@ -741,15 +940,21 @@ function App() {
     return found || best;
   }, [candidates, pickedId, best]);
 
-  // 합산 범위에 따른 기타 자산
-  const otherPrincipal = useMemo(() => {
-    const p = hasPension ? pensionBal : 0;
-    const i = hasIrp ? irpBal : 0;
-    if (scope === 'pension') return p;
-    if (scope === 'irp') return i;
-    if (scope === 'all') return p + i;
-    return 0;
-  }, [scope, hasPension, pensionBal, hasIrp, irpBal]);
+  // 합산 범위에 따른 기존 자산. 세액공제 받지 않은 납입액은 과세제외 재원으로 따로 뗀다.
+  const { exemptPrincipal, otherPrincipal } = useMemo(() => {
+    const take = (on, bal, ex) => {
+      if (!on) return { e: 0, g: 0 };
+      const e = Math.max(0, Math.min(ex, bal));
+      return { e, g: bal - e };
+    };
+    const p = take(hasPension, pensionBal, pensionExempt);
+    const i = take(hasIrp, irpBal, irpExempt);
+    const pick = scope === 'pension' ? [p] : scope === 'irp' ? [i] : scope === 'all' ? [p, i] : [];
+    return {
+      exemptPrincipal: pick.reduce((s, x) => s + x.e, 0),
+      otherPrincipal: pick.reduce((s, x) => s + x.g, 0)
+    };
+  }, [scope, hasPension, pensionBal, pensionExempt, hasIrp, irpBal, irpExempt]);
 
   /**
    * 합산 경고 - 연금수령한도는 계좌별로 따로 산정된다.
@@ -757,23 +962,14 @@ function App() {
    */
   const mixedBasis = useMemo(() => {
     if (!picked || scope === 'alone') return [];
-    const inScope = [];
-    if (hasPension && (scope === 'pension' || scope === 'all') && pensionBal > 0) {
-      inScope.push({ id: 'ex-pension', label: '기존 연금저축', legacy: isLegacyDate(pensionJoin) });
-    }
-    if (hasIrp && (scope === 'irp' || scope === 'all') && irpBal > 0) {
-      inScope.push({ id: 'ex-irp', label: '기존 IRP', legacy: isLegacyDate(irpJoin) });
-    }
-    return inScope.filter((a) => a.id !== picked.id && a.legacy !== picked.legacy);
-  }, [picked, scope, hasPension, pensionJoinStr, pensionBal, hasIrp, irpJoinStr, irpBal]);
-
-  // 연금 개시 시점
-  const startYear = useMemo(() => {
-    const retireY = TODAY.getFullYear();
-    if (!birth) return retireY;
-    return Math.max(retireY, birth.getFullYear() + 55);
-  }, [birth]);
-  const startAge = age !== null ? Math.max(age, 55) : 55;
+    const wanted = [];
+    if (hasPension && (scope === 'pension' || scope === 'all') && pensionBal > 0) wanted.push('ex-pension');
+    if (hasIrp && (scope === 'irp' || scope === 'all') && irpBal > 0) wanted.push('ex-irp');
+    // 연차가 실제로 다른 계좌만 경고한다. 둘 다 2013.3.1 이전이어도 만 55세 도달 시점이
+    // 달라 연차가 벌어질 수 있으므로, legacy 여부가 아니라 연차 자체를 비교한다.
+    return candidates.filter((c) =>
+      wanted.indexOf(c.id) >= 0 && c.id !== picked.id && c.startLimitYear !== picked.startLimitYear);
+  }, [candidates, picked, scope, hasPension, pensionBal, hasIrp, irpBal]);
 
   // 분할 입금 시 이연퇴직소득세는 계좌에 배정된 금액 비율로 안분한다
   const allocatedDeferredTax = useMemo(() => {
@@ -784,6 +980,7 @@ function App() {
   const sim = useMemo(() => {
     if (!picked || !(picked.allocatedAmount > 0)) return null;
     return buildSchedule({
+      exemptPrincipal,
       retirePrincipal: picked.allocatedAmount,
       otherPrincipal,
       deferredTax: allocatedDeferredTax,
@@ -792,7 +989,7 @@ function App() {
       feeRate: picked.feeRate,
       years, mode, rate: rate / 100, startYear, startAge
     });
-  }, [picked, otherPrincipal, allocatedDeferredTax, pastCount, years, mode, rate, startYear, startAge]);
+  }, [picked, exemptPrincipal, otherPrincipal, allocatedDeferredTax, pastCount, years, mode, rate, startYear, startAge]);
 
   /**
    * 계좌별 비교 - 퇴직급여를 어느 계좌로 받느냐만 바꾸고 나머지 조건은 동일하게 두어
@@ -804,6 +1001,7 @@ function App() {
       .filter((c) => c.acceptAmount > 0)
       .map((c) => {
         const s = buildSchedule({
+          exemptPrincipal: 0,
           retirePrincipal: c.acceptAmount,
           otherPrincipal: 0,
           deferredTax: deferredTax * (c.acceptAmount / retireTotal),
@@ -911,10 +1109,10 @@ function App() {
    */
   const doReset = () => {
     setCustName(''); setBirthRaw('');
-    setSystem('DC'); setSystemJoinStr('');
+    setSystem('DC'); setSystemJoinStr(''); setDbConverted(false); setDbJoinStr('');
     setAmtSingle(0); setAmtLegal(0); setAmtHonor(0); setDeferredTax(0);
-    setHasPension(false); setPensionJoinStr(''); setPensionBal(0);
-    setHasIrp(false); setIrpJoinStr(''); setIrpBal(0);
+    setHasPension(false); setPensionJoinStr(''); setPensionBal(0); setPensionExempt(0); setPensionStarted(false);
+    setHasIrp(false); setIrpJoinStr(''); setIrpBal(0); setIrpExempt(0); setIrpStarted(false);
     setPastCount(0);
     setFees({ 'ex-pension': 0, 'ex-irp': 0, 'new-irp': 0, 'new-pension': 0 });
     setManualPick({}); setPickedId(null);
@@ -1170,7 +1368,13 @@ function App() {
                       : <Badge tone="warn">만 55세까지 {55 - age}년 - 과세이연 후 대기</Badge>)}
                   </div>
 
-                  <Field label="퇴직제도">
+                  <Field label="퇴직제도"
+                    help={<React.Fragment>
+                      소득세법상 <strong>연금계좌</strong>는 DC · IRP · 연금저축계좌 · 과학기술인연금 ·
+                      중소기업퇴직연금입니다. <strong>DB 와 퇴직금제도는 연금계좌가 아닙니다.</strong>
+                      그래서 DB · 퇴직금제도의 퇴직급여 지급은 '연금계좌 간 이체'가 아니라 '퇴직소득의 입금'이라
+                      이체 제한(시행령 §40의4)을 받지 않고, DC 만 제한을 받습니다.
+                    </React.Fragment>}>
                     <Segmented
                       value={system} onChange={(v) => setSystem(v)}
                       options={[
@@ -1183,12 +1387,45 @@ function App() {
                   <Field
                     label={system === 'SEV' ? '입사일' : system + ' 제도 가입일'}
                     hint={system === 'SEV'
-                      ? '법정퇴직금은 연금계좌 이체 제한을 받지 않습니다.'
+                      ? '퇴직금제도·명예퇴직금은 가입일자 개념이 없어 기산연차 특례를 쓸 수 없습니다.'
                       : system === 'DC'
-                        ? CUTOFF_LABEL + ' 이후 설정된 DC 계좌는 구 연금계좌로 이전할 수 없습니다.'
-                        : 'DB 는 가입자별 연금계좌가 아니어서 이체 제한을 받지 않습니다.'}>
+                        ? CUTOFF_LABEL + ' 이후 가입한 DC 는 구 연금계좌로 입금할 수 없습니다.'
+                        : 'DB 는 연금계좌가 아니어서 가입일과 무관하게 어느 계좌로든 입금할 수 있습니다.'}
+                    help={system === 'SEV'
+                      ? '퇴직금제도의 퇴직금과 명예퇴직금은 연금수령한도에 영향을 주는 가입일자라는 개념 자체가 없습니다. 입금받는 계좌의 가입일자만 적용되므로, 신규 계좌로 받으면 1년차 기산입니다.'
+                      : system === 'DC'
+                        ? CUTOFF_LABEL + ' 이전에 가입한 DC 라면, 신규 IRP 를 개설해 전액 이체할 때 DC 가입일자를 승계해 6년차 기산을 쓸 수 있습니다. 반대로 ' + CUTOFF_LABEL + ' 이후 가입한 DC 는 구 연금계좌로 입금할 수 없고, 이때는 1사 1IRP 예외사유라 IRP 를 추가 개설하면 됩니다.'
+                        : CUTOFF_LABEL + ' 이전에 가입한 DB 라면, 퇴직급여 전액을 신규 개설 연금계좌에 입금할 때 가입일자는 그대로여도 연금수령 기산연차를 6년차로 시작할 수 있습니다(시행령 §40의2④1).'}>
                     <DateInput value={systemJoinStr} onChange={setSystemJoinStr} label="제도 가입일" />
                   </Field>
+
+                  {system === 'DC' && (
+                    <div className="border border-hair rounded-sm bg-surf-soft p-3">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" checked={dbConverted} aria-label="DB 에서 DC 로 전환"
+                          onChange={(e) => setDbConverted(e.target.checked)}
+                          className="w-4 h-4 accent-[#F58220]" />
+                        <span className="text-[13px] font-medium text-ink-body">DB 에서 DC 로 전환</span>
+                        <Help title="DB → DC 전환">
+                          임금피크제 등으로 DB 에서 DC 로 전환하면 DC 가입일은 전환 시점이 됩니다.
+                          다만 전환 전 DB 가입일이 {CUTOFF_LABEL} 이전이고 퇴직급여 전액을
+                          <strong> 신규 IRP 로 이체</strong>한다면, DB 가입일 정보를 반영해
+                          <strong> 6년차 기산 특례</strong>를 적용합니다.
+                          (2021.9월 이후 전환분부터 DB 가입일 정보가 기록됩니다.)
+                        </Help>
+                      </label>
+                      {dbConverted && (
+                        <div className="mt-3">
+                          <Field label="전환 전 DB 가입일"
+                            hint={isLegacyDate(dbJoin)
+                              ? CUTOFF_LABEL + ' 이전 가입 - 신규 계좌 전액 이체 시 6년차 기산'
+                              : CUTOFF_LABEL + ' 이후 가입 - 기산연차 특례 대상 아님'}>
+                            <DateInput value={dbJoinStr} onChange={setDbJoinStr} label="전환 전 DB 가입일" />
+                          </Field>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {system === 'SEV' ? (
                     <div className="space-y-3">
@@ -1196,7 +1433,13 @@ function App() {
                         <MoneyInput value={amtLegal} onChange={setAmtLegal} label="법정퇴직금" />
                       </Field>
                       <Field label="명예(법정외) 퇴직금"
-                        hint="근퇴법상 퇴직급여가 아니므로 만 55세 미만이어도 연금저축계좌 입금이 가능합니다.">
+                        hint="근퇴법상 퇴직급여가 아니므로 만 55세 미만이어도 연금저축계좌 입금이 가능합니다."
+                        help={<React.Fragment>
+                          명퇴금 · 위로금 등 <strong>DB/DC 규약에 규정되지 않은</strong> 퇴직금은 제도와 연령에
+                          관계없이 연금저축계좌로 입금할 수 있습니다. 반대로 법정외 퇴직금이라도
+                          DB/DC 규약에 포함되어 있다면 법정퇴직금과 같은 제한을 받으므로,
+                          규약 포함 여부를 먼저 확인하세요.
+                        </React.Fragment>}>
                         <MoneyInput value={amtHonor} onChange={setAmtHonor} label="명예퇴직금" />
                       </Field>
                     </div>
@@ -1207,7 +1450,14 @@ function App() {
                     </Field>
                   )}
 
-                  <Field label="이연 퇴직소득세" hint="원천징수영수증 기준. 미입력 시 세액 비교는 표시되지 않습니다.">
+                  <Field label="이연 퇴직소득세" hint="원천징수영수증 기준. 미입력 시 세액 비교는 표시되지 않습니다."
+                    help={<React.Fragment>
+                      퇴직급여를 연금계좌로 받으면 퇴직소득세를 떼지 않고 <strong>징수를 미뤄</strong> 둡니다.
+                      나중에 연금으로 나눠 받을 때 이 세금의 일부만 내는데, 실제 연금수령 횟수에 따라
+                      1~10회차 <strong>30% 감면</strong>, 11~20회차 <strong>40%</strong>,
+                      21회차부터 <strong>50%</strong>가 감면됩니다.
+                      (20년 초과 구간은 2025년 세법개정 신설분으로 2026.1.1 이후 연금수령분부터 적용)
+                    </React.Fragment>}>
                     <MoneyInput value={deferredTax} onChange={setDeferredTax} label="이연 퇴직소득세" />
                   </Field>
                 </div>
@@ -1216,8 +1466,12 @@ function App() {
               <Section title="2 · 기존 보유 연금계좌">
                 <div className="space-y-5">
                   {[
-                    { on: hasPension, setOn: setHasPension, label: '연금저축', joinStr: pensionJoinStr, setJoin: setPensionJoinStr, bal: pensionBal, setBal: setPensionBal },
-                    { on: hasIrp, setOn: setHasIrp, label: 'IRP', joinStr: irpJoinStr, setJoin: setIrpJoinStr, bal: irpBal, setBal: setIrpBal }
+                    { on: hasPension, setOn: setHasPension, label: '연금저축', joinStr: pensionJoinStr, setJoin: setPensionJoinStr,
+                      bal: pensionBal, setBal: setPensionBal, ex: pensionExempt, setEx: setPensionExempt,
+                      started: pensionStarted, setStarted: setPensionStarted },
+                    { on: hasIrp, setOn: setHasIrp, label: 'IRP', joinStr: irpJoinStr, setJoin: setIrpJoinStr,
+                      bal: irpBal, setBal: setIrpBal, ex: irpExempt, setEx: setIrpExempt,
+                      started: irpStarted, setStarted: setIrpStarted }
                   ].map((a) => {
                     const jd = parseDate(a.joinStr);
                     return (
@@ -1226,29 +1480,67 @@ function App() {
                           <input type="checkbox" checked={a.on} onChange={(e) => a.setOn(e.target.checked)}
                             aria-label={'기존 ' + a.label + ' 보유'} className="w-4 h-4 accent-[#F58220]" />
                           <span className="text-[15px] font-bold text-ink">기존 {a.label} 보유</span>
-                          {a.on && isLegacyDate(jd) && a.bal > 0 ? <Badge tone="brand">{CUTOFF_LABEL} 이전 가입</Badge> : null}
+                          {a.on && isLegacyDate(jd) ? <Badge tone="brand">{CUTOFF_LABEL} 이전 가입</Badge> : null}
                         </label>
                         {a.on && (
-                          <div className="grid grid-cols-2 gap-3">
-                            <Field label="가입일">
-                              <DateInput value={a.joinStr} onChange={a.setJoin} label={'기존 ' + a.label + ' 가입일'} />
-                            </Field>
-                            <Field label="현재 평가액">
-                              <MoneyInput value={a.bal} onChange={a.setBal} label={'기존 ' + a.label + ' 평가액'} />
-                            </Field>
-                          </div>
-                        )}
-                        {a.on && isLegacyDate(jd) && !(a.bal > 0) && (
-                          <p className="text-[12px] text-sig-err mt-2 leading-snug">
-                            잔고가 0원이면 {CUTOFF_LABEL} 이전 가입 특례(6년차 기산)를 적용할 수 없습니다.
-                          </p>
+                          <React.Fragment>
+                            <div className="grid grid-cols-2 gap-3">
+                              <Field label="가입일"
+                                help={<React.Fragment>
+                                  가입일이 {CUTOFF_LABEL} 이전이면 연금수령연차를 <strong>6년차부터</strong> 기산합니다.
+                                  {CUTOFF_LABEL} 전에는 연금수령 요건이 '10년 이상 가입하고 5년 이상 수령'이었기 때문에,
+                                  기존 계약자가 5년만 받아도 연금소득으로 인정해 주려는 경과조치입니다.
+                                  <strong> 2002년 가입과 2012년 가입은 똑같이 6년차</strong>라 가입일이 빠르다고 유리하지 않습니다.
+                                </React.Fragment>}>
+                                <DateInput value={a.joinStr} onChange={a.setJoin} label={'기존 ' + a.label + ' 가입일'} />
+                              </Field>
+                              <Field label="현재 평가액">
+                                <MoneyInput value={a.bal} onChange={a.setBal} label={'기존 ' + a.label + ' 평가액'} />
+                              </Field>
+                              <Field label="세액공제 받지 않은 금액"
+                                hint="평가액 중 과세제외 재원"
+                                help={<React.Fragment>
+                                  연말정산에서 세액공제를 받지 않은 납입액입니다. 인출할 때
+                                  <strong> 가장 먼저 빠져나가고 세금이 전혀 없습니다</strong>(인출순서 1순위).
+                                  그다음이 퇴직금, 마지막이 세액공제 받은 금액과 운용수익입니다.
+                                  모르면 0 으로 두세요 - 세금이 과대 계산될 뿐 과소 계산되지 않습니다.
+                                </React.Fragment>}>
+                                <MoneyInput value={a.ex} onChange={a.setEx} label={'기존 ' + a.label + ' 세액공제 받지 않은 금액'} />
+                              </Field>
+                              <div className="flex items-end pb-1">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                  <input type="checkbox" checked={a.started} onChange={(e) => a.setStarted(e.target.checked)}
+                                    aria-label={'기존 ' + a.label + ' 연금개시됨'} className="w-4 h-4 accent-[#F58220]" />
+                                  <span className="text-[13px] font-medium text-ink-body">연금개시됨</span>
+                                  <Help title="연금개시된 계좌">
+                                    연금개시를 신청하면 계좌 안의 재원별 금액을 확정해 국세청에 통보하므로
+                                    <strong> 원칙적으로 추가 입금이 막힙니다</strong>. 다만 당사에서 연금개시한
+                                    IRP · 연금저축계좌는 <strong>퇴직금에 한해</strong> 입금할 수 있습니다.
+                                    타사 계좌라면 수관이 필요한데, 연금개시된 계좌로의 계약이전은 제한되어
+                                    신규 개설 후 가입일자를 승계하는 방식만 가능합니다.
+                                    이미 보유한 IRP 가 연금개시된 경우는 1사 1IRP 예외사유라 추가 개설이 됩니다.
+                                  </Help>
+                                </label>
+                              </div>
+                            </div>
+                            {a.ex > a.bal && (
+                              <p className="text-[12px] text-sig-err mt-2 leading-snug">
+                                세액공제 받지 않은 금액이 평가액보다 큽니다. 평가액까지만 반영합니다.
+                              </p>
+                            )}
+                          </React.Fragment>
                         )}
                       </div>
                     );
                   })}
 
                   <Field label="과거 연금 수령 횟수"
-                    hint="감면율은 '실제' 연금수령 누적 횟수 기준입니다 (10회 이하 30% · 11~20회 40% · 21회부터 50%).">
+                    hint="감면율은 '실제' 연금수령 누적 횟수 기준입니다 (10회 이하 30% · 11~20회 40% · 21회부터 50%)."
+                    help={<React.Fragment>
+                      <strong>연금수령연차와는 다른 값</strong>입니다. 연금수령연차는 개시 요건을 갖춘 해부터
+                      돈을 찾지 않아도 해마다 자동으로 쌓이지만, 퇴직소득세 감면율은 실제로 연금을 받은
+                      <strong> 횟수</strong>를 셉니다. 한 번도 받은 적이 없으면 0 입니다.
+                    </React.Fragment>}>
                     <input type="number" min="0" max="30" aria-label="과거 연금 수령 횟수" className={inputCls + ' num'} value={pastCount}
                       onChange={(e) => setPastCount(Math.max(0, Math.min(30, +e.target.value || 0)))} />
                   </Field>
@@ -1420,7 +1712,7 @@ function App() {
                                       {o.label}
                                       {o.perSource.some((p) => p.source.kind === a.source.kind && !p.ok && p.selectable)
                                         ? ' · 조건부' : ''}
-                                      {o.startLimitYear === 6 ? ' · 6년차 기산' : ' · 1년차 기산'}
+                                      {' · ' + o.startLimitYear + '년차' + (o.unlimited ? ' · 한도 없음' : '')}
                                       {o.feeRate > 0 ? ' · 연 ' + (o.feeRate * 100).toFixed(2) + '%' : ' · 수수료 없음'}
                                     </option>
                                   ))}
@@ -1430,8 +1722,10 @@ function App() {
                               )}
                               {a.manual
                                 ? <span className="text-[12px] bg-white text-mas-active font-bold px-1.5 py-[2px] rounded-xs shrink-0">수동 선택</span>
-                                : a.target && a.target.legacy
-                                  ? <span className="text-[12px] bg-white/25 px-1.5 py-[1px] rounded-xs shrink-0">6년차 기산</span>
+                                : a.target
+                                  ? <span className="text-[12px] bg-white/25 px-1.5 py-[1px] rounded-xs shrink-0">
+                                      {a.target.startLimitYear}년차{a.target.unlimited ? ' · 한도 없음' : ''}
+                                    </span>
                                   : null}
                             </div>
                           ))}
@@ -1445,9 +1739,14 @@ function App() {
                           </button>
                         )}
                         <p className="text-[14px] leading-relaxed opacity-95">
-                          {best.legacy
-                            ? CUTOFF_LABEL + ' 이전 가입 계좌에 잔고가 남아 있어 연금수령연차가 6년차부터 기산됩니다. 신규 계좌 대비 5년 빠르게 한도 제한이 해제됩니다.'
-                            : '연금수령연차가 1년차부터 기산됩니다. 퇴직급여를 세액공제 납입분과 분리해 관리할 수 있습니다.'}
+                          {'기산연차 ' + best.seniorityIndex + '년차 (' + best.seniorityBasis + ')'}
+                          {best.baseYear < startYear
+                            ? ' · ' + best.baseYear + '년에 이미 연금개시 요건을 갖춰 연차가 자동 누적되어 ' +
+                              startYear + '년 현재 ' + best.startLimitYear + '년차입니다.'
+                            : ' · ' + startYear + '년에 ' + best.startLimitYear + '년차로 시작합니다.'}
+                          {best.unlimited
+                            ? ' 11년차를 넘겨 연금수령한도가 없으므로 인출액 전액이 연금수령으로 인정됩니다.'
+                            : ' 한도 안에서 전액을 빼려면 ' + best.minYears + '년이 걸립니다.'}
                         </p>
                         {allocation.some((a) => a.tiedWith && a.tiedWith.length > 0) && (
                           <div className="mt-3 pt-3 border-t border-white/30 text-[13px] leading-relaxed">
@@ -1457,7 +1756,7 @@ function App() {
                                 {[a.target.label].concat(a.tiedWith.map((t) => t.label)).join(' / ')}
                               </span>
                             ))}
-                            {' 은 모두 ' + CUTOFF_LABEL + ' 이전 가입이라 한도 기산이 똑같이 6년차입니다. '}
+                            {' 은 연금수령연차가 똑같이 ' + best.startLimitYear + '년차라 한도가 같습니다. '}
                             <strong className="font-bold">가입일이 더 빠르다고 유리하지 않습니다.</strong>
                             {' 세법상 우열이 없으므로 수수료 · 투자 가능 상품 · 중도인출 조건을 보고 고르시고, 아래에서 계좌를 눌러 시뮬레이션을 바꿔 볼 수 있습니다.'}
                           </div>
@@ -1483,9 +1782,11 @@ function App() {
                               <div className="flex items-center gap-2 flex-wrap">
                                 <span className="text-[16px] font-bold text-ink">{c.label}</span>
                                 {allocated ? <Badge tone="brand">배정 {krw(c.allocatedAmount)}</Badge> : null}
-                                {c.legacy ? <Badge tone="good">6년차 기산</Badge> : null}
-                                {!c.isNew && !c.legacy ? <Badge tone="neutral">1년차 기산</Badge> : null}
-                                {blocked ? <Badge tone="bad">이전 불가</Badge> : null}
+                                {blocked ? <Badge tone="bad">입금 불가</Badge> : null}
+                                {/* 막힌 계좌의 연차는 '썼다면 이랬다'는 참고값이라 색을 빼 둔다 */}
+                                <Badge tone={blocked ? 'neutral' : c.legacy ? 'good' : 'neutral'}>
+                                  {blocked ? '해당 시 ' : ''}{c.startLimitYear}년차{c.unlimited ? ' · 한도 없음' : ''}
+                                </Badge>
                                 {!blocked && c.perSource.some((p) => !p.ok && p.selectable)
                                   ? <Badge tone="warn">조건부 - 확인 필요</Badge> : null}
                               </div>
@@ -1514,16 +1815,18 @@ function App() {
                               )}
                             </div>
                             {!blocked && (
-                              <div className="text-[12px] text-ink-soft mt-2">
-                                한도 기산 <strong className="text-ink-body">{c.startLimitYear}년차</strong>부터
-                                {' ('}
-                                {c.isNew
-                                  ? '신규 개설'
-                                  : c.legacy
-                                    ? fmtDate(c.joinDate) + ' 가입 · ' + CUTOFF_LABEL + ' 이전'
-                                    : fmtDate(c.joinDate) + ' 가입 · ' + CUTOFF_LABEL + ' 이후'}
-                                {')'}
-                                {' · '}최소 권장 수령 기간 <strong className="text-ink-body">{c.minYears}년</strong>
+                              <div className="text-[12px] text-ink-soft mt-2 leading-snug">
+                                기산연차 <strong className="text-ink-body">{c.seniorityIndex}년차</strong>
+                                {' (' + c.seniorityBasis + ')'}
+                                {c.baseYear < startYear
+                                  ? ' · ' + c.baseYear + '년 요건 충족 후 ' + (startYear - c.baseYear) + '년 누적'
+                                  : ' · ' + c.baseYear + '년 요건 충족'}
+                                {' → '}
+                                <strong className="text-ink-body">{startYear}년 {c.startLimitYear}년차</strong>
+                                {' · '}
+                                {c.unlimited
+                                  ? '한도 없음 (전액 연금수령 인정)'
+                                  : <React.Fragment>한도 내 전액 인출에 <strong className="text-ink-body">{c.minYears}년</strong></React.Fragment>}
                                 {!allocated ? ' · 더 유리하거나 동등한 계좌가 배정되었습니다' : ''}
                               </div>
                             )}
@@ -1562,7 +1865,7 @@ function App() {
                                 {r.partial ? <span className="text-[11px] text-sig-err ml-1">일부만</span> : null}
                               </td>
                               <td className="px-2 py-2 text-center">
-                                <span className={r.c.legacy ? 'text-sig-ok font-bold' : 'text-ink-muted'}>
+                                <span className={r.c.startLimitYear > 1 ? 'text-sig-ok font-bold' : 'text-ink-muted'}>
                                   {r.c.startLimitYear}년차
                                 </span>
                               </td>
@@ -1584,9 +1887,10 @@ function App() {
                     단위: 만원 · 수수료는 매년 적립금 기준으로 차감 · '일부만'은 그 계좌가 퇴직급여 전액을 받을 수 없는 경우 ·
                     '+잔액'은 수령 기간 내 전액 인출이 안 되어 남는 금액
                     <br />
-                    <strong className="text-ink-muted">한도 기산 차이는 세후 수령액이 아니라 인출 속도(유동성) 차이입니다.</strong>{' '}
-                    6년차 기산은 5년 만에 한도가 풀려 급히 목돈이 필요할 때 꺼낼 수 있다는 뜻이고, 이 표의 세후 수령액은
-                    선택한 수령 기간 안에서 계산한 값입니다.
+                    <strong className="text-ink-muted">연차가 높을수록 그해 한도가 커집니다.</strong>{' '}
+                    한도는 인출 상한이 아니라 연금수령과 연금외수령을 가르는 기준선입니다. 한도를 넘겨 빼도 되지만
+                    넘은 부분은 퇴직소득세 감면 없이(세액공제분·운용수익은 기타소득세 16.5%) 과세됩니다.
+                    연차가 11년차에 닿으면 한도가 사라져 인출액 전액이 연금수령으로 인정됩니다.
                   </p>
 
                   {/* 세액·수수료로 가려지지 않는 계좌 유형의 차이 - 수동 선택의 판단 근거 */}
@@ -1673,7 +1977,7 @@ function App() {
                   {mixedBasis.length > 0 && (
                     <div className="border border-[#E8D49A] bg-[#FBF3DF] rounded-sm px-4 py-3 mb-5 text-[13px] text-[#8A6A0B] leading-relaxed">
                       <strong className="font-bold">합산 주의</strong>{' · '}
-                      {mixedBasis.map((a) => a.label).join(' / ')}는 한도 기산이{' '}
+                      {mixedBasis.map((a) => a.label + '(' + a.startLimitYear + '년차)').join(' / ')}는 연금수령연차가{' '}
                       {picked.label}({picked.startLimitYear}년차)과 달라 실제로는 한도가 계좌별로 따로 산정됩니다.
                       아래 표는 {picked.startLimitYear}년차 기준으로 합산해 계산한 값이라 참고용입니다.
                     </div>
@@ -1705,9 +2009,25 @@ function App() {
                             <td className="px-2 py-1.5 text-center">{r.actualYear}년차</td>
                             <td className="px-2 py-1.5 text-right">{man(r.begin)}</td>
                             <td className="px-2 py-1.5 text-right">{r.unlimited ? '전액' : man(r.limit)}</td>
-                            <td className="px-2 py-1.5 text-right font-bold text-mas-blue">
+                            <td className="px-2 py-1.5 text-right font-bold text-mas-blue"
+                              title={'재원별 인출 (인출 순서대로)\n' +
+                                '① 세액공제 받지 않은 금액  ' + man(r.drawExempt) + '만원 (과세제외)\n' +
+                                '② 이연퇴직소득  ' + man(r.drawRet) + '만원\n' +
+                                '③ 세액공제 받은 금액·운용수익  ' + man(r.drawOther) + '만원'}>
                               {man(r.draw)}
                               <span className="text-[11px] text-ink-soft font-normal ml-1">({man(r.monthly)})</span>
+                              {r.overPart > 1 ? (
+                                <span className="block text-[11px] text-sig-err font-normal"
+                                  title="한도를 넘겨 인출한 부분입니다. 연금외수령으로 보아 감면 없이 과세됩니다.">
+                                  연금외 {man(r.overPart)}
+                                </span>
+                              ) : null}
+                              {r.over1500 ? (
+                                <span className="block text-[11px] text-[#8A6A0B] font-normal"
+                                  title="세액공제 받은 금액·운용수익의 연금수령분이 연 1,500만원을 넘습니다. 종합과세 또는 16.5% 분리과세를 선택해야 하며, 이 표는 분리과세 기준으로 계산했습니다.">
+                                  1,500만 초과
+                                </span>
+                              ) : null}
                             </td>
                             <td className="px-2 py-1.5 text-center">
                               {r.drawRet > 0 ? (
@@ -1726,10 +2046,27 @@ function App() {
                     </table>
                   </div>
                   <p className="text-[12px] text-ink-soft mt-3 leading-relaxed">
-                    단위: 만원 · 연금수령한도 = 과세기간 개시일 평가액 ÷ (11 - 연금수령연차) × 120% ·
-                    {CUTOFF_LABEL} 이전 가입 연금계좌는 6년차부터 기산 ·
-                    인출 순서는 이연퇴직소득 → 세액공제 납입분·운용수익 순(소득세법 시행령 §40의3) ·
-                    사적연금 연 1,500만원 초과 시 종합과세 또는 16.5% 분리과세 선택 대상입니다.
+                    단위: 만원 · 연금수령한도 = 과세기간 개시일 평가액 ÷ (11 - 연금수령연차) × 120%
+                    <Help title="연금수령한도는 인출 한도가 아닙니다">
+                      한도는 인출할 수 있는 금액의 상한이 아니라, 뺀 돈을 <strong>연금수령</strong>으로 볼지
+                      <strong> 연금외수령</strong>으로 볼지 가르는 기준선입니다. 한도를 넘겨 빼도 되고,
+                      넘은 부분만 연금외수령이 되어 퇴직소득세 감면 없이(세액공제분·운용수익은 기타소득세 16.5%)
+                      과세됩니다. 연금수령연차가 11년차를 넘으면 한도가 사라져 인출액 전액이 연금수령으로 인정됩니다.
+                    </Help>
+                    {' · '}인출 순서는 세액공제 받지 않은 금액 → 이연퇴직소득 → 세액공제 받은 금액·운용수익
+                    <Help title="인출 순서 (시행령 §40의3)">
+                      ① <strong>세액공제 받지 않은 납입액</strong> - 과세제외, 세금 없음<br />
+                      ② <strong>이연퇴직소득(퇴직금)</strong> - 연금수령분은 퇴직소득세를 30·40·50% 감면<br />
+                      ③ <strong>세액공제 받은 납입액 + 운용수익</strong> - 연금소득세 5.5% / 70세 이상 4.4% /
+                      80세 이상 3.3%, 연 1,500만원 초과 시 종합과세 또는 16.5% 분리과세 선택<br />
+                      순서를 바꿀 수 없으므로 ①이 많을수록 초기 인출의 세금이 낮아집니다.
+                    </Help>
+                    {sim.totals.totalOver > 1 ? (
+                      <span className="block mt-1 text-sig-err">
+                        이 조건에서는 {man(sim.totals.totalOver)}만원이 한도를 넘겨 연금외수령으로 과세됩니다.
+                        수령 기간을 늘리거나 '세법 한도 내 최대'로 바꾸면 줄어듭니다.
+                      </span>
+                    ) : null}
                   </p>
                 </Section>
               )}
@@ -1756,7 +2093,7 @@ function App() {
         comparison={comparison}
         memo={memo} memoOnPrint={memoOnPrint}
         scope={scope} scopeOptions={scopeOptions} mode={mode} years={years} rate={rate}
-        otherPrincipal={otherPrincipal} sim={sim} startYear={startYear}
+        otherPrincipal={otherPrincipal} exemptPrincipal={exemptPrincipal} sim={sim} startYear={startYear}
         hasPension={hasPension} pensionJoin={pensionJoin} pensionBal={pensionBal}
         hasIrp={hasIrp} irpJoin={irpJoin} irpBal={irpBal}
       />
@@ -1773,7 +2110,7 @@ function PrintSheet(props) {
     ready, custName, birth, age, system, systemJoin, retireTotal,
     amtLegal, amtHonor, deferredTax, best, picked, scope, scopeOptions,
     allocation, isSplit, allocatedDeferredTax, comparison, memo, memoOnPrint,
-    mode, years, rate, otherPrincipal, sim,
+    mode, years, rate, otherPrincipal, sim, startYear, exemptPrincipal,
     hasPension, pensionJoin, pensionBal, hasIrp, irpJoin, irpBal
   } = props;
 
@@ -1803,7 +2140,7 @@ function PrintSheet(props) {
   ];
 
   const stats = [
-    ['대상 자산', krw(picked.allocatedAmount + otherPrincipal)],
+    ['대상 자산', krw(picked.allocatedAmount + otherPrincipal + (exemptPrincipal || 0))],
     ['총 인출액 (' + sim.totals.spanYears + '년)', krw(sim.totals.totalDraw)],
     ['총 예상 세액', krw(sim.totals.totalTax)],
     ['세후 수령액', krw(sim.totals.afterTax)]
@@ -1840,14 +2177,16 @@ function PrintSheet(props) {
         {(allocation || []).map((a, i) => (
           <div key={i} style={{ fontSize: '9.5pt', fontWeight: 700, lineHeight: 1.3 }}>
             {a.source.label} {krw(a.source.amount)} → {a.target ? a.target.label : '입금 가능한 계좌 없음'}
-            {a.target && a.target.legacy ? ' (6년차 기산)' : ''}
+            {a.target ? ' (' + a.target.startLimitYear + '년차)' : ''}
             {a.manual ? <span style={{ fontSize: '6.6pt', fontWeight: 400, marginLeft: '1mm' }}>· 상담자 수동 선택</span> : null}
           </div>
         ))}
         <div style={{ fontSize: '7pt', marginTop: '0.8mm', lineHeight: 1.35 }}>
-          {picked.legacy
-            ? CUTOFF_LABEL + ' 이전 가입 계좌에 잔고가 있어 연금수령연차가 6년차부터 기산됩니다. 최소 ' + picked.minYears + '년 수령으로 한도 제한이 해제됩니다.'
-            : '연금수령연차가 1년차부터 기산되며, 한도 내 전액 인출에는 최소 ' + picked.minYears + '년이 필요합니다.'}
+          {'기산연차 ' + picked.seniorityIndex + '년차 (' + picked.seniorityBasis + ') · ' +
+            picked.baseYear + '년 연금개시 요건 충족 → ' + startYear + '년 ' + picked.startLimitYear + '년차. '}
+          {picked.unlimited
+            ? '연금수령한도가 없어 인출액 전액이 연금수령으로 인정됩니다.'
+            : '한도 내 전액 인출에는 ' + picked.minYears + '년이 필요합니다.'}
         </div>
       </div>
 
@@ -1983,8 +2322,9 @@ function PrintSheet(props) {
       </table>
 
       <p style={{ fontSize: '6.2pt', color: '#6C6C6C', lineHeight: 1.35, margin: '1.6mm 0 0' }}>
-        연금수령한도 = 과세기간 개시일 현재 평가액 ÷ (11 - 연금수령연차) × 120%. {CUTOFF_LABEL} 이전 가입 연금계좌는 연금수령연차를 6년차부터 기산합니다.
-        퇴직소득세는 실제 연금수령 1~10년차 30%, 11~20년차 40%, 21년차부터 50% 감면됩니다(소득세법 §129①5의3). 인출은 이연퇴직소득 → 세액공제 납입분·운용수익 순으로 이루어집니다(소득세법 시행령 §40의3).
+        연금수령한도 = 과세기간 개시일 현재 평가액 ÷ (11 - 연금수령연차) × 120%. 이는 인출 한도가 아니라 연금수령과 연금외수령을 가르는 기준이며, 초과 인출분은 감면 없이 과세됩니다.
+        연금수령연차는 {CUTOFF_LABEL} 이전 가입 계좌, 그리고 {CUTOFF_LABEL} 이전 퇴직연금(DB·DC) 가입자가 퇴직급여 전액을 신규 개설 계좌에 입금하는 경우 6년차부터 기산하며(소득세법 시행령 §40의2④), 연금개시 요건(만 55세·가입 5년, 퇴직급여 입금 시 5년 면제)을 갖춘 해부터 신청 여부와 무관하게 매년 누적됩니다.
+        퇴직소득세는 실제 연금수령 1~10년차 30%, 11~20년차 40%, 21년차부터 50% 감면됩니다(소득세법 §129①5의3). 인출은 세액공제 받지 않은 금액 → 이연퇴직소득 → 세액공제 받은 금액·운용수익 순입니다(소득세법 시행령 §40의3).
         사적연금 연 1,500만원 초과 수령 시 종합과세 또는 16.5% 분리과세 선택 대상입니다.
         본 자료는 상담 보조용 추정치로 실제 세액 및 수령액과 다를 수 있으며, 최종 판단은 원천징수영수증과 금융기관 확인을 거쳐야 합니다.
       </p>

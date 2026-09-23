@@ -21,8 +21,12 @@ const FIELDS = {
   ],
   whenDbDc: ['퇴직급여'],
   whenSeverance: ['법정퇴직금', '명예퇴직금'],
-  whenPension: ['기존 연금저축 가입일', '기존 연금저축 평가액', '기존 연금저축 연간 수수료'],
-  whenIrp: ['기존 IRP 가입일', '기존 IRP 평가액', '기존 IRP 연간 수수료']
+  whenDc: ['DB 에서 DC 로 전환'],
+  whenConverted: ['전환 전 DB 가입일'],
+  whenPension: ['기존 연금저축 가입일', '기존 연금저축 평가액', '기존 연금저축 연간 수수료',
+    '기존 연금저축 세액공제 받지 않은 금액', '기존 연금저축 연금개시됨'],
+  whenIrp: ['기존 IRP 가입일', '기존 IRP 평가액', '기존 IRP 연간 수수료',
+    '기존 IRP 세액공제 받지 않은 금액', '기존 IRP 연금개시됨']
 };
 
 const BUTTONS = [
@@ -75,18 +79,27 @@ async function fillCase(page, c) {
   if (c.birth) await field(page, '생년월일').fill(c.birth);
   if (c.system) await button(page, c.system === 'SEV' ? '퇴직금제도' : c.system).click();
   if (c.joinDate) await field(page, '제도 가입일').fill(c.joinDate);
+  if (c.dbConverted) {
+    await field(page, 'DB 에서 DC 로 전환').check();
+    if (c.dbJoin) await field(page, '전환 전 DB 가입일').fill(c.dbJoin);
+  }
 
   if (c.legal !== undefined) await field(page, '법정퇴직금').fill(String(c.legal));
   if (c.honor !== undefined) await field(page, '명예퇴직금').fill(String(c.honor));
   if (c.amount !== undefined) await field(page, '퇴직급여').fill(String(c.amount));
   if (c.deferredTax !== undefined) await field(page, '이연 퇴직소득세').fill(String(c.deferredTax));
 
+  // 앞선 케이스에서 켜 둔 계좌가 그대로 남아 판정을 오염시키지 않도록,
+  // false 를 주면 명시적으로 끈다. undefined 는 '건드리지 않음'이다.
   for (const [key, label] of [['pension', '연금저축'], ['irp', 'IRP']]) {
     const a = c[key];
+    if (a === false) { await field(page, '기존 ' + label + ' 보유').uncheck(); continue; }
     if (!a) continue;
     await field(page, '기존 ' + label + ' 보유').check();
     if (a.join) await field(page, '기존 ' + label + ' 가입일').fill(a.join);
     if (a.balance !== undefined) await field(page, '기존 ' + label + ' 평가액').fill(String(a.balance));
+    if (a.exempt !== undefined) await field(page, '기존 ' + label + ' 세액공제 받지 않은 금액').fill(String(a.exempt));
+    if (a.started) await field(page, '기존 ' + label + ' 연금개시됨').check();
   }
 
   if (c.pastCount !== undefined) await field(page, '과거 연금 수령 횟수').fill(String(c.pastCount));
