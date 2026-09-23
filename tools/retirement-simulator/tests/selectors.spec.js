@@ -6,7 +6,7 @@
  * 검증하지 않는 상태였다. 그래서 (1) 모든 라벨이 정확히 하나로 잡히는지, (2) 각 라벨이
  * 정말 그 필드로 가는지 (서로 다른 값을 넣고 되읽어서) 확인한다.
  */
-const { FIELDS, BUTTONS, openApp, field, button } = require('./helpers');
+const { FIELDS, BUTTONS, openApp, field, button, setAccounts } = require('./helpers');
 
 module.exports = async function run(t) {
   const { browser, page, errors } = await openApp({});
@@ -49,13 +49,25 @@ module.exports = async function run(t) {
     for (const name of FIELDS.whenSeverance) t.is(await field(page, name).count(), 1, '퇴직금제도 라벨 고유: ' + name);
     t.is(await field(page, '퇴직급여').count(), 0, '퇴직금제도에서는 단일 퇴직급여 칸이 없다');
 
-    // --- 3. 계좌를 켜면 나타나는 칸 ---
-    await field(page, '기존 연금저축 보유').check();
-    await field(page, '기존 IRP 보유').check();
-    await page.waitForTimeout(300);
-    for (const name of FIELDS.whenPension.concat(FIELDS.whenIrp)) {
-      t.is(await field(page, name).count(), 1, '계좌 라벨 고유: ' + name);
+    // --- 3. 계좌를 추가하면 그 카드의 칸들이 순번 이름으로 생긴다 ---
+    // 같은 종류를 두 개 넣어도 '연금저축 1' / '연금저축 2' 로 갈려 겹치지 않아야 한다.
+    await setAccounts(page, [
+      { kind: 'pension' }, { kind: 'pension' }, { kind: 'irp' }
+    ]);
+    for (const k of ['연금저축 1', '연금저축 2', 'IRP 1']) {
+      for (const name of FIELDS.perAccount) {
+        t.is(await field(page, k + ' ' + name).count(), 1, '계좌 라벨 고유: ' + k + ' ' + name);
+      }
     }
+    t.is(await field(page, 'IRP 2 가입일').count(), 0, '없는 계좌의 칸은 잡히지 않는다');
+
+    // 가운데 계좌를 지우면 번호가 다시 매겨진다
+    await button(page, '연금저축 1 삭제').click();
+    await page.waitForTimeout(300);
+    t.is(await field(page, '연금저축 1 가입일').count(), 1, '삭제 후에도 연금저축 1 이 존재');
+    t.is(await field(page, '연금저축 2 가입일').count(), 0, '연금저축 2 는 사라짐');
+    t.is(await field(page, 'IRP 1 가입일').count(), 1, 'IRP 번호는 영향 없음');
+    await setAccounts(page, [{ kind: 'pension' }, { kind: 'irp' }]);
 
     // --- 4. 핵심: 각 라벨이 정말 그 필드로 가는가 ---
     // 서로 다른 값을 넣고 전부 되읽어, 한 칸이 다른 칸을 덮어쓰지 않는지 본다.
@@ -66,12 +78,13 @@ module.exports = async function run(t) {
       ['법정퇴직금', '111000000'],
       ['명예퇴직금', '222000000'],
       ['이연 퇴직소득세', '333000'],
-      ['기존 연금저축 가입일', '2003-03-02'],
-      ['기존 연금저축 평가액', '444000000'],
-      ['기존 연금저축 세액공제 받지 않은 금액', '12000000'],
-      ['기존 IRP 가입일', '2002-03-02'],
-      ['기존 IRP 평가액', '555000000'],
-      ['기존 IRP 세액공제 받지 않은 금액', '34000000'],
+      ['연금저축 1 가입일', '2003-03-02'],
+      ['연금저축 1 평가액', '444000000'],
+      ['연금저축 1 세액공제 받지 않은 금액', '12000000'],
+      ['연금저축 1 금융기관', '미래에셋'],
+      ['IRP 1 가입일', '2002-03-02'],
+      ['IRP 1 평가액', '555000000'],
+      ['IRP 1 세액공제 받지 않은 금액', '34000000'],
       ['과거 연금 수령 횟수', '7'],
       ['상담 메모', '메모확인용']
     ];
@@ -84,7 +97,7 @@ module.exports = async function run(t) {
     }
 
     // 수수료 4칸도 서로 섞이지 않는지
-    const feeProbes = [['기존 연금저축', '0.11'], ['기존 IRP', '0.22'], ['신규 IRP', '0.33'], ['신규 연금저축', '0.44']];
+    const feeProbes = [['연금저축 1', '0.11'], ['IRP 1', '0.22'], ['신규 IRP', '0.33'], ['신규 연금저축', '0.44']];
     for (const [label, v] of feeProbes) await field(page, label + ' 연간 수수료').fill(v);
     await page.waitForTimeout(300);
     for (const [label, v] of feeProbes) {
@@ -99,7 +112,8 @@ module.exports = async function run(t) {
     t.is(await field(page, '운용수익률').inputValue(), '4.5', '운용수익률 슬라이더');
 
     // 체크박스 4개가 서로 독립인지 - 하나만 켜고 나머지가 꺼져 있는지 본다
-    const boxes = ['기존 연금저축 연금개시됨', '기존 IRP 연금개시됨', '상담 메모 인쇄물 포함'];
+    const boxes = ['연금저축 1 연금개시됨', '연금저축 1 시뮬레이션 합산',
+      'IRP 1 연금개시됨', 'IRP 1 시뮬레이션 합산', '상담 메모 인쇄물 포함'];
     for (const name of boxes) {
       await field(page, name).check();
       await page.waitForTimeout(150);

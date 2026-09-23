@@ -14,6 +14,53 @@ const man = (n) => {
   return (Math.round(n / 10000)).toLocaleString('ko-KR');
 };
 
+/**
+ * 저장된 상담에서 보유 계좌 목록을 읽는다.
+ *
+ * 계좌가 하나씩(연금저축 1 · IRP 1)만 있던 시절에 저장한 건이 남아 있으므로,
+ * 그 형태도 읽어 목록으로 바꿔 준다. 예전에 저장한 상담을 열었을 때
+ * 계좌가 통째로 사라지면 상담 이력이 끊긴다.
+ */
+function readAccounts(d, cast) {
+  const { str, num, bool } = cast;
+  let n = 0;
+  const mk = (kind, src, pre) => ({
+    id: 'acc-load-' + (++n),
+    kind,
+    name: str(src.name, ''),
+    joinStr: str(src[pre + 'JoinStr'] !== undefined ? src[pre + 'JoinStr'] : src.joinStr, ''),
+    bal: num(src[pre + 'Bal'] !== undefined ? src[pre + 'Bal'] : src.bal, 0),
+    exempt: num(src[pre + 'Exempt'] !== undefined ? src[pre + 'Exempt'] : src.exempt, 0),
+    started: bool(src[pre + 'Started'] !== undefined ? src[pre + 'Started'] : src.started, false),
+    fee: num(src.fee, 0),
+    merge: bool(src.merge, false)
+  });
+
+  if (Array.isArray(d.accounts)) {
+    return d.accounts
+      .filter((a) => a && (a.kind === 'pension' || a.kind === 'irp'))
+      .slice(0, 20)
+      .map((a) => mk(a.kind, a, ''));
+  }
+
+  // 예전 형식 - 고정 2계좌
+  const out = [];
+  const oldFees = (d.fees && typeof d.fees === 'object') ? d.fees : {};
+  if (bool(d.hasPension, false)) {
+    const a = mk('pension', d, 'pension');
+    a.fee = num(oldFees['ex-pension'], 0);
+    a.merge = d.scope === 'pension' || d.scope === 'all';
+    out.push(a);
+  }
+  if (bool(d.hasIrp, false)) {
+    const a = mk('irp', d, 'irp');
+    a.fee = num(oldFees['ex-irp'], 0);
+    a.merge = d.scope === 'irp' || d.scope === 'all';
+    out.push(a);
+  }
+  return out;
+}
+
 /** 읽기 쉬운 한글 금액 - 3억 2,400만원 형태 */
 const krw = (n) => {
   if (n === null || n === undefined || !isFinite(n)) return '-';
@@ -226,17 +273,36 @@ function seniorityOf(target, sources, opts) {
   return { index, basis, baseYear };
 }
 
+/**
+ * 보유 계좌의 표시 이름.
+ *
+ * 연금저축은 한 금융기관에 여러 개를 둘 수 있고, IRP 도 1사 1계좌가 원칙이지만
+ * 금융기관마다 하나씩 가질 수 있어 실제로는 여러 개인 경우가 흔하다.
+ * 그래서 종류만으로는 구분이 안 되고 순번을 붙인다. 금융기관명은 선택 입력이다.
+ */
+function accountKey(a, seq) {
+  return (a.kind === 'pension' ? '연금저축' : 'IRP') + ' ' + seq;
+}
+
+function accountLabel(a, seq) {
+  return accountKey(a, seq) + (a.name ? ' · ' + a.name : '');
+}
+
 /** 계좌 후보 생성 및 평가 */
 function buildCandidates(input, sources) {
-  const { age, hasPension, pensionJoin, pensionBal, hasIrp, irpJoin, irpBal, fees, startYear, birthYear } = input;
+  const { age, accounts, fees, startYear, birthYear } = input;
 
-  const targets = [];
-  if (hasPension) {
-    targets.push({ id: 'ex-pension', type: 'pension', isNew: false, joinDate: pensionJoin, balance: pensionBal, started: !!input.pensionStarted, label: '기존 연금저축' });
-  }
-  if (hasIrp) {
-    targets.push({ id: 'ex-irp', type: 'irp', isNew: false, joinDate: irpJoin, balance: irpBal, started: !!input.irpStarted, label: '기존 IRP' });
-  }
+  // 종류별로 1부터 번호를 매긴다 (연금저축 1, 연금저축 2, IRP 1 …)
+  const seq = { pension: 0, irp: 0 };
+  const targets = (accounts || []).map((a) => {
+    seq[a.kind] += 1;
+    return {
+      id: a.id, type: a.kind, isNew: false,
+      joinDate: a.joinDate, balance: a.bal, started: !!a.started,
+      label: accountLabel(a, seq[a.kind]),
+      ownFeeRate: (a.fee || 0) / 100
+    };
+  });
   targets.push({ id: 'new-irp', type: 'irp', isNew: true, joinDate: TODAY, balance: 0, started: false, label: '신규 IRP 개설' });
   targets.push({ id: 'new-pension', type: 'pension', isNew: true, joinDate: TODAY, balance: 0, started: false, label: '신규 연금저축 개설' });
 
@@ -278,7 +344,8 @@ function buildCandidates(input, sources) {
       startLimitYear,
       unlimited: startLimitYear >= 11,
       minYears,
-      feeRate: ((fees && fees[t.id]) || 0) / 100   // 입력은 %, 계산은 소수
+      // 기존 계좌는 계좌마다, 신규는 종류별로 수수료를 받는다 (입력은 %, 계산은 소수)
+      feeRate: t.isNew ? (((fees && fees[t.id]) || 0) / 100) : (t.ownFeeRate || 0)
     };
   });
 }
@@ -795,30 +862,35 @@ function App() {
   const [amtHonor, setAmtHonor] = useState(0);
   const [deferredTax, setDeferredTax] = useState(0);
 
-  // --- 기존 보유 계좌
-  const [hasPension, setHasPension] = useState(false);
-  const [pensionJoinStr, setPensionJoinStr] = useState('');
-  const [pensionBal, setPensionBal] = useState(0);
-  const [pensionExempt, setPensionExempt] = useState(0);    // 세액공제 받지 않은 납입액
-  const [pensionStarted, setPensionStarted] = useState(false);
-  const [hasIrp, setHasIrp] = useState(false);
-  const [irpJoinStr, setIrpJoinStr] = useState('');
-  const [irpBal, setIrpBal] = useState(0);
-  const [irpExempt, setIrpExempt] = useState(0);
-  const [irpStarted, setIrpStarted] = useState(false);
+  // --- 기존 보유 계좌 (여러 개)
+  //
+  // 연금저축은 한 금융기관에 여러 개를 둘 수 있고, IRP 는 1사 1계좌가 원칙이지만
+  // 금융기관마다 하나씩 가질 수 있어 실제로는 여러 개인 경우가 흔하다. 게다가
+  // 연금개시된 IRP 가 있거나 구 IRP 에 신 DC 를 넣어야 하는 경우처럼 같은 기관에
+  // 추가 개설이 되는 예외도 있다. 연금수령연차는 계좌별로 따로 산정되므로
+  // 계좌를 하나로 뭉뚱그리면 판정 자체가 틀어진다.
+  const [accountList, setAccountList] = useState([]);
+  const nextAccId = React.useRef(1);
+
+  const addAccount = (kind) => setAccountList((l) => l.concat([{
+    id: 'acc-' + (nextAccId.current++),
+    kind, name: '', joinStr: '', bal: 0, exempt: 0, started: false, fee: 0, merge: false
+  }]));
+  const patchAccount = (id, patch) =>
+    setAccountList((l) => l.map((a) => (a.id === id ? Object.assign({}, a, patch) : a)));
+  const removeAccount = (id) => setAccountList((l) => l.filter((a) => a.id !== id));
   const [pastCount, setPastCount] = useState(0);
 
   // 재원별 수동 선택 - 투자 가능 상품·중도인출 조건 등 앱이 판단하지 않는 기준으로 상담자가 직접 고른다
   const [manualPick, setManualPick] = useState({});
 
-  // 계좌별 연간 수수료율 (%, 적립금 대비). 상품마다 달라 기본값은 0으로 두고 상담자가 입력한다.
-  const [fees, setFees] = useState({ 'ex-pension': 0, 'ex-irp': 0, 'new-irp': 0, 'new-pension': 0 });
+  // 신규 개설 계좌의 연간 수수료율 (%, 적립금 대비). 기존 계좌 수수료는 계좌마다 따로 받는다.
+  const [fees, setFees] = useState({ 'new-irp': 0, 'new-pension': 0 });
   const setFee = (id, v) => setFees((f) => Object.assign({}, f, { [id]: v }));
 
   // --- 시뮬레이션 옵션
   const [pickedId, setPickedId] = useState(null);
   const [tab, setTab] = useState('verdict');
-  const [scope, setScope] = useState('alone');          // alone | pension | irp | all
   const [mode, setMode] = useState('even');             // even | max
   const [years, setYears] = useState(10);
   const [rate, setRate] = useState(3);
@@ -843,16 +915,15 @@ function App() {
   const collectState = () => ({
     custName, birthRaw, system, systemJoinStr, retireDateStr, dbConverted, dbJoinStr,
     amtSingle, amtLegal, amtHonor, deferredTax,
-    hasPension, pensionJoinStr, pensionBal, pensionExempt, pensionStarted,
-    hasIrp, irpJoinStr, irpBal, irpExempt, irpStarted,
-    pastCount, fees, manualPick, pickedId, scope, mode, years, rate, memo, memoOnPrint
+    accounts: accountList,
+    pastCount, fees, manualPick, pickedId, mode, years, rate, memo, memoOnPrint
   });
 
   // 우리 형식인지 최소한의 확인. 아니면 폼을 건드리지 않는다
   const looksLikeCase = (d) => {
     if (!d || typeof d !== 'object' || Array.isArray(d)) return false;
     const keys = ['custName', 'birthRaw', 'system', 'systemJoinStr', 'amtSingle',
-      'amtLegal', 'amtHonor', 'deferredTax', 'years', 'rate', 'scope', 'mode'];
+      'amtLegal', 'amtHonor', 'deferredTax', 'years', 'rate', 'accounts', 'mode'];
     return keys.filter((k) => Object.prototype.hasOwnProperty.call(d, k)).length >= 4;
   };
 
@@ -872,22 +943,12 @@ function App() {
     setAmtLegal(num(d.amtLegal, 0));
     setAmtHonor(num(d.amtHonor, 0));
     setDeferredTax(num(d.deferredTax, 0));
-    setHasPension(bool(d.hasPension, false));
-    setPensionJoinStr(str(d.pensionJoinStr, ''));
-    setPensionBal(num(d.pensionBal, 0));
-    setPensionExempt(num(d.pensionExempt, 0));
-    setPensionStarted(bool(d.pensionStarted, false));
-    setHasIrp(bool(d.hasIrp, false));
-    setIrpJoinStr(str(d.irpJoinStr, ''));
-    setIrpBal(num(d.irpBal, 0));
-    setIrpExempt(num(d.irpExempt, 0));
-    setIrpStarted(bool(d.irpStarted, false));
+    setAccountList(readAccounts(d, { str, num, bool }));
     setPastCount(num(d.pastCount, 0));
-    setFees(Object.assign({ 'ex-pension': 0, 'ex-irp': 0, 'new-irp': 0, 'new-pension': 0 },
+    setFees(Object.assign({ 'new-irp': 0, 'new-pension': 0 },
       d.fees && typeof d.fees === 'object' ? d.fees : {}));
     setManualPick(d.manualPick && typeof d.manualPick === 'object' ? d.manualPick : {});
     setPickedId(typeof d.pickedId === 'string' ? d.pickedId : null);
-    setScope(['alone', 'pension', 'irp', 'all'].indexOf(d.scope) >= 0 ? d.scope : 'alone');
     setMode(d.mode === 'max' ? 'max' : 'even');
     setYears(Math.min(30, Math.max(5, num(d.years, 10))));
     setRate(Math.min(8, Math.max(0, num(d.rate, 3))));
@@ -901,8 +962,6 @@ function App() {
 
   const systemJoin = useMemo(() => parseDate(systemJoinStr), [systemJoinStr]);
   const dbJoin = useMemo(() => parseDate(dbJoinStr), [dbJoinStr]);
-  const pensionJoin = useMemo(() => parseDate(pensionJoinStr), [pensionJoinStr]);
-  const irpJoin = useMemo(() => parseDate(irpJoinStr), [irpJoinStr]);
 
   // 퇴직(예정)일. 비워 두면 오늘로 본다. 과거 퇴직도 미래 퇴직 예정도 받는다.
   const retireDate = useMemo(() => parseDate(retireDateStr) || TODAY, [retireDateStr]);
@@ -927,8 +986,7 @@ function App() {
     age: retireAge, birthYear: birth ? birth.getFullYear() : null, startYear, depositYear,
     system, systemJoin, dbConverted, dbJoin,
     amtSingle, amtLegal, amtHonor,
-    hasPension, pensionJoin, pensionBal, pensionStarted,
-    hasIrp, irpJoin, irpBal, irpStarted,
+    accounts: accountList.map((a) => Object.assign({}, a, { joinDate: parseDate(a.joinStr) })),
     fees
   };
 
@@ -939,8 +997,7 @@ function App() {
     const base = buildCandidates(input, sources);
     const alloc = buildAllocation(base, sources, manualPick);
     return { candidates: applyAllocation(base, alloc), allocation: alloc };
-  }, [sources, retireAge, birth, startYear, depositYear, hasPension, pensionJoinStr, pensionBal, pensionStarted,
-    hasIrp, irpJoinStr, irpBal, irpStarted, fees, manualPick]);
+  }, [sources, retireAge, birth, startYear, depositYear, accountList, fees, manualPick]);
 
   // 배정액이 가장 큰 계좌를 기본 시뮬레이션 대상으로 삼는다
   const best = useMemo(() => {
@@ -962,36 +1019,33 @@ function App() {
     return found || best;
   }, [candidates, pickedId, best]);
 
-  // 합산 범위에 따른 기존 자산. 세액공제 받지 않은 납입액은 과세제외 재원으로 따로 뗀다.
+  // 합산하기로 체크한 계좌의 잔고. 세액공제 받지 않은 납입액은 과세제외 재원으로 따로 뗀다.
+  // 퇴직급여를 받을 계좌(picked)의 잔고는 이미 후보 평가에 들어가 있으므로 여기서 뺀다.
+  const merged = useMemo(
+    () => accountList.filter((a) => a.merge && a.bal > 0),
+    [accountList]);
+
   const { exemptPrincipal, otherPrincipal } = useMemo(() => {
-    const take = (on, bal, ex) => {
-      if (!on) return { e: 0, g: 0 };
-      const e = Math.max(0, Math.min(ex, bal));
-      return { e, g: bal - e };
-    };
-    const p = take(hasPension, pensionBal, pensionExempt);
-    const i = take(hasIrp, irpBal, irpExempt);
-    const pick = scope === 'pension' ? [p] : scope === 'irp' ? [i] : scope === 'all' ? [p, i] : [];
-    return {
-      exemptPrincipal: pick.reduce((s, x) => s + x.e, 0),
-      otherPrincipal: pick.reduce((s, x) => s + x.g, 0)
-    };
-  }, [scope, hasPension, pensionBal, pensionExempt, hasIrp, irpBal, irpExempt]);
+    let e = 0, g = 0;
+    for (const a of merged) {
+      const ex = Math.max(0, Math.min(a.exempt, a.bal));
+      e += ex; g += a.bal - ex;
+    }
+    return { exemptPrincipal: e, otherPrincipal: g };
+  }, [merged]);
 
   /**
    * 합산 경고 - 연금수령한도는 계좌별로 따로 산정된다.
-   * 기산 연차가 다른 계좌를 합산하면 한도가 한쪽 기준으로 계산되어 부정확해진다.
+   * 연차가 다른 계좌를 합산하면 한도가 한쪽 기준으로 계산되어 부정확해진다.
    */
   const mixedBasis = useMemo(() => {
-    if (!picked || scope === 'alone') return [];
-    const wanted = [];
-    if (hasPension && (scope === 'pension' || scope === 'all') && pensionBal > 0) wanted.push('ex-pension');
-    if (hasIrp && (scope === 'irp' || scope === 'all') && irpBal > 0) wanted.push('ex-irp');
-    // 연차가 실제로 다른 계좌만 경고한다. 둘 다 2013.3.1 이전이어도 만 55세 도달 시점이
-    // 달라 연차가 벌어질 수 있으므로, legacy 여부가 아니라 연차 자체를 비교한다.
+    if (!picked || !merged.length) return [];
+    const ids = merged.map((a) => a.id);
+    // 둘 다 2013.3.1 이전이어도 만 55세 도달 시점이 달라 연차가 벌어질 수 있으므로,
+    // legacy 여부가 아니라 연차 자체를 비교한다.
     return candidates.filter((c) =>
-      wanted.indexOf(c.id) >= 0 && c.id !== picked.id && c.startLimitYear !== picked.startLimitYear);
-  }, [candidates, picked, scope, hasPension, pensionBal, hasIrp, irpBal]);
+      ids.indexOf(c.id) >= 0 && c.id !== picked.id && c.startLimitYear !== picked.startLimitYear);
+  }, [candidates, picked, merged]);
 
   // 분할 입금 시 이연퇴직소득세는 계좌에 배정된 금액 비율로 안분한다
   const allocatedDeferredTax = useMemo(() => {
@@ -1076,14 +1130,6 @@ function App() {
     else if (tab === 'schedule' && !sim) setTab('verdict');
   }, [ready, tab, comparison.length, sim]);
 
-  // 선택한 합산 범위가 더 이상 유효하지 않으면 단독으로 되돌린다
-  useEffect(() => {
-    if ((scope === 'pension' && !hasPension) ||
-        (scope === 'irp' && !hasIrp) ||
-        (scope === 'all' && !hasPension && !hasIrp)) {
-      setScope('alone');
-    }
-  }, [scope, hasPension, hasIrp]);
 
   // ---- 저장 동작 ----
   const doSaveCase = () => {
@@ -1134,12 +1180,11 @@ function App() {
     setSystem('DC'); setSystemJoinStr(''); setRetireDateStr(TODAY_STR);
     setDbConverted(false); setDbJoinStr('');
     setAmtSingle(0); setAmtLegal(0); setAmtHonor(0); setDeferredTax(0);
-    setHasPension(false); setPensionJoinStr(''); setPensionBal(0); setPensionExempt(0); setPensionStarted(false);
-    setHasIrp(false); setIrpJoinStr(''); setIrpBal(0); setIrpExempt(0); setIrpStarted(false);
+    setAccountList([]);
     setPastCount(0);
-    setFees({ 'ex-pension': 0, 'ex-irp': 0, 'new-irp': 0, 'new-pension': 0 });
+    setFees({ 'new-irp': 0, 'new-pension': 0 });
     setManualPick({}); setPickedId(null);
-    setScope('alone'); setMode('even'); setYears(10); setRate(3);
+    setMode('even'); setYears(10); setRate(3);
     setMemo(''); setMemoOnPrint(false);
     setTab('verdict'); setEditingId(null); setConfirmReset(false);
     say('입력을 초기화했습니다. 저장된 상담은 그대로입니다.');
@@ -1202,12 +1247,22 @@ function App() {
     say('CSV 로 내보냈습니다 - ' + fn);
   };
 
-  const scopeOptions = [
-    { value: 'alone', label: '퇴직금 단독' },
-    { value: 'pension', label: '기존 연금저축 합산', disabled: !hasPension },
-    { value: 'irp', label: '기존 IRP 합산', disabled: !hasIrp },
-    { value: 'all', label: '전체 전액 합산', disabled: !hasPension && !hasIrp }
-  ];
+  // 계좌 목록의 표시 이름 (종류별 순번). 판정 카드와 같은 규칙으로 매긴다.
+  // 표시 이름에는 금융기관명을 붙이지만, aria-label 로 쓰는 키에는 붙이지 않는다.
+  // 기관명을 타이핑하는 도중 라벨이 계속 바뀌면 그 칸을 다시 잡을 수 없게 된다.
+  const accountNames = useMemo(() => {
+    const seq = { pension: 0, irp: 0 };
+    const out = {};
+    for (const a of accountList) { seq[a.kind] += 1; out[a.id] = accountLabel(a, seq[a.kind]); }
+    return out;
+  }, [accountList]);
+
+  const accountKeys = useMemo(() => {
+    const seq = { pension: 0, irp: 0 };
+    const out = {};
+    for (const a of accountList) { seq[a.kind] += 1; out[a.id] = accountKey(a, seq[a.kind]); }
+    return out;
+  }, [accountList]);
 
   return (
     <React.Fragment>
@@ -1510,72 +1565,140 @@ function App() {
                 </div>
               </Section>
 
-              <Section title="2 · 기존 보유 연금계좌">
+              <Section title="2 · 기존 보유 연금계좌"
+                right={
+                  <div className="flex gap-1.5 screen-only">
+                    <button type="button" aria-label="연금저축 추가"
+                      onClick={() => addAccount('pension')}
+                      className="h-[30px] px-2.5 text-[12px] font-medium bg-white text-mas-active
+                                 border border-mas-orange rounded-xs hover:bg-mas-soft transition">
+                      + 연금저축
+                    </button>
+                    <button type="button" aria-label="IRP 추가"
+                      onClick={() => addAccount('irp')}
+                      className="h-[30px] px-2.5 text-[12px] font-medium bg-white text-mas-active
+                                 border border-mas-orange rounded-xs hover:bg-mas-soft transition">
+                      + IRP
+                    </button>
+                  </div>
+                }>
                 <div className="space-y-5">
-                  {[
-                    { on: hasPension, setOn: setHasPension, label: '연금저축', joinStr: pensionJoinStr, setJoin: setPensionJoinStr,
-                      bal: pensionBal, setBal: setPensionBal, ex: pensionExempt, setEx: setPensionExempt,
-                      started: pensionStarted, setStarted: setPensionStarted },
-                    { on: hasIrp, setOn: setHasIrp, label: 'IRP', joinStr: irpJoinStr, setJoin: setIrpJoinStr,
-                      bal: irpBal, setBal: setIrpBal, ex: irpExempt, setEx: setIrpExempt,
-                      started: irpStarted, setStarted: setIrpStarted }
-                  ].map((a) => {
+                  <p className="text-[12px] text-ink-soft leading-snug">
+                    보유한 계좌를 <strong className="text-ink-body">하나씩 모두</strong> 넣어 주세요.
+                    연금저축은 한 금융기관에 여러 개를 둘 수 있고, IRP 도 금융기관마다 하나씩 가질 수 있습니다.
+                    <Help title="계좌를 모두 넣어야 하는 이유">
+                      연금수령연차는 <strong>계좌마다 따로</strong> 산정됩니다. 같은 사람이라도
+                      2008년에 만든 연금저축은 6년차 기산, 2020년에 만든 IRP 는 1년차 기산이라
+                      한도가 몇 배씩 차이 납니다. 어느 계좌로 받느냐가 곧 판정이므로,
+                      계좌가 빠지면 더 유리한 선택지를 놓칩니다.<br /><br />
+                      IRP 는 1사 1계좌가 원칙이지만 금융기관마다 하나씩 가질 수 있고,
+                      이미 보유한 IRP 가 연금개시되었거나 {CUTOFF_LABEL} 이전 가입 IRP 에
+                      {CUTOFF_LABEL} 이후 가입 DC 를 넣어야 하는 경우에는 같은 기관에서도 추가 개설이 됩니다.
+                    </Help>
+                  </p>
+
+                  {!accountList.length && (
+                    <div className="border border-dashed border-hair rounded-sm bg-surf-soft px-4 py-5 text-center">
+                      <p className="text-[13px] text-ink-soft leading-relaxed">
+                        보유한 연금저축·IRP 가 없으면 비워 두세요.<br />
+                        있으면 위의 <strong className="text-ink-body">+ 연금저축</strong> /
+                        <strong className="text-ink-body"> + IRP</strong> 로 하나씩 추가합니다.
+                      </p>
+                    </div>
+                  )}
+
+                  {accountList.map((a) => {
                     const jd = parseDate(a.joinStr);
+                    const nm = accountNames[a.id];   // 화면 표시용 (기관명 포함)
+                    const key = accountKeys[a.id];   // 라벨용 (기관명 제외, 안정적)
                     return (
-                      <div key={a.label} className="border border-hair rounded-sm bg-white p-4">
-                        <label className="flex items-center gap-2 cursor-pointer mb-3">
-                          <input type="checkbox" checked={a.on} onChange={(e) => a.setOn(e.target.checked)}
-                            aria-label={'기존 ' + a.label + ' 보유'} className="w-4 h-4 accent-[#F58220]" />
-                          <span className="text-[15px] font-bold text-ink">기존 {a.label} 보유</span>
-                          {a.on && isLegacyDate(jd) ? <Badge tone="brand">{CUTOFF_LABEL} 이전 가입</Badge> : null}
-                        </label>
-                        {a.on && (
-                          <React.Fragment>
-                            <div className="grid grid-cols-2 gap-3">
-                              <Field label="가입일"
-                                help={<React.Fragment>
-                                  가입일이 {CUTOFF_LABEL} 이전이면 연금수령연차를 <strong>6년차부터</strong> 기산합니다.
-                                  {CUTOFF_LABEL} 전에는 연금수령 요건이 '10년 이상 가입하고 5년 이상 수령'이었기 때문에,
-                                  기존 계약자가 5년만 받아도 연금소득으로 인정해 주려는 경과조치입니다.
-                                  <strong> 2002년 가입과 2012년 가입은 똑같이 6년차</strong>라 가입일이 빠르다고 유리하지 않습니다.
-                                </React.Fragment>}>
-                                <DateInput value={a.joinStr} onChange={a.setJoin} label={'기존 ' + a.label + ' 가입일'} />
-                              </Field>
-                              <Field label="현재 평가액">
-                                <MoneyInput value={a.bal} onChange={a.setBal} label={'기존 ' + a.label + ' 평가액'} />
-                              </Field>
-                              <Field label="세액공제 받지 않은 금액"
-                                hint="평가액 중 과세제외 재원"
-                                help={<React.Fragment>
-                                  연말정산에서 세액공제를 받지 않은 납입액입니다. 인출할 때
-                                  <strong> 가장 먼저 빠져나가고 세금이 전혀 없습니다</strong>(인출순서 1순위).
-                                  그다음이 퇴직금, 마지막이 세액공제 받은 금액과 운용수익입니다.
-                                  모르면 0 으로 두세요 - 세금이 과대 계산될 뿐 과소 계산되지 않습니다.
-                                </React.Fragment>}>
-                                <MoneyInput value={a.ex} onChange={a.setEx} label={'기존 ' + a.label + ' 세액공제 받지 않은 금액'} />
-                              </Field>
-                              <div className="flex items-end pb-1">
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                  <input type="checkbox" checked={a.started} onChange={(e) => a.setStarted(e.target.checked)}
-                                    aria-label={'기존 ' + a.label + ' 연금개시됨'} className="w-4 h-4 accent-[#F58220]" />
-                                  <span className="text-[13px] font-medium text-ink-body">연금개시됨</span>
-                                  <Help title="연금개시된 계좌">
-                                    연금개시를 신청하면 계좌 안의 재원별 금액을 확정해 국세청에 통보하므로
-                                    <strong> 원칙적으로 추가 입금이 막힙니다</strong>. 다만 당사에서 연금개시한
-                                    IRP · 연금저축계좌는 <strong>퇴직금에 한해</strong> 입금할 수 있습니다.
-                                    타사 계좌라면 수관이 필요한데, 연금개시된 계좌로의 계약이전은 제한되어
-                                    신규 개설 후 가입일자를 승계하는 방식만 가능합니다.
-                                    이미 보유한 IRP 가 연금개시된 경우는 1사 1IRP 예외사유라 추가 개설이 됩니다.
-                                  </Help>
-                                </label>
-                              </div>
+                      <div key={a.id} className="border border-hair rounded-sm bg-white p-4">
+                        <div className="flex items-center gap-2 mb-3 flex-wrap">
+                          <span className="text-[15px] font-bold text-ink">{nm}</span>
+                          {isLegacyDate(jd) ? <Badge tone="brand">{CUTOFF_LABEL} 이전 가입</Badge> : null}
+                          <button type="button" aria-label={key + ' 삭제'}
+                            onClick={() => removeAccount(a.id)}
+                            className="ml-auto h-[26px] px-2 text-[12px] text-ink-soft border border-hair
+                                       rounded-xs hover:text-sig-err hover:border-sig-err transition">
+                            삭제
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <Field label="금융기관 (선택)">
+                            <input className={inputCls} value={a.name} maxLength={12}
+                              aria-label={key + ' 금융기관'} placeholder="미래에셋"
+                              onChange={(e) => patchAccount(a.id, { name: e.target.value })} />
+                          </Field>
+                          <Field label="가입일"
+                            help={<React.Fragment>
+                              가입일이 {CUTOFF_LABEL} 이전이면 연금수령연차를 <strong>6년차부터</strong> 기산합니다.
+                              {CUTOFF_LABEL} 전에는 연금수령 요건이 '10년 이상 가입하고 5년 이상 수령'이었기 때문에,
+                              기존 계약자가 5년만 받아도 연금소득으로 인정해 주려는 경과조치입니다.
+                              <strong> 2002년 가입과 2012년 가입은 똑같이 6년차</strong>라 가입일이 빠르다고 유리하지 않습니다.
+                            </React.Fragment>}>
+                            <DateInput value={a.joinStr} label={key + ' 가입일'}
+                              onChange={(v) => patchAccount(a.id, { joinStr: v })} />
+                          </Field>
+                          <Field label="현재 평가액">
+                            <MoneyInput value={a.bal} label={key + ' 평가액'}
+                              onChange={(v) => patchAccount(a.id, { bal: v })} />
+                          </Field>
+                          <Field label="세액공제 받지 않은 금액"
+                            hint="평가액 중 과세제외 재원"
+                            help={<React.Fragment>
+                              연말정산에서 세액공제를 받지 않은 납입액입니다. 인출할 때
+                              <strong> 가장 먼저 빠져나가고 세금이 전혀 없습니다</strong>(인출순서 1순위).
+                              그다음이 퇴직금, 마지막이 세액공제 받은 금액과 운용수익입니다.
+                              모르면 0 으로 두세요 - 세금이 과대 계산될 뿐 과소 계산되지 않습니다.
+                            </React.Fragment>}>
+                            <MoneyInput value={a.exempt} label={key + ' 세액공제 받지 않은 금액'}
+                              onChange={(v) => patchAccount(a.id, { exempt: v })} />
+                          </Field>
+                          <Field label="연간 수수료"
+                            hint="적립금 대비 연 요율">
+                            <div className="relative">
+                              <input type="number" min="0" max="3" step="0.01" aria-label={key + ' 연간 수수료'}
+                                className={inputCls + ' num pr-7 text-right'}
+                                value={a.fee}
+                                onChange={(e) => patchAccount(a.id, { fee: Math.max(0, Math.min(3, +e.target.value || 0)) })} />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[13px] text-ink-soft pointer-events-none">%</span>
                             </div>
-                            {a.ex > a.bal && (
-                              <p className="text-[12px] text-sig-err mt-2 leading-snug">
-                                세액공제 받지 않은 금액이 평가액보다 큽니다. 평가액까지만 반영합니다.
-                              </p>
-                            )}
-                          </React.Fragment>
+                          </Field>
+                          <div className="flex flex-col justify-end pb-1 gap-2">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input type="checkbox" checked={a.started}
+                                onChange={(e) => patchAccount(a.id, { started: e.target.checked })}
+                                aria-label={key + ' 연금개시됨'} className="w-4 h-4 accent-[#F58220]" />
+                              <span className="text-[13px] font-medium text-ink-body">연금개시됨</span>
+                              <Help title="연금개시된 계좌">
+                                연금개시를 신청하면 계좌 안의 재원별 금액을 확정해 국세청에 통보하므로
+                                <strong> 원칙적으로 추가 입금이 막힙니다</strong>. 다만 당사에서 연금개시한
+                                IRP · 연금저축계좌는 <strong>퇴직금에 한해</strong> 입금할 수 있습니다.
+                                타사 계좌라면 수관이 필요한데, 연금개시된 계좌로의 계약이전은 제한되어
+                                신규 개설 후 가입일자를 승계하는 방식만 가능합니다.
+                                이미 보유한 IRP 가 연금개시된 경우는 1사 1IRP 예외사유라 추가 개설이 됩니다.
+                              </Help>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input type="checkbox" checked={a.merge}
+                                onChange={(e) => patchAccount(a.id, { merge: e.target.checked })}
+                                aria-label={key + ' 시뮬레이션 합산'} className="w-4 h-4 accent-[#F58220]" />
+                              <span className="text-[13px] font-medium text-ink-body">시뮬레이션 합산</span>
+                              <Help title="시뮬레이션 합산">
+                                이 계좌의 잔고를 퇴직급여와 <strong>합쳐서</strong> 인출 스케줄을 계산합니다.
+                                체크하지 않으면 퇴직급여만 가지고 계산합니다.<br /><br />
+                                연금수령한도는 실제로는 계좌마다 따로 산정되므로, 연차가 다른 계좌를
+                                합치면 한도가 한쪽 기준으로 계산되어 부정확해집니다. 그런 경우에는
+                                결과 화면에 <strong>합산 주의</strong> 경고가 뜹니다.
+                              </Help>
+                            </label>
+                          </div>
+                        </div>
+                        {a.exempt > a.bal && (
+                          <p className="text-[12px] text-sig-err mt-2 leading-snug">
+                            세액공제 받지 않은 금액이 평가액보다 큽니다. 평가액까지만 반영합니다.
+                          </p>
                         )}
                       </div>
                     );
@@ -1596,25 +1719,13 @@ function App() {
 
               <Section title="3 · 시뮬레이션 옵션">
                 <div className="space-y-4">
-                  <Field label="자산 합산 범위">
-                    <div className="grid grid-cols-2 gap-2">
-                      {scopeOptions.map((o) => (
-                        <button key={o.value} type="button" disabled={o.disabled}
-                          aria-label={o.label} aria-pressed={scope === o.value}
-                          onClick={() => setScope(o.value)}
-                          className={
-                            'h-[42px] px-2 text-[13px] font-medium border rounded-xs transition ' +
-                            (o.disabled
-                              ? 'bg-surf-subtle text-mas-gray border-hair cursor-not-allowed'
-                              : scope === o.value
-                                ? 'bg-mas-orange text-white border-mas-orange'
-                                : 'bg-white text-ink-muted border-hair hover:bg-surf-subtle hover:text-ink')
-                          }>
-                          {o.label}
-                        </button>
-                      ))}
+                  {merged.length > 0 && (
+                    <div className="px-3 py-2 bg-mas-soft rounded-sm text-[12px] text-ink-body leading-snug">
+                      합산: {merged.map((a) => accountNames[a.id]).join(' · ')}
+                      {' (' + krw(exemptPrincipal + otherPrincipal) + ')'}
+                      <span className="text-ink-soft"> - 계좌 카드의 '시뮬레이션 합산'에서 바꿉니다</span>
                     </div>
-                  </Field>
+                  )}
 
                   <Field label="인출 방식">
                     <Segmented
@@ -1649,15 +1760,13 @@ function App() {
                     </div>
                   </Field>
 
-                  <Field label="계좌별 연간 수수료"
-                    hint="적립금 대비 연 요율(운용관리+자산관리). 상품마다 다르니 실제 요율을 넣으세요. 온라인 전용 IRP는 면제인 경우가 많고, 연금저축펀드는 계좌 수수료가 없습니다.">
+                  <Field label="신규 개설 계좌의 연간 수수료"
+                    hint="적립금 대비 연 요율(운용관리+자산관리). 기존 계좌 수수료는 각 계좌 카드에서 입력합니다. 온라인 전용 IRP는 면제인 경우가 많고, 연금저축펀드는 계좌 수수료가 없습니다.">
                     <div className="space-y-2">
                       {[
-                        { id: 'ex-pension', label: '기존 연금저축', on: hasPension },
-                        { id: 'ex-irp', label: '기존 IRP', on: hasIrp },
-                        { id: 'new-irp', label: '신규 IRP', on: true },
-                        { id: 'new-pension', label: '신규 연금저축', on: true }
-                      ].filter((r) => r.on).map((r) => (
+                        { id: 'new-irp', label: '신규 IRP' },
+                        { id: 'new-pension', label: '신규 연금저축' }
+                      ].map((r) => (
                         <div key={r.id} className="flex items-center gap-2">
                           <span className="text-[13px] text-ink-body flex-1">{r.label}</span>
                           <div className="relative w-[110px]">
@@ -2140,10 +2249,9 @@ function App() {
         allocation={allocation} isSplit={isSplit} allocatedDeferredTax={allocatedDeferredTax}
         comparison={comparison}
         memo={memo} memoOnPrint={memoOnPrint}
-        scope={scope} scopeOptions={scopeOptions} mode={mode} years={years} rate={rate}
+        mode={mode} years={years} rate={rate}
         otherPrincipal={otherPrincipal} exemptPrincipal={exemptPrincipal} sim={sim} startYear={startYear}
-        hasPension={hasPension} pensionJoin={pensionJoin} pensionBal={pensionBal}
-        hasIrp={hasIrp} irpJoin={irpJoin} irpBal={irpBal}
+        accountList={accountList} accountNames={accountNames} merged={merged}
       />
     </React.Fragment>
   );
@@ -2156,10 +2264,10 @@ function App() {
 function PrintSheet(props) {
   const {
     ready, custName, birth, age, system, systemJoin, retireTotal, retireDate, retireAge,
-    amtLegal, amtHonor, deferredTax, best, picked, scope, scopeOptions,
+    amtLegal, amtHonor, deferredTax, best, picked,
     allocation, isSplit, allocatedDeferredTax, comparison, memo, memoOnPrint,
     mode, years, rate, otherPrincipal, sim, startYear, exemptPrincipal,
-    hasPension, pensionJoin, pensionBal, hasIrp, irpJoin, irpBal
+    accountList, accountNames, merged
   } = props;
 
   if (!ready || !picked || !sim) {
@@ -2167,7 +2275,16 @@ function PrintSheet(props) {
   }
 
   const systemLabel = system === 'SEV' ? '퇴직금제도' : system;
-  const scopeLabel = (scopeOptions.find((o) => o.value === scope) || {}).label || '퇴직금 단독';
+  // 계좌가 여러 개일 수 있으므로 한 줄로 요약한다. A4 한 장을 지켜야 해서
+  // 세 개까지만 적고 나머지는 개수로 줄인다.
+  const accList = (accountList || []);
+  const accSummary = !accList.length ? '없음'
+    : accList.slice(0, 3).map((a) =>
+        accountNames[a.id] + ' ' + fmtDate(parseDate(a.joinStr)) + ' · ' + krw(a.bal)).join(' / ')
+      + (accList.length > 3 ? ' 외 ' + (accList.length - 3) + '건' : '');
+  const mergeLabel = !merged || !merged.length
+    ? '퇴직급여 단독'
+    : merged.map((a) => accountNames[a.id]).join(' · ') + ' 합산';
   const rows = sim.rows;
 
   const info = [
@@ -2179,9 +2296,8 @@ function PrintSheet(props) {
     ['이연 퇴직소득세', deferredTax > 0
       ? krw(deferredTax) + (isSplit ? ' (이 계좌 배정분 ' + krw(allocatedDeferredTax) + ')' : '')
       : '미입력'],
-    ['기존 연금저축', hasPension ? fmtDate(pensionJoin) + ' 가입 · ' + krw(pensionBal) : '없음'],
-    ['기존 IRP', hasIrp ? fmtDate(irpJoin) + ' 가입 · ' + krw(irpBal) : '없음'],
-    ['합산 범위 / 인출 방식', scopeLabel + ' / ' + (mode === 'max' ? '세법 한도 내 최대' : '기간 균등 분할')],
+    ['기존 보유 계좌', accSummary],
+    ['합산 범위 / 인출 방식', mergeLabel + ' / ' + (mode === 'max' ? '세법 한도 내 최대' : '기간 균등 분할')],
     ['수령 기간 / 운용수익률', years + '년 / 연 ' + rate.toFixed(1) + '%'],
     ['계좌 수수료 / 총 수수료', picked.feeRate > 0
       ? '연 ' + (picked.feeRate * 100).toFixed(2) + '% / ' + krw(sim.totals.totalFee)
@@ -2198,7 +2314,15 @@ function PrintSheet(props) {
   const printMemo = memoOnPrint ? String(memo || '').trim() : '';
 
   // 메모 블록이 붙으면서 표가 길면 A4 한 장을 넘길 수 있어 행 여백을 줄인다
-  const tight = !!printMemo && rows.length > 18;
+  // 계좌가 여러 개면 비교표도 길어진다. 고객이 실제로 견줄 만한 상위 5개만 싣고
+  // 나머지는 줄 수로 줄인다 (전체는 화면에서 본다).
+  const CMP_MAX = 5;
+  const cmpAll = comparison || [];
+  const cmpRows = cmpAll.slice(0, CMP_MAX);
+  const cmpHidden = cmpAll.length - cmpRows.length;
+
+  // 표가 길어지면 행 여백을 줄여 A4 한 장을 지킨다
+  const tight = (!!printMemo && rows.length > 18) || cmpAll.length > 4;
   const cellPad = tight ? '0.55mm 1mm' : '0.9mm 1mm';
 
   const th = { border: '0.5pt solid #CDCECB', background: '#FAB072', padding: tight ? '0.9mm 1mm' : '1.2mm 1mm', fontWeight: 700, textAlign: 'center' };
@@ -2288,7 +2412,7 @@ function PrintSheet(props) {
                 </tr>
               </thead>
               <tbody>
-                {comparison.map((r) => {
+                {cmpRows.map((r) => {
                   const on = r.c.id === picked.id;
                   const cell = {
                     border: '0.5pt solid #E5E4E1', padding: '0.6mm', textAlign: 'right',
@@ -2308,6 +2432,11 @@ function PrintSheet(props) {
                 })}
               </tbody>
             </table>
+            {cmpHidden > 0 && (
+              <div style={{ fontSize: '6pt', color: '#6C6C6C', marginTop: '0.5mm' }}>
+                연차가 낮은 {cmpHidden}개 계좌는 생략했습니다 (화면에서 전체 확인).
+              </div>
+            )}
             </React.Fragment>
           )}
         </div>

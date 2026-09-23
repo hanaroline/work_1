@@ -2,7 +2,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { openApp, fillCase, field, button } = require('./helpers');
+const { openApp, fillCase, field, button, DEL_RE } = require('./helpers');
 
 const CASE = {
   name: '홍길동', birth: '710315', system: 'DC', joinDate: '2000-07-01',
@@ -107,6 +107,40 @@ module.exports = async function run(t) {
     await page.locator('button[title="삭제"]').first().click();
     await page.waitForTimeout(500);
     t.is((await savedCases(page)).length, 0, '삭제되면 목록에서 사라짐');
+
+    // --- 예전 형식(계좌가 종류별 1개씩)도 읽힌다 ---
+    // 계좌를 목록으로 바꾸기 전에 저장한 상담이 지점 PC 에 남아 있다.
+    // 열었을 때 계좌가 통째로 사라지면 상담 이력이 끊긴다.
+    const legacyFile = path.join(tmp, 'legacy-case.json');
+    fs.writeFileSync(legacyFile, JSON.stringify({
+      format: 'mas-retirement-case', version: 1,
+      data: {
+        custName: '구형식', birthRaw: '680410', system: 'DB', systemJoinStr: '2000-07-01',
+        amtSingle: 200000000, amtLegal: 0, amtHonor: 0, deferredTax: 6000000,
+        hasPension: true, pensionJoinStr: '2009-04-01', pensionBal: 50000000,
+        pensionExempt: 8000000, pensionStarted: true,
+        hasIrp: true, irpJoinStr: '2015-02-02', irpBal: 30000000,
+        irpExempt: 0, irpStarted: false,
+        fees: { 'ex-pension': 0.2, 'ex-irp': 0.4, 'new-irp': 0, 'new-pension': 0 },
+        scope: 'pension', pastCount: 0, years: 15, rate: 3, mode: 'even'
+      }
+    }), 'utf8');
+    await field(page, '상담 케이스 가져오기').setInputFiles(legacyFile);
+    await page.waitForTimeout(800);
+
+    t.is(await field(page, '고객명').inputValue(), '구형식', '예전 형식도 불러와짐');
+    t.is(await page.getByRole('button', { name: DEL_RE }).count(), 2, '계좌 2건으로 옮겨짐');
+    t.is(await field(page, '연금저축 1 가입일').inputValue(), '2009-04-01', '연금저축 가입일 이관');
+    t.is((await field(page, '연금저축 1 평가액').inputValue()).replace(/,/g, ''), '50000000', '평가액 이관');
+    t.is((await field(page, '연금저축 1 세액공제 받지 않은 금액').inputValue()).replace(/,/g, ''),
+      '8000000', '세액공제 받지 않은 금액 이관');
+    t.is(await field(page, '연금저축 1 연금개시됨').isChecked(), true, '연금개시 표시 이관');
+    t.is(await field(page, '연금저축 1 연간 수수료').inputValue(), '0.2', '계좌별 수수료 이관');
+    t.is(await field(page, 'IRP 1 가입일').inputValue(), '2015-02-02', 'IRP 가입일 이관');
+    t.is(await field(page, 'IRP 1 연간 수수료').inputValue(), '0.4', 'IRP 수수료 이관');
+    // 예전 scope: 'pension' → 연금저축만 합산
+    t.is(await field(page, '연금저축 1 시뮬레이션 합산').isChecked(), true, '예전 합산 범위가 합산 체크로 옮겨짐');
+    t.is(await field(page, 'IRP 1 시뮬레이션 합산').isChecked(), false, 'IRP 는 합산 대상이 아니었음');
 
     t.is(errors.length, 0, '런타임 에러 없음');
   } finally {
