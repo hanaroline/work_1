@@ -57,12 +57,6 @@ module.exports = async function run(t) {
   try {
     for (const system of ['SEV', 'DB', 'DC']) {
       for (const fund of ['LEGAL', 'HONOR']) {
-        // 상담 화면은 퇴직금제도에서만 법정/법정외를 갈라 받는다.
-        // DB·DC 의 명예퇴직금은 입력할 자리가 없다 - 규칙표에는 있는 칸이므로 빈칸으로 남긴다.
-        if (fund === 'HONOR' && system !== 'SEV') {
-          gaps.push(system + ' 가입자의 ' + '법정외 퇴직금(명퇴금·위로금)');
-          continue;
-        }
         for (const ageAtRetire of [54, 58]) {
           const legacyCases = system === 'SEV' ? [false] : [true, false];
           for (const systemLegacy of legacyCases) {
@@ -80,11 +74,14 @@ module.exports = async function run(t) {
                 { kind: 'irp', join: '2018-07-02', balance: 20000000 }
               ]
             };
+            // 어느 제도에서나 법정/법정외를 갈라 넣는다. DB·DC 는 규약상 퇴직급여가
+            // '퇴직급여' 칸, 규약에 없는 명퇴금이 '명예퇴직금' 칸이다.
             if (system === 'SEV') {
               c.legal = fund === 'LEGAL' ? 200000000 : 0;
               c.honor = fund === 'HONOR' ? 200000000 : 0;
             } else {
-              c.amount = 200000000;
+              c.amount = fund === 'LEGAL' ? 200000000 : 0;
+              c.honor = fund === 'HONOR' ? 200000000 : 0;
             }
             await fillCase(page, c);
             await button(page, '판정').click();

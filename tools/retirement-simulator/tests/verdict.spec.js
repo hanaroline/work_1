@@ -73,6 +73,27 @@ module.exports = async function run(t) {
     t.includes(penCard, '만 55세 미만', '55세 미만 사유를 표시');
     t.includes(penCard, '근퇴법', '근거 법령을 표시');
 
+    // --- DC 가입자의 명퇴금은 연금저축계좌로 갈 수 있다 ---
+    // DC 규약에 규정된 퇴직급여는 연령 불문 연금저축계좌로 못 가지만, 규약에 규정되지 않은
+    // 명퇴금·위로금은 회사가 직접 지급하는 돈이라 제도·연령과 무관하게 갈 수 있다(Q12 첫 문단).
+    // 예전에는 DC 에 명퇴금을 넣을 칸이 아예 없어 전액을 규약상 퇴직급여로 보아 '불가' 로 판정했다.
+    await fillCase(page, {
+      name: 'DC명퇴', birth: '680410', system: 'DC', joinDate: '2016-04-01',
+      amount: 200000000, honor: 50000000, deferredTax: 6000000,
+      pension: { join: '2003-03-02', balance: 40000000 }, irp: false
+    });
+    v = await verdictText(page);
+    t.includes(v, '분할', 'DC 에서도 재원별 분할 입금이 잡힘');
+    t.includes(v, '명예(법정외)퇴직금', '명퇴금이 별도 재원으로 잡힘');
+    const dcPen = (await cards(page)).find((c) => c.startsWith('연금저축 1'));
+    t.includes(dcPen, '명예(법정외)퇴직금', '연금저축에 명퇴금은 배정 가능');
+    t.includes(dcPen, 'DC 퇴직급여', '같은 카드에 규약상 퇴직급여도 표시');
+    t.includes(dcPen, '불가', '규약상 DC 퇴직급여는 연금저축 불가');
+    // 명퇴금을 0 으로 되돌리면 연금저축은 받을 것이 없어진다 (음성 대조)
+    await field(page, '명예퇴직금').fill('0');
+    await page.waitForTimeout(500);
+    t.excludes(await verdictText(page), '명예(법정외)퇴직금', '명퇴금을 지우면 재원에서 빠짐');
+
     // --- 가입일 선후는 우열을 가르지 않는다 (둘 다 2013 이전이면 연차가 같다) ---
     // DB 로 두어야 연금저축과 IRP 가 모두 후보로 남는다 (DC 는 연금저축이 막힌다).
     await fillCase(page, {

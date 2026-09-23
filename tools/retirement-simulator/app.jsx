@@ -219,12 +219,23 @@ function buildSources(input) {
     if (input.amtHonor > 0) {
       sources.push({ kind: 'HONOR', label: '명예(법정외)퇴직금', amount: input.amtHonor, joinDate: systemJoin, seniorityDate: null });
     }
-  } else if (input.amtSingle > 0) {
-    sources.push({
-      kind: system, label: system + ' 퇴직급여', amount: input.amtSingle,
-      joinDate: systemJoin, seniorityDate,
-      seniorityFromDB: system === 'DC' && !!dbConverted && !!dbJoin
-    });
+  } else {
+    if (input.amtSingle > 0) {
+      sources.push({
+        kind: system, label: system + ' 퇴직급여', amount: input.amtSingle,
+        joinDate: systemJoin, seniorityDate,
+        seniorityFromDB: system === 'DC' && !!dbConverted && !!dbJoin
+      });
+    }
+    // DB·DC 가입자의 명퇴금·위로금. 규약에 규정되지 않은 돈이라 회사가 직접 지급하고,
+    // 연금계좌 간 이체가 아니므로 DC 의 연금저축 입금 제한도 가입시점 제한도 받지 않는다.
+    // 가입일자 개념이 없어 기산연차 특례 대상도 아니다(Q37).
+    if (input.amtHonor > 0) {
+      sources.push({
+        kind: 'HONOR', label: '명예(법정외)퇴직금', amount: input.amtHonor,
+        joinDate: systemJoin, seniorityDate: null
+      });
+    }
   }
   return sources;
 }
@@ -247,15 +258,23 @@ function buildSources(input) {
 function seniorityOf(target, sources, opts) {
   const { birthYear, depositYear } = opts;   // depositYear = 퇴직급여가 계좌에 들어온 해
 
+  // 기산연차 특례가 보는 것은 '퇴직연금 재원' 하나다. 명퇴금·위로금은 가입일자 개념이
+  // 없어(Q37) 특례 판단에 끼지 않으므로, 함께 있다고 해서 특례가 깨지지 않는다.
+  // 앱은 재원 하나를 쪼개 여러 계좌로 보내지 않으므로, 이 재원이 신규 계좌로 배정되면
+  // 그 재원의 '전액' 이 들어간 것이 된다.
+  const pensionFunds = sources.filter((s) => s.seniorityDate);
+  const legacyFund = pensionFunds.length === 1 && isLegacyDate(pensionFunds[0].seniorityDate)
+    ? pensionFunds[0] : null;
+
   let index = 1;
   let basis = CUTOFF_LABEL + ' 이후 가입 계좌';
   if (!target.isNew && isLegacyDate(target.joinDate)) {
     index = 6;
     basis = fmtDate(target.joinDate) + ' 가입 · ' + CUTOFF_LABEL + ' 이전 계좌';
-  } else if (target.isNew && sources.length === 1 && isLegacyDate(sources[0].seniorityDate)) {
+  } else if (target.isNew && legacyFund) {
     index = 6;
-    basis = CUTOFF_LABEL + ' 이전 ' + (sources[0].seniorityFromDB ? 'DB' : sources[0].kind) +
-      ' 가입(' + fmtDate(sources[0].seniorityDate) + ') · 신규계좌 전액 입금';
+    basis = CUTOFF_LABEL + ' 이전 ' + (legacyFund.seniorityFromDB ? 'DB' : legacyFund.kind) +
+      ' 가입(' + fmtDate(legacyFund.seniorityDate) + ') · 신규계좌 전액 입금';
   } else if (target.isNew) {
     basis = '신규 개설 · 기산연차 특례 대상 아님';
   }
@@ -989,7 +1008,8 @@ function App() {
   const depositYear = retireDate.getFullYear();
   const isPastRetire = depositYear < TODAY.getFullYear();
 
-  const retireTotal = system === 'SEV' ? amtLegal + amtHonor : amtSingle;
+  // 명퇴금은 어느 제도에서나 있을 수 있다 (규약에 규정되지 않은 돈)
+  const retireTotal = (system === 'SEV' ? amtLegal : amtSingle) + amtHonor;
 
   // 이전 가능 여부(만 55세 미만 IRP 의무이전 등)는 퇴직급여를 지급받는 시점의 나이로 본다.
   const retireAge = useMemo(() => ageOn(birth, retireDate), [birth, retireDate]);
@@ -1546,28 +1566,46 @@ function App() {
                     </div>
                   )}
 
-                  {system === 'SEV' ? (
-                    <div className="space-y-3">
+                  {/*
+                    법정외 퇴직금은 어느 제도에서나 받을 수 있다.
+
+                    예전에는 퇴직금제도에서만 법정/법정외를 갈라 받고 DB·DC 는 한 칸으로만
+                    받았다. 그래서 DB·DC 가입자의 명퇴금을 넣을 자리가 없었고, 넣으면 전액을
+                    규약상 퇴직급여로 보아 판정했다. DC 에서는 이것이 곧 오답이다 - 규약상
+                    퇴직급여는 연금저축계좌로 못 가지만, 규약에 규정되지 않은 명퇴금은
+                    연령·제도에 관계없이 갈 수 있기 때문이다(Q12 첫 문단).
+                  */}
+                  <div className="space-y-3">
+                    {system === 'SEV' ? (
                       <Field label="법정퇴직금">
                         <MoneyInput value={amtLegal} onChange={setAmtLegal} label="법정퇴직금" />
                       </Field>
-                      <Field label="명예(법정외) 퇴직금"
-                        hint="근퇴법상 퇴직급여가 아니므로 만 55세 미만이어도 연금저축계좌 입금이 가능합니다."
+                    ) : (
+                      <Field label={'퇴직급여 (' + system + ' 규약상)'}
+                        hint="규약에 규정된 퇴직급여입니다. 분할 입금 없이 단일 계좌로 이전합니다."
+                        helpTitle="규약상 퇴직급여"
                         help={<React.Fragment>
-                          명퇴금 · 위로금 등 <strong>DB/DC 규약에 규정되지 않은</strong> 퇴직금은 제도와 연령에
-                          관계없이 연금저축계좌로 입금할 수 있습니다. 반대로 법정외 퇴직금이라도
-                          DB/DC 규약에 포함되어 있다면 법정퇴직금과 같은 제한을 받으므로,
-                          규약 포함 여부를 먼저 확인하세요.
+                          {system} 규약에 규정된 퇴직급여입니다. 규약에 법정외 퇴직금이 포함되어 있다면
+                          <strong> 그 금액도 여기에</strong> 넣으세요 - 법정퇴직금과 같은 제한을 받습니다(Q12).
+                          규약에 없는 명퇴금·위로금만 아래 칸에 넣습니다.
                         </React.Fragment>}>
-                        <MoneyInput value={amtHonor} onChange={setAmtHonor} label="명예퇴직금" />
+                        <MoneyInput value={amtSingle} onChange={setAmtSingle} label="퇴직급여" />
                       </Field>
-                    </div>
-                  ) : (
-                    <Field label="퇴직급여 (단일 직접 입금)"
-                      hint="DB·DC 지급액은 분할 입금 없이 단일 계좌로 이전합니다.">
-                      <MoneyInput value={amtSingle} onChange={setAmtSingle} label="퇴직급여" />
+                    )}
+                    <Field label="명예(법정외) 퇴직금"
+                      hint={system === 'SEV'
+                        ? '근퇴법상 퇴직급여가 아니므로 만 55세 미만이어도 연금저축계좌 입금이 가능합니다.'
+                        : system + ' 규약에 규정되지 않은 명퇴금·위로금. 없으면 비워 두세요.'}
+                      help={<React.Fragment>
+                        명퇴금 · 위로금 등 <strong>DB/DC 규약에 규정되지 않은</strong> 퇴직금은 제도와 연령에
+                        관계없이 연금저축계좌로 입금할 수 있습니다. 회사가 직접 지급하는 돈이라
+                        연금계좌 간 이체 제한을 받지 않기 때문입니다.<br /><br />
+                        반대로 법정외 퇴직금이라도 <strong>DB/DC 규약에 포함되어 있다면</strong> 법정퇴직금과
+                        같은 제한을 받으므로 위 칸에 넣어야 합니다. 규약 포함 여부를 먼저 확인하세요.
+                      </React.Fragment>}>
+                      <MoneyInput value={amtHonor} onChange={setAmtHonor} label="명예퇴직금" />
                     </Field>
-                  )}
+                  </div>
 
                   <Field label="이연 퇴직소득세" hint="원천징수영수증 기준. 미입력 시 세액 비교는 표시되지 않습니다."
                     help={<React.Fragment>
@@ -2336,7 +2374,7 @@ function App() {
         ready={ready} custName={custName} birth={birth} age={age}
         system={system} systemJoin={systemJoin} retireTotal={retireTotal}
         retireDate={retireDate} retireAge={retireAge}
-        amtLegal={amtLegal} amtHonor={amtHonor} deferredTax={deferredTax}
+        amtSingle={amtSingle} amtLegal={amtLegal} amtHonor={amtHonor} deferredTax={deferredTax}
         candidates={candidates} best={best} picked={picked}
         allocation={allocation} isSplit={isSplit} allocatedDeferredTax={allocatedDeferredTax}
         comparison={comparison}
@@ -2357,7 +2395,7 @@ function App() {
 function PrintSheet(props) {
   const {
     ready, custName, birth, age, system, systemJoin, retireTotal, retireDate, retireAge,
-    amtLegal, amtHonor, deferredTax, best, picked,
+    amtSingle, amtLegal, amtHonor, deferredTax, best, picked,
     allocation, isSplit, allocatedDeferredTax, comparison, memo, memoOnPrint,
     mode, years, rate, otherPrincipal, sim, startYear, exemptPrincipal, blendedFeeRate,
     accountList, accountNames, merged
@@ -2385,7 +2423,10 @@ function PrintSheet(props) {
     ['생년월일 / 만 나이', (birth ? birth.getFullYear() + '.' + (birth.getMonth() + 1) + '.' + birth.getDate() : '-') + ' / 만 ' + (age !== null ? age : '-') + '세'],
     ['퇴직제도 / 가입일', systemLabel + ' / ' + fmtDate(systemJoin)],
     ['퇴직(예정)일', fmtDate(retireDate) + (retireAge !== null ? ' · 퇴직 시 만 ' + retireAge + '세' : '')],
-    ['퇴직급여 총액', krw(retireTotal) + (system === 'SEV' && amtHonor > 0 ? ' (법정 ' + krw(amtLegal) + ' · 명예 ' + krw(amtHonor) + ')' : '')],
+    ['퇴직급여 총액', krw(retireTotal) + (amtHonor > 0
+      ? ' (' + (system === 'SEV' ? '법정 ' + krw(amtLegal) : '규약상 ' + krw(amtSingle)) +
+        ' · 명예 ' + krw(amtHonor) + ')'
+      : '')],
     ['이연 퇴직소득세', deferredTax > 0
       ? krw(deferredTax) + (isSplit ? ' (이 계좌 배정분 ' + krw(allocatedDeferredTax) + ')' : '')
       : '미입력'],
