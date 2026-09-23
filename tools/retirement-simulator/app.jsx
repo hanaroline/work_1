@@ -449,7 +449,7 @@ const TODAY_STR = (() => {
  * 200700-02-01 같은 값이 들어온다. 연도를 앞 4자리로 자르고 범위를 눌러
  * 가입일이 오늘을 넘지 않게 한다.
  */
-function DateInput({ value, onChange }) {
+function DateInput({ value, onChange, label }) {
   const handle = (e) => {
     const v = e.target.value;
     if (!v) { onChange(''); return; }
@@ -473,16 +473,16 @@ function DateInput({ value, onChange }) {
   };
 
   return (
-    <input type="date" className={inputCls} value={value}
+    <input type="date" className={inputCls} value={value} aria-label={label}
       min="1900-01-01" max={TODAY_STR} onChange={handle} onBlur={handleBlur} />
   );
 }
 
-function MoneyInput({ value, onChange, placeholder }) {
+function MoneyInput({ value, onChange, placeholder, label }) {
   return (
     <div className="relative">
       <input
-        type="text" inputMode="numeric" className={inputCls + ' num pr-9 text-right'}
+        type="text" inputMode="numeric" aria-label={label} className={inputCls + ' num pr-9 text-right'}
         value={value ? Number(value).toLocaleString('ko-KR') : ''}
         placeholder={placeholder || '0'}
         onChange={(e) => onChange(Number(digitsOnly(e.target.value) || 0))}
@@ -500,6 +500,7 @@ function Segmented({ options, value, onChange }) {
         return (
           <button
             key={o.value} type="button" onClick={() => onChange(o.value)}
+            aria-label={o.label} aria-pressed={on}
             className={
               'flex-1 h-[42px] px-2 text-[14px] font-medium transition ' +
               (i > 0 ? 'border-l border-hair ' : '') +
@@ -968,14 +969,14 @@ function App() {
                   <span className="block text-[12px] font-medium text-ink-body mb-1">
                     상담 메모 <span className="text-ink-soft font-normal">(선택 · 저장·내보내기에 함께 담깁니다)</span>
                   </span>
-                  <textarea rows={2} maxLength={MEMO_MAX} value={memo}
+                  <textarea rows={2} maxLength={MEMO_MAX} value={memo} aria-label="상담 메모"
                     onChange={(e) => setMemo(e.target.value)}
                     placeholder="고객 요청사항, 다음 상담 시 확인할 점 등"
                     className="w-full px-3 py-2 border border-hair rounded-xs bg-white text-[13px] text-ink leading-snug
                                resize-y focus:outline-none focus:border-mas-orange focus:ring-2 focus:ring-mas-orange/25 transition" />
                   <span className="flex items-center justify-between mt-1">
                     <label className="flex items-center gap-1.5 cursor-pointer">
-                      <input type="checkbox" checked={memoOnPrint} className="w-3.5 h-3.5 accent-[#F58220]"
+                      <input type="checkbox" checked={memoOnPrint} aria-label="상담 메모 인쇄물 포함" className="w-3.5 h-3.5 accent-[#F58220]"
                         onChange={(e) => setMemoOnPrint(e.target.checked)} />
                       <span className="text-[12px] text-ink-body">고객용 인쇄물에 포함</span>
                     </label>
@@ -998,7 +999,7 @@ function App() {
                     className="flex-1 h-[38px] text-[14px] font-medium bg-white text-ink-body border border-hair rounded-xs hover:bg-surf-subtle transition">
                     가져오기
                   </button>
-                  <input ref={fileRef} type="file" accept="application/json,.json" className="hidden"
+                  <input ref={fileRef} type="file" accept="application/json,.json" aria-label="상담 케이스 가져오기" className="hidden"
                     onChange={(e) => { doImport(e.target.files && e.target.files[0]); e.target.value = ''; }} />
                 </div>
 
@@ -1037,7 +1038,7 @@ function App() {
 
                             {editing ? (
                               <div className="px-2 pb-1">
-                                <textarea rows={2} maxLength={MEMO_MAX} value={editingText} autoFocus
+                                <textarea rows={2} maxLength={MEMO_MAX} value={editingText} autoFocus aria-label="저장된 상담 메모 수정"
                                   onChange={(e) => setEditingText(e.target.value)}
                                   className="w-full px-2 py-1.5 border border-hair rounded-xs text-[12px] leading-snug resize-y
                                              focus:outline-none focus:border-mas-orange focus:ring-2 focus:ring-mas-orange/25" />
@@ -1080,11 +1081,11 @@ function App() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
                     <Field label="고객명 (선택)">
-                      <input className={inputCls} value={custName} maxLength={20}
+                      <input className={inputCls} value={custName} maxLength={20} aria-label="고객명"
                         onChange={(e) => setCustName(e.target.value)} placeholder="홍길동" />
                     </Field>
                     <Field label="생년월일" hint="710315 또는 19710315">
-                      <input className={inputCls + ' num'} value={birthRaw} inputMode="numeric" maxLength={10}
+                      <input className={inputCls + ' num'} value={birthRaw} inputMode="numeric" maxLength={10} aria-label="생년월일"
                         onChange={(e) => setBirthRaw(e.target.value)} placeholder="710315" />
                     </Field>
                   </div>
@@ -1113,28 +1114,28 @@ function App() {
                     hint={system === 'SEV'
                       ? '법정퇴직금은 연금계좌 이체 제한을 받지 않습니다.'
                       : CUTOFF_LABEL + ' 이후 가입이면 구 연금계좌로 이전할 수 없습니다.'}>
-                    <DateInput value={systemJoinStr} onChange={setSystemJoinStr} />
+                    <DateInput value={systemJoinStr} onChange={setSystemJoinStr} label="제도 가입일" />
                   </Field>
 
                   {system === 'SEV' ? (
                     <div className="space-y-3">
                       <Field label="법정퇴직금">
-                        <MoneyInput value={amtLegal} onChange={setAmtLegal} />
+                        <MoneyInput value={amtLegal} onChange={setAmtLegal} label="법정퇴직금" />
                       </Field>
                       <Field label="명예(법정외) 퇴직금"
                         hint="근퇴법상 퇴직급여가 아니므로 만 55세 미만이어도 연금저축계좌 입금이 가능합니다.">
-                        <MoneyInput value={amtHonor} onChange={setAmtHonor} />
+                        <MoneyInput value={amtHonor} onChange={setAmtHonor} label="명예퇴직금" />
                       </Field>
                     </div>
                   ) : (
                     <Field label="퇴직급여 (단일 직접 입금)"
                       hint="DB·DC 지급액은 분할 입금 없이 단일 계좌로 이전합니다.">
-                      <MoneyInput value={amtSingle} onChange={setAmtSingle} />
+                      <MoneyInput value={amtSingle} onChange={setAmtSingle} label="퇴직급여" />
                     </Field>
                   )}
 
                   <Field label="이연 퇴직소득세" hint="원천징수영수증 기준. 미입력 시 세액 비교는 표시되지 않습니다.">
-                    <MoneyInput value={deferredTax} onChange={setDeferredTax} />
+                    <MoneyInput value={deferredTax} onChange={setDeferredTax} label="이연 퇴직소득세" />
                   </Field>
                 </div>
               </Section>
@@ -1150,17 +1151,17 @@ function App() {
                       <div key={a.label} className="border border-hair rounded-sm bg-white p-4">
                         <label className="flex items-center gap-2 cursor-pointer mb-3">
                           <input type="checkbox" checked={a.on} onChange={(e) => a.setOn(e.target.checked)}
-                            className="w-4 h-4 accent-[#F58220]" />
+                            aria-label={'기존 ' + a.label + ' 보유'} className="w-4 h-4 accent-[#F58220]" />
                           <span className="text-[15px] font-bold text-ink">기존 {a.label} 보유</span>
                           {a.on && isLegacyDate(jd) && a.bal > 0 ? <Badge tone="brand">{CUTOFF_LABEL} 이전 가입</Badge> : null}
                         </label>
                         {a.on && (
                           <div className="grid grid-cols-2 gap-3">
                             <Field label="가입일">
-                              <DateInput value={a.joinStr} onChange={a.setJoin} />
+                              <DateInput value={a.joinStr} onChange={a.setJoin} label={'기존 ' + a.label + ' 가입일'} />
                             </Field>
                             <Field label="현재 평가액">
-                              <MoneyInput value={a.bal} onChange={a.setBal} />
+                              <MoneyInput value={a.bal} onChange={a.setBal} label={'기존 ' + a.label + ' 평가액'} />
                             </Field>
                           </div>
                         )}
@@ -1175,7 +1176,7 @@ function App() {
 
                   <Field label="과거 연금 수령 횟수"
                     hint="감면율은 '실제' 연금수령 누적 횟수 기준입니다 (10회 이하 30% · 11~20회 40% · 21회부터 50%).">
-                    <input type="number" min="0" max="30" className={inputCls + ' num'} value={pastCount}
+                    <input type="number" min="0" max="30" aria-label="과거 연금 수령 횟수" className={inputCls + ' num'} value={pastCount}
                       onChange={(e) => setPastCount(Math.max(0, Math.min(30, +e.target.value || 0)))} />
                   </Field>
                 </div>
@@ -1187,6 +1188,7 @@ function App() {
                     <div className="grid grid-cols-2 gap-2">
                       {scopeOptions.map((o) => (
                         <button key={o.value} type="button" disabled={o.disabled}
+                          aria-label={o.label} aria-pressed={scope === o.value}
                           onClick={() => setScope(o.value)}
                           className={
                             'h-[42px] px-2 text-[13px] font-medium border rounded-xs transition ' +
@@ -1213,7 +1215,7 @@ function App() {
 
                   <Field label={'수령 기간 - ' + years + '년'}>
                     <div className="pt-2">
-                      <input type="range" min="5" max="30" step="1" value={years} className="w-full"
+                      <input type="range" min="5" max="30" step="1" value={years} aria-label="수령 기간" className="w-full"
                         onChange={(e) => setYears(+e.target.value)} />
                       <div className="flex justify-between text-[11px] text-ink-soft mt-1 num">
                         <span>5년</span><span>30년</span>
@@ -1230,7 +1232,7 @@ function App() {
 
                   <Field label={'운용수익률 - 연 ' + rate.toFixed(1) + '%'}>
                     <div className="pt-2">
-                      <input type="range" min="0" max="8" step="0.5" value={rate} className="w-full"
+                      <input type="range" min="0" max="8" step="0.5" value={rate} aria-label="운용수익률" className="w-full"
                         onChange={(e) => setRate(+e.target.value)} />
                     </div>
                   </Field>
@@ -1247,7 +1249,7 @@ function App() {
                         <div key={r.id} className="flex items-center gap-2">
                           <span className="text-[13px] text-ink-body flex-1">{r.label}</span>
                           <div className="relative w-[110px]">
-                            <input type="number" min="0" max="3" step="0.01"
+                            <input type="number" min="0" max="3" step="0.01" aria-label={r.label + ' 연간 수수료'}
                               className={inputCls + ' num pr-7 text-right h-[38px]'}
                               value={fees[r.id]}
                               onChange={(e) => setFee(r.id, Math.max(0, Math.min(3, +e.target.value || 0)))} />
@@ -1276,6 +1278,7 @@ function App() {
                     const dim = !ready || (t.id === 'compare' && comparison.length < 2) || (t.id === 'schedule' && !sim);
                     return (
                       <button key={t.id} type="button" onClick={() => setTab(t.id)} disabled={dim}
+                        aria-label={t.label} aria-pressed={on}
                         className={
                           'h-[44px] px-5 text-[15px] font-medium transition ' +
                           (i > 0 ? 'border-l border-hair ' : '') +
