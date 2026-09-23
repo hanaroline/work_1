@@ -27,6 +27,20 @@ module.exports = async function run(t) {
     }
     t.is(await pdfPageCount(page), 1, 'PDF 1페이지');
 
+    // 세 탭의 인쇄물이 글자 하나까지 같아야 한다
+    const texts = [];
+    for (const tab of ['판정', '계좌 비교', '인출 스케줄']) {
+      await button(page, tab).click();
+      await page.waitForTimeout(300);
+      texts.push((await printSheet(page)).text);
+    }
+    t.is(texts[1], texts[0], '계좌 비교 탭의 인쇄물이 판정 탭과 동일');
+    t.is(texts[2], texts[0], '인출 스케줄 탭의 인쇄물이 판정 탭과 동일');
+
+    // 지표 카드(합산 기준)와 비교표(퇴직급여 단독 기준)의 기준이 다르다는 표시
+    t.includes(texts[0], '퇴직급여 단독 기준', '비교표에 산정 기준이 표시됨');
+    t.includes(texts[0], '단위: 만원', '비교표에 단위가 표시됨');
+
     // --- 메모 인쇄 옵션 ---
     await field(page, '상담 메모').fill(LONG_MEMO);
     await page.waitForTimeout(300);

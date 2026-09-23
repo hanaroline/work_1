@@ -1843,6 +1843,15 @@ function PrintSheet(props) {
 
           {/* 계좌별 비교 - 높이를 늘리지 않도록 우측 열 안에 둔다 */}
           {comparison && comparison.length > 1 && (
+            <React.Fragment>
+            {/*
+              위 지표 카드는 합산 범위 기준, 이 표는 퇴직급여 단독 기준이라 같은
+              '세후 수령액' 이라도 값이 다르다. 인쇄물만 보는 고객이 오해하지 않도록
+              기준과 단위를 표 머리에 밝힌다.
+            */}
+            <div style={{ fontSize: '6.2pt', color: '#6C6C6C', marginBottom: '0.6mm' }}>
+              계좌별 비교 <span style={{ color: '#CB6015' }}>(퇴직급여 단독 기준 · 단위: 만원)</span>
+            </div>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '6.2pt' }}>
               <thead>
                 <tr>
@@ -1872,6 +1881,7 @@ function PrintSheet(props) {
                 })}
               </tbody>
             </table>
+            </React.Fragment>
           )}
         </div>
       </div>

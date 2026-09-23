@@ -2444,7 +2444,17 @@ function PrintSheet(props) {
       fontWeight: 700,
       color: '#CB6015'
     }
-  }, krw(sim.totals.taxSaved))), comparison && comparison.length > 1 && /*#__PURE__*/React.createElement("table", {
+  }, krw(sim.totals.taxSaved))), comparison && comparison.length > 1 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: '6.2pt',
+      color: '#6C6C6C',
+      marginBottom: '0.6mm'
+    }
+  }, "\uACC4\uC88C\uBCC4 \uBE44\uAD50 ", /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: '#CB6015'
+    }
+  }, "(\uD1F4\uC9C1\uAE09\uC5EC \uB2E8\uB3C5 \uAE30\uC900 \xB7 \uB2E8\uC704: \uB9CC\uC6D0)")), /*#__PURE__*/React.createElement("table", {
     style: {
       width: '100%',
       borderCollapse: 'collapse',
@@ -2484,7 +2494,7 @@ function PrintSheet(props) {
     }, r.totalFee > 0 ? man(r.totalFee) : '-'), /*#__PURE__*/React.createElement("td", {
       style: cell
     }, man(r.afterTax)));
-  }))))), printMemo && /*#__PURE__*/React.createElement("div", {
+  })))))), printMemo && /*#__PURE__*/React.createElement("div", {
     style: {
       border: '0.5pt solid #CDCECB',
       background: '#F7F8FA',
