@@ -37,8 +37,10 @@ docs/journal-playbook.md 의 KIS 절에 적어 두었다.
 실질 손실이 거의 없지만, 그래도 「표본 안에서의 순위」임을 산출물에 적는다 —
 없는 것을 없다고 말하는 것이 이 저장소의 규칙이다.
 
-  모의 앱키(vps)  초당 1건    200종목 3.7분 · 400종목 7.3분
-  실전 앱키(prod) 초당 6~7건  400종목 1분
+  **실측(2026-09-23)**: 400 종목에 **1,491초 = 25분** — 종목당 3.7초다.
+  `kis_lib` 의 간격은 모의 1.1초지만 유량 제한(EGW00201) 재시도가 자주 걸려
+  실제로는 그 세 배가 든다. 문서의 「초당 1건」을 그대로 믿지 마십시오.
+  워크플로 제한 시간을 그 실측에 맞춰 넉넉히 두었다.
 
 쓰는 법
   python3 scripts/fetch_journal_kis.py                 # 시장별 상위 200
@@ -88,6 +90,17 @@ def pick_candidates(per_market: int) -> dict[str, list[dict]]:
               f"(문턱 {out[mkt][-1]['value_eok']:.0f}억원)" if out[mkt] else f"{mkt}: 없음",
               flush=True)
     return out
+
+
+def has_flows(v: dict) -> bool:
+    """수급 칸이 실제로 채워져 있는가.
+
+    **장중에는 원천이 투자자 칸을 빈 문자열로 준다.** 2026-09-23 14:07 에
+    확인했다 — `stck_clpr` 는 현재가가 오는데 `frgn_ntby_qty` 는 `''` 였다.
+    그대로 두면 「395종목 수집 성공」이라 말하면서 속이 빈 파일이 나간다.
+    """
+    return any((v.get(who) or {}).get("순매수수량") is not None
+               for who in ("외국인", "기관"))
 
 
 def fetch_one(kis, code: str) -> dict | None:
@@ -158,6 +171,7 @@ def main() -> int:
     got: dict[str, list[dict]] = {}
     dropped: list[str] = []
     failed: list[str] = []
+    empty: list[str] = []
     seen_dates: dict[str, int] = {}
 
     for mkt, rows in cand.items():
@@ -171,6 +185,9 @@ def main() -> int:
             if not v:
                 failed.append(f"{r['name']}({r['code']}): 빈 응답")
                 continue
+            if not has_flows(v):
+                empty.append(f"{r['name']}({r['code']})")
+                continue
             bad = check_row(v)
             if bad:
                 dropped.append(f"{r['name']}({r['code']}): {bad[0]}")
@@ -182,6 +199,45 @@ def main() -> int:
             got[mkt].append(v)
             if k % 50 == 0:
                 print(f"  {mkt} {k}/{len(rows)} · {time.time() - t0:.0f}초", flush=True)
+
+    # 읽기가 끊긴 종목은 **한 번만** 다시 부른다. 2026-09-23 수집에서 400 중
+    # 5 종목이 read timeout 으로 빠졌다 — 한 번 더 부르면 대개 들어온다.
+    if failed:
+        again, failed = list(failed), []
+        print(f"\n못 받은 {len(again)} 종목을 한 번 더 부른다", flush=True)
+        by_code = {r["code"]: (m, r) for m, rows in cand.items() for r in rows}
+        for line in again:
+            code = line.split("(")[-1].split(")")[0]
+            mkt_r = by_code.get(code)
+            if not mkt_r:
+                failed.append(line)
+                continue
+            mkt, r = mkt_r
+            try:
+                v = fetch_one(kis, code)
+            except Exception as e:  # noqa: BLE001
+                failed.append(f"{r['name']}({code}): {str(e)[:80]}")
+                continue
+            if not v or not has_flows(v) or check_row(v):
+                failed.append(f"{r['name']}({code}): 다시 불러도 쓸 수 없음")
+                continue
+            seen_dates[str(v["bizdate"])] = seen_dates.get(str(v["bizdate"]), 0) + 1
+            v["code"], v["name"], v["market"] = code, r["name"], mkt
+            v["change_pct"], v["value_eok"] = r.get("change_pct"), r.get("value_eok")
+            got[mkt].append(v)
+
+    # **속이 빈 판은 쓰지 않는다.** 장중에 돌면 원천이 투자자 칸을 빈 문자열로
+    # 주므로 「수백 종목 수집 성공」이라 말하면서 순위가 0 줄인 파일이 나온다.
+    # 그런 파일을 남기면 다음 판이 그것을 믿고 덮어쓸 수 있다. 쓰지 않고
+    # 끝 상태 1 로 끝내 워크플로가 붉게 서도록 한다.
+    usable = sum(len(v) for v in got.values())
+    if usable < total * 0.5:
+        print(f"\n쓸 수 있는 종목이 {usable}/{total} 뿐입니다 — 파일을 쓰지 않습니다.",
+              file=sys.stderr)
+        if len(empty) > usable:
+            print("원천이 수급 칸을 비워 보냈습니다. **장중에는 이 계열이 비어 있습니다** "
+                  "— 마감(15:30) 뒤, 확정치가 오는 저녁에 돌리십시오.", file=sys.stderr)
+        return 1
 
     # **기준일이 갈리면 섞지 않는다.** 종목마다 다른 날이 오면 그 자체가
     # 원천이 갱신 중이라는 뜻이다. 가장 많이 나온 날만 남기고 나머지는 버린다.
@@ -233,6 +289,7 @@ def main() -> int:
         },
         "못 받은 종목": failed[:50],
         "못 받은 수": len(failed),
+        "수급 칸이 비어 뺀 종목": len(empty),
         "기준일이 갈린 것": mixed,
         "rank": rank,
         "rows": got,
