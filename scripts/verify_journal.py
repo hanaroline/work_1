@@ -29,6 +29,7 @@ import sys
 
 JOURNAL = "data/journal/latest.json"
 MARKET = "data/market/latest.json"
+KISFLOWS = "data/journal/kis-flows.json"
 
 errs: list[str] = []
 warns: list[str] = []
@@ -115,8 +116,43 @@ def main() -> int:
         print("data/journal/latest.json 이 없습니다", file=sys.stderr)
         return 1
 
-    # ── ① 기준일 ────────────────────────────────────────────────────
+    # ── ⓪ KIS 종목별 수급 (있을 때만) ───────────────────────────────
+    # 이 원천은 **매수와 매도를 따로** 주므로 「순매수 = 매수 − 매도」를 되짚을
+    # 수 있다. 네이버에는 없던 검산거리다. 수집기가 이미 걸러 내지만, 발행
+    # 관문에서 한 번 더 본다 — 거르는 쪽과 내는 쪽이 같은 코드면 안 된다.
     bd = jr.get("bizdate")
+    kf = load(KISFLOWS)
+    if kf:
+        kbd = str(kf.get("bizdate") or "")
+        if kbd and bd and kbd != str(bd).replace("-", ""):
+            warn("KIS 수급 기준일 %s 이 순위 파일 %s 과 다르다 — 빌더가 물러선다"
+                 % (kbd, bd))
+        n_chk = n_bad = 0
+        for mkt, rows in (kf.get("rows") or {}).items():
+            for v in rows:
+                for who in ("외국인", "기관"):
+                    a = v.get(who) or {}
+                    for kind, b, s, net in (("수량", "매수수량", "매도수량", "순매수수량"),
+                                            ("금액", "매수금액", "매도금액", "순매수금액")):
+                        if any(a.get(x) is None for x in (b, s, net)):
+                            continue
+                        n_chk += 1
+                        if abs(a[net] - (a[b] - a[s])) > 1:
+                            n_bad += 1
+                            if n_bad <= 3:
+                                bad("KIS %s %s %s %s: 순매수 %s ≠ 매수−매도 %s"
+                                    % (mkt, v.get("name"), who, kind,
+                                       f"{a[net]:,.0f}", f"{a[b] - a[s]:,.0f}"))
+        if n_bad:
+            bad("KIS 수급 %d/%d 칸이 매수−매도와 어긋난다" % (n_bad, n_chk))
+        elif n_chk:
+            ok("KIS 수급 %d 칸 모두 순매수 = 매수 − 매도" % n_chk)
+        if kf.get("못 받은 수"):
+            warn("KIS 수급에서 못 받은 종목 %d" % kf["못 받은 수"])
+        if (kf.get("검산") or {}).get("어긋난 수"):
+            warn("KIS 수집기가 검산에 걸려 뺀 종목 %d" % kf["검산"]["어긋난 수"])
+
+    # ── ① 기준일 ────────────────────────────────────────────────────
     kd = ((mk or {}).get("indices") or {}).get("kospi", {}).get("date")
     if kd and bd != kd:
         warn("순위 파일 기준일 %s · 지수 종가일 %s — 산출물에 두 날짜를 모두 달아야 한다"

@@ -42,6 +42,10 @@ from journal_lib import (  # noqa: E402
 DOCS = "docs/journal"
 MARKET = "data/market/latest.json"
 JOURNAL = "data/journal/latest.json"
+# 종목별 수급을 증권사 원본(KIS)에서 확정 **금액**으로 받아 둔 것.
+# 있으면 네이버 것보다 먼저 쓰고, 없거나 기준일이 다르면 조용히 물러선다 —
+# 이 파일이 늦거나 실패해도 시장일지는 제때 나가야 한다.
+KISFLOWS = "data/journal/kis-flows.json"
 
 
 # ── 껍데기 ───────────────────────────────────────────────────────────
@@ -220,6 +224,46 @@ def load(path: str):
         return None
     with open(path, encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def prefer_kis_flows(irank: dict, close_date: str) -> tuple[dict, bool]:
+    """종목별 수급을 **KIS 확정 금액**으로 갈아 끼운다. 못 하면 그대로 둔다.
+
+    네이버가 주는 것과 같은 모양으로 맞춰 돌려주므로, 이 함수 바깥은 자료가
+    어디서 왔는지 몰라도 된다. 갈아 끼우는 조건은 셋이다.
+
+      ① `data/journal/kis-flows.json` 이 있다
+      ② 그 기준일이 오늘 종가일과 같다 — **다르면 쓰지 않는다.** 어제 수급을
+         오늘 것이라 말하느니 네이버의 「전 거래일 기준」 표기가 낫다
+      ③ 그 시장·주체에 실제로 줄이 있다
+
+    하나라도 어긋나면 **조용히 물러선다.** 이 파일은 저녁에 따로 도는 판이
+    만들고, 늦거나 실패할 수 있다. 그때도 시장일지는 제때 나가야 한다.
+    """
+    kf = load(KISFLOWS)
+    if not kf:
+        return irank, False
+    kbd = str(kf.get("bizdate") or "")
+    if not kbd or ymd(kbd) != close_date:
+        return irank, False
+
+    basis = ("증권사 원본(한국투자증권 오픈API) 확정 금액 · 거래대금 상위 "
+             "%s 종목 표본" % ", ".join(f"{m} {n}" for m, n in
+                                        (kf.get("표본") or {}).items()))
+    out = {m: dict(v) for m, v in (irank or {}).items()}
+    swapped = False
+    for mkt, per_who in (kf.get("rank") or {}).items():
+        sides = dict((out.get(mkt) or {}).get("sides") or {})
+        for who, io in (per_who or {}).items():
+            buy, sell = io.get("매수") or [], io.get("매도") or []
+            if not buy and not sell:
+                continue
+            sides[who] = {"buy": buy, "sell": sell, "bizdate": kbd,
+                          "estimated": False, "rank_basis": basis}
+            swapped = True
+        out.setdefault(mkt, {})
+        out[mkt] = dict(out[mkt], sides=sides)
+    return out, swapped
 
 
 def ymd(s: str | None) -> str | None:
@@ -453,6 +497,11 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
     # 보는 전부이므로, 「쌍매수」는 **두 명단에 함께 든 종목**으로 정의하고
     # 그렇게 적는다. 전체 종목에서 두 주체가 모두 순매수한 종목이 아니다.
     irank = (jr or {}).get("investor_rank") or {}
+    # **KIS 확정 금액이 있으면 그것을 쓴다.** 네이버는 금액을 주지 않아
+    # 수량 × 종가로 어림해 왔고, 그 어림이 확정치와 11% 어긋난 적이 있다
+    # (2026-09-21 삼성전자 ≈9,977억 대 11,063억). 갈아 끼우는 자리는 여기
+    # 한 곳이고, 아래 표들은 무엇에서 왔는지 모른 채 그대로 그린다.
+    irank, kis_used = prefer_kis_flows(irank, close_date)
     stale_tables: list[str] = []
 
     def flow_val(r):
@@ -487,9 +536,13 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
             title_ko += " (%s 기준)" % sbd
             title_en += " (as of %s)" % sbd
             stale_tables.append("%s %s %s" % (mkt, side_label, sbd))
-        nt = ("원천 차례는 %s 기준 · 기준일 %s%s. 「≈」는 금액이 오지 않아 "
-              "수량 × 종가로 어림한 값입니다."
+        nt = ("원천 차례는 %s 기준 · 기준일 %s%s."
               % (esc(basis), esc(ymd(s.get("bizdate")) or ""), est))
+        # 「≈」 설명은 **어림한 줄이 실제로 있을 때만** 단다. KIS 확정 금액으로
+        # 그린 표에는 어림이 없는데 그 문장을 달아 두면 없는 흠을 광고한다.
+        if any(r.get("value_eok") is None and r.get("value_eok_est") is not None
+               for r in rows):
+            nt += " 「≈」는 금액이 오지 않아 수량 × 종가로 어림한 값입니다."
         return block(title_ko, title_en,
                      table([("종목", "Name", "nm"), ("순매수", "Net", "n"),
                             ("종가", "Close", "n"), ("등락", "Chg", "n")],
@@ -767,16 +820,24 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                    " / ".join(strong(esc(w)) for w in warn)))
 
     uni = (jr or {}).get("universe") or {}
+    # 종목별 수급이 어디서 왔는지는 각주의 한 문장이 갈린다. `%` 서식 안에서
+    # 조건문을 쓰면 묶임 차례가 헷갈리므로 밖에서 만들어 넣는다.
+    flows_note_ko = (
+        "종목별 기관·외국인 순매수는 <b>증권사 원본(한국투자증권 오픈API)의 확정 금액</b>이며, "
+        "거래대금 상위 표본 안에서 순위를 직접 매긴 것입니다. "
+        if kis_used else
+        "종목별 기관·외국인 순매수는 원천이 주는 <b>상위 20</b>이 전부입니다. ")
     foot = (
         '<div class="foot">%s</div>'
         % L("수치 출처 — 지수·환율·금리·예탁금: 거래소·한국은행·네이버 시장지표 수집본"
             "(data/market/latest.json). 종목 순위: 네이버 종목 목록 API 에서 <b>시가총액 상위 "
             "%s 종목</b>(코스피 %s · 코스닥 %s)을 받아 순위는 직접 매김 — 거래소 상장 전종목이 "
-            "아닙니다. 종목별 기관·외국인 순매수는 원천이 주는 <b>상위 20</b>이 전부입니다. "
+            "아닙니다. %s"
             "연속 순매수는 시가총액 상위 100 종목 한정. 배지 — MARKET DATA 수집 원천 그대로 · "
             "CALCULATED 원자료에서 우리가 셈 · PARTIAL 표본·시점이 제한됨 · NOT FOUND 확보 실패. "
             "이 자료는 정보 제공 목적이며 투자 권유가 아닙니다."
-            % (uni.get("표본", "?"), uni.get("코스피", "?"), uni.get("코스닥", "?")),
+            % (uni.get("표본", "?"), uni.get("코스피", "?"), uni.get("코스닥", "?"),
+               flows_note_ko),
             "Sources — indices, FX, rates and deposits from the collected market file. "
             "Stock rankings computed in-house from the <b>top %s stocks by market cap</b> "
             "(KOSPI %s, KOSDAQ %s), not the full listed universe. Per-stock investor flows "
@@ -942,6 +1003,9 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
     claims["warnings"] = warn
     claims["stale_investor"] = sorted(set(stale_tables))
     claims["close_date"] = close_date
+    # 어느 원천으로 종목별 수급을 그렸는지 대장에 남긴다 — 나중에 판을 다시
+    # 볼 때 「이 표가 어림이었나 확정 금액이었나」를 파일만 보고 알 수 있어야 한다.
+    claims["flows_source"] = "KIS 확정금액" if kis_used else "네이버 상위20"
     return html, telegram, claims
 
 
