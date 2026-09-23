@@ -196,7 +196,7 @@ function buildSources(input) {
  *            연금개시를 신청하지 않아도 이 해부터 연차는 해마다 자동으로 누적된다.
  */
 function seniorityOf(target, sources, opts) {
-  const { birthYear, depositYear } = opts;
+  const { birthYear, depositYear } = opts;   // depositYear = 퇴직급여가 계좌에 들어온 해
 
   let index = 1;
   let basis = CUTOFF_LABEL + ' 이후 가입 계좌';
@@ -240,7 +240,10 @@ function buildCandidates(input, sources) {
   targets.push({ id: 'new-irp', type: 'irp', isNew: true, joinDate: TODAY, balance: 0, started: false, label: '신규 IRP 개설' });
   targets.push({ id: 'new-pension', type: 'pension', isNew: true, joinDate: TODAY, balance: 0, started: false, label: '신규 연금저축 개설' });
 
-  const opts = { birthYear: birthYear === undefined ? null : birthYear, depositYear: TODAY.getFullYear() };
+  const opts = {
+    birthYear: birthYear === undefined ? null : birthYear,
+    depositYear: input.depositYear || TODAY.getFullYear()
+  };
 
   return targets.map((t) => {
     const perSource = sources.map((s) => {
@@ -650,8 +653,15 @@ const TODAY_STR = (() => {
  * 브라우저 기본 date 입력은 연도 칸에 6자리(예: 200700)까지 받아들여
  * 200700-02-01 같은 값이 들어온다. 연도를 앞 4자리로 자르고 범위를 눌러
  * 가입일이 오늘을 넘지 않게 한다.
+ *
+ * 퇴직(예정)일처럼 미래가 정상인 칸은 allowFuture 로 상한을 푼다.
+ * 그래도 상한은 둔다 - 연도 칸에 세 자리를 치는 중간 상태(예: 202)가
+ * 0202 로 들어오는 것과 구분해야 해서, 상한 없이 열어 두면 오타를 못 잡는다.
  */
-function DateInput({ value, onChange, label }) {
+const FUTURE_MAX = (TODAY.getFullYear() + 50) + '-12-31';
+
+function DateInput({ value, onChange, label, allowFuture }) {
+  const max = allowFuture ? FUTURE_MAX : TODAY_STR;
   const handle = (e) => {
     const v = e.target.value;
     if (!v) { onChange(''); return; }
@@ -663,7 +673,7 @@ function DateInput({ value, onChange, label }) {
     // 들어와 곧바로 1900 으로 튀어 2016 을 칠 수 없게 된다. 하한은 blur 에서 본다.
     const y = m[1].length > 4 ? m[1].slice(0, 4) : m[1];
     let next = y.padStart(4, '0') + '-' + m[2] + '-' + m[3];
-    if (next > TODAY_STR) next = TODAY_STR;              // 가입일은 미래일 수 없다
+    if (next > max) next = max;
     onChange(next);
   };
 
@@ -676,7 +686,7 @@ function DateInput({ value, onChange, label }) {
 
   return (
     <input type="date" className={inputCls} value={value} aria-label={label}
-      min="1900-01-01" max={TODAY_STR} onChange={handle} onBlur={handleBlur} />
+      min="1900-01-01" max={max} onChange={handle} onBlur={handleBlur} />
   );
 }
 
@@ -775,6 +785,8 @@ function App() {
   // --- 퇴직제도
   const [system, setSystem] = useState('DC');          // 'DB' | 'DC' | 'SEV'
   const [systemJoinStr, setSystemJoinStr] = useState('');
+  // 퇴직(예정)일. 퇴직급여가 계좌에 들어온 해가 연금수령연차의 기산연도를 좌우한다.
+  const [retireDateStr, setRetireDateStr] = useState(TODAY_STR);
   // 임금피크제 등으로 DB → DC 로 전환한 경우. 신규 계좌 전액 이체 시 DB 가입일이 기산연차를 가른다.
   const [dbConverted, setDbConverted] = useState(false);
   const [dbJoinStr, setDbJoinStr] = useState('');
@@ -829,7 +841,7 @@ function App() {
 
   /** 화면의 모든 입력을 한 덩어리로 모은다 (저장·내보내기 공통) */
   const collectState = () => ({
-    custName, birthRaw, system, systemJoinStr, dbConverted, dbJoinStr,
+    custName, birthRaw, system, systemJoinStr, retireDateStr, dbConverted, dbJoinStr,
     amtSingle, amtLegal, amtHonor, deferredTax,
     hasPension, pensionJoinStr, pensionBal, pensionExempt, pensionStarted,
     hasIrp, irpJoinStr, irpBal, irpExempt, irpStarted,
@@ -853,6 +865,7 @@ function App() {
     setBirthRaw(str(d.birthRaw, ''));
     setSystem(['DB', 'DC', 'SEV'].indexOf(d.system) >= 0 ? d.system : 'DC');
     setSystemJoinStr(str(d.systemJoinStr, ''));
+    setRetireDateStr(str(d.retireDateStr, TODAY_STR));
     setDbConverted(bool(d.dbConverted, false));
     setDbJoinStr(str(d.dbJoinStr, ''));
     setAmtSingle(num(d.amtSingle, 0));
@@ -891,18 +904,27 @@ function App() {
   const pensionJoin = useMemo(() => parseDate(pensionJoinStr), [pensionJoinStr]);
   const irpJoin = useMemo(() => parseDate(irpJoinStr), [irpJoinStr]);
 
+  // 퇴직(예정)일. 비워 두면 오늘로 본다. 과거 퇴직도 미래 퇴직 예정도 받는다.
+  const retireDate = useMemo(() => parseDate(retireDateStr) || TODAY, [retireDateStr]);
+  const depositYear = retireDate.getFullYear();
+  const isPastRetire = depositYear < TODAY.getFullYear();
+
   const retireTotal = system === 'SEV' ? amtLegal + amtHonor : amtSingle;
 
-  // 연금 개시 시점 - 퇴직 연도와 만 55세 도달 연도 중 늦은 쪽
+  // 이전 가능 여부(만 55세 미만 IRP 의무이전 등)는 퇴직급여를 지급받는 시점의 나이로 본다.
+  const retireAge = useMemo(() => ageOn(birth, retireDate), [birth, retireDate]);
+
+  // 인출을 시작하는 해. 이미 지난 해부터 시뮬레이션할 수는 없으므로 오늘이 하한이고,
+  // 퇴직 예정일이 미래면 그때, 만 55세가 아직이면 55세가 되는 해가 하한이 된다.
   const startYear = useMemo(() => {
-    const retireY = TODAY.getFullYear();
-    if (!birth) return retireY;
-    return Math.max(retireY, birth.getFullYear() + 55);
-  }, [birth]);
-  const startAge = age !== null ? Math.max(age, 55) : 55;
+    let y = Math.max(TODAY.getFullYear(), depositYear);
+    if (birth) y = Math.max(y, birth.getFullYear() + 55);
+    return y;
+  }, [birth, depositYear]);
+  const startAge = birth ? Math.max(startYear - birth.getFullYear(), 55) : 55;
 
   const input = {
-    age, birthYear: birth ? birth.getFullYear() : null, startYear,
+    age: retireAge, birthYear: birth ? birth.getFullYear() : null, startYear, depositYear,
     system, systemJoin, dbConverted, dbJoin,
     amtSingle, amtLegal, amtHonor,
     hasPension, pensionJoin, pensionBal, pensionStarted,
@@ -917,7 +939,7 @@ function App() {
     const base = buildCandidates(input, sources);
     const alloc = buildAllocation(base, sources, manualPick);
     return { candidates: applyAllocation(base, alloc), allocation: alloc };
-  }, [sources, age, birth, startYear, hasPension, pensionJoinStr, pensionBal, pensionStarted,
+  }, [sources, retireAge, birth, startYear, depositYear, hasPension, pensionJoinStr, pensionBal, pensionStarted,
     hasIrp, irpJoinStr, irpBal, irpStarted, fees, manualPick]);
 
   // 배정액이 가장 큰 계좌를 기본 시뮬레이션 대상으로 삼는다
@@ -1109,7 +1131,8 @@ function App() {
    */
   const doReset = () => {
     setCustName(''); setBirthRaw('');
-    setSystem('DC'); setSystemJoinStr(''); setDbConverted(false); setDbJoinStr('');
+    setSystem('DC'); setSystemJoinStr(''); setRetireDateStr(TODAY_STR);
+    setDbConverted(false); setDbJoinStr('');
     setAmtSingle(0); setAmtLegal(0); setAmtHonor(0); setDeferredTax(0);
     setHasPension(false); setPensionJoinStr(''); setPensionBal(0); setPensionExempt(0); setPensionStarted(false);
     setHasIrp(false); setIrpJoinStr(''); setIrpBal(0); setIrpExempt(0); setIrpStarted(false);
@@ -1359,13 +1382,19 @@ function App() {
                     </Field>
                   </div>
 
-                  <div className="flex items-center gap-2 px-3 py-2 bg-surf-soft rounded-sm">
-                    <span className="text-[13px] text-ink-muted">만 나이</span>
+                  <div className="flex items-center gap-2 px-3 py-2 bg-surf-soft rounded-sm flex-wrap">
+                    <span className="text-[13px] text-ink-muted">현재 만 나이</span>
                     <span className="num text-[18px] font-bold text-mas-blue">{age !== null ? age : '-'}</span>
                     <span className="text-[13px] text-ink-muted">세</span>
-                    {age !== null && (age >= 55
-                      ? <Badge tone="good">연금수령 개시 가능</Badge>
-                      : <Badge tone="warn">만 55세까지 {55 - age}년 - 과세이연 후 대기</Badge>)}
+                    {/* 퇴직 시점의 나이가 다르면 함께 보여준다 - 이전 가능 여부는 그쪽으로 판정한다 */}
+                    {retireAge !== null && age !== null && retireAge !== age && (
+                      <span className="text-[13px] text-ink-muted">
+                        · 퇴직 시 만 <strong className="num text-ink-body">{retireAge}</strong>세
+                      </span>
+                    )}
+                    {retireAge !== null && (retireAge >= 55
+                      ? <Badge tone="good">퇴직 시 연금수령 개시 가능</Badge>
+                      : <Badge tone="warn">퇴직 시 만 55세 미만 - 법정퇴직급여는 IRP 로만</Badge>)}
                   </div>
 
                   <Field label="퇴직제도"
@@ -1397,6 +1426,24 @@ function App() {
                         ? CUTOFF_LABEL + ' 이전에 가입한 DC 라면, 신규 IRP 를 개설해 전액 이체할 때 DC 가입일자를 승계해 6년차 기산을 쓸 수 있습니다. 반대로 ' + CUTOFF_LABEL + ' 이후 가입한 DC 는 구 연금계좌로 입금할 수 없고, 이때는 1사 1IRP 예외사유라 IRP 를 추가 개설하면 됩니다.'
                         : CUTOFF_LABEL + ' 이전에 가입한 DB 라면, 퇴직급여 전액을 신규 개설 연금계좌에 입금할 때 가입일자는 그대로여도 연금수령 기산연차를 6년차로 시작할 수 있습니다(시행령 §40의2④1).'}>
                     <DateInput value={systemJoinStr} onChange={setSystemJoinStr} label="제도 가입일" />
+                  </Field>
+
+                  <Field label="퇴직(예정)일"
+                    hint={!birth ? '생년월일을 먼저 입력해 주세요.'
+                      : isPastRetire
+                        ? depositYear + '년 퇴직 · 퇴직 시 만 ' + (retireAge !== null ? retireAge : '-') + '세 · ' +
+                          '인출은 ' + startYear + '년부터 계산합니다'
+                        : '퇴직 시 만 ' + (retireAge !== null ? retireAge : '-') + '세 · 인출은 ' + startYear + '년부터 계산합니다'}
+                    help={<React.Fragment>
+                      퇴직급여가 연금계좌에 <strong>들어온 해</strong>가 연금수령연차의 기산연도를 좌우하므로
+                      따로 받습니다. <strong>이미 퇴직한 경우</strong>에도 그 해를 넣으면 그때부터 오늘까지
+                      쌓인 연차가 반영됩니다. 예를 들어 만 55세를 넘긴 뒤 2년 전에 퇴직해 신규 계좌로 받았다면
+                      지금은 1년차가 아니라 3년차이고, 그만큼 한도가 큽니다.<br /><br />
+                      만 55세 미만 여부(IRP 의무이전)도 <strong>퇴직 시점의 나이</strong>로 판정합니다.
+                      인출 시뮬레이션은 과거로 되돌릴 수 없으므로 올해(또는 만 55세가 되는 해)부터 계산하고,
+                      이미 받은 연금이 있다면 '과거 연금 수령 횟수'에 넣어 주세요.
+                    </React.Fragment>}>
+                    <DateInput value={retireDateStr} onChange={setRetireDateStr} label="퇴직일" allowFuture />
                   </Field>
 
                   {system === 'DC' && (
@@ -2087,6 +2134,7 @@ function App() {
       <PrintSheet
         ready={ready} custName={custName} birth={birth} age={age}
         system={system} systemJoin={systemJoin} retireTotal={retireTotal}
+        retireDate={retireDate} retireAge={retireAge}
         amtLegal={amtLegal} amtHonor={amtHonor} deferredTax={deferredTax}
         candidates={candidates} best={best} picked={picked}
         allocation={allocation} isSplit={isSplit} allocatedDeferredTax={allocatedDeferredTax}
@@ -2107,7 +2155,7 @@ function App() {
 
 function PrintSheet(props) {
   const {
-    ready, custName, birth, age, system, systemJoin, retireTotal,
+    ready, custName, birth, age, system, systemJoin, retireTotal, retireDate, retireAge,
     amtLegal, amtHonor, deferredTax, best, picked, scope, scopeOptions,
     allocation, isSplit, allocatedDeferredTax, comparison, memo, memoOnPrint,
     mode, years, rate, otherPrincipal, sim, startYear, exemptPrincipal,
@@ -2126,6 +2174,7 @@ function PrintSheet(props) {
     ['고객명', custName || '-'],
     ['생년월일 / 만 나이', (birth ? birth.getFullYear() + '.' + (birth.getMonth() + 1) + '.' + birth.getDate() : '-') + ' / 만 ' + (age !== null ? age : '-') + '세'],
     ['퇴직제도 / 가입일', systemLabel + ' / ' + fmtDate(systemJoin)],
+    ['퇴직(예정)일', fmtDate(retireDate) + (retireAge !== null ? ' · 퇴직 시 만 ' + retireAge + '세' : '')],
     ['퇴직급여 총액', krw(retireTotal) + (system === 'SEV' && amtHonor > 0 ? ' (법정 ' + krw(amtLegal) + ' · 명예 ' + krw(amtHonor) + ')' : '')],
     ['이연 퇴직소득세', deferredTax > 0
       ? krw(deferredTax) + (isSplit ? ' (이 계좌 배정분 ' + krw(allocatedDeferredTax) + ')' : '')

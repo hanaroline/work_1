@@ -1,11 +1,16 @@
 /** 전체 초기화 - 입력만 비우고 저장된 상담은 남긴다 */
 const { openApp, fillCase, field, button } = require('./helpers');
 
+const p2 = (n) => String(n).padStart(2, '0');
+const T = new Date();
+const TODAY_STR = T.getFullYear() + '-' + p2(T.getMonth() + 1) + '-' + p2(T.getDate());
+
 const savedCases = (page) =>
   page.locator('button[title^="불러오기"]').evaluateAll((bs) => bs.map((b) => b.innerText.replace(/\s+/g, ' ').trim()));
 
 const CASE = {
   name: '홍길동', birth: '710315', system: 'SEV', joinDate: '2000-07-01',
+  retireDate: '2024-03-02',
   legal: 150000000, honor: 50000000, deferredTax: 7500000,
   pension: { join: '2003-03-02', balance: 75000000, exempt: 12000000, started: true },
   irp: { join: '2002-03-02', balance: 85000000, exempt: 9000000 },
@@ -50,6 +55,7 @@ module.exports = async function run(t) {
     t.is(await field(page, '기존 연금저축 보유').isChecked(), false, '연금저축 보유 해제');
     t.is(await field(page, '기존 IRP 보유').isChecked(), false, 'IRP 보유 해제');
     t.is(await field(page, 'DB 에서 DC 로 전환').isChecked(), false, 'DB → DC 전환 표시 해제');
+    t.is(await field(page, '퇴직일').inputValue(), TODAY_STR, '퇴직일이 오늘로 돌아감');
     t.is(await field(page, '수령 기간').inputValue(), '10', '수령 기간 기본값 10년');
     t.is(await field(page, '운용수익률').inputValue(), '3', '운용수익률 기본값 3%');
     t.is(await field(page, '신규 IRP 연간 수수료').inputValue(), '0', '수수료 기본값 0');
@@ -79,6 +85,7 @@ module.exports = async function run(t) {
       '12000000', '세액공제 받지 않은 금액까지 복원');
     t.is(await field(page, '기존 연금저축 연금개시됨').isChecked(), true, '연금개시 표시까지 복원');
     t.is(await field(page, '기존 IRP 연금개시됨').isChecked(), false, 'IRP 는 개시 표시가 꺼진 채로 복원');
+    t.is(await field(page, '퇴직일').inputValue(), '2024-03-02', '과거 퇴직일까지 복원');
 
     t.is(errors.length, 0, '런타임 에러 없음');
   } finally {
