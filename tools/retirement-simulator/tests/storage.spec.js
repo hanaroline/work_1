@@ -2,7 +2,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { openApp, fillCase, field, button, DEL_RE } = require('./helpers');
+const { openApp, fillCase, field, button, comparisonRows, DEL_RE } = require('./helpers');
 
 const CASE = {
   name: '홍길동', birth: '710315', system: 'DC', joinDate: '2000-07-01',
@@ -135,12 +135,44 @@ module.exports = async function run(t) {
     t.is((await field(page, '연금저축 1 세액공제 받지 않은 금액').inputValue()).replace(/,/g, ''),
       '8000000', '세액공제 받지 않은 금액 이관');
     t.is(await field(page, '연금저축 1 연금개시됨').isChecked(), true, '연금개시 표시 이관');
-    t.is(await field(page, '연금저축 1 연간 수수료').inputValue(), '0.2', '계좌별 수수료 이관');
+    // 예전 형식에는 연금저축 수수료(ex-pension)도 들어 있었지만, 연금저축계좌에는
+    // 계좌 수수료가 없다. 칸을 없앴으므로 그 값은 버리고 판정에도 쓰지 않는다.
+    t.is(await field(page, '연금저축 1 연간 수수료').count(), 0, '연금저축 수수료 칸은 사라짐');
     t.is(await field(page, 'IRP 1 가입일').inputValue(), '2015-02-02', 'IRP 가입일 이관');
     t.is(await field(page, 'IRP 1 연간 수수료').inputValue(), '0.4', 'IRP 수수료 이관');
     // 예전 scope: 'pension' → 연금저축만 합산
     t.is(await field(page, '연금저축 1 시뮬레이션 합산').isChecked(), true, '예전 합산 범위가 합산 체크로 옮겨짐');
     t.is(await field(page, 'IRP 1 시뮬레이션 합산').isChecked(), false, 'IRP 는 합산 대상이 아니었음');
+
+    // --- 연금저축계좌에 수수료가 적힌 파일을 받아도 수수료로 세지 않는다 ---
+    // 연금저축계좌에는 계좌 수수료가 없어 화면에 입력칸을 두지 않았다. 그래도 파일에는
+    // 예전 판에서 저장한 값이나 손으로 고친 값이 들어올 수 있으므로, 계산하는 자리에서
+    // 0 으로 누른다. 계좌 비교표의 '연 수수료' 칸이 그 결과를 그대로 보여 준다.
+    const feeFile = path.join(tmp, 'pension-fee.json');
+    fs.writeFileSync(feeFile, JSON.stringify({
+      format: 'mas-retirement-case', version: 1,
+      data: {
+        custName: '연금저축수수료', birthRaw: '680410', system: 'DB', systemJoinStr: '2000-07-01',
+        amtSingle: 200000000, amtLegal: 0, amtHonor: 0, deferredTax: 6000000,
+        accounts: [
+          { id: 'a1', kind: 'pension', name: '', joinStr: '2009-04-01', bal: 50000000,
+            exempt: 0, started: false, fee: 0.9, merge: false },
+          { id: 'a2', kind: 'irp', name: '', joinStr: '2009-04-01', bal: 50000000,
+            exempt: 0, started: false, fee: 0.4, merge: false }
+        ],
+        pastCount: 0, years: 15, rate: 3, mode: 'even'
+      }
+    }), 'utf8');
+    await field(page, '상담 케이스 가져오기').setInputFiles(feeFile);
+    await page.waitForTimeout(800);
+    t.is(await page.getByRole('button', { name: DEL_RE }).count(), 2, '계좌 2건으로 읽힘');
+
+    const cmp = await comparisonRows(page);
+    const penRow = cmp.find((r) => r[0].startsWith('연금저축 1'));
+    const irpRow = cmp.find((r) => r[0].startsWith('IRP 1'));
+    t.ok(!!penRow && !!irpRow, '계좌 비교표에 두 계좌가 다 있음');
+    t.is(penRow[3], '-', '파일에 0.9% 가 적혀 있어도 연금저축은 수수료 없음으로 계산');
+    t.is(irpRow[3], '0.40%', 'IRP 수수료는 파일 값 그대로 (음성 대조)');
 
     t.is(errors.length, 0, '런타임 에러 없음');
   } finally {

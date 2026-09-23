@@ -17,7 +17,7 @@ const FIELDS = {
     '고객명', '생년월일', '제도 가입일', '퇴직일', '이연 퇴직소득세', '과거 연금 수령 횟수',
     '상담 메모', '상담 메모 인쇄물 포함',
     '상담 케이스 가져오기', '수령 기간', '운용수익률',
-    '신규 IRP 연간 수수료', '신규 연금저축 연간 수수료'
+    '신규 IRP 연간 수수료'
   ],
   whenDbDc: ['퇴직급여'],
   whenSeverance: ['법정퇴직금', '명예퇴직금'],
@@ -25,7 +25,9 @@ const FIELDS = {
   whenConverted: ['전환 전 DB 가입일'],
   // 계좌를 하나 추가했을 때 그 카드 안에 생기는 칸들 (앞의 '연금저축 1' 등은 호출부에서 붙인다)
   perAccount: ['금융기관', '가입일', '평가액', '세액공제 받지 않은 금액',
-    '연간 수수료', '연금개시됨', '시뮬레이션 합산', '삭제']
+    '연금개시됨', '시뮬레이션 합산', '삭제'],
+  // 계좌 수수료(운용관리 + 자산관리)는 IRP 에만 있다. 연금저축계좌에는 칸 자체가 없다.
+  perIrpOnly: ['연간 수수료']
 };
 
 const BUTTONS = [
@@ -59,7 +61,12 @@ async function setAccounts(page, list) {
     if (a.join) await field(page, k + ' 가입일').fill(a.join);
     if (a.balance !== undefined) await field(page, k + ' 평가액').fill(String(a.balance));
     if (a.exempt !== undefined) await field(page, k + ' 세액공제 받지 않은 금액').fill(String(a.exempt));
-    if (a.fee !== undefined) await field(page, k + ' 연간 수수료').fill(String(a.fee));
+    if (a.fee !== undefined) {
+      // 연금저축계좌에는 수수료 칸이 없다. 조용히 넘기면 '수수료를 넣었는데 반영되지 않음'
+      // 을 검사가 눈치채지 못하므로 여기서 끊는다.
+      if (a.kind !== 'irp') throw new Error('연금저축계좌에는 수수료 칸이 없습니다: ' + k);
+      await field(page, k + ' 연간 수수료').fill(String(a.fee));
+    }
     if (a.started) await field(page, k + ' 연금개시됨').check();
     if (a.merge) await field(page, k + ' 시뮬레이션 합산').check();
   }

@@ -28,7 +28,9 @@ function expected({ P0, G0, tax0, startLimitYear, years, rate, startAge, pastCou
     const factor = ay <= 10 ? 0.7 : ay <= 20 ? 0.6 : 0.5;
     const age = startAge + k - 1;
     const pRate = age >= 80 ? 0.033 : age >= 70 ? 0.044 : 0.055;
-    const tax = (P0 > 0 ? tax0 * (dR / P0) * factor : 0) + dG * pRate;
+    // 세액공제분·운용수익의 연금수령분이 연 1,500만원을 넘으면 저율 분리과세를
+    // 쓸 수 없고 종합과세 / 16.5% 분리과세 선택 대상이 된다 (소득세법 §64의4)
+    const tax = (P0 > 0 ? tax0 * (dR / P0) * factor : 0) + dG * (dG > 15000000 ? 0.165 : pRate);
     P -= dR; G -= dG;
     out.push({ k, ly, unlimited, begin, limit, draw, reduction: 1 - factor, tax, end: P + G });
   }
@@ -118,6 +120,40 @@ module.exports = async function run(t) {
     t.near(num(capped[0][5]), 3600, 1, '한도 내 최대는 한도까지만 인출');
     t.excludes(capped[0][5], '연금외', '한도 내 최대에는 연금외수령이 없음');
     t.near(num(capped[0][7]), 252, 1, '3,600만 × 0.1 × 0.7 = 252만원');
+
+    // ── ③재원 연금수령분이 연 1,500만원을 넘으면 저율 분리과세를 못 쓴다 ──
+    //
+    // 세액공제 받은 납입액·운용수익의 연금수령분이 연 1,500만원을 넘으면 3.3~5.5%
+    // 저율 분리과세가 아니라 종합과세와 16.5% 분리과세 중에서 고르게 된다(소득세법
+    // §64의4). 어느 쪽을 골라도 16.5% 를 넘지 않으므로 그 기준으로 계산한다.
+    // 이연퇴직소득 연금수령분과 과세제외분은 이 판정에 들어가지 않는다.
+    //
+    // 만 58세 · 2000년 가입 연금저축(9년차) 3억 합산 · 퇴직급여 100만원 · 5년 균등 · 0%
+    //   1회차 인출 6,020만 = 퇴직소득 100만 + ③재원 5,920만
+    //   한도 3.01억 ÷ (11-9) × 120% = 1억 8,060만이라 전액 연금수령이다.
+    //   5,920만 × 16.5% = 976.8만원
+    await fillCase(page, {
+      name: '분리과세', birth: '680410', system: 'SEV', joinDate: '1995-03-02',
+      legal: 1000000, honor: 0, deferredTax: 0,
+      pension: { join: '2000-01-03', balance: 300000000, exempt: 0, merge: true },
+      irp: false, mode: '기간 균등 분할', years: 5, rate: 0
+    });
+    const big = await scheduleRows(page);
+    t.is(big[0][1], '9년차', '2000년 가입 + 만 58세 → 9년차');
+    t.near(num(big[0][5]), 6020, 1, '1회차 인출 6,020만원');
+    t.excludes(big[0][5], '연금외', '한도 안이라 전액 연금수령');
+    t.includes(big[0][5], '1,500만 초과', '1,500만원 초과를 표시');
+    t.near(num(big[0][7]), 977, 1, '5,920만 × 16.5% = 977만원 (5.5% 가 아님)');
+
+    // 같은 조건에서 ③재원만 줄여 1,500만원 밑으로 내리면 5.5% 로 돌아온다 (음성 대조)
+    //   잔고 7,000만 → 1회차 인출 1,420만 = 퇴직소득 100만 + ③재원 1,320만
+    //   1,320만 × 5.5% = 72.6만원
+    await field(page, '연금저축 1 평가액').fill('70000000');
+    await page.waitForTimeout(500);
+    const small = await scheduleRows(page);
+    t.near(num(small[0][5]), 1420, 1, '1회차 인출 1,420만원');
+    t.excludes(small[0][5], '1,500만 초과', '1,500만원 이하면 표시가 없음');
+    t.near(num(small[0][7]), 73, 1, '1,320만 × 5.5% = 73만원');
 
     // ── 세액공제 받지 않은 금액은 가장 먼저, 세금 없이 빠진다 ──────
     // 연금저축 1 평가액 1억 중 4,000만이 세액공제를 받지 않은 금액.

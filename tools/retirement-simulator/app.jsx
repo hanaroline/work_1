@@ -32,6 +32,9 @@ function readAccounts(d, cast) {
     bal: num(src[pre + 'Bal'] !== undefined ? src[pre + 'Bal'] : src.bal, 0),
     exempt: num(src[pre + 'Exempt'] !== undefined ? src[pre + 'Exempt'] : src.exempt, 0),
     started: bool(src[pre + 'Started'] !== undefined ? src[pre + 'Started'] : src.started, false),
+    // 파일에 적힌 값을 그대로 읽는다. 연금저축계좌에 수수료가 적혀 있어도
+    // 계산하는 자리(buildCandidates)에서 0 으로 눌러 두므로 여기서 또 거르지 않는다.
+    // 두 군데서 거르면 한쪽이 망가져도 다른 쪽이 가려 줘서 검사가 아무것도 잡지 못한다.
     fee: num(src.fee, 0),
     merge: bool(src.merge, false)
   });
@@ -48,7 +51,6 @@ function readAccounts(d, cast) {
   const oldFees = (d.fees && typeof d.fees === 'object') ? d.fees : {};
   if (bool(d.hasPension, false)) {
     const a = mk('pension', d, 'pension');
-    a.fee = num(oldFees['ex-pension'], 0);
     a.merge = d.scope === 'pension' || d.scope === 'all';
     out.push(a);
   }
@@ -344,8 +346,12 @@ function buildCandidates(input, sources) {
       startLimitYear,
       unlimited: startLimitYear >= 11,
       minYears,
-      // 기존 계좌는 계좌마다, 신규는 종류별로 수수료를 받는다 (입력은 %, 계산은 소수)
-      feeRate: t.isNew ? (((fees && fees[t.id]) || 0) / 100) : (t.ownFeeRate || 0)
+      // 계좌 수수료(운용관리 + 자산관리)는 IRP 에만 붙는다. 연금저축계좌는 계좌 단위
+      // 수수료가 없고 비용이 편입 상품의 보수·사업비로 들어가므로 언제나 0 이다.
+      // (그 비용은 계좌에서 따로 떼는 돈이 아니라 수익률에 이미 반영된 값이다.)
+      // 입력은 %, 계산은 소수.
+      feeRate: t.type === 'pension' ? 0
+        : t.isNew ? (((fees && fees['new-irp']) || 0) / 100) : (t.ownFeeRate || 0)
     };
   });
 }
@@ -514,9 +520,16 @@ function buildSchedule(cfg) {
     const fullRetTax = taxPerWon * takeP;           // 일시금으로 받았을 때의 퇴직소득세
     const retTax = taxPerWon * (penP * factor + ovP);
 
-    // ③ 세액공제분·운용수익 - 연금수령분은 연령별 연금소득세, 초과분은 기타소득세 16.5%
+    // ③ 세액공제분·운용수익 - 연금수령분은 연령별 연금소득세, 한도 초과분은 기타소득세 16.5%.
+    //
+    //    다만 ③재원의 연금수령분이 연 1,500만원을 넘으면 저율 분리과세(3.3~5.5%)를 쓸 수
+    //    없고, 그 해 사적연금소득 '전액'에 대해 종합과세와 16.5% 분리과세 중에서 고르게
+    //    된다(소득세법 §64의4). 다른 소득이 적으면 종합과세가 더 쌀 수 있지만 그 계산은
+    //    이 앱이 알 수 없는 정보(다른 소득·공제)에 달려 있으므로, 어느 쪽을 골라도 넘지
+    //    않는 16.5% 를 기준으로 잡는다. 5.5% 를 그대로 두면 나올 수 없는 세액이 된다.
     const ageK = startAge + k - 1;
-    const otherTax = penG * pensionRateByAge(ageK) + ovG * 0.165;
+    const over1500 = penG > 15000000;
+    const otherTax = penG * (over1500 ? 0.165 : pensionRateByAge(ageK)) + ovG * 0.165;
 
     E -= takeE; P -= takeP; G -= takeG;
 
@@ -533,7 +546,7 @@ function buildSchedule(cfg) {
       end: E + P + G,
       // 사적연금 분리과세 한도는 ③ 재원의 연금수령분에만 걸린다.
       // 퇴직소득 재원의 연금수령분은 금액과 무관하게 분리과세된다.
-      over1500: penG > 15000000
+      over1500
     });
 
     totalDraw += draw; totalTax += retTax + otherTax;
@@ -692,12 +705,19 @@ function Help({ title, children }) {
   );
 }
 
-function Field({ label, hint, help, children, className = '' }) {
+/**
+ * 라벨 + 컨트롤 한 줄.
+ *
+ * helpTitle 은 설명 버튼의 aria-label 을 라벨과 따로 주기 위한 것이다.
+ * 계좌 카드처럼 같은 칸이 여러 벌 생기는 자리에서는 '가입일 설명' 버튼이
+ * 계좌 수만큼 생겨 어느 것을 눌렀는지 구분할 수 없다. 계좌 키를 붙여 준다.
+ */
+function Field({ label, hint, help, helpTitle, children, className = '' }) {
   return (
     <label className={'block ' + className}>
       <span className="block text-[13px] font-medium text-ink-body mb-1.5">
         {label}
-        {help ? <Help title={label}>{help}</Help> : null}
+        {help ? <Help title={helpTitle || label}>{help}</Help> : null}
       </span>
       {children}
       {hint ? <span className="block text-[11px] text-ink-soft mt-1 leading-snug">{hint}</span> : null}
@@ -884,8 +904,9 @@ function App() {
   // 재원별 수동 선택 - 투자 가능 상품·중도인출 조건 등 앱이 판단하지 않는 기준으로 상담자가 직접 고른다
   const [manualPick, setManualPick] = useState({});
 
-  // 신규 개설 계좌의 연간 수수료율 (%, 적립금 대비). 기존 계좌 수수료는 계좌마다 따로 받는다.
-  const [fees, setFees] = useState({ 'new-irp': 0, 'new-pension': 0 });
+  // 신규 개설 IRP 의 연간 수수료율 (%, 적립금 대비). 기존 계좌 수수료는 계좌마다 따로 받고,
+  // 연금저축계좌는 계좌 수수료 자체가 없어 여기에도 들어오지 않는다.
+  const [fees, setFees] = useState({ 'new-irp': 0 });
   const setFee = (id, v) => setFees((f) => Object.assign({}, f, { [id]: v }));
 
   // --- 시뮬레이션 옵션
@@ -945,8 +966,8 @@ function App() {
     setDeferredTax(num(d.deferredTax, 0));
     setAccountList(readAccounts(d, { str, num, bool }));
     setPastCount(num(d.pastCount, 0));
-    setFees(Object.assign({ 'new-irp': 0, 'new-pension': 0 },
-      d.fees && typeof d.fees === 'object' ? d.fees : {}));
+    // 예전 저장 건에 있던 'new-pension'·'ex-*' 키는 흘려보낸다 (연금저축은 계좌 수수료가 없다)
+    setFees({ 'new-irp': num(d.fees && d.fees['new-irp'], 0) });
     setManualPick(d.manualPick && typeof d.manualPick === 'object' ? d.manualPick : {});
     setPickedId(typeof d.pickedId === 'string' ? d.pickedId : null);
     setMode(d.mode === 'max' ? 'max' : 'even');
@@ -1020,7 +1041,7 @@ function App() {
   }, [candidates, pickedId, best]);
 
   // 합산하기로 체크한 계좌의 잔고. 세액공제 받지 않은 납입액은 과세제외 재원으로 따로 뗀다.
-  // 퇴직급여를 받을 계좌(picked)의 잔고는 이미 후보 평가에 들어가 있으므로 여기서 뺀다.
+  // 퇴직급여를 받을 계좌 자신도 체크되어 있으면 포함된다 (그 계좌 전체를 보는 것이 맞다).
   const merged = useMemo(
     () => accountList.filter((a) => a.merge && a.bal > 0),
     [accountList]);
@@ -1047,6 +1068,25 @@ function App() {
       ids.indexOf(c.id) >= 0 && c.id !== picked.id && c.startLimitYear !== picked.startLimitYear);
   }, [candidates, picked, merged]);
 
+  /**
+   * 시뮬레이션에 실제로 먹일 수수료율.
+   *
+   * 수수료는 계좌마다 다르고 연금저축계좌에는 아예 없다. 그런데 '시뮬레이션 합산'으로
+   * 다른 계좌의 잔고를 끌어오면서 수령 계좌의 요율을 그 돈에까지 먹이면, 연금저축
+   * 5천만원을 연 0.3% IRP 에 합산하는 것만으로 있지도 않은 수수료가 해마다 15만원씩
+   * 생긴다. 합산된 잔고는 실제로는 제 계좌에 남아 제 요율을 무는 돈이므로 금액으로
+   * 가중평균한다.
+   */
+  const blendedFeeRate = useMemo(() => {
+    if (!picked) return 0;
+    const rateOf = (a) => (a.id === picked.id ? picked.feeRate : a.kind === 'irp' ? (a.fee || 0) / 100 : 0);
+    const parts = [{ amt: picked.allocatedAmount, rate: picked.feeRate }]
+      .concat(merged.map((a) => ({ amt: a.bal, rate: rateOf(a) })));
+    const total = parts.reduce((s, p) => s + p.amt, 0);
+    if (!(total > 0)) return picked.feeRate;
+    return parts.reduce((s, p) => s + p.amt * p.rate, 0) / total;
+  }, [picked, merged]);
+
   // 분할 입금 시 이연퇴직소득세는 계좌에 배정된 금액 비율로 안분한다
   const allocatedDeferredTax = useMemo(() => {
     if (!picked || !(retireTotal > 0)) return 0;
@@ -1062,10 +1102,10 @@ function App() {
       deferredTax: allocatedDeferredTax,
       startLimitYear: picked.startLimitYear,
       pastCount,
-      feeRate: picked.feeRate,
+      feeRate: blendedFeeRate,
       years, mode, rate: rate / 100, startYear, startAge
     });
-  }, [picked, exemptPrincipal, otherPrincipal, allocatedDeferredTax, pastCount, years, mode, rate, startYear, startAge]);
+  }, [picked, exemptPrincipal, otherPrincipal, allocatedDeferredTax, pastCount, years, mode, rate, startYear, startAge, blendedFeeRate]);
 
   /**
    * 계좌별 비교 - 퇴직급여를 어느 계좌로 받느냐만 바꾸고 나머지 조건은 동일하게 두어
@@ -1182,7 +1222,7 @@ function App() {
     setAmtSingle(0); setAmtLegal(0); setAmtHonor(0); setDeferredTax(0);
     setAccountList([]);
     setPastCount(0);
-    setFees({ 'new-irp': 0, 'new-pension': 0 });
+    setFees({ 'new-irp': 0 });
     setManualPick({}); setPickedId(null);
     setMode('even'); setYears(10); setRate(3);
     setMemo(''); setMemoOnPrint(false);
@@ -1238,7 +1278,7 @@ function App() {
       ['대상 자산(원)', Math.round(picked.allocatedAmount + otherPrincipal)],
       ['수령 기간(년)', years],
       ['운용수익률(%)', rate],
-      ['계좌 수수료(%)', (picked.feeRate * 100).toFixed(2)],
+      ['계좌 수수료(%)', (blendedFeeRate * 100).toFixed(2)],
       ['작성일', TODAY_STR],
       ['상담 메모', memo.trim() || '-']
     ];
@@ -1630,7 +1670,7 @@ function App() {
                               aria-label={key + ' 금융기관'} placeholder="미래에셋"
                               onChange={(e) => patchAccount(a.id, { name: e.target.value })} />
                           </Field>
-                          <Field label="가입일"
+                          <Field label="가입일" helpTitle={key + ' 가입일'}
                             help={<React.Fragment>
                               가입일이 {CUTOFF_LABEL} 이전이면 연금수령연차를 <strong>6년차부터</strong> 기산합니다.
                               {CUTOFF_LABEL} 전에는 연금수령 요건이 '10년 이상 가입하고 5년 이상 수령'이었기 때문에,
@@ -1646,6 +1686,7 @@ function App() {
                           </Field>
                           <Field label="세액공제 받지 않은 금액"
                             hint="평가액 중 과세제외 재원"
+                            helpTitle={key + ' 세액공제 받지 않은 금액'}
                             help={<React.Fragment>
                               연말정산에서 세액공제를 받지 않은 납입액입니다. 인출할 때
                               <strong> 가장 먼저 빠져나가고 세금이 전혀 없습니다</strong>(인출순서 1순위).
@@ -1655,23 +1696,50 @@ function App() {
                             <MoneyInput value={a.exempt} label={key + ' 세액공제 받지 않은 금액'}
                               onChange={(v) => patchAccount(a.id, { exempt: v })} />
                           </Field>
-                          <Field label="연간 수수료"
-                            hint="적립금 대비 연 요율">
-                            <div className="relative">
-                              <input type="number" min="0" max="3" step="0.01" aria-label={key + ' 연간 수수료'}
-                                className={inputCls + ' num pr-7 text-right'}
-                                value={a.fee}
-                                onChange={(e) => patchAccount(a.id, { fee: Math.max(0, Math.min(3, +e.target.value || 0)) })} />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[13px] text-ink-soft pointer-events-none">%</span>
-                            </div>
-                          </Field>
+                          {a.kind === 'irp' ? (
+                            <Field label="연간 수수료"
+                              hint="적립금 대비 연 요율"
+                              helpTitle={key + ' 연간 수수료'}
+                              help={<React.Fragment>
+                                IRP 의 <strong>운용관리수수료 + 자산관리수수료</strong>를 합한 연 요율입니다.
+                                계좌마다 다르므로 <strong>계좌별로 따로</strong> 받습니다 - 금융기관마다 요율이
+                                다를 뿐 아니라, 같은 기관이라도 개설 채널(대면 · 비대면)과 적립금 구간에 따라
+                                달라집니다.<br /><br />
+                                <strong>퇴직급여(이연퇴직소득) 재원의 수수료를 면제하는 기관이 많고</strong>,
+                                비대면으로 개설한 IRP 는 전액 면제인 경우가 흔합니다. 이 계좌로 받을 퇴직급여에
+                                수수료가 붙지 않는다면 <strong>0 으로 두세요</strong>. 실제 요율은 각 기관의
+                                수수료율표나 금융감독원 통합연금포털에서 확인합니다.
+                              </React.Fragment>}>
+                              <div className="relative">
+                                <input type="number" min="0" max="3" step="0.01" aria-label={key + ' 연간 수수료'}
+                                  className={inputCls + ' num pr-7 text-right'}
+                                  value={a.fee}
+                                  onChange={(e) => patchAccount(a.id, { fee: Math.max(0, Math.min(3, +e.target.value || 0)) })} />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[13px] text-ink-soft pointer-events-none">%</span>
+                              </div>
+                            </Field>
+                          ) : (
+                            <Field label="연간 수수료" hint="연금저축계좌는 계좌 수수료가 없습니다">
+                              <div className="h-[42px] flex items-center text-[13px] text-ink-soft">
+                                해당 없음
+                                <Help title={key + ' 연간 수수료'}>
+                                  연금저축계좌에는 <strong>IRP 같은 계좌 수수료(운용관리 · 자산관리)가 없습니다</strong>.
+                                  비용은 계좌가 아니라 편입한 상품에 붙습니다 - 연금저축펀드는 집합투자기구의
+                                  운용보수 · 판매보수, 연금저축보험은 사업비, 연금저축신탁은 신탁보수입니다.<br /><br />
+                                  이 비용들은 계좌에서 따로 떼어 가는 돈이 아니라 <strong>기준가에 이미 반영</strong>되므로,
+                                  이 시뮬레이터에서는 위의 <strong>운용수익률</strong>을 보수 차감 후 수익률로 넣으면
+                                  그대로 반영됩니다. 그래서 수수료 칸을 따로 두지 않습니다.
+                                </Help>
+                              </div>
+                            </Field>
+                          )}
                           <div className="flex flex-col justify-end pb-1 gap-2">
                             <label className="flex items-center gap-2 cursor-pointer">
                               <input type="checkbox" checked={a.started}
                                 onChange={(e) => patchAccount(a.id, { started: e.target.checked })}
                                 aria-label={key + ' 연금개시됨'} className="w-4 h-4 accent-[#F58220]" />
                               <span className="text-[13px] font-medium text-ink-body">연금개시됨</span>
-                              <Help title="연금개시된 계좌">
+                              <Help title={key + ' 연금개시됨'}>
                                 연금개시를 신청하면 계좌 안의 재원별 금액을 확정해 국세청에 통보하므로
                                 <strong> 원칙적으로 추가 입금이 막힙니다</strong>. 다만 당사에서 연금개시한
                                 IRP · 연금저축계좌는 <strong>퇴직금에 한해</strong> 입금할 수 있습니다.
@@ -1685,7 +1753,7 @@ function App() {
                                 onChange={(e) => patchAccount(a.id, { merge: e.target.checked })}
                                 aria-label={key + ' 시뮬레이션 합산'} className="w-4 h-4 accent-[#F58220]" />
                               <span className="text-[13px] font-medium text-ink-body">시뮬레이션 합산</span>
-                              <Help title="시뮬레이션 합산">
+                              <Help title={key + ' 시뮬레이션 합산'}>
                                 이 계좌의 잔고를 퇴직급여와 <strong>합쳐서</strong> 인출 스케줄을 계산합니다.
                                 체크하지 않으면 퇴직급여만 가지고 계산합니다.<br /><br />
                                 연금수령한도는 실제로는 계좌마다 따로 산정되므로, 연차가 다른 계좌를
@@ -1760,24 +1828,27 @@ function App() {
                     </div>
                   </Field>
 
-                  <Field label="신규 개설 계좌의 연간 수수료"
-                    hint="적립금 대비 연 요율(운용관리+자산관리). 기존 계좌 수수료는 각 계좌 카드에서 입력합니다. 온라인 전용 IRP는 면제인 경우가 많고, 연금저축펀드는 계좌 수수료가 없습니다.">
-                    <div className="space-y-2">
-                      {[
-                        { id: 'new-irp', label: '신규 IRP' },
-                        { id: 'new-pension', label: '신규 연금저축' }
-                      ].map((r) => (
-                        <div key={r.id} className="flex items-center gap-2">
-                          <span className="text-[13px] text-ink-body flex-1">{r.label}</span>
-                          <div className="relative w-[110px]">
-                            <input type="number" min="0" max="3" step="0.01" aria-label={r.label + ' 연간 수수료'}
-                              className={inputCls + ' num pr-7 text-right h-[38px]'}
-                              value={fees[r.id]}
-                              onChange={(e) => setFee(r.id, Math.max(0, Math.min(3, +e.target.value || 0)))} />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[13px] text-ink-soft pointer-events-none">%</span>
-                          </div>
-                        </div>
-                      ))}
+                  {/*
+                    계좌 수수료는 IRP 에만 있다. 연금저축계좌는 계좌 단위 수수료가 없어
+                    입력칸을 두지 않는다 - 빈칸을 두면 '적어야 하는데 모르는 값' 처럼 보인다.
+                    기존 계좌 수수료는 계좌마다 다르므로 각 계좌 카드에서 받는다.
+                  */}
+                  <Field label="신규 IRP 의 연간 수수료"
+                    hint="적립금 대비 연 요율(운용관리 + 자산관리). 기존 계좌는 각 계좌 카드에서 입력합니다."
+                    help={<React.Fragment>
+                      새로 여는 IRP 의 수수료입니다. <strong>비대면으로 개설하면 전액 면제인 기관이 많고</strong>,
+                      대면 개설이라도 <strong>퇴직급여(이연퇴직소득) 재원은 면제</strong>하는 경우가 흔합니다.
+                      해당된다면 0 으로 두세요.<br /><br />
+                      <strong>연금저축계좌는 계좌 수수료가 없어</strong> 입력칸이 없습니다. 연금저축의 비용은
+                      계좌가 아니라 편입 상품(펀드 보수 · 보험 사업비 · 신탁보수)에 붙고 기준가에 이미
+                      반영되므로, 위의 <strong>운용수익률</strong>에 보수 차감 후 수익률을 넣으면 반영됩니다.
+                    </React.Fragment>}>
+                    <div className="relative w-[140px]">
+                      <input type="number" min="0" max="3" step="0.01" aria-label="신규 IRP 연간 수수료"
+                        className={inputCls + ' num pr-7 text-right h-[38px]'}
+                        value={fees['new-irp']}
+                        onChange={(e) => setFee('new-irp', Math.max(0, Math.min(3, +e.target.value || 0)))} />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[13px] text-ink-soft pointer-events-none">%</span>
                     </div>
                   </Field>
                 </div>
@@ -2026,7 +2097,8 @@ function App() {
                                 </span>
                               </td>
                               <td className="px-2 py-2 text-right">{man(r.amount)}</td>
-                              <td className="px-2 py-2 text-right text-ink-muted">{(r.c.feeRate * 100).toFixed(2)}%</td>
+                              <td className="px-2 py-2 text-right text-ink-muted">
+                                {r.c.feeRate > 0 ? (r.c.feeRate * 100).toFixed(2) + '%' : '-'}</td>
                               <td className="px-2 py-2 text-right">{r.totalFee > 0 ? man(r.totalFee) : '-'}</td>
                               <td className="px-2 py-2 text-right">{man(r.totalTax)}</td>
                               <td className="px-2 py-2 text-right font-bold text-mas-blue">
@@ -2123,7 +2195,9 @@ function App() {
                           <span className="text-[14px] text-ink-body">{sim.totals.spanYears}년간 총 수수료</span>
                           <span className="num text-[20px] font-bold text-ink ml-3">{krw(sim.totals.totalFee)}</span>
                           <div className="text-[12px] text-ink-muted mt-1">
-                            연 {(picked.feeRate * 100).toFixed(2)}% · 적립금 기준 차감
+                            연 {(blendedFeeRate * 100).toFixed(2)}% · 적립금 기준 차감
+                            {Math.abs(blendedFeeRate - picked.feeRate) > 1e-9
+                              ? ' (합산 계좌의 요율을 금액으로 가중평균)' : ''}
                           </div>
                         </div>
                       )}
@@ -2180,7 +2254,7 @@ function App() {
                               ) : null}
                               {r.over1500 ? (
                                 <span className="block text-[11px] text-[#8A6A0B] font-normal"
-                                  title="세액공제 받은 금액·운용수익의 연금수령분이 연 1,500만원을 넘습니다. 종합과세 또는 16.5% 분리과세를 선택해야 하며, 이 표는 분리과세 기준으로 계산했습니다.">
+                                  title="세액공제 받은 금액·운용수익의 연금수령분이 연 1,500만원을 넘어 3.3~5.5% 저율 분리과세를 쓸 수 없습니다. 종합과세와 16.5% 분리과세 중에서 고르게 되며, 이 표는 16.5% 분리과세를 택한 기준입니다. 다른 소득이 적으면 종합과세가 더 유리할 수 있습니다.">
                                   1,500만 초과
                                 </span>
                               ) : null}
@@ -2214,7 +2288,8 @@ function App() {
                       ① <strong>세액공제 받지 않은 납입액</strong> - 과세제외, 세금 없음<br />
                       ② <strong>이연퇴직소득(퇴직금)</strong> - 연금수령분은 퇴직소득세를 30·40·50% 감면<br />
                       ③ <strong>세액공제 받은 납입액 + 운용수익</strong> - 연금소득세 5.5% / 70세 이상 4.4% /
-                      80세 이상 3.3%, 연 1,500만원 초과 시 종합과세 또는 16.5% 분리과세 선택<br />
+                      80세 이상 3.3%. ③재원의 연금수령분이 <strong>연 1,500만원을 넘으면</strong> 저율 분리과세를
+                      쓸 수 없고 종합과세와 <strong>16.5% 분리과세</strong> 중에서 고릅니다 - 이 표는 16.5% 기준입니다<br />
                       순서를 바꿀 수 없으므로 ①이 많을수록 초기 인출의 세금이 낮아집니다.
                     </Help>
                     {sim.totals.totalOver > 1 ? (
@@ -2252,6 +2327,7 @@ function App() {
         mode={mode} years={years} rate={rate}
         otherPrincipal={otherPrincipal} exemptPrincipal={exemptPrincipal} sim={sim} startYear={startYear}
         accountList={accountList} accountNames={accountNames} merged={merged}
+        blendedFeeRate={blendedFeeRate}
       />
     </React.Fragment>
   );
@@ -2266,7 +2342,7 @@ function PrintSheet(props) {
     ready, custName, birth, age, system, systemJoin, retireTotal, retireDate, retireAge,
     amtLegal, amtHonor, deferredTax, best, picked,
     allocation, isSplit, allocatedDeferredTax, comparison, memo, memoOnPrint,
-    mode, years, rate, otherPrincipal, sim, startYear, exemptPrincipal,
+    mode, years, rate, otherPrincipal, sim, startYear, exemptPrincipal, blendedFeeRate,
     accountList, accountNames, merged
   } = props;
 
@@ -2299,8 +2375,8 @@ function PrintSheet(props) {
     ['기존 보유 계좌', accSummary],
     ['합산 범위 / 인출 방식', mergeLabel + ' / ' + (mode === 'max' ? '세법 한도 내 최대' : '기간 균등 분할')],
     ['수령 기간 / 운용수익률', years + '년 / 연 ' + rate.toFixed(1) + '%'],
-    ['계좌 수수료 / 총 수수료', picked.feeRate > 0
-      ? '연 ' + (picked.feeRate * 100).toFixed(2) + '% / ' + krw(sim.totals.totalFee)
+    ['계좌 수수료 / 총 수수료', blendedFeeRate > 0
+      ? '연 ' + (blendedFeeRate * 100).toFixed(2) + '% / ' + krw(sim.totals.totalFee)
       : '없음']
   ];
 
@@ -2424,7 +2500,7 @@ function PrintSheet(props) {
                         {r.c.label}{r.partial ? ' (일부)' : ''}
                       </td>
                       <td style={Object.assign({}, cell, { textAlign: 'center' })}>{r.c.startLimitYear}년차</td>
-                      <td style={cell}>{(r.c.feeRate * 100).toFixed(2)}%</td>
+                      <td style={cell}>{r.c.feeRate > 0 ? (r.c.feeRate * 100).toFixed(2) + '%' : '-'}</td>
                       <td style={cell}>{r.totalFee > 0 ? man(r.totalFee) : '-'}</td>
                       <td style={cell}>{man(r.afterTax)}</td>
                     </tr>
@@ -2503,7 +2579,7 @@ function PrintSheet(props) {
         연금수령한도 = 과세기간 개시일 현재 평가액 ÷ (11 - 연금수령연차) × 120%. 이는 인출 한도가 아니라 연금수령과 연금외수령을 가르는 기준이며, 초과 인출분은 감면 없이 과세됩니다.
         연금수령연차는 {CUTOFF_LABEL} 이전 가입 계좌, 그리고 {CUTOFF_LABEL} 이전 퇴직연금(DB·DC) 가입자가 퇴직급여 전액을 신규 개설 계좌에 입금하는 경우 6년차부터 기산하며(소득세법 시행령 §40의2④), 연금개시 요건(만 55세·가입 5년, 퇴직급여 입금 시 5년 면제)을 갖춘 해부터 신청 여부와 무관하게 매년 누적됩니다.
         퇴직소득세는 실제 연금수령 1~10년차 30%, 11~20년차 40%, 21년차부터 50% 감면됩니다(소득세법 §129①5의3). 인출은 세액공제 받지 않은 금액 → 이연퇴직소득 → 세액공제 받은 금액·운용수익 순입니다(소득세법 시행령 §40의3).
-        사적연금 연 1,500만원 초과 수령 시 종합과세 또는 16.5% 분리과세 선택 대상입니다.
+        사적연금 연 1,500만원 초과 수령 시 종합과세 또는 16.5% 분리과세 선택 대상이며, 16.5% 기준으로 계산했습니다.
         본 자료는 상담 보조용 추정치로 실제 세액 및 수령액과 다를 수 있으며, 최종 판단은 원천징수영수증과 금융기관 확인을 거쳐야 합니다.
       </p>
     </div>

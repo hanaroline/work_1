@@ -87,12 +87,16 @@ module.exports = async function run(t) {
     t.includes(v, '가입일이 더 빠르다고 유리하지 않습니다', '가입일 선후는 무관함을 명시');
 
     // --- 수수료가 동점을 가른다 ---
+    // 계좌 수수료는 IRP 에만 있다. 연금저축계좌는 계좌 단위 수수료가 없고 비용이
+    // 편입 상품의 보수로 들어가므로, 입력칸도 두지 않고 판정에서도 0 으로 본다.
+    t.is(await field(page, '연금저축 1 연간 수수료').count(), 0, '연금저축계좌에는 수수료 칸이 없다');
     await field(page, 'IRP 1 연간 수수료').fill('0.4');
     await page.waitForTimeout(500);
     t.includes(await selectedAccount(page), '연금저축 1', 'IRP 수수료 0.4% → 연금저축으로 뒤집힘');
-    await field(page, '연금저축 1 연간 수수료').fill('0.4');
+    // 되돌리면 다시 IRP (음성 대조 - 수수료가 정말 판정을 움직였는지 본다)
+    await field(page, 'IRP 1 연간 수수료').fill('0');
     await page.waitForTimeout(500);
-    t.includes(await selectedAccount(page), 'IRP 1', '둘 다 0.4% → 다시 IRP');
+    t.includes(await selectedAccount(page), 'IRP 1', '수수료를 0 으로 되돌리면 다시 IRP');
 
     // --- 연금이 개시된 계좌는 조건부 ---
     // 연금개시 계좌는 원칙적으로 추가 입금이 막히지만, 당사 계좌라면 퇴직금에 한해

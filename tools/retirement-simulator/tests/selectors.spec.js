@@ -59,7 +59,22 @@ module.exports = async function run(t) {
         t.is(await field(page, k + ' ' + name).count(), 1, '계좌 라벨 고유: ' + k + ' ' + name);
       }
     }
+    // 수수료 칸은 IRP 에만 있다 - 연금저축계좌에는 계좌 수수료가 없다
+    for (const name of FIELDS.perIrpOnly) {
+      t.is(await field(page, 'IRP 1 ' + name).count(), 1, 'IRP 전용 라벨 고유: IRP 1 ' + name);
+      t.is(await field(page, '연금저축 1 ' + name).count(), 0, '연금저축 1 에는 없다: ' + name);
+      t.is(await field(page, '연금저축 2 ' + name).count(), 0, '연금저축 2 에도 없다: ' + name);
+    }
     t.is(await field(page, 'IRP 2 가입일').count(), 0, '없는 계좌의 칸은 잡히지 않는다');
+
+    // 계좌마다 같은 칸이 생기므로 설명 버튼 이름에도 계좌 키가 붙어야 한다.
+    // 안 붙이면 '가입일 설명' 버튼이 계좌 수만큼 생겨 어느 것도 고유하게 잡히지 않는다.
+    for (const k of ['연금저축 1', '연금저축 2', 'IRP 1']) {
+      for (const name of ['가입일', '세액공제 받지 않은 금액', '연간 수수료', '연금개시됨', '시뮬레이션 합산']) {
+        t.is(await page.getByRole('button', { name: k + ' ' + name + ' 설명', exact: true }).count(), 1,
+          '설명 버튼 고유: ' + k + ' ' + name);
+      }
+    }
 
     // 가운데 계좌를 지우면 번호가 다시 매겨진다
     await button(page, '연금저축 1 삭제').click();
@@ -96,8 +111,8 @@ module.exports = async function run(t) {
       t.is(got, value, '값이 제 칸에 들어감: ' + name);
     }
 
-    // 수수료 4칸도 서로 섞이지 않는지
-    const feeProbes = [['연금저축 1', '0.11'], ['IRP 1', '0.22'], ['신규 IRP', '0.33'], ['신규 연금저축', '0.44']];
+    // 수수료 칸끼리 섞이지 않는지 (IRP 계좌 + 신규 IRP - 연금저축에는 칸이 없다)
+    const feeProbes = [['IRP 1', '0.22'], ['신규 IRP', '0.33']];
     for (const [label, v] of feeProbes) await field(page, label + ' 연간 수수료').fill(v);
     await page.waitForTimeout(300);
     for (const [label, v] of feeProbes) {
