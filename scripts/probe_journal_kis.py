@@ -126,6 +126,11 @@ def probe(kis, label: str) -> dict:
             "외국인 순매수수량": first.get("frgn_ntby_qty"),
             "기관 순매수수량": first.get("orgn_ntby_qty"),
             "개인 순매수수량": first.get("prsn_ntby_qty"),
+            # **칸 이름을 전부 적는다.** 원천을 이쪽으로 옮기려는 까닭이
+            # 「확정 금액을 얻는 것」인데, 이 계열이 금액을 주는지는 여기
+            # 목록에만 답이 있다. 골라 적으면 없는 것을 없다고 말할 수 없다.
+            "칸이름": sorted(first),
+            "맨윗줄 전체": first,
         }
     except Exception as e:  # noqa: BLE001
         r["칸"]["일자별투자자:삼성전자"] = {"됨": False, "까닭": str(e)[:200]}
