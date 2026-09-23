@@ -29,6 +29,25 @@ module.exports = async function run(t) {
     t.includes(legacyCard, '§40의4', '근거 조문을 표시');
     t.includes(await verdictText(page), '신규 IRP', '대신 신규 IRP 를 추천');
 
+    // --- DB 는 같은 제한을 받지 않는다 ---
+    // 소득세법 시행령 §40의2①2 의 '퇴직연금계좌' 열거에 확정급여형(DB)은 없다.
+    // DB 는 가입자별 계좌가 없어 퇴직급여 지급이 '연금계좌 간 이체'가 아니라
+    // '퇴직소득의 연금계좌 입금'이므로 §40의4 이체 제한 대상이 아니다.
+    await button(page, 'DB').click();
+    await page.waitForTimeout(400);
+    const dbCards = await cards(page);
+    const dbLegacy = dbCards.find((c) => c.startsWith('기존 연금저축'));
+    t.excludes(dbLegacy, '이전 불가', '2016년 가입 DB 는 구 연금저축으로 이전 가능');
+    t.excludes(dbLegacy, '§40의4', 'DB 에는 이체 제한 사유가 붙지 않음');
+    t.includes(dbLegacy, '6년차', 'DB 도 구계좌의 6년차 기산을 쓸 수 있음');
+    t.includes(await verdictText(page), '기존', 'DB 는 기존 구계좌가 추천됨');
+
+    // 같은 조건에서 DC 로 바꾸면 다시 막혀야 한다 (두 제도가 실제로 다르게 판정되는지)
+    await button(page, 'DC').click();
+    await page.waitForTimeout(400);
+    t.includes((await cards(page)).find((c) => c.startsWith('기존 연금저축')), '이전 불가',
+      'DC 로 바꾸면 같은 조건에서 이전 불가로 판정');
+
     // --- 만 55세 미만: 법정퇴직금은 IRP 의무이전, 명예퇴직금만 연금저축 가능 ---
     await fillCase(page, {
       name: '', birth: '760820', system: 'SEV', joinDate: '2000-01-03',

@@ -97,12 +97,17 @@ function transferBlockers(target, source, age) {
     reasons.push('만 55세 미만 퇴직급여는 IRP 의무이전 대상(근퇴법 §17·§20) - 연금저축 입금 불가');
   }
 
-  // (2) 퇴직연금(DB/DC) → 구 연금계좌 이체 제한 (소득세법 시행령 §40의4)
-  //     2013.3.1 이후 설정된 퇴직연금계좌의 지급액은 2013.3.1 이전 가입 연금계좌로 이체 불가.
-  //     법정퇴직금·명예퇴직금은 '연금계좌 간 이체'가 아닌 '퇴직소득 입금'이므로 제한 없음.
-  if ((source.kind === 'DB' || source.kind === 'DC') && !target.isNew) {
+  // (2) DC → 구 연금계좌 이체 제한 (소득세법 시행령 §40의4)
+  //     2013.3.1 이후 설정된 연금계좌의 금액은 2013.3.1 이전 가입 연금계좌로 이체할 수 없다.
+  //
+  //     DB 는 여기에 걸리지 않는다. 소득세법 시행령 §40의2①2 가 '퇴직연금계좌' 로 열거하는 것은
+  //     확정기여형(DC)·개인형퇴직연금(IRP)·중소기업퇴직연금기금·과학기술인공제회 계좌뿐이고
+  //     확정급여형(DB)은 빠져 있다. DB 는 사업장 단위로 적립해 가입자별 계좌 자체가 없으므로
+  //     퇴직급여 지급은 '연금계좌 간 이체'가 아니라 '퇴직소득의 연금계좌 입금'이다.
+  //     같은 이유로 법정퇴직금·명예퇴직금도 제한을 받지 않는다.
+  if (source.kind === 'DC' && !target.isNew) {
     if (isLegacyDate(target.joinDate) && !isLegacyDate(source.joinDate)) {
-      reasons.push(CUTOFF_LABEL + ' 이후 가입 ' + source.kind + ' 지급액은 ' + CUTOFF_LABEL +
+      reasons.push(CUTOFF_LABEL + ' 이후 설정된 DC 계좌의 지급액은 ' + CUTOFF_LABEL +
         ' 이전 가입 연금계좌로 이체 불가 (소득세법 시행령 §40의4)');
     }
   }
@@ -1156,7 +1161,9 @@ function App() {
                     label={system === 'SEV' ? '입사일' : system + ' 제도 가입일'}
                     hint={system === 'SEV'
                       ? '법정퇴직금은 연금계좌 이체 제한을 받지 않습니다.'
-                      : CUTOFF_LABEL + ' 이후 가입이면 구 연금계좌로 이전할 수 없습니다.'}>
+                      : system === 'DC'
+                        ? CUTOFF_LABEL + ' 이후 설정된 DC 계좌는 구 연금계좌로 이전할 수 없습니다.'
+                        : 'DB 는 가입자별 연금계좌가 아니어서 이체 제한을 받지 않습니다.'}>
                     <DateInput value={systemJoinStr} onChange={setSystemJoinStr} label="제도 가입일" />
                   </Field>
 
