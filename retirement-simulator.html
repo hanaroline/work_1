@@ -871,7 +871,8 @@ const TODAY_STR = (() => {
  */
 function DateInput({
   value,
-  onChange
+  onChange,
+  label
 }) {
   const handle = e => {
     const v = e.target.value;
@@ -904,6 +905,7 @@ function DateInput({
     type: "date",
     className: inputCls,
     value: value,
+    "aria-label": label,
     min: "1900-01-01",
     max: TODAY_STR,
     onChange: handle,
@@ -913,13 +915,15 @@ function DateInput({
 function MoneyInput({
   value,
   onChange,
-  placeholder
+  placeholder,
+  label
 }) {
   return /*#__PURE__*/React.createElement("div", {
     className: "relative"
   }, /*#__PURE__*/React.createElement("input", {
     type: "text",
     inputMode: "numeric",
+    "aria-label": label,
     className: inputCls + ' num pr-9 text-right',
     value: value ? Number(value).toLocaleString('ko-KR') : '',
     placeholder: placeholder || '0',
@@ -941,6 +945,8 @@ function Segmented({
       key: o.value,
       type: "button",
       onClick: () => onChange(o.value),
+      "aria-label": o.label,
+      "aria-pressed": on,
       className: 'flex-1 h-[42px] px-2 text-[14px] font-medium transition ' + (i > 0 ? 'border-l border-hair ' : '') + (on ? 'bg-mas-orange text-white' : 'bg-white text-ink-muted hover:bg-surf-subtle hover:text-ink')
     }, o.label);
   }));
@@ -1470,6 +1476,7 @@ function App() {
     rows: 2,
     maxLength: MEMO_MAX,
     value: memo,
+    "aria-label": "\uC0C1\uB2F4 \uBA54\uBAA8",
     onChange: e => setMemo(e.target.value),
     placeholder: "\uACE0\uAC1D \uC694\uCCAD\uC0AC\uD56D, \uB2E4\uC74C \uC0C1\uB2F4 \uC2DC \uD655\uC778\uD560 \uC810 \uB4F1",
     className: "w-full px-3 py-2 border border-hair rounded-xs bg-white text-[13px] text-ink leading-snug resize-y focus:outline-none focus:border-mas-orange focus:ring-2 focus:ring-mas-orange/25 transition"
@@ -1480,6 +1487,7 @@ function App() {
   }, /*#__PURE__*/React.createElement("input", {
     type: "checkbox",
     checked: memoOnPrint,
+    "aria-label": "\uC0C1\uB2F4 \uBA54\uBAA8 \uC778\uC1C4\uBB3C \uD3EC\uD568",
     className: "w-3.5 h-3.5 accent-[#F58220]",
     onChange: e => setMemoOnPrint(e.target.checked)
   }), /*#__PURE__*/React.createElement("span", {
@@ -1504,6 +1512,7 @@ function App() {
     ref: fileRef,
     type: "file",
     accept: "application/json,.json",
+    "aria-label": "\uC0C1\uB2F4 \uCF00\uC774\uC2A4 \uAC00\uC838\uC624\uAE30",
     className: "hidden",
     onChange: e => {
       doImport(e.target.files && e.target.files[0]);
@@ -1554,6 +1563,7 @@ function App() {
       maxLength: MEMO_MAX,
       value: editingText,
       autoFocus: true,
+      "aria-label": "\uC800\uC7A5\uB41C \uC0C1\uB2F4 \uBA54\uBAA8 \uC218\uC815",
       onChange: e => setEditingText(e.target.value),
       className: "w-full px-2 py-1.5 border border-hair rounded-xs text-[12px] leading-snug resize-y focus:outline-none focus:border-mas-orange focus:ring-2 focus:ring-mas-orange/25"
     }), /*#__PURE__*/React.createElement("div", {
@@ -1585,6 +1595,7 @@ function App() {
     className: inputCls,
     value: custName,
     maxLength: 20,
+    "aria-label": "\uACE0\uAC1D\uBA85",
     onChange: e => setCustName(e.target.value),
     placeholder: "\uD64D\uAE38\uB3D9"
   })), /*#__PURE__*/React.createElement(Field, {
@@ -1595,6 +1606,7 @@ function App() {
     value: birthRaw,
     inputMode: "numeric",
     maxLength: 10,
+    "aria-label": "\uC0DD\uB144\uC6D4\uC77C",
     onChange: e => setBirthRaw(e.target.value),
     placeholder: "710315"
   }))), /*#__PURE__*/React.createElement("div", {
@@ -1629,32 +1641,37 @@ function App() {
     hint: system === 'SEV' ? '법정퇴직금은 연금계좌 이체 제한을 받지 않습니다.' : CUTOFF_LABEL + ' 이후 가입이면 구 연금계좌로 이전할 수 없습니다.'
   }, /*#__PURE__*/React.createElement(DateInput, {
     value: systemJoinStr,
-    onChange: setSystemJoinStr
+    onChange: setSystemJoinStr,
+    label: "\uC81C\uB3C4 \uAC00\uC785\uC77C"
   })), system === 'SEV' ? /*#__PURE__*/React.createElement("div", {
     className: "space-y-3"
   }, /*#__PURE__*/React.createElement(Field, {
     label: "\uBC95\uC815\uD1F4\uC9C1\uAE08"
   }, /*#__PURE__*/React.createElement(MoneyInput, {
     value: amtLegal,
-    onChange: setAmtLegal
+    onChange: setAmtLegal,
+    label: "\uBC95\uC815\uD1F4\uC9C1\uAE08"
   })), /*#__PURE__*/React.createElement(Field, {
     label: "\uBA85\uC608(\uBC95\uC815\uC678) \uD1F4\uC9C1\uAE08",
     hint: "\uADFC\uD1F4\uBC95\uC0C1 \uD1F4\uC9C1\uAE09\uC5EC\uAC00 \uC544\uB2C8\uBBC0\uB85C \uB9CC 55\uC138 \uBBF8\uB9CC\uC774\uC5B4\uB3C4 \uC5F0\uAE08\uC800\uCD95\uACC4\uC88C \uC785\uAE08\uC774 \uAC00\uB2A5\uD569\uB2C8\uB2E4."
   }, /*#__PURE__*/React.createElement(MoneyInput, {
     value: amtHonor,
-    onChange: setAmtHonor
+    onChange: setAmtHonor,
+    label: "\uBA85\uC608\uD1F4\uC9C1\uAE08"
   }))) : /*#__PURE__*/React.createElement(Field, {
     label: "\uD1F4\uC9C1\uAE09\uC5EC (\uB2E8\uC77C \uC9C1\uC811 \uC785\uAE08)",
     hint: "DB\xB7DC \uC9C0\uAE09\uC561\uC740 \uBD84\uD560 \uC785\uAE08 \uC5C6\uC774 \uB2E8\uC77C \uACC4\uC88C\uB85C \uC774\uC804\uD569\uB2C8\uB2E4."
   }, /*#__PURE__*/React.createElement(MoneyInput, {
     value: amtSingle,
-    onChange: setAmtSingle
+    onChange: setAmtSingle,
+    label: "\uD1F4\uC9C1\uAE09\uC5EC"
   })), /*#__PURE__*/React.createElement(Field, {
     label: "\uC774\uC5F0 \uD1F4\uC9C1\uC18C\uB4DD\uC138",
     hint: "\uC6D0\uCC9C\uC9D5\uC218\uC601\uC218\uC99D \uAE30\uC900. \uBBF8\uC785\uB825 \uC2DC \uC138\uC561 \uBE44\uAD50\uB294 \uD45C\uC2DC\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
   }, /*#__PURE__*/React.createElement(MoneyInput, {
     value: deferredTax,
-    onChange: setDeferredTax
+    onChange: setDeferredTax,
+    label: "\uC774\uC5F0 \uD1F4\uC9C1\uC18C\uB4DD\uC138"
   })))), /*#__PURE__*/React.createElement(Section, {
     title: "2 \xB7 \uAE30\uC874 \uBCF4\uC720 \uC5F0\uAE08\uACC4\uC88C"
   }, /*#__PURE__*/React.createElement("div", {
@@ -1686,6 +1703,7 @@ function App() {
       type: "checkbox",
       checked: a.on,
       onChange: e => a.setOn(e.target.checked),
+      "aria-label": '기존 ' + a.label + ' 보유',
       className: "w-4 h-4 accent-[#F58220]"
     }), /*#__PURE__*/React.createElement("span", {
       className: "text-[15px] font-bold text-ink"
@@ -1697,12 +1715,14 @@ function App() {
       label: "\uAC00\uC785\uC77C"
     }, /*#__PURE__*/React.createElement(DateInput, {
       value: a.joinStr,
-      onChange: a.setJoin
+      onChange: a.setJoin,
+      label: '기존 ' + a.label + ' 가입일'
     })), /*#__PURE__*/React.createElement(Field, {
       label: "\uD604\uC7AC \uD3C9\uAC00\uC561"
     }, /*#__PURE__*/React.createElement(MoneyInput, {
       value: a.bal,
-      onChange: a.setBal
+      onChange: a.setBal,
+      label: '기존 ' + a.label + ' 평가액'
     }))), a.on && isLegacyDate(jd) && !(a.bal > 0) && /*#__PURE__*/React.createElement("p", {
       className: "text-[12px] text-sig-err mt-2 leading-snug"
     }, "\uC794\uACE0\uAC00 0\uC6D0\uC774\uBA74 ", CUTOFF_LABEL, " \uC774\uC804 \uAC00\uC785 \uD2B9\uB840(6\uB144\uCC28 \uAE30\uC0B0)\uB97C \uC801\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."));
@@ -1713,6 +1733,7 @@ function App() {
     type: "number",
     min: "0",
     max: "30",
+    "aria-label": "\uACFC\uAC70 \uC5F0\uAE08 \uC218\uB839 \uD69F\uC218",
     className: inputCls + ' num',
     value: pastCount,
     onChange: e => setPastCount(Math.max(0, Math.min(30, +e.target.value || 0)))
@@ -1728,6 +1749,8 @@ function App() {
     key: o.value,
     type: "button",
     disabled: o.disabled,
+    "aria-label": o.label,
+    "aria-pressed": scope === o.value,
     onClick: () => setScope(o.value),
     className: 'h-[42px] px-2 text-[13px] font-medium border rounded-xs transition ' + (o.disabled ? 'bg-surf-subtle text-mas-gray border-hair cursor-not-allowed' : scope === o.value ? 'bg-mas-orange text-white border-mas-orange' : 'bg-white text-ink-muted border-hair hover:bg-surf-subtle hover:text-ink')
   }, o.label)))), /*#__PURE__*/React.createElement(Field, {
@@ -1752,6 +1775,7 @@ function App() {
     max: "30",
     step: "1",
     value: years,
+    "aria-label": "\uC218\uB839 \uAE30\uAC04",
     className: "w-full",
     onChange: e => setYears(+e.target.value)
   }), /*#__PURE__*/React.createElement("div", {
@@ -1772,6 +1796,7 @@ function App() {
     max: "8",
     step: "0.5",
     value: rate,
+    "aria-label": "\uC6B4\uC6A9\uC218\uC775\uB960",
     className: "w-full",
     onChange: e => setRate(+e.target.value)
   }))), /*#__PURE__*/React.createElement(Field, {
@@ -1807,6 +1832,7 @@ function App() {
     min: "0",
     max: "3",
     step: "0.01",
+    "aria-label": r.label + ' 연간 수수료',
     className: inputCls + ' num pr-7 text-right h-[38px]',
     value: fees[r.id],
     onChange: e => setFee(r.id, Math.max(0, Math.min(3, +e.target.value || 0)))
@@ -1826,6 +1852,8 @@ function App() {
       type: "button",
       onClick: () => setTab(t.id),
       disabled: dim,
+      "aria-label": t.label,
+      "aria-pressed": on,
       className: 'h-[44px] px-5 text-[15px] font-medium transition ' + (i > 0 ? 'border-l border-hair ' : '') + (dim ? 'bg-surf-subtle text-mas-gray cursor-not-allowed' : on ? 'bg-mas-orange text-white' : 'bg-white text-ink-muted hover:bg-surf-subtle hover:text-ink')
     }, t.label);
   })), /*#__PURE__*/React.createElement("div", {

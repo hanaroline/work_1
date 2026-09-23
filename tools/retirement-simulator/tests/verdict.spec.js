@@ -1,0 +1,70 @@
+/** 판정 로직 - 계좌 선택, 분할 배정, 이전 제한 */
+const { openApp, fillCase, field, button, verdictText } = require('./helpers');
+
+const cards = (page) =>
+  page.locator('.screen-only .space-y-3.mb-6 > div')
+    .evaluateAll((ds) => ds.map((d) => d.innerText.replace(/\s+/g, ' ').trim()));
+
+module.exports = async function run(t) {
+  const { browser, page, errors } = await openApp({});
+  try {
+    // --- 구 연금저축(2013 이전·잔고 보유) 이 있으면 6년차 기산 ---
+    await fillCase(page, {
+      name: '김미래', birth: '680410', system: 'SEV', joinDate: '1995-03-02',
+      legal: 200000000, honor: 100000000, deferredTax: 12000000,
+      pension: { join: '2010-06-15', balance: 30000000 }, years: 10
+    });
+    let v = await verdictText(page);
+    t.includes(v, '기존 연금저축', '구 연금저축 보유 시 기존 계좌 추천');
+    t.includes(v, '6년차', '6년차 기산으로 판정');
+
+    // --- 2013.3 이후 가입 DC 는 구 연금계좌로 이전 불가 ---
+    await button(page, 'DC').click();
+    await field(page, '제도 가입일').fill('2016-04-01');
+    await field(page, '퇴직급여').fill('300000000');
+    await page.waitForTimeout(500);
+    const cs = await cards(page);
+    const legacyCard = cs.find((c) => c.startsWith('기존 연금저축'));
+    t.includes(legacyCard, '이전 불가', '2016년 가입 DC → 구 연금저축 이전 불가');
+    t.includes(legacyCard, '§40의4', '근거 조문을 표시');
+    t.includes(await verdictText(page), '신규 IRP', '대신 신규 IRP 를 추천');
+
+    // --- 만 55세 미만: 법정퇴직금은 IRP 의무이전, 명예퇴직금만 연금저축 가능 ---
+    await fillCase(page, {
+      name: '', birth: '760820', system: 'SEV', joinDate: '2000-01-03',
+      legal: 150000000, honor: 50000000, deferredTax: 7000000,
+      pension: { join: '2011-05-20', balance: 20000000 }
+    });
+    v = await verdictText(page);
+    t.includes(v, '분할', '재원별 분할 입금으로 판정');
+    t.includes(v, '법정퇴직금', '법정퇴직금 배정을 표시');
+    t.includes(v, '명예(법정외)퇴직금', '명예퇴직금 배정을 표시');
+    const penCard = (await cards(page)).find((c) => c.startsWith('기존 연금저축'));
+    t.includes(penCard, '만 55세 미만', '55세 미만 사유를 표시');
+    t.includes(penCard, '근퇴법', '근거 법령을 표시');
+
+    // --- 가입일 선후는 우열을 가르지 않는다 (둘 다 2013 이전이면 동점) ---
+    await fillCase(page, {
+      name: '홍길동', birth: '710315', system: 'DC', joinDate: '2000-07-01',
+      amount: 350000000, deferredTax: 7500000,
+      pension: { join: '2003-03-02', balance: 75000000 },
+      irp: { join: '2002-03-02', balance: 85000000 }
+    });
+    v = await verdictText(page);
+    t.includes(v, '기존 IRP', 'DC 는 IRP 로 직접 이전되므로 IRP 우선');
+    t.includes(v, '동점', '세법상 동점임을 안내');
+    t.includes(v, '가입일이 더 빠르다고 유리하지 않습니다', '가입일 선후는 무관함을 명시');
+
+    // --- 수수료가 동점을 가른다 ---
+    await field(page, '기존 IRP 연간 수수료').fill('0.4');
+    await page.waitForTimeout(500);
+    t.includes(await verdictText(page), '기존 연금저축', 'IRP 수수료 0.4% → 연금저축으로 뒤집힘');
+    await field(page, '기존 연금저축 연간 수수료').fill('0.4');
+    await page.waitForTimeout(500);
+    t.includes(await verdictText(page), '기존 IRP', '둘 다 0.4% → 다시 IRP');
+
+    t.is(errors.length, 0, '런타임 에러 없음');
+  } finally {
+    await browser.close();
+  }
+};
