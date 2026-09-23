@@ -606,6 +606,7 @@ function App() {
   const [storeOk] = useState(() => storageAvailable());
   const [notice, setNotice] = useState(null);
   const [memo, setMemo] = useState('');
+  const [memoOnPrint, setMemoOnPrint] = useState(false);   // 기본은 내부 메모로 취급해 인쇄 제외
   const [editingId, setEditingId] = useState(null);   // 목록에서 메모를 고치는 중인 항목
   const [editingText, setEditingText] = useState('');
   const fileRef = React.useRef(null);
@@ -621,7 +622,7 @@ function App() {
     amtSingle, amtLegal, amtHonor, deferredTax,
     hasPension, pensionJoinStr, pensionBal,
     hasIrp, irpJoinStr, irpBal,
-    pastCount, fees, manualPick, pickedId, scope, mode, years, rate, memo
+    pastCount, fees, manualPick, pickedId, scope, mode, years, rate, memo, memoOnPrint
   });
 
   // 우리 형식인지 최소한의 확인. 아니면 폼을 건드리지 않는다
@@ -661,6 +662,7 @@ function App() {
     setYears(Math.min(30, Math.max(5, num(d.years, 10))));
     setRate(Math.min(8, Math.max(0, num(d.rate, 3))));
     setMemo(str(d.memo, '').slice(0, MEMO_MAX));
+    setMemoOnPrint(bool(d.memoOnPrint, false));
     return true;
   };
 
@@ -971,9 +973,16 @@ function App() {
                     placeholder="고객 요청사항, 다음 상담 시 확인할 점 등"
                     className="w-full px-3 py-2 border border-hair rounded-xs bg-white text-[13px] text-ink leading-snug
                                resize-y focus:outline-none focus:border-mas-orange focus:ring-2 focus:ring-mas-orange/25 transition" />
-                  {memo.length > 0 && (
-                    <span className="block text-[11px] text-ink-soft mt-0.5 text-right num">{memo.length} / {MEMO_MAX}</span>
-                  )}
+                  <span className="flex items-center justify-between mt-1">
+                    <label className="flex items-center gap-1.5 cursor-pointer">
+                      <input type="checkbox" checked={memoOnPrint} className="w-3.5 h-3.5 accent-[#F58220]"
+                        onChange={(e) => setMemoOnPrint(e.target.checked)} />
+                      <span className="text-[12px] text-ink-body">고객용 인쇄물에 포함</span>
+                    </label>
+                    {memo.length > 0 && (
+                      <span className="text-[11px] text-ink-soft num">{memo.length} / {MEMO_MAX}</span>
+                    )}
+                  </span>
                 </label>
 
                 <div className="flex gap-2 mb-2">
@@ -1660,6 +1669,7 @@ function App() {
         candidates={candidates} best={best} picked={picked}
         allocation={allocation} isSplit={isSplit} allocatedDeferredTax={allocatedDeferredTax}
         comparison={comparison}
+        memo={memo} memoOnPrint={memoOnPrint}
         scope={scope} scopeOptions={scopeOptions} mode={mode} years={years} rate={rate}
         otherPrincipal={otherPrincipal} sim={sim} startYear={startYear}
         hasPension={hasPension} pensionJoin={pensionJoin} pensionBal={pensionBal}
@@ -1677,7 +1687,8 @@ function PrintSheet(props) {
   const {
     ready, custName, birth, age, system, systemJoin, retireTotal,
     amtLegal, amtHonor, deferredTax, best, picked, scope, scopeOptions,
-    allocation, isSplit, allocatedDeferredTax, comparison, mode, years, rate, otherPrincipal, sim,
+    allocation, isSplit, allocatedDeferredTax, comparison, memo, memoOnPrint,
+    mode, years, rate, otherPrincipal, sim,
     hasPension, pensionJoin, pensionBal, hasIrp, irpJoin, irpBal
   } = props;
 
@@ -1713,8 +1724,14 @@ function PrintSheet(props) {
     ['세후 수령액', krw(sim.totals.afterTax)]
   ];
 
-  const th = { border: '0.5pt solid #CDCECB', background: '#FAB072', padding: '1.2mm 1mm', fontWeight: 700, textAlign: 'center' };
-  const td = { border: '0.5pt solid #E5E4E1', padding: '0.9mm 1mm', textAlign: 'right' };
+  const printMemo = memoOnPrint ? String(memo || '').trim() : '';
+
+  // 메모 블록이 붙으면서 표가 길면 A4 한 장을 넘길 수 있어 행 여백을 줄인다
+  const tight = !!printMemo && rows.length > 18;
+  const cellPad = tight ? '0.55mm 1mm' : '0.9mm 1mm';
+
+  const th = { border: '0.5pt solid #CDCECB', background: '#FAB072', padding: tight ? '0.9mm 1mm' : '1.2mm 1mm', fontWeight: 700, textAlign: 'center' };
+  const td = { border: '0.5pt solid #E5E4E1', padding: cellPad, textAlign: 'right' };
   const tdC = Object.assign({}, td, { textAlign: 'center' });
 
   return (
@@ -1812,6 +1829,19 @@ function PrintSheet(props) {
           )}
         </div>
       </div>
+
+      {/* 상담 메모 - 체크했을 때만 */}
+      {printMemo && (
+        <div style={{
+          border: '0.5pt solid #CDCECB', background: '#F7F8FA',
+          padding: '1.2mm 1.6mm', marginBottom: '2mm'
+        }}>
+          <div style={{ fontSize: '6.2pt', color: '#6C6C6C', marginBottom: '0.4mm' }}>상담 메모</div>
+          <div style={{ fontSize: '6.6pt', lineHeight: 1.35, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+            {printMemo}
+          </div>
+        </div>
+      )}
 
       {/* 상세 인출 스케줄 */}
       <h2 style={{ fontSize: '8.4pt', fontWeight: 700, margin: '0 0 1.2mm', paddingTop: '0.8mm', borderTop: '1pt solid #F58220' }}>
