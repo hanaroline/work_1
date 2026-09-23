@@ -64,6 +64,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 KST = timezone(timedelta(hours=9))
 OUT = "data/journal/kis-flows.json"
 TOPN = 20                 # 산출물에 싣는 줄 수 (시장 × 주체 × 매수/매도)
+# 단위 검사를 걸 최소 금액(억원). 이보다 작으면 반올림이 지배해 뜻이 없다.
+MIN_EOK_FOR_UNIT_CHECK = 50
 
 
 def num(v, default=None):
@@ -90,6 +92,49 @@ def pick_candidates(per_market: int) -> dict[str, list[dict]]:
               f"(문턱 {out[mkt][-1]['value_eok']:.0f}억원)" if out[mkt] else f"{mkt}: 없음",
               flush=True)
     return out
+
+
+def eok_from_pbmn(v):
+    """`*_tr_pbmn` → 억원.
+
+    **이 칸은 원이 아니라 백만원이다.** 2026-09-23 에 원으로 알고 1e8 로
+    나눴다가 표의 금액이 전부 0억원으로 나왔다. 삼성전자 외국인 순매수
+    1,283,306 은 1.28조원이고, 억원으로는 12,833 이다 — 1억원 = 100 백만원.
+    """
+    return None if v is None else v / 100.0
+
+
+def unit_sane(v: dict) -> list[str]:
+    """금액이 **수량 × 종가**와 자릿수라도 맞는가.
+
+    「순매수 = 매수 − 매도」는 어느 단위로 재든 성립하므로 **단위 착오를 못
+    잡는다.** 실제로 100배 틀린 채 그 검산을 통과했다. 그래서 두 계열을
+    맞대는 검사를 따로 둔다 — 체결가는 종가와 다르므로 넉넉히 보되,
+    100배짜리 사고는 반드시 걸리게 한다.
+    """
+    bad = []
+    close = v.get("close")
+    if not close:
+        return bad
+    for who in ("외국인", "기관"):
+        a = v.get(who) or {}
+        q, m = a.get("순매수수량"), a.get("순매수금액")
+        if q is None or m is None:
+            continue
+        want = q * close / 1e8            # 수량 × 종가 → 억원
+        # **큰 금액에서만 잰다.** 작은 금액은 반올림이 지배해서 −1억 대 −2억
+        # 같은 것이 2배로 잡힌다. 실제로 그렇게 네 종목이 걸렸는데 넷 다
+        # 1~5억원짜리였다. 단위 사고는 100배로 나타나므로 큰 쪽만 봐도
+        # 반드시 걸린다 — 삼성전자라면 12,833억 대 0.128억이다.
+        if abs(want) < MIN_EOK_FOR_UNIT_CHECK:
+            continue
+        got = eok_from_pbmn(m)
+        ratio = abs(got / want) if want else 0
+        # 체결가는 종가가 아니므로 넉넉히 본다. 자릿수만 잡으면 된다.
+        if not (0.5 <= ratio <= 2.0):
+            bad.append("%s 금액 %.0f억 이 수량×종가 %.0f억 과 %.2f 배 어긋난다 "
+                       "— 단위를 의심하라" % (who, got, want, ratio))
+    return bad
 
 
 def has_flows(v: dict) -> bool:
@@ -139,7 +184,7 @@ def check_row(v: dict) -> list[str]:
             if a.get(b) is None or a.get(s) is None or a.get(n) is None:
                 continue
             got, want = a[n], a[b] - a[s]
-            # 금액은 원 단위라 반올림 오차가 생길 수 있다. 1 단위까지 본다.
+            # 금액 단위는 **백만원**이다. 반올림 오차가 있을 수 있어 1 까지 본다.
             if abs(got - want) > 1:
                 bad.append(f"{who} {kind}: 순매수 {got:,.0f} ≠ 매수−매도 {want:,.0f}")
     return bad
@@ -188,7 +233,7 @@ def main() -> int:
             if not has_flows(v):
                 empty.append(f"{r['name']}({r['code']})")
                 continue
-            bad = check_row(v)
+            bad = check_row(v) + unit_sane(v)
             if bad:
                 dropped.append(f"{r['name']}({r['code']}): {bad[0]}")
                 continue
@@ -218,7 +263,7 @@ def main() -> int:
             except Exception as e:  # noqa: BLE001
                 failed.append(f"{r['name']}({code}): {str(e)[:80]}")
                 continue
-            if not v or not has_flows(v) or check_row(v):
+            if not v or not has_flows(v) or check_row(v) or unit_sane(v):
                 failed.append(f"{r['name']}({code}): 다시 불러도 쓸 수 없음")
                 continue
             seen_dates[str(v["bizdate"])] = seen_dates.get(str(v["bizdate"]), 0) + 1
@@ -264,9 +309,7 @@ def main() -> int:
                 return {"code": v["code"], "name": v["name"], "close": v["close"],
                         "change_pct": v.get("change_pct"),
                         "qty": a["순매수수량"],
-                        # 원 → 억원. 시장일지의 다른 표와 단위를 맞춘다.
-                        "value_eok": (a["순매수금액"] / 1e8
-                                      if a["순매수금액"] is not None else None)}
+                        "value_eok": eok_from_pbmn(a["순매수금액"])}
 
             rank[mkt][who] = {"매수": [line(v) for v in buy],
                               "매도": [line(v) for v in sell]}
@@ -283,7 +326,9 @@ def main() -> int:
         "주의": ("거래소 전종목이 아니라 **거래대금 상위 표본** 안에서의 순위입니다. "
                  f"시장별 상위 {args.per_market} 종목을 불렀습니다."),
         "검산": {
-            "규칙": "순매수 = 매수 − 매도 (수량·금액 양쪽)",
+            "규칙": ["순매수 = 매수 − 매도 (수량·금액 양쪽)",
+                     "순매수금액 ≈ 순매수수량 × 종가 (자릿수 — 단위 착오를 잡는다)"],
+            "금액 단위": "원천의 *_tr_pbmn 은 **백만원**이다. 억원 = 값 / 100.",
             "어긋나 버린 종목": dropped[:50],
             "어긋난 수": len(dropped),
         },

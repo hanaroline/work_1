@@ -147,6 +147,38 @@ def main() -> int:
             bad("KIS 수급 %d/%d 칸이 매수−매도와 어긋난다" % (n_bad, n_chk))
         elif n_chk:
             ok("KIS 수급 %d 칸 모두 순매수 = 매수 − 매도" % n_chk)
+
+        # **단위를 따로 잰다.** 「순매수 = 매수 − 매도」는 어느 단위로 재든
+        # 성립하므로 단위 착오를 못 잡는다. 실제로 원천의 *_tr_pbmn 을 원으로
+        # 알고 1e8 로 나눴다가 표의 금액이 전부 0억원으로 나온 채 그 검산을
+        # 통과했다(2026-09-23). 그 계열은 **백만원**이다.
+        u_chk = u_bad = 0
+        for mkt, rows in (kf.get("rows") or {}).items():
+            for v in rows:
+                close = v.get("close")
+                if not close:
+                    continue
+                for who in ("외국인", "기관"):
+                    a = v.get(who) or {}
+                    q, m = a.get("순매수수량"), a.get("순매수금액")
+                    if q is None or m is None:
+                        continue
+                    want = q * close / 1e8       # 수량 × 종가 → 억원
+                    # 작은 금액은 반올림이 지배한다. 큰 쪽만 봐도 단위 사고는
+                    # 100배로 나타나므로 반드시 걸린다.
+                    if abs(want) < 50:
+                        continue
+                    u_chk += 1
+                    ratio = abs((m / 100.0) / want)
+                    if not (0.5 <= ratio <= 2.0):
+                        u_bad += 1
+                        if u_bad <= 3:
+                            bad("KIS %s %s %s 금액이 수량×종가와 %.2f 배 어긋난다 "
+                                "— 단위를 의심하라" % (mkt, v.get("name"), who, ratio))
+        if u_bad:
+            bad("KIS 수급 %d/%d 칸의 금액이 수량×종가와 자릿수가 다르다" % (u_bad, u_chk))
+        elif u_chk:
+            ok("KIS 수급 %d 칸 모두 금액이 수량×종가와 자릿수가 맞는다" % u_chk)
         if kf.get("못 받은 수"):
             warn("KIS 수급에서 못 받은 종목 %d" % kf["못 받은 수"])
         if (kf.get("검산") or {}).get("어긋난 수"):
