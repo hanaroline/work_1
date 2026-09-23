@@ -11,16 +11,23 @@ const blockText = async (page, heading) =>
   (await page.locator('section').filter({ has: page.getByRole('heading', { name: heading }) })
     .innerText()).replace(/\s+/g, ' ').trim();
 
-/** 한 계좌 줄의 판정 기호 (O / △ / X) */
-async function markOf(page, heading, label) {
+/** 한 계좌 줄을 통째로 읽는다 */
+async function rowOf(page, heading, label) {
   const rows = await page.locator('section')
     .filter({ has: page.getByRole('heading', { name: heading }) })
     .locator('div.border.border-hair.rounded-sm > div')
     .evaluateAll((ds) => ds.map((d) => d.innerText.replace(/\s+/g, ' ').trim()));
   const hit = rows.find((r) => r.slice(2).trim().startsWith(label));
   if (!hit) throw new Error('줄을 찾지 못함: ' + label + ' / 있는 줄: ' + JSON.stringify(rows));
-  return hit.trim()[0];
+  return hit.trim();
 }
+
+/** 한 계좌 줄의 판정 기호 (O / △ / X) */
+const markOf = async (page, heading, label) => (await rowOf(page, heading, label))[0];
+
+/** 지금 눌려 있는 조건 단추인가 */
+const pressed = (page, name) =>
+  button(page, '판단표 ' + name).getAttribute('aria-pressed');
 
 const RECEIVE = '어느 계좌로 받을 수 있나';
 const MOVE = '가지고 있는 계좌를 옮길 수 있나';
@@ -83,10 +90,17 @@ module.exports = async function run(t) {
     await page.waitForTimeout(300);
     await button(page, '고객 조건으로 보기').click();
     await page.waitForTimeout(400);
-    const after = await blockText(page, RECEIVE);
-    t.includes(after, 'DB', '고객의 퇴직제도로 맞춰짐');
-    // 2009년 가입 DB + 만 58세 → 신규 계좌도 6년차 특례 (Q34)
-    t.includes(after, '6년차', '2013.3.1 이전 DB 라 신규 계좌도 6년차');
+    // **고른 상태를 직접 본다.**
+    // 예전에는 블록 전체 글자에서 'DB' 와 '6년차' 를 찾았는데, 'DB' 는 조건 단추 이름으로
+    // 늘 거기 있고 '6년차' 는 아래 설명문("6년차면 1년차의 2배입니다")에 늘 있다.
+    // 그래서 단추가 아무 일도 하지 않아도 통과했다 - 음성 대조에서 드러났다.
+    t.is(await pressed(page, 'DB'), 'true', '고객의 퇴직제도(DB)로 맞춰짐');
+    t.is(await pressed(page, '2013.3.1 전'), 'true', '제도 가입시점도 맞춰짐');
+    t.is(await pressed(page, '만 55세 이상'), 'true', '퇴직 시 나이도 맞춰짐');
+    t.is(await pressed(page, 'DC'), 'false', '고르지 않은 제도는 눌려 있지 않음');
+    // 2009년 가입 DB + 만 58세 → 신규 계좌도 6년차 특례 (Q34). 그 줄을 직접 읽는다.
+    t.includes(await rowOf(page, RECEIVE, '신규 개설'), '6년차',
+      '2013.3.1 이전 DB 라 신규 계좌도 6년차');
 
     // ── 근거는 접혀 있다 ──────────────────────────────────────────
     t.is(await page.getByText('사내 연금 업무 Q&A', { exact: false }).count(), 1, '근거 묶음이 한 줄로 접혀 있음');

@@ -151,6 +151,37 @@ module.exports = async function run(t) {
     await page.waitForTimeout(200);
     t.is(await page.getByRole('note').count(), 0, '닫기로 다시 닫힘');
 
+    // --- 5. 판단표 탭의 조건 단추 ---
+    //
+    // **숨은 탭은 이 가드를 빠져나간다.** 판단표 패널은 display:none 이라 탭을 열기 전에는
+    // getByRole 이 세지 않는다. 그래서 판단표의 'DB' 단추가 왼쪽 입력 폼의 것과 접근성
+    // 이름이 같아 충돌했을 때, 이 스펙은 아무것도 잡지 못하고 matrix 스펙이 실제로
+    // 눌러 보다가 걸렸다. 누르지 않는 컨트롤이 새로 생기면 그마저도 빠져나가므로
+    // 탭을 열어 놓고 여기서 센다.
+    await button(page, '판단표').click();
+    await page.waitForTimeout(300);
+
+    const MATRIX_BUTTONS = [
+      '판단표 퇴직금제도', '판단표 DB', '판단표 DC',
+      '판단표 2013.3.1 전', '판단표 2013.3.1 후',
+      '판단표 규약상 퇴직급여', '판단표 명퇴금 · 위로금',
+      '판단표 만 55세 미만', '판단표 만 55세 이상',
+      '판단표 보내는 연금저축(구)', '판단표 보내는 연금저축(신)',
+      '판단표 보내는 IRP(구)', '판단표 보내는 IRP(신)',
+      '판단표 받는 연금저축(구)', '판단표 받는 연금저축(신)',
+      '판단표 받는 IRP(구)', '판단표 받는 IRP(신)',
+      '판단표 아직 아님', '판단표 충족'
+    ];
+    for (const name of MATRIX_BUTTONS) {
+      t.is(await button(page, name).count(), 1, '판단표 라벨 고유: ' + name);
+    }
+
+    // 판단표를 열어도 왼쪽 입력 폼의 단추와 겹치지 않아야 한다.
+    // 겹치면 사람도 검사도 어느 것을 누르는지 구분할 수 없다.
+    for (const name of ['DB', 'DC', '퇴직금제도', '기간 균등 분할', '세법 한도 내 최대']) {
+      t.is(await button(page, name).count(), 1, '판단표를 열어도 입력 폼 단추는 하나: ' + name);
+    }
+
     t.is(errors.length, 0, '런타임 에러 없음');
   } finally {
     await browser.close();
