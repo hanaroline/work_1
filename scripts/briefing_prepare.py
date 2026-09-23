@@ -62,6 +62,38 @@ def _prefer_daily(idx, daily):
     return out
 
 
+# 업종 등락률이 이 값을 넘으면 **원천이 잘못 준 것**입니다. 국내 주식의 하루
+# 가격제한폭이 ±30% 이므로, 종목을 시가총액으로 묶은 업종 지수는 어떤 날에도
+# 30% 를 넘을 수 없습니다. 넘으면 산술이 아니라 수집이 틀린 것입니다.
+SECTOR_LIMIT_PCT = 30.0
+
+
+def _sectors(sec):
+    """업종 등락률에서 **불가능한 값을 걸러낸다.**
+
+    네이버 업종 API 가 이따금 한 업종에 터무니없는 값을 실어 보냅니다.
+    2026-09-23 수집에서 「가정용품」이 **+162.93%** 였고(12종목 중 오른 것 5
+    내린 것 5), 이틀 전인 9/21 에도 같은 업종이 **+145.12%** 였습니다. 그
+    사이 9/22 는 &minus;0.15% 로 멀쩡했습니다 — 계속 틀린 것이 아니라
+    **하루씩 튀는 고장**입니다. 9/21 판이 「소프트웨어 +19.54%」를 같은 이유로
+    실었는데, 그 값도 나중에 +1.93% 로 고쳐졌습니다.
+
+    그대로 두면 「오른 업종」 표 맨 윗줄에 +162.93% 가 찍힙니다. 표가 한 줄
+    때문에 통째로 못 믿을 것이 되므로, **가격제한폭을 넘는 줄만 빼고** 남은
+    것에서 위아래 다섯을 다시 셉니다. 자료 파일은 건드리지 않습니다 — 뺀
+    개수를 돌려주므로 검증 노트에 몇 줄을 왜 뺐는지 적으십시오.
+    """
+    rows = [r for r in (sec.get("all") or []) if r.get("change_pct") is not None]
+    if not rows:                       # `all` 이 없으면 종전대로 원천의 top5/bottom5
+        return (sec.get("top5") or []), (sec.get("bottom5") or []), []
+    ok = [r for r in rows if abs(r["change_pct"]) <= SECTOR_LIMIT_PCT]
+    dropped = [r for r in rows if abs(r["change_pct"]) > SECTOR_LIMIT_PCT]
+    ok.sort(key=lambda r: -r["change_pct"])
+    # 원천의 `bottom5` 와 같은 차례로 돌려줍니다 — 덜 내린 것이 위, 가장 크게
+    # 내린 것이 아래입니다. 뒤집으면 지난 판들과 표가 거꾸로 섭니다.
+    return ok[:5], ok[-5:], dropped
+
+
 def prepare(D, H, N, today, now, kind):
     I = D["indices"]
     _dly = D.get("index_daily") or {}
@@ -140,8 +172,7 @@ def prepare(D, H, N, today, now, kind):
 
     kr_top, kr_bot = _split(S, 8)
     us_top, us_bot = _split(US, 6)
-    sec_top = (D.get("sectors") or {}).get("top5") or []
-    sec_bot = (D.get("sectors") or {}).get("bottom5") or []
+    sec_top, sec_bot, sec_dropped = _sectors(D.get("sectors") or {})
 
     ktb10 = (ec.get("ktb10y") or {}).get("value")
     gap = (ktb10 - ru["curve"]["ust10y"]) * 100 if ktb10 else None
