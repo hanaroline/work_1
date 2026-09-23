@@ -26,6 +26,21 @@ module.exports = async function run(t) {
   const { browser, page, errors } = await openApp({});
   try {
     await fillCase(page, CASE);
+
+    // **세 금액 칸이 모두 값을 가진 상태로 만들어 두고 초기화한다.**
+    //
+    // 예전에는 초기화 뒤 '퇴직급여' 칸만 비었는지 보았다. 그런데 이 케이스는
+    // 퇴직금제도라 그 칸이 애초에 비어 있고, 초기화하면 제도가 DC 로 돌아가면서
+    // 그 빈 칸을 읽게 된다 - 금액을 하나도 지우지 않아도 통과하는 검사였다.
+    // 음성 대조(초기화에서 금액 비우기 제거)가 통과해 버려 드러났다.
+    await button(page, 'DC').click();
+    await page.waitForTimeout(250);
+    await field(page, '퇴직급여').fill('123000000');
+    await button(page, '퇴직금제도').click();
+    await page.waitForTimeout(250);
+    t.is((await field(page, '법정퇴직금').inputValue()).replace(/,/g, ''), '150000000', '초기화 전 법정퇴직금 있음');
+    t.is((await field(page, '명예퇴직금').inputValue()).replace(/,/g, ''), '50000000', '초기화 전 명예퇴직금 있음');
+
     await button(page, '상담 저장').click();
     await page.waitForTimeout(500);
     t.is((await savedCases(page)).length, 1, '초기화 전에 상담 1건 저장');
@@ -61,6 +76,7 @@ module.exports = async function run(t) {
     // 금액 칸은 '있는가' 만 보고 '비었는가' 를 안 보고 있었다. 제도가 DC 로 돌아가면서
     // 칸이 새로 그려지는 바람에 값이 남아도 검사가 눈치채지 못하는 자리였다.
     t.is(await field(page, '퇴직급여').inputValue(), '', '퇴직급여 금액 비움');
+    t.is(await field(page, '명예퇴직금').inputValue(), '', '명예퇴직금 비움');
     t.is(await field(page, '과거 연금 수령 횟수').inputValue(), '0', '과거 수령 횟수 0');
     t.is(await field(page, '상담 메모').inputValue(), '', '메모 비움');
     t.is(await field(page, '상담 메모 인쇄물 포함').isChecked(), false, '메모 인쇄 체크 해제');
@@ -75,6 +91,15 @@ module.exports = async function run(t) {
     // 제도는 DC 로, 합산·인출 방식도 기본값으로
     t.is(await field(page, '퇴직급여').count(), 1, '퇴직제도가 DC 기본값으로 돌아감');
     t.is(await field(page, '법정퇴직금').count(), 0, '퇴직금제도 전용 칸이 사라짐');
+
+    // 법정퇴직금 칸은 초기화 후 화면에 없으므로(제도가 DC 로 돌아간다) 제도를 되돌려 확인한다.
+    // 이 한 칸을 보지 않으면 '법정퇴직금만 안 지우는' 회귀가 그대로 빠져나간다.
+    await button(page, '퇴직금제도').click();
+    await page.waitForTimeout(250);
+    t.is(await field(page, '법정퇴직금').inputValue(), '', '법정퇴직금도 비움');
+    t.is(await field(page, '명예퇴직금').inputValue(), '', '제도를 바꿔도 명예퇴직금은 비어 있음');
+    await button(page, 'DC').click();
+    await page.waitForTimeout(250);
     t.is(await page.getByRole('button', { name: '기간 균등 분할', exact: true }).getAttribute('aria-pressed'), 'true',
       '인출 방식이 기간 균등 분할로');
     t.is(await page.getByRole('button', { name: '판정', exact: true }).getAttribute('aria-pressed'), 'true',

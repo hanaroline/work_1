@@ -123,6 +123,32 @@ module.exports = async function run(t) {
     t.is(r.limitYear, 1, '올해 퇴직이면 1년차');
     t.near(r.limit, 1200, 1, '1년차 한도 1,200만원');
 
+    // ── 명퇴금이 함께 있어도 6년차 특례는 깨지지 않는다 ────────────
+    //
+    // 특례가 보는 것은 '퇴직연금 재원' 하나다. 명퇴금·위로금은 가입일자 개념이 없어
+    // (Q37) 특례 판정에 끼지 않는다. 재원 개수를 세는 식으로 구현하면 명퇴금이 하나
+    // 붙는 것만으로 6년차가 1년차가 되어 한도가 반토막 난다.
+    //
+    // DB 2011.11.1 가입(2013.3.1 이전) · 퇴직급여 1억 + 명퇴금 5천만 · 신규 계좌 전액.
+    // 두 재원이 같은 신규 IRP 로 가므로 기초자산 1.5억, 6년차면 1.5억÷(11-6)×120% = 3,600만원.
+    await fillCase(page, {
+      name: '명퇴금동반', birth: BIRTH, system: 'DB', joinDate: '2011-11-01',
+      retireDate: THIS_YEAR + '-03-02',
+      amount: 100000000, honor: 50000000, deferredTax: 0,
+      pension: false, irp: false,
+      mode: '기간 균등 분할', years: 30, rate: 0
+    });
+    r = await firstRow(page);
+    t.is(r.limitYear, 6, '명퇴금이 함께 있어도 DB 6년차 특례가 유지됨');
+    t.near(r.limit, 3600, 1, '6년차 한도 3,600만원 (1년차면 1,800만원)');
+
+    // 명퇴금을 지우면 재원이 하나가 되지만 연차는 그대로 6년차다 (음성 대조)
+    await field(page, '명예퇴직금').fill('0');
+    await page.waitForTimeout(500);
+    r = await firstRow(page);
+    t.is(r.limitYear, 6, '명퇴금을 지워도 6년차');
+    t.near(r.limit, 2400, 1, '기초자산만 1억으로 줄어 한도 2,400만원');
+
     // ── 퇴직 시점의 나이로 이전 가능 여부를 판정한다 ────────────────
     // 지금은 만 55세를 넘겼어도, 퇴직 당시 55세 미만이었다면 법정퇴직금은
     // IRP 로만 지급되었어야 한다. 오늘 나이로 판정하면 이걸 놓친다.
