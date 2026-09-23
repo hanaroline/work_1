@@ -15,12 +15,14 @@ const APP = 'file://' + path.resolve(__dirname, '..', '..', '..', 'retirement-si
 const FIELDS = {
   always: [
     '고객명', '생년월일', '제도 가입일', '퇴직일', '이연 퇴직소득세', '과거 연금 수령 횟수',
+    // 명퇴금·위로금은 규약에 규정되지 않은 돈이라 어느 제도에서나 있을 수 있다
+    '명예퇴직금',
     '상담 메모', '상담 메모 인쇄물 포함',
     '상담 케이스 가져오기', '수령 기간', '운용수익률',
     '신규 IRP 연간 수수료'
   ],
   whenDbDc: ['퇴직급여'],
-  whenSeverance: ['법정퇴직금', '명예퇴직금'],
+  whenSeverance: ['법정퇴직금'],
   whenDc: ['DB 에서 DC 로 전환'],
   whenConverted: ['전환 전 DB 가입일'],
   // 계좌를 하나 추가했을 때 그 카드 안에 생기는 칸들 (앞의 '연금저축 1' 등은 호출부에서 붙인다)
@@ -114,7 +116,20 @@ const button = (page, name) => page.getByRole('button', { name, exact: true });
 async function fillCase(page, c) {
   if (c.name !== undefined) await field(page, '고객명').fill(c.name);
   if (c.birth) await field(page, '생년월일').fill(c.birth);
-  if (c.system) await button(page, c.system === 'SEV' ? '퇴직금제도' : c.system).click();
+  if (c.system) {
+    await button(page, c.system === 'SEV' ? '퇴직금제도' : c.system).click();
+    await page.waitForTimeout(120);
+    // 새 케이스를 채울 때 금액 칸은 비우고 시작한다.
+    //
+    // 명퇴금처럼 어느 제도에서나 보이는 칸이 생기자, 앞 케이스에서 넣은 5천만원이
+    // 다음 케이스로 새어 들어가 기초자산을 1억에서 1.5억으로 불리고 한도 계산을
+    // 바꿔 놓았다. 케이스마다 명시적으로 0 을 적어 막을 수도 있지만, 그러면 칸이
+    // 하나 늘 때마다 같은 함정이 다시 생긴다. 여기서 한 번에 비운다.
+    for (const name of ['퇴직급여', '법정퇴직금', '명예퇴직금']) {
+      const f = field(page, name);
+      if (await f.count()) await f.fill('0');
+    }
+  }
   if (c.joinDate) await field(page, '제도 가입일').fill(c.joinDate);
   if (c.retireDate) await field(page, '퇴직일').fill(c.retireDate);
   if (c.dbConverted) {

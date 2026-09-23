@@ -568,15 +568,29 @@ function buildSources(input) {
         seniorityDate: null
       });
     }
-  } else if (input.amtSingle > 0) {
-    sources.push({
-      kind: system,
-      label: system + ' 퇴직급여',
-      amount: input.amtSingle,
-      joinDate: systemJoin,
-      seniorityDate,
-      seniorityFromDB: system === 'DC' && !!dbConverted && !!dbJoin
-    });
+  } else {
+    if (input.amtSingle > 0) {
+      sources.push({
+        kind: system,
+        label: system + ' 퇴직급여',
+        amount: input.amtSingle,
+        joinDate: systemJoin,
+        seniorityDate,
+        seniorityFromDB: system === 'DC' && !!dbConverted && !!dbJoin
+      });
+    }
+    // DB·DC 가입자의 명퇴금·위로금. 규약에 규정되지 않은 돈이라 회사가 직접 지급하고,
+    // 연금계좌 간 이체가 아니므로 DC 의 연금저축 입금 제한도 가입시점 제한도 받지 않는다.
+    // 가입일자 개념이 없어 기산연차 특례 대상도 아니다(Q37).
+    if (input.amtHonor > 0) {
+      sources.push({
+        kind: 'HONOR',
+        label: '명예(법정외)퇴직금',
+        amount: input.amtHonor,
+        joinDate: systemJoin,
+        seniorityDate: null
+      });
+    }
   }
   return sources;
 }
@@ -602,14 +616,20 @@ function seniorityOf(target, sources, opts) {
     depositYear
   } = opts; // depositYear = 퇴직급여가 계좌에 들어온 해
 
+  // 기산연차 특례가 보는 것은 '퇴직연금 재원' 하나다. 명퇴금·위로금은 가입일자 개념이
+  // 없어(Q37) 특례 판단에 끼지 않으므로, 함께 있다고 해서 특례가 깨지지 않는다.
+  // 앱은 재원 하나를 쪼개 여러 계좌로 보내지 않으므로, 이 재원이 신규 계좌로 배정되면
+  // 그 재원의 '전액' 이 들어간 것이 된다.
+  const pensionFunds = sources.filter(s => s.seniorityDate);
+  const legacyFund = pensionFunds.length === 1 && isLegacyDate(pensionFunds[0].seniorityDate) ? pensionFunds[0] : null;
   let index = 1;
   let basis = CUTOFF_LABEL + ' 이후 가입 계좌';
   if (!target.isNew && isLegacyDate(target.joinDate)) {
     index = 6;
     basis = fmtDate(target.joinDate) + ' 가입 · ' + CUTOFF_LABEL + ' 이전 계좌';
-  } else if (target.isNew && sources.length === 1 && isLegacyDate(sources[0].seniorityDate)) {
+  } else if (target.isNew && legacyFund) {
     index = 6;
-    basis = CUTOFF_LABEL + ' 이전 ' + (sources[0].seniorityFromDB ? 'DB' : sources[0].kind) + ' 가입(' + fmtDate(sources[0].seniorityDate) + ') · 신규계좌 전액 입금';
+    basis = CUTOFF_LABEL + ' 이전 ' + (legacyFund.seniorityFromDB ? 'DB' : legacyFund.kind) + ' 가입(' + fmtDate(legacyFund.seniorityDate) + ') · 신규계좌 전액 입금';
   } else if (target.isNew) {
     basis = '신규 개설 · 기산연차 특례 대상 아님';
   }
@@ -1475,7 +1495,9 @@ function App() {
   const retireDate = useMemo(() => parseDate(retireDateStr) || TODAY, [retireDateStr]);
   const depositYear = retireDate.getFullYear();
   const isPastRetire = depositYear < TODAY.getFullYear();
-  const retireTotal = system === 'SEV' ? amtLegal + amtHonor : amtSingle;
+
+  // 명퇴금은 어느 제도에서나 있을 수 있다 (규약에 규정되지 않은 돈)
+  const retireTotal = (system === 'SEV' ? amtLegal : amtSingle) + amtHonor;
 
   // 이전 가능 여부(만 55세 미만 IRP 의무이전 등)는 퇴직급여를 지급받는 시점의 나이로 본다.
   const retireAge = useMemo(() => ageOn(birth, retireDate), [birth, retireDate]);
@@ -2077,30 +2099,32 @@ function App() {
     value: dbJoinStr,
     onChange: setDbJoinStr,
     label: "\uC804\uD658 \uC804 DB \uAC00\uC785\uC77C"
-  })))), system === 'SEV' ? /*#__PURE__*/React.createElement("div", {
+  })))), /*#__PURE__*/React.createElement("div", {
     className: "space-y-3"
-  }, /*#__PURE__*/React.createElement(Field, {
+  }, system === 'SEV' ? /*#__PURE__*/React.createElement(Field, {
     label: "\uBC95\uC815\uD1F4\uC9C1\uAE08"
   }, /*#__PURE__*/React.createElement(MoneyInput, {
     value: amtLegal,
     onChange: setAmtLegal,
     label: "\uBC95\uC815\uD1F4\uC9C1\uAE08"
-  })), /*#__PURE__*/React.createElement(Field, {
-    label: "\uBA85\uC608(\uBC95\uC815\uC678) \uD1F4\uC9C1\uAE08",
-    hint: "\uADFC\uD1F4\uBC95\uC0C1 \uD1F4\uC9C1\uAE09\uC5EC\uAC00 \uC544\uB2C8\uBBC0\uB85C \uB9CC 55\uC138 \uBBF8\uB9CC\uC774\uC5B4\uB3C4 \uC5F0\uAE08\uC800\uCD95\uACC4\uC88C \uC785\uAE08\uC774 \uAC00\uB2A5\uD569\uB2C8\uB2E4.",
-    help: /*#__PURE__*/React.createElement(React.Fragment, null, "\uBA85\uD1F4\uAE08 \xB7 \uC704\uB85C\uAE08 \uB4F1 ", /*#__PURE__*/React.createElement("strong", null, "DB/DC \uADDC\uC57D\uC5D0 \uADDC\uC815\uB418\uC9C0 \uC54A\uC740"), " \uD1F4\uC9C1\uAE08\uC740 \uC81C\uB3C4\uC640 \uC5F0\uB839\uC5D0 \uAD00\uACC4\uC5C6\uC774 \uC5F0\uAE08\uC800\uCD95\uACC4\uC88C\uB85C \uC785\uAE08\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uBC18\uB300\uB85C \uBC95\uC815\uC678 \uD1F4\uC9C1\uAE08\uC774\uB77C\uB3C4 DB/DC \uADDC\uC57D\uC5D0 \uD3EC\uD568\uB418\uC5B4 \uC788\uB2E4\uBA74 \uBC95\uC815\uD1F4\uC9C1\uAE08\uACFC \uAC19\uC740 \uC81C\uD55C\uC744 \uBC1B\uC73C\uBBC0\uB85C, \uADDC\uC57D \uD3EC\uD568 \uC5EC\uBD80\uB97C \uBA3C\uC800 \uD655\uC778\uD558\uC138\uC694.")
-  }, /*#__PURE__*/React.createElement(MoneyInput, {
-    value: amtHonor,
-    onChange: setAmtHonor,
-    label: "\uBA85\uC608\uD1F4\uC9C1\uAE08"
-  }))) : /*#__PURE__*/React.createElement(Field, {
-    label: "\uD1F4\uC9C1\uAE09\uC5EC (\uB2E8\uC77C \uC9C1\uC811 \uC785\uAE08)",
-    hint: "DB\xB7DC \uC9C0\uAE09\uC561\uC740 \uBD84\uD560 \uC785\uAE08 \uC5C6\uC774 \uB2E8\uC77C \uACC4\uC88C\uB85C \uC774\uC804\uD569\uB2C8\uB2E4."
+  })) : /*#__PURE__*/React.createElement(Field, {
+    label: '퇴직급여 (' + system + ' 규약상)',
+    hint: "\uADDC\uC57D\uC5D0 \uADDC\uC815\uB41C \uD1F4\uC9C1\uAE09\uC5EC\uC785\uB2C8\uB2E4. \uBD84\uD560 \uC785\uAE08 \uC5C6\uC774 \uB2E8\uC77C \uACC4\uC88C\uB85C \uC774\uC804\uD569\uB2C8\uB2E4.",
+    helpTitle: "\uADDC\uC57D\uC0C1 \uD1F4\uC9C1\uAE09\uC5EC",
+    help: /*#__PURE__*/React.createElement(React.Fragment, null, system, " \uADDC\uC57D\uC5D0 \uADDC\uC815\uB41C \uD1F4\uC9C1\uAE09\uC5EC\uC785\uB2C8\uB2E4. \uADDC\uC57D\uC5D0 \uBC95\uC815\uC678 \uD1F4\uC9C1\uAE08\uC774 \uD3EC\uD568\uB418\uC5B4 \uC788\uB2E4\uBA74", /*#__PURE__*/React.createElement("strong", null, " \uADF8 \uAE08\uC561\uB3C4 \uC5EC\uAE30\uC5D0"), " \uB123\uC73C\uC138\uC694 - \uBC95\uC815\uD1F4\uC9C1\uAE08\uACFC \uAC19\uC740 \uC81C\uD55C\uC744 \uBC1B\uC2B5\uB2C8\uB2E4(Q12). \uADDC\uC57D\uC5D0 \uC5C6\uB294 \uBA85\uD1F4\uAE08\xB7\uC704\uB85C\uAE08\uB9CC \uC544\uB798 \uCE78\uC5D0 \uB123\uC2B5\uB2C8\uB2E4.")
   }, /*#__PURE__*/React.createElement(MoneyInput, {
     value: amtSingle,
     onChange: setAmtSingle,
     label: "\uD1F4\uC9C1\uAE09\uC5EC"
   })), /*#__PURE__*/React.createElement(Field, {
+    label: "\uBA85\uC608(\uBC95\uC815\uC678) \uD1F4\uC9C1\uAE08",
+    hint: system === 'SEV' ? '근퇴법상 퇴직급여가 아니므로 만 55세 미만이어도 연금저축계좌 입금이 가능합니다.' : system + ' 규약에 규정되지 않은 명퇴금·위로금. 없으면 비워 두세요.',
+    help: /*#__PURE__*/React.createElement(React.Fragment, null, "\uBA85\uD1F4\uAE08 \xB7 \uC704\uB85C\uAE08 \uB4F1 ", /*#__PURE__*/React.createElement("strong", null, "DB/DC \uADDC\uC57D\uC5D0 \uADDC\uC815\uB418\uC9C0 \uC54A\uC740"), " \uD1F4\uC9C1\uAE08\uC740 \uC81C\uB3C4\uC640 \uC5F0\uB839\uC5D0 \uAD00\uACC4\uC5C6\uC774 \uC5F0\uAE08\uC800\uCD95\uACC4\uC88C\uB85C \uC785\uAE08\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uD68C\uC0AC\uAC00 \uC9C1\uC811 \uC9C0\uAE09\uD558\uB294 \uB3C8\uC774\uB77C \uC5F0\uAE08\uACC4\uC88C \uAC04 \uC774\uCCB4 \uC81C\uD55C\uC744 \uBC1B\uC9C0 \uC54A\uAE30 \uB54C\uBB38\uC785\uB2C8\uB2E4.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), "\uBC18\uB300\uB85C \uBC95\uC815\uC678 \uD1F4\uC9C1\uAE08\uC774\uB77C\uB3C4 ", /*#__PURE__*/React.createElement("strong", null, "DB/DC \uADDC\uC57D\uC5D0 \uD3EC\uD568\uB418\uC5B4 \uC788\uB2E4\uBA74"), " \uBC95\uC815\uD1F4\uC9C1\uAE08\uACFC \uAC19\uC740 \uC81C\uD55C\uC744 \uBC1B\uC73C\uBBC0\uB85C \uC704 \uCE78\uC5D0 \uB123\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uADDC\uC57D \uD3EC\uD568 \uC5EC\uBD80\uB97C \uBA3C\uC800 \uD655\uC778\uD558\uC138\uC694.")
+  }, /*#__PURE__*/React.createElement(MoneyInput, {
+    value: amtHonor,
+    onChange: setAmtHonor,
+    label: "\uBA85\uC608\uD1F4\uC9C1\uAE08"
+  }))), /*#__PURE__*/React.createElement(Field, {
     label: "\uC774\uC5F0 \uD1F4\uC9C1\uC18C\uB4DD\uC138",
     hint: "\uC6D0\uCC9C\uC9D5\uC218\uC601\uC218\uC99D \uAE30\uC900. \uBBF8\uC785\uB825 \uC2DC \uC138\uC561 \uBE44\uAD50\uB294 \uD45C\uC2DC\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
     help: /*#__PURE__*/React.createElement(React.Fragment, null, "\uD1F4\uC9C1\uAE09\uC5EC\uB97C \uC5F0\uAE08\uACC4\uC88C\uB85C \uBC1B\uC73C\uBA74 \uD1F4\uC9C1\uC18C\uB4DD\uC138\uB97C \uB5BC\uC9C0 \uC54A\uACE0 ", /*#__PURE__*/React.createElement("strong", null, "\uC9D5\uC218\uB97C \uBBF8\uB904"), " \uB461\uB2C8\uB2E4. \uB098\uC911\uC5D0 \uC5F0\uAE08\uC73C\uB85C \uB098\uB220 \uBC1B\uC744 \uB54C \uC774 \uC138\uAE08\uC758 \uC77C\uBD80\uB9CC \uB0B4\uB294\uB370, \uC2E4\uC81C \uC5F0\uAE08\uC218\uB839 \uD69F\uC218\uC5D0 \uB530\uB77C 1~10\uD68C\uCC28 ", /*#__PURE__*/React.createElement("strong", null, "30% \uAC10\uBA74"), ", 11~20\uD68C\uCC28 ", /*#__PURE__*/React.createElement("strong", null, "40%"), ", 21\uD68C\uCC28\uBD80\uD130 ", /*#__PURE__*/React.createElement("strong", null, "50%"), "\uAC00 \uAC10\uBA74\uB429\uB2C8\uB2E4. (20\uB144 \uCD08\uACFC \uAD6C\uAC04\uC740 2025\uB144 \uC138\uBC95\uAC1C\uC815 \uC2E0\uC124\uBD84\uC73C\uB85C 2026.1.1 \uC774\uD6C4 \uC5F0\uAE08\uC218\uB839\uBD84\uBD80\uD130 \uC801\uC6A9)")
@@ -2708,6 +2732,7 @@ function App() {
     retireTotal: retireTotal,
     retireDate: retireDate,
     retireAge: retireAge,
+    amtSingle: amtSingle,
     amtLegal: amtLegal,
     amtHonor: amtHonor,
     deferredTax: deferredTax,
@@ -2749,6 +2774,7 @@ function PrintSheet(props) {
     retireTotal,
     retireDate,
     retireAge,
+    amtSingle,
     amtLegal,
     amtHonor,
     deferredTax,
@@ -2784,7 +2810,7 @@ function PrintSheet(props) {
   const accSummary = !accList.length ? '없음' : accList.slice(0, 3).map(a => accountNames[a.id] + ' ' + fmtDate(parseDate(a.joinStr)) + ' · ' + krw(a.bal)).join(' / ') + (accList.length > 3 ? ' 외 ' + (accList.length - 3) + '건' : '');
   const mergeLabel = !merged || !merged.length ? '퇴직급여 단독' : merged.map(a => accountNames[a.id]).join(' · ') + ' 합산';
   const rows = sim.rows;
-  const info = [['고객명', custName || '-'], ['생년월일 / 만 나이', (birth ? birth.getFullYear() + '.' + (birth.getMonth() + 1) + '.' + birth.getDate() : '-') + ' / 만 ' + (age !== null ? age : '-') + '세'], ['퇴직제도 / 가입일', systemLabel + ' / ' + fmtDate(systemJoin)], ['퇴직(예정)일', fmtDate(retireDate) + (retireAge !== null ? ' · 퇴직 시 만 ' + retireAge + '세' : '')], ['퇴직급여 총액', krw(retireTotal) + (system === 'SEV' && amtHonor > 0 ? ' (법정 ' + krw(amtLegal) + ' · 명예 ' + krw(amtHonor) + ')' : '')], ['이연 퇴직소득세', deferredTax > 0 ? krw(deferredTax) + (isSplit ? ' (이 계좌 배정분 ' + krw(allocatedDeferredTax) + ')' : '') : '미입력'], ['기존 보유 계좌', accSummary], ['합산 범위 / 인출 방식', mergeLabel + ' / ' + (mode === 'max' ? '세법 한도 내 최대' : '기간 균등 분할')], ['수령 기간 / 운용수익률', years + '년 / 연 ' + rate.toFixed(1) + '%'], ['계좌 수수료 / 총 수수료', blendedFeeRate > 0 ? '연 ' + (blendedFeeRate * 100).toFixed(2) + '% / ' + krw(sim.totals.totalFee) : '없음']];
+  const info = [['고객명', custName || '-'], ['생년월일 / 만 나이', (birth ? birth.getFullYear() + '.' + (birth.getMonth() + 1) + '.' + birth.getDate() : '-') + ' / 만 ' + (age !== null ? age : '-') + '세'], ['퇴직제도 / 가입일', systemLabel + ' / ' + fmtDate(systemJoin)], ['퇴직(예정)일', fmtDate(retireDate) + (retireAge !== null ? ' · 퇴직 시 만 ' + retireAge + '세' : '')], ['퇴직급여 총액', krw(retireTotal) + (amtHonor > 0 ? ' (' + (system === 'SEV' ? '법정 ' + krw(amtLegal) : '규약상 ' + krw(amtSingle)) + ' · 명예 ' + krw(amtHonor) + ')' : '')], ['이연 퇴직소득세', deferredTax > 0 ? krw(deferredTax) + (isSplit ? ' (이 계좌 배정분 ' + krw(allocatedDeferredTax) + ')' : '') : '미입력'], ['기존 보유 계좌', accSummary], ['합산 범위 / 인출 방식', mergeLabel + ' / ' + (mode === 'max' ? '세법 한도 내 최대' : '기간 균등 분할')], ['수령 기간 / 운용수익률', years + '년 / 연 ' + rate.toFixed(1) + '%'], ['계좌 수수료 / 총 수수료', blendedFeeRate > 0 ? '연 ' + (blendedFeeRate * 100).toFixed(2) + '% / ' + krw(sim.totals.totalFee) : '없음']];
   const stats = [['대상 자산', krw(picked.allocatedAmount + otherPrincipal + (exemptPrincipal || 0))], ['총 인출액 (' + sim.totals.spanYears + '년)', krw(sim.totals.totalDraw)], ['총 예상 세액', krw(sim.totals.totalTax)], ['세후 수령액', krw(sim.totals.afterTax)]];
   const printMemo = memoOnPrint ? String(memo || '').trim() : '';
 
