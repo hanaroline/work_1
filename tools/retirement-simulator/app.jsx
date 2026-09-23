@@ -455,15 +455,26 @@ function DateInput({ value, onChange }) {
     if (!v) { onChange(''); return; }
     const m = v.match(/^(\d+)-(\d{2})-(\d{2})$/);
     if (!m) { onChange(v); return; }
-    let y = m[1].length > 4 ? m[1].slice(0, 4) : m[1];   // 6자리 입력 → 앞 4자리
-    y = Math.min(TODAY.getFullYear(), Math.max(1900, +y));
-    let next = String(y).padStart(4, '0') + '-' + m[2] + '-' + m[3];
+
+    // 연도 칸은 6자리까지 들어오므로 앞 4자리만 쓴다.
+    // 하한(1900)은 여기서 누르면 안 된다 - 연도를 고칠 때 첫 글자 '2' 가 0002 로
+    // 들어와 곧바로 1900 으로 튀어 2016 을 칠 수 없게 된다. 하한은 blur 에서 본다.
+    const y = m[1].length > 4 ? m[1].slice(0, 4) : m[1];
+    let next = y.padStart(4, '0') + '-' + m[2] + '-' + m[3];
     if (next > TODAY_STR) next = TODAY_STR;              // 가입일은 미래일 수 없다
     onChange(next);
   };
+
+  // 타이핑이 끝난 뒤 연도가 터무니없으면 비운다.
+  // 1900 같은 그럴듯한 값으로 눌러 두면 2013.3.1 판정에 조용히 섞여 들어간다.
+  const handleBlur = (e) => {
+    const m = (e.target.value || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (m && +m[1] < 1900) onChange('');
+  };
+
   return (
     <input type="date" className={inputCls} value={value}
-      min="1900-01-01" max={TODAY_STR} onChange={handle} />
+      min="1900-01-01" max={TODAY_STR} onChange={handle} onBlur={handleBlur} />
   );
 }
 
@@ -545,6 +556,8 @@ function Stat({ label, value, tone }) {
    ================================================================ */
 
 // 결과 탭 - 상담 진행 순서와 같다
+const DOC_TITLE = '퇴직급여 수령 의사결정 시뮬레이터';
+
 const TABS = [
   { id: 'verdict', label: '판정' },
   { id: 'compare', label: '계좌 비교' },
@@ -785,6 +798,25 @@ function App() {
 
   const ready = !!birth && retireTotal > 0;
 
+  /**
+   * PDF 저장 시의 기본 파일명.
+   * 크롬은 인쇄 창에서 document.title 을 파일명으로 제안하므로, 인쇄 직전에만
+   * 고객명이 들어간 제목으로 바꾸고 끝나면 되돌린다. Ctrl+P 로 눌러도 동작하도록
+   * beforeprint/afterprint 이벤트에 건다.
+   */
+  useEffect(() => {
+    const wanted = '퇴직급여 의사결정' + (custName ? '_' + safeName(custName) : '') + '_' + TODAY_STR;
+    const before = () => { document.title = wanted; };
+    const after = () => { document.title = DOC_TITLE; };
+    window.addEventListener('beforeprint', before);
+    window.addEventListener('afterprint', after);
+    return () => {
+      window.removeEventListener('beforeprint', before);
+      window.removeEventListener('afterprint', after);
+      document.title = DOC_TITLE;
+    };
+  }, [custName]);
+
   // 보고 있던 탭의 내용이 사라지면 판정 탭으로 되돌린다 (빈 화면 방지)
   useEffect(() => {
     if (!ready && tab !== 'verdict') setTab('verdict');
@@ -863,6 +895,19 @@ function App() {
     };
     reader.onerror = () => say('파일을 읽지 못했습니다.', 'err');
     reader.readAsText(file, 'utf-8');
+  };
+
+  /**
+   * PDF 저장.
+   *
+   * 브라우저 인쇄 창의 '대상 = PDF로 저장' 이 곧 PDF 저장이다. 이 경로를 쓰면
+   * 글자가 이미지로 굽히지 않고 벡터로 들어가 검색·복사가 되고 A4 배치도 정확하다.
+   * 별도 PDF 라이브러리를 넣으면 한글 폰트까지 다시 실어야 해 파일이 수 MB 로 불어나고,
+   * 인쇄 레이아웃을 두 벌 유지해야 한다.
+   */
+  const doPdf = () => {
+    say("인쇄 창이 열리면 '대상'을 'PDF로 저장'으로 고르세요.");
+    setTimeout(() => window.print(), 250);
   };
 
   const doCsv = () => {
@@ -1234,16 +1279,26 @@ function App() {
                     );
                   })}
                 </div>
-                <button type="button" onClick={() => window.print()} disabled={!ready}
-                  className={
-                    'h-[44px] px-5 text-[15px] font-medium rounded-xs transition ' +
-                    (ready ? 'bg-mas-orange text-white hover:bg-mas-active' : 'bg-mas-gray text-white cursor-not-allowed')
-                  }>
-                  고객용 A4 1장 인쇄
-                </button>
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => window.print()} disabled={!ready}
+                    className={
+                      'h-[44px] px-5 text-[15px] font-medium rounded-xs transition ' +
+                      (ready ? 'bg-mas-orange text-white hover:bg-mas-active' : 'bg-mas-gray text-white cursor-not-allowed')
+                    }>
+                    A4 1장 인쇄
+                  </button>
+                  <button type="button" onClick={doPdf} disabled={!ready}
+                    className={
+                      'h-[44px] px-5 text-[15px] font-medium rounded-xs border transition ' +
+                      (ready ? 'bg-white text-ink-body border-hair hover:bg-surf-subtle'
+                        : 'bg-surf-subtle text-mas-gray border-hair cursor-not-allowed')
+                    }>
+                    PDF 저장
+                  </button>
+                </div>
               </div>
               <p className="text-[12px] text-ink-soft mb-5 -mt-2">
-                인쇄물에는 보고 있는 탭과 무관하게 판정 · 계좌 비교 · 인출 스케줄이 모두 담깁니다.
+                인쇄물에는 보고 있는 탭과 무관하게 판정 · 계좌 비교 · 인출 스케줄이 모두 담깁니다. PDF 는 인쇄 창에서 대상을 'PDF로 저장'으로 고르면 됩니다.
               </p>
 
               <div style={{ display: tab === 'verdict' ? 'block' : 'none' }}>
