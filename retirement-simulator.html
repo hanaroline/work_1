@@ -551,7 +551,8 @@ function seniorityOf(target, sources, opts) {
   const {
     birthYear,
     depositYear
-  } = opts;
+  } = opts; // depositYear = 퇴직급여가 계좌에 들어온 해
+
   let index = 1;
   let basis = CUTOFF_LABEL + ' 이후 가입 계좌';
   if (!target.isNew && isLegacyDate(target.joinDate)) {
@@ -639,7 +640,7 @@ function buildCandidates(input, sources) {
   });
   const opts = {
     birthYear: birthYear === undefined ? null : birthYear,
-    depositYear: TODAY.getFullYear()
+    depositYear: input.depositYear || TODAY.getFullYear()
   };
   return targets.map(t => {
     const perSource = sources.map(s => {
@@ -1095,12 +1096,19 @@ const TODAY_STR = (() => {
  * 브라우저 기본 date 입력은 연도 칸에 6자리(예: 200700)까지 받아들여
  * 200700-02-01 같은 값이 들어온다. 연도를 앞 4자리로 자르고 범위를 눌러
  * 가입일이 오늘을 넘지 않게 한다.
+ *
+ * 퇴직(예정)일처럼 미래가 정상인 칸은 allowFuture 로 상한을 푼다.
+ * 그래도 상한은 둔다 - 연도 칸에 세 자리를 치는 중간 상태(예: 202)가
+ * 0202 로 들어오는 것과 구분해야 해서, 상한 없이 열어 두면 오타를 못 잡는다.
  */
+const FUTURE_MAX = TODAY.getFullYear() + 50 + '-12-31';
 function DateInput({
   value,
   onChange,
-  label
+  label,
+  allowFuture
 }) {
+  const max = allowFuture ? FUTURE_MAX : TODAY_STR;
   const handle = e => {
     const v = e.target.value;
     if (!v) {
@@ -1118,7 +1126,7 @@ function DateInput({
     // 들어와 곧바로 1900 으로 튀어 2016 을 칠 수 없게 된다. 하한은 blur 에서 본다.
     const y = m[1].length > 4 ? m[1].slice(0, 4) : m[1];
     let next = y.padStart(4, '0') + '-' + m[2] + '-' + m[3];
-    if (next > TODAY_STR) next = TODAY_STR; // 가입일은 미래일 수 없다
+    if (next > max) next = max;
     onChange(next);
   };
 
@@ -1134,7 +1142,7 @@ function DateInput({
     value: value,
     "aria-label": label,
     min: "1900-01-01",
-    max: TODAY_STR,
+    max: max,
     onChange: handle,
     onBlur: handleBlur
   });
@@ -1247,6 +1255,8 @@ function App() {
   // --- 퇴직제도
   const [system, setSystem] = useState('DC'); // 'DB' | 'DC' | 'SEV'
   const [systemJoinStr, setSystemJoinStr] = useState('');
+  // 퇴직(예정)일. 퇴직급여가 계좌에 들어온 해가 연금수령연차의 기산연도를 좌우한다.
+  const [retireDateStr, setRetireDateStr] = useState(TODAY_STR);
   // 임금피크제 등으로 DB → DC 로 전환한 경우. 신규 계좌 전액 이체 시 DB 가입일이 기산연차를 가른다.
   const [dbConverted, setDbConverted] = useState(false);
   const [dbJoinStr, setDbJoinStr] = useState('');
@@ -1314,6 +1324,7 @@ function App() {
     birthRaw,
     system,
     systemJoinStr,
+    retireDateStr,
     dbConverted,
     dbJoinStr,
     amtSingle,
@@ -1357,6 +1368,7 @@ function App() {
     setBirthRaw(str(d.birthRaw, ''));
     setSystem(['DB', 'DC', 'SEV'].indexOf(d.system) >= 0 ? d.system : 'DC');
     setSystemJoinStr(str(d.systemJoinStr, ''));
+    setRetireDateStr(str(d.retireDateStr, TODAY_STR));
     setDbConverted(bool(d.dbConverted, false));
     setDbJoinStr(str(d.dbJoinStr, ''));
     setAmtSingle(num(d.amtSingle, 0));
@@ -1396,19 +1408,29 @@ function App() {
   const dbJoin = useMemo(() => parseDate(dbJoinStr), [dbJoinStr]);
   const pensionJoin = useMemo(() => parseDate(pensionJoinStr), [pensionJoinStr]);
   const irpJoin = useMemo(() => parseDate(irpJoinStr), [irpJoinStr]);
+
+  // 퇴직(예정)일. 비워 두면 오늘로 본다. 과거 퇴직도 미래 퇴직 예정도 받는다.
+  const retireDate = useMemo(() => parseDate(retireDateStr) || TODAY, [retireDateStr]);
+  const depositYear = retireDate.getFullYear();
+  const isPastRetire = depositYear < TODAY.getFullYear();
   const retireTotal = system === 'SEV' ? amtLegal + amtHonor : amtSingle;
 
-  // 연금 개시 시점 - 퇴직 연도와 만 55세 도달 연도 중 늦은 쪽
+  // 이전 가능 여부(만 55세 미만 IRP 의무이전 등)는 퇴직급여를 지급받는 시점의 나이로 본다.
+  const retireAge = useMemo(() => ageOn(birth, retireDate), [birth, retireDate]);
+
+  // 인출을 시작하는 해. 이미 지난 해부터 시뮬레이션할 수는 없으므로 오늘이 하한이고,
+  // 퇴직 예정일이 미래면 그때, 만 55세가 아직이면 55세가 되는 해가 하한이 된다.
   const startYear = useMemo(() => {
-    const retireY = TODAY.getFullYear();
-    if (!birth) return retireY;
-    return Math.max(retireY, birth.getFullYear() + 55);
-  }, [birth]);
-  const startAge = age !== null ? Math.max(age, 55) : 55;
+    let y = Math.max(TODAY.getFullYear(), depositYear);
+    if (birth) y = Math.max(y, birth.getFullYear() + 55);
+    return y;
+  }, [birth, depositYear]);
+  const startAge = birth ? Math.max(startYear - birth.getFullYear(), 55) : 55;
   const input = {
-    age,
+    age: retireAge,
     birthYear: birth ? birth.getFullYear() : null,
     startYear,
+    depositYear,
     system,
     systemJoin,
     dbConverted,
@@ -1437,7 +1459,7 @@ function App() {
       candidates: applyAllocation(base, alloc),
       allocation: alloc
     };
-  }, [sources, age, birth, startYear, hasPension, pensionJoinStr, pensionBal, pensionStarted, hasIrp, irpJoinStr, irpBal, irpStarted, fees, manualPick]);
+  }, [sources, retireAge, birth, startYear, depositYear, hasPension, pensionJoinStr, pensionBal, pensionStarted, hasIrp, irpJoinStr, irpBal, irpStarted, fees, manualPick]);
 
   // 배정액이 가장 큰 계좌를 기본 시뮬레이션 대상으로 삼는다
   const best = useMemo(() => {
@@ -1652,6 +1674,7 @@ function App() {
     setBirthRaw('');
     setSystem('DC');
     setSystemJoinStr('');
+    setRetireDateStr(TODAY_STR);
     setDbConverted(false);
     setDbJoinStr('');
     setAmtSingle(0);
@@ -1935,18 +1958,22 @@ function App() {
     onChange: e => setBirthRaw(e.target.value),
     placeholder: "710315"
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center gap-2 px-3 py-2 bg-surf-soft rounded-sm"
+    className: "flex items-center gap-2 px-3 py-2 bg-surf-soft rounded-sm flex-wrap"
   }, /*#__PURE__*/React.createElement("span", {
     className: "text-[13px] text-ink-muted"
-  }, "\uB9CC \uB098\uC774"), /*#__PURE__*/React.createElement("span", {
+  }, "\uD604\uC7AC \uB9CC \uB098\uC774"), /*#__PURE__*/React.createElement("span", {
     className: "num text-[18px] font-bold text-mas-blue"
   }, age !== null ? age : '-'), /*#__PURE__*/React.createElement("span", {
     className: "text-[13px] text-ink-muted"
-  }, "\uC138"), age !== null && (age >= 55 ? /*#__PURE__*/React.createElement(Badge, {
+  }, "\uC138"), retireAge !== null && age !== null && retireAge !== age && /*#__PURE__*/React.createElement("span", {
+    className: "text-[13px] text-ink-muted"
+  }, "\xB7 \uD1F4\uC9C1 \uC2DC \uB9CC ", /*#__PURE__*/React.createElement("strong", {
+    className: "num text-ink-body"
+  }, retireAge), "\uC138"), retireAge !== null && (retireAge >= 55 ? /*#__PURE__*/React.createElement(Badge, {
     tone: "good"
-  }, "\uC5F0\uAE08\uC218\uB839 \uAC1C\uC2DC \uAC00\uB2A5") : /*#__PURE__*/React.createElement(Badge, {
+  }, "\uD1F4\uC9C1 \uC2DC \uC5F0\uAE08\uC218\uB839 \uAC1C\uC2DC \uAC00\uB2A5") : /*#__PURE__*/React.createElement(Badge, {
     tone: "warn"
-  }, "\uB9CC 55\uC138\uAE4C\uC9C0 ", 55 - age, "\uB144 - \uACFC\uC138\uC774\uC5F0 \uD6C4 \uB300\uAE30"))), /*#__PURE__*/React.createElement(Field, {
+  }, "\uD1F4\uC9C1 \uC2DC \uB9CC 55\uC138 \uBBF8\uB9CC - \uBC95\uC815\uD1F4\uC9C1\uAE09\uC5EC\uB294 IRP \uB85C\uB9CC"))), /*#__PURE__*/React.createElement(Field, {
     label: "\uD1F4\uC9C1\uC81C\uB3C4",
     help: /*#__PURE__*/React.createElement(React.Fragment, null, "\uC18C\uB4DD\uC138\uBC95\uC0C1 ", /*#__PURE__*/React.createElement("strong", null, "\uC5F0\uAE08\uACC4\uC88C"), "\uB294 DC \xB7 IRP \xB7 \uC5F0\uAE08\uC800\uCD95\uACC4\uC88C \xB7 \uACFC\uD559\uAE30\uC220\uC778\uC5F0\uAE08 \xB7 \uC911\uC18C\uAE30\uC5C5\uD1F4\uC9C1\uC5F0\uAE08\uC785\uB2C8\uB2E4. ", /*#__PURE__*/React.createElement("strong", null, "DB \uC640 \uD1F4\uC9C1\uAE08\uC81C\uB3C4\uB294 \uC5F0\uAE08\uACC4\uC88C\uAC00 \uC544\uB2D9\uB2C8\uB2E4."), "\uADF8\uB798\uC11C DB \xB7 \uD1F4\uC9C1\uAE08\uC81C\uB3C4\uC758 \uD1F4\uC9C1\uAE09\uC5EC \uC9C0\uAE09\uC740 '\uC5F0\uAE08\uACC4\uC88C \uAC04 \uC774\uCCB4'\uAC00 \uC544\uB2C8\uB77C '\uD1F4\uC9C1\uC18C\uB4DD\uC758 \uC785\uAE08'\uC774\uB77C \uC774\uCCB4 \uC81C\uD55C(\uC2DC\uD589\uB839 \xA740\uC7584)\uC744 \uBC1B\uC9C0 \uC54A\uACE0, DC \uB9CC \uC81C\uD55C\uC744 \uBC1B\uC2B5\uB2C8\uB2E4.")
   }, /*#__PURE__*/React.createElement(Segmented, {
@@ -1970,6 +1997,15 @@ function App() {
     value: systemJoinStr,
     onChange: setSystemJoinStr,
     label: "\uC81C\uB3C4 \uAC00\uC785\uC77C"
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "\uD1F4\uC9C1(\uC608\uC815)\uC77C",
+    hint: !birth ? '생년월일을 먼저 입력해 주세요.' : isPastRetire ? depositYear + '년 퇴직 · 퇴직 시 만 ' + (retireAge !== null ? retireAge : '-') + '세 · ' + '인출은 ' + startYear + '년부터 계산합니다' : '퇴직 시 만 ' + (retireAge !== null ? retireAge : '-') + '세 · 인출은 ' + startYear + '년부터 계산합니다',
+    help: /*#__PURE__*/React.createElement(React.Fragment, null, "\uD1F4\uC9C1\uAE09\uC5EC\uAC00 \uC5F0\uAE08\uACC4\uC88C\uC5D0 ", /*#__PURE__*/React.createElement("strong", null, "\uB4E4\uC5B4\uC628 \uD574"), "\uAC00 \uC5F0\uAE08\uC218\uB839\uC5F0\uCC28\uC758 \uAE30\uC0B0\uC5F0\uB3C4\uB97C \uC88C\uC6B0\uD558\uBBC0\uB85C \uB530\uB85C \uBC1B\uC2B5\uB2C8\uB2E4. ", /*#__PURE__*/React.createElement("strong", null, "\uC774\uBBF8 \uD1F4\uC9C1\uD55C \uACBD\uC6B0"), "\uC5D0\uB3C4 \uADF8 \uD574\uB97C \uB123\uC73C\uBA74 \uADF8\uB54C\uBD80\uD130 \uC624\uB298\uAE4C\uC9C0 \uC313\uC778 \uC5F0\uCC28\uAC00 \uBC18\uC601\uB429\uB2C8\uB2E4. \uC608\uB97C \uB4E4\uC5B4 \uB9CC 55\uC138\uB97C \uB118\uAE34 \uB4A4 2\uB144 \uC804\uC5D0 \uD1F4\uC9C1\uD574 \uC2E0\uADDC \uACC4\uC88C\uB85C \uBC1B\uC558\uB2E4\uBA74 \uC9C0\uAE08\uC740 1\uB144\uCC28\uAC00 \uC544\uB2C8\uB77C 3\uB144\uCC28\uC774\uACE0, \uADF8\uB9CC\uD07C \uD55C\uB3C4\uAC00 \uD07D\uB2C8\uB2E4.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), "\uB9CC 55\uC138 \uBBF8\uB9CC \uC5EC\uBD80(IRP \uC758\uBB34\uC774\uC804)\uB3C4 ", /*#__PURE__*/React.createElement("strong", null, "\uD1F4\uC9C1 \uC2DC\uC810\uC758 \uB098\uC774"), "\uB85C \uD310\uC815\uD569\uB2C8\uB2E4. \uC778\uCD9C \uC2DC\uBBAC\uB808\uC774\uC158\uC740 \uACFC\uAC70\uB85C \uB418\uB3CC\uB9B4 \uC218 \uC5C6\uC73C\uBBC0\uB85C \uC62C\uD574(\uB610\uB294 \uB9CC 55\uC138\uAC00 \uB418\uB294 \uD574)\uBD80\uD130 \uACC4\uC0B0\uD558\uACE0, \uC774\uBBF8 \uBC1B\uC740 \uC5F0\uAE08\uC774 \uC788\uB2E4\uBA74 '\uACFC\uAC70 \uC5F0\uAE08 \uC218\uB839 \uD69F\uC218'\uC5D0 \uB123\uC5B4 \uC8FC\uC138\uC694.")
+  }, /*#__PURE__*/React.createElement(DateInput, {
+    value: retireDateStr,
+    onChange: setRetireDateStr,
+    label: "\uD1F4\uC9C1\uC77C",
+    allowFuture: true
   })), system === 'DC' && /*#__PURE__*/React.createElement("div", {
     className: "border border-hair rounded-sm bg-surf-soft p-3"
   }, /*#__PURE__*/React.createElement("label", {
@@ -2561,6 +2597,8 @@ function App() {
     system: system,
     systemJoin: systemJoin,
     retireTotal: retireTotal,
+    retireDate: retireDate,
+    retireAge: retireAge,
     amtLegal: amtLegal,
     amtHonor: amtHonor,
     deferredTax: deferredTax,
@@ -2604,6 +2642,8 @@ function PrintSheet(props) {
     system,
     systemJoin,
     retireTotal,
+    retireDate,
+    retireAge,
     amtLegal,
     amtHonor,
     deferredTax,
@@ -2639,7 +2679,7 @@ function PrintSheet(props) {
   const systemLabel = system === 'SEV' ? '퇴직금제도' : system;
   const scopeLabel = (scopeOptions.find(o => o.value === scope) || {}).label || '퇴직금 단독';
   const rows = sim.rows;
-  const info = [['고객명', custName || '-'], ['생년월일 / 만 나이', (birth ? birth.getFullYear() + '.' + (birth.getMonth() + 1) + '.' + birth.getDate() : '-') + ' / 만 ' + (age !== null ? age : '-') + '세'], ['퇴직제도 / 가입일', systemLabel + ' / ' + fmtDate(systemJoin)], ['퇴직급여 총액', krw(retireTotal) + (system === 'SEV' && amtHonor > 0 ? ' (법정 ' + krw(amtLegal) + ' · 명예 ' + krw(amtHonor) + ')' : '')], ['이연 퇴직소득세', deferredTax > 0 ? krw(deferredTax) + (isSplit ? ' (이 계좌 배정분 ' + krw(allocatedDeferredTax) + ')' : '') : '미입력'], ['기존 연금저축', hasPension ? fmtDate(pensionJoin) + ' 가입 · ' + krw(pensionBal) : '없음'], ['기존 IRP', hasIrp ? fmtDate(irpJoin) + ' 가입 · ' + krw(irpBal) : '없음'], ['합산 범위 / 인출 방식', scopeLabel + ' / ' + (mode === 'max' ? '세법 한도 내 최대' : '기간 균등 분할')], ['수령 기간 / 운용수익률', years + '년 / 연 ' + rate.toFixed(1) + '%'], ['계좌 수수료 / 총 수수료', picked.feeRate > 0 ? '연 ' + (picked.feeRate * 100).toFixed(2) + '% / ' + krw(sim.totals.totalFee) : '없음']];
+  const info = [['고객명', custName || '-'], ['생년월일 / 만 나이', (birth ? birth.getFullYear() + '.' + (birth.getMonth() + 1) + '.' + birth.getDate() : '-') + ' / 만 ' + (age !== null ? age : '-') + '세'], ['퇴직제도 / 가입일', systemLabel + ' / ' + fmtDate(systemJoin)], ['퇴직(예정)일', fmtDate(retireDate) + (retireAge !== null ? ' · 퇴직 시 만 ' + retireAge + '세' : '')], ['퇴직급여 총액', krw(retireTotal) + (system === 'SEV' && amtHonor > 0 ? ' (법정 ' + krw(amtLegal) + ' · 명예 ' + krw(amtHonor) + ')' : '')], ['이연 퇴직소득세', deferredTax > 0 ? krw(deferredTax) + (isSplit ? ' (이 계좌 배정분 ' + krw(allocatedDeferredTax) + ')' : '') : '미입력'], ['기존 연금저축', hasPension ? fmtDate(pensionJoin) + ' 가입 · ' + krw(pensionBal) : '없음'], ['기존 IRP', hasIrp ? fmtDate(irpJoin) + ' 가입 · ' + krw(irpBal) : '없음'], ['합산 범위 / 인출 방식', scopeLabel + ' / ' + (mode === 'max' ? '세법 한도 내 최대' : '기간 균등 분할')], ['수령 기간 / 운용수익률', years + '년 / 연 ' + rate.toFixed(1) + '%'], ['계좌 수수료 / 총 수수료', picked.feeRate > 0 ? '연 ' + (picked.feeRate * 100).toFixed(2) + '% / ' + krw(sim.totals.totalFee) : '없음']];
   const stats = [['대상 자산', krw(picked.allocatedAmount + otherPrincipal + (exemptPrincipal || 0))], ['총 인출액 (' + sim.totals.spanYears + '년)', krw(sim.totals.totalDraw)], ['총 예상 세액', krw(sim.totals.totalTax)], ['세후 수령액', krw(sim.totals.afterTax)]];
   const printMemo = memoOnPrint ? String(memo || '').trim() : '';
 

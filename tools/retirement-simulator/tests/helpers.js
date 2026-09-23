@@ -14,7 +14,7 @@ const APP = 'file://' + path.resolve(__dirname, '..', '..', '..', 'retirement-si
 /** 라벨이 고유해야 하는 컨트롤 (selectors 스펙이 검사한다) */
 const FIELDS = {
   always: [
-    '고객명', '생년월일', '제도 가입일', '이연 퇴직소득세', '과거 연금 수령 횟수',
+    '고객명', '생년월일', '제도 가입일', '퇴직일', '이연 퇴직소득세', '과거 연금 수령 횟수',
     '기존 연금저축 보유', '기존 IRP 보유', '상담 메모', '상담 메모 인쇄물 포함',
     '상담 케이스 가져오기', '수령 기간', '운용수익률',
     '신규 IRP 연간 수수료', '신규 연금저축 연간 수수료'
@@ -79,6 +79,7 @@ async function fillCase(page, c) {
   if (c.birth) await field(page, '생년월일').fill(c.birth);
   if (c.system) await button(page, c.system === 'SEV' ? '퇴직금제도' : c.system).click();
   if (c.joinDate) await field(page, '제도 가입일').fill(c.joinDate);
+  if (c.retireDate) await field(page, '퇴직일').fill(c.retireDate);
   if (c.dbConverted) {
     await field(page, 'DB 에서 DC 로 전환').check();
     if (c.dbJoin) await field(page, '전환 전 DB 가입일').fill(c.dbJoin);
