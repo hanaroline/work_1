@@ -164,14 +164,14 @@ function canDeposit(c) {
   // (1) 만 55세 미만의 법정퇴직급여는 IRP 로만 지급된다 (근퇴법 §17·§20, Q12)
   //     2022.4.13 이후로는 퇴직금제도의 법정퇴직금도 IRP 의무이전 대상이다.
   if (t.kind === 'pension' && c.fund === 'LEGAL' && c.ageAtRetire < 55) {
-    blockers.push({ rule: 'D1', src: 'Q12', law: '근퇴법 §17·§20',
+    blockers.push({ rule: 'D1', short: '만 55세 미만 법정퇴직급여', src: 'Q12', law: '근퇴법 §17·§20',
       text: '만 55세 미만 법정퇴직급여는 IRP 의무이전 대상 - 연금저축계좌 입금 불가' });
   }
 
   // (2) DC 의 법정퇴직급여는 연령 불문 연금저축계좌로 못 간다 (시행령 §40의4①1, Q12)
   //     DC 자체가 퇴직연금계좌라 연금저축계좌와의 상호 이체 금지에 걸린다.
   if (c.system === 'DC' && c.fund === 'LEGAL' && t.kind === 'pension') {
-    blockers.push({ rule: 'D2', src: 'Q12', law: '소득세법 시행령 §40의4①1',
+    blockers.push({ rule: 'D2', short: 'DC 는 연금저축으로 직접 못 감', src: 'Q12', law: '소득세법 시행령 §40의4①1',
       text: 'DC 퇴직급여는 연금저축계좌로 직접 입금 불가 (연령 불문)'
         + (c.ageAtRetire >= 55 ? ' - 단 55세 이상이면 DC→IRP→연금저축계좌 2단계 경로 가능' : '') });
   }
@@ -182,7 +182,7 @@ function canDeposit(c) {
   //     회사가 직접 지급하는 것이라 '연금계좌 간의 이체'가 아니기 때문이다(Q12 첫 문단).
   if (isPensionAccountSystem(c.system) && c.fund === 'LEGAL' &&
       !c.systemLegacy && !t.isNew && t.legacy) {
-    blockers.push({ rule: 'D3', src: 'Q23', law: '소득세법 시행령 §40의4①2',
+    blockers.push({ rule: 'D3', short: '신 DC → 구 계좌', src: 'Q23', law: '소득세법 시행령 §40의4①2',
       text: CUTOFF_LABEL + ' 이후 가입 DC 의 퇴직급여는 ' + CUTOFF_LABEL +
         ' 전 가입 연금계좌로 입금 불가 - 1사 1IRP 예외사유이므로 IRP 추가 개설 가능' });
   }
@@ -190,10 +190,10 @@ function canDeposit(c) {
   // (4) 연금이 개시된 계좌 - 원칙 불가. 당사 계좌는 퇴직금에 한해 입금 가능(Q9).
   if (!t.isNew && t.started) {
     if (t.inHouse === true) {
-      cautions.push({ rule: 'D4', src: 'Q9', law: '소득세법 시행령 §40의3',
+      cautions.push({ rule: 'D4', short: '연금개시된 계좌', src: 'Q9', law: '소득세법 시행령 §40의3',
         text: '당사에서 연금개시한 계좌 - 퇴직금에 한하여 입금 가능' });
     } else {
-      blockers.push({ rule: 'D4', src: 'Q9', law: '소득세법 시행령 §40의3',
+      blockers.push({ rule: 'D4', short: '연금개시된 계좌', src: 'Q9', law: '소득세법 시행령 §40의3',
         text: '연금개시된 타사 계좌 - 추가 입금 불가 (수관도 Q23④에 걸림)' });
     }
   }
@@ -220,23 +220,23 @@ function canTransfer(c) {
   //    연금저축→연금저축, IRP→IRP 는 애초에 이 제한 대상이 아니다.
   if (f.kind !== t.kind) {
     if (f.meetsPensionReq) {
-      cautions.push({ rule: 'T1', src: 'Q23', law: '소득세법 시행령 §40의4①1',
+      cautions.push({ rule: 'T1', short: '연금저축 ↔ IRP', src: 'Q23', law: '소득세법 시행령 §40의4①1',
         text: '연금수령요건(만 55세 이상 + 가입 5년)을 갖춘 계좌라 연금저축↔IRP 계약이전 가능 - 요건 충족 여부 확인 필요' });
     } else {
-      blockers.push({ rule: 'T1', src: 'Q23', law: '소득세법 시행령 §40의4①1',
+      blockers.push({ rule: 'T1', short: '연금저축 ↔ IRP', src: 'Q23', law: '소득세법 시행령 §40의4①1',
         text: '연금저축계좌와 퇴직연금계좌 상호간 이체 금지 - 연금수령요건을 갖추면 허용' });
     }
   }
 
   // ② 2013.3.1 이후 가입 계좌 → 2013.3.1 전 가입 계좌 (한 방향만 막힌다)
   if (!f.legacy && t.legacy && !t.isNew) {
-    blockers.push({ rule: 'T2', src: 'Q23', law: '소득세법 시행령 §40의4①2',
+    blockers.push({ rule: 'T2', short: '신 계좌 → 구 계좌', src: 'Q23', law: '소득세법 시행령 §40의4①2',
       text: CUTOFF_LABEL + ' 이후 가입 계좌를 ' + CUTOFF_LABEL + ' 전 가입 계좌로 이체 불가' });
   }
 
   // ③ 일부 금액만 이체
   if (!c.fullAmount) {
-    blockers.push({ rule: 'T3', src: 'Q23', law: '소득세법 시행령 §40의4①',
+    blockers.push({ rule: 'T3', short: '일부만 이체', src: 'Q23', law: '소득세법 시행령 §40의4①',
       text: '일부 금액만 이체 불가 - 전액 이체여야 한다' });
   }
 
@@ -244,11 +244,11 @@ function canTransfer(c) {
   //    막히는 것은 '받는 쪽' 이 개시된 경우다. 개시된 계좌를 개시 전 계좌로 보내는 것은
   //    가능하다(Q25). 다만 보내는 쪽이 개시된 계좌면 실무 제약이 따로 있다.
   if (t.started) {
-    blockers.push({ rule: 'T4', src: 'Q23', law: '소득세법 시행령 §40의4①',
+    blockers.push({ rule: 'T4', short: '받는 계좌가 연금개시됨', src: 'Q23', law: '소득세법 시행령 §40의4①',
       text: '연금이 개시된 계좌로는 이체 불가' });
   }
   if (c.from.started) {
-    cautions.push({ rule: 'T5', src: 'Q25', law: '소득세법 시행령 §40의4①',
+    cautions.push({ rule: 'T5', short: '보내는 계좌가 연금개시됨', src: 'Q25', law: '소득세법 시행령 §40의4①',
       text: '연금개시된 계좌를 보내는 경우 - 개시 전 계좌로의 이체는 가능하나, ' +
         '생보사 종신형 개시분은 불가하고 일부 기관은 시스템 부재로 이·수관을 거부한다. ' +
         '수관 시에는 신규 계좌를 개설해 기존 가입일자를 승계하는 방식만 가능하다 ' +

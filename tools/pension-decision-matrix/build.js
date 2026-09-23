@@ -202,6 +202,60 @@ function render() {
   return L.join('\n');
 }
 
+/**
+ * 판단표를 자료로 내보낸다 (시뮬레이터 HTML 에 심기 위한 것).
+ *
+ * 표만 자료로 넘기고 판정 로직은 넘기지 않는다. 앱이 이 규칙으로 직접 판정하게 하면
+ * 두 구현이 하나가 되어 crosscheck 가 자기 자신을 비교하게 되기 때문이다.
+ * 앱은 앱의 판정을, 이 표는 규칙표의 답을 보여 주고, 둘이 어긋나면 crosscheck 가 잡는다.
+ */
+function matrixData() {
+  const legend = new Map();
+  const deposit = depositMatrix().map((row) => ({
+    system: row.sys.key,
+    systemLabel: row.sys.key === 'SEV' ? row.sys.label
+      : row.sys.label + ' (' + CUTOFF_LABEL + (row.legacySys ? ' 전' : ' 후') + ' 가입)',
+    legacySys: row.legacySys,
+    fund: row.fund.key,
+    fundLabel: row.fund.label,
+    age: row.age.v,
+    ageLabel: row.age.label,
+    cells: row.cells.map((c) => {
+      for (const b of c.r.blockers.concat(c.r.cautions)) if (!legend.has(b.rule)) legend.set(b.rule, b);
+      return {
+        mark: MARK[c.r.verdict], verdict: c.r.verdict, index: c.idx,
+        rules: c.r.blockers.concat(c.r.cautions).map((b) => b.rule),
+        short: c.r.blockers.concat(c.r.cautions).map((b) => b.short).join(' · '),
+        why: c.r.blockers.concat(c.r.cautions).map((b) => b.text).join(' / ')
+      };
+    })
+  }));
+
+  const tm = transferMatrix();
+  const transfer = [false, true].map((meets) => {
+    const rows = tm.filter((r) => r.meets === meets);
+    return {
+      meets,
+      label: meets ? '연금수령요건 충족 (만 55세 이상 + 가입 5년)' : '연금수령요건 미충족',
+      kinds: rows[0].targets.map((t) => t.label),
+      rows: rows.map((r) => ({
+        from: r.from.label,
+        cells: r.cells.map((c) => ({ mark: MARK[c.verdict], verdict: c.verdict,
+          short: c.blockers.concat(c.cautions).map((b) => b.short).join(' · '),
+          why: c.blockers.concat(c.cautions).map((b) => b.text).join(' / ') }))
+      }))
+    };
+  });
+
+  return {
+    targets: TARGETS.map((t) => ({ key: t.key, label: t.label })),
+    deposit,
+    transfer,
+    legend: [...legend.values()].map((b) => ({ rule: b.rule, short: b.short, src: b.src, law: b.law, text: b.text })),
+    sources: Object.keys(SOURCES).map((k) => Object.assign({ key: k }, SOURCES[k]))
+  };
+}
+
 if (require.main === module) {
   const out = render();
   const i = process.argv.indexOf('--md');
@@ -213,4 +267,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { render, depositMatrix, transferMatrix, TARGETS, SYSTEMS, FUNDS, AGES };
+module.exports = { render, matrixData, depositMatrix, transferMatrix, TARGETS, SYSTEMS, FUNDS, AGES };

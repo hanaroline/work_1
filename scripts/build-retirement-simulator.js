@@ -99,6 +99,17 @@ const appJs = babel.transform(jsx, {
   compact: false
 }).code;
 
+/*
+ * 2-2) 판단표 자료.
+ *
+ * tools/pension-decision-matrix 의 규칙에서 전개한 표를 자료로 심는다.
+ * **표만 심고 판정 로직은 심지 않는다** - 앱이 그 규칙으로 직접 판정하게 하면 두 구현이
+ * 하나가 되어, 둘을 맞춰 보는 crosscheck 가 자기 자신을 비교하는 꼴이 된다.
+ * 앱은 앱의 판정을, 이 표는 규칙표의 답을 보여 주고 어긋나면 crosscheck 가 잡는다.
+ */
+const matrix = require(path.join(ROOT, 'tools', 'pension-decision-matrix', 'build.js'));
+const matrixJs = 'window.__MATRIX__ = ' + JSON.stringify(matrix.matrixData()) + ';';
+
 // 3) React UMD 번들
 console.log('[3/5] React 번들 인라인');
 const react = read(path.join(requireDep('react', 'npm install --no-save react@18.3.1'), 'umd', 'react.production.min.js'));
@@ -109,7 +120,7 @@ console.log('[4/5] 단일 HTML 조립');
 const html = read(path.join(SRC, 'shell.html'))
   .replace('/*__STYLES__*/', () => '\n' + fontCss + '\n' + css + '\n')
   .replace('/*__REACT__*/', () => '\n' + react + '\n' + reactDom + '\n')
-  .replace('/*__APP__*/', () => '\n' + appJs + '\n');
+  .replace('/*__APP__*/', () => '\n' + matrixJs + '\n' + appJs + '\n');
 
 if (html.includes('__STYLES__') || html.includes('__REACT__') || html.includes('__APP__')) {
   console.error('조립 실패: shell.html 의 플레이스홀더가 치환되지 않았습니다.');
