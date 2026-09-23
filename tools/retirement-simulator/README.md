@@ -66,6 +66,7 @@ node scripts/build-retirement-simulator.js
 | **파일로 내보내기 / 가져오기** | `.json` 파일 | PC 간 이동, 백업, localStorage 가 막힌 환경 |
 | **CSV 내보내기** | `.csv` 파일 | 인출 스케줄을 엑셀로 넘긴다 (인출 스케줄 탭) |
 | **PDF 저장** | 브라우저 인쇄 경로 | 고객용 A4 1장을 PDF 로 (탭 바의 'PDF 저장' 버튼) |
+| **전체 초기화** | - | 화면 입력만 비운다. **저장된 상담은 남는다** |
 
 구현상 주의할 점 두 가지.
 
@@ -87,6 +88,10 @@ PDF 라이브러리를 따로 싣는 방법은 한글 폰트를 한 벌 더 넣�
 포함' 을 켜면 인출 스케줄 위에 '상담 메모' 블록으로 들어간다. 이 체크 상태도 저장·내보내기에 따라간다.
 메모 블록이 붙으면 A4 한 장을 넘길 수 있어, 표가 18행을 넘으면 행 여백을 자동으로 줄인다
 (실측: 수령 30년 + 메모 500자에서 969px / 1,062px, PDF 1페이지).
+
+**전체 초기화**는 실수로 상담 내용을 날리지 않도록 두 번 눌러야 한다. 첫 클릭에서 '입력한 내용이 모두
+지워집니다. 저장된 상담은 남습니다' 안내와 함께 확인·취소가 뜬다. 지우는 것은 화면 입력뿐이고 저장된
+상담 목록은 건드리지 않는다 - 목록을 지우려면 항목별 '삭제' 를 쓴다.
 
 `localStorage` 는 `file://` 이나 사내 정책에 따라 막힐 수 있어 모든 접근을 try/catch 로 감싸고,
 막혀 있으면 안내 문구를 띄우고 파일 내보내기로 유도한다. 가져오기는 `format` 키와 알려진 입력 키
@@ -156,7 +161,7 @@ PDF 라이브러리를 따로 싣는 방법은 한글 폰트를 한 벌 더 넣�
 
 ```bash
 node scripts/build-retirement-simulator.js            # 먼저 빌드
-node tools/retirement-simulator/tests/run.js          # 전체 (189건, 약 30초)
+node tools/retirement-simulator/tests/run.js          # 전체 (217건, 약 36초)
 node tools/retirement-simulator/tests/run.js verdict  # 이름으로 일부만
 ```
 
@@ -169,6 +174,7 @@ node tools/retirement-simulator/tests/run.js verdict  # 이름으로 일부만
 | `schedule` | 한도 공식과 3단계 감면을 세법 공식으로 다시 계산해 대조 |
 | `print` | 탭과 무관하게 전부 인쇄, A4 한 장, 메모 인쇄 옵션, PDF 파일명 |
 | `storage` | 상담 저장·불러오기·삭제, 메모, JSON 왕복, CSV BOM |
+| `reset` | 전체 초기화의 2단계 확인, 입력만 비우고 저장 목록은 보존 |
 | `offline` | 외부 요청 0건, 임베드 폰트 실사용, 날짜 입력 방어 |
 
 ### 선택자 규칙
@@ -195,6 +201,8 @@ node tools/retirement-simulator/tests/run.js verdict  # 이름으로 일부만
 | 체크박스를 무시하고 메모를 항상 인쇄 | `print` 1건 실패 |
 | 만 55세 미만 IRP 의무이전 규칙 제거 | `verdict` 3건 실패 |
 | CSV 의 UTF-8 BOM 제거 | `storage` 1건 실패 |
+| 확인 없이 바로 초기화 | `reset` 3건 실패 |
+| 초기화가 저장된 상담까지 삭제 | `reset` 3건 실패 |
 
 ## 한계
 

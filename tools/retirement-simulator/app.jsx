@@ -608,6 +608,7 @@ function App() {
   const [notice, setNotice] = useState(null);
   const [memo, setMemo] = useState('');
   const [memoOnPrint, setMemoOnPrint] = useState(false);   // 기본은 내부 메모로 취급해 인쇄 제외
+  const [confirmReset, setConfirmReset] = useState(false);  // 전체 초기화 2단계 확인
   const [editingId, setEditingId] = useState(null);   // 목록에서 메모를 고치는 중인 항목
   const [editingText, setEditingText] = useState('');
   const fileRef = React.useRef(null);
@@ -876,6 +877,25 @@ function App() {
     else say(r.reason, 'err');
   };
 
+  /**
+   * 전체 초기화 - 화면의 입력만 비운다.
+   * 저장된 상담은 건드리지 않는다. 지우려면 목록에서 항목별로 삭제한다.
+   */
+  const doReset = () => {
+    setCustName(''); setBirthRaw('');
+    setSystem('DC'); setSystemJoinStr('');
+    setAmtSingle(0); setAmtLegal(0); setAmtHonor(0); setDeferredTax(0);
+    setHasPension(false); setPensionJoinStr(''); setPensionBal(0);
+    setHasIrp(false); setIrpJoinStr(''); setIrpBal(0);
+    setPastCount(0);
+    setFees({ 'ex-pension': 0, 'ex-irp': 0, 'new-irp': 0, 'new-pension': 0 });
+    setManualPick({}); setPickedId(null);
+    setScope('alone'); setMode('even'); setYears(10); setRate(3);
+    setMemo(''); setMemoOnPrint(false);
+    setTab('verdict'); setEditingId(null); setConfirmReset(false);
+    say('입력을 초기화했습니다. 저장된 상담은 그대로입니다.');
+  };
+
   const doExport = () => {
     const payload = { format: CASE_FORMAT, version: 1, savedAt: new Date().toISOString(), data: collectState() };
     const fn = downloadName('retirement-case', custName, 'json');
@@ -1002,6 +1022,29 @@ function App() {
                   <input ref={fileRef} type="file" accept="application/json,.json" aria-label="상담 케이스 가져오기" className="hidden"
                     onChange={(e) => { doImport(e.target.files && e.target.files[0]); e.target.value = ''; }} />
                 </div>
+
+                {/* 전체 초기화 - 실수로 상담 내용을 날리지 않도록 두 번 누르게 한다 */}
+                {confirmReset ? (
+                  <div className="flex items-center gap-2 mb-2 px-2 py-1.5 border border-[#E8D49A] bg-[#FBF3DF] rounded-xs">
+                    <span className="flex-1 text-[12px] text-[#8A6A0B] leading-snug">
+                      입력한 내용이 모두 지워집니다. 저장된 상담은 남습니다.
+                    </span>
+                    <button type="button" onClick={doReset} aria-label="초기화 확인"
+                      className="shrink-0 h-[30px] px-3 text-[12px] font-medium bg-sig-err text-white rounded-xs hover:opacity-90 transition">
+                      초기화
+                    </button>
+                    <button type="button" onClick={() => setConfirmReset(false)} aria-label="초기화 취소"
+                      className="shrink-0 h-[30px] px-3 text-[12px] text-ink-muted border border-hair bg-white rounded-xs hover:bg-surf-subtle transition">
+                      취소
+                    </button>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => setConfirmReset(true)}
+                    className="w-full h-[32px] mb-2 text-[13px] text-ink-muted border border-hair rounded-xs
+                               hover:bg-surf-subtle hover:text-ink transition">
+                    전체 초기화
+                  </button>
+                )}
 
                 {cases.length > 0 && (
                   <div className="border-t border-hair-soft pt-2">
