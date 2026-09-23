@@ -90,34 +90,42 @@ const pensionRateByAge = (age) => (age >= 80 ? 0.033 : age >= 70 ? 0.044 : 0.055
  * target      : { type:'pension'|'irp', isNew:boolean, joinDate:Date|null }
  */
 function transferBlockers(target, source, age) {
-  const reasons = [];
+  const blockers = [];   // 막힘 - 자동 배정에서도 수동 선택에서도 제외
+  const cautions = [];   // 조건부 - 자동 배정에서는 빼되, 상담자가 확인 후 수동 선택은 가능
 
   // (1) 만 55세 미만 - 근퇴법상 퇴직급여는 IRP 의무이전. 법정외(명예)퇴직금은 예외.
   if (target.type === 'pension' && age !== null && age < 55 && source.kind !== 'HONOR') {
-    reasons.push('만 55세 미만 퇴직급여는 IRP 의무이전 대상(근퇴법 §17·§20) - 연금저축 입금 불가');
+    blockers.push('만 55세 미만 퇴직급여는 IRP 의무이전 대상(근퇴법 §17·§20) - 연금저축 입금 불가');
   }
 
-  // (2) DC → 구 연금계좌 이체 제한 (소득세법 시행령 §40의4)
-  //     2013.3.1 이후 설정된 연금계좌의 금액은 2013.3.1 이전 가입 연금계좌로 이체할 수 없다.
+  // (2) DC → 구 연금계좌 (소득세법 시행령 §40의4①2)
   //
-  //     DB 는 여기에 걸리지 않는다. 소득세법 시행령 §40의2①2 가 '퇴직연금계좌' 로 열거하는 것은
-  //     확정기여형(DC)·개인형퇴직연금(IRP)·중소기업퇴직연금기금·과학기술인공제회 계좌뿐이고
-  //     확정급여형(DB)은 빠져 있다. DB 는 사업장 단위로 적립해 가입자별 계좌 자체가 없으므로
-  //     퇴직급여 지급은 '연금계좌 간 이체'가 아니라 '퇴직소득의 연금계좌 입금'이다.
-  //     같은 이유로 법정퇴직금·명예퇴직금도 제한을 받지 않는다.
-  if (source.kind === 'DC' && !target.isNew) {
-    if (isLegacyDate(target.joinDate) && !isLegacyDate(source.joinDate)) {
-      reasons.push(CUTOFF_LABEL + ' 이후 설정된 DC 계좌의 지급액은 ' + CUTOFF_LABEL +
-        ' 이전 가입 연금계좌로 이체 불가 (소득세법 시행령 §40의4)');
-    }
+  //     §40의4① 은 연금계좌 간 이체를 인출로 보지 않되, 각 호를 예외로 둔다. 그중 2호가
+  //     '2013.3.1 이후 가입한 연금계좌의 금액을 2013.3.1 전에 가입한 연금계좌로 이체하는 경우'다.
+  //     따라서 DC 에서 구 연금계좌로 '직접 이체'하면 인출로 간주되어 과세이연이 깨진다.
+  //
+  //     다만 완전히 막힌 것은 아니다. 퇴직급여를 수령한 날부터 60일 내에 연금계좌에 '입금'하면
+  //     과세이연되는 별도 경로가 있고(소득세법 §146②), 그 대상에는 연금저축계좌도 포함된다.
+  //     이 경로는 §40의4 의 '이체'가 아니므로 2호에 걸리지 않는다는 해석이 가능하다.
+  //     국세청 유권해석과 금융기관 수용 여부를 확인하지 못했으므로 단정하지 않고 조건부로 둔다.
+  //
+  //     DB 는 애초에 여기에 걸리지 않는다. §40의2①2 가 '퇴직연금계좌' 로 열거하는 것은
+  //     DC·IRP·중소기업퇴직연금기금·과학기술인공제회 계좌뿐이고 확정급여형(DB)은 빠져 있다.
+  //     DB 는 가입자별 계좌 자체가 없어 지급이 '이체'가 아니라 '퇴직소득 입금'이다.
+  //     법정퇴직금·명예퇴직금도 같은 이유로 제한을 받지 않는다.
+  if (source.kind === 'DC' && !target.isNew &&
+      isLegacyDate(target.joinDate) && !isLegacyDate(source.joinDate)) {
+    cautions.push(CUTOFF_LABEL + ' 이후 설정된 DC 계좌에서 ' + CUTOFF_LABEL +
+      ' 이전 가입 연금계좌로 직접 이체는 불가 (소득세법 시행령 §40의4①2). ' +
+      '퇴직급여 수령 후 60일 내 입금 경로(소득세법 §146②)는 가능할 수 있으니 금융기관에 확인하세요.');
   }
 
   // (3) 기존 계좌 잔고 요건 - 잔고가 없으면 구계좌 가입일 승계 효과를 인정받을 수 없음
   if (!target.isNew && isLegacyDate(target.joinDate) && !(target.balance > 0)) {
-    reasons.push('기존 계좌 잔고가 0원 - ' + CUTOFF_LABEL + ' 이전 가입 특례(6년차 기산) 적용 불가');
+    blockers.push('기존 계좌 잔고가 0원 - ' + CUTOFF_LABEL + ' 이전 가입 특례(6년차 기산) 적용 불가');
   }
 
-  return reasons;
+  return { blockers, cautions };
 }
 
 /** 퇴직급여 재원 구성 */
@@ -145,8 +153,15 @@ function buildCandidates(input, sources) {
 
   return targets.map((t) => {
     const perSource = sources.map((s) => {
-      const blockers = transferBlockers(t, s, age);
-      return { source: s, ok: blockers.length === 0, blockers };
+      const { blockers, cautions } = transferBlockers(t, s, age);
+      return {
+        source: s,
+        // ok        : 자동 배정 대상 (막힘도 조건부도 없음)
+        // selectable: 상담자가 확인 후 수동으로 고를 수 있음 (막힘만 없으면 됨)
+        ok: blockers.length === 0 && cautions.length === 0,
+        selectable: blockers.length === 0,
+        blockers, cautions
+      };
     });
     const acceptable = perSource.filter((p) => p.ok);
     const acceptAmount = acceptable.reduce((a, p) => a + p.source.amount, 0);
@@ -203,23 +218,31 @@ function accountScore(c, source) {
  */
 function buildAllocation(candidates, sources, manualPick) {
   return sources.map((s) => {
+    // 자동 배정은 ok 인 계좌만, 수동 선택 상자에는 조건부(selectable)도 올린다
     const options = candidates.filter((c) => c.perSource.some((p) => p.source.kind === s.kind && p.ok));
-    if (!options.length) return { source: s, target: null, options: [], tiedWith: [], manual: false };
+    const manualOptions = candidates.filter((c) => c.perSource.some((p) => p.source.kind === s.kind && p.selectable));
+    if (!options.length && !manualOptions.length) return { source: s, target: null, options: [], tiedWith: [], manual: false };
     const scored = options.map((c) => ({ c, score: accountScore(c, s) }));
     scored.sort((a, b) => b.score - a.score);
-    const auto = scored[0].c;
+    const auto = scored.length ? scored[0].c : null;
 
     // 상담자가 투자 가능 상품·중도인출 조건 등을 보고 직접 고른 계좌가 있으면 그것을 따른다
     const forcedId = manualPick && manualPick[s.kind];
-    const forced = forcedId ? options.find((c) => c.id === forcedId) : null;
+    const forced = forcedId ? manualOptions.find((c) => c.id === forcedId) : null;
     const target = forced || auto;
+    if (!target) return { source: s, target: null, options: manualOptions, tiedWith: [], manual: false };
 
     // 한도 기산이 같은 기존 계좌들 = 세법상 우열 없음
     const tiedWith = scored
       .filter((x) => x.c.id !== target.id && !x.c.isNew && x.c.startLimitYear === target.startLimitYear)
       .map((x) => x.c);
 
-    return { source: s, target, auto, options: scored.map((x) => x.c), tiedWith, manual: !!forced && forced.id !== auto.id };
+    return {
+      source: s, target, auto,
+      options: manualOptions,
+      tiedWith,
+      manual: !!forced && (!auto || forced.id !== auto.id)
+    };
   });
 }
 
@@ -1395,6 +1418,8 @@ function App() {
                                   {a.options.map((o) => (
                                     <option key={o.id} value={o.id}>
                                       {o.label}
+                                      {o.perSource.some((p) => p.source.kind === a.source.kind && !p.ok && p.selectable)
+                                        ? ' · 조건부' : ''}
                                       {o.startLimitYear === 6 ? ' · 6년차 기산' : ' · 1년차 기산'}
                                       {o.feeRate > 0 ? ' · 연 ' + (o.feeRate * 100).toFixed(2) + '%' : ' · 수수료 없음'}
                                     </option>
@@ -1444,7 +1469,7 @@ function App() {
                       {candidates.map((c) => {
                         const on = picked && picked.id === c.id;
                         const allocated = c.allocatedAmount > 0;
-                        const blocked = !c.canAcceptAny;
+                        const blocked = !c.perSource.some((p) => p.selectable);
                         return (
                           <div key={c.id}
                             onClick={() => { if (allocated) setPickedId(c.id); }}
@@ -1461,22 +1486,29 @@ function App() {
                                 {c.legacy ? <Badge tone="good">6년차 기산</Badge> : null}
                                 {!c.isNew && !c.legacy ? <Badge tone="neutral">1년차 기산</Badge> : null}
                                 {blocked ? <Badge tone="bad">이전 불가</Badge> : null}
+                                {!blocked && c.perSource.some((p) => !p.ok && p.selectable)
+                                  ? <Badge tone="warn">조건부 - 확인 필요</Badge> : null}
                               </div>
                               <span className="text-[12px] text-ink-soft whitespace-nowrap">
                                 {c.isNew ? '신규' : fmtDate(c.joinDate) + ' 가입'}
                               </span>
                             </div>
                             <div className="space-y-1">
-                              {c.perSource.map((p, i) => (
-                                <div key={i} className="flex items-start gap-2 text-[13px] leading-snug">
-                                  <span className={'font-medium shrink-0 ' + (p.ok ? 'text-sig-ok' : 'text-sig-err')}>
-                                    {p.ok ? '가능' : '불가'}
-                                  </span>
-                                  <span className="text-ink-muted shrink-0">{p.source.label}</span>
-                                  <span className="num text-ink-body shrink-0">{krw(p.source.amount)}</span>
-                                  {!p.ok && <span className="text-sig-err">- {p.blockers[0]}</span>}
-                                </div>
-                              ))}
+                              {c.perSource.map((p, i) => {
+                                const state = p.ok ? 'ok' : p.selectable ? 'caution' : 'blocked';
+                                return (
+                                  <div key={i} className="flex items-start gap-2 text-[13px] leading-snug">
+                                    <span className={'font-medium shrink-0 ' +
+                                      (state === 'ok' ? 'text-sig-ok' : state === 'caution' ? 'text-[#8A6A0B]' : 'text-sig-err')}>
+                                      {state === 'ok' ? '가능' : state === 'caution' ? '조건부' : '불가'}
+                                    </span>
+                                    <span className="text-ink-muted shrink-0">{p.source.label}</span>
+                                    <span className="num text-ink-body shrink-0">{krw(p.source.amount)}</span>
+                                    {state === 'blocked' && <span className="text-sig-err">- {p.blockers[0]}</span>}
+                                    {state === 'caution' && <span className="text-[#8A6A0B]">- {p.cautions[0]}</span>}
+                                  </div>
+                                );
+                              })}
                               {!c.perSource.length && (
                                 <div className="text-[13px] text-ink-soft">퇴직급여액을 입력해 주세요.</div>
                               )}

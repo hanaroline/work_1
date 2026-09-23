@@ -25,9 +25,24 @@ module.exports = async function run(t) {
     await page.waitForTimeout(500);
     const cs = await cards(page);
     const legacyCard = cs.find((c) => c.startsWith('기존 연금저축'));
-    t.includes(legacyCard, '이전 불가', '2016년 가입 DC → 구 연금저축 이전 불가');
+    // 직접 이체는 §40의4①2 로 막히지만, 60일 내 입금 경로(§146②)가 있어 단정하지 않고 조건부로 둔다
+    t.includes(legacyCard, '조건부', '2016년 가입 DC → 구 연금저축은 조건부');
+    t.includes(legacyCard, '직접 이체는 불가', '직접 이체가 막힌다는 점을 명시');
     t.includes(legacyCard, '§40의4', '근거 조문을 표시');
-    t.includes(await verdictText(page), '신규 IRP', '대신 신규 IRP 를 추천');
+    t.includes(legacyCard, '60일', '대체 경로(60일 내 입금)를 안내');
+    t.includes(await verdictText(page), '신규 IRP', '자동 추천은 신규 IRP');
+
+    // 조건부는 자동 배정에서 빠지되, 상담자가 수동으로 고를 수는 있어야 한다
+    const opts = await page.locator('select').first().locator('option').allInnerTexts();
+    t.ok(opts.some((o) => o.includes('기존 연금저축') && o.includes('조건부')),
+      '조건부 계좌가 수동 선택 상자에 조건부 표시와 함께 올라옴');
+    await page.locator('select').first().selectOption('ex-pension');
+    await page.waitForTimeout(500);
+    t.includes(await verdictText(page), '기존 연금저축', '수동으로 조건부 계좌를 고를 수 있음');
+    t.includes(await verdictText(page), '수동 선택', '수동 선택 표시가 붙음');
+    await page.getByRole('button', { name: '자동 추천으로 되돌리기', exact: true }).click();
+    await page.waitForTimeout(500);
+    t.includes(await verdictText(page), '신규 IRP', '되돌리면 다시 자동 추천');
 
     // --- DB 는 같은 제한을 받지 않는다 ---
     // 소득세법 시행령 §40의2①2 의 '퇴직연금계좌' 열거에 확정급여형(DB)은 없다.
@@ -37,7 +52,7 @@ module.exports = async function run(t) {
     await page.waitForTimeout(400);
     const dbCards = await cards(page);
     const dbLegacy = dbCards.find((c) => c.startsWith('기존 연금저축'));
-    t.excludes(dbLegacy, '이전 불가', '2016년 가입 DB 는 구 연금저축으로 이전 가능');
+    t.excludes(dbLegacy, '조건부', '2016년 가입 DB 는 조건 없이 구 연금저축으로 이전 가능');
     t.excludes(dbLegacy, '§40의4', 'DB 에는 이체 제한 사유가 붙지 않음');
     t.includes(dbLegacy, '6년차', 'DB 도 구계좌의 6년차 기산을 쓸 수 있음');
     t.includes(await verdictText(page), '기존', 'DB 는 기존 구계좌가 추천됨');
@@ -45,8 +60,8 @@ module.exports = async function run(t) {
     // 같은 조건에서 DC 로 바꾸면 다시 막혀야 한다 (두 제도가 실제로 다르게 판정되는지)
     await button(page, 'DC').click();
     await page.waitForTimeout(400);
-    t.includes((await cards(page)).find((c) => c.startsWith('기존 연금저축')), '이전 불가',
-      'DC 로 바꾸면 같은 조건에서 이전 불가로 판정');
+    t.includes((await cards(page)).find((c) => c.startsWith('기존 연금저축')), '조건부',
+      'DC 로 바꾸면 같은 조건에서 조건부로 판정');
 
     // --- 만 55세 미만: 법정퇴직금은 IRP 의무이전, 명예퇴직금만 연금저축 가능 ---
     await fillCase(page, {
