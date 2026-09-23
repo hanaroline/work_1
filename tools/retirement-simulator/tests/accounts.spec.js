@@ -6,7 +6,7 @@
  * 뭉뚱그리면 더 유리한 선택지를 놓친다. 그래서 목록으로 받는다.
  */
 const { openApp, fillCase, field, button, setAccounts, verdictText, selectedAccount,
-  scheduleRows, printSheet, pdfPageCount, DEL_RE, A4_CONTENT_PX } = require('./helpers');
+  pickAccount, scheduleRows, printSheet, pdfPageCount, DEL_RE, A4_CONTENT_PX } = require('./helpers');
 
 const num = (s) => {
   const m = String(s).replace(/,/g, '').match(/-?\d+(\.\d+)?/);
@@ -89,21 +89,72 @@ module.exports = async function run(t) {
     t.includes(body, '합산 주의', '연차가 다른 계좌를 합치면 경고');
     t.includes(body, 'IRP 1', '경고에 어느 계좌인지 표시');
 
-    // ── 수수료는 계좌마다 따로 먹는다 ─────────────────────────────
+    // ── 수수료는 IRP 계좌마다 따로 먹는다 ─────────────────────────
+    // 계좌 수수료(운용관리 + 자산관리)는 IRP 에만 있다. 요율은 금융기관마다 다르고
+    // 같은 기관이라도 개설 채널·적립금 구간에 따라 달라지므로 계좌별로 받는다.
+    // 연금저축계좌는 계좌 수수료가 없어 칸 자체를 두지 않는다.
+    await fillCase(page, {
+      name: '수수료', birth: '680505', system: 'DB', joinDate: '2016-04-01',
+      amount: 300000000, deferredTax: 12000000,
+      accounts: [
+        { kind: 'irp', name: '가나증권', join: '2008-03-03', balance: 50000000 },
+        { kind: 'irp', name: '다라은행', join: '2012-11-01', balance: 30000000 },
+        { kind: 'pension', name: '마바증권', join: '2010-05-04', balance: 20000000 }
+      ],
+      mode: '기간 균등 분할', years: 20, rate: 0
+    });
     await button(page, '판정').click();
-    t.includes(await selectedAccount(page), '연금저축 1', '수수료를 넣기 전에는 연금저축 1');
-    await field(page, '연금저축 1 연간 수수료').fill('0.5');
+    await page.waitForTimeout(300);
+    t.is(await field(page, 'IRP 1 연간 수수료').count(), 1, 'IRP 에는 수수료 칸이 있다');
+    t.is(await field(page, 'IRP 2 연간 수수료').count(), 1, 'IRP 마다 따로 있다');
+    t.is(await field(page, '연금저축 1 연간 수수료').count(), 0, '연금저축에는 수수료 칸이 없다');
+
+    // 셋 다 9년차로 세법상 동점이다. 퇴직연금 지급액은 IRP 로 직접 이전되므로 IRP 1.
+    t.includes(await selectedAccount(page), 'IRP 1', '수수료를 넣기 전에는 IRP 1');
+    await field(page, 'IRP 1 연간 수수료').fill('0.5');
     await page.waitForTimeout(600);
-    t.includes(await selectedAccount(page), '연금저축 2',
-      '같은 9년차면 수수료가 싼 쪽으로 넘어감');
+    t.includes(await selectedAccount(page), 'IRP 2', '같은 9년차면 수수료가 싼 IRP 로 넘어감');
     t.includes(await selectedAccount(page), '수수료 없음', '넘어간 계좌는 수수료가 0');
-    t.is(await field(page, '연금저축 2 연간 수수료').inputValue(), '0',
+    t.is(await field(page, 'IRP 2 연간 수수료').inputValue(), '0',
       '다른 계좌의 수수료 입력칸은 그대로');
 
-    // 되돌리면 다시 연금저축 1 (음성 대조)
-    await field(page, '연금저축 1 연간 수수료').fill('0');
+    // 되돌리면 다시 IRP 1 (음성 대조)
+    await field(page, 'IRP 1 연간 수수료').fill('0');
     await page.waitForTimeout(600);
-    t.includes(await selectedAccount(page), '연금저축 1', '수수료를 되돌리면 원래 계좌로');
+    t.includes(await selectedAccount(page), 'IRP 1', '수수료를 되돌리면 원래 계좌로');
+
+    // ── 합산한 연금저축에는 없는 수수료가 붙지 않는다 ─────────────
+    // 합산은 '다른 계좌의 잔고를 같이 본다'는 뜻이지 그 돈이 IRP 로 옮겨간다는 뜻이
+    // 아니다. 수령 계좌의 요율을 합산 잔고에까지 먹이면 연금저축 2천만원을 합치는
+    // 것만으로 있지도 않은 수수료가 생긴다. 금액으로 가중평균해야 한다.
+    await field(page, 'IRP 1 연간 수수료').fill('0.5');
+    await page.waitForTimeout(400);
+    await pickAccount(page, 'IRP 1');   // 수수료가 붙은 계좌를 일부러 수령 계좌로 둔다
+    t.includes(await selectedAccount(page), 'IRP 1', '수수료가 붙은 IRP 1 로 받는 상황');
+
+    await button(page, '인출 스케줄').click();
+    await page.waitForTimeout(300);
+    let feeBody = await page.locator('.screen-only').first().innerText();
+    t.includes(feeBody, '연 0.50%', '합산 전에는 IRP 요율 그대로');
+    t.excludes(feeBody, '가중평균', '합산이 없으면 가중평균도 없음');
+
+    await button(page, '판정').click();
+    await field(page, '연금저축 1 시뮬레이션 합산').check();
+    await page.waitForTimeout(600);
+    await button(page, '인출 스케줄').click();
+    await page.waitForTimeout(300);
+    feeBody = await page.locator('.screen-only').first().innerText();
+    t.includes(feeBody, '가중평균', '합산하면 요율을 가중평균했다고 밝힌다');
+    t.excludes(feeBody, '연 0.50%', '합산 잔고에 IRP 요율을 그대로 먹이지 않는다');
+    // 퇴직급여 3억(0.5%) + 합산한 연금저축 2천만원(수수료 없음) → 0.5% × 3.0/3.2 = 0.47%
+    t.includes(feeBody, '연 0.47%', '금액 가중평균 요율을 표시');
+
+    // 표시만 바꾸고 계산은 그대로면 아무 의미가 없다. 실제로 덜 떼는지 숫자로 본다.
+    //   3.2억 × 0.46875%(가중평균) = 150만원 → 1회차 기초자산 3억 1,850만원
+    //   3.2억 × 0.5%(수령 계좌 요율) = 160만원 → 3억 1,840만원 이 되어 10만원 차이가 난다
+    const mergedRows = await scheduleRows(page);
+    t.near(num(mergedRows[0][3]), 31850, 1,
+      '가중평균 요율로 수수료를 뗀 1회차 기초자산 (0.5% 를 그대로 먹이면 31,840)');
 
     // ── 계좌가 많아도 A4 한 장 ────────────────────────────────────
     await setAccounts(page, [
