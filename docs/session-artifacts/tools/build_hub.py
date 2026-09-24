@@ -74,6 +74,20 @@ GROUPS = [
              'Paste the source and get a one-page Korean summary each morning.',
              '블룸버그 브리핑 자동 번역 및 요약', 'Bloomberg briefing auto-translate',
              '2026-07-27', '6ba8c13c-26b1-41e9-91f7-ad8be51bf834', False),
+            ('국내 시장일지', 'Korea Market Journal',
+             '거래일마다 16:00 에 발행하는 마감 일지. 지수·거래대금·금리·환율과 업종별 '
+             '등락, 종목별 수급을 KRX 정규장 마감 기준으로 한 장에 정리합니다. 수급은 '
+             '한국투자증권 오픈API 에서 받아 오며, 장중 값이 잠정치라는 것을 확인하고 '
+             '기준 시각을 맞춘 뒤에 싣습니다. 아티팩트에는 9/22 마감 판을 실었습니다 — '
+             '날짜별 판은 저장소 `docs/journal/` 에 쌓입니다.',
+             'A close-of-day journal published at 16:00 each trading day: indices, turnover, '
+             'rates and FX with sector moves and per-name flows, all on the KRX regular-'
+             'session close. Flows come from the broker\'s open API, with intraday values '
+             'confirmed as provisional and the reference time aligned before publication. '
+             'This artifact carries the Sep 22 edition; dated editions accumulate in the '
+             'repository.',
+             '국내 시장일지', 'Korea market journal',
+             '2026-09-22', 'https://claude.ai/artifact/G2nyjm2Ta52Qhi8BWgmwo5', True),
         ]),
     dict(
         ko='보유자산 · 포트폴리오', en='Holdings & Portfolio',
@@ -296,6 +310,17 @@ GROUPS = [
              'repository over a local server instead.',
              'TV · 라디오 온에어 화면', 'TV/radio on-air screen',
              '2026-09-13', None, ('아티팩트 불가 · 저장소', 'Cannot publish · in repo')),
+            ('미국 주요기업 실적 인텔리전스', 'US Earnings Intelligence',
+             '미국 주요 25개사의 발표일·컨센서스·실제치·가이던스와 선행 P/E·P/S·'
+             'EV/EBITDA 를 한 화면에서 훑습니다. 실적 시즌에 기업별로 흩어 찾지 않기 '
+             '위한 화면이고, 수치마다 기업 IR·8-K 공시 링크가 붙어 있습니다. '
+             '기준일 2026-09-17.',
+             'Reporting dates, consensus, actuals and guidance for 25 major US companies, '
+             'with forward P/E, P/S and EV/EBITDA on one screen — so an earnings season can '
+             'be read in one place instead of company by company. Every figure links to the '
+             'company\'s own IR release or 8-K. As of Sep 17, 2026.',
+             '실적 인텔리전스 화면', 'Earnings intelligence screen',
+             '2026-09-17', 'https://claude.ai/artifact/4HaVH13cZZuH434S8TtJys', True),
         ]),
     dict(
         ko='세금 · 계산기 · 영업 도구', en='Tax, Calculators & Sales Tools',
@@ -348,6 +373,42 @@ GROUPS = [
              'it cannot open as an artifact page — take it from the repository.',
              '월배당 ETF 제안서', 'Monthly-distribution ETF proposal',
              '2026-09-16', None, ('엑셀 · 저장소', 'Spreadsheet · in repo')),
+            ('퇴직급여 수령 의사결정 시뮬레이터', 'Retirement Payout Decision Simulator',
+             '고객 나이·퇴직제도(DB/DC/퇴직금)·기존 연금계좌 가입일을 넣으면 신규 계좌를 '
+             '열어야 하는지 가리고, 연차별 인출 한도를 시뮬레이션합니다. 판단표 16장을 '
+             '원문과 한 칸씩 대조해 미확인 칸 0건으로 맞춘 판이며, 상담 내용을 저장하고 '
+             '파일로 주고받을 수 있습니다.',
+             'Enter the client\'s age, scheme (DB/DC/severance) and the start date of any '
+             'existing pension account, and it decides whether a new account is required, '
+             'then simulates the withdrawal ceiling year by year. The decision matrix was '
+             'checked cell by cell against the source with no unverified entries left; '
+             'consultations can be saved and exchanged as files.',
+             '퇴직급여 판단표 · 시뮬레이터', 'Retirement payout matrix',
+             '2026-09-23', 'https://claude.ai/artifact/5LwwSEjKCS54xCT2qUYab7', True),
+            ('자산배분 제안서 생성기', 'Asset Allocation Proposal Builder',
+             '투자금액·기간·위험성향을 넣으면 자산배분과 그에 맞는 상품을 제안하고, '
+             '인쇄·PDF·CSV 로 내보냅니다. 고객명은 비어 있는 입력칸이라 특정 고객의 '
+             '자료가 들어 있지 않습니다.',
+             'Enter amount, horizon and risk profile to get an allocation with matching '
+             'products, exportable to print, PDF or CSV. The client name is an empty field — '
+             'no client\'s data is embedded.',
+             '자산배분 제안서', 'Asset allocation proposal',
+             '2026-09-20', 'https://claude.ai/artifact/FDcy9WXPRSh1691JsTHfvn', True),
+            ('시장 변동성 경보 · 고객용', 'Volatility Alert · Client Edition',
+             '지금 시장이 어느 자리에 있는지를 네 축으로 재어 한 장에 담은 고객용 판. '
+             '같은 자리였던 과거의 이후 열흘이 어땠는지를 표본 수와 함께 싣고, 무조건부 '
+             '확률과 「방향을 맞히는 장치가 아니다」까지 남깁니다 — 걷어낸 것은 복잡한 '
+             '것이지 불리한 것이 아닙니다. 판단하는 사람이 보는 대시보드는 자료를 따로 '
+             '받아 오므로 아티팩트로 열 수 없고, 저장소에서 로컬 서버로 열어야 합니다. '
+             '2026-09-21 기준.',
+             'The client-facing edition: where the market sits now, measured on four axes, '
+             'on one page. It carries what the following ten days looked like from the same '
+             'position, with sample sizes, the unconditional probability, and the statement '
+             'that this does not predict direction — what was stripped out was complexity, '
+             'not the unflattering parts. The analyst dashboard fetches its data separately '
+             'and cannot run as an artifact. As of Sep 21, 2026.',
+             '변동성 경보 모델', 'Volatility alert model',
+             '2026-09-21', 'https://claude.ai/artifact/8Vmbp6SC2KLnsrrnCpfp4r', True),
             ('마포WM 모바일 창구', 'Mapo WM Mobile Desk',
              '고객에게 문자로 보내는 한 장. 비대면 계좌개설 6종과 자주 찾는 업무 7종을 '
              '눌러 바로 진행하게 만들었습니다. 링크는 마포WM으로 개설되는 실제 계좌개설 '
@@ -523,6 +584,21 @@ GROUPS = [
              'An arcade shooter built in the same session.',
              'Tetris game', 'Tetris game',
              '2026-07-09', '189bc251-61dc-409b-9b78-df39b8f0a092', True),
+            ('한국투자증권 오픈API 붙임쇠', 'Broker Open-API Connector',
+             '증권사 오픈API 에서 국내 일봉과 종목별 수급을 받아 오는 붙임쇠와 실측 '
+             '도구입니다. 야후·네이버 값이 어긋날 때 증권사 원본으로 가리는 심판 역할을 '
+             '하고, 장중 값이 잠정치라는 것(15:37 값도 확정이 아니었습니다)과 단위 '
+             '오독(백만원을 원으로 읽던 것)을 실측으로 잡아냈습니다. 자격정보는 개인 '
+             '환경파일에 두고 저장소에 넣지 않습니다. 산출물이 스크립트·워크플로라 '
+             '따로 볼 화면이 없습니다.',
+             'A connector and measurement tools that pull Korean daily bars and per-name '
+             'flows from the broker\'s open API, used as the referee when Yahoo and Naver '
+             'disagree. Measurement established that intraday values stay provisional (even '
+             'the 15:37 print) and caught a unit misreading. Credentials live in a personal '
+             'environment file, never the repository. The output is scripts and workflows, '
+             'so there is no page to view.',
+             '증권사 오픈API 연동', 'Broker open-API integration',
+             '2026-09-23', None, ('생성기 · 저장소', 'Tooling · in repo')),
             ('세미나 중간 영상 클립', 'Seminar Video Clips',
              '세미나 슬라이드 한가운데에 방송 영상을 트는 자리를 만든 작업입니다. '
              '덱 생성기(`make_deck.mjs`)가 클립 자리를 슬라이드에 넣고, '
@@ -784,13 +860,13 @@ h.append('<div class="lang" role="radiogroup" aria-label="언어 선택 / Langua
 h.append('</div>')
 
 h.append(bi('세션 산출물 자료실', 'Session Work Library', 'h1'))
-h.append(bi('클로드 코드 세션 53개가 남긴 최종 작업본을 주제별로 모았습니다. '
+h.append(bi('클로드 코드 세션 59개가 남긴 최종 작업본을 주제별로 모았습니다. '
             '제목을 누르면 해당 아티팩트가 열립니다.',
-            'The final deliverable of every one of 53 Claude Code sessions, grouped by '
+            'The final deliverable of every one of 59 Claude Code sessions, grouped by '
             'subject. Each title opens its artifact.', 'p', 'sub'))
 
 h.append('<div class="stats">')
-for kolab, enlab, val in [('세션', 'Sessions', '53'),
+for kolab, enlab, val in [('세션', 'Sessions', '59'),
                           ('주제', 'Subjects', str(len(GROUPS))),
                           ('새로 올린 아티팩트', 'Newly published', str(new_count)),
                           ('색인에 실은 항목', 'Indexed items', str(rows_total))]:
@@ -876,10 +952,10 @@ for (tko, ten, dko, den) in NOARTIFACT:
 h.append('</div></section>')
 
 h.append('<footer>')
-h.append(bi('기준 2026-09-17 · 저장소 <code>hanaroline/work_1</code> · '
+h.append(bi('기준 2026-09-24 · 저장소 <code>hanaroline/work_1</code> · '
             '세션별 브랜치의 마지막 커밋에서 산출물을 뽑았습니다. 이 색인은 월·목 아침에 '
             '스스로 갱신됩니다.',
-            'As of 2026-09-17 · repository <code>hanaroline/work_1</code> · deliverables taken '
+            'As of 2026-09-24 · repository <code>hanaroline/work_1</code> · deliverables taken '
             'from the last commit on each session branch. This index refreshes itself on '
             'Monday and Thursday mornings.', 'p'))
 h.append(bi('세션 목록에는 최근 35개가 잡힙니다. 그보다 앞선 브랜치 두 개'
@@ -893,14 +969,14 @@ h.append(bi('세션 목록에는 최근 35개가 잡힙니다. 그보다 앞선 
             'artifacts are the original; the two factsheets were found in the artifact list '
             'but the session that produced them could not be identified from the session '
             'listing.', 'p'))
-h.append(bi('<b>9/17 기준 밀린 것 —</b> <code>국내·미국 100대 기업</code>·'
+h.append(bi('<b>9/24 기준 밀린 것 —</b> <code>국내·미국 100대 기업</code>·'
             '<code>증시 일정 캘린더</code>·<code>증권사 리포트 다이제스트</code>·'
             '<code>완전판매 스크립트</code>(전체판) 는 저장소에 더 새 판이 있지만 이번 '
             '회차에 갈아 끼우지 못했습니다. 아티팩트를 덮어쓰려면 지금 올라가 있는 판을 '
             '먼저 통째로 다시 읽어야 하는데, 이 화면들은 데이터를 파일에 담고 있어 그 '
             '과정이 한 건에 수천 줄입니다. 각 화면은 자기가 안고 있는 자료의 시점을 '
             '스스로 밝히므로 틀린 값을 보여 주지는 않습니다.',
-            '<b>Behind as of Sep 17 —</b> newer builds of <code>Korea / US Top-100</code>, '
+            '<b>Behind as of Sep 24 —</b> newer builds of <code>Korea / US Top-100</code>, '
             '<code>Market Calendar</code>, <code>Broker Report Digest</code> and the full '
             '<code>Compliance Script</code> exist in the repository but were not swapped in '
             'this round: overwriting an artifact requires re-reading the published build in '
