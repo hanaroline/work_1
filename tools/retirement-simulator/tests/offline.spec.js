@@ -46,39 +46,60 @@ module.exports = async function run(t) {
     t.is(font.numFamily, 'Inter', '숫자 칸은 Inter 를 씀');
     t.is(font.w1, font.w8, '고정폭 숫자 (1 과 8 의 폭이 같음)');
 
-    // --- 날짜 입력 방어 ---
+    // --- 날짜 입력 ---
+    //
+    // 휴대폰에서 브라우저 기본 달력은 월 이동밖에 없어 2003년 가입일을 고르려면
+    // 화살표를 270번 넘게 눌러야 했다. 숫자를 직접 치는 칸으로 바꿨다.
+    // 여기서 지키는 것은 세 가지다.
+    //   1. 친 대로 구분선이 붙는가
+    //   2. 치는 중간 상태가 눌리거나 지워지지 않는가 (옛 date 칸은 '2' 가 0002 로
+    //      들어가 곧바로 1900 으로 튀어 2016 을 칠 수 없었다)
+    //   3. 달력에 없는 날짜·범위 밖 날짜는 걸러지는가
     const d = field(page, '제도 가입일');
-    await d.fill('200700-02-01');
-    await page.waitForTimeout(300);
-    t.is(await d.inputValue(), '2007-02-01', '연도 6자리는 앞 4자리로 절삭');
 
-    await d.fill('2099-01-01');
-    await page.waitForTimeout(300);
-    const today = await page.evaluate(() => {
-      const p = (n) => String(n).padStart(2, '0');
-      const t2 = new Date();
-      return t2.getFullYear() + '-' + p(t2.getMonth() + 1) + '-' + p(t2.getDate());
-    });
-    t.is(await d.inputValue(), today, '미래 날짜는 오늘로 제한');
-
-    // 기존 값의 연도를 한 글자씩 고치는 경로 (중간값이 눌리면 안 된다)
-    await d.fill('2003-03-07');
+    await d.fill('');
+    await d.pressSequentially('20030701');
     await page.waitForTimeout(250);
+    t.is(await d.inputValue(), '2003-07-01', '숫자 여덟 자리를 치면 구분선이 붙는다');
+
+    // 한 글자씩 쳐도 중간값이 눌리지 않는다
+    await d.fill('');
+    await d.pressSequentially('2016');
+    await page.waitForTimeout(250);
+    t.is(await d.inputValue(), '2016', '연도를 치는 동안에는 그대로 둔다');
+
+    // 치다 말고 다른 곳을 봐도 남아 있어야 한다
+    await button(page, '판정').click();
+    await page.waitForTimeout(250);
+    t.is(await d.inputValue(), '2016', '치다 만 값은 지워지지 않는다');
+
     await d.click();
-    await page.keyboard.press('Home');
-    // 이 환경의 칸 순서를 확인해 연도 칸으로 이동
-    await page.keyboard.type('5');
+    await d.pressSequentially('0401');
+    await page.waitForTimeout(250);
+    t.is(await d.inputValue(), '2016-04-01', '이어서 치면 완성된다');
+
+    await d.pressSequentially('9');
     await page.waitForTimeout(200);
-    const yearFirst = (await d.inputValue()).startsWith('0005');
-    await d.fill('2003-03-07');
-    await page.waitForTimeout(200);
-    await d.click();
-    await page.keyboard.press('Home');
-    if (!yearFirst) { await page.keyboard.press('ArrowRight'); await page.keyboard.press('ArrowRight'); }
-    for (const ch of '2016') { await page.keyboard.type(ch); await page.waitForTimeout(150); }
+    t.is(await d.inputValue(), '2016-04-01', '여덟 자리를 넘겨 쳐도 늘어나지 않는다');
+
+    // 달력에 없는 날짜는 비운다
+    await d.fill('20030231');
     await button(page, '판정').click();
     await page.waitForTimeout(300);
-    t.is(await d.inputValue(), '2016-03-07', '연도를 한 글자씩 고쳐 2016 으로 완성됨');
+    t.is(await d.inputValue(), '', '2003-02-31 처럼 없는 날짜는 비운다');
+
+    // 가입일에 미래는 있을 수 없다
+    await d.fill('20990101');
+    await button(page, '판정').click();
+    await page.waitForTimeout(300);
+    t.is(await d.inputValue(), '', '가입일에 미래 날짜는 비운다');
+
+    // 퇴직(예정)일은 미래가 정상이다 (음성 대조)
+    const rd = field(page, '퇴직일');
+    await rd.fill('20280301');
+    await button(page, '판정').click();
+    await page.waitForTimeout(300);
+    t.is(await rd.inputValue(), '2028-03-01', '퇴직(예정)일은 미래를 받는다');
 
     await d.fill('0002-03-07');
     await page.waitForTimeout(250);

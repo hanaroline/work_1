@@ -756,43 +756,87 @@ const TODAY_STR = (() => {
 /**
  * 날짜 입력.
  *
- * 브라우저 기본 date 입력은 연도 칸에 6자리(예: 200700)까지 받아들여
- * 200700-02-01 같은 값이 들어온다. 연도를 앞 4자리로 자르고 범위를 눌러
- * 가입일이 오늘을 넘지 않게 한다.
+ * **숫자 여덟 자리를 직접 친다.** 브라우저 기본 date 입력(type="date")을 쓰다가
+ * 바꿨다. 휴대폰에서는 그것이 달력으로만 열리는데 달력에 월 이동 화살표밖에 없어,
+ * 2003년 가입일을 고르려면 월 화살표를 270번 넘게 눌러야 했다. 이 도구가 다루는
+ * 날짜는 대부분 수십 년 전 가입일이라 달력으로 찾는 것 자체가 맞지 않는다.
  *
- * 퇴직(예정)일처럼 미래가 정상인 칸은 allowFuture 로 상한을 푼다.
- * 그래도 상한은 둔다 - 연도 칸에 세 자리를 치는 중간 상태(예: 202)가
- * 0202 로 들어오는 것과 구분해야 해서, 상한 없이 열어 두면 오타를 못 잡는다.
+ * 생년월일 칸이 이미 '710315' 처럼 숫자만 받고 있어 입력 방식도 그쪽과 맞는다.
+ *
+ * 치는 대로 20030701 → 2003-07-01 로 구분선을 넣어 준다. 값은 예전과 똑같이
+ * YYYY-MM-DD 문자열이라 저장·불러오기·인쇄가 그대로 동작한다.
+ * 달력을 쓰고 싶은 사람을 위해, 브라우저가 지원하면 달력 단추를 함께 둔다.
  */
 const FUTURE_MAX = (TODAY.getFullYear() + 50) + '-12-31';
 
+/** 숫자만 남겨 여덟 자리까지 끊고 구분선을 넣는다 */
+function dateMask(raw) {
+  const d = digitsOnly(raw).slice(0, 8);
+  if (d.length <= 4) return d;
+  if (d.length <= 6) return d.slice(0, 4) + '-' + d.slice(4);
+  return d.slice(0, 4) + '-' + d.slice(4, 6) + '-' + d.slice(6);
+}
+
+/** 완성된 날짜일 때만 실제 달력상 존재하는 날인지 본다 */
+function realDate(str) {
+  const m = (str || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return null;
+  const d = new Date(+m[1], +m[2] - 1, +m[3]);
+  if (d.getFullYear() !== +m[1] || d.getMonth() !== +m[2] - 1 || d.getDate() !== +m[3]) return null;
+  return d;
+}
+
 function DateInput({ value, onChange, label, allowFuture }) {
   const max = allowFuture ? FUTURE_MAX : TODAY_STR;
-  const handle = (e) => {
-    const v = e.target.value;
-    if (!v) { onChange(''); return; }
-    const m = v.match(/^(\d+)-(\d{2})-(\d{2})$/);
-    if (!m) { onChange(v); return; }
+  const pickerRef = React.useRef(null);
 
-    // 연도 칸은 6자리까지 들어오므로 앞 4자리만 쓴다.
-    // 하한(1900)은 여기서 누르면 안 된다 - 연도를 고칠 때 첫 글자 '2' 가 0002 로
-    // 들어와 곧바로 1900 으로 튀어 2016 을 칠 수 없게 된다. 하한은 blur 에서 본다.
-    const y = m[1].length > 4 ? m[1].slice(0, 4) : m[1];
-    let next = y.padStart(4, '0') + '-' + m[2] + '-' + m[3];
-    if (next > max) next = max;
-    onChange(next);
-  };
+  // 달력 단추는 브라우저가 열어 줄 수 있을 때만 보여 준다.
+  // 지원하지 않는 브라우저에서 눌러도 아무 일이 없으면 고장으로 보인다.
+  const canPick = typeof HTMLInputElement !== 'undefined'
+    && typeof HTMLInputElement.prototype.showPicker === 'function';
 
-  // 타이핑이 끝난 뒤 연도가 터무니없으면 비운다.
-  // 1900 같은 그럴듯한 값으로 눌러 두면 2013.3.1 판정에 조용히 섞여 들어간다.
+  const handle = (e) => onChange(dateMask(e.target.value));
+
+  // 치는 중에는 막지 않는다. 다 치고 나서 범위를 벗어나면 그때 손본다 -
+  // 중간 상태(2016 을 치다 만 '2')를 걸러 내면 그 해를 칠 수가 없다.
   const handleBlur = (e) => {
-    const m = (e.target.value || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (m && +m[1] < 1900) onChange('');
+    const v = e.target.value;
+    // 치다 만 값은 건드리지 않는다. 연도만 쳐 놓고 다른 칸을 확인하러 갔다가
+    // 돌아왔을 때 비어 있으면 처음부터 다시 쳐야 한다.
+    if (digitsOnly(v).length !== 8) return;
+    // 여덟 자리를 다 쳤는데 달력에 없는 날(2003-02-31)이거나 범위 밖이면 비운다.
+    // 그럴듯한 값으로 눌러 두면 2013.3.1 판정에 조용히 섞여 들어간다.
+    if (!realDate(v) || v < '1900-01-01' || v > max) onChange('');
   };
 
   return (
-    <input type="date" className={inputCls} value={value} aria-label={label}
-      min="1900-01-01" max={max} onChange={handle} onBlur={handleBlur} />
+    <div className="relative">
+      <input
+        type="text" inputMode="numeric" autoComplete="off"
+        className={inputCls + ' num' + (canPick ? ' pr-11' : '')}
+        value={value} aria-label={label} placeholder="2003-07-01"
+        maxLength={10} onChange={handle} onBlur={handleBlur} />
+      {canPick && (
+        <React.Fragment>
+          <button type="button" aria-label={label + ' 달력'}
+            onClick={() => { try { pickerRef.current.showPicker(); } catch (err) { /* 열 수 없으면 그냥 둔다 */ } }}
+            className="absolute right-1 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center
+                       text-ink-soft hover:text-mas-orange transition"
+            title="달력에서 고르기">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="5" width="18" height="16" rx="2" />
+              <path d="M3 10h18M8 3v4M16 3v4" />
+            </svg>
+          </button>
+          {/* 달력만 띄우는 숨은 칸. 화면에는 위의 숫자 칸만 보인다 */}
+          <input ref={pickerRef} type="date" tabIndex={-1} aria-hidden="true"
+            className="absolute right-3 bottom-0 w-0 h-0 opacity-0 pointer-events-none"
+            min="1900-01-01" max={max}
+            value={realDate(value) ? value : ''}
+            onChange={(e) => onChange(e.target.value)} />
+        </React.Fragment>
+      )}
+    </div>
   );
 }
 
