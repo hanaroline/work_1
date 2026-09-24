@@ -83,6 +83,9 @@ module.exports = async function run(t) {
     t.includes(text, '브라우저', '브라우저로 열라고 안내');
     t.includes(text, 'Chrome', '어느 앱으로 열지 이름을 댄다');
     t.includes(text, 'Download', '파일을 어디서 찾는지 알려 준다');
+    // 앱 고르는 화면이 안 뜨는 기기가 있다. 주소를 직접 칠 수 있게 경로를 적어 둔다 -
+    // 이것이 앱 선택을 건너뛰는 가장 확실한 길이다.
+    t.includes(text, 'file:///storage/emulated/0/Download/', '주소창에 칠 경로를 그대로 적어 준다');
     t.excludes(text, '300,000,000', '예비 화면에는 상담 내용이 남지 않는다');
     await noJs.close();
   } finally {
