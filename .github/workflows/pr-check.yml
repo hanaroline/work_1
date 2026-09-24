@@ -10,6 +10,8 @@ name: PR 점검
 #            그 자료로 화면이 브라우저에서 깨지지 않는가
 #   매매타이밍 — 전략빌더 10종의 성적표·세팅을 다시 만들고 재검산을 돌려
 #            통과하는가, 그 자료로 화면이 브라우저에서 깨지지 않는가
+#   퇴직급여 — 단일 HTML 을 소스에서 다시 만들어 판정·세액 검사를 전부 돌리고,
+#            커밋된 한 장이 소스와 같은 바이트인가, 판단표와 화면 판정이 같은 답인가
 #
 # **자료 파일이 커밋된 것과 같은지는 보지 않는다.** 지수 일봉은 kr100-data 가지에
 # 있고 날마다 자라므로, 다시 만들면 커밋된 것과 당연히 달라진다. 그래서 「같은가」가
@@ -115,6 +117,67 @@ jobs:
           print(f'자료 {n} 개 가운데 {len(bad)} 개 어긋남 (진단물 {skipped} 개는 건너뜀)')
           sys.exit(1 if bad else 0)
           PY
+
+  retirement:
+    name: 퇴직급여 시뮬레이터 — 판정·세액 재검산과 A4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # 커밋된 한 장을 만든 환경과 같은 판으로 맞춘다 — 아래 '소스와 같은가'
+          # 검사가 바이트를 견주므로 판이 갈리면 애먼 데서 붉어진다.
+          node-version: '22'
+
+      # 이 저장소는 package.json 이 .gitignore 대상이라 빌드 의존성을 직접 건다.
+      # 판을 README 와 같게 못박는다 — 러너와 사람 기계가 다른 판을 쓰면 한쪽에서
+      # 통과한 것이 다른 쪽에서 깨진다. playwright 는 세션 시작 갈고리와 같은 판이다.
+      - name: 빌드·검사 의존성
+        run: |
+          npm install --no-save --no-audit --no-fund \
+            react@18.3.1 react-dom@18.3.1 @babel/standalone@7.25.6 \
+            tailwindcss@3.4.16 spoqa-han-sans@3.3.0 @fontsource/inter@5.3.0 \
+            playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: 단일 HTML 을 소스에서 다시 만든다
+        run: node scripts/build-retirement-simulator.js
+
+      # **커밋된 한 장이 소스와 어긋나면 지점에 내려가는 파일이 옛 판이다.**
+      # app.jsx 만 고치고 빌드를 잊은 PR, 그리고 산출물을 손으로 고친 PR 을
+      # 여기서 잡는다. 빌드는 고정된 판으로만 돌아가므로 같은 소스면 같은 바이트가 나온다.
+      - name: 커밋된 한 장이 소스와 같은가
+        run: |
+          if ! git diff --quiet -- retirement-simulator.html; then
+            echo "::error::retirement-simulator.html 이 소스와 어긋납니다 — 빌드해서 함께 커밋하세요"
+            git diff --stat -- retirement-simulator.html
+            exit 1
+          fi
+          echo "커밋된 한 장이 소스와 일치합니다"
+
+      # **판단표와 화면 판정이 어긋나면 한 파일 안에서 답이 둘이 된다.**
+      # 판단표 탭은 규칙표(rules.js)에서 전개한 자료를 보여 주고, 개별 판정은 app.jsx 가
+      # 따로 한다. 둘은 일부러 다른 구현으로 두었으므로(서로의 검산이 된다) 어긋날 수 있고,
+      # 어긋난 채로 배포되면 상담자가 같은 화면에서 서로 다른 답을 본다. 여기서 막는다.
+      - name: 판단표와 화면 판정이 같은 답을 내는가
+        run: node tools/pension-decision-matrix/crosscheck.js
+
+      # 판정 로직·세액 산식·A4 한 장을 브라우저에서 실제로 돌려 본다.
+      # 이 검사들이 이 도구의 유일한 안전장치인데 지금까지 PR 에서 돌지 않았다 —
+      # 세법 산식을 잘못 고쳐도 사람이 눈으로 보는 것 말고는 걸러 주는 것이 없었다.
+      - name: 검사
+        run: |
+          set -o pipefail
+          node tools/retirement-simulator/tests/run.js 2>&1 | tee /tmp/rs.txt
+          code=$?
+          {
+            echo '### 퇴직급여 시뮬레이터'
+            echo '```'
+            grep -E '^ (OK|FAIL)|^검사|✗' /tmp/rs.txt | head -40
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $code
 
   volatility:
     name: 변동성 — 모델 재검산과 화면

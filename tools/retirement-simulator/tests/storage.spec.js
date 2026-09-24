@@ -1,0 +1,182 @@
+/** 저장 - 상담 보관, 메모, 파일 내보내기/가져오기, CSV */
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { openApp, fillCase, field, button, comparisonRows, DEL_RE } = require('./helpers');
+
+const CASE = {
+  name: '홍길동', birth: '710315', system: 'DC', joinDate: '2000-07-01',
+  amount: 350000000, deferredTax: 7500000,
+  pension: { join: '2003-03-02', balance: 75000000 },
+  years: 20, memo: '기존 IRP 수수료 확인 필요.\n2월 재방문 예정.'
+};
+
+const savedCases = (page) =>
+  page.locator('button[title^="불러오기"]').evaluateAll((bs) => bs.map((b) => b.innerText.replace(/\s+/g, ' ').trim()));
+
+module.exports = async function run(t) {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'mas-sim-'));
+  const { browser, page, errors } = await openApp({});
+  try {
+    await fillCase(page, CASE);
+
+    // --- 저장 후 목록에 남는다 ---
+    await button(page, '상담 저장').click();
+    await page.waitForTimeout(500);
+    let list = await savedCases(page);
+    t.is(list.length, 1, '상담 1건이 저장됨');
+    t.includes(list[0], '홍길동', '목록에 고객명이 보임');
+    t.includes(list[0], '1971년생', '목록에 생년이 보임');
+
+    // --- 입력을 바꿨다가 불러오면 되돌아온다 ---
+    await field(page, '고객명').fill('지워짐');
+    await field(page, '수령 기간').fill('5');
+    await page.waitForTimeout(400);
+    await page.locator('button[title^="불러오기"]').first().click();
+    await page.waitForTimeout(600);
+    t.is(await field(page, '고객명').inputValue(), '홍길동', '고객명 복원');
+    t.is(await field(page, '수령 기간').inputValue(), '20', '수령 기간 복원');
+    t.is((await field(page, '퇴직급여').inputValue()).replace(/,/g, ''), '350000000', '퇴직급여 복원');
+    t.includes(await field(page, '상담 메모').inputValue(), '2월 재방문 예정', '메모 복원');
+
+    // --- 새로고침해도 남는다 ---
+    await page.reload({ waitUntil: 'load' });
+    await page.waitForFunction(() => document.getElementById('root').children.length > 0);
+    await page.waitForTimeout(600);
+    t.is((await savedCases(page)).length, 1, '새로고침 후에도 목록 유지');
+
+    // --- 목록에서 메모만 수정 (입력값은 그대로) ---
+    await page.locator('button[title^="불러오기"]').first().click();
+    await page.waitForTimeout(500);
+    await page.locator('button[title="메모 수정"]').first().click();
+    await page.waitForTimeout(300);
+    await field(page, '저장된 상담 메모 수정').fill('수정된 메모');
+    await button(page, '메모 저장').click();
+    await page.waitForTimeout(500);
+    const listed = await savedCases(page);
+    t.is(listed.length, 1, '수정 후에도 항목은 1건');
+    const memoShown = await page.locator('p.whitespace-pre-wrap').allInnerTexts();
+    t.ok(memoShown.some((x) => x.trim() === '수정된 메모'), '목록에 수정된 메모가 표시됨');
+    t.ok(!memoShown.some((x) => x.includes('2월 재방문 예정')), '이전 메모는 대체됨');
+    t.is((await field(page, '퇴직급여').inputValue()).replace(/,/g, ''), '350000000', '메모 수정이 입력값을 건드리지 않음');
+
+    // --- 파일 내보내기 / 가져오기 ---
+    const [dl] = await Promise.all([page.waitForEvent('download'), button(page, '파일로 내보내기').click()]);
+    const jsonPath = path.join(tmp, 'case.json');
+    await dl.saveAs(jsonPath);
+    t.ok(/^retirement-case_.*\.json$/.test(dl.suggestedFilename()),
+      'ASCII 파일명으로 저장됨 (' + dl.suggestedFilename() + ')');
+
+    const payload = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+    t.is(payload.format, 'mas-retirement-case', '파일 형식 표기');
+    t.is(payload.data.custName, '홍길동', '고객명은 파일 안에 들어감');
+    t.is(payload.data.years, 20, '수령 기간이 담김');
+
+    await field(page, '고객명').fill('');
+    await field(page, '수령 기간').fill('5');
+    await page.waitForTimeout(400);
+    await field(page, '상담 케이스 가져오기').setInputFiles(jsonPath);
+    await page.waitForTimeout(700);
+    t.is(await field(page, '고객명').inputValue(), '홍길동', '가져오기로 복원');
+    t.is(await field(page, '수령 기간').inputValue(), '20', '가져오기로 수령 기간 복원');
+
+    // --- 형식이 다른 JSON 은 거부 ---
+    const badPath = path.join(tmp, 'bad.json');
+    fs.writeFileSync(badPath, '{"hello":"world"}');
+    await field(page, '상담 케이스 가져오기').setInputFiles(badPath);
+    await page.waitForTimeout(600);
+    t.is(await field(page, '고객명').inputValue(), '홍길동', '엉뚱한 JSON 이 폼을 초기화하지 않음');
+    t.includes(await page.locator('body').innerText(), '상담 케이스 형식이 아닙니다', '거부 메시지 표시');
+
+    // --- CSV ---
+    await button(page, '인출 스케줄').click();
+    await page.waitForTimeout(300);
+    const [csvDl] = await Promise.all([page.waitForEvent('download'), button(page, 'CSV 내보내기').click()]);
+    const csvPath = path.join(tmp, 'schedule.csv');
+    await csvDl.saveAs(csvPath);
+    const buf = fs.readFileSync(csvPath);
+    t.ok(buf[0] === 0xEF && buf[1] === 0xBB && buf[2] === 0xBF, 'CSV 에 UTF-8 BOM (엑셀 한글 보존)');
+    const csv = buf.toString('utf8');
+    t.includes(csv, '고객명,홍길동', 'CSV 머리말에 고객명');
+    t.includes(csv, '상담 메모', 'CSV 머리말에 메모');
+    t.includes(csv, '회차,연도,나이', 'CSV 표 머리행');
+    t.is(csv.trim().split('\r\n').filter((l) => /^\d+,/.test(l)).length, 20, 'CSV 데이터 20행');
+
+    // --- 삭제 ---
+    await button(page, '판정').click();
+    await page.locator('button[title="삭제"]').first().click();
+    await page.waitForTimeout(500);
+    t.is((await savedCases(page)).length, 0, '삭제되면 목록에서 사라짐');
+
+    // --- 예전 형식(계좌가 종류별 1개씩)도 읽힌다 ---
+    // 계좌를 목록으로 바꾸기 전에 저장한 상담이 지점 PC 에 남아 있다.
+    // 열었을 때 계좌가 통째로 사라지면 상담 이력이 끊긴다.
+    const legacyFile = path.join(tmp, 'legacy-case.json');
+    fs.writeFileSync(legacyFile, JSON.stringify({
+      format: 'mas-retirement-case', version: 1,
+      data: {
+        custName: '구형식', birthRaw: '680410', system: 'DB', systemJoinStr: '2000-07-01',
+        amtSingle: 200000000, amtLegal: 0, amtHonor: 0, deferredTax: 6000000,
+        hasPension: true, pensionJoinStr: '2009-04-01', pensionBal: 50000000,
+        pensionExempt: 8000000, pensionStarted: true,
+        hasIrp: true, irpJoinStr: '2015-02-02', irpBal: 30000000,
+        irpExempt: 0, irpStarted: false,
+        fees: { 'ex-pension': 0.2, 'ex-irp': 0.4, 'new-irp': 0, 'new-pension': 0 },
+        scope: 'pension', pastCount: 0, years: 15, rate: 3, mode: 'even'
+      }
+    }), 'utf8');
+    await field(page, '상담 케이스 가져오기').setInputFiles(legacyFile);
+    await page.waitForTimeout(800);
+
+    t.is(await field(page, '고객명').inputValue(), '구형식', '예전 형식도 불러와짐');
+    t.is(await page.getByRole('button', { name: DEL_RE }).count(), 2, '계좌 2건으로 옮겨짐');
+    t.is(await field(page, '연금저축 1 가입일').inputValue(), '2009-04-01', '연금저축 가입일 이관');
+    t.is((await field(page, '연금저축 1 평가액').inputValue()).replace(/,/g, ''), '50000000', '평가액 이관');
+    t.is((await field(page, '연금저축 1 세액공제 받지 않은 금액').inputValue()).replace(/,/g, ''),
+      '8000000', '세액공제 받지 않은 금액 이관');
+    t.is(await field(page, '연금저축 1 연금개시됨').isChecked(), true, '연금개시 표시 이관');
+    // 예전 형식에는 연금저축 수수료(ex-pension)도 들어 있었지만, 연금저축계좌에는
+    // 계좌 수수료가 없다. 칸을 없앴으므로 그 값은 버리고 판정에도 쓰지 않는다.
+    t.is(await field(page, '연금저축 1 연간 수수료').count(), 0, '연금저축 수수료 칸은 사라짐');
+    t.is(await field(page, 'IRP 1 가입일').inputValue(), '2015-02-02', 'IRP 가입일 이관');
+    t.is(await field(page, 'IRP 1 연간 수수료').inputValue(), '0.4', 'IRP 수수료 이관');
+    // 예전 scope: 'pension' → 연금저축만 합산
+    t.is(await field(page, '연금저축 1 시뮬레이션 합산').isChecked(), true, '예전 합산 범위가 합산 체크로 옮겨짐');
+    t.is(await field(page, 'IRP 1 시뮬레이션 합산').isChecked(), false, 'IRP 는 합산 대상이 아니었음');
+
+    // --- 연금저축계좌에 수수료가 적힌 파일을 받아도 수수료로 세지 않는다 ---
+    // 연금저축계좌에는 계좌 수수료가 없어 화면에 입력칸을 두지 않았다. 그래도 파일에는
+    // 예전 판에서 저장한 값이나 손으로 고친 값이 들어올 수 있으므로, 계산하는 자리에서
+    // 0 으로 누른다. 계좌 비교표의 '연 수수료' 칸이 그 결과를 그대로 보여 준다.
+    const feeFile = path.join(tmp, 'pension-fee.json');
+    fs.writeFileSync(feeFile, JSON.stringify({
+      format: 'mas-retirement-case', version: 1,
+      data: {
+        custName: '연금저축수수료', birthRaw: '680410', system: 'DB', systemJoinStr: '2000-07-01',
+        amtSingle: 200000000, amtLegal: 0, amtHonor: 0, deferredTax: 6000000,
+        accounts: [
+          { id: 'a1', kind: 'pension', name: '', joinStr: '2009-04-01', bal: 50000000,
+            exempt: 0, started: false, fee: 0.9, merge: false },
+          { id: 'a2', kind: 'irp', name: '', joinStr: '2009-04-01', bal: 50000000,
+            exempt: 0, started: false, fee: 0.4, merge: false }
+        ],
+        pastCount: 0, years: 15, rate: 3, mode: 'even'
+      }
+    }), 'utf8');
+    await field(page, '상담 케이스 가져오기').setInputFiles(feeFile);
+    await page.waitForTimeout(800);
+    t.is(await page.getByRole('button', { name: DEL_RE }).count(), 2, '계좌 2건으로 읽힘');
+
+    const cmp = await comparisonRows(page);
+    const penRow = cmp.find((r) => r[0].startsWith('연금저축 1'));
+    const irpRow = cmp.find((r) => r[0].startsWith('IRP 1'));
+    t.ok(!!penRow && !!irpRow, '계좌 비교표에 두 계좌가 다 있음');
+    t.is(penRow[3], '-', '파일에 0.9% 가 적혀 있어도 연금저축은 수수료 없음으로 계산');
+    t.is(irpRow[3], '0.40%', 'IRP 수수료는 파일 값 그대로 (음성 대조)');
+
+    t.is(errors.length, 0, '런타임 에러 없음');
+  } finally {
+    await browser.close();
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+};
