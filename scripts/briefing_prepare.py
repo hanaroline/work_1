@@ -673,8 +673,16 @@ def _hero(C):
         + L(("기준: 국내는 오늘 " + DK(today) + " 마감 &middot; 해외는 " + DK(C["prev_us"], True)
              + " 마감(아직 열지 않았습니다) &middot; 환율은 오늘 마감"
              if C["kind"] == "close" else
-             "기준: 국내&middot;해외 모두 " + DK(C["prev_us"], True) + " 마감 &middot; 환율은 오늘 아침 "
-             + DK(today))
+             # 보통 아침에는 국내 마지막 마감과 미국 마지막 마감이 같은 날이다
+             # (월요일 국내 마감과 월요일 미국 마감은 둘 다 «월요일»이다). 그런데
+             # **연휴 뒤에는 어긋난다** — 2026-09-28 모닝 판이 국내 마지막 거래일
+             # 9/23 을 두고 «국내·해외 모두 9월 25일 마감»이라고 찍었다. 추석에
+             # 국내만 9/24~25 를 쉬었기 때문이다. 두 날짜가 다르면 갈라 적는다.
+             ("기준: 국내&middot;해외 모두 " + DK(C["prev_us"], True) + " 마감"
+              if C["prev_kr"] == C["prev_us"] else
+              "기준: 국내는 " + DK(C["prev_kr"], True) + " 마감(그 뒤 휴장) &middot; "
+              "해외는 " + DK(C["prev_us"], True) + " 마감")
+             + " &middot; 환율은 오늘 아침 " + DK(today))
             + " &middot; 시세 파일 " + C["D"]["generated_at_kst"][5:16] + " 수집 &middot; 작성 "
             + now.strftime("%Y-%m-%d") + "(" + "월화수목금토일"[now.weekday()] + ") "
             + now.strftime("%H:%M") + " KST"
@@ -683,7 +691,11 @@ def _hero(C):
             ("Basis: Korea closed today; overseas closes of " + DE(C["prev_us"], True)
              + " (not yet open); FX at today&rsquo;s close"
              if C["kind"] == "close" else
-             "Basis: closes of " + DE(C["prev_us"], True) + "; FX as of this morning")
+             ("Basis: closes of " + DE(C["prev_us"], True)
+              if C["prev_kr"] == C["prev_us"] else
+              "Basis: Korea's close of " + DE(C["prev_kr"], True) + " (shut since); "
+              "overseas closes of " + DE(C["prev_us"], True))
+             + "; FX as of this morning")
             + "; data collected "
             + C["D"]["generated_at_kst"][5:16] + "; compiled " + now.strftime("%H:%M") + " KST")
         + '</p>\n</div>')
