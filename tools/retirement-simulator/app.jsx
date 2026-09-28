@@ -1018,13 +1018,75 @@ function realDate(str) {
 function DateInput({ value, onChange, label, allowFuture }) {
   const max = allowFuture ? FUTURE_MAX : TODAY_STR;
   const pickerRef = React.useRef(null);
+  const inputRef = React.useRef(null);
+
+  /**
+   * 커서를 어디에 돌려 놓을지.
+   *
+   * 마스크를 다시 씌우면 값이 통째로 바뀌므로 커서가 맨 뒤로 튄다. 그래서 연도
+   * 가운데를 고쳐 보려 하면 커서가 '일' 자리로 달아나고, 블록으로 잡아 새로 쳐도
+   * 마찬가지였다 - 사실상 고칠 수가 없었다.
+   *
+   * **글자 위치가 아니라 '몇 번째 숫자 뒤' 인지로 센다.** 구분선(-)은 자릿수에 따라
+   * 늘거나 줄기 때문에 글자 위치로 기억하면 한 칸씩 어긋난다.
+   */
+  const caretRef = React.useRef(null);
 
   // 달력 단추는 브라우저가 열어 줄 수 있을 때만 보여 준다.
   // 지원하지 않는 브라우저에서 눌러도 아무 일이 없으면 고장으로 보인다.
   const canPick = typeof HTMLInputElement !== 'undefined'
     && typeof HTMLInputElement.prototype.showPicker === 'function';
 
-  const handle = (e) => onChange(dateMask(e.target.value));
+  const handle = (e) => {
+    const el = e.target;
+    caretRef.current = digitsOnly(el.value.slice(0, el.selectionStart)).length;
+    onChange(dateMask(el.value));
+  };
+
+  /**
+   * 구분선 위에서 지우기.
+   *
+   * '2003-05-01' 에서 '-' 바로 뒤에 커서를 두고 백스페이스를 누르면 아무 일도
+   * 일어나지 않는다. 브라우저는 '-' 를 지우지만 마스크가 곧바로 되돌려 놓기
+   * 때문이다. 사용자 눈에는 키가 먹지 않는 것으로 보인다. 그 자리에서는
+   * 옆의 **숫자**를 지운다.
+   */
+  const handleKey = (e) => {
+    const el = e.target;
+    if (el.selectionStart !== el.selectionEnd) return;   // 블록으로 잡았으면 그대로 둔다
+    const p = el.selectionStart;
+    if (e.key === 'Backspace' && p >= 2 && el.value[p - 1] === '-') {
+      e.preventDefault();
+      caretRef.current = digitsOnly(el.value.slice(0, p - 2)).length;
+      onChange(dateMask(el.value.slice(0, p - 2) + el.value.slice(p)));
+    } else if (e.key === 'Delete' && el.value[p] === '-') {
+      e.preventDefault();
+      caretRef.current = digitsOnly(el.value.slice(0, p)).length;
+      onChange(dateMask(el.value.slice(0, p + 1) + el.value.slice(p + 2)));
+    }
+  };
+
+  /** 값이 다시 그려진 뒤 커서를 제자리에 돌려 놓는다 */
+  React.useLayoutEffect(() => {
+    const el = inputRef.current;
+    const want = caretRef.current;
+    caretRef.current = null;
+    if (!el || want === null || (typeof document !== 'undefined' && document.activeElement !== el)) return;
+    let idx = 0;
+    if (want > 0) {
+      let seen = 0;
+      idx = el.value.length;
+      for (let i = 0; i < el.value.length; i++) {
+        if (el.value[i] >= '0' && el.value[i] <= '9') {
+          seen += 1;
+          if (seen === want) { idx = i + 1; break; }
+        }
+      }
+    }
+    // 구분선 바로 앞이면 그 뒤로 넘긴다 - 다음에 칠 숫자가 들어갈 자리다
+    if (el.value[idx] === '-') idx += 1;
+    try { el.setSelectionRange(idx, idx); } catch (err) { /* 포커스가 없으면 그만둔다 */ }
+  }, [value]);
 
   // 치는 중에는 막지 않는다. 다 치고 나서 범위를 벗어나면 그때 손본다 -
   // 중간 상태(2016 을 치다 만 '2')를 걸러 내면 그 해를 칠 수가 없다.
@@ -1047,7 +1109,13 @@ function DateInput({ value, onChange, label, allowFuture }) {
         type="text" inputMode="numeric" autoComplete="off"
         className={inputCls + ' num' + (canPick ? ' pr-11' : '')}
         value={value} aria-label={label} placeholder="YYYY-MM-DD"
-        maxLength={10} onChange={handle} onBlur={handleBlur} />
+        ref={inputRef}
+        /*
+          maxLength 를 두지 않는다. 열 글자가 다 찬 칸에서는 가운데에 숫자를 끼워
+          넣으려 해도 브라우저가 입력 자체를 막아 버려 고칠 수가 없었다.
+          길이는 마스크가 여덟 자리로 잘라 지킨다.
+        */
+        onChange={handle} onKeyDown={handleKey} onBlur={handleBlur} />
       {canPick && (
         <React.Fragment>
           <button type="button" aria-label={label + ' 달력'}
@@ -1523,6 +1591,172 @@ const MATRIX = (typeof window !== 'undefined' && window.__MATRIX__) || null;
 const FUND_ORDER = ['LEGAL', 'HONOR'];
 
 /* ================================================================
+   5-3. 사용법
+
+   별도 PDF 로 두지 않는다. 이 도구는 **파일 하나가 돌아다니는** 형태라 PDF 를 따로
+   두면 HTML 만 받은 사람에게는 사용법이 없고, 화면이 바뀔 때마다 그 PDF 는 낡는다.
+   종이가 필요하면 브라우저 인쇄로 뽑으면 된다.
+
+   내용은 **상담 순서 그대로** 간다. 기능 목록이 아니라 '무엇부터 하면 되는가' 다.
+   단계마다 자주 틀리는 것을 붙인다 - 이 도구에서 실제로 틀렸던 것들이다.
+   ================================================================ */
+
+const GUIDE_STEPS = [
+  {
+    n: '1',
+    title: '고객 정보를 넣습니다',
+    where: '왼쪽 · 1 · 고객 및 퇴직 정보',
+    body: [
+      '생년월일은 710315 처럼 여섯 자리로 쳐도 됩니다.',
+      '날짜는 숫자 여덟 자리를 그대로 칩니다 (20030701 → 2003-07-01). 달력이 필요하면 칸 오른쪽 달력 단추를 누릅니다.',
+      '퇴직제도를 고르고 제도 가입일을 넣습니다.',
+      '퇴직(예정)일은 앞으로의 날짜도, 이미 지난 날짜도 넣을 수 있습니다.'
+    ],
+    trap: [
+      ['제도 가입일을 비우지 마세요', '비우면 2013.3.1 이후 가입으로 보아 1년차로 계산합니다. 2013.3.1 이전이면 6년차라 한도가 2배입니다. 비어 있으면 판정 결과 맨 위에 경고가 뜹니다.'],
+      ['명예퇴직금은 따로 넣습니다', '규약에 규정되지 않은 명퇴금·위로금은 갈 수 있는 계좌가 달라 칸이 따로 있습니다. 규약에 포함된 법정외 퇴직금은 위 칸(규약상 퇴직급여)에 넣습니다.'],
+      ['이연 퇴직소득세가 없으면 직접 계산을 켜세요', '퇴직 전이라 원천징수영수증이 없으면 입사일·퇴직일·금액으로 산출합니다. DB·DC 는 입사일 칸이 따로 열립니다 — 제도 가입일과 다를 수 있습니다.']
+    ]
+  },
+  {
+    n: '2',
+    title: '보유 계좌를 하나씩 넣습니다',
+    where: '왼쪽 · 2 · 기존 보유 연금계좌',
+    body: [
+      "'+ 연금저축' · '+ IRP' 로 개수 제한 없이 추가합니다.",
+      '계좌마다 가입일 · 평가액 · 세액공제 받지 않은 금액 · 연금개시 여부를 받습니다.',
+      '수수료 칸은 IRP 에만 있습니다. 연금저축계좌는 계좌 수수료가 없습니다.'
+    ],
+    trap: [
+      ['계좌를 빠뜨리면 판정이 틀립니다', '연금수령연차는 계좌마다 따로 산정됩니다. 2008년에 만든 연금저축은 9년차, 2022년 IRP 는 1년차라 한도가 몇 배씩 차이 납니다. 하나가 빠지면 더 유리한 선택지를 아예 못 봅니다.'],
+      ['평가액이 0원이어도 넣으세요', '가입일자가 살아 있으면 6년차 기산이 그대로 적용됩니다. 해지되지 않았는지만 확인하시면 됩니다.']
+    ]
+  },
+  {
+    n: '3',
+    title: '판정을 읽습니다',
+    where: '오른쪽 · 판정 탭',
+    body: [
+      '맨 위 주황 카드가 재원별로 어느 계좌에 넣을지 알려 줍니다. 재원마다 갈 수 있는 계좌가 다르면 나누어 입금합니다.',
+      '그 아래 계좌 카드마다 가능 / 조건부 / 불가와 사유, 기산연차가 나옵니다.',
+      '카드를 누르면 그 계좌로 인출 스케줄을 봅니다.'
+    ],
+    trap: [
+      ['선택 상자에서 직접 바꿀 수 있습니다', '투자 가능 상품이나 중도인출 조건처럼 앱이 수치화하지 않는 기준으로 고르실 때 쓰세요. 조건부 계좌도 확인 후 고를 수 있습니다.'],
+      ["'동점 안내' 가 뜨면 가입일은 보지 마세요", '기산연차는 2013.3.1 이전이냐 아니냐로만 갈립니다. 2002년 가입과 2012년 가입은 똑같이 6년차입니다.']
+    ]
+  },
+  {
+    n: '4',
+    title: '계좌를 나란히 비교합니다',
+    where: '오른쪽 · 계좌 비교 탭',
+    body: [
+      '받는 계좌만 바꾸고 조건은 같게 두어 총 수수료 · 총 세액 · 세후 수령액을 나란히 봅니다.',
+      '고객에게 "이 계좌로 받으면 얼마 차이" 를 바로 보여 줄 수 있습니다.'
+    ],
+    trap: []
+  },
+  {
+    n: '5',
+    title: '인출 스케줄을 봅니다',
+    where: '오른쪽 · 인출 스케줄 탭',
+    body: [
+      '회차별로 한도 · 인출액(월 환산) · 감면율 · 세액 · 잔액이 나옵니다.',
+      '인출액 칸에 마우스를 올리면 재원별(과세제외 / 퇴직금 / 운용수익) 분해가 뜹니다.',
+      '분할 입금이면 머리의 선택 상자에서 계좌를 바꿔 가며 봅니다.'
+    ],
+    trap: [
+      ['한도는 인출 상한이 아닙니다', '넘겨서 뺄 수 있고, 넘은 부분만 연금외수령으로 과세됩니다. 그래서 균등 분할이 한도를 넘으면 자르지 않고 초과분을 따로 표시합니다.'],
+      ['수령 기간을 줄이면 세금이 늘 수 있습니다', "계좌마다 '최소 권장 수령 기간' 이 표시됩니다. 그보다 짧으면 한도를 넘겨 연금외수령이 생깁니다."]
+    ]
+  },
+  {
+    n: '6',
+    title: '제도 자체를 확인합니다',
+    where: '오른쪽 · 판단표 탭',
+    body: [
+      '고객 정보와 무관한 참조표입니다. 퇴직제도 · 가입시점 · 받을 돈 · 퇴직 시 나이를 고르면 여섯 계좌의 가능/불가가 나옵니다.',
+      '계좌를 옮길 수 있는지도 보내는/받는 계좌를 골라 확인합니다.',
+      "'지금 상담 중인 고객 조건으로 맞추기' 로 왼쪽 입력과 한 번에 맞춥니다."
+    ],
+    trap: [
+      ["'받을 돈' 은 해당되는 것을 모두 켜세요", '퇴직급여와 명퇴금은 답이 다릅니다. DC 는 규약상 퇴직급여가 연금저축으로 못 가지만 같은 사람의 명퇴금은 갈 수 있습니다.']
+    ]
+  },
+  {
+    n: '7',
+    title: '저장하고 출력합니다',
+    where: '왼쪽 위 · 오른쪽 위',
+    body: [
+      "'상담 저장' 은 이 PC 의 브라우저에 담습니다 (최대 50건).",
+      "'파일로 내보내기' 는 .json 으로 받아 다른 PC 에서 '가져오기' 로 엽니다.",
+      "'A4 1장 인쇄' 는 보고 있는 탭과 무관하게 판정 · 계좌 비교 · 인출 스케줄을 모두 담습니다.",
+      "PDF 가 필요하면 'PDF 저장' 을 누르고 인쇄 창에서 대상을 'PDF로 저장' 으로 고릅니다."
+    ],
+    trap: [
+      ['상담 메모는 기본적으로 인쇄되지 않습니다', '내부 메모로 보기 때문입니다. 고객에게 주려면 체크박스를 켜세요.'],
+      ["'전체 초기화' 는 화면 입력만 비웁니다", '저장된 상담은 그대로 남습니다. 지우려면 목록에서 항목별로 삭제합니다.']
+    ]
+  }
+];
+
+const GUIDE_LIMITS = [
+  '이 도구는 상담 보조용 추정치입니다. 최종 판단은 원천징수영수증과 금융기관 확인을 거쳐야 합니다.',
+  '퇴직소득세 자체 계산은 2023.1.1 이후 퇴직분 기준이고, 임원 퇴직소득 한도는 반영하지 않습니다.',
+  '신규 IRP 수수료는 미래에셋증권 공시 요율로만 계산합니다. 타사 신규 IRP 는 표현할 수 없습니다.',
+  '사적연금 연 1,500만원을 넘으면 16.5% 분리과세를 택한 기준으로 계산합니다. 종합과세가 더 유리한 경우는 계산하지 않습니다.',
+  '연금수령한도는 실제로 계좌별로 따로 산정됩니다. 연차가 다른 계좌를 합산하면 화면에 주의가 뜹니다.',
+  '계좌 간 계약이전 자체는 시뮬레이션하지 않습니다. 옮긴 뒤를 보려면 옮긴 상태를 입력해 다시 봅니다.'
+];
+
+/** 사용법 본문 - 화면 덮개와 인쇄물이 같은 것을 쓴다 (두 벌이면 한쪽이 낡는다) */
+function GuideBody({ forPrint }) {
+  const h = forPrint
+    ? { step: '10pt', body: '8.5pt', trap: '8pt' }
+    : { step: '17px', body: '14px', trap: '13px' };
+  return (
+    <div className={forPrint ? '' : 'space-y-6'}>
+      {GUIDE_STEPS.map((st) => (
+        <div key={st.n} className={forPrint ? '' : 'border border-hair rounded-sm bg-white p-4'}
+          style={forPrint ? { marginBottom: '7pt', breakInside: 'avoid' } : null}>
+          <div className="flex items-baseline gap-2 flex-wrap mb-2">
+            <span className={forPrint ? '' : 'w-[26px] h-[26px] rounded-full bg-mas-orange text-white ' +
+              'text-[14px] font-bold leading-[26px] text-center shrink-0'}
+              style={forPrint ? { fontWeight: 700, marginRight: '4pt' } : null}>
+              {forPrint ? st.n + '.' : st.n}
+            </span>
+            <span className="font-bold text-ink" style={{ fontSize: h.step }}>{st.title}</span>
+            <span className="text-ink-soft" style={{ fontSize: h.trap }}>{st.where}</span>
+          </div>
+          <ul className={forPrint ? '' : 'space-y-1'} style={{ fontSize: h.body, margin: 0, paddingLeft: '16px' }}>
+            {st.body.map((b, i) => (
+              <li key={i} className="text-ink-body leading-relaxed" style={{ listStyle: 'disc' }}>{b}</li>
+            ))}
+          </ul>
+          {st.trap.map((tp, i) => (
+            <div key={i}
+              className={forPrint ? '' : 'mt-2 px-3 py-2 bg-[#FBF3DF] border border-[#E8D49A] rounded-xs'}
+              style={forPrint ? { marginTop: '3pt', paddingLeft: '16px' } : null}>
+              <span className="font-bold text-[#8A6A0B]" style={{ fontSize: h.trap }}>자주 틀리는 것 — {tp[0]}</span>
+              <span className="block text-[#8A6A0B] leading-snug" style={{ fontSize: h.trap }}>{tp[1]}</span>
+            </div>
+          ))}
+        </div>
+      ))}
+      <div className={forPrint ? '' : 'border border-hair rounded-sm bg-surf-subtle p-4'}
+        style={forPrint ? { marginTop: '6pt', breakInside: 'avoid' } : null}>
+        <div className="font-bold text-ink mb-2" style={{ fontSize: h.step }}>이 도구가 하지 않는 것</div>
+        <ul style={{ fontSize: h.body, margin: 0, paddingLeft: '16px' }}>
+          {GUIDE_LIMITS.map((l, i) => (
+            <li key={i} className="text-ink-body leading-relaxed" style={{ listStyle: 'disc' }}>{l}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+/* ================================================================
    5-2. 판단표 탭
 
    격자를 통째로 보여 주면 20행 × 6열이라 읽히지 않는다. 상담 중에 필요한 것은
@@ -1880,6 +2114,10 @@ function App() {
   // --- 시뮬레이션 옵션
   const [pickedId, setPickedId] = useState(null);
   const [tab, setTab] = useState('verdict');
+  // 사용법 덮개. printMode 는 인쇄할 때 어느 것을 내보낼지 가른다
+  // ('sheet' = 고객용 A4, 'guide' = 사용법). 두 벌을 동시에 내보내면 안 된다.
+  const [guideOpen, setGuideOpen] = useState(false);
+  const [printMode, setPrintMode] = useState('sheet');
   const [mode, setMode] = useState('even');             // even | max
   const [years, setYears] = useState(10);
   const [rate, setRate] = useState(3);
@@ -1955,6 +2193,28 @@ function App() {
     setMemo(str(d.memo, '').slice(0, MEMO_MAX));
     setMemoOnPrint(bool(d.memoOnPrint, false));
     return true;
+  };
+
+  // 덮개는 Esc 로 닫힌다. 덮개가 열려 있는 동안에는 뒤 화면이 스크롤되지 않게 한다.
+  React.useEffect(() => {
+    if (!guideOpen) return undefined;
+    const onKey = (e) => { if (e.key === 'Escape') setGuideOpen(false); };
+    document.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [guideOpen]);
+
+  /** 사용법만 인쇄한다. 고객용 A4 와 섞이지 않게 내보낼 것을 바꿔 두고 되돌린다 */
+  const printGuide = () => {
+    setPrintMode('guide');
+    setTimeout(() => {
+      window.print();
+      setPrintMode('sheet');
+    }, 150);
   };
 
   const birth = useMemo(() => parseBirth(birthRaw), [birthRaw]);
@@ -2081,6 +2341,13 @@ function App() {
   const pickables = useMemo(
     () => candidates.filter((c) => c.allocatedAmount > 0),
     [candidates]);
+
+  // 합산할 수 있는 계좌 - 잔고가 있어야 합산에 의미가 있다
+  const mergeable = useMemo(() => accountList.filter((a) => a.bal > 0), [accountList]);
+
+  /** 한 번에 켜고 끈다. 계좌가 여럿이면 카드마다 누르는 것이 번거롭다 */
+  const setMergeAll = (on) =>
+    setAccountList((l) => l.map((a) => (a.bal > 0 ? Object.assign({}, a, { merge: on }) : a)));
 
   // 합산하기로 체크한 계좌의 잔고. 세액공제 받지 않은 납입액은 과세제외 재원으로 따로 뗀다.
   // 퇴직급여를 받을 계좌 자신도 체크되어 있으면 포함된다 (그 계좌 전체를 보는 것이 맞다).
@@ -2408,6 +2675,11 @@ function App() {
               고객 나이 · 퇴직제도 · 기존 연금계좌 가입일을 입력하면 <strong className="font-bold">신규 계좌를 개설해야 하는지,
               기존 계좌를 활용해도 되는지</strong> 판정하고 연차별 인출 한도를 시뮬레이션합니다.
             </p>
+            <button type="button" aria-label="사용법" onClick={() => setGuideOpen(true)}
+              className="mt-4 h-[38px] px-4 text-[14px] font-medium bg-white text-mas-active
+                         rounded-xs hover:bg-mas-soft transition">
+              사용법 보기
+            </button>
           </div>
         </header>
 
@@ -2989,13 +3261,70 @@ function App() {
 
               <Section title="3 · 시뮬레이션 옵션">
                 <div className="space-y-4">
-                  {merged.length > 0 && (
-                    <div className="px-3 py-2 bg-mas-soft rounded-sm text-[12px] text-ink-body leading-snug">
-                      합산: {merged.map((a) => accountNames[a.id]).join(' · ')}
-                      {' (' + krw(exemptPrincipal + otherPrincipal) + ')'}
-                      <span className="text-ink-soft"> - 계좌 카드의 '시뮬레이션 합산'에서 바꿉니다</span>
+                  {/*
+                    자산 합산 범위.
+
+                    예전에는 여기 '퇴직금 단독 / 기존 연금저축 합산 / 기존 IRP 합산 /
+                    전체 전액 합산' 4지선다가 있었다. 계좌를 개수 제한 없이 받게 되면서
+                    그 구조가 성립하지 않는다 - 연금저축이 셋이면 '기존 연금저축 합산' 이
+                    어느 것인지 말할 수 없다. 그래서 계좌 카드마다 체크로 옮겼다.
+
+                    그런데 **개념 자체가 화면에서 사라졌다.** 카드를 훑지 않으면 합산할 수
+                    있다는 것을 모르고, '전체 합산' 도 계좌 수만큼 눌러야 했다.
+                    여기서는 고르지 않고 **지금 상태를 보여 주고 한 번에 바꾸기만** 한다.
+                    개별 조정은 계좌 카드에서 그대로 한다.
+                  */}
+                  <Field label="자산 합산 범위"
+                    help={<React.Fragment>
+                      퇴직급여만 가지고 시뮬레이션할지, <strong>기존 계좌의 잔고까지 합쳐서</strong>
+                      볼지입니다. 합치면 인출 한도와 세액을 그 자산 전체로 계산합니다.<br /><br />
+                      <strong>합산은 돈을 옮긴다는 뜻이 아닙니다.</strong> 각 계좌는 제자리에 남아
+                      제 수수료를 물고, 요율은 금액으로 가중평균합니다.<br /><br />
+                      <strong>연금수령한도는 실제로는 계좌별로 따로 산정됩니다.</strong> 그래서
+                      연차가 같은 계좌끼리 합산할 때만 정확하고, 연차가 다른 계좌를 섞으면
+                      화면에 주의를 띄웁니다.<br /><br />
+                      계좌를 하나씩 켜고 끄는 것은 <strong>2 · 기존 보유 연금계좌</strong>의
+                      각 카드에 있는 '시뮬레이션 합산' 에서 합니다.
+                    </React.Fragment>}>
+                    <div className="space-y-2">
+                      <div className={'px-3 py-2 rounded-sm text-[13px] leading-snug ' +
+                        (merged.length > 0 ? 'bg-mas-soft text-ink-body' : 'bg-surf-subtle text-ink-muted')}
+                        role="note" aria-label="자산 합산 범위 현황">
+                        {mergeable.length === 0
+                          ? '보유 계좌가 없어 퇴직급여 단독으로 계산합니다'
+                          : merged.length === 0
+                            ? '퇴직급여 단독 · 합산한 계좌 없음'
+                            : merged.map((a) => accountNames[a.id]).join(' · ') + ' 합산 중 · 기존 잔고 ' +
+                              krw(exemptPrincipal + otherPrincipal)}
+                      </div>
+                      {mergeable.length > 0 && (
+                        <div className="flex gap-2 screen-only">
+                          <button type="button" aria-label="전체 합산"
+                            onClick={() => setMergeAll(true)}
+                            disabled={merged.length === mergeable.length}
+                            className={'flex-1 h-[34px] text-[13px] font-medium border rounded-xs transition ' +
+                              (merged.length === mergeable.length
+                                ? 'bg-surf-subtle text-mas-gray border-hair cursor-not-allowed'
+                                : 'bg-white text-mas-active border-mas-orange hover:bg-mas-soft')}>
+                            전체 합산
+                          </button>
+                          <button type="button" aria-label="합산 해제"
+                            onClick={() => setMergeAll(false)}
+                            disabled={merged.length === 0}
+                            className={'flex-1 h-[34px] text-[13px] font-medium border rounded-xs transition ' +
+                              (merged.length === 0
+                                ? 'bg-surf-subtle text-mas-gray border-hair cursor-not-allowed'
+                                : 'bg-white text-ink-body border-hair hover:bg-surf-subtle')}>
+                            합산 해제
+                          </button>
+                        </div>
+                      )}
+                      <p className="text-[11px] text-ink-soft leading-snug screen-only">
+                        계좌를 하나씩 고르려면 <strong>2 · 기존 보유 연금계좌</strong>의 각 카드에서
+                        '시뮬레이션 합산' 을 켜고 끕니다.
+                      </p>
                     </div>
-                  )}
+                  </Field>
 
                   <Field label="인출 방식">
                     <Segmented
@@ -3655,10 +3984,58 @@ function App() {
             </p>
           </footer>
         </main>
+
+        {/* ---------- 사용법 덮개 ---------- */}
+        {guideOpen && (
+          <div className="fixed inset-0 z-50 bg-black/50 overflow-y-auto"
+            onClick={() => setGuideOpen(false)}>
+            <div className="max-w-[820px] mx-auto my-8 bg-surf-soft rounded-sm shadow-lg"
+              role="dialog" aria-label="사용법" aria-modal="true"
+              onClick={(e) => e.stopPropagation()}>
+              <div className="sticky top-0 bg-mas-orange text-white px-6 py-4 rounded-t-sm
+                              flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-[19px] font-bold">사용법</div>
+                  <div className="text-[12px] opacity-90 mt-0.5">상담 순서 그대로 · 자주 틀리는 것까지</div>
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <button type="button" aria-label="사용법 인쇄" onClick={printGuide}
+                    className="h-[34px] px-3 text-[13px] font-medium bg-white text-mas-active
+                               rounded-xs hover:bg-mas-soft transition">
+                    인쇄
+                  </button>
+                  <button type="button" aria-label="사용법 닫기" onClick={() => setGuideOpen(false)}
+                    className="h-[34px] px-3 text-[13px] font-medium bg-white/15 text-white
+                               rounded-xs hover:bg-white/25 transition">
+                    닫기 (Esc)
+                  </button>
+                </div>
+              </div>
+              <div className="px-6 py-5">
+                <GuideBody forPrint={false} />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* ===================== 인쇄 (A4 1장) ===================== */}
-      <PrintSheet
+      {/* ===================== 인쇄 ===================== */}
+      {/*
+        인쇄물은 두 가지다 - 고객에게 주는 A4 한 장과, 지점에 돌리는 사용법.
+        동시에 내보내면 한 뭉치로 나오므로 printMode 로 하나만 그린다.
+      */}
+      {printMode === 'guide' && (
+        <div className="print-only" style={{ padding: '10mm' }}>
+          <h1 style={{ fontSize: '14pt', fontWeight: 700, margin: '0 0 2pt' }}>
+            퇴직급여 수령 의사결정 시뮬레이터 — 사용법
+          </h1>
+          <p style={{ fontSize: '8.5pt', color: '#6C6C6C', margin: '0 0 8pt' }}>
+            [사내한] 상담 순서 그대로. 각 단계의 '자주 틀리는 것' 은 실제로 틀렸던 것들입니다.
+          </p>
+          <GuideBody forPrint />
+        </div>
+      )}
+      {printMode === 'sheet' && <PrintSheet
         ready={ready} custName={custName} birth={birth} age={age}
         system={system} systemJoin={systemJoin} retireTotal={retireTotal}
         retireDate={retireDate} retireAge={retireAge}
@@ -3672,7 +4049,7 @@ function App() {
         otherPrincipal={otherPrincipal} exemptPrincipal={exemptPrincipal} sim={sim} startYear={startYear}
         accountList={accountList} accountNames={accountNames} merged={merged}
         blendedFeeRate={blendedFeeRate}
-      />
+      />}
     </React.Fragment>
   );
 }
