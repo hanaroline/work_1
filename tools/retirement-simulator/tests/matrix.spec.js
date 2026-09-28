@@ -223,6 +223,20 @@ module.exports = async function run(t) {
       Object.keys(SOURCES).length + '건)');
     t.is(inFile.length, 0, '배포본 파일을 편집기로 열어도 Q&A 원문이 없다 — ' + inFile.join(' '));
 
+    /* Q 번호도 뺀다.
+     *
+     * 원문을 지워도 'Q23② 를 보라' 가 남으면 어느 사내 문서를 보라는 이야기가
+     * 그대로 남는다. 법령 조문(§)은 공개된 것이라 그대로 둔다.
+     *
+     * React 번들에는 Q0·Q51 같은 압축된 이름이 널려 있으므로 앱 부분만 본다 -
+     * 판단표 자료가 시작되는 자리부터가 앱이다. 그러지 않으면 늘 붉은불이라
+     * 아무도 보지 않게 된다.
+     */
+    const appPart = (h) => h.slice(h.indexOf('window.__MATRIX__'));
+    const qIn = (h) => [...new Set(appPart(h).match(/Q\d{1,3}[\u2460-\u2473]*/g) || [])];
+    const qLeft = qIn(raw);
+    t.is(qLeft.length, 0, '배포본에 사내 Q&A 번호가 없다 — ' + qLeft.join(' '));
+
     /* 되돌리는 길이 살아 있는지도 본다.
        '필요하면 되돌릴 수 있다' 는 말은 되돌려 봐야 참이 된다 - 스위치가
        끊겨 있어도 배포본 검사는 그대로 통과하므로 여기서 짚지 않으면
@@ -236,6 +250,8 @@ module.exports = async function run(t) {
     const kept = Object.keys(SOURCES).filter((k) => fullHtml.indexOf(SOURCES[k].note) >= 0);
     t.ok(kept.length >= 16, '--근거 로 지으면 Q&A 가 그대로 돌아온다 (' + kept.length + '건)');
     t.ok(fullHtml.length > raw.length, '근거를 담은 판이 배포본보다 크다');
+    t.ok(qIn(fullHtml).length >= 10, '근거를 담은 판에는 Q 번호도 함께 돌아온다 (' +
+      qIn(fullHtml).length + '종)');
 
     // 판정은 그대로 돈다 - 근거를 뺀 것이 표를 건드리지는 않았다
     const stillWorks = await blockText(page, RECEIVE);
