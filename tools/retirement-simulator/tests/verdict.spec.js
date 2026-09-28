@@ -150,6 +150,41 @@ module.exports = async function run(t) {
     t.excludes((await cards(page)).find((c) => c.startsWith('IRP 1')), '조건부',
       '개시 표시를 풀면 조건부도 사라짐');
 
+    // --- 비워 둔 가입일은 답 위에 먼저 밝힌다 ---
+    //
+    // 빈 가입일은 '2013.3.1 이후'로 흘러가 1년차 기산이 된다. 2013.3.1 이전 가입자는
+    // 6년차라 한도가 2배인데, 그 가정이 화면 어디에도 없으면 상담자는 넣지 않은 줄
+    // 모른 채 답을 믿게 된다.
+    await fillCase(page, {
+      name: '빈가입일', birth: '680410', system: 'DB', joinDate: '2009-04-01',
+      amount: 200000000, deferredTax: 5000000,
+      pension: { join: '2008-03-02', balance: 30000000, exempt: 0 }
+    });
+    const warnBox = page.getByLabel('가입일 미입력 경고', { exact: true });
+    t.is(await warnBox.count(), 0, '가입일이 다 있으면 경고가 없다');
+
+    await field(page, '제도 가입일').fill('');
+    await field(page, '제도 가입일').blur();
+    await field(page, '연금저축 1 가입일').fill('');
+    await field(page, '연금저축 1 가입일').blur();
+    await page.waitForTimeout(600);
+
+    // 없을 때 innerText 를 기다리면 30초를 버리고 예외로 죽는다. 먼저 세고 읽는다.
+    t.is(await warnBox.count(), 1, '비워 둔 가입일이 있으면 경고가 뜬다');
+    const warnText = (await warnBox.count())
+      ? (await warnBox.innerText()).replace(/\s+/g, ' ').trim() : '';
+    t.includes(warnText, '1년차', '무엇으로 가정했는지 적는다');
+    t.includes(warnText, 'DB 제도 가입일', '어느 칸이 비었는지 이름을 댄다');
+    t.includes(warnText, '연금저축 1 가입일', '계좌 가입일도 이름을 댄다');
+
+    // 채우면 사라진다 (음성 대조)
+    await field(page, '제도 가입일').fill('2009-04-01');
+    await field(page, '제도 가입일').blur();
+    await field(page, '연금저축 1 가입일').fill('2008-03-02');
+    await field(page, '연금저축 1 가입일').blur();
+    await page.waitForTimeout(600);
+    t.is(await warnBox.count(), 0, '채우면 경고가 사라진다');
+
     t.is(errors.length, 0, '런타임 에러 없음');
   } finally {
     await browser.close();

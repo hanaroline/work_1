@@ -57,6 +57,14 @@ module.exports = async function run(t) {
     //   3. 달력에 없는 날짜·범위 밖 날짜는 걸러지는가
     const d = field(page, '제도 가입일');
 
+    // 자리표시자는 날짜로 읽혀서는 안 된다.
+    //
+    // 예시 날짜('2003-07-01')를 넣어 두었더니 비어 있는 칸을 '입력했다'고 본 채
+    // 판정을 믿는 일이 있었다. 빈 가입일은 2013.3.1 이후로 흘러가 1년차가 되므로
+    // 그대로 답이 반토막 난다.
+    const ph = await d.getAttribute('placeholder');
+    t.ok(!/\d/.test(ph || ''), '자리표시자에 숫자가 없다 (값으로 읽히지 않는다) - ' + ph);
+
     await d.fill('');
     await d.pressSequentially('20030701');
     await page.waitForTimeout(250);
