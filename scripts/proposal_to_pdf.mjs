@@ -34,7 +34,16 @@ const html = readFileSync(SRC, 'utf8');
 const title = (html.match(/<h1>([^<]+)<\/h1>/) || [])[1] || 'ELS 분석자료';
 const offer = (html.match(/<dt>청약기간<\/dt><dd>([^<]+)<\/dd>/) || [])[1] || '';
 
-const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
+/**
+ * 크로미움 경로를 고정하지 않는다.
+ *
+ * 이 컨테이너는 /opt/pw-browsers 에 미리 받아 둔 것을 쓰지만, GitHub Actions 러너는
+ * playwright 가 제 캐시에 받는다. 경로를 박아 두었더니 러너에서
+ * "executable doesn't exist at /opt/pw-browsers/chromium" 으로 죽었다(2026-09-29).
+ * 있으면 쓰고, 없으면 playwright 가 알아서 찾게 둔다.
+ */
+const PINNED = '/opt/pw-browsers/chromium';
+const b = await chromium.launch(existsSync(PINNED) ? { executablePath: PINNED } : {});
 const p = await b.newPage({ viewport: { width: 1120, height: 1400 } });
 await p.goto('file://' + path.resolve(SRC), { waitUntil: 'load' });
 await p.evaluate(() => document.fonts.ready);
