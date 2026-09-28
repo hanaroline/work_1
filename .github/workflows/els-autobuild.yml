@@ -1,0 +1,191 @@
+name: ELS 신규 회차 자동 빌드
+
+# 신규 회차가 올라오면 수집부터 산출물 세 개까지 러너가 혼자 끝내고
+# 작업 브랜치에 커밋한다. 예약 세션이 깨어났을 때 이미 다 되어 있게 하는 것이
+# 목적이다 — 그 세션에는 GitHub MCP 도구가 없어 수집을 스스로 걸지 못하고,
+# 작업 브랜치로의 push 도 되지 않는다(2026-09-15 확인).
+#
+# **schedule 은 기본 브랜치(main)에 있는 워크플로만 발동한다.** 그래서 이 파일은
+# main 에 있어야 하고, 아래 checkout 이 작업 브랜치를 따로 받아 온다. 러너의
+# GITHUB_TOKEN 은 어느 브랜치로든 밀 수 있으므로 세션의 push 제약과 무관하다.
+#
+# 러너가 못 하는 일이 하나 있다 — **눈으로 보는 검증**이다. 2026-09-29 회차에서
+# 기계 검사를 모두 통과한 채로 "제일 높은 건 연 20.0%인 제38168회"(실제 1위는
+# 23.0%), "ELS 제안서"(분석자료인데), "가장 높은 수익률입니다"(아닌데) 가 인쇄됐다.
+# 그래서 이 워크플로는 커밋까지만 하고, 사람에게 보내는 일은 예약 세션이 맡는다.
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '새 회차가 없어도 산출물을 다시 빌드한다'
+        type: boolean
+        default: false
+  schedule:
+    # 평일 10:10 KST (01:10 UTC). els-weekly.yml 의 매일 수집(08:00 KST 예약,
+    # 실제로는 09:30~10:00 에 붙는다)보다 뒤, 점검 예약(10:30 KST)보다 앞이다.
+    - cron: '10 1 * * 1-5'
+
+permissions:
+  contents: write
+
+# 수집 워크플로들과 같은 브랜치에 커밋한다. 겹치면 push 가 서로 밀린다.
+concurrency:
+  group: els-collect
+  cancel-in-progress: false
+
+env:
+  BRANCH: claude/els-product-structure-page-ljsucw
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/els-product-structure-page-ljsucw
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm install --no-audit --no-fund
+
+      - name: Playwright
+        run: npm i -D playwright@1.56.1 && npx playwright install --with-deps chromium
+
+      # ── 1. 수집 ────────────────────────────────────────────────────────────
+      # 수집 실패로 잡을 죽이지 않는다. 데이터 파일을 건드리지 않고 끝나므로
+      # 직전 판이 그대로 남고, 아래 신선도 검사가 그 사실을 잡는다.
+      - name: 상품 목록·시세 수집
+        continue-on-error: true
+        run: |
+          node scripts/collect_els.mjs
+          node scripts/collect_history.mjs
+
+      - name: 공시 원문 수집
+        continue-on-error: true
+        run: node scripts/fetch_prospectus.mjs
+
+      # ── 2. 판정 ────────────────────────────────────────────────────────────
+      - name: 신규 회차 판정
+        id: check
+        run: |
+          node scripts/els_check_new.mjs --log | tee /tmp/check.txt
+          echo "status=$(grep -oP '^STATUS=\K\w+' /tmp/check.txt)" >> "$GITHUB_OUTPUT"
+          echo "nos=$(grep -oP '^NEW_NOS=\K.*' /tmp/check.txt || true)" >> "$GITHUB_OUTPUT"
+
+      # 새 회차가 없으면 기록 줄만 남기고 끝낸다. 점검이 돈 것과 안 돈 것이
+      # 구분되어야 하므로 이 줄은 반드시 커밋한다.
+      - name: 기록만 커밋 (새 회차 없음)
+        if: steps.check.outputs.status != 'NEW' && inputs.force != true
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/els-autorun-log.md data/ tools/discovery/ || true
+          git diff --cached --quiet && { echo "변경 없음"; exit 0; }
+          git commit -m "chore(els): 신규 회차 점검 (${{ steps.check.outputs.status }})"
+          git push origin HEAD:"$BRANCH"
+
+      # ── 3. 파싱 ────────────────────────────────────────────────────────────
+      # 파서에는 정합성 게이트가 있다. 어긋나면 exitCode 1 로 끝나고 잡이 죽는다 —
+      # 새 기초자산이 ASSETS 표에 없어 종목이 통째로 빠지는 사고를 여기서 막는다.
+      - name: 공시 원문 파싱
+        if: steps.check.outputs.status == 'NEW' || inputs.force == true
+        run: node scripts/parse_prospectus.mjs
+
+      # 신규 회차가 실린 접수번호를 고른다. 인자를 안 주면 분석층이 "가장 큰
+      # 접수번호" 를 쓰는데, 옛 회차 한두 건을 따로 낸 공시가 더 늦게 올라오는 주가
+      # 있어(제36729회, 2026-09-22) 그걸 집을 수 있다. 회차로 되짚어 고른다.
+      - name: 대상 접수번호 결정
+        id: rcp
+        if: steps.check.outputs.status == 'NEW' || inputs.force == true
+        run: |
+          RCP=$(node -e '
+            const fs = require("fs");
+            const P = JSON.parse(fs.readFileSync("tools/discovery/prospectus_parsed.json", "utf8"));
+            const want = (process.argv[1] || "").split(",").map(Number).filter(Boolean);
+            const hit = Object.entries(P)
+              .filter(([, b]) => (b.items || []).some((i) => want.includes(Number(i.no))))
+              .map(([k]) => k).sort();
+            // 새 회차가 공시 두 건에 걸치는 주가 있다(하루 늦게 시작하는 회차).
+            // 그때는 쉼표로 이어 넘긴다 — 빌더들이 그 형태를 받는다.
+            process.stdout.write(hit.length ? hit.join(",") : Object.keys(P).sort().pop());
+          ' "${{ steps.check.outputs.nos }}")
+          echo "접수번호: $RCP"
+          echo "rcp=$RCP" >> "$GITHUB_OUTPUT"
+
+      # ── 4. 주장 대장 → 기계 검산 ───────────────────────────────────────────
+      # 통과하지 못하면 여기서 죽는다. 검산 안 된 자료를 커밋하지 않는다.
+      - name: 주장 대장
+        if: steps.check.outputs.status == 'NEW' || inputs.force == true
+        run: |
+          node scripts/build_els_claims.mjs "${{ steps.rcp.outputs.rcp }}"
+          python3 vendor/check_claims.py tools/discovery/els-claims.json
+
+      # ── 5. 산출물 세 개 ────────────────────────────────────────────────────
+      - name: 렌더 준비 (한글 글꼴·LibreOffice)
+        if: steps.check.outputs.status == 'NEW' || inputs.force == true
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk libreoffice-impress
+          bash scripts/install_fonts.sh || echo "구글 폰트 내려받기 실패 — Noto CJK 로 렌더한다"
+          fc-cache -f >/dev/null
+
+      - name: 빌드
+        if: steps.check.outputs.status == 'NEW' || inputs.force == true
+        env:
+          RCP: ${{ steps.rcp.outputs.rcp }}
+        run: |
+          node scripts/build_els_sales_deck.mjs "$RCP"
+          node scripts/build_els_analysis.mjs "$RCP"
+          node scripts/build_els_analysis_deck.mjs "$RCP"
+          rm -f els-sales-deck.pdf els-analysis.pdf els-analysis-deck.pdf
+          soffice --headless --convert-to pdf els-sales-deck.pptx >/dev/null
+          soffice --headless --convert-to pdf els-analysis-deck.pptx >/dev/null
+          node scripts/proposal_to_pdf.mjs els-analysis.html els-analysis.pdf
+
+      # ── 6. 기계 재검증 ─────────────────────────────────────────────────────
+      # 눈으로 보는 검증은 예약 세션이 한다. 여기서는 기계가 할 수 있는 것만 한다.
+      - name: 역방향 대조·경계·빈값
+        if: steps.check.outputs.status == 'NEW' || inputs.force == true
+        run: |
+          pip install --quiet pymupdf
+          for f in els-sales-deck els-analysis els-analysis-deck; do
+            python3 scripts/reverse_check_deck.py "$f.pdf" tools/discovery/els-claims.json
+          done
+          python3 - <<'PY'
+          import pymupdf, re, sys
+          bad = 0
+          for f in ('els-sales-deck.pdf', 'els-analysis.pdf', 'els-analysis-deck.pdf'):
+              d = pymupdf.open(f)
+              for i, p in enumerate(d, 1):
+                  r = p.rect
+                  for b in p.get_text('blocks'):
+                      if b[0] < -1 or b[1] < -1 or b[2] > r.width + 1 or b[3] > r.height + 1:
+                          bad += 1; print(f"경계 넘침 {f} p{i}: {b[4][:40]!r}")
+                  for m in re.finditer(r'null|undefined|NaN|\[object', p.get_text()):
+                      bad += 1; print(f"빈값 누출 {f} p{i}")
+              print(f"{f}: {d.page_count}쪽")
+          sys.exit(1 if bad else 0)
+          PY
+
+      # ── 7. 커밋 ────────────────────────────────────────────────────────────
+      - name: 커밋·푸시
+        if: steps.check.outputs.status == 'NEW' || inputs.force == true
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && { echo "변경 없음"; exit 0; }
+          RANGE=$(node -e '
+            const P = JSON.parse(require("fs").readFileSync("tools/discovery/prospectus_parsed.json","utf8"));
+            const b = P["${{ steps.rcp.outputs.rcp }}".split(",")[0]];
+            const n = b.items.map(i => i.no);
+            process.stdout.write(`제${Math.min(...n)}~${Math.max(...n)}회 ${n.length}종`);
+          ')
+          git commit -m "feat(els): ${RANGE} 세일즈 자료 3종 (자동 빌드)" \
+                     -m "러너가 수집·파싱·대장 검산·빌드·역방향 대조까지 끝낸 판이다. 눈으로 보는 검증은 아직 안 했다 — 예약 세션이 받아서 확인하고 사용자에게 보낸다." \
+                     -m "접수번호 ${{ steps.rcp.outputs.rcp }}"
+          git push origin HEAD:"$BRANCH"
