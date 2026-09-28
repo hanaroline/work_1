@@ -57,6 +57,84 @@ function recompute(sheet) {
   return [n, bad];
 }
 
+/* ── 열 너비 ─────────────────────────────────────────────────────
+   앱이 너비를 잘못 잡으면 엑셀에서 숫자가 `#######` 가 되고 글자는 옆 칸에
+   가려 끊긴다. 파일을 열어 보기 전에는 드러나지 않으므로 여기서 잰다.
+   앱과 같은 규칙을 쓰되 코드는 가져다 쓰지 않고 다시 쓴다.
+   ---------------------------------------------------------------- */
+
+const COL_N = (s) => { let n = 0; for (let i = 0; i < s.length; i++) n = n * 26 + (s.charCodeAt(i) - 64); return n; };
+const COL_S = (n) => { let s = '', k = n; while (k > 0) { const r = (k - 1) % 26; s = String.fromCharCode(65 + r) + s; k = Math.floor((k - 1) / 26); } return s; };
+
+/** 한글·전각은 두 칸 */
+function vis(s) {
+  const t = String(s === null || s === undefined ? '' : s);
+  let w = 0;
+  for (let i = 0; i < t.length; i++) {
+    w += /[ᄀ-ᇿ①-⓿■-◿⺀-꓏가-힣豈-﫿︰-﹏＀-｠]/.test(t[i]) ? 2 : 1;
+  }
+  return w;
+}
+
+/**
+ * 보이는 글자. 서식표를 읽지 않고 값에서 짐작한다 -
+ * 1 보다 작은 0 아닌 수는 백분율 칸이고(가장 긴 `0.000%` 로 잡는다),
+ * 나머지 수는 천단위 구분이 붙은 정수다.
+ */
+function shownOf(c) {
+  if (c.text !== undefined) return c.text;
+  if (typeof c.v !== 'number') return String(c.v === undefined ? '' : c.v);
+  if (c.v !== 0 && Math.abs(c.v) < 1) return (c.v * 100).toFixed(3) + '%';
+  return Math.round(c.v).toLocaleString('en-US');
+}
+
+/**
+ * 열 너비에 잘리는 칸을 모아 준다.
+ * 숫자는 넘쳐 흐르지 못하므로 언제나 보고, 글자는 **오른쪽 칸이 차 있을 때만**
+ * 본다 - 비어 있으면 엑셀이 그리로 흘려 그대로 읽힌다.
+ */
+function clipped(sheet) {
+  const bad = [];
+  for (const ref of Object.keys(sheet.cells)) {
+    const m = /^([A-Z]+)(\d+)$/.exec(ref);
+    if (!m) continue;
+    const c = sheet.cells[ref];
+    const shown = shownOf(c);
+    if (!shown) continue;
+    const isNum = c.text === undefined;
+    const right = sheet.cells[COL_S(COL_N(m[1]) + 1) + m[2]];
+    const rightFilled = !!right && (right.text !== undefined || right.v !== undefined || right.f !== undefined);
+    if (!isNum && !rightFilled) continue;
+    const w = sheet.widths[COL_N(m[1])];
+    const room = w === undefined ? 8.43 : w;
+    if (vis(shown) > room) {
+      bad.push(sheet.name + '!' + ref + ' "' + shown + '" ' + vis(shown) + '칸 > 너비 ' + room);
+    }
+  }
+  return bad;
+}
+
+/**
+ * 입력 블록에서 라벨로 칸을 찾는다.
+ *
+ * 열 문자를 검사에 박아 두면 입력 블록이 옮겨 갈 때 엉뚱한 칸을 고치고도
+ * 통과한다(실제로 B 열에서 옮겼다). A 열의 라벨로 행을 찾고, 그 행에서
+ * 값이 들어 있는 첫 칸을 돌려준다.
+ */
+function inputRef(sheet, labelPart) {
+  for (const ref of Object.keys(sheet.cells)) {
+    const m = /^A(\d+)$/.exec(ref);
+    if (!m) continue;
+    const c = sheet.cells[ref];
+    if (c.text === undefined || c.text.indexOf(labelPart) < 0) continue;
+    for (let i = 2; i <= 16; i++) {
+      const v = sheet.cells[COL_S(i) + m[1]];
+      if (v && (v.text !== undefined || v.v !== undefined)) return COL_S(i) + m[1];
+    }
+  }
+  throw new Error('입력 칸을 찾지 못했습니다: ' + labelPart);
+}
+
 /** 입력 칸 하나를 바꿔 놓고 표를 다시 계산한다 (엑셀에서 고쳐 보는 것과 같은 일) */
 function whatIf(sheet, changes) {
   const cells = {};
@@ -156,8 +234,9 @@ module.exports = async function run(t) {
     const drawBefore = base.at('H' + sumRow);
     t.ok(drawBefore > 0, '합계행이 수식으로 인출액을 더한다');
 
-    const retireCell = sh.cells.B5;
-    const doubled = whatIf(sh, { B5: retireCell.v * 2 });
+    const retRef = inputRef(sh, '이연퇴직소득 원금');
+    const retireCell = sh.cells[retRef];
+    const doubled = whatIf(sh, { [retRef]: retireCell.v * 2 });
     t.ok(doubled.at('H' + sumRow) > drawBefore * 1.5,
       '② 원금을 두 배로 하면 총 인출액이 크게 는다 (수식이 살아 있다)');
     t.ok(doubled.at('F' + first) > base.at('F' + first),
@@ -165,11 +244,15 @@ module.exports = async function run(t) {
 
     // 균등 분할은 기간 안에 계좌를 비우므로 마지막 기말잔액은 어느 수익률에서나 0 에
     // 가깝다. 수익률이 흘러가는지는 '총 인출액' 으로 본다.
-    const faster = whatIf(sh, { B10: 0.10 });
+    const faster = whatIf(sh, { [inputRef(sh, '운용수익률')]: 0.10 });
     t.ok(faster.at('H' + sumRow) > base.at('H' + sumRow) * 1.05,
       '운용수익률을 올리면 총 인출액이 는다');
 
-    const zeroed = whatIf(sh, { B5: 0, B4: 0, B6: 0 });
+    const zeroed = whatIf(sh, {
+      [retRef]: 0,
+      [inputRef(sh, '세액공제 받지 않은 금액')]: 0,
+      [inputRef(sh, '세액공제분')]: 0
+    });
     t.is(Math.round(zeroed.at('H' + first)), 0, '자산을 0 으로 두면 인출액도 0 (0 으로 나누어 깨지지 않는다)');
 
     /* ── 4. 신규 IRP — 미래에셋 공시 수수료를 수식으로 ────────── */
@@ -185,7 +268,8 @@ module.exports = async function run(t) {
     const b = await grab(page);
     const bs = sched(b.wb)[0];
     t.includes(bs.name, '신규 IRP', '신규 IRP 스케줄 시트');
-    t.includes(String(bs.cells.B18.text || ''), '체차', '수수료 방식이 공시 기준이라고 적힌다');
+    t.includes(String(bs.cells[inputRef(bs, '수수료 방식')].text || ''), '체차',
+      '수수료 방식이 공시 기준이라고 적힌다');
 
     const [n2, bad2] = recompute(bs);
     t.ok(n2 > 200, '신규 IRP 도 수식이다 (' + n2 + '칸)');
@@ -201,7 +285,7 @@ module.exports = async function run(t) {
     t.ok(fee1 > flat, '체차적용이라 전액 0.18% 보다 많다 (' + Math.round(fee1) + ' > ' + Math.round(flat) + ')');
 
     // 전액 면제 조건을 켜면 수수료가 0 이 된다 - 수식이 그 칸을 실제로 본다는 뜻
-    const waived = whatIf(bs, { B22: 1 });
+    const waived = whatIf(bs, { [inputRef(bs, '전액 면제면 1')]: 1 });
     t.is(Math.round(waived.at('N' + bFirst)), 0, '전액 면제 칸을 1 로 두면 수수료가 0');
     const bSum = lastDataRow(bs) + 2;
     t.ok(waived.at('H' + bSum) > bEv.at('H' + bSum),
@@ -213,7 +297,7 @@ module.exports = async function run(t) {
     await page.waitForTimeout(700);
     const c = await grab(page);
     const cs = sched(c.wb)[0];
-    t.is(cs.cells.B22.v, 1, '다이렉트 개설을 켜면 전액 면제 칸이 1');
+    t.is(cs.cells[inputRef(cs, '전액 면제면 1')].v, 1, '다이렉트 개설을 켜면 전액 면제 칸이 1');
     const cFirst = lastDataRow(cs) - (await scheduleRows(page)).length + 1;
     t.is(Math.round(cs.cells['N' + cFirst].v), 0, '그때 수수료 칸이 0');
     const [, badC] = recompute(cs);
@@ -283,7 +367,8 @@ module.exports = async function run(t) {
 
     // 그 합계가 스케줄 시트의 입력 칸으로 흘러간다
     const eSh = sched(e.wb)[0];
-    t.ok(Math.abs(eSh.cells.B8.v - tot) <= 1, '스케줄 시트의 이연퇴직소득세가 요약과 같다');
+    t.ok(Math.abs(eSh.cells[inputRef(eSh, '이연퇴직소득세 (지방소득세')].v - tot) <= 1,
+      '스케줄 시트의 이연퇴직소득세가 요약과 같다');
 
     /* ── 7-2. 구간을 실제로 지나가는 케이스 ───────────────────── */
 
@@ -331,6 +416,39 @@ module.exports = async function run(t) {
     t.ok(n7 > 600, '30년 표도 전부 수식이다 (' + n7 + '칸)');
     t.is(bad7.length, 0, '감면 3단계 · 연령별 세율 · 1,500만원 초과까지 수식이 같은 값' +
       (bad7.length ? ' — ' + bad7.slice(0, 3).join(' ; ') : ''));
+
+    /* ── 7-3. 열 너비 — 잘리는 칸이 없다 ──────────────────────── */
+
+    /*
+     * 너비를 손으로 적어 두었더니 **같은 열을 입력 블록과 표가 나눠 쓰면서**
+     * 늘 한쪽이 잘렸다. 인출 스케줄 시트의 A 열은 '회차' 에 맞춘 여섯 칸인데
+     * 그 위 입력 블록에는 '① 세액공제 받지 않은 금액 (과세제외)' 가 들어 있어
+     * 끊겨 보였고, B 열은 '연도' 에 맞춘 일곱 칸인데 2억 5천만원이 들어와
+     * `#######` 이 됐다. 파일을 열어 보기 전에는 드러나지 않던 자리다.
+     */
+    let clipBad = [];
+    let clipSheets = 0;
+    [g.wb, e.wb, d.wb].forEach((wb) => {
+      wb.sheets.forEach((s) => { clipSheets += 1; clipBad = clipBad.concat(clipped(s)); });
+    });
+    t.ok(clipSheets >= 8, '시트 ' + clipSheets + '장의 모든 칸을 재 보았다');
+    t.is(clipBad.length, 0, '열 너비에 잘리는 칸이 없다' +
+      (clipBad.length ? ' (' + clipBad.length + '칸) — ' + clipBad.slice(0, 4).join(' ; ') : ''));
+
+    // 입력 블록의 라벨이 표의 첫 열에 갇혀 있지 않은지 - 위 검사가 지키는 핵심
+    const labelRef = Object.keys(gs.cells).find((k) =>
+      /^A\d+$/.test(k) && (gs.cells[k].text || '').indexOf('세액공제 받지 않은 금액') >= 0);
+    t.ok(!!labelRef, '입력 라벨이 A 열에 있다');
+    const labelRow = /\d+/.exec(labelRef)[0];
+    t.ok(!gs.cells['B' + labelRow], '라벨 오른쪽 칸이 비어 있어 글자가 흘러 읽힌다');
+    t.ok(vis(gs.cells[labelRef].text) > (gs.widths[1] || 0),
+      '라벨이 A 열 너비보다 길다 (흘려 보내야만 읽히는 길이다)');
+
+    // 반대쪽도 - 값이 들어간 열은 숫자가 다 들어갈 만큼 넓다
+    const valRef = inputRef(gs, '세액공제 받지 않은 금액');
+    const valCol = COL_N(/^[A-Z]+/.exec(valRef)[0]);
+    t.ok(gs.widths[valCol] >= vis(shownOf(gs.cells[valRef])),
+      '값이 들어간 열은 그 숫자가 다 들어간다 (' + gs.widths[valCol] + '칸)');
 
     /* ── 8. CSV 와 엑셀이 따로 있다 ───────────────────────────── */
 

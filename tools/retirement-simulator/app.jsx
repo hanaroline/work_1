@@ -1011,6 +1011,78 @@ const num = (v, s) => ({ t: 'n', v: v, s: s === undefined ? S.won : s });
 const txt = (v, s) => ({ t: 's', v: v, s: s === undefined ? S.plain : s });
 const fx = (f, v, s) => ({ t: 'n', f: f, v: v, s: s === undefined ? S.won : s });
 
+/**
+ * 엑셀에서 보이는 글자 너비. 단위는 기본 글꼴의 '0' 한 글자다.
+ * 한글·한자·전각기호·①② 같은 둘러싼 숫자는 두 칸을 먹는다.
+ */
+const WIDE_CH = /[ᄀ-ᇿ①-⓿■-◿⺀-꓏가-힣豈-﫿︰-﹏＀-｠]/;
+function textWidth(s) {
+  const str = String(s === null || s === undefined ? '' : s);
+  let w = 0;
+  for (let i = 0; i < str.length; i++) w += WIDE_CH.test(str[i]) ? 2 : 1;
+  return w;
+}
+
+/** 그 칸이 엑셀에서 실제로 어떤 글자로 보이는지 (서식을 먹인 뒤) */
+function shownText(c) {
+  if (c.t !== 'n') return c.v === null || c.v === undefined ? '' : String(c.v);
+  const v = isFinite(c.v) ? c.v : 0;
+  if (c.s === S.pct) return (v * 100).toFixed(1) + '%';
+  if (c.s === S.pct3) return (v * 100).toFixed(3) + '%';
+  if (c.s === S.won || c.s === S.wonBold) return Math.round(v).toLocaleString('en-US');
+  return String(v);
+}
+
+/**
+ * 열 너비를 내용에서 잰다.
+ *
+ * 손으로 적어 두었더니 **같은 열을 입력 블록과 표가 나눠 쓰면서** 어느 한쪽이
+ * 늘 잘렸다. 인출 스케줄 시트가 그랬다 - A 열은 '회차' 에 맞춘 6칸인데 그 위
+ * 입력 블록에는 '① 세액공제 받지 않은 금액 (과세제외)' 가 들어 있어 끊겨 보였고,
+ * B 열은 '연도' 에 맞춘 7칸인데 2억 5천만원이 들어와 `#######` 이 됐다.
+ *
+ * 두 규칙만 둔다.
+ *
+ *   - **숫자는 언제나 잰다.** 숫자는 넘쳐 흐르지 않고 `###` 가 되기 때문이다.
+ *   - **글자는 바로 오른쪽 칸이 비어 있으면 재지 않는다.** 엑셀이 옆 칸으로
+ *     흘려 그대로 읽히므로, 제목 한 줄 때문에 첫 열을 마흔 칸으로 벌릴 이유가 없다.
+ *
+ * floor 로 열마다 최소 너비를 줄 수 있다. 사유·해설처럼 긴 글이 들어가는 열은
+ * 흘려도 읽히기는 하지만 제 칸을 가지고 있는 편이 낫다.
+ */
+function autoCols(rows, opt) {
+  const o = opt || {};
+  const pad = o.pad === undefined ? 2 : o.pad;
+  const min = o.min === undefined ? 5 : o.min;
+  const max = o.max === undefined ? 80 : o.max;
+  const floor = o.floor || {};
+  const want = [];
+  let ncol = 0;
+
+  rows.forEach((cells) => {
+    if (!cells || !cells.length) return;
+    if (cells.length > ncol) ncol = cells.length;
+    for (let i = 0; i < cells.length; i++) {
+      const c = cells[i];
+      if (c === null || c === undefined) continue;
+      const right = cells[i + 1];
+      const flows = c.t !== 'n' && (right === null || right === undefined);
+      if (flows) continue;
+      const bold = c.s === S.bold || c.s === S.head || c.s === S.wonBold;
+      const w = textWidth(shownText(c)) + (bold ? 1 : 0);
+      if (!(want[i] >= w)) want[i] = w;
+    }
+  });
+
+  const out = [];
+  for (let i = 0; i < ncol; i++) {
+    // 아무것도 없는 열은 좁게 둔다 (표를 가르는 빈 칸)
+    if (want[i] === undefined) { out.push(floor[i] === undefined ? 2 : floor[i]); continue; }
+    out.push(Math.max(min, floor[i] || 0, Math.min(max, want[i] + pad)));
+  }
+  return out;
+}
+
 function sheetXml(rows, cols) {
   const out = ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
     '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'];
@@ -1183,20 +1255,33 @@ XCOL.forEach((name, i) => { if (name) XC[name] = colName(i); });
 function scheduleSheet(ctx) {
   const rows = [];
   const put = (r, cells) => { rows[r - 1] = cells; };
-  const pair = (r, label, cell) => put(r, [txt(label, S.bold), cell]);
+  /*
+    라벨은 A, 값은 G 에 둔다.
+    A 는 아래 표의 '회차' 와 같은 열이라 여섯 칸을 넘길 수 없는데 라벨은
+    마흔 칸에 가깝다. 값을 바로 옆(B)에 두면 라벨이 거기서 끊긴다. G 로
+    밀어 두면 B~F 가 비어 라벨이 그리로 흘러 온전히 읽히고, G 는 금액이
+    들어가는 열이라 너비도 맞는다.
+  */
+  const XVAL = 6;                       // 0부터 센 열 번호 (G)
+  const pair = (r, label, cell) => {
+    const cells = [txt(label, S.bold)];
+    cells[XVAL] = cell;
+    put(r, cells);
+  };
 
   const c = ctx;
   put(1, [txt('인출 스케줄 — ' + c.label, S.bold)]);
-  put(2, [txt('파란 칸(B4~B22)을 고치면 아래 표가 다시 계산됩니다. 표의 숫자는 모두 수식입니다.')]);
+  put(2, [txt('파란 칸(G4~G22)을 고치면 아래 표가 다시 계산됩니다. 표의 숫자는 모두 수식입니다.')]);
 
   pair(XI.exempt, '① 세액공제 받지 않은 금액 (과세제외)', num(c.exemptPrincipal));
   pair(XI.retire, '② 이연퇴직소득 원금 (퇴직급여)', num(c.retirePrincipal));
   pair(XI.other, '③ 세액공제분 + 기존 운용수익', num(c.otherPrincipal));
-  pair(XI.total, '시작 자산 합계', fx('B' + XI.exempt + '+B' + XI.retire + '+B' + XI.other,
+  const V = (k) => colName(XVAL) + k;          // 입력 칸 (상대참조)
+  pair(XI.total, '시작 자산 합계', fx(V(XI.exempt) + '+' + V(XI.retire) + '+' + V(XI.other),
     c.exemptPrincipal + c.retirePrincipal + c.otherPrincipal, S.wonBold));
   pair(XI.tax, '이연퇴직소득세 (지방소득세 포함)', num(c.deferredTax));
   pair(XI.perWon, '퇴직소득 1원당 세액',
-    fx('IF(B' + XI.retire + '>0,B' + XI.tax + '/B' + XI.retire + ',0)',
+    fx('IF(' + V(XI.retire) + '>0,' + V(XI.tax) + '/' + V(XI.retire) + ',0)',
       c.retirePrincipal > 0 ? c.deferredTax / c.retirePrincipal : 0, S.pct3));
   pair(XI.rate, '운용수익률 (연)', num(c.rate, S.pct));
   pair(XI.years, '수령 기간 (년)', num(c.years, S.plain));
@@ -1219,7 +1304,9 @@ function scheduleSheet(ctx) {
     null, null, null, null, null, null, txt('계산 과정 — 재원별 잔액·인출과 세액 분해', S.bold)]);
   put(XHEAD, headRow);
 
-  const A = (r) => 'A' + r, Bi = (k) => '$B$' + k;
+  // Bi = 입력 블록의 칸. 열은 XVAL 과 한 몸이라 여기서 한 번만 만든다.
+  const IN_COL = colName(XVAL);
+  const A = (r) => 'A' + r, Bi = (k) => '$' + IN_COL + '$' + k;
 
   c.rows.forEach((row, idx) => {
     const r = XFIRST + idx;
@@ -1308,9 +1395,7 @@ function scheduleSheet(ctx) {
     fx('H' + tr + '-M' + tr, c.totals.afterTax, S.wonBold)]);
   put(tr + 3, [txt('행 수는 화면에서 계산된 회차 그대로입니다. 기간을 크게 늘리려면 마지막 행을 복사해 내리세요.')]);
 
-  const cols = [6, 7, 6, 9, 9, 14, 14, 14, 12, 14, 14, 8, 13, 11, 14, 2];
-  for (let i = cols.length; i < XCOL.length; i++) cols.push(13);
-  return { name: c.sheet, rows: rows, cols: cols };
+  return { name: c.sheet, rows: rows, cols: autoCols(rows) };
 }
 
 /* ---------------------------------------------------------------
@@ -1370,7 +1455,8 @@ function summarySheet(c) {
   put([txt('상담 보조용 추정치이며 최종 판단은 원천징수영수증과 금융기관 확인을 거쳐야 합니다.')]);
   if (c.memo) { put([]); put([txt('상담 메모', S.bold)]); put([txt(c.memo)]); }
 
-  return { name: '요약', rows: rows, cols: [34, 18, 26, 13, 13, 70] };
+  // 사유 열은 흘려도 읽히지만 제 칸을 가지고 있는 편이 낫다
+  return { name: '요약', rows: rows, cols: autoCols(rows, { floor: { 4: 16, 5: 70 } }) };
 }
 
 function compareSheet(c) {
@@ -1388,7 +1474,7 @@ function compareSheet(c) {
   ]));
   rows.push([]);
   rows.push([txt('세후 수령액 + 잔존액이 큰 순서입니다. 수수료·세액은 위 수령 기간과 수익률 기준입니다.')]);
-  return { name: '계좌 비교', rows: rows, cols: [28, 11, 18, 16, 16, 18, 16, 40] };
+  return { name: '계좌 비교', rows: rows, cols: autoCols(rows, { floor: { 7: 40 } }) };
 }
 
 function taxSheet(c) {
@@ -1403,7 +1489,7 @@ function taxSheet(c) {
   rows.push([]);
   rows.push([txt('이 시트는 화면에서 나온 값입니다 - 공제표와 세율표를 엑셀 수식으로 한 벌 더 두면')]);
   rows.push([txt('같은 규칙이 두 곳에 살게 되어 한쪽이 낡습니다. 금액을 바꿔 보시려면 화면에서 바꾸세요.')]);
-  return { name: '퇴직소득세', rows: rows, cols: [30, 18, 20, 78] };
+  return { name: '퇴직소득세', rows: rows, cols: autoCols(rows, { floor: { 3: 78 } }) };
 }
 
 /* ================================================================
