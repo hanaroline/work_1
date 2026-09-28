@@ -363,9 +363,32 @@ export async function analyze(rcpNo) {
       pick: takeMax(items.filter((i) => krw(i) && sane(i) && i.tier < 2 && i.mcLoss),
         (i) => i.annualRate / i.mcLoss) },
     { label: '수익률을 먼저 보는 분',
-      why: '이번 회차에서 가장 높은 수익률입니다. 넣는 순간의 값어치가 크게 깎이지 않은 상품 중에서 골랐습니다.',
+      why: null,   // 아래에서 실제 순위를 보고 정한다
       pick: takeMax(items.filter((i) => sane(i) && i.tier < 2), (i) => i.annualRate) },
   ].filter((s) => s.pick);
+
+  /**
+   * 수익 자리의 추천 사유는 **뽑히고 나서** 정한다.
+   *
+   * 예전에는 "이번 회차에서 가장 높은 수익률입니다" 를 붙박이로 달아 두었다.
+   * 이 자리는 앞의 두 자리가 가져간 상품을 빼고 고르므로, 더 높은 회차가 위
+   * 자리에 올라간 주에는 사실이 아닌 문장이 된다 — 2026-09-29 에 연 21.1%인
+   * 제38161회를 "가장 높은 수익률" 이라 적었고, 실제 1위는 23.0%인 제38165회로
+   * 바로 위 자리에 있었다.
+   */
+  const rateSlot = slots.find((s) => s.label === '수익률을 먼저 보는 분');
+  if (rateSlot) {
+    const p = rateSlot.pick;
+    const maxAll = Math.max(...items.map((i) => i.annualRate));
+    const higherPicked = slots
+      .filter((s) => s !== rateSlot && s.pick.annualRate > p.annualRate)
+      .sort((a, b) => b.pick.annualRate - a.pick.annualRate)[0];
+    rateSlot.why = p.annualRate >= maxAll - 0.001
+      ? '이번 회차에서 가장 높은 수익률입니다. 넣는 순간의 값어치가 크게 깎이지 않은 상품 중에서 골랐습니다.'
+      : higherPicked
+        ? `넣는 순간의 값어치가 크게 깎이지 않은 상품 중에서 골랐습니다. 이보다 높은 제${higherPicked.pick.no}회(연 ${higherPicked.pick.annualRate}%)는 바로 위 자리에 이미 올라 있어, 그다음으로 높은 수익률입니다.`
+        : '넣는 순간의 값어치가 크게 깎이지 않은 상품 중에서 가장 높은 수익률입니다. 더 높은 회차는 값어치가 깎였거나 손실 확률이 높아 권하지 않습니다.';
+  }
 
   const caution = items
     .filter((it) => (it.fairValueGap ?? 0) <= -10 || it.tier === 2 || it.simShort)

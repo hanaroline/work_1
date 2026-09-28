@@ -42,7 +42,7 @@ const avgLossOf = (kind) => {
 const pres = new pptxgen();
 pres.layout = 'LAYOUT_WIDE';                // 반드시 슬라이드 추가 전에
 pres.author = '미래에셋증권';
-pres.title = `제${A.items[0].no}~${A.items[A.items.length - 1].no}회 ELS 제안서`;
+pres.title = `제${A.items[0].no}~${A.items[A.items.length - 1].no}회 ELS 분석자료`;
 
 /** 절 제목 — 미래에셋 시그니처인 1px 오렌지 룰 위에 제목을 얹는다 */
 function head(s, title, sub) {
@@ -94,7 +94,7 @@ const stockAnswer = !stockRec
   s.addText('MIRAE ASSET · ELS WEEKLY', {
     x: M, y: 1.5, w: 7.6, h: 0.3, fontFace: F, fontSize: 12, bold: true, color: WHITE, charSpacing: 2, margin: 0,
   });
-  s.addText(`제${A.items[0].no}~${A.items[A.items.length - 1].no}회\nELS 제안서`, {
+  s.addText(`제${A.items[0].no}~${A.items[A.items.length - 1].no}회\nELS 분석자료`, {
     x: M, y: 1.9, w: 7.6, h: 1.9, fontFace: F, fontSize: 42, bold: true, color: WHITE, lineSpacing: 50, margin: 0,
   });
   s.addText(`투자설명서(일괄신고추가서류) ${A.filedOn} 공시 원문 기준 · 전 ${A.items.length}종 분석`, {
