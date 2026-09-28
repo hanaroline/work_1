@@ -4,7 +4,12 @@
  * 표 자체가 맞는지는 pension-decision-matrix 의 crosscheck 가 규칙표와 화면 판정을
  * 맞춰 보며 지킨다. 여기서는 '그 표가 화면에 제대로 열리고 고른 조건의 답이 나오는지' 만 본다.
  */
-const { openApp, fillCase, field, button } = require('./helpers');
+const fs = require('fs');
+const path = require('path');
+const { execFileSync } = require('child_process');
+const { APP, openApp, fillCase, field, button } = require('./helpers');
+// 규칙표 원본. 배포본에서 뺀 글자가 정말로 없는지 맞대 보려면 원문이 있어야 한다.
+const { SOURCES } = require('../../pension-decision-matrix/rules');
 
 /** 판단표 탭의 두 블록을 텍스트로 읽는다 */
 const blockText = async (page, heading) =>
@@ -191,8 +196,50 @@ module.exports = async function run(t) {
     t.is(await page.getByLabel('가입시점 못 맞춤', { exact: true }).count(), 0,
       '맞춘 뒤에는 못 맞췄다는 안내가 사라짐');
 
-    // ── 근거는 접혀 있다 ──────────────────────────────────────────
-    t.is(await page.getByText('사내 연금 업무 Q&A', { exact: false }).count(), 1, '근거 묶음이 한 줄로 접혀 있음');
+    /* ── 근거는 배포본에 실리지 않는다 ─────────────────────────────
+     *
+     * 이 도구는 파일 하나가 지점으로 돌아다닌다. 사내 Q&A 원문 요약이
+     * 그대로 실려 나가면 파일을 받은 누구나 읽는다. 서버가 없어 화면에서만
+     * 가리는 잠금은 편집기로 열면 뚫리므로 **자료 자체를 심지 않는다**
+     * (build.js 의 INCLUDE_SOURCES).
+     *
+     * 그래서 화면에 안 보이는 것만으로는 부족하다. **파일 안에 글자가
+     * 없는지**까지 본다 - 그게 이 조치가 실제로 지키려는 것이다.
+     */
+    t.is(await page.getByText('사내 연금 업무 Q&A', { exact: false }).count(), 0,
+      '근거 묶음의 출처·건수 글자가 화면에 없다');
+
+    // 접혀 있어서 안 보이는 것과 애초에 없는 것은 다르다. 심긴 자료를 직접 본다.
+    const embedded = await page.evaluate(() => (window.__MATRIX__.sources || []).length);
+    t.is(embedded, 0, '배포본에 심긴 근거 자료가 0건이다');
+
+    const shown = await page.locator('body').innerText();
+    const onScreen = Object.keys(SOURCES).filter((k) => shown.indexOf(SOURCES[k].note) >= 0);
+    t.is(onScreen.length, 0, '화면 어디에도 Q&A 원문이 없다 — ' + onScreen.join(' '));
+
+    const raw = fs.readFileSync(APP.replace('file://', ''), 'utf8');
+    const inFile = Object.keys(SOURCES).filter((k) => raw.indexOf(SOURCES[k].note) >= 0);
+    t.ok(Object.keys(SOURCES).length >= 18, 'Q&A 원본은 규칙표에 그대로 있다 (' +
+      Object.keys(SOURCES).length + '건)');
+    t.is(inFile.length, 0, '배포본 파일을 편집기로 열어도 Q&A 원문이 없다 — ' + inFile.join(' '));
+
+    /* 되돌리는 길이 살아 있는지도 본다.
+       '필요하면 되돌릴 수 있다' 는 말은 되돌려 봐야 참이 된다 - 스위치가
+       끊겨 있어도 배포본 검사는 그대로 통과하므로 여기서 짚지 않으면
+       아무도 모른다. --근거 로 한 판 지어 18건이 들어 있는지 센다. */
+    const ROOT = path.resolve(__dirname, '..', '..', '..');
+    const full = path.join(ROOT, 'retirement-simulator-근거포함.html');
+    execFileSync(process.execPath,
+      [path.join(ROOT, 'scripts', 'build-retirement-simulator.js'), '--근거'],
+      { cwd: ROOT, stdio: 'ignore' });
+    const fullHtml = fs.readFileSync(full, 'utf8');
+    const kept = Object.keys(SOURCES).filter((k) => fullHtml.indexOf(SOURCES[k].note) >= 0);
+    t.ok(kept.length >= 16, '--근거 로 지으면 Q&A 가 그대로 돌아온다 (' + kept.length + '건)');
+    t.ok(fullHtml.length > raw.length, '근거를 담은 판이 배포본보다 크다');
+
+    // 판정은 그대로 돈다 - 근거를 뺀 것이 표를 건드리지는 않았다
+    const stillWorks = await blockText(page, RECEIVE);
+    t.includes(stillWorks, '신규 개설', '근거를 빼도 판단표는 그대로 답한다');
 
     t.is(errors.length, 0, '런타임 에러 없음');
   } finally {

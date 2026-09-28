@@ -208,8 +208,20 @@ function render() {
  * 표만 자료로 넘기고 판정 로직은 넘기지 않는다. 앱이 이 규칙으로 직접 판정하게 하면
  * 두 구현이 하나가 되어 crosscheck 가 자기 자신을 비교하게 되기 때문이다.
  * 앱은 앱의 판정을, 이 표는 규칙표의 답을 보여 주고, 둘이 어긋나면 crosscheck 가 잡는다.
+ *
+ * opts.sources — 근거(사내 연금 업무 Q&A)를 함께 심을지. **기본은 심지 않는다.**
+ *
+ *   이 도구는 파일 하나가 지점으로 돌아다니는 형태라, Q&A 원문 요약을 그대로 실어
+ *   보내면 파일을 받은 누구나 읽는다. 서버가 없으므로 화면에서만 가리는 잠금은 파일을
+ *   편집기로 여는 순간 뚫린다 - 잠긴 줄 알고 돌리는 편이 더 위험하다. 그래서 배포본에는
+ *   **자료 자체를 심지 않는다.**
+ *
+ *   근거까지 담긴 판은 따로 만든다(빌드의 --근거 참조). 원본은 rules.js 의 SOURCES 와
+ *   사내 참조용 MATRIX.md 에 그대로 남으므로 잃는 것은 없고, 판정 로직과 교차검증도
+ *   SOURCES 를 그대로 쓰므로 영향을 받지 않는다.
  */
-function matrixData() {
+function matrixData(opts) {
+  const includeSources = !!(opts && opts.sources);
   const legend = new Map();
   const deposit = depositMatrix().map((row) => ({
     system: row.sys.key,
@@ -252,7 +264,10 @@ function matrixData() {
     deposit,
     transfer,
     legend: [...legend.values()].map((b) => ({ rule: b.rule, short: b.short, src: b.src, law: b.law, text: b.text })),
-    sources: Object.keys(SOURCES).map((k) => Object.assign({ key: k }, SOURCES[k]))
+    // 빈 배열이면 화면이 근거 묶음을 아예 그리지 않는다 (위 opts.sources 를 보라)
+    sources: includeSources
+      ? Object.keys(SOURCES).map((k) => Object.assign({ key: k }, SOURCES[k]))
+      : []
   };
 }
 
