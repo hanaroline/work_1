@@ -130,6 +130,119 @@ const fmtDate = (d) => (d ? d.getFullYear() + '.' + (d.getMonth() + 1) + '.' + d
 const pensionRateByAge = (age) => (age >= 80 ? 0.033 : age >= 70 ? 0.044 : 0.055);
 
 /* ================================================================
+   1-2. 퇴직소득세
+
+   원천징수영수증이 아직 없는 퇴직 전 상담에서 이연퇴직소득세를 직접 산출한다.
+   퇴직소득세는 **퇴직급여 전체를 합해 한 번** 계산한다 - 법정퇴직금과 명예퇴직금을
+   따로 계산하지 않는다(소득세법 §22). 재원별 이연퇴직소득세는 그 합계를 계좌
+   배정액 비율로 안분한 값이고, 그건 아래 allocatedDeferredTax 가 한다(시행령 §202의2).
+
+   여기 적힌 표는 tools/retirement-tax/rules.js 에도 있고, 그쪽은 조문에서 따로
+   옮겨 적은 것이다. 한쪽을 가져다 쓰지 않고 둘 다 두는 이유는 판단표와 같다 -
+   세율표는 한 자리 틀려도 숫자가 그럴듯하게 나오고 그대로 고객에게 간다.
+   crosscheck 가 격자로 둘을 맞댄다.
+
+   적용 범위: 2023.1.1 이후 퇴직분.
+
+   국세와 지방소득세를 갈라 내고, 시뮬레이션에는 **합계**를 쓴다. 같은 칸에 더해지는
+   연금소득세(5.5/4.4/3.3%)와 기타소득세(16.5%)가 이미 지방세를 품은 세율이라,
+   퇴직소득세만 국세로 두면 '총 예상 세액' 한 칸 안에서 기준이 갈린다.
+   원천징수영수증의 '이연퇴직소득세' 는 국세 기준이므로 화면에 둘 다 적는다.
+   ================================================================ */
+
+const MAN = 10000;
+
+/** 근속연수 - 1년 미만의 기간은 1년으로 본다 (시행령 §105②) */
+function yearsBetween(from, to) {
+  if (!from || !to || to < from) return null;
+  let y = to.getFullYear() - from.getFullYear();
+  if (new Date(from.getFullYear() + y, from.getMonth(), from.getDate()) > to) y -= 1;
+  const exact = new Date(from.getFullYear() + y, from.getMonth(), from.getDate());
+  if (exact.getTime() !== to.getTime()) y += 1;
+  return Math.max(1, y);
+}
+
+/** 근속연수공제 (소득세법 §48①1) */
+function svcDeductionOf(y) {
+  if (y <= 5) return 100 * MAN * y;
+  if (y <= 10) return 500 * MAN + 200 * MAN * (y - 5);
+  if (y <= 20) return 1500 * MAN + 250 * MAN * (y - 10);
+  return 4000 * MAN + 300 * MAN * (y - 20);
+}
+
+/** 환산급여공제 (소득세법 §48③) */
+function convDeductionOf(v) {
+  if (v <= 800 * MAN) return v;
+  if (v <= 7000 * MAN) return 800 * MAN + (v - 800 * MAN) * 0.6;
+  if (v <= 10000 * MAN) return 4520 * MAN + (v - 7000 * MAN) * 0.55;
+  if (v <= 30000 * MAN) return 6170 * MAN + (v - 10000 * MAN) * 0.45;
+  return 15170 * MAN + (v - 30000 * MAN) * 0.35;
+}
+
+/** 기본세율 (소득세법 §55①) */
+function basicTaxOf(base) {
+  if (base <= 0) return 0;
+  if (base <= 1400 * MAN) return base * 0.06;
+  if (base <= 5000 * MAN) return base * 0.15 - 126 * MAN;
+  if (base <= 8800 * MAN) return base * 0.24 - 576 * MAN;
+  if (base <= 15000 * MAN) return base * 0.35 - 1544 * MAN;
+  if (base <= 30000 * MAN) return base * 0.38 - 1994 * MAN;
+  if (base <= 50000 * MAN) return base * 0.40 - 2594 * MAN;
+  if (base <= 100000 * MAN) return base * 0.42 - 3594 * MAN;
+  return base * 0.45 - 6594 * MAN;
+}
+
+/** 퇴직소득세 한 번의 계산. 단계마다 값을 남긴다 - 상담 중에 설명해야 한다 */
+function retireTaxOf(amount, years) {
+  if (!(amount > 0) || !(years > 0)) return null;
+  const svcDed = svcDeductionOf(years);
+  const converted = Math.max(0, (amount - svcDed) / years * 12);
+  const convDed = convDeductionOf(converted);
+  const base = Math.max(0, converted - convDed);
+  const convertedTax = basicTaxOf(base);
+  const tax = Math.floor(convertedTax / 12 * years);
+  const local = Math.floor(tax * 0.1);
+  return { income: amount, years, svcDed, converted, convDed, base, convertedTax,
+    tax, local, total: tax + local };
+}
+
+/**
+ * 중간정산이 있으면 두 갈래를 다 낸다.
+ *
+ * 원칙은 정산일 다음 날부터 근속연수를 세는 것이고(분리), 퇴직자가 신고하면
+ * 통산해 다시 계산하고 기납부세액을 빼 준다(정산특례, §148). 대개 정산특례가
+ * 유리하지만 합산으로 과세표준 구간이 올라가면 뒤집히므로 단정하지 않는다.
+ */
+function computeRetireTax(inp) {
+  if (!inp.hire || !inp.retire || !(inp.amount > 0)) return null;
+
+  if (!inp.midDate || !(inp.midAmount > 0)) {
+    const y = yearsBetween(inp.hire, inp.retire);
+    const only = y && retireTaxOf(inp.amount, y);
+    return only ? { mode: 'plain', chosen: only, plain: only, settle: null } : null;
+  }
+
+  const dayAfter = new Date(inp.midDate.getTime());
+  dayAfter.setDate(dayAfter.getDate() + 1);
+  const sepY = yearsBetween(dayAfter, inp.retire);
+  const plain = sepY && retireTaxOf(inp.amount, sepY);
+
+  const allY = yearsBetween(inp.hire, inp.retire);
+  const whole = allY && retireTaxOf(inp.amount + inp.midAmount, allY);
+  const paid = inp.midPaidTax || 0;
+  const settleTax = whole ? Math.max(0, whole.tax - paid) : 0;
+  const settleLocal = Math.floor(settleTax * 0.1);
+  const settle = whole && Object.assign({}, whole, {
+    paid, wholeTax: whole.tax,
+    tax: settleTax, local: settleLocal, total: settleTax + settleLocal
+  });
+
+  if (!plain || !settle) return null;
+  const useSettle = settle.total < plain.total;
+  return { mode: useSettle ? 'settle' : 'plain', chosen: useSettle ? settle : plain, plain, settle };
+}
+
+/* ================================================================
    2. 판정 로직 - 퇴직제도 × 계좌 가입일 × 연령
 
    근거 : 근로자퇴직급여보장법 §17·§20
@@ -931,6 +1044,101 @@ function SegmentedMulti({ options, values, onChange, ariaPrefix }) {
   );
 }
 
+/**
+ * 퇴직소득세 계산 과정.
+ *
+ * 결과 숫자 하나만 내놓지 않는다. 상담 중에 "왜 이 금액인가" 를 고객에게 그 자리에서
+ * 설명해야 하고, 회사가 뗀 금액과 다를 때 어느 단계가 다른지 짚을 수 있어야 한다.
+ */
+function RetireTaxBreakdown({ r }) {
+  const c = r.chosen;
+  const rows = [
+    ['근속연수', c.years + '년', '1년 미만은 1년으로 올림 (시행령 §105②)'],
+    ['퇴직소득금액', krw(c.income), r.mode === 'settle' ? '중간정산분 합산 (§148)' : null],
+    ['− 근속연수공제', krw(c.svcDed), '소득세법 §48①1'],
+    ['환산급여', krw(Math.round(c.converted)), '(퇴직소득금액 − 공제) ÷ 근속연수 × 12'],
+    ['− 환산급여공제', krw(Math.round(c.convDed)), '소득세법 §48③'],
+    ['과세표준', krw(Math.round(c.base)), null],
+    ['환산산출세액', krw(Math.round(c.convertedTax)), '기본세율 §55①'],
+    ['÷ 12 × 근속연수', krw(r.mode === 'settle' ? c.wholeTax : c.tax), null]
+  ];
+  if (r.mode === 'settle') rows.push(['− 중간정산 기납부세액', krw(c.paid), '정산특례 §148']);
+
+  return (
+    <div className="screen-only border-t border-hair pt-3">
+      <div className="text-[12px] font-bold text-ink-body mb-1.5">계산 과정</div>
+      <div className="text-[12px] leading-relaxed">
+        {rows.map((row, i) => (
+          <div key={i} className="flex items-baseline gap-2 py-[3px] border-b border-hair-soft last:border-b-0">
+            <span className="text-ink-muted shrink-0 w-[112px]">{row[0]}</span>
+            <span className="num font-medium text-ink shrink-0">{row[1]}</span>
+            {row[2] ? <span className="text-ink-soft text-[11px] truncate">{row[2]}</span> : null}
+          </div>
+        ))}
+        <div className="flex items-baseline gap-2 pt-2 mt-1 border-t border-hair">
+          <span className="text-ink-muted shrink-0 w-[112px]">이연퇴직소득세 (국세)</span>
+          <span className="num font-medium text-ink">{krw(c.tax)}</span>
+          <span className="text-ink-soft text-[11px]">영수증의 '이연퇴직소득세' 가 이 금액입니다</span>
+        </div>
+        <div className="flex items-baseline gap-2 py-[3px]">
+          <span className="text-ink-muted shrink-0 w-[112px]">+ 지방소득세</span>
+          <span className="num font-medium text-ink">{krw(c.local)}</span>
+          <span className="text-ink-soft text-[11px]">소득세액의 10% (지방세법 §103의3)</span>
+        </div>
+        <div className="flex items-baseline gap-2 pt-1.5 mt-1 border-t border-hair">
+          <span className="text-ink-body font-bold shrink-0 w-[112px]">합계</span>
+          <span className="num font-bold text-mas-active text-[14px]">{krw(c.total)}</span>
+          <span className="text-ink-soft text-[11px]">
+            실효 {c.income > 0 ? (c.total / c.income * 100).toFixed(2) : '0.00'}%
+          </span>
+        </div>
+        {/* 원 단위까지 적는다. 영수증과 맞대려면 만원 단위 표기로는 부족하다 */}
+        <p className="text-[11px] text-ink-soft mt-0.5 num" aria-label="이연퇴직소득세 원 단위">
+          국세 {c.tax.toLocaleString('ko-KR')}원 · 지방소득세 {c.local.toLocaleString('ko-KR')}원 ·
+          합계 {c.total.toLocaleString('ko-KR')}원
+        </p>
+        <p className="text-[11px] text-ink-soft mt-1 leading-snug">
+          <strong>인출 스케줄과 계좌 비교에는 합계(지방소득세 포함)를 씁니다.</strong> 같은 칸에
+          더해지는 연금소득세(5.5·4.4·3.3%)와 기타소득세(16.5%)가 이미 지방소득세를 품은
+          세율이라, 퇴직소득세만 국세로 두면 한 칸 안에서 기준이 갈립니다.
+        </p>
+      </div>
+
+      {r.settle && (
+        <div className="mt-3 border border-hair rounded-xs bg-white p-2.5" role="note"
+          aria-label="중간정산 정산특례 비교">
+          <div className="text-[12px] font-bold text-ink-body mb-1.5">
+            중간정산 — 어느 쪽이 유리한가
+            <span className="font-normal text-ink-soft ml-1">(지방소득세 포함)</span>
+          </div>
+          {[['분리 (원칙)', r.plain.total, 'plain'], ['정산특례 신고 (§148)', r.settle.total, 'settle']]
+            .map(([label, tax, key]) => (
+              <div key={key} className={'flex items-baseline gap-2 py-1 px-1.5 rounded-xs ' +
+                (r.mode === key ? 'bg-mas-soft' : '')}>
+                <span className={'text-[12px] flex-1 ' +
+                  (r.mode === key ? 'font-bold text-mas-active' : 'text-ink-muted')}>{label}</span>
+                <span className="num text-[12px] font-medium text-ink">{krw(tax)}</span>
+                {r.mode === key ? <Badge tone="brand">유리</Badge> : null}
+              </div>
+            ))}
+          {r.mode === 'settle' && (
+            <p className="text-[11px] text-ink-soft mt-1.5 leading-snug">
+              정산특례는 <strong>퇴직자가 회사에 신고</strong>해야 적용됩니다. 퇴직 시
+              중간정산 원천징수영수증을 함께 제출하세요.
+            </p>
+          )}
+          {r.mode === 'plain' && (
+            <p className="text-[11px] text-ink-soft mt-1.5 leading-snug">
+              이 경우는 합산으로 과세표준 구간이 올라가 정산특례가 오히려 불리합니다.
+              신고하지 않으면 원칙(분리)대로 계산됩니다.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Badge({ tone = 'neutral', children }) {
   const tones = {
     good: 'bg-[#E8F3EA] text-sig-ok border-[#B9DCC1]',
@@ -964,7 +1172,9 @@ function Stat({ label, value, tone }) {
   return (
     <div className="border border-hair rounded-sm bg-white px-4 py-3">
       <div className="text-[12px] font-medium text-ink-soft tracking-wide mb-1 whitespace-nowrap overflow-hidden text-ellipsis">{label}</div>
-      <div className={'num text-[17px] font-bold leading-tight whitespace-nowrap ' + color}>{value}</div>
+      {/* 값 칸만 이름으로 잡히게 한다 - 라벨까지 같이 읽히면 검사가 숫자를 못 떼어 낸다 */}
+      <div role="note" aria-label={label}
+        className={'num text-[17px] font-bold leading-tight whitespace-nowrap ' + color}>{value}</div>
     </div>
   );
 }
@@ -1309,6 +1519,19 @@ function App() {
   const [amtHonor, setAmtHonor] = useState(0);
   const [deferredTax, setDeferredTax] = useState(0);
 
+  // --- 이연퇴직소득세 자체 계산
+  //
+  // 퇴직 전 상담에는 원천징수영수증이 없다. 그러면 이 칸이 비고, 세액 비교와 인출
+  // 세액이 통째로 나오지 않는다. 입사일·퇴직일·퇴직급여액에서 직접 산출한다.
+  // 기본은 꺼 둔다 - 영수증을 들고 온 고객은 그 값이 맞고, 계산값이 그걸 덮으면 안 된다.
+  const [taxCalc, setTaxCalc] = useState(false);
+  const [hireDateStr, setHireDateStr] = useState('');
+  const [taxExempt, setTaxExempt] = useState(0);        // 비과세 퇴직급여
+  const [hasMid, setHasMid] = useState(false);          // 중간정산 받음
+  const [midDateStr, setMidDateStr] = useState('');
+  const [midAmount, setMidAmount] = useState(0);
+  const [midPaidTax, setMidPaidTax] = useState(0);
+
   // --- 기존 보유 계좌 (여러 개)
   //
   // 연금저축은 한 금융기관에 여러 개를 둘 수 있고, IRP 는 1사 1계좌가 원칙이지만
@@ -1363,6 +1586,7 @@ function App() {
   const collectState = () => ({
     custName, birthRaw, system, systemJoinStr, retireDateStr, dbConverted, dbJoinStr,
     amtSingle, amtLegal, amtHonor, deferredTax,
+    taxCalc, hireDateStr, taxExempt, hasMid, midDateStr, midAmount, midPaidTax,
     accounts: accountList,
     pastCount, fees, manualPick, pickedId, mode, years, rate, memo, memoOnPrint
   });
@@ -1391,6 +1615,14 @@ function App() {
     setAmtLegal(num(d.amtLegal, 0));
     setAmtHonor(num(d.amtHonor, 0));
     setDeferredTax(num(d.deferredTax, 0));
+    // 자체 계산 칸은 나중에 생겼다. 없던 시절의 저장 건은 '직접 입력'으로 열린다.
+    setTaxCalc(bool(d.taxCalc, false));
+    setHireDateStr(str(d.hireDateStr, ''));
+    setTaxExempt(num(d.taxExempt, 0));
+    setHasMid(bool(d.hasMid, false));
+    setMidDateStr(str(d.midDateStr, ''));
+    setMidAmount(num(d.midAmount, 0));
+    setMidPaidTax(num(d.midPaidTax, 0));
     setAccountList(readAccounts(d, { str, num, bool }));
     setPastCount(num(d.pastCount, 0));
     // 예전 저장 건에 있던 'new-pension'·'ex-*' 키는 흘려보낸다 (연금저축은 계좌 수수료가 없다)
@@ -1425,6 +1657,51 @@ function App() {
 
   // 이전 가능 여부(만 55세 미만 IRP 의무이전 등)는 퇴직급여를 지급받는 시점의 나이로 본다.
   const retireAge = useMemo(() => ageOn(birth, retireDate), [birth, retireDate]);
+
+  // --- 이연퇴직소득세 자체 계산 ---
+  //
+  // 퇴직금제도는 이미 '입사일' 칸을 쓰고 있으므로 그것을 그대로 근속 시작일로 본다.
+  // DB·DC 의 '제도 가입일' 은 입사일이 아니다 - 근속연수는 입사일 기준이라 따로 받는다.
+  const hireDate = useMemo(
+    () => (system === 'SEV' ? systemJoin : parseDate(hireDateStr)),
+    [system, systemJoin, hireDateStr]);
+  const midDate = useMemo(() => parseDate(midDateStr), [midDateStr]);
+
+  const taxResult = useMemo(() => {
+    if (!taxCalc) return null;
+    return computeRetireTax({
+      hire: hireDate, retire: retireDate,
+      amount: Math.max(0, ((system === 'SEV' ? amtLegal : amtSingle) + amtHonor) - taxExempt),
+      midDate: hasMid ? midDate : null,
+      midAmount: hasMid ? midAmount : 0,
+      midPaidTax: hasMid ? midPaidTax : 0
+    });
+  }, [taxCalc, hireDate, retireDate, system, amtLegal, amtSingle, amtHonor,
+    taxExempt, hasMid, midDate, midAmount, midPaidTax]);
+
+  // 계산을 켜 두었는데 못 한 이유. 빈 칸을 조용히 0 으로 두지 않는다.
+  const taxBlockers = useMemo(() => {
+    if (!taxCalc) return [];
+    const out = [];
+    if (!hireDate) out.push(system === 'SEV' ? '입사일' : '입사일 (근속연수 기산일)');
+    if (!(((system === 'SEV' ? amtLegal : amtSingle) + amtHonor) > 0)) out.push('퇴직급여액');
+    if (hasMid && !midDate) out.push('중간정산일');
+    if (hasMid && !(midAmount > 0)) out.push('중간정산 퇴직급여');
+    if (hireDate && retireDate && retireDate < hireDate) out.push('퇴직일이 입사일보다 빠릅니다');
+    if (hasMid && midDate && hireDate && (midDate < hireDate || midDate > retireDate)) {
+      out.push('중간정산일이 입사일~퇴직일 밖입니다');
+    }
+    return out;
+  }, [taxCalc, hireDate, retireDate, system, amtLegal, amtSingle, amtHonor,
+    hasMid, midDate, midAmount]);
+
+  // 계산이 성립하면 그 값을 쓰고, 아니면 직접 입력한 값을 쓴다.
+  //
+  // 어느 쪽이든 **국세 기준**이다(직접 입력은 원천징수영수증의 '이연퇴직소득세').
+  // 시뮬레이션에는 지방소득세 10% 를 더한 합계를 넘긴다 - 같은 칸의 연금소득세·
+  // 기타소득세가 이미 지방세를 품은 세율이라, 퇴직소득세만 국세로 두면 기준이 갈린다.
+  const deferredTaxNational = taxCalc && taxResult ? taxResult.chosen.tax : deferredTax;
+  const effectiveDeferredTax = deferredTaxNational + Math.floor(deferredTaxNational * 0.1);
 
   // 인출을 시작하는 해. 이미 지난 해부터 시뮬레이션할 수는 없으므로 오늘이 하한이고,
   // 퇴직 예정일이 미래면 그때, 만 55세가 아직이면 55세가 되는 해가 하한이 된다.
@@ -1522,8 +1799,8 @@ function App() {
   // 분할 입금 시 이연퇴직소득세는 계좌에 배정된 금액 비율로 안분한다
   const allocatedDeferredTax = useMemo(() => {
     if (!picked || !(retireTotal > 0)) return 0;
-    return deferredTax * (picked.allocatedAmount / retireTotal);
-  }, [picked, deferredTax, retireTotal]);
+    return effectiveDeferredTax * (picked.allocatedAmount / retireTotal);
+  }, [picked, effectiveDeferredTax, retireTotal]);
 
   const sim = useMemo(() => {
     if (!picked || !(picked.allocatedAmount > 0)) return null;
@@ -1552,7 +1829,7 @@ function App() {
           exemptPrincipal: 0,
           retirePrincipal: c.acceptAmount,
           otherPrincipal: 0,
-          deferredTax: deferredTax * (c.acceptAmount / retireTotal),
+          deferredTax: effectiveDeferredTax * (c.acceptAmount / retireTotal),
           startLimitYear: c.startLimitYear,
           pastCount,
           feeRate: c.feeRate,
@@ -1569,7 +1846,7 @@ function App() {
         };
       })
       .sort((a, b) => (b.afterTax + b.residual) - (a.afterTax + a.residual));
-  }, [candidates, retireTotal, deferredTax, pastCount, years, mode, rate, startYear, startAge]);
+  }, [candidates, retireTotal, effectiveDeferredTax, pastCount, years, mode, rate, startYear, startAge]);
 
   // 수령 기간이 최소 권장보다 짧으면 경고
   const shortSpan = picked && years < picked.minYears;
@@ -1654,6 +1931,8 @@ function App() {
     setSystem('DC'); setSystemJoinStr(''); setRetireDateStr(TODAY_STR);
     setDbConverted(false); setDbJoinStr('');
     setAmtSingle(0); setAmtLegal(0); setAmtHonor(0); setDeferredTax(0);
+    setTaxCalc(false); setHireDateStr(''); setTaxExempt(0);
+    setHasMid(false); setMidDateStr(''); setMidAmount(0); setMidPaidTax(0);
     setAccountList([]);
     setPastCount(0);
     setFees({ 'new-irp': 0 });
@@ -2047,16 +2326,125 @@ function App() {
                     </Field>
                   </div>
 
-                  <Field label="이연 퇴직소득세" hint="원천징수영수증 기준. 미입력 시 세액 비교는 표시되지 않습니다."
-                    help={<React.Fragment>
-                      퇴직급여를 연금계좌로 받으면 퇴직소득세를 떼지 않고 <strong>징수를 미뤄</strong> 둡니다.
-                      나중에 연금으로 나눠 받을 때 이 세금의 일부만 내는데, 실제 연금수령 횟수에 따라
-                      1~10회차 <strong>30% 감면</strong>, 11~20회차 <strong>40%</strong>,
-                      21회차부터 <strong>50%</strong>가 감면됩니다.
-                      (20년 초과 구간은 2025년 세법개정 신설분으로 2026.1.1 이후 연금수령분부터 적용)
-                    </React.Fragment>}>
-                    <MoneyInput value={deferredTax} onChange={setDeferredTax} label="이연 퇴직소득세" />
-                  </Field>
+                  {/*
+                    이연 퇴직소득세.
+
+                    원천징수영수증을 들고 온 고객은 그 값이 맞다. 퇴직 전 상담에는
+                    영수증이 없어 이 칸이 비고, 그러면 세액 비교와 인출 세액이 통째로
+                    나오지 않는다. 그래서 '직접 계산' 을 곁들이되 기본은 꺼 둔다 -
+                    계산값이 영수증 값을 덮으면 안 된다.
+                  */}
+                  <div className="border border-hair rounded-sm bg-surf-soft p-3 space-y-3">
+                    <label className="flex items-center gap-2 cursor-pointer screen-only">
+                      <input type="checkbox" checked={taxCalc} aria-label="이연 퇴직소득세 직접 계산"
+                        onChange={(e) => setTaxCalc(e.target.checked)}
+                        className="w-4 h-4 accent-[#F58220]" />
+                      <span className="text-[13px] font-medium text-ink-body">
+                        이연 퇴직소득세를 직접 계산
+                      </span>
+                      <Help title="이연 퇴직소득세 직접 계산">
+                        원천징수영수증이 아직 없는 <strong>퇴직 전 상담</strong>에서 씁니다.
+                        입사일·퇴직일·퇴직급여액으로 퇴직소득세를 산출합니다(소득세법 §48·§55).
+                        퇴직소득세는 <strong>법정퇴직금과 명예퇴직금을 합해 한 번</strong> 계산하고
+                        (§22), 계좌가 여럿이면 배정액 비율로 안분합니다(시행령 §202의2).<br /><br />
+                        <strong>2023.1.1 이후 퇴직분</strong> 기준이며, 임원 퇴직소득 한도(§22③)는
+                        반영하지 않습니다. 최종값은 원천징수영수증으로 확인하세요.
+                      </Help>
+                    </label>
+
+                    {taxCalc && (
+                      <React.Fragment>
+                        {system !== 'SEV' && (
+                          <Field label="입사일"
+                            warn={!hireDate}
+                            hint={!hireDate
+                              ? '넣어 주세요. 근속연수는 제도 가입일이 아니라 입사일로 셉니다'
+                              : '근속연수 기산일. ' + system + ' 제도 가입일과 다를 수 있습니다'}>
+                            <DateInput value={hireDateStr} onChange={setHireDateStr} label="입사일" />
+                          </Field>
+                        )}
+                        <Field label="비과세 퇴직급여" hint="없으면 0. 퇴직소득금액에서 뺍니다">
+                          <MoneyInput value={taxExempt} onChange={setTaxExempt} label="비과세 퇴직급여" />
+                        </Field>
+
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input type="checkbox" checked={hasMid} aria-label="중간정산 받음"
+                            onChange={(e) => setHasMid(e.target.checked)}
+                            className="w-4 h-4 accent-[#F58220]" />
+                          <span className="text-[13px] font-medium text-ink-body">중간정산을 받았음</span>
+                          <Help title="중간정산">
+                            중간정산을 받으면 근속연수를 <strong>정산일 다음 날부터</strong> 셉니다.
+                            다만 퇴직자가 회사에 신고하면 중간정산분과 최종분을 <strong>합산</strong>해
+                            입사일부터 통산한 뒤 이미 낸 세금을 빼 주는 <strong>정산특례</strong>가
+                            있습니다(소득세법 §148). 대개 정산특례가 유리하지만 합산으로 과세표준
+                            구간이 올라가면 뒤집히므로, <strong>둘 다 계산해</strong> 보여 드립니다.
+                          </Help>
+                        </label>
+
+                        {hasMid && (
+                          <div className="grid grid-cols-2 gap-3">
+                            <Field label="중간정산일" warn={!midDate}
+                              hint={!midDate ? '넣어 주세요' : null}>
+                              <DateInput value={midDateStr} onChange={setMidDateStr} label="중간정산일" />
+                            </Field>
+                            <Field label="중간정산 퇴직급여" warn={!(midAmount > 0)}
+                              hint={!(midAmount > 0) ? '넣어 주세요' : null}>
+                              <MoneyInput value={midAmount} onChange={setMidAmount} label="중간정산 퇴직급여" />
+                            </Field>
+                            <Field label="중간정산 때 낸 퇴직소득세" className="col-span-2"
+                              hint="국세 기준. 정산특례의 기납부세액으로 뺍니다">
+                              <MoneyInput value={midPaidTax} onChange={setMidPaidTax}
+                                label="중간정산 때 낸 퇴직소득세" />
+                            </Field>
+                          </div>
+                        )}
+                      </React.Fragment>
+                    )}
+
+                    <Field label={taxCalc ? '이연 퇴직소득세 (지방소득세 포함)' : '이연 퇴직소득세'}
+                      hint={taxCalc
+                        ? (taxResult
+                          ? '위 입력으로 계산한 국세 + 지방소득세 합계입니다'
+                          : '아직 계산하지 못했습니다')
+                        : '원천징수영수증 기준(국세). 시뮬레이션에는 지방소득세 10% 를 더해 씁니다.'}
+                      warn={taxCalc && !taxResult}
+                      help={<React.Fragment>
+                        퇴직급여를 연금계좌로 받으면 퇴직소득세를 떼지 않고 <strong>징수를 미뤄</strong> 둡니다.
+                        나중에 연금으로 나눠 받을 때 이 세금의 일부만 내는데, 실제 연금수령 횟수에 따라
+                        1~10회차 <strong>30% 감면</strong>, 11~20회차 <strong>40%</strong>,
+                        21회차부터 <strong>50%</strong>가 감면됩니다.
+                        (20년 초과 구간은 2025년 세법개정 신설분으로 2026.1.1 이후 연금수령분부터 적용)
+                        <br /><br />
+                        원천징수영수증의 '이연퇴직소득세' 는 <strong>국세 기준</strong>입니다.
+                        여기에 <strong>지방소득세 10%</strong>가 따로 붙으므로(지방세법 §103의3),
+                        인출 스케줄과 계좌 비교에는 <strong>둘을 합한 금액</strong>을 씁니다.
+                        같은 칸에 더해지는 연금소득세(5.5·4.4·3.3%)와 기타소득세(16.5%)가 이미
+                        지방소득세를 품은 세율이기 때문입니다.
+                      </React.Fragment>}>
+                      {taxCalc ? (
+                        <div className={inputCls + ' num flex items-center justify-end bg-surf-subtle ' +
+                          (taxResult ? 'text-ink font-bold' : 'text-ink-soft')}
+                          role="note" aria-label="계산된 이연 퇴직소득세"
+                          title={taxResult
+                            ? '국세 ' + taxResult.chosen.tax.toLocaleString('ko-KR') + '원 + 지방소득세 ' +
+                              taxResult.chosen.local.toLocaleString('ko-KR') + '원'
+                            : ''}>
+                          {taxResult ? krw(taxResult.chosen.total) : '계산 대기'}
+                        </div>
+                      ) : (
+                        <MoneyInput value={deferredTax} onChange={setDeferredTax} label="이연 퇴직소득세" />
+                      )}
+                    </Field>
+
+                    {taxCalc && taxBlockers.length > 0 && (
+                      <p className="text-[12px] text-sig-err font-medium leading-snug"
+                        role="note" aria-label="퇴직소득세 계산 미완">
+                        계산에 필요한 값이 없습니다 — {taxBlockers.join(' · ')}
+                      </p>
+                    )}
+
+                    {taxCalc && taxResult && <RetireTaxBreakdown r={taxResult} />}
+                  </div>
                 </div>
               </Section>
 
@@ -2693,9 +3081,9 @@ function App() {
                     <Stat label="세후 수령액" value={krw(sim.totals.afterTax)} tone="brand" />
                   </div>
 
-                  {(deferredTax > 0 || sim.totals.totalFee > 0) && (
+                  {(effectiveDeferredTax > 0 || sim.totals.totalFee > 0) && (
                     <div className="flex flex-wrap gap-3 mb-5">
-                      {deferredTax > 0 && (
+                      {effectiveDeferredTax > 0 && (
                         <div className="flex-1 min-w-[280px] border border-mas-soft bg-[#FDEEDF] rounded-sm px-4 py-3">
                           <span className="text-[14px] text-ink-body">일시금 수령 대비 퇴직소득세 절감액</span>
                           <span className="num text-[20px] font-bold text-mas-active ml-3">{krw(sim.totals.taxSaved)}</span>
@@ -2800,7 +3188,8 @@ function App() {
                     {' · '}인출 순서는 세액공제 받지 않은 금액 → 이연퇴직소득 → 세액공제 받은 금액·운용수익
                     <Help title="인출 순서 (시행령 §40의3)">
                       ① <strong>세액공제 받지 않은 납입액</strong> - 과세제외, 세금 없음<br />
-                      ② <strong>이연퇴직소득(퇴직금)</strong> - 연금수령분은 퇴직소득세를 30·40·50% 감면<br />
+                      ② <strong>이연퇴직소득(퇴직금)</strong> - 연금수령분은 퇴직소득세를 30·40·50% 감면
+                      (지방소득세 포함 금액 기준)<br />
                       ③ <strong>세액공제 받은 납입액 + 운용수익</strong> - 연금소득세 5.5% / 70세 이상 4.4% /
                       80세 이상 3.3%. ③재원의 연금수령분이 <strong>연 1,500만원을 넘으면</strong> 저율 분리과세를
                       쓸 수 없고 종합과세와 <strong>16.5% 분리과세</strong> 중에서 고릅니다 - 이 표는 16.5% 기준입니다<br />
@@ -2852,7 +3241,8 @@ function App() {
         ready={ready} custName={custName} birth={birth} age={age}
         system={system} systemJoin={systemJoin} retireTotal={retireTotal}
         retireDate={retireDate} retireAge={retireAge}
-        amtSingle={amtSingle} amtLegal={amtLegal} amtHonor={amtHonor} deferredTax={deferredTax}
+        amtSingle={amtSingle} amtLegal={amtLegal} amtHonor={amtHonor} deferredTax={effectiveDeferredTax}
+        taxCalc={taxCalc && !!taxResult}
         candidates={candidates} best={best} picked={picked}
         allocation={allocation} isSplit={isSplit} allocatedDeferredTax={allocatedDeferredTax}
         comparison={comparison}
@@ -2873,7 +3263,7 @@ function App() {
 function PrintSheet(props) {
   const {
     ready, custName, birth, age, system, systemJoin, retireTotal, retireDate, retireAge,
-    amtSingle, amtLegal, amtHonor, deferredTax, best, picked,
+    amtSingle, amtLegal, amtHonor, deferredTax, taxCalc, best, picked,
     allocation, isSplit, allocatedDeferredTax, comparison, memo, memoOnPrint,
     mode, years, rate, otherPrincipal, sim, startYear, exemptPrincipal, blendedFeeRate,
     accountList, accountNames, merged
@@ -2906,7 +3296,8 @@ function PrintSheet(props) {
         ' · 명예 ' + krw(amtHonor) + ')'
       : '')],
     ['이연 퇴직소득세', deferredTax > 0
-      ? krw(deferredTax) + (isSplit ? ' (이 계좌 배정분 ' + krw(allocatedDeferredTax) + ')' : '')
+      ? krw(deferredTax) + ' (지방소득세 포함)' + (taxCalc ? ' · 자체 계산' : '') +
+        (isSplit ? ' (이 계좌 배정분 ' + krw(allocatedDeferredTax) + ')' : '')
       : '미입력'],
     ['기존 보유 계좌', accSummary],
     ['합산 범위 / 인출 방식', mergeLabel + ' / ' + (mode === 'max' ? '세법 한도 내 최대' : '기간 균등 분할')],

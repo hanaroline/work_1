@@ -129,6 +129,43 @@ module.exports = async function run(t) {
     t.is(await field(page, 'IRP 1 연금개시됨').isChecked(), false, 'IRP 는 개시 표시가 꺼진 채로 복원');
     t.is(await field(page, '퇴직일').inputValue(), '2024-03-02', '과거 퇴직일까지 복원');
 
+    // --- 이연퇴직소득세 자체 계산 칸도 초기화 대상이다 ---
+    //
+    // 켜 둔 채로 다음 고객을 받으면 앞 사람의 입사일·중간정산이 남아 그대로 계산된다.
+    // DB 로 둔다 - 입사일 칸은 DB·DC 에만 따로 생긴다(퇴직금제도는 기존 칸을 쓴다)
+    await button(page, 'DB').click();
+    await page.waitForTimeout(250);
+    await field(page, '이연 퇴직소득세 직접 계산').check();
+    await page.waitForTimeout(250);
+    await field(page, '입사일').fill('1995-03-02');
+    await field(page, '비과세 퇴직급여').fill('3000000');
+    await field(page, '중간정산 받음').check();
+    await page.waitForTimeout(250);
+    await field(page, '중간정산일').fill('2015-06-30');
+    await field(page, '중간정산 퇴직급여').fill('50000000');
+    await field(page, '중간정산 때 낸 퇴직소득세').fill('2000000');
+    await page.waitForTimeout(400);
+
+    await button(page, '전체 초기화').click();
+    await page.waitForTimeout(250);
+    await button(page, '초기화 확인').click();
+    await page.waitForTimeout(600);
+
+    t.is(await field(page, '이연 퇴직소득세 직접 계산').isChecked(), false, '자체 계산 표시가 꺼짐');
+    t.is(await field(page, '입사일').count(), 0, '입사일 칸이 닫힘');
+    t.is(await field(page, '중간정산일').count(), 0, '중간정산 칸도 닫힘');
+    // 다시 켜 보면 값까지 비어 있어야 한다 - 칸만 닫고 값을 남기면 다음 고객에게 섞인다
+    await field(page, '이연 퇴직소득세 직접 계산').check();
+    await page.waitForTimeout(300);
+    t.is(await field(page, '입사일').inputValue(), '', '입사일 값도 비워짐');
+    t.is(await field(page, '비과세 퇴직급여').inputValue(), '', '비과세 퇴직급여도 비워짐');
+    t.is(await field(page, '중간정산 받음').isChecked(), false, '중간정산 표시도 꺼짐');
+    await field(page, '중간정산 받음').check();
+    await page.waitForTimeout(250);
+    t.is(await field(page, '중간정산일').inputValue(), '', '중간정산일도 비워짐');
+    t.is(await field(page, '중간정산 퇴직급여').inputValue(), '', '중간정산 금액도 비워짐');
+    t.is(await field(page, '중간정산 때 낸 퇴직소득세').inputValue(), '', '기납부세액도 비워짐');
+
     t.is(errors.length, 0, '런타임 에러 없음');
   } finally {
     await browser.close();
