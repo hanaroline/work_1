@@ -337,6 +337,58 @@ module.exports = async function run(t) {
     t.ok(taxOn > taxOff,
       '계산값이 인출 세액까지 흘러간다 (켬 ' + taxOn + ' > 끔 ' + taxOff + ')');
 
+    /* ── 눈에 띄는가 ─────────────────────────────────────────── */
+
+    /*
+     * 이 체크는 **보여야** 한다.
+     *
+     * 퇴직 전 상담에서는 영수증이 없어 이연 퇴직소득세 칸이 비고, 그러면 세액 비교와
+     * 인출 세액이 통째로 나오지 않는다. 그런데도 회색 상자 안의 작은 체크로 두었더니
+     * 있는 줄 모르고 지나쳤다. 색과 굵기는 눈으로 보고 넣은 것이라 다음 정리 때
+     * 조용히 되돌아가기 쉬워, 계산된 스타일로 못을 박는다.
+     */
+    const look = await page.evaluate(() => {
+      const cb = document.querySelector('input[aria-label="이연 퇴직소득세 직접 계산"]');
+      const label = cb.parentElement.querySelector('span');
+      const box = cb.closest('div');
+      const ls = getComputedStyle(label);
+      const bs = getComputedStyle(box);
+      return {
+        weight: Number(ls.fontWeight),
+        size: parseFloat(ls.fontSize),
+        color: ls.color,
+        border: bs.borderTopColor,
+        bg: bs.backgroundColor
+      };
+    });
+    // 미래에셋 오렌지 계열: 빨강이 높고 파랑이 낮다 (#F58220 / #CB6015 / #FAB072)
+    const warm = (css) => {
+      const m = /rgba?\((\d+), (\d+), (\d+)/.exec(css);
+      return m && Number(m[1]) > 150 && Number(m[1]) - Number(m[3]) > 60;
+    };
+    t.ok(look.weight >= 700, '라벨이 굵다 (' + look.weight + ')');
+    t.ok(look.size >= 14, '라벨이 주변 글자보다 크다 (' + look.size + 'px)');
+    t.ok(warm(look.color), '라벨이 브랜드 색이다 (' + look.color + ')');
+    t.ok(warm(look.border), '상자 테두리가 브랜드 색이다 (' + look.border + ')');
+    // 바탕은 아주 옅은 살구색이라(#FFF9F4) 기준을 따로 둔다 - 흰색·회색이 아니면 된다
+    const tinted = (css) => {
+      const m = /rgba?\((\d+), (\d+), (\d+)/.exec(css);
+      if (!m) return false;
+      const [r, g, b] = [Number(m[1]), Number(m[2]), Number(m[3])];
+      return r > b && r >= g && r - b >= 5;
+    };
+    t.ok(tinted(look.bg), '상자 바탕에 따뜻한 색이 깔린다 (' + look.bg + ')');
+
+    // 꺼져 있을 때는 '켜면 무엇이 되는지' 를 한 줄로 알려 준다
+    t.is(await page.getByLabel('직접 계산 안내', { exact: true }).count(), 1,
+      '꺼져 있으면 언제 켜는지 안내가 붙는다');
+    await field(page, '이연 퇴직소득세 직접 계산').check();
+    await page.waitForTimeout(400);
+    t.is(await page.getByLabel('직접 계산 안내', { exact: true }).count(), 0,
+      '켜면 그 안내는 사라진다 (자리를 계속 먹지 않는다)');
+    await field(page, '이연 퇴직소득세 직접 계산').uncheck();
+    await page.waitForTimeout(300);
+
     t.is(errors.length, 0, '런타임 에러 없음');
   } finally {
     await browser.close();

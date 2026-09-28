@@ -2219,7 +2219,7 @@ const GUIDE_STEPS = [
       "'상담 저장' 은 이 PC 의 브라우저에 담습니다 (최대 50건).",
       "'파일로 내보내기' 는 .json 으로 받아 다른 PC 에서 '가져오기' 로 엽니다.",
       "'엑셀 내보내기' 는 요약 · 계좌 비교 · 계좌별 인출 스케줄을 한 파일(.xlsx)로 받습니다.",
-      "인출 스케줄 탭의 'CSV 내보내기' 는 지금 보고 있는 표 한 장만 내보냅니다.",
+      "그 옆 'CSV 내보내기' 는 지금 보고 있는 인출 스케줄 표 한 장만 값으로 내보냅니다.",
       "'A4 1장 인쇄' 는 보고 있는 탭과 무관하게 판정 · 계좌 비교 · 인출 스케줄을 모두 담습니다.",
       "PDF 가 필요하면 'PDF 저장' 을 누르고 인쇄 창에서 대상을 'PDF로 저장' 으로 고릅니다."
     ],
@@ -3348,13 +3348,15 @@ function App() {
           자연스럽게 접히게 둔다.
         */}
         <header className="bg-mas-orange text-white">
-          <div className="max-w-[1200px] mx-auto px-6 py-3.5
-                          flex items-center justify-between gap-4">
+          {/* 좁은 화면에서는 단추를 제목 아래로 내린다. 가로로 붙여 두면 글자 칸이
+              눌려 제목이 여덟 줄로 쪼개진다(412px 에서 실제로 그랬다). */}
+          <div className="max-w-[1200px] mx-auto px-6 py-[18px]
+                          flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
             <div className="min-w-0">
               <div className="text-[11px] font-medium tracking-wider opacity-85 leading-none mb-1">
                 [사내한] 퇴직급여 상담 도구
               </div>
-              <h1 className="text-[20px] md:text-[25px] font-bold leading-[1.2] tracking-[-0.5px]">
+              <h1 className="text-[21px] md:text-[27px] font-bold leading-[1.2] tracking-[-0.5px]">
                 퇴직급여 수령 의사결정 시뮬레이터
               </h1>
               {/* 넓은 화면에서는 한 줄로 떨어져야 머리가 두 줄치 높이를 먹지 않는다.
@@ -3365,11 +3367,38 @@ function App() {
                 기존 계좌 활용 중 무엇이 맞는지</strong> 판정하고 연차별 인출 한도를 시뮬레이션합니다.
               </p>
             </div>
-            <button type="button" aria-label="사용법" onClick={() => setGuideOpen(true)}
-              className="shrink-0 h-[34px] px-3.5 text-[13px] font-medium bg-white text-mas-active
-                         rounded-xs hover:bg-mas-soft transition">
-              사용법 보기
-            </button>
+
+            {/*
+              내보내기와 사용법을 머리 한 줄에 모은다.
+
+              엑셀은 왼쪽 저장 카드, CSV 는 인출 스케줄 탭 안에 있었는데 그러면
+              **한 번에 볼 수가 없다** - 실제로 "CSV 기능은 없는 것 같다" 는 보고를
+              받았다. 머리는 어느 탭에서나 보이는 유일한 자리다.
+
+              자료가 아직 없으면 꺼 둔다. 눌러서 빈 파일을 받는 것보다 낫고,
+              무엇을 먼저 해야 하는지도 그 자체로 말해 준다.
+            */}
+            <div className="flex flex-wrap items-center gap-2 md:shrink-0">
+              <button type="button" onClick={doXlsx} disabled={!sim}
+                title="요약 · 계좌 비교 · 계좌별 인출 스케줄을 한 파일로. 인출표는 수식이라 엑셀에서 금액이나 수익률을 바꾸면 다시 계산됩니다."
+                className={'h-[34px] px-3 text-[13px] font-medium rounded-xs transition ' +
+                  (sim ? 'bg-white/15 text-white border border-white/55 hover:bg-white/25'
+                    : 'bg-white/5 text-white/45 border border-white/20 cursor-not-allowed')}>
+                엑셀 내보내기
+              </button>
+              <button type="button" onClick={doCsv} disabled={!sim}
+                title="지금 보고 있는 인출 스케줄 표 한 장만 값으로 내보냅니다 (사내 시스템 업로드 등)."
+                className={'h-[34px] px-3 text-[13px] font-medium rounded-xs transition ' +
+                  (sim ? 'bg-white/15 text-white border border-white/55 hover:bg-white/25'
+                    : 'bg-white/5 text-white/45 border border-white/20 cursor-not-allowed')}>
+                CSV 내보내기
+              </button>
+              <button type="button" aria-label="사용법" onClick={() => setGuideOpen(true)}
+                className="h-[34px] px-3.5 text-[13px] font-medium bg-white text-mas-active
+                           rounded-xs hover:bg-mas-soft transition">
+                사용법 보기
+              </button>
+            </div>
           </div>
         </header>
 
@@ -3420,23 +3449,17 @@ function App() {
                 </div>
 
                 {/*
-                  엑셀은 저장 카드에 둔다 - 담기는 것이 스케줄 한 장이 아니라 상담 결과
-                  전부(요약 · 계좌 비교 · 계좌별 인출 스케줄 · 퇴직소득세)이기 때문이다.
-                  인출 스케줄 표 한 장만 넘기는 CSV 는 그 표 옆(스케줄 탭)에 그대로 둔다.
+                  엑셀·CSV 단추는 머리에 있다. 여기에 한 벌 더 두면 접근성 이름이
+                  겹쳐 사람도 검사도 어느 것을 누르는지 구분할 수 없고, 둘 중 하나만
+                  고쳐 놓는 일이 생긴다. 무엇이 담기는지는 여기 한 줄로만 적어 둔다.
                 */}
-                <div className="mb-2">
-                  <button type="button" onClick={doXlsx} disabled={!sim}
-                    className={'w-full h-[38px] text-[14px] font-medium rounded-xs transition ' +
-                      (sim
-                        ? 'bg-white text-ink-body border border-hair hover:bg-surf-subtle'
-                        : 'bg-surf-subtle text-ink-soft border border-hair cursor-not-allowed')}>
-                    엑셀 내보내기
-                  </button>
-                  <span className="block mt-1 text-[11px] text-ink-soft leading-snug">
-                    요약 · 계좌 비교 · 계좌별 인출 스케줄을 한 파일로. 인출표는 <strong>수식</strong>이라
-                    엑셀에서 금액이나 수익률을 바꾸면 다시 계산됩니다.
-                  </span>
-                </div>
+                <p className="mb-2 text-[11px] text-ink-soft leading-snug">
+                  맨 위 <strong className="text-ink-body">엑셀 내보내기</strong>는 요약 · 계좌 비교 ·
+                  계좌별 인출 스케줄을 한 파일로 담고, 인출표가 <strong className="text-ink-body">수식</strong>이라
+                  엑셀에서 금액이나 수익률을 바꾸면 다시 계산됩니다.
+                  <strong className="text-ink-body"> CSV 내보내기</strong>는 인출 스케줄 표 한 장만
+                  값으로 내보냅니다.
+                </p>
 
                 {cases.length > 0 && (
                   <div className="border-t border-hair-soft pt-2">
@@ -3672,12 +3695,22 @@ function App() {
                     나오지 않는다. 그래서 '직접 계산' 을 곁들이되 기본은 꺼 둔다 -
                     계산값이 영수증 값을 덮으면 안 된다.
                   */}
-                  <div className="border border-hair rounded-sm bg-surf-soft p-3 space-y-3">
+                  {/*
+                    이 체크는 눈에 띄어야 한다.
+
+                    퇴직 **전** 상담에서는 영수증이 없어 이연 퇴직소득세 칸이 비고,
+                    그러면 세액 비교와 인출 세액이 통째로 나오지 않는다. 그런데도
+                    회색 상자 안의 작은 체크로 두었더니 있는 줄 모르고 지나쳤다.
+                    브랜드 색으로 테두리와 글자를 세우고, 꺼져 있을 때는 '켜면 무엇이
+                    되는지' 를 한 줄로 붙인다. 켜면 색을 채워 지금 계산 중임을 알린다.
+                  */}
+                  <div className={'border rounded-sm p-3 space-y-3 transition ' +
+                    (taxCalc ? 'border-mas-orange bg-[#FFF3E8]' : 'border-mas-soft bg-[#FFF9F4]')}>
                     <label className="flex items-center gap-2 cursor-pointer screen-only">
                       <input type="checkbox" checked={taxCalc} aria-label="이연 퇴직소득세 직접 계산"
                         onChange={(e) => setTaxCalc(e.target.checked)}
-                        className="w-4 h-4 accent-[#F58220]" />
-                      <span className="text-[13px] font-medium text-ink-body">
+                        className="w-[17px] h-[17px] accent-[#F58220]" />
+                      <span className="text-[14px] font-bold text-mas-active">
                         이연 퇴직소득세를 직접 계산
                       </span>
                       <Help title="이연 퇴직소득세 직접 계산">
@@ -3689,6 +3722,15 @@ function App() {
                         반영하지 않습니다. 최종값은 원천징수영수증으로 확인하세요.
                       </Help>
                     </label>
+
+                    {!taxCalc && (
+                      <p className="text-[12px] text-mas-active leading-snug screen-only -mt-1"
+                        role="note" aria-label="직접 계산 안내">
+                        퇴직 <strong>전</strong> 상담이라 원천징수영수증이 없으면 켜세요.
+                        입사일 · 퇴직일 · 퇴직급여액으로 산출합니다. 영수증이 있으면 켜지 말고
+                        아래 칸에 그 값을 넣으세요.
+                      </p>
+                    )}
 
                     {taxCalc && (
                       <React.Fragment>
@@ -4516,10 +4558,11 @@ function App() {
                           ))}
                         </select>
                       )}
-                      <button type="button" onClick={doCsv}
-                        className="h-[38px] px-4 text-[14px] font-medium bg-white text-ink-body border border-hair rounded-xs hover:bg-surf-subtle transition">
-                        CSV 내보내기
-                      </button>
+                      {/*
+                        내보내기 단추는 여기 두지 않는다. 엑셀과 CSV 는 고를 때 서로
+                        비교하는 것이라 한자리에 있어야 하고(왼쪽 저장 카드), 여기
+                        하나만 있으면 탭을 열기 전에는 보이지 않아 '없는 기능' 이 된다.
+                      */}
                     </div>
                   }>
                   {pickables.length > 1 && (

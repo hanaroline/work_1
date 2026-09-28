@@ -334,10 +334,25 @@ module.exports = async function run(t) {
 
     /* ── 8. CSV 와 엑셀이 따로 있다 ───────────────────────────── */
 
-    await button(page, '인출 스케줄').click();
+    /*
+     * 둘은 **한자리에** 있어야 한다.
+     *
+     * 처음에는 엑셀만 저장 카드에 두고 CSV 는 인출 스케줄 표 옆에 남겨 두었는데,
+     * "CSV 내보내기 기능은 없는 것 같다" 는 보고를 받았다. 있었지만 탭을 열어야
+     * 보이는 자리였다. 고를 때 서로 비교하는 것이라 떨어뜨려 두면 안 된다.
+     */
+    t.is(await button(page, '엑셀 내보내기').count(), 1, '엑셀 단추가 하나');
+    t.is(await button(page, 'CSV 내보내기').count(), 1, 'CSV 단추가 하나');
+
+    // 탭을 열지 않은 상태에서도 둘 다 보인다 (판정 탭이 기본이다)
+    await button(page, '판정').click();
     await page.waitForTimeout(300);
-    t.is(await button(page, 'CSV 내보내기').count(), 1, 'CSV 단추는 스케줄 표 옆에 그대로 있다');
-    t.is(await button(page, '엑셀 내보내기').count(), 1, '엑셀 단추는 저장 카드에 하나');
+    t.is(await button(page, '엑셀 내보내기').isVisible(), true, '판정 탭에서도 엑셀 단추가 보인다');
+    t.is(await button(page, 'CSV 내보내기').isVisible(), true, '판정 탭에서도 CSV 단추가 보인다');
+
+    const boxX = await button(page, '엑셀 내보내기').boundingBox();
+    const boxC = await button(page, 'CSV 내보내기').boundingBox();
+    t.ok(Math.abs(boxX.y - boxC.y) < 5, '둘이 같은 줄에 나란히 있다');
 
     const [csvDl] = await Promise.all([
       page.waitForEvent('download'), button(page, 'CSV 내보내기').click()
