@@ -38,17 +38,29 @@ module.exports = async function run(t) {
       const el = document.querySelector('header');
       const h = el.getBoundingClientRect();
       const t = el.querySelector('h1').getBoundingClientRect();
-      const b = el.querySelector('button').getBoundingClientRect();
+      // 머리에는 단추가 셋이다(엑셀 · CSV · 사용법). 첫 번째를 집으면 엉뚱한 것을 본다.
+      const btns = Array.prototype.slice.call(el.querySelectorAll('button'));
+      const guide = btns.filter((b) => b.getAttribute('aria-label') === '사용법')[0];
+      const b = guide.getBoundingClientRect();
       const p = el.querySelector('p');
       return {
         height: h.height,
+        buttons: btns.length,
         sameRow: b.top < t.bottom && b.bottom > t.top,
         right: b.left > t.right,
         // 블록 요소라 getClientRects 는 언제나 하나다 - 높이를 줄높이로 나눠 센다
         descLines: Math.round(p.getBoundingClientRect().height / parseFloat(getComputedStyle(p).lineHeight))
       };
     });
-    t.ok(geo.height <= 110, '머리 높이가 110px 를 넘지 않는다 (실제 ' + Math.round(geo.height) + 'px)');
+    /*
+     * 위아래로 못을 둘 다 박는다.
+     *
+     * 처음에는 '140px 이하' 만 보았는데, 그 뒤 95px 까지 줄였더니 이번에는
+     * "답답하다" 는 보고를 받았다. 한쪽만 막아 두면 반대쪽으로 넘어간다.
+     */
+    t.ok(geo.height >= 96 && geo.height <= 140,
+      '머리 높이가 96~140px 안에 있다 (실제 ' + Math.round(geo.height) + 'px)');
+    t.is(geo.buttons, 3, '머리에 단추가 셋 - 엑셀 · CSV · 사용법');
     t.is(geo.sameRow, true, '사용법 단추가 제목과 같은 줄에 있다 - 높이를 따로 먹지 않는다');
     t.is(geo.right, true, '사용법 단추는 제목 오른쪽 빈자리에 있다');
     // 설명이 두 줄로 접히면 그것만으로 머리가 한 줄치(18px) 더 커진다
