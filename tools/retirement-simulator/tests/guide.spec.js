@@ -35,27 +35,51 @@ module.exports = async function run(t) {
      * 넘었다).
      */
     const geo = await page.evaluate(() => {
-      const h = document.querySelector('header').getBoundingClientRect();
-      const t = document.querySelector('header h1').getBoundingClientRect();
-      const b = document.querySelector('header button').getBoundingClientRect();
-      return { height: h.height, sameRow: b.top < t.bottom && b.bottom > t.top, right: b.left > t.right };
+      const el = document.querySelector('header');
+      const h = el.getBoundingClientRect();
+      const t = el.querySelector('h1').getBoundingClientRect();
+      const b = el.querySelector('button').getBoundingClientRect();
+      const p = el.querySelector('p');
+      return {
+        height: h.height,
+        sameRow: b.top < t.bottom && b.bottom > t.top,
+        right: b.left > t.right,
+        // 블록 요소라 getClientRects 는 언제나 하나다 - 높이를 줄높이로 나눠 센다
+        descLines: Math.round(p.getBoundingClientRect().height / parseFloat(getComputedStyle(p).lineHeight))
+      };
     });
-    t.ok(geo.height <= 140, '머리 높이가 140px 를 넘지 않는다 (실제 ' + Math.round(geo.height) + 'px)');
+    t.ok(geo.height <= 110, '머리 높이가 110px 를 넘지 않는다 (실제 ' + Math.round(geo.height) + 'px)');
     t.is(geo.sameRow, true, '사용법 단추가 제목과 같은 줄에 있다 - 높이를 따로 먹지 않는다');
     t.is(geo.right, true, '사용법 단추는 제목 오른쪽 빈자리에 있다');
+    // 설명이 두 줄로 접히면 그것만으로 머리가 한 줄치(18px) 더 커진다
+    t.is(geo.descLines, 1, '넓은 화면에서 설명은 한 줄이다');
 
     await button(page, '사용법').click();
     await page.waitForTimeout(400);
     t.is(await dialog(page).count(), 1, '누르면 사용법이 열린다');
 
-    // 상담 순서 그대로 일곱 단계. 기능 목록이 아니라 '무엇부터 하면 되는가' 다.
+    // 상담 순서 그대로 여덟 단계. 기능 목록이 아니라 '무엇부터 하면 되는가' 다.
     const guide = await flat(dialog(page));
-    for (const step of ['고객 정보를 넣습니다', '보유 계좌를 하나씩 넣습니다', '판정을 읽습니다',
+    for (const step of ['고객 정보를 넣습니다', '이연퇴직소득세를 직접 계산합니다',
+      '보유 계좌를 하나씩 넣습니다', '판정을 읽습니다',
       '계좌를 나란히 비교합니다', '인출 스케줄을 봅니다', '제도 자체를 확인합니다',
       '저장하고 출력합니다']) {
       t.includes(guide, step, '단계가 있다: ' + step);
     }
     t.includes(guide, '이 도구가 하지 않는 것', '한계를 함께 적는다');
+
+    /**
+     * 이연퇴직소득세 직접 계산은 **칸이 있는데 사용법이 없던** 자리다.
+     *
+     * 여기서 틀리면 세액이 통째로 틀리는데(근속연수를 제도 가입일부터 세면 세금이
+     * 과대 계산된다) 화면만 보고는 알 수 없는 것들이라, 함정을 낱낱이 적었는지 본다.
+     * '단계 제목이 있다' 만 보면 제목만 있고 속은 비어도 통과한다.
+     */
+    t.includes(guide, '입사일은 제도 가입일과 다릅니다', '입사일 함정을 적는다');
+    t.includes(guide, '근속연수는 1년 미만도 1년으로 셉니다', '근속연수 절상을 적는다');
+    t.includes(guide, '중간정산은 두 갈래를 다 계산합니다', '중간정산 두 갈래를 적는다');
+    t.includes(guide, '지방소득세가 들어 있습니다', '지방소득세 포함을 적는다');
+    t.includes(guide, '영수증이 있으면 켜지 마세요', '영수증이 있을 때는 끄라고 적는다');
 
     // 단계마다 자주 틀리는 것이 붙는다 - 이 도구에서 실제로 틀렸던 것들이다
     t.ok((guide.match(/자주 틀리는 것/g) || []).length >= 10,
