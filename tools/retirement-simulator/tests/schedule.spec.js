@@ -2,7 +2,8 @@
  * 인출 시뮬레이션 - 한도 공식과 3단계 감면.
  * 앱 결과를 세법 공식으로 다시 계산해 대조한다.
  */
-const { openApp, fillCase, field, button, scheduleRows } = require('./helpers');
+const { openApp, fillCase, field, button, scheduleRows, comparisonRows,
+  verdictText, selectedAccount } = require('./helpers');
 
 // '2,388 (199)' 처럼 두 수가 한 칸에 있으므로 앞의 수만 읽는다
 const num = (s) => {
@@ -200,19 +201,40 @@ module.exports = async function run(t) {
 
     const pick = field(page, '시뮬레이션 계좌');
     t.is(await pick.count(), 1, '스케줄 탭에 계좌 선택 상자가 있다');
-    const optLabels = await pick.locator('option').allInnerTexts();
-    t.is(optLabels.length, 2, '분할 입금이라 고를 계좌가 둘');
-    t.ok(optLabels.every((o) => /년차/.test(o) && /배정/.test(o)),
-      '연차와 배정액이 함께 적혀 어느 쪽인지 구분된다 - ' + JSON.stringify(optLabels));
+
+    /** 묶음별 option 텍스트 - 묶음 이름으로 '보는 것' 과 '바꾸는 것' 을 가른다 */
+    const groups = () => pick.evaluate((el) =>
+      [...el.querySelectorAll('optgroup')].map((g) => ({
+        label: g.label,
+        options: [...g.querySelectorAll('option')].map((o) => o.textContent.trim())
+      })));
+
+    /* 묶음이 없어도 뒤의 검사가 계속 돌도록 빈 묶음으로 받는다. 여기서
+       예외가 나면 남은 검사가 통째로 묻혀 무엇이 깨졌는지 보이지 않는다. */
+    const grp = (gs, i) => gs[i] || { label: '(없음)', options: [] };
+    const g1raw = await groups();
+    const g1 = [grp(g1raw, 0), grp(g1raw, 1)];
+    t.is(g1raw.length, 2, '배정된 계좌와 바꿔 볼 후보를 묶음으로 가른다');
+    t.includes(g1[0].label, '나누어 받는 계좌', '첫 묶음은 지금 받는 계좌들');
+    t.is(g1[0].options.length, 2, '분할 입금이라 지금 받는 계좌가 둘');
+    t.ok(g1[0].options.every((o) => /년차/.test(o) && /배정/.test(o)),
+      '연차와 배정액이 함께 적혀 어느 쪽인지 구분된다 - ' + JSON.stringify(g1[0].options));
+    t.includes(g1[1].label, '바꿔서 보기', '둘째 묶음은 바꿔 볼 후보');
+    t.ok(g1[1].options.length >= 1, '바꿔 볼 후보가 올라온다 - ' + JSON.stringify(g1[1].options));
+    t.ok(g1[1].options.every((o) => !/배정/.test(o)),
+      '배정되지 않은 후보에는 배정액을 적지 않는다 - ' + JSON.stringify(g1[1].options));
 
     const assetOf = async () =>
       Number((await page.getByLabel('시뮬레이션 대상 자산', { exact: true }).innerText())
         .replace(/[^0-9]/g, ''));
+    const optLabels = await pick.locator('option').allInnerTexts();
     const values = await pick.locator('option').evaluateAll((os) => os.map((o) => o.value));
     const first = await pick.inputValue();
     const firstAsset = await assetOf();
 
-    const second = values.find((v) => v !== first);
+    // 먼저 '보기만 옮기는' 쪽 - 같은 묶음 안의 다른 배정 계좌
+    const allocValues = values.slice(0, g1[0].options.length);
+    const second = allocValues.find((v) => v !== first);
     await pick.selectOption(second);
     await page.waitForTimeout(700);
     t.is(await pick.inputValue(), second, '상자에서 바꾼 계좌가 선택된다');
@@ -227,13 +249,89 @@ module.exports = async function run(t) {
     t.includes(highlighted.split('\n')[0], secondLabel,
       '판정 탭에서도 같은 계좌가 골라져 있다');
 
-    // 고를 것이 하나뿐이면 상자를 두지 않는다
+    // ── 배정되지 않은 후보로 바꾸면 '받을 계좌' 자체가 바뀐다 ─────
+    //
+    // 계좌 비교 탭에는 후보가 둘 나란히 서는데 돈이 가는 곳은 하나라, 전에는
+    // 스케줄 탭에 상자 자체가 없었다. '저 계좌로 받으면 어떻게 되나' 를 보려면
+    // 판정 탭까지 되돌아가야 했다.
     await fillCase(page, {
-      name: '단일', birth: '650115', system: 'SEV', joinDate: '2003-07-01',
-      retireDate: '2026-06-30', legal: 200000000, honor: 0, deferredTax: 10000000,
-      pension: false, irp: false
+      name: '후보둘', birth: '650115', system: 'DC', joinDate: '2007-11-19',
+      retireDate: '2026-06-30', amount: 250000000, honor: 0, deferredTax: 15000000,
+      accounts: [{ kind: 'irp', name: '미래에셋', join: '2010-12-27', balance: 20000000 }]
+    });
+    await page.waitForTimeout(700);
+
+    const compare = await comparisonRows(page);
+    t.ok(compare.length >= 2, '계좌 비교에 후보가 둘 이상 - ' + compare.length + '개');
+
+    await button(page, '인출 스케줄').click();
+    await page.waitForTimeout(600);
+    const g2raw = await groups();
+    const g2 = [grp(g2raw, 0), grp(g2raw, 1)];
+    t.is(g2raw.length, 2, '분할이 아니어도 바꿔 볼 후보 묶음이 나온다');
+    t.includes(g2[0].label, '지금 받는 계좌', '분할이 아니면 묶음 이름이 단수형');
+    t.is(g2[0].options.length, 1, '지금 받는 계좌는 하나');
+    t.is(g2[0].options.length + g2[1].options.length, compare.length,
+      '스케줄에서 고를 수 있는 계좌가 계좌 비교의 후보 수와 같다');
+
+    /* 대상 자산은 두 후보가 같은 돈을 받으므로 바뀌지 않는다. 연차가 갈리는
+       것을 본다 - 2007년 DC 가입이라 신규 계좌는 6년차, 2010년에 만든 기존
+       IRP 는 11년차다. 한도가 달라지므로 표 자체가 다시 짜인다. */
+    /* 어느 쪽이 자동 추천인지는 연차·수수료로 갈리므로 테스트가 미리 정하지
+       않는다. 상자에 적힌 것을 그대로 읽어 쓴다. */
+    const head = (s) => s.split(' · ')[0];
+    const autoLabel = g2[0].options[0] || '';
+    const altLabel = g2[1].options[0] || '';
+
+    const beforeYear = (await scheduleRows(page))[0][1];
+    const altValue = await pick.evaluate((el) => {
+      const gs = el.querySelectorAll('optgroup');
+      return gs[1] ? gs[1].querySelector('option').value : '';
+    });
+    await pick.selectOption(altValue);
+    await page.waitForTimeout(800);
+    t.is(await pick.inputValue(), altValue, '바꿔 볼 후보가 선택된다');
+
+    const g3 = await groups();
+    t.is(grp(g3, 0).options.length, 1, '바꾼 뒤에도 받는 계좌는 하나');
+    t.ok(/배정/.test(grp(g3, 0).options[0] || ''),
+      '고른 후보가 이제 배정액을 들고 첫 묶음으로 올라온다 - ' + g3[0].options[0]);
+    const afterYear = (await scheduleRows(page))[0][1];
+    t.ok(afterYear !== beforeYear,
+      '그 계좌의 연차로 스케줄이 다시 짜인다 (' + beforeYear + ' → ' + afterYear + ')');
+
+    // 판정·인쇄물이 함께 따라간다 - 보는 것만 바뀐 것이 아니다
+    await button(page, '판정').click();
+    await page.waitForTimeout(500);
+    const v = await verdictText(page);
+    t.includes(v, '상담자 선택', '판정 카드가 수동 선택 상태로 바뀐다');
+    t.includes(await selectedAccount(page), head(altLabel),
+      '판정 탭의 재원 선택 상자도 바뀐 계좌를 가리킨다');
+
+    // 같은 자리에서 되돌린다 - 되돌리러 판정 탭까지 가야 하면 바꿔 보기가 부담이 된다
+    await button(page, '인출 스케줄').click();
+    await page.waitForTimeout(500);
+    const undo = page.getByRole('button', { name: '추천 계좌로 되돌리기', exact: true });
+    t.is(await undo.count(), 1, '스케줄 탭에 되돌리기 단추가 하나 있다');
+    await undo.click();
+    await page.waitForTimeout(700);
+    const g4 = await groups();
+    t.is(head(grp(g4, 0).options[0] || ''), head(autoLabel),
+      '되돌리면 자동 추천 계좌로 돌아온다');
+    t.is(await undo.count(), 0, '되돌린 뒤에는 되돌리기 단추가 사라진다');
+
+    // ── 고를 것이 하나뿐이면 상자를 두지 않는다 ───────────────────
+    //
+    // DC 퇴직급여는 연금저축계좌로 직접 입금할 수 없어, 보유 계좌가 없으면
+    // 후보가 신규 IRP 하나뿐이다.
+    await fillCase(page, {
+      name: '단일', birth: '650115', system: 'DC', joinDate: '2003-07-01',
+      retireDate: '2026-06-30', amount: 200000000, honor: 0, deferredTax: 10000000,
+      accounts: []
     });
     await page.waitForTimeout(600);
+    // 후보가 하나뿐이면 계좌 비교 탭 자체가 잠긴다 - 비교할 상대가 없다
+    t.is(await button(page, '계좌 비교').isDisabled(), true, '후보가 하나뿐인 상황이 맞다');
     await button(page, '인출 스케줄').click();
     await page.waitForTimeout(600);
     t.is(await field(page, '시뮬레이션 계좌').count(), 0,
