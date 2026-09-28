@@ -33,7 +33,7 @@ function expected({ P0, G0, tax0, startLimitYear, years, rate, startAge, pastCou
     // 이연퇴직소득세는 국세 기준으로 받아 **지방소득세 10% 를 더해** 쓴다
     // (지방세법 §103의3). 같은 칸에 더해지는 연금소득세 5.5·4.4·3.3% 와
     // 기타소득세 16.5% 가 이미 지방세를 품은 세율이기 때문이다.
-    const tax0Total = tax0 + Math.floor(tax0 * 0.1);
+    const tax0Total = tax0 + Math.floor(Number((tax0 * 0.1).toFixed(6)));
     const tax = (P0 > 0 ? tax0Total * (dR / P0) * factor : 0) + dG * (dG > 15000000 ? 0.165 : pRate);
     P -= dR; G -= dG;
     out.push({ k, ly, unlimited, begin, limit, draw, reduction: 1 - factor, tax, end: P + G });
@@ -44,6 +44,12 @@ function expected({ P0, G0, tax0, startLimitYear, years, rate, startAge, pastCou
 module.exports = async function run(t) {
   const { browser, page, errors } = await openApp({});
   try {
+    // 이 스펙은 한도 공식·기산연차·세액을 본다. 신규 IRP 에 미래에셋 공시 수수료가
+    // 붙으면 기초자산이 그만큼 줄어 한도 숫자가 흔들리므로, 여기서는 면제 조건을 켜
+    // 수수료를 0 으로 두고 본다. 수수료 자체는 irpfee 스펙이 지킨다.
+    await field(page, '다이렉트 개설 및 직접 운용').check();
+    await page.waitForTimeout(200);
+
     // 구 연금저축(6년차 기산) · 퇴직급여 3억 · 15년 균등 · 3%
     await fillCase(page, {
       name: '검산', birth: '680410', system: 'SEV', joinDate: '1995-03-02',

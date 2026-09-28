@@ -86,7 +86,8 @@ module.exports = async function run(t) {
     t.is(await field(page, '퇴직일').inputValue(), TODAY_STR, '퇴직일이 오늘로 돌아감');
     t.is(await field(page, '수령 기간').inputValue(), '10', '수령 기간 기본값 10년');
     t.is(await field(page, '운용수익률').inputValue(), '3', '운용수익률 기본값 3%');
-    t.is(await field(page, '신규 IRP 연간 수수료').inputValue(), '0', '수수료 기본값 0');
+    t.is(await field(page, '당사 DB·DC 가입자').isChecked(), false, '신규 IRP 수수료 조건도 초기화');
+    t.is(await field(page, '다이렉트 개설 및 직접 운용').isChecked(), false, '면제 조건도 초기화');
 
     // 제도는 DC 로, 합산·인출 방식도 기본값으로
     t.is(await field(page, '퇴직급여').count(), 1, '퇴직제도가 DC 기본값으로 돌아감');

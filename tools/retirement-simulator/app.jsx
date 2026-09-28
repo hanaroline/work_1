@@ -130,6 +130,75 @@ const fmtDate = (d) => (d ? d.getFullYear() + '.' + (d.getMonth() + 1) + '.' + d
 const pensionRateByAge = (age) => (age >= 80 ? 0.033 : age >= 70 ? 0.044 : 0.055);
 
 /* ================================================================
+   1-1. 미래에셋증권 개인형IRP 수수료 (2026.1.12 시행 공시)
+
+   이 도구가 다루는 신규 계좌는 **개인형IRP** 하나다. DB·DC·기업형IRP 는 사용자(회사)가
+   무는 수수료라 퇴직 후 개인이 받는 계좌와 무관하다.
+
+   요율은 고정값이 아니라 **적립금과 해가 바뀌면 같이 바뀐다.** 그래서 한 해의 요율을
+   따로 내는 함수로 두고, 인출 스케줄이 해마다 다시 부른다.
+
+     · 운용관리 - 적립금 규모별 **체차적용**(구간별 누진). 3억이면 전액에 0.15% 가
+       아니라 1억까지 0.20% · 1~3억 0.18% 로 쌓는다
+     · 자산관리 - 개인형IRP 는 규모와 무관하게 0.10%
+     · 장기할인 - 2~4차년도 10% · 5~10차년도 12% · 11차년도~ 15%
+     · 연금수령개시 - 연금을 1회 이상 수령한 뒤부터 20%
+     · 당사 DB·DC 가입자가 당사 개인형IRP 를 계약하면 1년간 운용관리수수료 면제
+     · 전자매체로 다이렉트 개설 + 전자매체로만 직접 운용·거래하면 전액 면제
+
+   **'가입자부담금 20% 할인 / 전자매체 개설 시 면제' 는 여기 들어가지 않는다.**
+   그 면제는 가입자가 스스로 넣는 돈에 붙는 것이고, 이 도구가 다루는 재원은
+   퇴직급여(이연퇴직소득)다. 둘을 섞으면 수수료를 없는 것으로 보게 된다.
+   ================================================================ */
+
+const MAS_IRP = {
+  /** 운용관리 - 적립금 규모별 체차적용 */
+  manage: [
+    { upto: 100000000, rate: 0.0020 },   // 1억원 미만
+    { upto: 300000000, rate: 0.0018 },   // 1억원 이상 3억원 미만
+    { upto: Infinity, rate: 0.0015 }     // 3억원 이상
+  ],
+  /** 자산관리 - 개인형IRP 는 정률 */
+  asset: 0.0010,
+  /** 장기할인 (계약 차년도) */
+  longTerm: (k) => (k >= 11 ? 0.15 : k >= 5 ? 0.12 : k >= 2 ? 0.10 : 0),
+  /** 연금수령개시 가입자 (1회 이상 수령한 뒤) */
+  pensionStarted: 0.20
+};
+
+/** 체차적용 운용관리수수료 (원) */
+function masManageFee(balance) {
+  let prev = 0, fee = 0;
+  for (const t of MAS_IRP.manage) {
+    if (balance <= prev) break;
+    fee += (Math.min(balance, t.upto) - prev) * t.rate;
+    prev = t.upto;
+  }
+  return fee;
+}
+
+/**
+ * 그 해에 무는 수수료 (원).
+ *
+ * @param bal          그 해 적립금
+ * @param k            계약 차년도 (1부터)
+ * @param o.waived     다이렉트 개설 + 전자매체 직접 운용 → 전액 면제
+ * @param o.fromOurDb  당사 DB·DC 가입자 → 1차년도 운용관리수수료 면제
+ * @param o.drawn      이미 연금을 1회 이상 수령했는가
+ *
+ * 할인이 겹칠 때 공시에 합산인지 곱인지가 적혀 있지 않다. **곱으로 본다** -
+ * 둘 중 할인이 덜 되는 쪽이라 수수료를 낮춰 잡지 않는다. 실무 확인 대상으로 남긴다.
+ */
+function masIrpFee(bal, k, o) {
+  if (!(bal > 0)) return 0;
+  if (o && o.waived) return 0;
+  const manage = (o && o.fromOurDb && k <= 1) ? 0 : masManageFee(bal);
+  const asset = bal * MAS_IRP.asset;
+  const keep = (1 - MAS_IRP.longTerm(k)) * (1 - (o && o.drawn ? MAS_IRP.pensionStarted : 0));
+  return (manage + asset) * keep;
+}
+
+/* ================================================================
    1-2. 퇴직소득세
 
    원천징수영수증이 아직 없는 퇴직 전 상담에서 이연퇴직소득세를 직접 산출한다.
@@ -151,6 +220,19 @@ const pensionRateByAge = (age) => (age >= 80 ? 0.033 : age >= 70 ? 0.044 : 0.055
    ================================================================ */
 
 const MAN = 10000;
+
+/**
+ * 원 미만 절사.
+ *
+ * 그냥 Math.floor 를 쓰면 안 된다. 나눗셈·곱셈을 거친 값은 정답이 정확히
+ * 1,306,250 원인 경우에도 1306249.9999999998 로 나오고, 절사하면 **1원이 깎인다.**
+ * 80,000 건을 훑어 10,916 건(13.6%)에서 실제로 그랬다. 영수증과 1원이 어긋나면
+ * 상담자는 산식이 틀린 줄 안다.
+ *
+ * 규칙표(rules.js)와 여기가 **같은 방식으로** 틀려 있어 교차검증이 잡지 못했다 -
+ * 두 구현을 두어도 같은 착각을 공유하면 드러나지 않는다.
+ */
+const floorWon = (v) => Math.floor(Number(v.toFixed(6)));
 
 /** 근속연수 - 1년 미만의 기간은 1년으로 본다 (시행령 §105②) */
 function yearsBetween(from, to) {
@@ -200,8 +282,8 @@ function retireTaxOf(amount, years) {
   const convDed = convDeductionOf(converted);
   const base = Math.max(0, converted - convDed);
   const convertedTax = basicTaxOf(base);
-  const tax = Math.floor(convertedTax / 12 * years);
-  const local = Math.floor(tax * 0.1);
+  const tax = floorWon(convertedTax / 12 * years);
+  const local = floorWon(tax * 0.1);
   return { income: amount, years, svcDed, converted, convDed, base, convertedTax,
     tax, local, total: tax + local };
 }
@@ -231,7 +313,7 @@ function computeRetireTax(inp) {
   const whole = allY && retireTaxOf(inp.amount + inp.midAmount, allY);
   const paid = inp.midPaidTax || 0;
   const settleTax = whole ? Math.max(0, whole.tax - paid) : 0;
-  const settleLocal = Math.floor(settleTax * 0.1);
+  const settleLocal = floorWon(settleTax * 0.1);
   const settle = whole && Object.assign({}, whole, {
     paid, wholeTax: whole.tax,
     tax: settleTax, local: settleLocal, total: settleTax + settleLocal
@@ -425,6 +507,12 @@ function accountLabel(a, seq) {
 /** 계좌 후보 생성 및 평가 */
 function buildCandidates(input, sources) {
   const { age, accounts, fees, startYear, birthYear } = input;
+  // 신규 IRP 의 수수료 조건. fees 자리에 그대로 실어 온다.
+  const irpOpt = {
+    waived: !!(fees && fees.direct),
+    fromOurDb: !!(fees && fees.ourDbDc),
+    offset: Math.max(0, (fees && fees.contractOffset) || 0)
+  };
 
   // 종류별로 1부터 번호를 매긴다 (연금저축 1, 연금저축 2, IRP 1 …)
   const seq = { pension: 0, irp: 0 };
@@ -481,9 +569,21 @@ function buildCandidates(input, sources) {
       // 계좌 수수료(운용관리 + 자산관리)는 IRP 에만 붙는다. 연금저축계좌는 계좌 단위
       // 수수료가 없고 비용이 편입 상품의 보수·사업비로 들어가므로 언제나 0 이다.
       // (그 비용은 계좌에서 따로 떼는 돈이 아니라 수익률에 이미 반영된 값이다.)
-      // 입력은 %, 계산은 소수.
+      //
+      // 신규 IRP 는 요율이 고정값이 아니다 - 적립금 구간(체차)과 계약 차년도에 따라
+      // 해마다 바뀐다. 해마다 다시 묻는 함수(feeOf)로 넘기고, 순위와 비교표에 쓸
+      // 대표값으로 첫 해 실효요율을 함께 둔다.
       feeRate: t.type === 'pension' ? 0
-        : t.isNew ? (((fees && fees['new-irp']) || 0) / 100) : (t.ownFeeRate || 0)
+        : t.isNew
+          ? (acceptAmount > 0
+            ? masIrpFee(acceptAmount, 1 + irpOpt.offset,
+              { waived: irpOpt.waived, fromOurDb: irpOpt.fromOurDb, drawn: false }) / acceptAmount
+            : 0)
+          : (t.ownFeeRate || 0),
+      feeOf: t.type === 'irp' && t.isNew
+        ? (bal, k) => masIrpFee(bal, k + irpOpt.offset,
+          { waived: irpOpt.waived, fromOurDb: irpOpt.fromOurDb, drawn: k > 1 })
+        : null
     };
   });
 }
@@ -586,6 +686,9 @@ function buildSchedule(cfg) {
     startLimitYear,    // 연금 개시 첫 해의 연금수령연차
     pastCount,         // 과거 실제 연금수령 횟수 (감면율 판정용)
     feeRate,           // 계좌 연간 수수료율 (적립금 대비, 소수)
+    // 요율이 해마다 바뀌는 계좌(미래에셋 신규 IRP)는 함수로 받는다.
+    // 적립금 구간(체차)·장기할인·연금수령개시 할인이 모두 해에 따라 달라진다.
+    feeOf,
     years, mode, rate, startYear, startAge
   } = cfg;
 
@@ -607,8 +710,9 @@ function buildSchedule(cfg) {
     // 계좌 수수료는 매년 적립금 기준으로 차감한다. 운용수익·세액공제분에서 먼저 빼고,
     // 모자라면 퇴직소득 재원에서 뺀다(이연퇴직소득세는 실제 인출한 퇴직소득분에만
     // 비례하므로 재원이 줄면 그만큼 세액도 줄어든다).
-    if (fRate > 0) {
-      const fee = Math.max(0, (E + P + G) * fRate);
+    const feeThisYear = feeOf ? Math.max(0, feeOf(E + P + G, k)) : Math.max(0, (E + P + G) * fRate);
+    if (feeThisYear > 0) {
+      const fee = feeThisYear;
       const fromG = Math.min(fee, Math.max(0, G));
       G -= fromG;
       const rest = fee - fromG;
@@ -823,6 +927,9 @@ function Help({ title, children }) {
       {open && (
         <span
           role="note"
+          /* 이름을 붙여 둔다. 화면에 늘 떠 있는 안내문도 role="note" 라서,
+             'note 가 몇 개냐' 로 세면 설명이 열렸는지와 섞인다. */
+          aria-label={title + ' 설명 내용'}
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
           className="absolute z-30 left-0 top-[22px] w-[300px] max-w-[78vw] p-3 bg-ink text-white
                      text-[12px] leading-relaxed font-normal rounded-sm shadow-lg cursor-default block">
@@ -1556,7 +1663,9 @@ function App() {
 
   // 신규 개설 IRP 의 연간 수수료율 (%, 적립금 대비). 기존 계좌 수수료는 계좌마다 따로 받고,
   // 연금저축계좌는 계좌 수수료 자체가 없어 여기에도 들어오지 않는다.
-  const [fees, setFees] = useState({ 'new-irp': 0 });
+  // 신규 IRP 수수료 조건. 요율은 미래에셋 공시에서 자동으로 나오고, 상담자는
+  // 공시가 요구하는 두 가지 사실만 고른다 (앱이 알 수 없는 것들이다).
+  const [fees, setFees] = useState({ direct: false, ourDbDc: false });
   const setFee = (id, v) => setFees((f) => Object.assign({}, f, { [id]: v }));
 
   // --- 시뮬레이션 옵션
@@ -1626,7 +1735,9 @@ function App() {
     setAccountList(readAccounts(d, { str, num, bool }));
     setPastCount(num(d.pastCount, 0));
     // 예전 저장 건에 있던 'new-pension'·'ex-*' 키는 흘려보낸다 (연금저축은 계좌 수수료가 없다)
-    setFees({ 'new-irp': num(d.fees && d.fees['new-irp'], 0) });
+    // 예전 저장 건의 'new-irp'(직접 입력 요율)·'new-pension'·'ex-*' 키는 흘려보낸다.
+    // 신규 IRP 요율은 이제 공시에서 나오므로 저장할 값이 아니다.
+    setFees({ direct: bool(d.fees && d.fees.direct, false), ourDbDc: bool(d.fees && d.fees.ourDbDc, false) });
     setManualPick(d.manualPick && typeof d.manualPick === 'object' ? d.manualPick : {});
     setPickedId(typeof d.pickedId === 'string' ? d.pickedId : null);
     setMode(d.mode === 'max' ? 'max' : 'even');
@@ -1701,7 +1812,7 @@ function App() {
   // 시뮬레이션에는 지방소득세 10% 를 더한 합계를 넘긴다 - 같은 칸의 연금소득세·
   // 기타소득세가 이미 지방세를 품은 세율이라, 퇴직소득세만 국세로 두면 기준이 갈린다.
   const deferredTaxNational = taxCalc && taxResult ? taxResult.chosen.tax : deferredTax;
-  const effectiveDeferredTax = deferredTaxNational + Math.floor(deferredTaxNational * 0.1);
+  const effectiveDeferredTax = deferredTaxNational + floorWon(deferredTaxNational * 0.1);
 
   // 인출을 시작하는 해. 이미 지난 해부터 시뮬레이션할 수는 없으므로 오늘이 하한이고,
   // 퇴직 예정일이 미래면 그때, 만 55세가 아직이면 55세가 되는 해가 하한이 된다.
@@ -1717,7 +1828,9 @@ function App() {
     system, systemJoin, dbConverted, dbJoin,
     amtSingle, amtLegal, amtHonor,
     accounts: accountList.map((a) => Object.assign({}, a, { joinDate: parseDate(a.joinStr) })),
-    fees
+    // 신규 IRP 의 계약 1차년도는 퇴직급여가 들어오는 해다. 인출이 그보다 늦게
+    // 시작하면(만 55세 대기 등) 그만큼 장기할인 차년도가 앞서 있다.
+    fees: Object.assign({}, fees, { contractOffset: Math.max(0, startYear - depositYear) })
   };
 
   const sources = useMemo(() => buildSources(input),
@@ -1796,6 +1909,27 @@ function App() {
     return parts.reduce((s, p) => s + p.amt * p.rate, 0) / total;
   }, [picked, merged]);
 
+  /**
+   * 신규 IRP 가 실제로 얼마를 무는지 한 줄로 적는다.
+   *
+   * 요율이 해마다 바뀌므로 숫자 하나로는 설명이 안 된다. 첫 해와 마지막 해를
+   * 함께 적어 '갈수록 준다' 는 것이 보이게 한다.
+   */
+  const newIrpFeeNote = useMemo(() => {
+    const c = candidates.find((x) => x.id === 'new-irp');
+    if (!c || !(c.acceptAmount > 0)) return null;
+    if (fees.direct) return '전액 면제 조건에 해당해 수수료 0 으로 계산합니다.';
+    const off = Math.max(0, startYear - depositYear);
+    const pct = (k) => {
+      const f = masIrpFee(c.acceptAmount, k + off,
+        { fromOurDb: !!fees.ourDbDc, drawn: k > 1 });
+      return (f / c.acceptAmount * 100).toFixed(3) + '%';
+    };
+    return '배정액 ' + krw(c.acceptAmount) + ' 기준 1회차 ' + pct(1) +
+      ' → 2회차 ' + pct(2) + ' → ' + years + '회차 ' + pct(years) +
+      ' (적립금이 줄면 더 낮아집니다)';
+  }, [candidates, fees.direct, fees.ourDbDc, startYear, depositYear, years]);
+
   // 분할 입금 시 이연퇴직소득세는 계좌에 배정된 금액 비율로 안분한다
   const allocatedDeferredTax = useMemo(() => {
     if (!picked || !(retireTotal > 0)) return 0;
@@ -1812,9 +1946,12 @@ function App() {
       startLimitYear: picked.startLimitYear,
       pastCount,
       feeRate: blendedFeeRate,
+      // 합산 계좌가 없을 때만 연차별 요율을 그대로 쓴다. 합산하면 다른 계좌의
+      // 고정 요율과 섞이므로 가중평균(blendedFeeRate)으로 둔다.
+      feeOf: merged.length === 0 ? picked.feeOf : null,
       years, mode, rate: rate / 100, startYear, startAge
     });
-  }, [picked, exemptPrincipal, otherPrincipal, allocatedDeferredTax, pastCount, years, mode, rate, startYear, startAge, blendedFeeRate]);
+  }, [picked, merged, exemptPrincipal, otherPrincipal, allocatedDeferredTax, pastCount, years, mode, rate, startYear, startAge, blendedFeeRate]);
 
   /**
    * 계좌별 비교 - 퇴직급여를 어느 계좌로 받느냐만 바꾸고 나머지 조건은 동일하게 두어
@@ -1832,7 +1969,7 @@ function App() {
           deferredTax: effectiveDeferredTax * (c.acceptAmount / retireTotal),
           startLimitYear: c.startLimitYear,
           pastCount,
-          feeRate: c.feeRate,
+          feeRate: c.feeRate, feeOf: c.feeOf,
           years, mode, rate: rate / 100, startYear, startAge
         });
         return {
@@ -1935,7 +2072,7 @@ function App() {
     setHasMid(false); setMidDateStr(''); setMidAmount(0); setMidPaidTax(0);
     setAccountList([]);
     setPastCount(0);
-    setFees({ 'new-irp': 0 });
+    setFees({ direct: false, ourDbDc: false });
     setManualPick({}); setPickedId(null);
     setMode('even'); setYears(10); setRate(3);
     setMemo(''); setMemoOnPrint(false);
@@ -2678,22 +2815,53 @@ function App() {
                     입력칸을 두지 않는다 - 빈칸을 두면 '적어야 하는데 모르는 값' 처럼 보인다.
                     기존 계좌 수수료는 계좌마다 다르므로 각 계좌 카드에서 받는다.
                   */}
-                  <Field label="신규 IRP 의 연간 수수료"
-                    hint="적립금 대비 연 요율(운용관리 + 자산관리). 기존 계좌는 각 계좌 카드에서 입력합니다."
+                  <Field label="신규 IRP 의 수수료"
+                    hint="미래에셋증권 공시 요율로 자동 계산합니다. 기존 계좌는 각 계좌 카드에서 입력합니다."
+                    helpTitle="신규 IRP 수수료"
                     help={<React.Fragment>
-                      새로 여는 IRP 의 수수료입니다. <strong>비대면으로 개설하면 전액 면제인 기관이 많고</strong>,
-                      대면 개설이라도 <strong>퇴직급여(이연퇴직소득) 재원은 면제</strong>하는 경우가 흔합니다.
-                      해당된다면 0 으로 두세요.<br /><br />
-                      <strong>연금저축계좌는 계좌 수수료가 없어</strong> 입력칸이 없습니다. 연금저축의 비용은
+                      <strong>미래에셋증권 개인형IRP 공시 요율</strong>(2026.1.12 시행)로 계산합니다.
+                      요율은 고정값이 아니라 적립금과 해가 바뀌면 같이 바뀌므로 직접 넣지 않습니다.<br /><br />
+                      운용관리 <strong>체차적용</strong> 1억 미만 0.20% · 1~3억 0.18% · 3억 이상 0.15%,
+                      자산관리 <strong>0.10%</strong>.
+                      여기에 <strong>장기할인</strong>(2~4차년도 10% · 5~10차년도 12% · 11차년도~ 15%)과
+                      연금을 1회 이상 받은 뒤의 <strong>연금수령개시 20% 할인</strong>이 붙습니다.<br /><br />
+                      <strong>'가입자부담금 20% 할인 / 전자매체 개설 시 면제' 는 넣지 않았습니다.</strong>
+                      그 면제는 가입자가 스스로 넣는 돈에 붙는 것이고, 여기서 다루는 재원은
+                      퇴직급여(이연퇴직소득)입니다.<br /><br />
+                      <strong>연금저축계좌는 계좌 수수료가 없어</strong> 칸이 없습니다. 연금저축의 비용은
                       계좌가 아니라 편입 상품(펀드 보수 · 보험 사업비 · 신탁보수)에 붙고 기준가에 이미
                       반영되므로, 위의 <strong>운용수익률</strong>에 보수 차감 후 수익률을 넣으면 반영됩니다.
                     </React.Fragment>}>
-                    <div className="relative w-[140px]">
-                      <input type="number" min="0" max="3" step="0.01" aria-label="신규 IRP 연간 수수료"
-                        className={inputCls + ' num pr-7 text-right h-[38px]'}
-                        value={fees['new-irp']}
-                        onChange={(e) => setFee('new-irp', Math.max(0, Math.min(3, +e.target.value || 0)))} />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[13px] text-ink-soft pointer-events-none">%</span>
+                    <div className="space-y-2">
+                      <label className="flex items-start gap-2 cursor-pointer">
+                        <input type="checkbox" checked={!!fees.ourDbDc} aria-label="당사 DB·DC 가입자"
+                          onChange={(e) => setFee('ourDbDc', e.target.checked)}
+                          className="w-4 h-4 mt-[2px] accent-[#F58220]" />
+                        <span className="text-[13px] text-ink-body leading-snug">
+                          퇴직연금(DB·DC)이 <strong>미래에셋증권</strong>에 있음
+                          <span className="block text-[11px] text-ink-soft">
+                            당사 DB·DC 가입자가 당사 개인형IRP 를 계약하면 1년간 운용관리수수료 면제
+                          </span>
+                        </span>
+                      </label>
+                      <label className="flex items-start gap-2 cursor-pointer">
+                        <input type="checkbox" checked={!!fees.direct} aria-label="다이렉트 개설 및 직접 운용"
+                          onChange={(e) => setFee('direct', e.target.checked)}
+                          className="w-4 h-4 mt-[2px] accent-[#F58220]" />
+                        <span className="text-[13px] text-ink-body leading-snug">
+                          <strong>다이렉트로 개설하고 직접 운용</strong>함
+                          <span className="block text-[11px] text-ink-soft">
+                            온라인웹·모바일로 계좌관리점을 다이렉트로 선택하고, 전자매체만으로
+                            스스로 운용·거래하면 <strong>전액 면제</strong>
+                          </span>
+                        </span>
+                      </label>
+                      {newIrpFeeNote && (
+                        <p className="text-[12px] text-ink-soft leading-snug pt-1 border-t border-hair-soft"
+                          role="note" aria-label="신규 IRP 요율 안내">
+                          {newIrpFeeNote}
+                        </p>
+                      )}
                     </div>
                   </Field>
                 </div>
@@ -3095,7 +3263,10 @@ function App() {
                       {sim.totals.totalFee > 0 && (
                         <div className="flex-1 min-w-[280px] border border-hair bg-surf-subtle rounded-sm px-4 py-3">
                           <span className="text-[14px] text-ink-body">{sim.totals.spanYears}년간 총 수수료</span>
-                          <span className="num text-[20px] font-bold text-ink ml-3">{krw(sim.totals.totalFee)}</span>
+                          <span className="num text-[20px] font-bold text-ink ml-3"
+                            role="note" aria-label="총 수수료"
+                            title={Math.round(sim.totals.totalFee).toLocaleString('ko-KR') + '원'}>
+                            {krw(sim.totals.totalFee)}</span>
                           <div className="text-[12px] text-ink-muted mt-1">
                             연 {(blendedFeeRate * 100).toFixed(2)}% · 적립금 기준 차감
                             {Math.abs(blendedFeeRate - picked.feeRate) > 1e-9

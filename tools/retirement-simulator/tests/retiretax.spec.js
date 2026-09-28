@@ -41,17 +41,26 @@ function basicTax(b) {
   return b * 0.45 - 65940000;
 }
 
+/**
+ * 원 미만 절사.
+ *
+ * 세법이 절사하라는 것은 **정확한 값**이다. 부동소수점을 그대로 Math.floor 하면
+ * 정답이 1,306,250 원인 경우에도 1306249.9999999998 이 되어 1원이 깎인다.
+ * 이 검사가 앱의 코드를 베껴 오면 같은 착각을 공유해 아무것도 잡지 못한다.
+ */
+const floorWon = (v) => Math.floor(Number(v.toFixed(6)));
+
 /** 산출세액 (국세) */
 function expectNational(amount, years) {
   const converted = Math.max(0, (amount - svcDed(years)) / years * 12);
   const base = Math.max(0, converted - convDed(converted));
-  return Math.floor(basicTax(base) / 12 * years);
+  return floorWon(basicTax(base) / 12 * years);
 }
 
 /** 국세 + 지방소득세 (지방세법 §103의3). 화면이 쓰는 값이 이것이다 */
 function expectTax(amount, years) {
   const nat = expectNational(amount, years);
-  return nat + Math.floor(nat * 0.1);
+  return nat + floorWon(nat * 0.1);
 }
 
 /**
@@ -148,6 +157,22 @@ module.exports = async function run(t) {
     await page.waitForTimeout(300);
     t.is(await shownTax(page), expectTax(30000 * 만, 1), '1년 미만 근속은 1년으로 본다');
 
+    // ── 원 미만 절사는 '정확한 값' 기준이다 ──────────────────────
+    //
+    // 나눗셈·곱셈을 거친 값을 그냥 Math.floor 하면 정답이 정확히 1,306,250 원인
+    // 경우에도 1306249.9999999998 이 되어 **1원이 깎인다.** 80,000 건 중 10,916 건
+    // (13.6%)이 이 자리에 걸렸다. 규칙표와 화면이 같은 방식으로 틀려 있어
+    // 교차검증이 잡지 못했다 - 두 구현을 두어도 같은 착각을 공유하면 드러나지 않는다.
+    // 영수증과 1원이 어긋나면 상담자는 산식이 틀린 줄 안다.
+    for (const c of [{ y: 1, amt: 1700 * 만 }, { y: 2, amt: 3400 * 만 },
+      { y: 10, amt: 17400 * 만 }, { y: 20, amt: 35800 * 만 }]) {
+      await field(page, '입사일').fill(hireFor(RETIRE, c.y));
+      await field(page, '퇴직급여').fill(String(c.amt));
+      await page.waitForTimeout(300);
+      t.is(await shownNational(page), expectNational(c.amt, c.y),
+        '부동소수점으로 1원이 깎이지 않음 (근속 ' + c.y + '년 · ' + (c.amt / 만) + '만원)');
+    }
+
     // ── 명예퇴직금도 합해 한 번에 과세한다 (§22) ─────────────────
     await field(page, '입사일').fill(hireFor(RETIRE, 20));
     await field(page, '퇴직급여').fill(String(20000 * 만));
@@ -187,7 +212,7 @@ module.exports = async function run(t) {
 
     // 분리 = 정산일 다음 날부터 10년, 최종 퇴직급여만
     // 정산특례 = 입사일부터 20년, 합산 4억, 기납부 500만원 공제
-    const withLocal = (nat) => nat + Math.floor(nat * 0.1);
+    const withLocal = (nat) => nat + floorWon(nat * 0.1);
     const sep = withLocal(expectNational(30000 * 만, 10));
     const settle = withLocal(Math.max(0, expectNational(40000 * 만, 20) - 500 * 만));
     t.is(await shownTax(page), Math.min(sep, settle), '두 갈래 중 적은 쪽을 쓴다');
