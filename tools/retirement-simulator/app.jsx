@@ -2071,6 +2071,17 @@ function App() {
     return found || best;
   }, [candidates, pickedId, best]);
 
+  /**
+   * 시뮬레이션 대상으로 고를 수 있는 계좌.
+   *
+   * 판정 탭에서 카드를 눌러 고르는 것과 **같은 집합**이다(실제로 돈이 배정된 계좌).
+   * 분할 입금이면 둘 이상이 되고, 그때 스케줄을 보다가 다른 계좌로 바꾸려면
+   * 판정 탭까지 되돌아가야 했다. 스케줄 탭 머리에도 같은 선택을 둔다.
+   */
+  const pickables = useMemo(
+    () => candidates.filter((c) => c.allocatedAmount > 0),
+    [candidates]);
+
   // 합산하기로 체크한 계좌의 잔고. 세액공제 받지 않은 납입액은 과세제외 재원으로 따로 뗀다.
   // 퇴직급여를 받을 계좌 자신도 체크되어 있으면 포함된다 (그 계좌 전체를 보는 것이 맞다).
   const merged = useMemo(
@@ -3444,13 +3455,43 @@ function App() {
 
               <div style={{ display: tab === 'schedule' ? 'block' : 'none' }}>
               {ready && sim && (
-                <Section title={'인출 시뮬레이션 - ' + picked.label}
+                <Section
+                  title={pickables.length > 1 ? '인출 시뮬레이션' : '인출 시뮬레이션 - ' + picked.label}
                   right={
-                    <button type="button" onClick={doCsv}
-                      className="h-[38px] px-4 text-[14px] font-medium bg-white text-ink-body border border-hair rounded-xs hover:bg-surf-subtle transition">
-                      CSV 내보내기
-                    </button>
+                    <div className="flex items-center gap-2 screen-only">
+                      {/*
+                        계좌를 여기서도 바꾼다.
+
+                        고를 수 있는 것이 하나뿐이면 상자를 두지 않는다 - 고를 것이 없는
+                        선택 상자는 '뭘 골라야 하나' 를 묻는 것처럼 보인다.
+                      */}
+                      {pickables.length > 1 && (
+                        <select value={picked.id} aria-label="시뮬레이션 계좌"
+                          onChange={(e) => setPickedId(e.target.value)}
+                          className="h-[38px] px-3 pr-8 text-[14px] font-medium bg-white text-ink
+                                     border border-mas-orange rounded-xs cursor-pointer max-w-[280px]
+                                     focus:outline-none focus:ring-2 focus:ring-mas-orange/25">
+                          {pickables.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.label + ' · ' + c.startLimitYear + '년차 · 배정 ' + krw(c.allocatedAmount)}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                      <button type="button" onClick={doCsv}
+                        className="h-[38px] px-4 text-[14px] font-medium bg-white text-ink-body border border-hair rounded-xs hover:bg-surf-subtle transition">
+                        CSV 내보내기
+                      </button>
+                    </div>
                   }>
+                  {pickables.length > 1 && (
+                    <p className="text-[12px] text-ink-soft mb-3 leading-snug screen-only"
+                      role="note" aria-label="분할 입금 계좌 안내">
+                      재원이 <strong>{pickables.length}개 계좌로 나뉘어</strong> 입금됩니다. 위에서 계좌를 바꾸면
+                      그 계좌의 인출 스케줄을 봅니다 — 판정 탭으로 돌아가지 않아도 됩니다.
+                      (인쇄물에는 지금 고른 계좌가 담깁니다.)
+                    </p>
+                  )}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
                     <Stat label="시뮬레이션 대상 자산" value={krw(picked.allocatedAmount + otherPrincipal)} tone="brand" />
                     <Stat label={'총 인출액 (' + sim.totals.spanYears + '년)'} value={krw(sim.totals.totalDraw)} />

@@ -185,6 +185,60 @@ module.exports = async function run(t) {
       num(noExempt[0][7]) + ' → ' + num(withExempt[0][7]) + '만원)');
     t.is(num(withExempt[0][7]), 0, '1회차 인출이 전액 과세제외 재원이면 세금 0');
 
+    // ── 스케줄 탭에서도 시뮬레이션 계좌를 바꾼다 ──────────────────
+    //
+    // 분할 입금이면 계좌가 둘인데, 스케줄을 보다가 다른 계좌로 바꾸려면 판정 탭까지
+    // 되돌아가야 했다. 같은 상태(pickedId)를 쓰므로 어느 쪽에서 바꿔도 함께 움직인다.
+    await fillCase(page, {
+      name: '분할', birth: '650115', system: 'DC', joinDate: '2003-07-01',
+      retireDate: '2026-06-30', amount: 250000000, honor: 300000000, deferredTax: 20000000,
+      pension: { join: '2005-06-05', balance: 10000000 }
+    });
+    await page.waitForTimeout(600);
+    await button(page, '인출 스케줄').click();
+    await page.waitForTimeout(600);
+
+    const pick = field(page, '시뮬레이션 계좌');
+    t.is(await pick.count(), 1, '스케줄 탭에 계좌 선택 상자가 있다');
+    const optLabels = await pick.locator('option').allInnerTexts();
+    t.is(optLabels.length, 2, '분할 입금이라 고를 계좌가 둘');
+    t.ok(optLabels.every((o) => /년차/.test(o) && /배정/.test(o)),
+      '연차와 배정액이 함께 적혀 어느 쪽인지 구분된다 - ' + JSON.stringify(optLabels));
+
+    const assetOf = async () =>
+      Number((await page.getByLabel('시뮬레이션 대상 자산', { exact: true }).innerText())
+        .replace(/[^0-9]/g, ''));
+    const values = await pick.locator('option').evaluateAll((os) => os.map((o) => o.value));
+    const first = await pick.inputValue();
+    const firstAsset = await assetOf();
+
+    const second = values.find((v) => v !== first);
+    await pick.selectOption(second);
+    await page.waitForTimeout(700);
+    t.is(await pick.inputValue(), second, '상자에서 바꾼 계좌가 선택된다');
+    t.ok(await assetOf() !== firstAsset,
+      '스케줄이 그 계좌로 다시 계산된다 (대상 자산이 바뀜)');
+
+    // 판정 탭의 선택과 같은 상태다 - 한쪽에서 바꾸면 다른 쪽도 따라간다
+    await button(page, '판정').click();
+    await page.waitForTimeout(500);
+    const highlighted = await page.locator('div.border-mas-orange.ring-2').first().innerText();
+    const secondLabel = optLabels[values.indexOf(second)].split(' · ')[0];
+    t.includes(highlighted.split('\n')[0], secondLabel,
+      '판정 탭에서도 같은 계좌가 골라져 있다');
+
+    // 고를 것이 하나뿐이면 상자를 두지 않는다
+    await fillCase(page, {
+      name: '단일', birth: '650115', system: 'SEV', joinDate: '2003-07-01',
+      retireDate: '2026-06-30', legal: 200000000, honor: 0, deferredTax: 10000000,
+      pension: false, irp: false
+    });
+    await page.waitForTimeout(600);
+    await button(page, '인출 스케줄').click();
+    await page.waitForTimeout(600);
+    t.is(await field(page, '시뮬레이션 계좌').count(), 0,
+      '고를 계좌가 하나면 선택 상자를 두지 않는다');
+
     t.is(errors.length, 0, '런타임 에러 없음');
   } finally {
     await browser.close();
