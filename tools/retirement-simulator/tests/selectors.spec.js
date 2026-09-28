@@ -145,13 +145,12 @@ module.exports = async function run(t) {
       t.is(got, value, '값이 제 칸에 들어감: ' + name);
     }
 
-    // 수수료 칸끼리 섞이지 않는지 (IRP 계좌 + 신규 IRP - 연금저축에는 칸이 없다)
-    const feeProbes = [['IRP 1', '0.22'], ['신규 IRP', '0.33']];
-    for (const [label, v] of feeProbes) await field(page, label + ' 연간 수수료').fill(v);
+    // 수수료 칸은 기존 IRP 계좌에만 있다. 신규 IRP 요율은 미래에셋 공시에서
+    // 자동으로 나오므로 입력칸이 없고, 연금저축계좌는 계좌 수수료 자체가 없다.
+    await field(page, 'IRP 1 연간 수수료').fill('0.22');
     await page.waitForTimeout(300);
-    for (const [label, v] of feeProbes) {
-      t.is(await field(page, label + ' 연간 수수료').inputValue(), v, '수수료 칸 구분: ' + label);
-    }
+    t.is(await field(page, 'IRP 1 연간 수수료').inputValue(), '0.22', '기존 IRP 수수료 칸');
+    t.is(await field(page, '신규 IRP 연간 수수료').count(), 0, '신규 IRP 에는 요율 입력칸이 없다');
 
     // 슬라이더 두 개
     await field(page, '수령 기간').fill('23');
@@ -177,13 +176,16 @@ module.exports = async function run(t) {
     // 설명 버튼은 눌러야 열리고, 열려도 입력 칸을 가로채지 않는다
     const help = page.getByRole('button', { name: '퇴직제도 설명', exact: true });
     t.is(await help.count(), 1, '설명 버튼이 라벨로 잡힘');
-    t.is(await page.getByRole('note').count(), 0, '처음에는 설명이 닫혀 있음');
+    // 화면에 늘 떠 있는 안내문도 role="note" 이므로, 이 설명 패널만 이름으로 센다.
+    // (예전에는 note 전체를 세어, 안내문이 하나 늘면 바로 어긋났다.)
+    const helpNote = page.getByLabel('퇴직제도 설명 내용', { exact: true });
+    t.is(await helpNote.count(), 0, '처음에는 설명이 닫혀 있음');
     await help.click();
     await page.waitForTimeout(200);
-    t.is(await page.getByRole('note').count(), 1, '누르면 설명이 열림');
+    t.is(await helpNote.count(), 1, '누르면 설명이 열림');
     await page.getByRole('button', { name: '퇴직제도 설명 닫기', exact: true }).click();
     await page.waitForTimeout(200);
-    t.is(await page.getByRole('note').count(), 0, '닫기로 다시 닫힘');
+    t.is(await helpNote.count(), 0, '닫기로 다시 닫힘');
 
     // --- 5. 판단표 탭의 조건 단추 ---
     //

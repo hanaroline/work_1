@@ -53,6 +53,19 @@ const BRACKETS = [
 /** 지방소득세율 (지방세법 §103의3) */
 const LOCAL_RATE = 0.10;
 
+/**
+ * 원 미만 절사.
+ *
+ * 그냥 Math.floor 를 쓰면 안 된다. 나눗셈·곱셈을 거친 값은 정답이 정확히
+ * 1,306,250 원인 경우에도 1306249.9999999998 로 나오고, 절사하면 **1원이 깎인다.**
+ * 80,000 건을 훑어 10,916 건(13.6%)에서 실제로 그랬다. 영수증과 1원이 어긋나면
+ * 상담자는 산식이 틀린 줄 안다.
+ *
+ * 규칙표와 화면이 **같은 방식으로** 틀려 있어 교차검증이 잡지 못한 자리다 -
+ * 두 구현을 두어도 같은 착각을 공유하면 드러나지 않는다.
+ */
+const floorWon = (v) => Math.floor(Number(v.toFixed(6)));
+
 const SOURCES = [
   { id: '§22', text: '퇴직소득의 범위. 명예퇴직금·위로금도 퇴직소득이라 법정퇴직금과 합해 한 번에 과세한다' },
   { id: '§48①1', text: '근속연수공제' },
@@ -109,8 +122,8 @@ function taxOf(amount, years) {
   const convDed = convertedDeduction(converted);
   const base = Math.max(0, converted - convDed);
   const convertedTax = progressiveTax(base);
-  const tax = Math.floor(convertedTax / 12 * years);
-  const local = Math.floor(tax * LOCAL_RATE);
+  const tax = floorWon(convertedTax / 12 * years);
+  const local = floorWon(tax * LOCAL_RATE);
   return {
     income, years, svcDed, converted, convDed, base, convertedTax,
     tax, local, total: tax + local
@@ -153,7 +166,7 @@ function compute(c) {
   const whole = allYears && taxOf(c.amount + c.midAmount, allYears);
   const paid = c.midPaidTax || 0;
   const settleTax = whole ? Math.max(0, whole.tax - paid) : 0;
-  const settleLocal = Math.floor(settleTax * LOCAL_RATE);
+  const settleLocal = floorWon(settleTax * LOCAL_RATE);
   const settle = whole && Object.assign({}, whole, {
     paid, wholeTax: whole.tax,
     tax: settleTax, local: settleLocal, total: settleTax + settleLocal
@@ -165,6 +178,6 @@ function compute(c) {
 }
 
 module.exports = {
-  SERVICE_DEDUCTION, CONVERTED_DEDUCTION, BRACKETS, LOCAL_RATE, SOURCES,
+  SERVICE_DEDUCTION, CONVERTED_DEDUCTION, BRACKETS, LOCAL_RATE, SOURCES, floorWon,
   serviceYears, serviceDeduction, convertedDeduction, progressiveTax, taxOf, compute
 };

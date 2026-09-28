@@ -29,6 +29,12 @@ async function firstRow(page) {
 module.exports = async function run(t) {
   const { browser, page, errors } = await openApp({});
   try {
+    // 이 스펙은 한도 공식·기산연차·세액을 본다. 신규 IRP 에 미래에셋 공시 수수료가
+    // 붙으면 기초자산이 그만큼 줄어 한도 숫자가 흔들리므로, 여기서는 면제 조건을 켜
+    // 수수료를 0 으로 두고 본다. 수수료 자체는 irpfee 스펙이 지킨다.
+    await field(page, '다이렉트 개설 및 직접 운용').check();
+    await page.waitForTimeout(200);
+
     // ── 퇴직연금 미가입 + 신규 계좌 → 1년차 ────────────────────────
     // 계좌 개설일이 2013.3.1 이후이고 퇴직연금도 미가입이라 6년차 특례 대상이 아니다.
     // 기산연도는 퇴직금이 입금된 해(= 올해). 1억 ÷ (11-1) × 120% = 1,200만원.
