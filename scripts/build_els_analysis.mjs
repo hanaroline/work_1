@@ -236,6 +236,73 @@ const avgLossOf = (kind) => {
 const sensRow = (f) => CS.rows.map((r) => `<td class="num">${f(r)}</td>`).join('');
 
 /**
+ * 손실 확률 × 연 수익률 산점도 (SVG).
+ *
+ * 이 절은 관계를 표와 글로만 다뤄 왔는데, "정비례하지 않는다" 는 말은 흩어진 그림을
+ * 한 번 보는 편이 열 줄보다 빠르다. 제안서 5장에 있던 그림을 분석자료에도 둔다.
+ *
+ * SVG 로 그린다 — 인쇄(PDF)까지 그대로 가야 하고, 자바스크립트 없이 열려야 한다.
+ * 점마다 <title> 을 달아 두면 브라우저에서 올려놓았을 때 회차가 뜬다.
+ *
+ * 색은 mas-design 의 세 칸(추천 주황 / 그 외 회색 / 권하지 않음 빨강)을 그대로 쓴다.
+ * 회색은 이 시스템이 "기타" 슬롯으로 지정한 중립색이라 채도가 낮은 것이 의도다.
+ * 대비가 3:1 에 못 미치는 것은 바로 아래 전 종목 표가 받쳐 준다.
+ */
+const scatter = (() => {
+  const pts = items.filter((i) => i.mcLoss != null);
+  if (!pts.length) return '';
+  const W = 760, H = 420, L = 58, R = 16, T = 16, B = 52;
+  const step = (v, u, up) => (up ? Math.ceil(v / u) : Math.floor(v / u)) * u;
+  const xMax = step(Math.max(...pts.map((i) => +i.mcLoss.toFixed(1))), 10, true);
+  const yMin = step(Math.min(...pts.map((i) => i.annualRate)), 5, false);
+  const yMax = step(Math.max(...pts.map((i) => i.annualRate)), 5, true);
+  const px = (v) => L + (v / xMax) * (W - L - R);
+  const py = (v) => H - B - ((v - yMin) / (yMax - yMin)) * (H - T - B);
+  const grp = (i) => (slots.some((s2) => s2.pick.no === i.no) ? 0 : caution.includes(i) ? 2 : 1);
+  const COL = ['#F58220', '#9AA6B2', '#C62828'];
+
+  const xt = [];
+  for (let v = 0; v <= xMax; v += 10) xt.push(v);
+  const yt = [];
+  for (let v = yMin; v <= yMax; v += 5) yt.push(v);
+
+  // 눈에 띄게 적을 점 — 위험당 대가 1등과 꼴찌만. 모든 점에 숫자를 달면 글씨가 엉킨다.
+  const mark = new Set([CE.best.no, CE.worst.no]);
+
+  return `<figure class="fig">
+  <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="이번 회차 ${pts.length}종을 손실 확률과 연 수익률로 흩어 놓은 그림">
+    ${yt.map((v) => `<line x1="${L}" y1="${py(v).toFixed(1)}" x2="${W - R}" y2="${py(v).toFixed(1)}" class="gl"/>`).join('')}
+    <line x1="${L}" y1="${H - B}" x2="${W - R}" y2="${H - B}" class="ax"/>
+    <line x1="${L}" y1="${T}" x2="${L}" y2="${H - B}" class="ax"/>
+    ${xt.map((v) => `<text x="${px(v).toFixed(1)}" y="${H - B + 17}" class="tk" text-anchor="middle">${v}</text>`).join('')}
+    ${yt.map((v) => `<text x="${L - 8}" y="${(py(v) + 4).toFixed(1)}" class="tk" text-anchor="end">${v}</text>`).join('')}
+    <text x="${((L + W - R) / 2).toFixed(0)}" y="${H - 10}" class="axt" text-anchor="middle">손실 확률 B (%) — 오른쪽일수록 위험하다</text>
+    <text x="14" y="${((T + H - B) / 2).toFixed(0)}" class="axt" text-anchor="middle" transform="rotate(-90 14 ${((T + H - B) / 2).toFixed(0)})">연 수익률 (%)</text>
+    ${pts.map((i) => {
+      const x = px(+i.mcLoss.toFixed(1)), y = py(i.annualRate);
+      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6" fill="${COL[grp(i)]}" class="dot"><title>제${i.no}회 ${esc(i.underlyings.join('·'))} · 연 ${f1(i.annualRate, 1)}% · 손실 확률 ${f1(i.mcLoss, 1)}%</title></circle>`;
+    }).join('')}
+    ${pts.filter((i) => mark.has(i.no)).map((i) => {
+      const x = px(+i.mcLoss.toFixed(1)), y = py(i.annualRate);
+      // 글씨는 점 **위**에 얹는다. 옆으로 밀면 같은 높이에 있는 다른 점을 덮는다 —
+      // 2026-09-29 에 제38168회 글씨가 제38167회 점을 가렸다. 위가 좁으면 아래로 내린다.
+      const up = y - 14 > T + 8;
+      const half = 34;   // 글씨 절반 폭 어림 — 그림 밖으로 나가지 않게 가둔다
+      const cx = Math.min(Math.max(x, L + half), W - R - half);
+      return `<text x="${cx.toFixed(1)}" y="${(y + (up ? -13 : 20)).toFixed(1)}" class="dl" text-anchor="middle">제${i.no}회 ${f1(CE.ratio(i), 2)}%</text>`;
+    }).join('')}
+  </svg>
+  <figcaption>
+    <span class="lg"><i style="background:#F58220"></i>추천 ${slots.length}종</span>
+    <span class="lg"><i style="background:#9AA6B2"></i>그 외 ${pts.length - slots.length - caution.length}종</span>
+    <span class="lg"><i style="background:#C62828"></i>권하지 않는 ${caution.length}종</span>
+    <span class="lgn">왼쪽 위가 적은 위험에 많이 받는 자리, 오른쪽 아래가 위험만 큰 자리입니다. 글씨를 단 두 점은 손실 확률 1%당 받는 수익률의 1등과 꼴찌입니다. 점 위에 마우스를 올리면 회차가 뜹니다.</span>
+  </figcaption>
+</figure>`;
+})();
+
+
+/**
  * "쿠폰과 위험이 어긋나는 이유" 세 가지 — 회차마다 셋 다 성립하지는 않는다.
  *
  * ① 은 같은 기초자산 묶음이 있어야 하고, ③ 은 원화 아닌 상품이 있어야 한다.
@@ -456,6 +523,19 @@ section{margin-bottom:56px}
 /* 열이 11개라 헤더를 한 줄로 두면 데스크탑에서도 가로 스크롤이 난다.
    머리글은 두 줄까지 접고, 종류·등급은 각각 기초자산·손실확률 칸에 넣어 열을 줄였다. */
 .tw{overflow-x:auto;border:1px solid var(--hair)}
+.fig{margin:24px 0 8px;padding:0}
+.fig svg{width:100%;height:auto;display:block}
+.fig .gl{stroke:var(--hair-s);stroke-width:1;stroke-dasharray:3 3}
+.fig .ax{stroke:#49535B;stroke-width:1}
+.fig .tk{font-size:11px;fill:var(--muted);font-family:var(--font-num)}
+.fig .axt{font-size:12px;fill:var(--body)}
+.fig .dot{stroke:#fff;stroke-width:1.5}
+.fig .dl{font-size:11px;fill:var(--ink);font-weight:700;font-family:var(--font-num)}
+.fig figcaption{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;margin-top:10px;
+  font-size:14px;color:var(--muted);line-height:1.5}
+.fig .lg{display:inline-flex;align-items:center;gap:6px;color:var(--body);white-space:nowrap}
+.fig .lg i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.fig .lgn{flex:1 1 100%}
 table{border-collapse:collapse;width:100%;font-size:14px;table-layout:auto}
 th{background:var(--soft);color:var(--ink);font-weight:700;text-align:left;padding:9px 9px;
   white-space:normal;line-height:1.3;border-bottom:1px solid var(--hair);vertical-align:bottom}
@@ -723,6 +803,8 @@ ${byKind.map((r) => `        <tr><td><b>${r.key}형</b></td><td class="num">${r.
   <p class="slead">"수익률이 높으면 그만큼 위험한 것 아니냐"는 질문을 자주 받습니다. <b>맞는 말씀입니다.</b> 다만 <b>정확히 비례하지는 않고</b>, 그 어긋나는 자리가 바로 상품을 고르는 자리입니다. 이번 주 ${coupon.n}종으로 직접 확인했습니다.</p>
 
   <p class="mnote"><b>왜 그런가</b> — ELS의 수익률은 고객이 회사에 <b>"많이 떨어지면 그 손해는 제가 떠안겠습니다"라는 약속을 팔고 받는 값</b>입니다. 자산이 심하게 출렁일수록 그 약속이 비싸지니 수익률도 올라갑니다. 업계 관행이 아니라 <b>값을 매기는 계산식 자체가 그렇게 돼 있습니다.</b> 그래서 오히려 <b>둘이 따로 노는 상품이 의심 대상</b>입니다.</p>
+
+${scatter}
 
   <div class="tw">
     <table class="kt">

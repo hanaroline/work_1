@@ -379,6 +379,80 @@ if (A.plan.hasCooling) {
   s.addNotes('"수익률 높으면 위험한 거 아니냐"는 질문에 이 장을 펴십시오. 맞다고 인정하고 시작하되, 같은 위험을 지고도 더 받는 상품이 있다는 것이 다음 장입니다.');
 }
 
+// ══ 5-A. 흩어 놓고 보기 ════════════════════════════════════════════════════
+// 앞 장이 관계를 표와 숫자로 다뤘다면 이 장은 그것을 한 번에 보여 준다.
+// "정비례하지 않는다" 는 말은 흩어진 그림이 열 줄보다 빠르다.
+{
+  const CE = A.coupon.eff;
+  const pts = A.items.filter((i) => i.mcLoss != null);
+  const s = slide();
+  const y0 = head(s, '흩어 놓고 보면 이렇습니다',
+    `${pts.length}종을 손실 확률(B)과 연 수익률로 찍었습니다. 왼쪽 위가 적은 위험에 많이 받는 자리, 오른쪽 아래가 위험만 큰 자리입니다. 점 위에 마우스를 올리면 회차와 기초자산이 뜹니다.`);
+
+  const xs = pts.map((i) => +i.mcLoss.toFixed(1));
+  const stepv = (v, u, up) => (up ? Math.ceil(v / u) : Math.floor(v / u)) * u;
+  const xMax = stepv(Math.max(...xs), 10, true);
+  const yMin = stepv(Math.min(...pts.map((i) => i.annualRate)), 5, false);
+  const yMax = stepv(Math.max(...pts.map((i) => i.annualRate)), 5, true);
+
+  // 계열을 회차마다 하나씩 둔다 — 파워포인트 풍선말이 계열 이름을 보여 주므로
+  // 묶어 두면 어느 회차인지가 안 뜬다. 제안서 5장과 같은 방식이다.
+  const REC5 = A.slots.map((x) => x.pick);
+  const dotOf = (it) => (REC5.includes(it) ? ORANGE : A.caution.includes(it) ? BAD : '9AA6B2');
+  const series = [{ name: '손실 확률 B (%)', values: xs }];
+  const cols = [];
+  pts.forEach((it, k) => {
+    series.push({
+      name: `제${it.no}회 ${it.underlyings.join('·')}`,
+      values: pts.map((_, j) => (j === k ? +it.annualRate.toFixed(1) : null)),
+    });
+    cols.push(dotOf(it));
+  });
+
+  s.addChart(pres.ChartType.scatter, series, {
+    x: M, y: y0, w: 8.1, h: 4.42,
+    chartColors: cols,
+    lineSize: 0, lineDataSymbol: 'circle', lineDataSymbolSize: 9,
+    catAxisMinVal: 0, catAxisMaxVal: xMax, catAxisMajorUnit: 10,
+    valAxisMinVal: yMin, valAxisMaxVal: yMax, valAxisMajorUnit: 5,
+    catAxisTitle: '손실 확률 B (%) — 오른쪽일수록 위험하다', showCatAxisTitle: true,
+    valAxisTitle: '연 수익률 (%)', showValAxisTitle: true,
+    catAxisLabelFontFace: F, valAxisLabelFontFace: F,
+    catAxisTitleFontFace: F, valAxisTitleFontFace: F,
+    catAxisLabelFontSize: 9, valAxisLabelFontSize: 9,
+    catAxisTitleFontSize: 10, valAxisTitleFontSize: 10,
+    catAxisLineShow: true, valAxisLineShow: true,
+    catGridLine: { style: 'none' }, valGridLine: { color: 'E5E4E1', style: 'dash', size: 0.5 },
+    showLegend: false, border: { pt: 0 }, fill: WHITE,
+  });
+
+  // 계열이 회차 수만큼이라 자동 범례를 쓸 수 없다. 색 뜻만 손으로 적는다.
+  const lgd = [[ORANGE, `추천 ${REC5.length}종`],
+    ['9AA6B2', `그 외 ${pts.length - REC5.length - A.caution.length}종`],
+    [BAD, `권하지 않는 ${A.caution.length}종`]];
+  let lx = M + 0.6;
+  for (const [c, t] of lgd) {
+    s.addShape(pres.ShapeType.ellipse, { x: lx, y: y0 + 4.54, w: 0.12, h: 0.12, fill: { color: c }, line: { width: 0 } });
+    s.addText(t, { x: lx + 0.19, y: y0 + 4.45, w: 1.8, h: 0.28, fontFace: F, fontSize: 10, color: BODY, margin: 0, valign: 'middle' });
+    lx += 2.1;
+  }
+
+  // 오른쪽 — 그림에서 바로 읽히는 것만 짧게
+  const rx = M + 8.35, rw = CW - 8.35;
+  const notes = [
+    ['왼쪽 위로 갈수록 좋습니다', `같은 위험을 지고 가장 많이 받는 쪽은 제${CE.fairBest.no}회(연 ${f1(CE.fairBest.annualRate)}% · 손실 확률 ${f1(CE.fairBest.mcLoss)}%)입니다.`, BLUE],
+    ['오른쪽 아래가 피할 자리', `제${CE.worst.no}회는 연 ${f1(CE.worst.annualRate)}%를 받자고 손실 확률 ${f1(CE.worst.mcLoss)}%를 집니다 — 손실 확률 1%당 ${f1(CE.ratio(CE.worst), 2)}%뿐입니다.`, BAD],
+    ['줄이 아니라 구름입니다', `정비례한다면 점들이 한 줄에 놓여야 합니다. 흩어진 폭이 곧 고를 자리이고, 이번 회차는 위험당 대가가 ${f1(CE.spread, 1)}배까지 벌어집니다.`, ACTIVE],
+  ];
+  notes.forEach(([t, b, c], i) => {
+    const y = y0 + i * 1.6;
+    s.addShape(pres.ShapeType.rect, { x: rx, y, w: rw, h: 1.42, fill: { color: SURF }, line: { color: HAIR, width: 0.75 } });
+    s.addShape(pres.ShapeType.rect, { x: rx, y, w: 0.05, h: 1.42, fill: { color: c }, line: { width: 0 } });
+    s.addText(t, { x: rx + 0.2, y: y + 0.12, w: rw - 0.4, h: 0.28, fontFace: F, fontSize: 11.5, bold: true, color: INK, margin: 0 });
+    s.addText(b, { x: rx + 0.2, y: y + 0.42, w: rw - 0.4, h: 0.92, fontFace: F, fontSize: 10, color: BODY, margin: 0, lineSpacing: 13, valign: 'top' });
+  });
+}
+
 // ══ 6. 어디서 갈라지나 ═════════════════════════════════════════════════════
 {
   const C = A.coupon, { eff: CE, why: CW2, sens: CS } = C;
