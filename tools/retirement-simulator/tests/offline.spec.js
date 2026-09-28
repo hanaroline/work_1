@@ -1,5 +1,5 @@
 /** 자립성 - 외부 요청 0건, 임베드 폰트 실사용, 날짜 입력 방어 */
-const { openApp, fillCase, field, button, printSheet } = require('./helpers');
+const { openApp, fillCase, field, button, printSheet , setAccounts } = require('./helpers');
 
 module.exports = async function run(t) {
   const { browser, page, errors, external } = await openApp({});
@@ -101,6 +101,155 @@ module.exports = async function run(t) {
     await button(page, '판정').click();
     await page.waitForTimeout(300);
     t.is(await d.inputValue(), '', '가입일에 미래 날짜는 비운다');
+
+    // --- 친 뒤에 고칠 수 있는가 ---
+    //
+    // 마스크를 다시 씌우면 값이 통째로 바뀌어 **커서가 맨 뒤로 튄다.** 연도 가운데를
+    // 고치려 하면 커서가 '일' 자리로 달아나고, 블록으로 잡아 새로 쳐도 마찬가지여서
+    // 사실상 고칠 수가 없었다. 게다가 maxLength=10 이라 열 글자가 찬 칸에서는
+    // 가운데에 숫자를 끼워 넣는 것을 브라우저가 아예 막았다.
+    //
+    // 커서 자리는 '몇 번째 숫자 뒤' 로 센다 - 구분선은 자릿수에 따라 늘고 줄기 때문에
+    // 글자 위치로 기억하면 한 칸씩 어긋난다.
+    const caretState = () => page.evaluate(() => {
+      const el = document.activeElement;
+      return el.value + ' @' + el.selectionStart;
+    });
+    const putCaret = (i) => page.evaluate((n) => {
+      document.activeElement.setSelectionRange(n, n);
+    }, i);
+    const selectRange = (from, to) => page.evaluate((r) => {
+      document.activeElement.setSelectionRange(r[0], r[1]);
+    }, [from, to]);
+
+    const edit = async (name, steps, want) => {
+      await d.fill('');
+      await d.click();
+      await steps();
+      t.is(await caretState(), want, name);
+    };
+
+    // 연도만 블록으로 잡아 다시 치기 - 실제로 가장 많이 하는 고치기
+    await edit('연도를 블록으로 잡아 고치면 그 자리에 머문다', async () => {
+      await page.keyboard.type('20300501');
+      await selectRange(0, 4);
+      await page.keyboard.type('2003');
+    }, '2003-05-01 @5');
+
+    // 월·일도 같은 방식으로
+    await edit('월을 고쳐도 커서가 달아나지 않는다', async () => {
+      await page.keyboard.type('20030501');
+      await selectRange(5, 7);
+      await page.keyboard.type('12');
+    }, '2003-12-01 @8');
+    await edit('일을 고쳐도 커서가 달아나지 않는다', async () => {
+      await page.keyboard.type('20030501');
+      await selectRange(8, 10);
+      await page.keyboard.type('25');
+    }, '2003-05-25 @10');
+
+    // 열 글자가 다 찬 칸의 가운데에 끼워 넣기 (maxLength 가 막던 것)
+    await edit('열 글자가 찼어도 가운데에 끼워 넣을 수 있다', async () => {
+      await page.keyboard.type('20030501');
+      await putCaret(2);
+      await page.keyboard.type('9');
+    }, '2090-30-50 @3');
+
+    // 가운데에서 한 글자 지우기
+    await edit('가운데 숫자를 지우면 그 자리에 머문다', async () => {
+      await page.keyboard.type('20030501');
+      await putCaret(3);
+      await page.keyboard.press('Backspace');
+    }, '2030-50-1 @2');
+
+    // 구분선 위에서는 옆의 숫자를 지운다 - 마스크가 '-' 를 되돌려 놓아 키가 먹지 않았다
+    await edit('구분선 뒤 백스페이스는 앞의 숫자를 지운다', async () => {
+      await page.keyboard.type('20030501');
+      await putCaret(5);
+      await page.keyboard.press('Backspace');
+    }, '2000-50-1 @3');
+    await edit('구분선 위 딜리트는 뒤의 숫자를 지운다', async () => {
+      await page.keyboard.type('20030501');
+      await putCaret(4);
+      await page.keyboard.press('Delete');
+    }, '2003-50-1 @5');
+
+    // 지웠다가 이어서 다시 치기
+    await edit('지우고 이어서 쳐도 제자리에 붙는다', async () => {
+      await page.keyboard.type('20030501');
+      for (let i = 0; i < 4; i++) await page.keyboard.press('Backspace');
+      await page.keyboard.type('1225');
+    }, '2003-12-25 @10');
+
+    // 포커스를 뺐다가 돌아와서 고치기
+    await edit('다른 칸을 보고 와서 고쳐도 된다', async () => {
+      await page.keyboard.type('20030501');
+      await field(page, '고객명').click();
+      await page.waitForTimeout(150);
+      await d.click();
+      await selectRange(5, 7);
+      await page.keyboard.type('11');
+    }, '2003-11-01 @8');
+
+    await d.fill('');
+
+    // --- 날짜 칸이 **모두** 같은 식으로 고쳐지는가 ---
+    //
+    // 처음에는 '제도 가입일' 하나만 보고 고쳤다. 날짜 칸은 일곱 개고(퇴직일 ·
+    // 전환 전 DB 가입일 · 입사일 · 중간정산일 · 계좌마다 가입일) 모두 같은
+    // 컴포넌트를 쓰지만, 하나만 보고 '고쳤다' 고 하면 나머지는 확인한 적이 없는 것이다.
+    // 전환 칸과 입사일 칸은 DC 에서만 열린다
+    await button(page, 'DC').click();
+    await page.waitForTimeout(250);
+    await field(page, 'DB 에서 DC 로 전환').check();
+    await page.waitForTimeout(200);
+    await field(page, '이연 퇴직소득세 직접 계산').check();
+    await page.waitForTimeout(250);
+    await field(page, '중간정산 받음').check();
+    await page.waitForTimeout(250);
+    await setAccounts(page, [{ kind: 'pension' }, { kind: 'irp' }]);
+    await page.waitForTimeout(250);
+
+    const DATE_FIELDS = ['제도 가입일', '퇴직일', '전환 전 DB 가입일', '입사일', '중간정산일',
+      '연금저축 1 가입일', 'IRP 1 가입일'];
+
+    for (const name of DATE_FIELDS) {
+      const f = field(page, name);
+      t.is(await f.count(), 1, '날짜 칸이 하나로 잡힌다: ' + name);
+
+      // 연도만 블록으로 잡아 고치기 - 실제로 가장 많이 하는 고치기다
+      await f.fill('');
+      await f.click();
+      await page.keyboard.type('20300501');
+      await selectRange(0, 4);
+      await page.keyboard.type('2003');
+      t.is(await caretState(), '2003-05-01 @5', name + ': 연도를 고쳐도 커서가 제자리');
+
+      // 열 글자가 찬 칸의 가운데에 끼워 넣기
+      await f.fill('');
+      await f.click();
+      await page.keyboard.type('20030501');
+      await putCaret(2);
+      await page.keyboard.type('9');
+      t.is(await caretState(), '2090-30-50 @3', name + ': 가운데에 끼워 넣을 수 있다');
+
+      // 구분선 위에서 지우기
+      await f.fill('');
+      await f.click();
+      await page.keyboard.type('20030501');
+      await putCaret(5);
+      await page.keyboard.press('Backspace');
+      t.is(await caretState(), '2000-50-1 @3', name + ': 구분선 위 백스페이스가 먹는다');
+
+      await f.fill('');
+    }
+
+    // 원래 상태로 되돌린다 (뒤의 검사가 이 화면을 이어서 쓴다)
+    await field(page, '중간정산 받음').uncheck();
+    await field(page, '이연 퇴직소득세 직접 계산').uncheck();
+    await field(page, 'DB 에서 DC 로 전환').uncheck();
+    await setAccounts(page, []);
+    await page.waitForTimeout(300);
 
     // 퇴직(예정)일은 미래가 정상이다 (음성 대조)
     const rd = field(page, '퇴직일');

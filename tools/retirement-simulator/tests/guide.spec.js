@@ -1,0 +1,170 @@
+/**
+ * 사용법과 자산 합산 범위.
+ *
+ * 둘 다 '기능이 있는데 보이지 않는다' 를 고친 것이라, 지키는 것도 **보이는가** 다.
+ *
+ *   · 사용법은 별도 PDF 가 아니라 화면 안에 있다. 파일 하나가 돌아다니는 도구라
+ *     PDF 를 따로 두면 HTML 만 받은 사람에게는 사용법이 없고, 화면이 바뀌면 낡는다.
+ *   · 자산 합산 범위는 계좌 카드 안의 체크로 옮기면서 개념 자체가 화면에서 사라졌다.
+ *     고르는 자리가 아니라 **지금 상태를 보여 주고 한 번에 바꾸는** 자리로 되살렸다.
+ */
+const { openApp, fillCase, field, button } = require('./helpers');
+
+const 만 = 10000;
+
+const dialog = (page) => page.getByRole('dialog', { name: '사용법' });
+const flat = async (loc) => (await loc.innerText()).replace(/\s+/g, ' ').trim();
+
+module.exports = async function run(t) {
+  const { browser, page, errors } = await openApp({});
+  try {
+    /* ── 사용법 ─────────────────────────────────────────────────── */
+
+    t.is(await dialog(page).count(), 0, '처음에는 사용법이 닫혀 있다');
+    t.is(await button(page, '사용법').count(), 1, '머리에 사용법 단추가 하나');
+
+    await button(page, '사용법').click();
+    await page.waitForTimeout(400);
+    t.is(await dialog(page).count(), 1, '누르면 사용법이 열린다');
+
+    // 상담 순서 그대로 일곱 단계. 기능 목록이 아니라 '무엇부터 하면 되는가' 다.
+    const guide = await flat(dialog(page));
+    for (const step of ['고객 정보를 넣습니다', '보유 계좌를 하나씩 넣습니다', '판정을 읽습니다',
+      '계좌를 나란히 비교합니다', '인출 스케줄을 봅니다', '제도 자체를 확인합니다',
+      '저장하고 출력합니다']) {
+      t.includes(guide, step, '단계가 있다: ' + step);
+    }
+    t.includes(guide, '이 도구가 하지 않는 것', '한계를 함께 적는다');
+
+    // 단계마다 자주 틀리는 것이 붙는다 - 이 도구에서 실제로 틀렸던 것들이다
+    t.ok((guide.match(/자주 틀리는 것/g) || []).length >= 10,
+      "'자주 틀리는 것' 이 단계마다 붙는다");
+    t.includes(guide, '제도 가입일을 비우지 마세요', '빈 가입일 함정을 적는다');
+    t.includes(guide, '명예퇴직금은 따로 넣습니다', '명퇴금 칸을 따로 둔 이유를 적는다');
+    t.includes(guide, '한도는 인출 상한이 아닙니다', '가장 흔한 오해를 적는다');
+
+    // 닫는 길이 둘 - Esc 와 바깥 누르기
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(300);
+    t.is(await dialog(page).count(), 0, 'Esc 로 닫힌다');
+
+    await button(page, '사용법').click();
+    await page.waitForTimeout(300);
+    await page.mouse.click(30, 400);
+    await page.waitForTimeout(300);
+    t.is(await dialog(page).count(), 0, '바깥을 누르면 닫힌다');
+
+    /* ── 사용법 인쇄는 고객용 A4 와 섞이지 않는다 ────────────────── */
+
+    // 고객명은 사용법 본문에 나올 수 없는 글자로 둔다. '판정 결과' 같은 낱말로
+    // 보려다 실패했는데, 사용법이 '판정 결과 맨 위에 경고가 뜹니다' 라고 안내하고
+    // 있어서였다 - **양쪽에 다 있는 낱말로는 섞였는지 가릴 수 없다.**
+    const CUST = '섞임확인용고객';
+    await fillCase(page, {
+      name: CUST, birth: '650115', system: 'DB', joinDate: '2005-03-02',
+      retireDate: '2026-06-30', amount: 200000000, deferredTax: 10000000
+    });
+    await page.waitForTimeout(700);
+
+    /**
+     * 인쇄되는 것을 **전부** 읽는다.
+     *
+     * 처음에는 첫 번째 .print-only 만 읽었다. 그러면 고객용 A4 와 사용법을 동시에
+     * 그려 놓아도 앞에 있는 것만 보이므로 '섞였는지' 를 가릴 수 없다 - 실제로
+     * 음성 대조에서 그 회귀가 통과해 버렸다. 인쇄기는 전부를 내보낸다.
+     */
+    const printedAll = async () => {
+      await page.emulateMedia({ media: 'print' });
+      await page.waitForTimeout(250);
+      const txt = (await page.locator('.print-only').allInnerTexts()).join(' ').replace(/\s+/g, ' ');
+      await page.emulateMedia({ media: 'screen' });
+      await page.waitForTimeout(150);
+      return txt;
+    };
+    const printed = printedAll;
+
+    const sheet = await printed();
+    t.includes(sheet, CUST, '기본 인쇄물은 고객용 A4 다');
+    t.excludes(sheet, '자주 틀리는 것', '고객용 A4 에 사용법이 섞이지 않는다');
+
+    // window.print 를 가로채 그 순간에 무엇이 인쇄되는지 본다
+    await page.evaluate(() => {
+      window.__printed = null;
+      window.print = () => {
+        // 하나만 읽으면 둘을 같이 그려 놓아도 앞의 것만 보인다
+        window.__printed = Array.prototype.map
+          .call(document.querySelectorAll('.print-only'), (el) => el.innerText).join(' ');
+      };
+    });
+    await button(page, '사용법').click();
+    await page.waitForTimeout(300);
+    await button(page, '사용법 인쇄').click();
+    await page.waitForTimeout(700);
+    const guidePrint = ((await page.evaluate(() => window.__printed)) || '').replace(/\s+/g, ' ');
+    t.includes(guidePrint, '자주 틀리는 것', '사용법 인쇄에는 사용법이 담긴다');
+    t.includes(guidePrint, '이 도구가 하지 않는 것', '한계까지 담긴다');
+    t.excludes(guidePrint, CUST, '사용법 인쇄에 고객 자료가 섞이지 않는다');
+
+    await page.waitForTimeout(400);
+    const back = await printed();
+    t.includes(back, CUST, '인쇄한 뒤에는 고객용 A4 로 되돌아온다');
+    t.excludes(back, '자주 틀리는 것', '사용법이 남지 않는다');
+    await button(page, '사용법 닫기').click();
+    await page.waitForTimeout(300);
+
+    /* ── 자산 합산 범위 ─────────────────────────────────────────── */
+
+    const scope = () => page.getByLabel('자산 합산 범위 현황', { exact: true });
+
+    await fillCase(page, {
+      name: '합산', birth: '650115', system: 'DB', joinDate: '2005-03-02',
+      retireDate: '2026-06-30', amount: 200000000, deferredTax: 10000000,
+      pension: false, irp: false
+    });
+    await page.waitForTimeout(600);
+    t.is(await scope().count(), 1, '자산 합산 범위가 시뮬레이션 옵션에 보인다');
+    t.includes(await flat(scope()), '보유 계좌가 없어', '계좌가 없으면 그렇게 적는다');
+    t.is(await button(page, '전체 합산').count(), 0, '계좌가 없으면 단추도 없다');
+
+    await fillCase(page, {
+      name: '합산2', birth: '650115', system: 'DB', joinDate: '2005-03-02',
+      retireDate: '2026-06-30', amount: 200000000, deferredTax: 10000000,
+      accounts: [
+        { kind: 'pension', join: '2008-03-02', balance: 5000 * 만 },
+        { kind: 'irp', join: '2015-03-02', balance: 3000 * 만 }
+      ]
+    });
+    await page.waitForTimeout(700);
+    t.includes(await flat(scope()), '퇴직급여 단독', '아무것도 안 켜면 퇴직급여 단독');
+    t.is(await button(page, '합산 해제').isDisabled(), true, '끌 것이 없으면 해제는 눌리지 않는다');
+
+    // 한 번에 켠다 - 예전 '전체 전액 합산' 이 하던 일
+    await button(page, '전체 합산').click();
+    await page.waitForTimeout(700);
+    const all = await flat(scope());
+    t.includes(all, '연금저축 1', '합산한 계좌를 이름으로 적는다');
+    t.includes(all, 'IRP 1', '두 번째 계좌도 이름으로 적는다');
+    t.includes(all, '8,000만원', '합산된 기존 잔고를 적는다');
+    t.is(await field(page, '연금저축 1 시뮬레이션 합산').isChecked(), true, '계좌 카드의 체크도 켜진다');
+    t.is(await field(page, 'IRP 1 시뮬레이션 합산').isChecked(), true, '두 번째 계좌도 켜진다');
+    t.is(await button(page, '전체 합산').isDisabled(), true, '다 켜져 있으면 전체 합산은 눌리지 않는다');
+
+    // 카드에서 하나만 꺼도 요약이 따라온다 (4지선다로는 표현할 수 없던 상태)
+    await field(page, 'IRP 1 시뮬레이션 합산').uncheck();
+    await page.waitForTimeout(600);
+    const partial = await flat(scope());
+    t.includes(partial, '연금저축 1', '남은 계좌만 적는다');
+    t.excludes(partial, 'IRP 1', '끈 계좌는 빠진다');
+    t.includes(partial, '5,000만원', '잔고도 남은 것만 센다');
+
+    // 한 번에 끈다
+    await button(page, '합산 해제').click();
+    await page.waitForTimeout(700);
+    t.includes(await flat(scope()), '퇴직급여 단독', '해제하면 퇴직급여 단독으로 돌아온다');
+    t.is(await field(page, '연금저축 1 시뮬레이션 합산').isChecked(), false, '계좌 카드의 체크도 꺼진다');
+
+    t.is(errors.length, 0, '런타임 에러 없음');
+  } finally {
+    await browser.close();
+  }
+};
