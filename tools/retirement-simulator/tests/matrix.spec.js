@@ -11,19 +11,32 @@ const blockText = async (page, heading) =>
   (await page.locator('section').filter({ has: page.getByRole('heading', { name: heading }) })
     .innerText()).replace(/\s+/g, ' ').trim();
 
-/** 한 계좌 줄을 통째로 읽는다 */
-async function rowOf(page, heading, label) {
-  const rows = await page.locator('section')
-    .filter({ has: page.getByRole('heading', { name: heading }) })
-    .locator('div.border.border-hair.rounded-sm > div')
-    .evaluateAll((ds) => ds.map((d) => d.innerText.replace(/\s+/g, ' ').trim()));
-  const hit = rows.find((r) => r.slice(2).trim().startsWith(label));
-  if (!hit) throw new Error('줄을 찾지 못함: ' + label + ' / 있는 줄: ' + JSON.stringify(rows));
-  return hit.trim();
-}
+/** 계좌 줄 묶음 */
+const rowsOf = (page, heading) => page.locator('section')
+  .filter({ has: page.getByRole('heading', { name: heading }) })
+  .locator('div.border.border-hair.rounded-sm > div');
 
-/** 한 계좌 줄의 판정 기호 (O / △ / X) */
-const markOf = async (page, heading, label) => (await rowOf(page, heading, label))[0];
+/**
+ * 한 계좌 줄에서 한 재원의 답을 읽는다.
+ *
+ * 재원을 하나만 골랐으면 줄 자체가 답이고, 둘을 골랐으면 계좌 이름 아래에 재원별로
+ * 갈려 있다. 둘 다 { mark, text } 로 돌려준다 - 줄 전체 글자에서 'O' 나 '6년차' 를
+ * 찾으면 옆 재원의 답을 보고도 통과한다.
+ */
+function cellOf(page, heading, account, fund) {
+  return rowsOf(page, heading).evaluateAll((ds, arg) => {
+    const clean = (s) => s.replace(/\s+/g, ' ').trim();
+    const box = ds.find((d) => clean(d.innerText).replace(/^[OX△]\s*/, '').startsWith(arg.account));
+    if (!box) return null;
+    const lines = Array.from(box.querySelectorAll(':scope > div'));
+    if (!lines.length) {                       // 재원 하나 - 줄 하나가 통째로 답이다
+      const t = clean(box.innerText);
+      return { mark: t[0], text: t };
+    }
+    const hit = lines.find((l) => l.innerText.indexOf(arg.fund) >= 0);
+    return hit ? { mark: clean(hit.innerText)[0], text: clean(hit.innerText) } : null;
+  }, { account, fund });
+}
 
 /** 지금 눌려 있는 조건 단추인가 */
 const pressed = (page, name) =>
@@ -31,6 +44,8 @@ const pressed = (page, name) =>
 
 const RECEIVE = '어느 계좌로 받을 수 있나';
 const MOVE = '가지고 있는 계좌를 옮길 수 있나';
+const LEGAL = '규약상 퇴직급여';
+const HONOR = '명퇴금 · 위로금';
 
 module.exports = async function run(t) {
   const { browser, page, errors } = await openApp({});
@@ -42,29 +57,54 @@ module.exports = async function run(t) {
     await page.waitForTimeout(400);
     t.includes(await blockText(page, RECEIVE), '퇴직제도', '조건 고르는 칸이 보임');
 
-    // ── DC 규약상 퇴직급여는 연금저축으로 못 간다 (Q12) ───────────
     // 판단표의 조건 단추는 왼쪽 입력 폼과 글자가 같으므로 '판단표 ' 접두사로 구분된다
     const pick = async (name) => { await button(page, '판단표 ' + name).click(); await page.waitForTimeout(250); };
+
+    // ── DC 규약상 퇴직급여는 연금저축으로 못 간다 (Q12) ───────────
     await pick('DC');
     await pick('2013.3.1 후');
-    await pick('규약상 퇴직급여');
     await pick('만 55세 이상');
+    t.is(await pressed(page, LEGAL), 'true', '받을 돈은 규약상 퇴직급여부터 켜져 있음');
+    t.is(await pressed(page, HONOR), 'false', '명퇴금은 꺼져 있음');
 
-    t.is(await markOf(page, RECEIVE, '기존 (2013.3.1 전)'), 'X', 'DC 규약상 → 구 연금저축 불가');
-    t.is(await markOf(page, RECEIVE, '신규 개설'), 'X', 'DC 규약상 → 신규 연금저축도 불가');
+    t.is((await cellOf(page, RECEIVE, '기존 (2013.3.1 전)', LEGAL)).mark, 'X',
+      'DC 규약상 → 구 연금저축 불가');
+    t.is((await cellOf(page, RECEIVE, '신규 개설', LEGAL)).mark, 'X', 'DC 규약상 → 신규 연금저축도 불가');
     t.includes(await blockText(page, RECEIVE), 'DC 는 연금저축으로 직접 못 감', '사유를 짧게 표시');
 
-    // ── 같은 사람의 명퇴금은 갈 수 있다 (Q12 첫 문단) ─────────────
-    await pick('명퇴금 · 위로금');
-    t.is(await markOf(page, RECEIVE, '신규 개설'), 'O', '명퇴금은 신규 연금저축 가능');
+    // ── 명퇴금을 같이 켜면 둘을 나란히 본다 ───────────────────────
+    //
+    // 퇴직급여와 명퇴금을 같이 받는 사람이 흔한데 하나만 고를 수 있으면 나머지
+    // 재원의 답이 화면에서 아예 사라진다. DC 는 그 둘의 답이 정반대다.
+    await pick(HONOR);
+    t.is(await pressed(page, LEGAL), 'true', '규약상 퇴직급여가 켜진 채로 남음');
+    t.is(await pressed(page, HONOR), 'true', '명퇴금도 같이 켜짐');
+
+    const newPenLegal = await cellOf(page, RECEIVE, '신규 개설', LEGAL);
+    const newPenHonor = await cellOf(page, RECEIVE, '신규 개설', HONOR);
+    t.is(newPenLegal.mark, 'X', '같은 줄에서 규약상은 여전히 불가');
+    t.is(newPenHonor.mark, 'O', '같은 줄에서 명퇴금은 가능');
+    t.includes(newPenLegal.text, 'DC 는 연금저축으로 직접 못 감', '사유는 막힌 재원에만 붙음');
+    t.excludes(newPenHonor.text, 'DC 는 연금저축으로 직접 못 감', '명퇴금에는 DC 제한 사유가 붙지 않음');
+    t.includes(await blockText(page, RECEIVE), '나누어 입금', '재원마다 답이 다르면 분할 입금을 안내');
+
+    // 규약상을 끄면 명퇴금만 남는다
+    await pick(LEGAL);
+    t.is(await pressed(page, LEGAL), 'false', '규약상을 끌 수 있음');
+    t.is((await cellOf(page, RECEIVE, '신규 개설', HONOR)).mark, 'O', '명퇴금만 남아도 가능');
     t.excludes(await blockText(page, RECEIVE), 'DC 는 연금저축으로 직접 못 감',
-      '명퇴금에는 DC 제한 사유가 붙지 않음');
+      '끈 재원의 사유는 사라짐');
+
+    // 마지막 하나는 끌 수 없다 - 표가 빈 채로 남으면 고장으로 보인다
+    await pick(HONOR);
+    t.is(await pressed(page, HONOR), 'true', '마지막 하나는 꺼지지 않음');
 
     // ── 55세 미만이면 법정은 막히고 명퇴금은 열린다 ───────────────
+    await pick(LEGAL);
     await pick('만 55세 미만');
-    t.is(await markOf(page, RECEIVE, '신규 개설'), 'O', '55세 미만이어도 명퇴금은 연금저축 가능');
-    await pick('규약상 퇴직급여');
-    t.is(await markOf(page, RECEIVE, '신규 개설'), 'X', '55세 미만 법정은 불가');
+    t.is((await cellOf(page, RECEIVE, '신규 개설', HONOR)).mark, 'O',
+      '55세 미만이어도 명퇴금은 연금저축 가능');
+    t.is((await cellOf(page, RECEIVE, '신규 개설', LEGAL)).mark, 'X', '55세 미만 법정은 불가');
 
     // ── 계좌 이전: 신 계좌는 구 계좌로 못 간다 (Q23②) ─────────────
     await pick('보내는 연금저축(신)');
@@ -84,7 +124,7 @@ module.exports = async function run(t) {
     // (판정 탭은 고객 정보가 없는 동안 비활성이라 누를 수도 없다).
     await fillCase(page, {
       name: '맞추기', birth: '680410', system: 'DB', joinDate: '2009-04-01',
-      amount: 200000000, deferredTax: 5000000
+      amount: 200000000, honor: 50000000, deferredTax: 5000000
     });
     await button(page, '판단표').click();
     await page.waitForTimeout(300);
@@ -98,9 +138,22 @@ module.exports = async function run(t) {
     t.is(await pressed(page, '2013.3.1 전'), 'true', '제도 가입시점도 맞춰짐');
     t.is(await pressed(page, '만 55세 이상'), 'true', '퇴직 시 나이도 맞춰짐');
     t.is(await pressed(page, 'DC'), 'false', '고르지 않은 제도는 눌려 있지 않음');
-    // 2009년 가입 DB + 만 58세 → 신규 계좌도 6년차 특례 (Q34). 그 줄을 직접 읽는다.
-    t.includes(await rowOf(page, RECEIVE, '신규 개설'), '6년차',
-      '2013.3.1 이전 DB 라 신규 계좌도 6년차');
+    // 명퇴금도 넣었으므로 둘 다 켜져야 한다
+    t.is(await pressed(page, LEGAL), 'true', '퇴직급여가 있으면 규약상이 켜짐');
+    t.is(await pressed(page, HONOR), 'true', '명퇴금도 있으면 같이 켜짐');
+    t.includes(await page.getByLabel('고객 조건 요약', { exact: true }).innerText(),
+      LEGAL + ' + ' + HONOR, '요약에도 둘 다 적힘');
+
+    // 2009년 가입 DB + 만 58세 → 신규 계좌도 6년차 특례 (Q34).
+    //
+    // 기산연차는 계좌의 성질이라 재원에 따라 갈리지 않는다. 그래서 재원을 둘 켜도
+    // 계좌 줄에 연차는 **한 번만** 적힌다 - 같은 숫자를 두 번 적으면 재원마다
+    // 다른 값인 것처럼 읽힌다.
+    const newRow = (await rowsOf(page, RECEIVE).evaluateAll((ds) =>
+      ds.map((d) => d.innerText.replace(/\s+/g, ' ').trim().replace(/^[OX△]\s*/, ''))
+        .find((s) => s.startsWith('신규 개설')))) || '';
+    t.includes(newRow, '6년차', '2013.3.1 이전 DB 라 신규 계좌도 6년차');
+    t.is((newRow.match(/년차/g) || []).length, 1, '연차는 계좌마다 한 번만 적힌다');
 
     // ── 제도 가입일이 비어 있으면 가입시점을 단정하지 않는다 ─────
     //

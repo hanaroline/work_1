@@ -895,6 +895,42 @@ function Segmented({ options, value, onChange, ariaPrefix }) {
   );
 }
 
+/**
+ * 여러 개를 한꺼번에 고르는 Segmented.
+ *
+ * 퇴직급여와 명퇴금을 같이 받는 사람이 많은데 하나만 고를 수 있으면 나머지 하나는
+ * 판단표에서 아예 보이지 않는다. 둘의 답이 서로 다른 것이 요점이므로(DC 규약상은
+ * 연금저축 불가, 같은 사람의 명퇴금은 가능) 같이 켜 놓고 나란히 봐야 한다.
+ *
+ * 하나도 없는 상태는 만들지 않는다 - 표가 빈 채로 남아 고장으로 보인다.
+ */
+function SegmentedMulti({ options, values, onChange, ariaPrefix }) {
+  return (
+    <div className="flex border border-hair rounded-xs overflow-hidden bg-white">
+      {options.map((o, i) => {
+        const on = values.indexOf(o.value) >= 0;
+        const toggle = () => {
+          if (!on) onChange(options.map((x) => x.value).filter((v) => v === o.value || values.indexOf(v) >= 0));
+          else if (values.length > 1) onChange(values.filter((v) => v !== o.value));
+        };
+        return (
+          <button
+            key={o.value} type="button" onClick={toggle}
+            aria-label={(ariaPrefix || '') + o.label} aria-pressed={on}
+            className={
+              'flex-1 h-[42px] px-2 text-[14px] font-medium transition ' +
+              (i > 0 ? 'border-l border-hair ' : '') +
+              (on ? 'bg-mas-orange text-white' : 'bg-white text-ink-muted hover:bg-surf-subtle hover:text-ink')
+            }>
+            <span className="mr-1.5 text-[12px]">{on ? '✓' : ' '}</span>
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function Badge({ tone = 'neutral', children }) {
   const tones = {
     good: 'bg-[#E8F3EA] text-sig-ok border-[#B9DCC1]',
@@ -957,6 +993,9 @@ const TABS = [
  */
 const MATRIX = (typeof window !== 'undefined' && window.__MATRIX__) || null;
 
+/** 재원을 적는 순서. 고르는 차례와 무관하게 늘 같게 보이도록 고정한다 */
+const FUND_ORDER = ['LEGAL', 'HONOR'];
+
 /* ================================================================
    5-2. 판단표 탭
 
@@ -965,44 +1004,110 @@ const MATRIX = (typeof window !== 'undefined' && window.__MATRIX__) || null;
    표는 뒤에 그대로 있지만 화면에는 고른 줄 하나만 편다.
    ================================================================ */
 
-function MatrixPick({ label, options, value, onChange, hint, ariaPrefix }) {
+function MatrixPick({ label, options, value, onChange, hint, ariaPrefix, multi }) {
+  const prefix = '판단표 ' + (ariaPrefix || '');
   return (
     <div className="mb-3">
       <div className="text-[13px] font-medium text-ink-body mb-1.5">
         {label}
         {hint ? <span className="text-ink-soft font-normal ml-1.5 text-[12px]">{hint}</span> : null}
       </div>
-      <Segmented options={options} value={value} onChange={onChange}
-        ariaPrefix={'판단표 ' + (ariaPrefix || '')} />
+      {multi
+        ? <SegmentedMulti options={options} values={value} onChange={onChange} ariaPrefix={prefix} />
+        : <Segmented options={options} value={value} onChange={onChange} ariaPrefix={prefix} />}
     </div>
   );
 }
 
-/** 가능/조건부/불가 한 줄 */
-function MatrixRow({ label, cell, showIndex }) {
-  const ok = cell.verdict === '가능';
-  const cond = cell.verdict === '조건부';
+const markCls = (v) => (v === '가능' ? 'bg-sig-ok' : v === '조건부' ? 'bg-[#C89A2B]' : 'bg-mas-gray');
+const markChar = (v) => (v === '가능' ? 'O' : v === '조건부' ? '△' : 'X');
+const tintCls = (v) => (v === '가능' ? 'bg-white' : v === '조건부' ? 'bg-[#FBF3DF]' : 'bg-surf-subtle');
+
+/** 가능/조건부/불가 기호 */
+function Mark({ verdict }) {
   return (
-    <div className={'flex items-start gap-3 px-3 py-2.5 border-b border-hair-soft last:border-b-0 ' +
-      (ok ? 'bg-white' : cond ? 'bg-[#FBF3DF]' : 'bg-surf-subtle')}>
-      <span className={'shrink-0 w-[22px] h-[22px] rounded-full text-[13px] font-bold leading-[22px] text-center ' +
-        (ok ? 'bg-sig-ok text-white' : cond ? 'bg-[#C89A2B] text-white' : 'bg-mas-gray text-white')}>
-        {ok ? 'O' : cond ? '△' : 'X'}
-      </span>
-      <span className="flex-1 min-w-0">
-        <span className={'block text-[14px] ' + (ok ? 'font-bold text-ink' : 'text-ink-muted')}>{label}</span>
-        {/* 짧은 사유만 적는다. 긴 설명은 마우스를 올리면 뜬다 - 상담 중에 읽어야 하는 것은 한 줄이다 */}
-        {cell.short ? (
-          <span className="block text-[12px] text-ink-soft leading-snug mt-0.5" title={cell.why}>
-            {cell.short}
+    <span className={'shrink-0 w-[22px] h-[22px] rounded-full text-[13px] font-bold leading-[22px] ' +
+      'text-center text-white ' + markCls(verdict)}>
+      {markChar(verdict)}
+    </span>
+  );
+}
+
+/**
+ * 계좌 한 줄.
+ *
+ * entries 는 고른 재원마다 하나씩이다. 재원이 하나면 예전처럼 한 줄로 그리고,
+ * 둘이면 계좌 이름 아래에 재원별로 갈라 적는다. **합쳐서 하나의 기호로 줄이지
+ * 않는다** - 같은 계좌라도 규약상 퇴직급여는 막히고 명퇴금은 되는 일이 흔하다
+ * (DC 가 그렇다). 재원별로 갈리는 것은 가능/불가뿐이고 기산연차는 계좌의 성질이라
+ * 같으므로, 연차는 계좌 이름 옆에 한 번만 적는다.
+ */
+function MatrixRow({ label, entries, showIndex }) {
+  const first = entries[0].cell;
+
+  if (entries.length === 1) {
+    const ok = first.verdict === '가능';
+    return (
+      <div className={'flex items-start gap-3 px-3 py-2.5 border-b border-hair-soft last:border-b-0 ' +
+        tintCls(first.verdict)}>
+        <Mark verdict={first.verdict} />
+        <span className="flex-1 min-w-0">
+          <span className={'block text-[14px] ' + (ok ? 'font-bold text-ink' : 'text-ink-muted')}>{label}</span>
+          {/* 짧은 사유만 적는다. 긴 설명은 마우스를 올리면 뜬다 - 상담 중에 읽어야 하는 것은 한 줄이다 */}
+          {first.short ? (
+            <span className="block text-[12px] text-ink-soft leading-snug mt-0.5" title={first.why}>
+              {first.short}
+            </span>
+          ) : null}
+        </span>
+        {showIndex && first.verdict !== '불가' ? (
+          <span className={'shrink-0 num text-[13px] font-bold ' +
+            (first.index >= 6 ? 'text-mas-active' : 'text-ink-soft')}>
+            {first.index}년차
           </span>
         ) : null}
-      </span>
-      {showIndex && cell.verdict !== '불가' ? (
-        <span className={'shrink-0 num text-[13px] font-bold ' + (cell.index >= 6 ? 'text-mas-active' : 'text-ink-soft')}>
-          {cell.index}년차
+      </div>
+    );
+  }
+
+  const anyOk = entries.some((e) => e.cell.verdict === '가능');
+  // 갈 수 있는 재원들의 기산연차. 계좌의 성질이라 하나로 모이지만, 그렇지 않은
+  // 자료가 들어오면 재원별로 나누어 적는다 - 서로 다른 값을 하나로 뭉개지 않는다.
+  const idx = entries.filter((e) => e.cell.verdict !== '불가').map((e) => e.cell.index);
+  const sharedIdx = idx.length && idx.every((n) => n === idx[0]) ? idx[0] : null;
+
+  return (
+    <div className="border-b border-hair-soft last:border-b-0">
+      <div className="flex items-baseline gap-3 px-3 pt-2 pb-1">
+        <span className={'flex-1 min-w-0 text-[14px] ' + (anyOk ? 'font-bold text-ink' : 'text-ink-muted')}>
+          {label}
         </span>
-      ) : null}
+        {showIndex && sharedIdx !== null ? (
+          <span className={'shrink-0 num text-[13px] font-bold ' +
+            (sharedIdx >= 6 ? 'text-mas-active' : 'text-ink-soft')}>
+            {sharedIdx}년차
+          </span>
+        ) : null}
+      </div>
+      {entries.map((e) => (
+        <div key={e.fund} className={'flex items-start gap-2.5 px-3 py-1.5 ' + tintCls(e.cell.verdict)}>
+          <Mark verdict={e.cell.verdict} />
+          <span className="flex-1 min-w-0">
+            <span className="block text-[13px] text-ink-body">{e.label}</span>
+            {e.cell.short ? (
+              <span className="block text-[12px] text-ink-soft leading-snug mt-0.5" title={e.cell.why}>
+                {e.cell.short}
+              </span>
+            ) : null}
+          </span>
+          {showIndex && sharedIdx === null && e.cell.verdict !== '불가' ? (
+            <span className={'shrink-0 num text-[13px] font-bold ' +
+              (e.cell.index >= 6 ? 'text-mas-active' : 'text-ink-soft')}>
+              {e.cell.index}년차
+            </span>
+          ) : null}
+        </div>
+      ))}
     </div>
   );
 }
@@ -1011,7 +1116,9 @@ function MatrixTab({ current }) {
   const M = MATRIX;
   const [sys, setSys] = useState('DC');
   const [legacy, setLegacy] = useState(false);
-  const [fund, setFund] = useState('LEGAL');
+  // 받을 돈은 여러 개다. 퇴직급여와 명퇴금을 같이 받는 사람이 흔하고, 그 둘의
+  // 답이 서로 다른 것이 판단표를 보는 이유다.
+  const [funds, setFunds] = useState(['LEGAL']);
   const [old55, setOld55] = useState(true);
   const [from, setFrom] = useState(0);
   const [to, setTo] = useState(1);
@@ -1030,8 +1137,12 @@ function MatrixTab({ current }) {
     setSys(current.system);
     if (current.legacy !== null) setLegacy(current.legacy);
     setOld55(current.age >= 55);
-    if (current.fund) setFund(current.fund);
+    if (current.funds.length) setFunds(current.funds);
   };
+
+  /** 이 제도에서 그 재원을 뭐라고 부르는가 */
+  const fundLabel = (f) => (f === 'HONOR' ? '명퇴금 · 위로금'
+    : sys === 'SEV' ? '법정퇴직금' : '규약상 퇴직급여');
 
   // 단추를 누르기 전에도 무엇으로 맞춰지는지 보인다 - 누른 뒤에 달라진 게 없어
   // '안 먹었나' 싶은 상황을 없앤다.
@@ -1040,13 +1151,17 @@ function MatrixTab({ current }) {
     ? [sysLabel[current.system],
       current.system === 'SEV' ? null
         : current.legacy === null ? '가입시점 모름' : CUTOFF_LABEL + (current.legacy ? ' 전' : ' 후'),
-      current.fund === 'HONOR' ? '명퇴금 · 위로금' : current.fund === 'LEGAL'
-        ? (current.system === 'SEV' ? '법정퇴직금' : '규약상 퇴직급여') : null,
+      current.funds.map((f) => (f === 'HONOR' ? '명퇴금 · 위로금'
+        : current.system === 'SEV' ? '법정퇴직금' : '규약상 퇴직급여')).join(' + ') || null,
       '만 55세 ' + (current.age >= 55 ? '이상' : '미만')].filter(Boolean).join(' · ')
     : null;
 
-  const row = M.deposit.find((r) => r.system === sys && r.fund === fund &&
-    r.age === (old55 ? 58 : 54) && (sys === 'SEV' || r.legacySys === legacy));
+  // 고른 재원마다 한 줄씩. 순서는 늘 규약상 → 명퇴금으로 고정한다.
+  const entriesFor = (i) => FUND_ORDER.filter((f) => funds.indexOf(f) >= 0).map((f) => {
+    const r = M.deposit.find((x) => x.system === sys && x.fund === f &&
+      x.age === (old55 ? 58 : 54) && (sys === 'SEV' || x.legacySys === legacy));
+    return { fund: f, label: fundLabel(f), cell: r.cells[i] };
+  });
 
   const grp = M.transfer.find((g) => g.meets === meets);
   const tCell = grp.rows[from].cells[to];
@@ -1083,8 +1198,8 @@ function MatrixTab({ current }) {
             <MatrixPick label={sys + ' 제도 가입일'} value={legacy} onChange={setLegacy}
               options={[{ value: true, label: CUTOFF_LABEL + ' 전' }, { value: false, label: CUTOFF_LABEL + ' 후' }]} />
           )}
-          <MatrixPick label="받을 돈" value={fund} onChange={setFund}
-            hint={sys === 'SEV' ? '' : '규약에 없는 명퇴금은 오른쪽'}
+          <MatrixPick label="받을 돈" value={funds} onChange={setFunds} multi
+            hint="둘 다 있으면 둘 다 켜 두세요 - 답이 서로 다릅니다"
             options={[
               { value: 'LEGAL', label: sys === 'SEV' ? '법정퇴직금' : '규약상 퇴직급여' },
               { value: 'HONOR', label: '명퇴금 · 위로금' }
@@ -1099,7 +1214,7 @@ function MatrixTab({ current }) {
             <div className="border border-hair rounded-sm overflow-hidden">
               {penIdx.map((i) => (
                 <MatrixRow key={i} label={M.targets[i].label.replace(' 연금저축', '').replace('연금저축 ', '')}
-                  cell={row.cells[i]} showIndex />
+                  entries={entriesFor(i)} showIndex />
               ))}
             </div>
           </div>
@@ -1108,11 +1223,17 @@ function MatrixTab({ current }) {
             <div className="border border-hair rounded-sm overflow-hidden">
               {irpIdx.map((i) => (
                 <MatrixRow key={i} label={M.targets[i].label.replace(' IRP', '').replace('IRP ', '')}
-                  cell={row.cells[i]} showIndex />
+                  entries={entriesFor(i)} showIndex />
               ))}
             </div>
           </div>
         </div>
+        {funds.length > 1 && (
+          <p className="text-[12px] text-ink-soft mt-3 leading-relaxed" role="note" aria-label="재원별 분할 안내">
+            재원마다 갈 수 있는 계좌와 기산연차가 다르면 <strong>나누어 입금</strong>합니다.
+            화면 왼쪽에 금액을 넣으면 <strong>판정</strong> 탭이 재원별로 계좌를 배정해 줍니다.
+          </p>
+        )}
         <p className="text-[12px] text-ink-soft mt-3 leading-relaxed">
           오른쪽 숫자는 <strong>기산연차</strong>입니다. 실제 연금수령연차는 기산연도(만 55세 + 계좌에 돈이 들어온 해)부터
           해마다 쌓이므로 더 클 수 있습니다. <strong>연차가 클수록 한도가 큽니다</strong> - 6년차면 1년차의 2배입니다.
@@ -1132,7 +1253,8 @@ function MatrixTab({ current }) {
           options={[{ value: false, label: '아직 아님' }, { value: true, label: '충족' }]} />
 
         <div className="border border-hair rounded-sm overflow-hidden mt-3">
-          <MatrixRow label={grp.kinds[from] + ' → ' + grp.kinds[to]} cell={tCell} />
+          <MatrixRow label={grp.kinds[from] + ' → ' + grp.kinds[to]}
+            entries={[{ fund: 'MOVE', label: '', cell: tCell }]} />
         </div>
 
         {tCell.verdict !== '불가' && from !== to && (
@@ -2705,7 +2827,12 @@ function App() {
                   legacy: systemJoinMissing ? null
                     : isLegacyDate(system === 'DC' && dbConverted && dbJoin ? dbJoin : systemJoin),
                   age: retireAge === null ? 58 : retireAge,
-                  fund: (system === 'SEV' ? amtLegal : amtSingle) > 0 ? 'LEGAL' : amtHonor > 0 ? 'HONOR' : null
+                  // 둘 다 있으면 둘 다 넘긴다. 하나만 보여 주면 나머지 재원의 답이
+                  // 화면에서 아예 사라진다 - DC 는 그 둘의 답이 정반대다.
+                  funds: [
+                    (system === 'SEV' ? amtLegal : amtSingle) > 0 ? 'LEGAL' : null,
+                    amtHonor > 0 ? 'HONOR' : null
+                  ].filter(Boolean)
                 }} />
               </div>
             </div>
