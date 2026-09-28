@@ -1157,47 +1157,256 @@ function SegmentedMulti({ options, values, onChange, ariaPrefix }) {
  * 결과 숫자 하나만 내놓지 않는다. 상담 중에 "왜 이 금액인가" 를 고객에게 그 자리에서
  * 설명해야 하고, 회사가 뗀 금액과 다를 때 어느 단계가 다른지 짚을 수 있어야 한다.
  */
+/**
+ * 계산 과정의 한 줄. 마우스를 올리면(또는 눌러도) 해설이 뜬다.
+ *
+ * 상담 중에 고객이 묻는 것은 '왜 이 금액이냐' 가 아니라 '이 줄이 무슨 뜻이냐' 다.
+ * 조문 번호만 적어 두면 그 자리에서 설명할 수가 없다. 해설을 줄마다 붙여 두고,
+ * 화면은 여전히 숫자만 보이게 접어 둔다.
+ *
+ * 손가락으로 쓰는 기기에는 hover 가 없으므로 눌러도 열린다. 키보드로도 열린다.
+ */
+function ExplainRow({ title, body, children, className = '' }) {
+  // 올려 두는 동안 열리는 것과, 눌러서 고정해 두는 것을 갈라 둔다.
+  //
+  // 하나로 두면 누르는 순간 이미 hover 로 열려 있어 토글이 곧 '닫기' 가 된다.
+  // 손가락으로 누른 사람에게는 아무 일도 안 일어난 것처럼 보이고, 마우스로 누른
+  // 사람에게는 읽으려는 순간 사라진다. 눌러서 고정하면 마우스를 떼도 남는다.
+  const [hover, setHover] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const open = hover || pinned;
+  return (
+    <div className="relative"
+      onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+      <button type="button"
+        aria-label={title + ' 해설'} aria-expanded={open} aria-pressed={pinned}
+        onClick={(e) => { e.preventDefault(); setPinned((v) => !v); }}
+        onFocus={() => setHover(true)} onBlur={() => setHover(false)}
+        className={'w-full text-left flex items-baseline gap-2 rounded-xs transition ' +
+          'hover:bg-mas-soft focus:outline-none focus:ring-2 focus:ring-mas-orange/30 ' + className}>
+        {children}
+      </button>
+      {open && (
+        <span role="note" aria-label={title + ' 해설 내용'}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+          className="absolute z-30 left-0 top-full mt-1 w-[320px] max-w-[80vw] p-3 bg-ink text-white
+                     text-[12px] leading-relaxed font-normal rounded-sm shadow-lg block cursor-default">
+          <span className="block font-bold mb-1">
+            {title}
+            {pinned ? <span className="font-normal opacity-60 ml-1.5 text-[11px]">고정됨 · 다시 누르면 해제</span> : null}
+          </span>
+          <span className="block opacity-90">{body}</span>
+        </span>
+      )}
+    </div>
+  );
+}
+
+/** 계산 과정의 줄마다 붙는 해설 */
+function taxStepNotes(r, c) {
+  const 만 = (n) => n.toLocaleString('ko-KR');
+  return {
+    근속연수: (
+      <React.Fragment>
+        입사일부터 퇴직일까지입니다. <strong>1년 미만의 기간은 1년으로 올립니다</strong>
+        (시행령 §105②) — 하루만 넘겨도 한 해가 올라가므로 세액이 눈에 띄게 갈립니다.<br /><br />
+        {r.settle
+          ? '중간정산을 받았으므로 두 갈래가 있습니다. 원칙(분리)은 정산일 다음 날부터 세고, 정산특례는 입사일부터 통산합니다. 지금은 ' +
+            (r.mode === 'settle' ? '정산특례' : '원칙(분리)') + ' 쪽이 유리해 그 연수를 씁니다.'
+          : '중간정산을 받았다면 원칙적으로 정산일 다음 날부터 셉니다.'}
+        <br /><br />
+        근속연수가 길수록 아래 <strong>근속연수공제가 커지고</strong> 환산급여의 분모도 커져
+        세금이 줄어듭니다.
+      </React.Fragment>
+    ),
+    퇴직소득금액: (
+      <React.Fragment>
+        <strong>법정퇴직금 + 명예퇴직금 − 비과세 퇴직급여</strong>입니다. 명예퇴직금·위로금도
+        퇴직소득이라(소득세법 §22) 따로 계산하지 않고 <strong>합해서 한 번에</strong> 과세합니다.
+        <br /><br />
+        계좌를 나눠 받아도 세금은 이 합계로 먼저 계산하고, 계좌별 이연퇴직소득세는
+        <strong> 배정액 비율로 안분</strong>합니다(시행령 §202의2).
+        {r.mode === 'settle' && (
+          <React.Fragment><br /><br />
+            정산특례라서 <strong>중간정산분도 합산</strong>한 금액입니다.
+          </React.Fragment>
+        )}
+      </React.Fragment>
+    ),
+    근속연수공제: (
+      <React.Fragment>
+        오래 일할수록 더 많이 빼 줍니다(소득세법 §48①1).<br /><br />
+        5년 이하 — 100만원 × 근속연수<br />
+        5년 초과 10년 이하 — 500만원 + 200만원 × (연수 − 5)<br />
+        10년 초과 20년 이하 — 1,500만원 + 250만원 × (연수 − 10)<br />
+        20년 초과 — 4,000만원 + 300만원 × (연수 − 20)<br /><br />
+        지금은 <strong>{c.years}년</strong>이라 <strong>{만(c.svcDed)}원</strong>입니다.
+        구간별로 쌓는 방식이라 20년을 넘겨도 전액에 300만원을 곱하지 않습니다.
+      </React.Fragment>
+    ),
+    환산급여: (
+      <React.Fragment>
+        <strong>(퇴직소득금액 − 근속연수공제) ÷ 근속연수 × 12</strong><br /><br />
+        퇴직금은 여러 해에 걸쳐 쌓인 돈인데 한 해에 몰아서 받습니다. 그대로 누진세율을
+        먹이면 세율이 지나치게 높아지므로, <strong>1년치로 나눈 뒤 12를 곱해</strong> 세율을
+        낮춰 잡습니다(연분연승). 맨 아래에서 <strong>÷ 12 × 근속연수</strong>로 되돌립니다.
+        <br /><br />
+        그래서 근속연수가 길수록 환산급여가 작아지고, 세율 구간도 낮아집니다.
+      </React.Fragment>
+    ),
+    환산급여공제: (
+      <React.Fragment>
+        환산급여에서 다시 한 번 빼 줍니다(소득세법 §48③). 금액이 클수록 <strong>공제율이
+        낮아지는</strong> 체감 구조입니다.<br /><br />
+        800만원 이하 — 전액<br />
+        800만 ~ 7,000만원 — 800만원 + 초과분 × 60%<br />
+        7,000만 ~ 1억원 — 4,520만원 + 초과분 × 55%<br />
+        1억 ~ 3억원 — 6,170만원 + 초과분 × 45%<br />
+        3억원 초과 — 1억 5,170만원 + 초과분 × 35%<br /><br />
+        지금은 환산급여 {만(Math.round(c.converted))}원이라 <strong>{만(Math.round(c.convDed))}원</strong>을 뺍니다.
+      </React.Fragment>
+    ),
+    과세표준: (
+      <React.Fragment>
+        <strong>환산급여 − 환산급여공제</strong>입니다. 여기에 아래의 기본세율을 적용합니다.
+        <br /><br />
+        이 값은 <strong>1년치로 환산한 금액</strong>이라 실제 퇴직금과 크게 다릅니다.
+        놀라실 필요 없습니다 — 마지막에 근속연수만큼 되돌립니다.
+      </React.Fragment>
+    ),
+    환산산출세액: (
+      <React.Fragment>
+        과세표준에 종합소득 기본세율을 적용합니다(소득세법 §55①).<br /><br />
+        1,400만원 이하 6% · ~5,000만원 15% · ~8,800만원 24% · ~1.5억 35% ·<br />
+        ~3억 38% · ~5억 40% · ~10억 42% · 10억 초과 45%<br /><br />
+        <strong>아직 실제 세금이 아닙니다.</strong> 1년치로 환산한 세액이므로 아래에서
+        근속연수만큼 되돌려야 합니다.
+      </React.Fragment>
+    ),
+    되돌리기: (
+      <React.Fragment>
+        <strong>연분연승을 되돌립니다.</strong> 환산산출세액은 12개월치 기준이므로 12로 나눠
+        한 달치로 만든 다음 근속연수를 곱합니다.<br /><br />
+        원 미만은 절사합니다. 나눗셈·곱셈을 거친 값이라 그냥 버리면 부동소수점 때문에
+        1원이 깎이는 경우가 있어, 정확한 값으로 되돌린 뒤 절사합니다.
+      </React.Fragment>
+    ),
+    기납부세액: (
+      <React.Fragment>
+        정산특례(소득세법 §148)는 중간정산분을 합산해 <strong>처음부터 다시 계산한 뒤</strong>,
+        그때 이미 낸 세금을 뺍니다. 같은 돈에 두 번 과세하지 않기 위한 장치입니다.
+        <br /><br />
+        <strong>퇴직자가 회사에 신고해야 적용됩니다.</strong> 퇴직할 때 중간정산
+        원천징수영수증을 함께 제출하세요. 신고하지 않으면 원칙(분리)대로 계산됩니다.
+      </React.Fragment>
+    ),
+    이연퇴직소득세: (
+      <React.Fragment>
+        퇴직급여를 <strong>연금계좌로 받으면 이 세금을 떼지 않고 미뤄 둡니다</strong>
+        (소득세법 §146). 일시금으로 받으면 지금 전액을 냅니다.<br /><br />
+        나중에 연금으로 나눠 받을 때 실제 수령 횟수에 따라 <strong>1~10회차 30% ·
+        11~20회차 40% · 21회차부터 50%</strong>를 감면받습니다. 오래 나눠 받을수록 덜 냅니다.
+        <br /><br />
+        원천징수영수증의 <strong>'이연퇴직소득세'</strong> 란에 적히는 금액이 이것입니다
+        (국세 기준).
+      </React.Fragment>
+    ),
+    지방소득세: (
+      <React.Fragment>
+        소득세액의 <strong>10%</strong>가 따로 붙습니다(지방세법 §103의3).<br /><br />
+        원천징수영수증에는 <strong>국세만</strong> 적히므로 영수증 금액과 맞댈 때는 위의
+        '이연퇴직소득세 (국세)' 를 보시면 됩니다.
+      </React.Fragment>
+    ),
+    합계: (
+      <React.Fragment>
+        <strong>인출 스케줄과 계좌 비교가 쓰는 값</strong>입니다. 같은 칸에 더해지는
+        연금소득세(5.5 · 4.4 · 3.3%)와 기타소득세(16.5%)가 이미 지방소득세를 품은 세율이라,
+        퇴직소득세만 국세로 두면 한 칸 안에서 기준이 갈립니다.<br /><br />
+        실효세율은 <strong>합계 ÷ 퇴직소득금액</strong>입니다. 퇴직소득은 공제가 크고
+        연분연승이 적용되어 다른 소득보다 실효세율이 낮습니다.
+      </React.Fragment>
+    )
+  };
+}
+
+/**
+ * 퇴직소득세 계산 과정.
+ *
+ * 결과 숫자 하나만 내놓지 않는다. 상담 중에 "왜 이 금액인가" 를 고객에게 그 자리에서
+ * 설명해야 하고, 회사가 뗀 금액과 다를 때 어느 단계가 다른지 짚을 수 있어야 한다.
+ * 줄마다 해설을 달아 두되(마우스를 올리면 뜬다) 화면에는 숫자만 보이게 접어 둔다.
+ */
 function RetireTaxBreakdown({ r }) {
   const c = r.chosen;
+  const N = taxStepNotes(r, c);
   const rows = [
-    ['근속연수', c.years + '년', '1년 미만은 1년으로 올림 (시행령 §105②)'],
-    ['퇴직소득금액', krw(c.income), r.mode === 'settle' ? '중간정산분 합산 (§148)' : null],
-    ['− 근속연수공제', krw(c.svcDed), '소득세법 §48①1'],
-    ['환산급여', krw(Math.round(c.converted)), '(퇴직소득금액 − 공제) ÷ 근속연수 × 12'],
-    ['− 환산급여공제', krw(Math.round(c.convDed)), '소득세법 §48③'],
-    ['과세표준', krw(Math.round(c.base)), null],
-    ['환산산출세액', krw(Math.round(c.convertedTax)), '기본세율 §55①'],
-    ['÷ 12 × 근속연수', krw(r.mode === 'settle' ? c.wholeTax : c.tax), null]
+    { key: '근속연수', title: '근속연수', label: '근속연수', value: c.years + '년',
+      note: '1년 미만은 1년으로 올림 (시행령 §105②)', why: N.근속연수 },
+    { key: '퇴직소득금액', title: '퇴직소득금액', label: '퇴직소득금액', value: krw(c.income),
+      note: r.mode === 'settle' ? '중간정산분 합산 (§148)' : '법정 + 명예 − 비과세 (§22)',
+      why: N.퇴직소득금액 },
+    { key: '근속연수공제', title: '근속연수공제', label: '− 근속연수공제', value: krw(c.svcDed),
+      note: '소득세법 §48①1', why: N.근속연수공제 },
+    { key: '환산급여', title: '환산급여', label: '환산급여', value: krw(Math.round(c.converted)),
+      note: '(퇴직소득금액 − 공제) ÷ 근속연수 × 12', why: N.환산급여 },
+    { key: '환산급여공제', title: '환산급여공제', label: '− 환산급여공제', value: krw(Math.round(c.convDed)),
+      note: '소득세법 §48③', why: N.환산급여공제 },
+    { key: '과세표준', title: '과세표준', label: '과세표준', value: krw(Math.round(c.base)),
+      note: '1년치로 환산한 금액', why: N.과세표준 },
+    { key: '환산산출세액', title: '환산산출세액', label: '환산산출세액', value: krw(Math.round(c.convertedTax)),
+      note: '기본세율 §55①', why: N.환산산출세액 },
+    { key: '되돌리기', title: '연분연승 되돌리기', label: '÷ 12 × 근속연수',
+      value: krw(r.mode === 'settle' ? c.wholeTax : c.tax),
+      note: '연분연승을 되돌림', why: N.되돌리기 }
   ];
-  if (r.mode === 'settle') rows.push(['− 중간정산 기납부세액', krw(c.paid), '정산특례 §148']);
+  if (r.mode === 'settle') {
+    rows.push({ key: '기납부세액', title: '중간정산 기납부세액', label: '− 중간정산 기납부세액',
+      value: krw(c.paid),
+      note: '정산특례 §148', why: N.기납부세액 });
+  }
+
+  const L = 'text-ink-muted shrink-0 w-[112px]';
+  const V = 'num font-medium text-ink shrink-0';
+  const H = 'text-ink-soft text-[11px] truncate';
 
   return (
     <div className="screen-only border-t border-hair pt-3">
-      <div className="text-[12px] font-bold text-ink-body mb-1.5">계산 과정</div>
+      <div className="text-[12px] font-bold text-ink-body mb-1.5">
+        계산 과정
+        <span className="font-normal text-ink-soft ml-1.5">줄에 마우스를 올리면 해설이 나옵니다</span>
+      </div>
       <div className="text-[12px] leading-relaxed">
-        {rows.map((row, i) => (
-          <div key={i} className="flex items-baseline gap-2 py-[3px] border-b border-hair-soft last:border-b-0">
-            <span className="text-ink-muted shrink-0 w-[112px]">{row[0]}</span>
-            <span className="num font-medium text-ink shrink-0">{row[1]}</span>
-            {row[2] ? <span className="text-ink-soft text-[11px] truncate">{row[2]}</span> : null}
-          </div>
+        {rows.map((row) => (
+          /* 제목은 줄마다 명시한다. 라벨에서 기호를 깎아 만들었더니
+             '÷ 12 × 근속연수' 가 '근속연수' 가 되어 두 줄의 이름이 겹쳤다. */
+          <ExplainRow key={row.key} title={row.title} body={row.why}
+            className="py-[3px] px-1 -mx-1 border-b border-hair-soft">
+            <span className={L}>{row.label}</span>
+            <span className={V}>{row.value}</span>
+            {row.note ? <span className={H}>{row.note}</span> : null}
+          </ExplainRow>
         ))}
-        <div className="flex items-baseline gap-2 pt-2 mt-1 border-t border-hair">
-          <span className="text-ink-muted shrink-0 w-[112px]">이연퇴직소득세 (국세)</span>
-          <span className="num font-medium text-ink">{krw(c.tax)}</span>
-          <span className="text-ink-soft text-[11px]">영수증의 '이연퇴직소득세' 가 이 금액입니다</span>
+        <div className="pt-2 mt-1 border-t border-hair">
+          <ExplainRow title="이연퇴직소득세 (국세)" body={N.이연퇴직소득세} className="px-1 -mx-1">
+            <span className={L}>이연퇴직소득세 (국세)</span>
+            <span className={V}>{krw(c.tax)}</span>
+            <span className={H}>영수증의 '이연퇴직소득세' 가 이 금액입니다</span>
+          </ExplainRow>
         </div>
-        <div className="flex items-baseline gap-2 py-[3px]">
-          <span className="text-ink-muted shrink-0 w-[112px]">+ 지방소득세</span>
-          <span className="num font-medium text-ink">{krw(c.local)}</span>
-          <span className="text-ink-soft text-[11px]">소득세액의 10% (지방세법 §103의3)</span>
-        </div>
-        <div className="flex items-baseline gap-2 pt-1.5 mt-1 border-t border-hair">
-          <span className="text-ink-body font-bold shrink-0 w-[112px]">합계</span>
-          <span className="num font-bold text-mas-active text-[14px]">{krw(c.total)}</span>
-          <span className="text-ink-soft text-[11px]">
-            실효 {c.income > 0 ? (c.total / c.income * 100).toFixed(2) : '0.00'}%
-          </span>
+        <ExplainRow title="지방소득세" body={N.지방소득세} className="py-[3px] px-1 -mx-1">
+          <span className={L}>+ 지방소득세</span>
+          <span className={V}>{krw(c.local)}</span>
+          <span className={H}>소득세액의 10% (지방세법 §103의3)</span>
+        </ExplainRow>
+        <div className="pt-1.5 mt-1 border-t border-hair">
+          <ExplainRow title="합계 (지방소득세 포함)" body={N.합계} className="px-1 -mx-1">
+            <span className="text-ink-body font-bold shrink-0 w-[112px]">합계</span>
+            <span className="num font-bold text-mas-active text-[14px] shrink-0">{krw(c.total)}</span>
+            <span className={H}>
+              실효 {c.income > 0 ? (c.total / c.income * 100).toFixed(2) : '0.00'}%
+            </span>
+          </ExplainRow>
         </div>
         {/* 원 단위까지 적는다. 영수증과 맞대려면 만원 단위 표기로는 부족하다 */}
         <p className="text-[11px] text-ink-soft mt-0.5 num" aria-label="이연퇴직소득세 원 단위">
