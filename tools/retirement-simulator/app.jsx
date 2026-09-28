@@ -2665,25 +2665,40 @@ function App() {
     <React.Fragment>
       {/* ===================== 화면 ===================== */}
       <div className="screen-only">
+        {/*
+          머리는 상담 중에 한 번도 읽지 않는 자리다. 크게 잡아 두면 정작 봐야 할
+          판정과 스케줄이 화면 밖으로 밀린다(세로 754px 화면에서 머리만 285px 를
+          쓰고 있었다). 한 줄로 눕히고, 사용법 단추는 제목 오른쪽 빈자리에 둬서
+          높이를 따로 먹지 않게 한다.
+
+          설명 문장은 지우지 않는다 - 처음 여는 사람에게 이 도구가 무엇을 답해 주는지
+          말해 주는 유일한 자리다. 대신 작게 줄이고, 좁은 화면에서는 제목 아래로
+          자연스럽게 접히게 둔다.
+        */}
         <header className="bg-mas-orange text-white">
-          <div className="max-w-[1200px] mx-auto px-6 py-8 md:py-10">
-            <div className="text-[12px] font-medium tracking-wider opacity-90 mb-3">[사내한] 퇴직급여 상담 도구</div>
-            <h1 className="text-[34px] md:text-[44px] font-bold leading-[1.15] tracking-[-0.5px]">
-              퇴직급여 수령 의사결정 시뮬레이터
-            </h1>
-            <p className="mt-3 text-[16px] md:text-[17px] leading-relaxed opacity-95 max-w-[760px]">
-              고객 나이 · 퇴직제도 · 기존 연금계좌 가입일을 입력하면 <strong className="font-bold">신규 계좌를 개설해야 하는지,
-              기존 계좌를 활용해도 되는지</strong> 판정하고 연차별 인출 한도를 시뮬레이션합니다.
-            </p>
+          <div className="max-w-[1200px] mx-auto px-6 py-3.5
+                          flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <div className="text-[11px] font-medium tracking-wider opacity-85 leading-none mb-1">
+                [사내한] 퇴직급여 상담 도구
+              </div>
+              <h1 className="text-[20px] md:text-[25px] font-bold leading-[1.2] tracking-[-0.5px]">
+                퇴직급여 수령 의사결정 시뮬레이터
+              </h1>
+              <p className="mt-1 text-[12px] md:text-[13px] leading-snug opacity-90 max-w-[720px]">
+                고객 나이 · 퇴직제도 · 기존 연금계좌 가입일로 <strong className="font-bold">신규 계좌 개설과
+                기존 계좌 활용 중 무엇이 맞는지</strong> 판정하고 연차별 인출 한도를 시뮬레이션합니다.
+              </p>
+            </div>
             <button type="button" aria-label="사용법" onClick={() => setGuideOpen(true)}
-              className="mt-4 h-[38px] px-4 text-[14px] font-medium bg-white text-mas-active
+              className="shrink-0 h-[34px] px-3.5 text-[13px] font-medium bg-white text-mas-active
                          rounded-xs hover:bg-mas-soft transition">
               사용법 보기
             </button>
           </div>
         </header>
 
-        <main className="max-w-[1200px] mx-auto px-6 py-10">
+        <main className="max-w-[1200px] mx-auto px-6 py-6">
           <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-8 items-start">
 
             {/* ---------- 입력 (데스크탑에서는 스크롤에 따라붙는다) ---------- */}

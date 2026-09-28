@@ -23,6 +23,27 @@ module.exports = async function run(t) {
     t.is(await dialog(page).count(), 0, '처음에는 사용법이 닫혀 있다');
     t.is(await button(page, '사용법').count(), 1, '머리에 사용법 단추가 하나');
 
+    /**
+     * 머리는 본문을 밀어내지 않는다.
+     *
+     * 제목·부제·사용법 단추를 세로로 쌓아 두었더니 머리 하나가 세로 285px 를 먹어
+     * 정작 봐야 할 판정과 인출표가 화면 밖으로 내려갔다는 보고를 받았다. 눈으로
+     * 보고 줄인 것이라 다시 쌓기 쉬우므로 높이로 못을 박는다.
+     *
+     * 글자 크기를 조금 만지는 것으로는 안 깨지고, **단추를 다시 아래 줄로 내리거나
+     * 여백을 예전만큼 키우면** 깨지는 값으로 잡는다 (예전 배치는 이 폭에서 200px 을
+     * 넘었다).
+     */
+    const geo = await page.evaluate(() => {
+      const h = document.querySelector('header').getBoundingClientRect();
+      const t = document.querySelector('header h1').getBoundingClientRect();
+      const b = document.querySelector('header button').getBoundingClientRect();
+      return { height: h.height, sameRow: b.top < t.bottom && b.bottom > t.top, right: b.left > t.right };
+    });
+    t.ok(geo.height <= 140, '머리 높이가 140px 를 넘지 않는다 (실제 ' + Math.round(geo.height) + 'px)');
+    t.is(geo.sameRow, true, '사용법 단추가 제목과 같은 줄에 있다 - 높이를 따로 먹지 않는다');
+    t.is(geo.right, true, '사용법 단추는 제목 오른쪽 빈자리에 있다');
+
     await button(page, '사용법').click();
     await page.waitForTimeout(400);
     t.is(await dialog(page).count(), 1, '누르면 사용법이 열린다');
