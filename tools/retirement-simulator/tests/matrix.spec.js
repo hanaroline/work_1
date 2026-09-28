@@ -102,6 +102,42 @@ module.exports = async function run(t) {
     t.includes(await rowOf(page, RECEIVE, '신규 개설'), '6년차',
       '2013.3.1 이전 DB 라 신규 계좌도 6년차');
 
+    // ── 제도 가입일이 비어 있으면 가입시점을 단정하지 않는다 ─────
+    //
+    // 예전에는 빈 가입일이 false('2013.3.1 이후')로 흘러가, 맞추기를 눌러도
+    // '2013.3.1 후'가 눌린 채 아무 일도 일어나지 않는 것처럼 보였다. 2013.3.1 이전
+    // 가입자는 6년차라 한도가 2배인데 그 가정이 화면 어디에도 없었다.
+    await field(page, '제도 가입일').fill('');
+    await field(page, '제도 가입일').blur();
+    await page.waitForTimeout(400);
+    await button(page, '판단표').click();
+    await page.waitForTimeout(300);
+
+    const summary = async () =>
+      (await page.getByLabel('고객 조건 요약', { exact: true }).innerText()).replace(/\s+/g, ' ').trim();
+
+    t.includes(await summary(), '가입시점 모름', '가입일이 없으면 모른다고 적는다');
+    t.is(await page.getByLabel('가입시점 못 맞춤', { exact: true }).count(), 1,
+      '무엇을 못 맞췄는지 알려 준다');
+
+    // 눌러도 가입시점은 건드리지 않는다 - 모르는 것을 '후'로 단정하지 않는다
+    await button(page, '고객 조건으로 보기').click();
+    await page.waitForTimeout(400);
+    t.is(await pressed(page, 'DB'), 'true', '아는 것(퇴직제도)은 맞춘다');
+    t.includes(await summary(), '가입시점 모름', '가입일이 없으면 눌러도 모르는 채로 둔다');
+
+    // 넣으면 맞춰진다
+    await field(page, '제도 가입일').fill('2010-01-01');
+    await field(page, '제도 가입일').blur();
+    await page.waitForTimeout(400);
+    await button(page, '판단표').click();
+    await page.waitForTimeout(300);
+    await button(page, '고객 조건으로 보기').click();
+    await page.waitForTimeout(400);
+    t.is(await pressed(page, '2013.3.1 전'), 'true', '가입일을 넣으면 가입시점이 맞춰짐');
+    t.is(await page.getByLabel('가입시점 못 맞춤', { exact: true }).count(), 0,
+      '맞춘 뒤에는 못 맞췄다는 안내가 사라짐');
+
     // ── 근거는 접혀 있다 ──────────────────────────────────────────
     t.is(await page.getByText('사내 연금 업무 Q&A', { exact: false }).count(), 1, '근거 묶음이 한 줄로 접혀 있음');
 

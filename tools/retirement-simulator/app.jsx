@@ -731,7 +731,13 @@ function Help({ title, children }) {
  * 계좌 카드처럼 같은 칸이 여러 벌 생기는 자리에서는 '가입일 설명' 버튼이
  * 계좌 수만큼 생겨 어느 것을 눌렀는지 구분할 수 없다. 계좌 키를 붙여 준다.
  */
-function Field({ label, hint, help, helpTitle, children, className = '' }) {
+/**
+ * warn 이 켜지면 힌트를 경고색으로 그린다.
+ *
+ * 비어 있는 칸을 조용히 기본값으로 메우면 그 가정이 판정에 그대로 섞여 들어간다.
+ * 가정을 했으면 그 자리에서 보이게 한다.
+ */
+function Field({ label, hint, help, helpTitle, warn, children, className = '' }) {
   return (
     <label className={'block ' + className}>
       <span className="block text-[13px] font-medium text-ink-body mb-1.5">
@@ -739,7 +745,10 @@ function Field({ label, hint, help, helpTitle, children, className = '' }) {
         {help ? <Help title={helpTitle || label}>{help}</Help> : null}
       </span>
       {children}
-      {hint ? <span className="block text-[11px] text-ink-soft mt-1 leading-snug">{hint}</span> : null}
+      {hint ? (
+        <span className={'block text-[11px] mt-1 leading-snug ' +
+          (warn ? 'text-sig-err font-medium' : 'text-ink-soft')}>{hint}</span>
+      ) : null}
     </label>
   );
 }
@@ -809,12 +818,15 @@ function DateInput({ value, onChange, label, allowFuture }) {
     if (!realDate(v) || v < '1900-01-01' || v > max) onChange('');
   };
 
+  // 예시 날짜('2003-07-01')를 자리표시자로 두었더니 채워진 값으로 읽혔다. 실제로
+  // 비어 있는 가입일을 '입력했다' 고 본 채 판정을 신뢰한 일이 있었다. 자리표시자는
+  // 날짜로 읽힐 수 없는 것이어야 한다.
   return (
     <div className="relative">
       <input
         type="text" inputMode="numeric" autoComplete="off"
         className={inputCls + ' num' + (canPick ? ' pr-11' : '')}
-        value={value} aria-label={label} placeholder="2003-07-01"
+        value={value} aria-label={label} placeholder="YYYY-MM-DD"
         maxLength={10} onChange={handle} onBlur={handleBlur} />
       {canPick && (
         <React.Fragment>
@@ -1007,10 +1019,31 @@ function MatrixTab({ current }) {
 
   if (!M) return <p className="text-[14px] text-ink-soft">판단표 자료를 불러오지 못했습니다.</p>;
 
+  /**
+   * 왼쪽 입력과 맞춘다.
+   *
+   * 제도 가입일이 비어 있으면 가입시점을 알 수 없다. 예전에는 그걸 false('이후')로
+   * 흘려보내 단추를 눌러도 '2013.3.1 후' 가 눌린 채 아무 일도 없는 것처럼 보였다.
+   * 모르는 것은 맞추지 않고, 무엇을 못 맞췄는지 아래에 적는다.
+   */
   const useCustomer = () => {
-    setSys(current.system); setLegacy(current.legacy);
-    setOld55(current.age >= 55); if (current.fund) setFund(current.fund);
+    setSys(current.system);
+    if (current.legacy !== null) setLegacy(current.legacy);
+    setOld55(current.age >= 55);
+    if (current.fund) setFund(current.fund);
   };
+
+  // 단추를 누르기 전에도 무엇으로 맞춰지는지 보인다 - 누른 뒤에 달라진 게 없어
+  // '안 먹었나' 싶은 상황을 없앤다.
+  const sysLabel = { SEV: '퇴직금제도', DB: 'DB', DC: 'DC' };
+  const customerLine = current.ready
+    ? [sysLabel[current.system],
+      current.system === 'SEV' ? null
+        : current.legacy === null ? '가입시점 모름' : CUTOFF_LABEL + (current.legacy ? ' 전' : ' 후'),
+      current.fund === 'HONOR' ? '명퇴금 · 위로금' : current.fund === 'LEGAL'
+        ? (current.system === 'SEV' ? '법정퇴직금' : '규약상 퇴직급여') : null,
+      '만 55세 ' + (current.age >= 55 ? '이상' : '미만')].filter(Boolean).join(' · ')
+    : null;
 
   const row = M.deposit.find((r) => r.system === sys && r.fund === fund &&
     r.age === (old55 ? 58 : 54) && (sys === 'SEV' || r.legacySys === legacy));
@@ -1025,11 +1058,24 @@ function MatrixTab({ current }) {
       <Section title="어느 계좌로 받을 수 있나">
         <div className="mb-4">
           {current.ready && (
-            <button type="button" onClick={useCustomer} aria-label="고객 조건으로 보기"
-              className="mb-3 h-[34px] px-3 text-[13px] font-medium text-mas-active border border-mas-orange
-                         bg-mas-soft rounded-xs hover:bg-mas-orange hover:text-white transition">
-              지금 상담 중인 고객 조건으로 맞추기
-            </button>
+            <div className="mb-3">
+              <button type="button" onClick={useCustomer} aria-label="고객 조건으로 보기"
+                className="h-[34px] px-3 text-[13px] font-medium text-mas-active border border-mas-orange
+                           bg-mas-soft rounded-xs hover:bg-mas-orange hover:text-white transition">
+                지금 상담 중인 고객 조건으로 맞추기
+              </button>
+              <p className="text-[12px] text-ink-soft mt-1.5 leading-snug" role="note"
+                aria-label="고객 조건 요약">
+                지금 상담 중인 고객: <strong className="text-ink-body">{customerLine}</strong>
+              </p>
+              {current.legacy === null && current.system !== 'SEV' && (
+                <p className="text-[12px] text-sig-err font-medium mt-1 leading-snug"
+                  role="note" aria-label="가입시점 못 맞춤">
+                  {current.system} 제도 가입일이 비어 있어 가입시점은 맞추지 못했습니다.
+                  왼쪽 <strong>{current.system} 제도 가입일</strong>에 넣어 주세요.
+                </p>
+              )}
+            </div>
           )}
           <MatrixPick label="퇴직제도" value={sys} onChange={setSys}
             options={[{ value: 'SEV', label: '퇴직금제도' }, { value: 'DB', label: 'DB' }, { value: 'DC', label: 'DC' }]} />
@@ -1242,6 +1288,10 @@ function App() {
 
   const systemJoin = useMemo(() => parseDate(systemJoinStr), [systemJoinStr]);
   const dbJoin = useMemo(() => parseDate(dbJoinStr), [dbJoinStr]);
+
+  // 제도 가입일을 비워 두면 '2013.3.1 이후' 로 흘러가 1년차 기산이 된다.
+  // 넣지 않은 것과 '이후' 인 것은 다른 이야기이므로 갈라 둔다 (아래 missingJoins).
+  const systemJoinMissing = system !== 'SEV' && !systemJoin;
 
   // 퇴직(예정)일. 비워 두면 오늘로 본다. 과거 퇴직도 미래 퇴직 예정도 받는다.
   const retireDate = useMemo(() => parseDate(retireDateStr) || TODAY, [retireDateStr]);
@@ -1566,6 +1616,26 @@ function App() {
     return out;
   }, [accountList]);
 
+  /**
+   * 가입일을 비워 둔 곳의 이름.
+   *
+   * 빈 가입일은 조용히 '2013.3.1 이후' 로 흘러가 1년차 기산이 된다. 한도가 절반이
+   * 되는 값인데 화면 어디에도 표시가 없어, 상담자는 넣지 않은 줄 모른 채 답을 믿게
+   * 된다. 실제로 그렇게 나온 판정을 '오류' 로 보고받았다. 가정을 했으면 이름을 대고
+   * 말한다.
+   *
+   * 퇴직금제도(SEV)의 입사일은 가입일자 개념 자체가 없어(Q37) 여기 들어가지 않는다.
+   */
+  const missingJoins = useMemo(() => {
+    const out = [];
+    if (systemJoinMissing) out.push(system + ' 제도 가입일');
+    if (system === 'DC' && dbConverted && !dbJoin) out.push('전환 전 DB 가입일');
+    for (const a of accountList) {
+      if (!parseDate(a.joinStr)) out.push(accountKeys[a.id] + ' 가입일');
+    }
+    return out;
+  }, [systemJoinMissing, system, dbConverted, dbJoin, accountList, accountKeys]);
+
   return (
     <React.Fragment>
       {/* ===================== 화면 ===================== */}
@@ -1749,11 +1819,14 @@ function App() {
 
                   <Field
                     label={system === 'SEV' ? '입사일' : system + ' 제도 가입일'}
-                    hint={system === 'SEV'
-                      ? '퇴직금제도·명예퇴직금은 가입일자 개념이 없어 기산연차 특례를 쓸 수 없습니다.'
-                      : system === 'DC'
-                        ? CUTOFF_LABEL + ' 이후 가입한 DC 는 구 연금계좌로 입금할 수 없습니다.'
-                        : 'DB 는 연금계좌가 아니어서 가입일과 무관하게 어느 계좌로든 입금할 수 있습니다.'}
+                    warn={systemJoinMissing}
+                    hint={systemJoinMissing
+                      ? '넣어 주세요. 비워 두면 ' + CUTOFF_LABEL + ' 이후 가입으로 보아 1년차로 계산합니다 - 이전 가입이면 6년차라 한도가 2배입니다.'
+                      : system === 'SEV'
+                        ? '퇴직금제도·명예퇴직금은 가입일자 개념이 없어 기산연차 특례를 쓸 수 없습니다.'
+                        : system === 'DC'
+                          ? CUTOFF_LABEL + ' 이후 가입한 DC 는 구 연금계좌로 입금할 수 없습니다.'
+                          : 'DB 는 연금계좌가 아니어서 가입일과 무관하게 어느 계좌로든 입금할 수 있습니다.'}
                     help={system === 'SEV'
                       ? '퇴직금제도의 퇴직금과 명예퇴직금은 연금수령한도에 영향을 주는 가입일자라는 개념 자체가 없습니다. 입금받는 계좌의 가입일자만 적용되므로, 신규 계좌로 받으면 1년차 기산입니다.'
                       : system === 'DC'
@@ -1798,9 +1871,12 @@ function App() {
                       {dbConverted && (
                         <div className="mt-3">
                           <Field label="전환 전 DB 가입일"
-                            hint={isLegacyDate(dbJoin)
-                              ? CUTOFF_LABEL + ' 이전 가입 - 신규 계좌 전액 이체 시 6년차 기산'
-                              : CUTOFF_LABEL + ' 이후 가입 - 기산연차 특례 대상 아님'}>
+                            warn={!dbJoin}
+                            hint={!dbJoin
+                              ? '넣어 주세요. 비우면 전환 전 DB 를 반영하지 못해 ' + system + ' 가입일로만 봅니다'
+                              : isLegacyDate(dbJoin)
+                                ? CUTOFF_LABEL + ' 이전 가입 - 신규 계좌 전액 이체 시 6년차 기산'
+                                : CUTOFF_LABEL + ' 이후 가입 - 기산연차 특례 대상 아님'}>
                             <DateInput value={dbJoinStr} onChange={setDbJoinStr} label="전환 전 DB 가입일" />
                           </Field>
                         </div>
@@ -1928,6 +2004,8 @@ function App() {
                               onChange={(e) => patchAccount(a.id, { name: e.target.value })} />
                           </Field>
                           <Field label="가입일" helpTitle={key + ' 가입일'}
+                            warn={!jd}
+                            hint={!jd ? '넣어 주세요. 비우면 1년차로 봅니다' : null}
                             help={<React.Fragment>
                               가입일이 {CUTOFF_LABEL} 이전이면 연금수령연차를 <strong>6년차부터</strong> 기산합니다.
                               {CUTOFF_LABEL} 전에는 연금수령 요건이 '10년 이상 가입하고 5년 이상 수령'이었기 때문에,
@@ -2212,6 +2290,22 @@ function App() {
                   </div>
                 ) : (
                   <React.Fragment>
+                    {/*
+                      비운 가입일을 조용히 '2013.3.1 이후' 로 삼은 채 답만 내놓으면
+                      상담자는 그 가정을 볼 길이 없다. 답 위에 먼저 적는다.
+                    */}
+                    {missingJoins.length > 0 && (
+                      <div role="note" aria-label="가입일 미입력 경고"
+                        className="border border-[#E8D49A] bg-[#FBF3DF] rounded-sm px-4 py-3 mb-4">
+                        <p className="text-[13px] font-bold text-[#8A6A0B] mb-1">
+                          가입일을 넣지 않은 곳이 있어 {CUTOFF_LABEL} 이후로 보고 1년차로 계산했습니다
+                        </p>
+                        <p className="text-[12px] text-[#8A6A0B] leading-relaxed">
+                          {missingJoins.join(' · ')} — {CUTOFF_LABEL} 이전이면 6년차 기산이라
+                          한도가 2배가 되고 추천 계좌가 바뀔 수 있습니다.
+                        </p>
+                      </div>
+                    )}
                     {best && (
                       <div className="bg-mas-orange text-white rounded-sm px-6 py-5 mb-5">
                         <div className="text-[12px] font-medium tracking-wider opacity-90 mb-1.5">
@@ -2606,7 +2700,10 @@ function App() {
                 <MatrixTab current={{
                   ready,
                   system,
-                  legacy: isLegacyDate(system === 'DC' && dbConverted && dbJoin ? dbJoin : systemJoin),
+                  // 모르는 것은 null 로 넘긴다. false 로 넘기면 '2013.3.1 이후'라고
+                  // 단정하는 꼴이라, 맞추기를 눌러도 아무 일이 없는 것처럼 보인다.
+                  legacy: systemJoinMissing ? null
+                    : isLegacyDate(system === 'DC' && dbConverted && dbJoin ? dbJoin : systemJoin),
                   age: retireAge === null ? 58 : retireAge,
                   fund: (system === 'SEV' ? amtLegal : amtSingle) > 0 ? 'LEGAL' : amtHonor > 0 ? 'HONOR' : null
                 }} />
