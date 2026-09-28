@@ -196,6 +196,83 @@ module.exports = async function run(t) {
     await field(page, '비과세 퇴직급여').fill('0');
     await page.waitForTimeout(300);
 
+    // ── 계산 과정의 줄마다 해설이 붙는다 ─────────────────────────
+    //
+    // 상담 중에 고객이 묻는 것은 '왜 이 금액이냐' 보다 '이 줄이 무슨 뜻이냐' 다.
+    // 조문 번호만 적어 두면 그 자리에서 설명할 수가 없다.
+    const STEPS = ['근속연수', '퇴직소득금액', '근속연수공제', '환산급여', '환산급여공제',
+      '과세표준', '환산산출세액', '연분연승 되돌리기', '이연퇴직소득세 (국세)', '지방소득세',
+      '합계 (지방소득세 포함)'];
+
+    for (const step of STEPS) {
+      // **이름이 정확히 하나로 잡혀야 한다.** 처음에는 제목을 라벨에서 기호를 깎아
+      // 만들었는데 '÷ 12 × 근속연수' 가 '근속연수' 가 되어 두 줄이 겹쳤다.
+      t.is(await button(page, step + ' 해설').count(), 1, '해설 단추가 하나: ' + step);
+    }
+
+    const noteOf = (step) => page.getByLabel(step + ' 해설 내용', { exact: true });
+    t.is(await noteOf('환산급여').count(), 0, '올리기 전에는 해설이 닫혀 있다');
+
+    await button(page, '환산급여 해설').hover();
+    await page.waitForTimeout(200);
+    t.is(await noteOf('환산급여').count(), 1, '마우스를 올리면 해설이 열린다');
+    t.includes((await noteOf('환산급여').innerText()).replace(/\s+/g, ' '), '연분연승',
+      '그 줄의 해설이 나온다');
+    t.is(await noteOf('과세표준').count(), 0, '올리지 않은 줄의 해설은 열리지 않는다');
+
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(200);
+    t.is(await noteOf('환산급여').count(), 0, '마우스가 떠나면 닫힌다');
+
+    // 누르면 **고정**된다. 손가락으로 쓰는 기기에는 hover 가 없고, 마우스로 쓰는
+    // 사람도 길게 읽으려면 마우스를 떼야 한다. 토글로 두면 누르는 순간 이미 hover 로
+    // 열려 있어 곧바로 닫혀 버린다.
+    await button(page, '근속연수공제 해설').click();
+    await page.waitForTimeout(200);
+    t.is(await noteOf('근속연수공제').count(), 1, '눌러도 열린다 (터치 기기)');
+    t.includes((await noteOf('근속연수공제').innerText()).replace(/\s+/g, ' '), '§48①1',
+      '근거 조문을 적는다');
+    t.is(await button(page, '근속연수공제 해설').getAttribute('aria-pressed'), 'true', '고정 표시');
+
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(200);
+    t.is(await noteOf('근속연수공제').count(), 1, '고정하면 마우스를 떼도 남는다');
+
+    await button(page, '근속연수공제 해설').click();   // 고정 해제
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(200);
+    t.is(await noteOf('근속연수공제').count(), 0, '다시 누르면 고정이 풀린다');
+
+    // 해설을 열어 두어도 인쇄물은 그대로다.
+    //
+    // 처음에는 '인쇄물에 연분연승이 없다' 만 봤는데, 계산 과정은 입력 패널 안에 있고
+    // 인쇄물은 별도 컴포넌트라 **구조상 절대 새지 않는다.** 실패할 수 없는 검사였다
+    // (음성 대조에서 드러남 - screen-only 를 떼어도 통과했다).
+    //
+    // 누출은 검사가 아니라 구조가 막는다. 대신 여기서는 **화면 상태가 인쇄물을
+    // 바꾸지 않는다**는 것만 본다. 이 역시 주입으로 깨뜨리기는 어렵지만, 적어도
+    // 인쇄물을 실제로 읽어 비어 있지 않은 것을 확인하므로 '빈 글자끼리 비교' 는 아니다.
+    // 인쇄물 자체는 print 스펙이 탭 간 동일성과 A4 한 장으로 지킨다.
+    const printedText = async () => {
+      await page.emulateMedia({ media: 'print' });
+      await page.waitForTimeout(250);
+      const txt = (await page.locator('.print-only').first().innerText()).replace(/\s+/g, ' ').trim();
+      await page.emulateMedia({ media: 'screen' });
+      await page.waitForTimeout(150);
+      return txt;
+    };
+    const sheetClosed = await printedText();
+    await button(page, '합계 (지방소득세 포함) 해설').click();    // 고정해 둔다
+    await page.waitForTimeout(250);
+    t.is(await noteOf('합계 (지방소득세 포함)').count(), 1, '해설을 열어 둔 상태');
+    const sheetOpen = await printedText();
+    t.is(sheetOpen, sheetClosed, '해설을 열어 두어도 인쇄물은 글자까지 같다');
+    t.ok(sheetClosed.length > 0 && sheetClosed.indexOf('이연 퇴직소득세') >= 0,
+      '인쇄물을 실제로 읽었다 (빈 글자와 비교한 것이 아니다)');
+    await button(page, '합계 (지방소득세 포함) 해설').click();    // 고정 해제
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(200);
+
     // ── 중간정산: 두 갈래를 다 내고 유리한 쪽을 쓴다 (§148) ──────
     await field(page, '중간정산 받음').check();
     await page.waitForTimeout(300);
