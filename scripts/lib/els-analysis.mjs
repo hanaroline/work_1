@@ -70,6 +70,15 @@ export const TIER_RULE = `등급은 B(같은 조건으로 돌린 손실 확률) 
  */
 export const perRiskOf = (it) => (it.mcLoss ? it.annualRate / +it.mcLoss.toFixed(1) : null);
 
+/**
+ * 위험당 대가가 몇 배 벌어지는가 — **인쇄되는 두 값끼리** 나눈다.
+ *
+ * 원값으로 나누면 자료를 보고 손으로 검산한 사람과 끝자리가 갈린다. 분모가
+ * 작을수록 그 차이가 커진다: 2026-09-29 회차는 1.446541 / 0.407332 = 3.6 인데
+ * 인쇄된 1.45 / 0.41 은 3.5 다. 주장 대장 검산이 이 어긋남을 잡아냈다.
+ */
+export const perRiskSpread = (best, worst) => +perRiskOf(best).toFixed(2) / +perRiskOf(worst).toFixed(2);
+
 export const kindOf = (it) => it.underlyings.every((u) => IDX.has(u)) ? '지수'
   : it.underlyings.some((u) => IDX.has(u)) ? '혼합' : '종목';
 export const tierOf = (it) => TIERS[it.tier];
@@ -182,9 +191,9 @@ function couponStudy(items, best) {
   const eff = {
     ratio, order: rank1,
     best: rank1[0], worst: rank1[rank1.length - 1],
-    spread: ratio(rank1[0]) / ratio(rank1[rank1.length - 1]),
+    spread: perRiskSpread(rank1[0], rank1[rank1.length - 1]),
     fairBest: fairRank[0], fairWorst: fairRank[fairRank.length - 1],
-    fairSpread: ratio(fairRank[0]) / ratio(fairRank[fairRank.length - 1]),
+    fairSpread: perRiskSpread(fairRank[0], fairRank[fairRank.length - 1]),
   };
 
   // ① 구조 — 기초자산도 변동성도 같은데 쿠폰만 갈리는 짝
@@ -371,7 +380,12 @@ export async function analyze(rcpNo) {
   // 쿠폰과 위험이 정말 비례하는가 — 위험당 대가가 가장 좋은 상품으로 상관 민감도까지 확인한다
   const coupon = couponStudy(items, slots[0]?.pick);
   coupon.sens = rhoSensitivity(coupon.eff.fairBest, RCP);
-  coupon.sensIsPick = coupon.sens != null && slots.some((s) => s.pick.no === coupon.sens.no);
+  // 추천 목록에 들어 있는지, 들어 있다면 **몇 번째 자리**인지까지 준다.
+  // 예전에는 들어 있기만 하면 "(추천 1번)" 으로 적어, 3번 자리 상품을 1번이라
+  // 부르는 일이 있었다(2026-09-29 제38165회).
+  coupon.sensSlot = coupon.sens == null ? 0
+    : slots.findIndex((s) => s.pick.no === coupon.sens.no) + 1;
+  coupon.sensIsPick = coupon.sensSlot > 0;
 
   await saveCache();
 

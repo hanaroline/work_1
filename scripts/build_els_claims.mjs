@@ -14,7 +14,7 @@
  *                     덱에서도 "A. 설명서상" / "B. 시뮬레이션" 으로 갈라 표기한다.
  */
 import { writeFile, readFile } from 'node:fs/promises';
-import { analyze, kindOf, unitOf, perRiskOf, MC_SENS, TIER_CUT } from './lib/els-analysis.mjs';
+import { analyze, kindOf, unitOf, perRiskOf, perRiskSpread, MC_SENS, TIER_CUT } from './lib/els-analysis.mjs';
 
 const A = await analyze(process.argv[2]);   // 인자가 없으면 가장 최근 공시 회차 (덱과 같은 규칙)
 const OUT = 'tools/discovery/els-claims.json';
@@ -301,11 +301,12 @@ for (const it of A.items) {
     +per(worst).toFixed(2), '%', ['p5-find3', 'p5-foot']);
   derived.push({ id: 'D_PERRISK_BEST', kind: 'ratio', numerator: `R${best.no}_RATE`, denominator: `R${best.no}_MCLOSS`, printed: +per(best).toFixed(2), tolerance: 0.01 });
   derived.push({ id: 'D_PERRISK_WORST', kind: 'ratio', numerator: `R${worst.no}_RATE`, denominator: `R${worst.no}_MCLOSS`, printed: +per(worst).toFixed(2), tolerance: 0.01 });
-  stat('PERRISK_SPREAD', '위험당 대가 배수', '위험당 대가의 최대/최소 배수', +(per(best) / per(worst)).toFixed(1), '배', ['p5-find3']);
+  stat('PERRISK_SPREAD', '위험당 대가 배수', '위험당 대가의 최대/최소 배수',
+    +perRiskSpread(best, worst).toFixed(1), '배', ['p5-find3']);
   derived.push({
     id: 'D_PERRISK_SPREAD', kind: 'ratio',
     numerator: 'PERRISK_BEST', denominator: 'PERRISK_WORST',
-    printed: +(per(best) / per(worst)).toFixed(1), tolerance: 0.06,
+    printed: +perRiskSpread(best, worst).toFixed(1), tolerance: 0.06,
   });
 
   // 상관계수 민감도 — 결론이 공시 상관계수 한 값에 얹혀 있지 않은지 흔들어 본 값
@@ -664,6 +665,21 @@ if (STALE.length) {
         `제${n}회 ${v.asset}의 적용 변동성`, v.vol, '%', ['h-vol']);
     }
   }
+  // 추천 카드의 막대는 차수마다 "몇 개월"을 적는다. 주기의 배수이지만 인쇄되는
+  // 숫자이므로 대장에 둔다 — 지난주에는 6·12·18·30·36 이 다른 값과 우연히 겹쳐
+  // 넘어갔고, 이번 주에 24 가 미등록으로 걸렸다.
+  for (const s of A.slots) {
+    const R = s.pick, n = R.no;
+    if (!R.every || !R.steps) continue;
+    for (let k = 1; k <= R.steps; k++) {
+      disclosed(`R${n}_STEPMON${k}`, '차수 경과 개월', `제${n}회 ${k}차 판정까지의 개월 수`,
+        R.every * k, '개월', ['h-card']);
+      derived.push({
+        id: `D${n}_STEPMON${k}`, kind: 'product',
+        a: `R${n}_EVERY`, b: k, printed: R.every * k, tolerance: 0.01,
+      });
+    }
+  }
   // 추천 카드는 "1만원 → 빠르면 6개월 뒤 10,800원" 으로 첫 상환금액을 적는다
   for (const s of A.slots) {
     const R = s.pick, n = R.no;
@@ -712,6 +728,7 @@ const ledger = {
     '우연일 확률': '%', '설명력': '%', '회귀 기울기': '%p', '손실 확률 차이': '%p',
     '위험당 대가 (민감도)': '%', '변동성 차이': '%p', '백테스트 이익 비중': '%',
     '자체 검증 기간': '년', '과거 최저 수준': '%', '낙인 돌파폭': '%p', '기초자산 변동성': '%',
+    '차수 경과 개월': '개월',
   },
   claims, derived,
 };

@@ -226,6 +226,9 @@ const rhoCell = (o) => `<td class="num"><b>${f1(o.r, 2)}</b><small class="sn">�
 const rhoRow = (label, k, hi) => `        <tr><td>${hi ? `<b>${label}</b>` : label}</td>`
   + rhoCell(CR[k].all) + rhoCell(CR[k].fair) + '</tr>';
 const eff1 = (it) => f1(CE.ratio(it), 2);
+// 위험당 대가 1등이 마침 수익률 1등이기도 한 주가 있다. 그때 "연 23.0%짜리도
+// 있는데 왜 23.0%짜리를 먼저 권하냐" 는 같은 숫자를 두 번 적는 문장이 된다.
+const topIsFairBest = Math.abs(rateMax - CE.fairBest.annualRate) < 0.05;
 const avgLossOf = (kind) => {
   const g = items.filter((i) => kindOf(i) === kind && i.mcAvgLoss != null);
   return g.length ? Math.abs(g.reduce((s, i) => s + i.mcAvgLoss, 0) / g.length) : null;
@@ -746,7 +749,7 @@ ${whyList}
   <h3 class="sub3">확률만 보면 왜 느슨해지나 — 잃을 때 잃는 크기가 다릅니다</h3>
   <p class="slead2">위 표에서 손실 확률은 <b>${f1(CR.loss.fair.r, 2)}</b>인데 <b>잃을 때 얼마나 잃는지</b>를 곱하면 <b>${f1(CR.expLoss.fair.r, 2)}</b>로 올라갑니다. 확률이 못 잡는 부분이 <b>손실의 크기</b>입니다 — 지수만 담은 상품은 손해가 나면 ${f1(avgLossOf('지수'), 0)}% 남짓 잃지만, 개별 종목 상품은 ${f1(avgLossOf('종목'), 0)}%가량 잃습니다. 발행사는 "얼마나 자주 잃느냐"만이 아니라 <b>"자주 × 크게"</b>로 값을 매기기 때문입니다. <b>그래서 등급이 같은 두 상품 중에 고르실 때는 기초자산 종류를 한 번 더 보십시오</b> — 손실 확률이 같아도 개별 종목 쪽이 실제로는 더 비싼 위험입니다.</p>
 
-  <h3 class="sub3">가장 크게 어긋난 상품은 따로 흔들어 봤습니다 — 손실 확률 1%당 수익률 1등인 제${CS.no}회${coupon.sensIsPick ? ' (추천 1번)' : ''}</h3>
+  <h3 class="sub3">가장 크게 어긋난 상품은 따로 흔들어 봤습니다 — 손실 확률 1%당 수익률 1등인 제${CS.no}회${coupon.sensIsPick ? ` (추천 ${coupon.sensSlot}번)` : ''}</h3>
   <p class="slead2">그 우위가 <b>"두 기초자산이 ${f1(CS.disclosed, 2)}만큼 같이 움직인다"는 공시 값 하나에 얹혀 있는 건 아닌지</b>, 그 값을 억지로 낮춰가며 다시 돌려봤습니다.</p>
   <div class="tw">
     <table class="kt">
@@ -759,7 +762,9 @@ ${whyList}
   </div>
   <p class="tnote">같이 움직이는 정도를 ${f1(CS.rows[CS.rows.length - 1].rho, 2)}까지 억지로 낮춰도 손실 확률은 ${f1(CS.rows[0].loss, 1)}%에서 ${f1(CS.rows[CS.rows.length - 1].loss, 1)}%로 오르는 데 그치고, 손실 확률 1%당 수익률은 ${f1(CS.rows[CS.rows.length - 1].ratio, 2)}%로 <b>여전히 1등</b>입니다. 두 기초자산의 변동성이 ${f1(CS.volSpread, 1)}%p나 벌어져 <b>같이 움직이든 말든 "더 나쁜 쪽"이 거의 항상 같은 자산</b>이기 때문입니다.</p>
 
-  <p class="mnote"><b>상담에서 쓰실 한 줄</b> — 고객이 "연 ${f1(rateMax, 1)}%짜리도 있는데 왜 ${f1(CE.fairBest.annualRate, 1)}%짜리를 먼저 권하냐"고 물으시면: <b>"수익률이 높으면 위험도 큰 것, 맞습니다. 다만 같은 손실 확률을 지고도 남들보다 많이 받는 상품이 따로 있습니다. 이번 회차는 그 차이가 ${f1(CE.fairSpread, 1)}배까지 벌어집니다."</b> 수익률만 유난히 높고 손실 확률은 안 높은 상품을 만나면 ${CW.fx ? '넷' : '셋'} 중 하나입니다 — 조건 덕이거나, ${CW.fx ? '통화가 다르거나, ' : ''}값어치가 깎여 있거나, <b>아직 못 본 위험이 있거나.</b> 앞의 것들로 설명이 안 되면 마지막입니다.</p>
+  <p class="mnote"><b>상담에서 쓰실 한 줄</b> — ${topIsFairBest
+      ? '고객이 "그냥 수익률 높은 순서대로 보여 달라"고 하시면'
+      : `고객이 "연 ${f1(rateMax, 1)}%짜리도 있는데 왜 ${f1(CE.fairBest.annualRate, 1)}%짜리를 먼저 권하냐"고 물으시면`}: <b>"수익률이 높으면 위험도 큰 것, 맞습니다. 다만 같은 손실 확률을 지고도 남들보다 많이 받는 상품이 따로 있습니다. 이번 회차는 그 차이가 ${f1(CE.fairSpread, 1)}배까지 벌어집니다."</b> 수익률만 유난히 높고 손실 확률은 안 높은 상품을 만나면 ${CW.fx ? '넷' : '셋'} 중 하나입니다 — 조건 덕이거나, ${CW.fx ? '통화가 다르거나, ' : ''}값어치가 깎여 있거나, <b>아직 못 본 위험이 있거나.</b> 앞의 것들로 설명이 안 되면 마지막입니다.</p>
 </section>
 
 <section class="page-break">

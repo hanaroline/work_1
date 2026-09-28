@@ -16,7 +16,7 @@
  */
 import { readFile } from 'node:fs/promises';
 import pptxgen from 'pptxgenjs';
-import { analyze, kindOf, tierOf, unitOf, money, perRiskOf, TIER_CUT } from './lib/els-analysis.mjs';
+import { analyze, kindOf, tierOf, unitOf, money, perRiskOf, perRiskSpread, TIER_CUT } from './lib/els-analysis.mjs';
 
 const A = await analyze(process.argv[2]);   // 인자가 없으면 가장 최근 공시 회차
 const OUT = 'els-sales-deck.pptx';
@@ -616,7 +616,7 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
   // 창구에서 표를 보고 검산했을 때 끝자리가 어긋난다.
   const prOrder = [...pts].sort((a, b) => perRisk(b) - perRisk(a));
   const prBest = prOrder[0], prWorst = prOrder.at(-1);
-  const prSpread = perRisk(prBest) / perRisk(prWorst);
+  const prSpread = perRiskSpread(prBest, prWorst);   // 인쇄된 두 값끼리 나눈다
   const rl = C.rho.loss.all;
   const pr = C.pairs.all;
   const pTxt = rl.p < 0.001 ? 'p<0.001' : `p=${f1(rl.p, 3)}`;
@@ -767,8 +767,22 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
       `3년은 최장 기간이고 대부분 훨씬 일찍 끝납니다. 제${R.no}회는 ${R.every}개월마다 ${R.steps}번 상환 기회가 있고, 첫 회에 끝난 경우가 백테스트 ${f1(R.simFirst)}%였습니다. 중도상환도 가능합니다만 그때는 원금 손실이 날 수 있어서, 3년 쓸 일 없는 돈으로만 하셔야 합니다.`],
     ['“지금이 고점 아닌가요.”',
       `고점인지 아닌지는 저도 모릅니다. 다만 이 상품은 오르면 버는 구조가 아니라 크게 안 떨어지면 버는 구조입니다. 제${R.no}회는 ${R.barriers[0]}% 배리어라 기초자산이 ${100 - R.barriers[0]}% 떨어져도 첫 회에 상환됩니다. 그래도 부담스러우시면 손실 확률이 그다음으로 낮은 제${safeAlt.no}회(${f1(safeAlt.mcLoss)}%, 연 ${f1(safeAlt.annualRate, 1)}%)를 보시죠.`],
+    /**
+     * "제일 높은 것" 은 **실제 수익률 1위(topRate)** 를 가리켜야 한다.
+     *
+     * 예전에는 주의 종목 중 손실 확률이 가장 큰 회차(CAU[0])를 그 자리에 넣어
+     * 두었다. 그 둘이 다른 주에는 사실이 아닌 문장이 나간다 — 2026-09-29 에
+     * "제일 높은 건 연 20.0%인 제38168회" 가 인쇄됐는데 실제 1위는 연 23.0%인
+     * 제38165회였고, 그건 오히려 추천 종목이었다.
+     *
+     * 그래서 두 갈래로 나눈다. 1위가 권하지 않는 종목이면 대안을 내밀고,
+     * 1위가 권할 수 있는 종목이면 "그건 마침 권해 드릴 수 있는 것" 이라고
+     * 사실대로 말한 뒤, 정작 피해야 할 회차를 짚는다.
+     */
     ['“그냥 수익률 제일 높은 걸로 주세요.”',
-      `그게 이번엔 안 맞습니다. 제일 높은 건 연 ${f1(CAU[0].annualRate, 1)}%인 제${CAU[0].no}회인데 손실 확률이 ${f1(CAU[0].mcLoss)}%입니다. 권해 드릴 수 있는 것 중 가장 높은 제${topRest.no}회는 연 ${f1(topRest.annualRate, 1)}%에 손실 확률이 ${f1(topRest.mcLoss)}%뿐입니다 — ${rateVs(topRest, CAU[0])} 위험만 ${f1(CAU[0].mcLoss / topRest.mcLoss, 1)}배 지시는 셈입니다. 수익률과 위험은 비례하지 않습니다.`],
+      CAU.includes(topRate)
+        ? `그게 이번엔 안 맞습니다. 제일 높은 건 연 ${f1(topRate.annualRate, 1)}%인 제${topRate.no}회인데 손실 확률이 ${f1(topRate.mcLoss)}%입니다. 권해 드릴 수 있는 것 중 가장 높은 제${topRest.no}회는 연 ${f1(topRest.annualRate, 1)}%에 손실 확률이 ${f1(topRest.mcLoss)}%뿐입니다 — ${rateVs(topRest, topRate)} 위험만 ${f1(topRate.mcLoss / topRest.mcLoss, 1)}배 지시는 셈입니다. 수익률과 위험은 비례하지 않습니다.`
+        : `이번엔 그 말씀이 맞습니다. 제일 높은 건 연 ${f1(topRate.annualRate, 1)}%인 제${topRate.no}회인데, 손실 확률이 ${f1(topRate.mcLoss)}%로 권해 드릴 수 있는 축입니다. 다만 수익률 순서를 그대로 따라가시면 안 됩니다 — 연 ${f1(CAU[0].annualRate, 1)}%인 제${CAU[0].no}회는 손실 확률이 ${f1(CAU[0].mcLoss)}%로, ${f1(topRate.annualRate, 1)}%짜리보다 ${f1(topRate.annualRate - CAU[0].annualRate, 1)}%p 덜 주면서 위험은 ${f1(CAU[0].mcLoss / topRate.mcLoss, 1)}배입니다. 수익률과 위험은 비례하지 않습니다.`],
   ];
 
   const cw = (CW - 0.24) / 2, rh = 1.72;

@@ -422,7 +422,7 @@ if (A.plan.hasCooling) {
   });
 
   if (CS) {
-    s.addText(`제${CS.no}회${C.sensIsPick ? '(추천 1번)' : ''} — 손실 확률 1%당 수익률 1등. 이 우위가 공시 상관 ${f1(CS.disclosed, 2)} 하나에 얹혀 있는지 흔들어 봤습니다`, {
+    s.addText(`제${CS.no}회${C.sensIsPick ? `(추천 ${C.sensSlot}번)` : ''} — 손실 확률 1%당 수익률 1등. 이 우위가 공시 상관 ${f1(CS.disclosed, 2)} 하나에 얹혀 있는지 흔들어 봤습니다`, {
       x: M, y: y0 + 2.46, w: CW, h: 0.26, fontFace: F, fontSize: 12, bold: true, color: INK, margin: 0,
     });
     const rhoHd = [{ text: '같이 움직이는 정도', options: { bold: true, color: INK, fill: { color: SOFT } } }]
@@ -450,7 +450,10 @@ if (A.plan.hasCooling) {
 
   s.addShape(pres.ShapeType.rect, { x: M, y: y0 + 4.78, w: CW, h: 0.72, fill: { color: TINT }, line: { width: 0 } });
   s.addText([
-    { text: `"연 ${f1(A.rateMax)}%짜리도 있는데 왜 ${f1(CE.fairBest.annualRate)}%짜리를 먼저 권하나요?"  `, options: { bold: true, color: INK } },
+    { text: Math.abs(A.rateMax - CE.fairBest.annualRate) < 0.05
+      ? '"그냥 수익률 높은 순서대로 보여 주세요."  '
+      : `"연 ${f1(A.rateMax)}%짜리도 있는데 왜 ${f1(CE.fairBest.annualRate)}%짜리를 먼저 권하나요?"  `,
+      options: { bold: true, color: INK } },
     { text: `→ "수익률이 높으면 위험도 큰 것, 맞습니다. 다만 같은 손실 확률을 지고도 남들보다 많이 받는 상품이 따로 있습니다. 이번 회차는 그 차이가 ${f1(CE.fairSpread)}배까지 벌어집니다."` },
   ], { x: M + 0.22, y: y0 + 4.78, w: CW - 0.44, h: 0.72, fontFace: F, fontSize: 11.5, color: BODY, valign: 'middle', lineSpacing: 16, margin: 0 });
   s.addNotes(`수익률만 유난히 높고 위험은 안 높아 보이면 ${CW2.fx ? '넷' : '셋'} 중 하나입니다 — 조건 덕이거나, ${CW2.fx ? '돈의 종류가 다르거나, ' : ''}값어치가 깎여 있거나, 아직 못 본 위험이 있거나. 앞의 것들로 설명이 안 되면 마지막입니다.`);
