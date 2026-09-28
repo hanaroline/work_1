@@ -51,14 +51,33 @@ const collectedKst = updatedAt ? new Date(updatedAt.getTime() + 9 * 3600 * 1000)
 const now = kstNow();
 
 // 목록에 실린 회차. 이름 끝의 5자리가 회차, 뒤에 e 가 붙으면 온라인 전용이다.
+//
+// **출처가 둘이다.** 목록 API(data/els.js)는 "청약 진행중" 만 돌려주므로 청약
+// 첫날 아침에는 새 회차가 아직 안 들어 있다. 화면을 그대로 긁어 둔
+// rendered_list.json 에는 청약 예정분까지 먼저 올라온다. API 만 보면
+// 신규 회차를 통째로 놓친다 — 2026-09-29 07:56 에 실제로 그렇게 됐다.
+// 화면에 제38152~38169회 18건이 올라와 있는데 "새 회차 없음" 으로 끝났다.
+// 덱 빌더는 진작 화면을 1순위로 보고 있었는데 이 판정만 API 에 매여 있었다.
 const listed = new Set();
 const online = new Set();
-for (const p of data.products || []) {
-  const m = String(p.name).match(/(\d{5})(e?)\s*$/);
-  if (!m) continue;
+const addName = (name) => {
+  const m = String(name).match(/(\d{5})(e?)\s*$/);
+  if (!m) return;
   listed.add(Number(m[1]));
   if (m[2]) online.add(Number(m[1]));
-}
+};
+for (const p of data.products || []) addName(p.name);
+
+let screenAt = null;
+try {
+  const r = JSON.parse(await read('tools/discovery/rendered_list.json'));
+  // 화면 캡처도 오늘 것이어야 센다. 낡은 캡처를 섞으면 신선도 판정이 무너진다.
+  const cap = r.capturedAt ? new Date(r.capturedAt) : null;
+  if (cap) screenAt = new Date(cap.getTime() + 9 * 3600 * 1000);
+  if (screenAt && kstDay(screenAt) === kstDay(kstNow())) {
+    for (const row of r.rows || []) addName(String(row.name).replace(/\s+$/, ''));
+  }
+} catch { /* 캡처가 없으면 API 만으로 판정한다 */ }
 
 // 이미 제안서로 다룬 회차 — 공시 원문을 파싱해 둔 것이 곧 다룬 것이다.
 const parsed = JSON.parse(await read('tools/discovery/prospectus_parsed.json'));
@@ -67,7 +86,9 @@ for (const batch of Object.values(parsed)) {
   for (const it of batch.items || []) if (it.no) covered.add(Number(it.no));
 }
 
-const fresh = collectedKst != null && kstDay(collectedKst) === kstDay(now);
+const freshApi = collectedKst != null && kstDay(collectedKst) === kstDay(now);
+const freshScreen = screenAt != null && kstDay(screenAt) === kstDay(now);
+const fresh = freshApi || freshScreen;
 const newNos = [...listed].filter((n) => !covered.has(n)).sort((a, b) => a - b);
 
 const out = [];
@@ -75,6 +96,7 @@ out.push(`지금(KST): ${kstStamp(now)}`);
 out.push(
   `목록 수집 시각: ${collectedKst ? kstStamp(collectedKst) : '없음'} (${origin} · source=${data.source ?? '?'})`
 );
+out.push(`화면 캡처 시각: ${screenAt ? kstStamp(screenAt) : '없음'}${freshScreen ? '' : ' (오늘 것이 아니라 세지 않음)'}`);
 out.push(`목록에 실린 회차 ${listed.size}건 · 이미 다룬 회차 ${covered.size}건`);
 
 let status;
