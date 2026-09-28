@@ -44,10 +44,44 @@ module.exports = async function run(t) {
       t.is(await field(page, name).count(), 0, 'DB 에서는 전환 칸이 없다: ' + name);
     }
 
+    // 이연퇴직소득세 자체 계산 - 켜야 칸이 열린다.
+    // DB·DC 는 '입사일' 이 따로 필요하다. 제도 가입일은 입사일이 아니다.
+    for (const name of FIELDS.whenTaxCalc.concat(FIELDS.whenTaxCalcDbDc)) {
+      t.is(await field(page, name).count(), 0, '계산을 켜기 전에는 없다: ' + name);
+    }
+    await field(page, '이연 퇴직소득세 직접 계산').check();
+    await page.waitForTimeout(250);
+    for (const name of FIELDS.whenTaxCalc.concat(FIELDS.whenTaxCalcDbDc)) {
+      t.is(await field(page, name).count(), 1, '계산 라벨 고유: ' + name);
+    }
+    for (const name of FIELDS.whenMidSettle) {
+      t.is(await field(page, name).count(), 0, '중간정산 표시 전에는 없다: ' + name);
+    }
+    await field(page, '중간정산 받음').check();
+    await page.waitForTimeout(250);
+    for (const name of FIELDS.whenMidSettle) {
+      t.is(await field(page, name).count(), 1, '중간정산 라벨 고유: ' + name);
+    }
+    // 켜 두면 이연 퇴직소득세는 계산값 칸이 되어 입력 칸이 사라진다
+    t.is(await field(page, '이연 퇴직소득세').count(), 0, '계산 중에는 직접 입력 칸이 없다');
+    t.is(await page.getByLabel('계산된 이연 퇴직소득세', { exact: true }).count(), 1,
+      '대신 계산값 칸이 하나 있다');
+    await field(page, '이연 퇴직소득세 직접 계산').uncheck();
+    await page.waitForTimeout(250);
+    t.is(await field(page, '이연 퇴직소득세').count(), 1, '끄면 직접 입력 칸이 돌아온다');
+
     await button(page, '퇴직금제도').click();
     await page.waitForTimeout(250);
     for (const name of FIELDS.whenSeverance) t.is(await field(page, name).count(), 1, '퇴직금제도 라벨 고유: ' + name);
     t.is(await field(page, '퇴직급여').count(), 0, '퇴직금제도에서는 단일 퇴직급여 칸이 없다');
+
+    // 퇴직금제도는 기존 '입사일' 칸(라벨은 제도 가입일)을 근속 기산일로 그대로 쓴다.
+    // 같은 뜻의 칸을 둘 두면 어느 쪽을 채워야 하는지 알 수 없다.
+    await field(page, '이연 퇴직소득세 직접 계산').check();
+    await page.waitForTimeout(250);
+    t.is(await field(page, '입사일').count(), 0, '퇴직금제도에는 입사일 칸이 따로 생기지 않는다');
+    await field(page, '이연 퇴직소득세 직접 계산').uncheck();
+    await page.waitForTimeout(200);
 
     // --- 3. 계좌를 추가하면 그 카드의 칸들이 순번 이름으로 생긴다 ---
     // 같은 종류를 두 개 넣어도 '연금저축 1' / '연금저축 2' 로 갈려 겹치지 않아야 한다.

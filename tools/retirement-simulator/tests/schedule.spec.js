@@ -30,7 +30,11 @@ function expected({ P0, G0, tax0, startLimitYear, years, rate, startAge, pastCou
     const pRate = age >= 80 ? 0.033 : age >= 70 ? 0.044 : 0.055;
     // 세액공제분·운용수익의 연금수령분이 연 1,500만원을 넘으면 저율 분리과세를
     // 쓸 수 없고 종합과세 / 16.5% 분리과세 선택 대상이 된다 (소득세법 §64의4)
-    const tax = (P0 > 0 ? tax0 * (dR / P0) * factor : 0) + dG * (dG > 15000000 ? 0.165 : pRate);
+    // 이연퇴직소득세는 국세 기준으로 받아 **지방소득세 10% 를 더해** 쓴다
+    // (지방세법 §103의3). 같은 칸에 더해지는 연금소득세 5.5·4.4·3.3% 와
+    // 기타소득세 16.5% 가 이미 지방세를 품은 세율이기 때문이다.
+    const tax0Total = tax0 + Math.floor(tax0 * 0.1);
+    const tax = (P0 > 0 ? tax0Total * (dR / P0) * factor : 0) + dG * (dG > 15000000 ? 0.165 : pRate);
     P -= dR; G -= dG;
     out.push({ k, ly, unlimited, begin, limit, draw, reduction: 1 - factor, tax, end: P + G });
   }
@@ -109,9 +113,10 @@ module.exports = async function run(t) {
     t.includes(over[0][5], '연금외', '한도 초과분이 연금외수령으로 표시됨');
     t.includes(over[0][5], '2,400', '초과분 2,400만원');
 
-    // 세액 검산: 퇴직소득 1원당 이연세액 0.1.
-    // 연금수령분 3,600만 × 0.1 × 0.7(30% 감면) + 초과분 2,400만 × 0.1(감면 없음) = 492만원
-    t.near(num(over[0][7]), 492, 1, '연금수령분만 감면되고 초과분은 전액 과세');
+    // 세액 검산: 이연퇴직소득세 3,000만원(국세) + 지방소득세 300만원 = 3,300만원.
+    // 퇴직소득 3억 기준 1원당 0.11.
+    // 연금수령분 3,600만 × 0.11 × 0.7(30% 감면) + 초과분 2,400만 × 0.11 = 541.2만원
+    t.near(num(over[0][7]), 541, 1, '연금수령분만 감면되고 초과분은 전액 과세');
 
     // 같은 조건에서 '세법 한도 내 최대'로 바꾸면 한도까지만 빠진다
     await button(page, '세법 한도 내 최대').click();
@@ -119,7 +124,7 @@ module.exports = async function run(t) {
     const capped = await scheduleRows(page);
     t.near(num(capped[0][5]), 3600, 1, '한도 내 최대는 한도까지만 인출');
     t.excludes(capped[0][5], '연금외', '한도 내 최대에는 연금외수령이 없음');
-    t.near(num(capped[0][7]), 252, 1, '3,600만 × 0.1 × 0.7 = 252만원');
+    t.near(num(capped[0][7]), 277, 1, '3,600만 × 0.11 × 0.7 = 277.2만원 (지방소득세 포함)');
 
     // ── ③재원 연금수령분이 연 1,500만원을 넘으면 저율 분리과세를 못 쓴다 ──
     //
