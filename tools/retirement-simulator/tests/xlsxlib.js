@@ -98,7 +98,30 @@ function readSheet(xml) {
   return cells;
 }
 
-/** 워크북 → [{name, cells}] (workbook.xml 의 순서 = sheet1, sheet2 …) */
+/**
+ * 시트 XML → { 1: 너비, 2: 너비, … } (1부터 센 열 번호)
+ *
+ * 열 너비를 읽어 두어야 '이 칸이 제 열에 들어가는가' 를 검사가 따질 수 있다.
+ * 앱이 너비를 잘못 잡으면 엑셀에서 숫자가 ### 가 되고 글자가 끊기는데,
+ * 그건 파일을 열어 보기 전에는 드러나지 않는다.
+ */
+function readCols(xml) {
+  const out = {};
+  const re = /<col\s([^>]*)\/>/g;
+  let m;
+  while ((m = re.exec(xml))) {
+    const at = (k) => {
+      const g = new RegExp('\\s' + k + '="([^"]*)"').exec(' ' + m[1]);
+      return g ? Number(g[1]) : null;
+    };
+    const lo = at('min'), hi = at('max'), w = at('width');
+    if (lo === null || w === null) continue;
+    for (let i = lo; i <= (hi === null ? lo : hi); i++) out[i] = w;
+  }
+  return out;
+}
+
+/** 워크북 → [{name, cells, widths}] (workbook.xml 의 순서 = sheet1, sheet2 …) */
 function readWorkbook(buf) {
   const files = unzip(buf);
   const wb = files['xl/workbook.xml'].toString('utf8');
@@ -108,10 +131,10 @@ function readWorkbook(buf) {
   while ((m = re.exec(wb))) names.push(unesc(m[1]));
   return {
     files,
-    sheets: names.map((name, i) => ({
-      name,
-      cells: readSheet(files['xl/worksheets/sheet' + (i + 1) + '.xml'].toString('utf8'))
-    }))
+    sheets: names.map((name, i) => {
+      const xml = files['xl/worksheets/sheet' + (i + 1) + '.xml'].toString('utf8');
+      return { name, cells: readSheet(xml), widths: readCols(xml) };
+    })
   };
 }
 
@@ -283,4 +306,4 @@ function makeEvaluator(cells) {
   return { valueOf, evaluate };
 }
 
-module.exports = { unzip, readSheet, readWorkbook, makeEvaluator, crc32 };
+module.exports = { unzip, readSheet, readCols, readWorkbook, makeEvaluator, crc32 };
