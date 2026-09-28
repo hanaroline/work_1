@@ -259,16 +259,37 @@ function matrixData(opts) {
     };
   });
 
-  return {
+  const data = {
     targets: TARGETS.map((t) => ({ key: t.key, label: t.label })),
     deposit,
     transfer,
-    legend: [...legend.values()].map((b) => ({ rule: b.rule, short: b.short, src: b.src, law: b.law, text: b.text })),
+    // src 는 사내 Q&A 번호다. 근거를 빼는 판에는 번호도 싣지 않는다 - 번호만
+    // 남아도 어느 문서를 보라는 이야기가 되고, 법령(law)과 달리 사내 자료다.
+    legend: [...legend.values()].map((b) => includeSources
+      ? { rule: b.rule, short: b.short, src: b.src, law: b.law, text: b.text }
+      : { rule: b.rule, short: b.short, law: b.law, text: b.text }),
     // 빈 배열이면 화면이 근거 묶음을 아예 그리지 않는다 (위 opts.sources 를 보라)
     sources: includeSources
       ? Object.keys(SOURCES).map((k) => Object.assign({ key: k }, SOURCES[k]))
       : []
   };
+
+  /*
+   * 빼기로 했으면 정말 하나도 없는지 여기서 끊는다.
+   *
+   * 규칙 하나를 고치면서 설명문에 'Q23② 에 걸립니다' 처럼 적어 넣기 쉽다.
+   * 조용히 지나가면 그 판이 그대로 지점으로 나간다. 지우고 넘어가지 않고
+   * **세우는** 이유는, 문장에서 번호만 도려내면 남는 말이 어색해져 사람이
+   * 다시 써야 하기 때문이다.
+   */
+  if (!includeSources) {
+    const found = (JSON.stringify(data).match(/Q\d{1,3}[\u2460-\u2473]*/g) || []);
+    if (found.length) {
+      throw new Error('근거를 뺀 판단표 자료에 사내 Q&A 번호가 남아 있습니다: ' +
+        [...new Set(found)].join(' ') + '\n  rules.js 의 설명문에서 번호를 빼고 문장을 다듬어 주세요.');
+    }
+  }
+  return data;
 }
 
 if (require.main === module) {

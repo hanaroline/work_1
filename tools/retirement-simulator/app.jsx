@@ -2286,6 +2286,19 @@ const TABS = [
  */
 const MATRIX = (typeof window !== 'undefined' && window.__MATRIX__) || null;
 
+/**
+ * 사내 Q&A 번호를 화면에 적을지.
+ *
+ * 근거를 담은 판에서만 적는다. 번호만 남아도 '어느 사내 문서를 보라' 는
+ * 이야기가 되고, 이 파일은 사람 손을 타고 돈다. 법령 조문(§)은 공개된
+ * 것이라 그대로 둔다 - 가리는 것은 사내 자료를 가리키는 표시뿐이다.
+ *
+ * 쓸 때는 문장 끝에 붙인다.  ... 고를 수 있습니다{qref(' (Q32)')}.
+ * 빠져도 문장이 그대로 읽히게 적어 두는 것이 중요하다.
+ */
+const HAS_SOURCES = !!(MATRIX && MATRIX.sources && MATRIX.sources.length);
+const qref = (s) => (HAS_SOURCES ? s : '');
+
 /** 재원을 적는 순서. 고르는 차례와 무관하게 늘 같게 보이도록 고정한다 */
 const FUND_ORDER = ['LEGAL', 'HONOR'];
 
@@ -2748,7 +2761,8 @@ function MatrixTab({ current }) {
             <strong>옮기기 전에 연차부터 보세요.</strong>{' '}
             {(from === 0 || from === 2) && (to === 1 || to === 3)
               ? '구 계좌(6년차)를 잔액 있는 신 계좌로 옮기면 받는 계좌 가입일이 적용되어 1년차가 됩니다. 한도가 몇 배 줄어듭니다.'
-              : '신규 계좌를 열어 잔액 없는 상태에서 전액을 옮기면 보내는 계좌의 가입일자를 고를 수 있습니다(Q32). 자동이 아니라 선택이므로 반드시 요청하세요.'}
+              : '신규 계좌를 열어 잔액 없는 상태에서 전액을 옮기면 보내는 계좌의 가입일자를 고를 수 있습니다' +
+                qref(' (Q32)') + '. 자동이 아니라 선택이므로 반드시 요청하세요.'}
           </div>
         )}
         <p className="text-[12px] text-ink-soft mt-3 leading-relaxed">
@@ -3912,7 +3926,7 @@ function App() {
                         helpTitle="규약상 퇴직급여"
                         help={<React.Fragment>
                           {system} 규약에 규정된 퇴직급여입니다. 규약에 법정외 퇴직금이 포함되어 있다면
-                          <strong> 그 금액도 여기에</strong> 넣으세요 - 법정퇴직금과 같은 제한을 받습니다(Q12).
+                          <strong> 그 금액도 여기에</strong> 넣으세요 - 법정퇴직금과 같은 제한을 받습니다{qref(' (Q12)')}.
                           규약에 없는 명퇴금·위로금만 아래 칸에 넣습니다.
                         </React.Fragment>}>
                         <MoneyInput value={amtSingle} onChange={setAmtSingle} label="퇴직급여" />

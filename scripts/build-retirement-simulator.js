@@ -113,10 +113,33 @@ fs.unlinkSync(cssTmp);
 console.log('[2/5] JSX 트랜스파일');
 const babel = require(requireDep('@babel/standalone', 'npm install --no-save @babel/standalone@7.25.6'));
 const jsx = read(path.join(SRC, 'app.jsx'));
-const appJs = babel.transform(jsx, {
+/*
+ * 주석은 싣지 않는다.
+ *
+ * app.jsx 의 주석은 다음 사람에게 남기는 기록이라 사내 Q&A 번호(Q37 같은 것)를
+ * 그대로 인용한다. 그런데 이 파일은 사람 손을 타고 도는 한 장이라, 주석까지
+ * 통째로 실려 나가면 파일을 받은 누구나 그 인용을 읽는다.
+ *
+ * 주석을 지우는 대신 **원본은 그대로 둔다.** 인용을 원본에서 걷어내면 다음에
+ * 고치는 사람이 근거를 잃는다 - 지워야 할 것은 원본이 아니라 배포본이다.
+ * 덤으로 파일이 작아진다.
+ */
+let appJs = babel.transform(jsx, {
   presets: [['react', { runtime: 'classic' }]],
-  compact: false
+  compact: false,
+  comments: false
 }).code;
+
+/*
+ * qref(' (Q32)') 같은 인용도 글자째 걷어낸다.
+ *
+ * 화면에서 안 그리는 것만으로는 부족하다 - 안 그려도 글자는 파일 안에 남고,
+ * 가리려는 것이 바로 '파일을 열었을 때 읽히는 것' 이다. qref 는 따옴표에 싼
+ * 글자 하나만 받는 helper 라 여기서 통째로 빈 문자열로 바꿔도 안전하다.
+ */
+if (!WITH_SOURCES) {
+  appJs = appJs.replace(/qref\(\s*(["'])(?:(?!\1)[^\\]|\\.)*\1\s*\)/g, '""');
+}
 
 /*
  * 2-2) 판단표 자료.
@@ -145,6 +168,25 @@ const html = read(path.join(SRC, 'shell.html'))
 if (html.includes('__STYLES__') || html.includes('__REACT__') || html.includes('__APP__')) {
   console.error('조립 실패: shell.html 의 플레이스홀더가 치환되지 않았습니다.');
   process.exit(1);
+}
+
+/*
+ * 배포본에 사내 Q&A 번호가 남아 있으면 쓰지 않고 끊는다.
+ *
+ * 검사로도 보지만 검사는 빌드가 끝난 뒤의 일이라, 그 사이에 파일이 손을 탈
+ * 수 있다. 내보내지 못할 파일은 **애초에 만들지 않는 편**이 낫다.
+ *
+ * React 번들에는 Q0·Q51 같은 압축된 이름이 널려 있으므로 앱 부분만 본다.
+ * 앱 부분은 판단표 자료가 시작되는 자리부터다.
+ */
+if (!WITH_SOURCES) {
+  const appPart = html.slice(html.indexOf('window.__MATRIX__'));
+  const found = [...new Set(appPart.match(/Q\d{1,3}[①-⑳]*/g) || [])];
+  if (found.length) {
+    console.error('배포본에 사내 Q&A 번호가 남아 있습니다: ' + found.join(' ') +
+      '\n  화면에 적는 인용은 qref(\' (Q32)\') 로 감싸 주세요 (app.jsx 의 qref 주석 참조).');
+    process.exit(1);
+  }
 }
 
 fs.writeFileSync(OUT, html);
