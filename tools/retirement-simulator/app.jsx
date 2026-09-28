@@ -1411,18 +1411,123 @@ function taxSheet(c) {
    ================================================================ */
 
 /**
+ * 열려 있는 설명은 언제나 하나다.
+ *
+ * 전에는 설명마다 제 상태를 따로 들고 있었다. 그래서 누르는 대로 쌓였고, 상담
+ * 중에 서넛을 열어 두면 나중에 연 것이 앞의 것을 덮어 **둘 다 못 읽는** 화면이
+ * 됐다(실제로 그런 화면이 올라왔다). 바깥을 눌러도 닫히지 않으니 한 번 연 설명은
+ * 그 '?' 를 다시 찾아 누르기 전에는 사라지지 않았다.
+ *
+ * 그래서 '지금 열린 설명' 을 한 곳에만 두고, 다른 것이 열리면 나머지는 스스로
+ * 닫는다. 설명끼리는 서로를 모르므로 부모를 거치지 않고 여기로 모은다.
+ */
+const helpBus = (() => {
+  let current = 0;
+  let seq = 0;
+  const subs = new Set();
+  const tell = () => subs.forEach((fn) => fn(current));
+  return {
+    nextId: () => (seq += 1),
+    toggle(id) { current = (current === id ? 0 : id); tell(); },
+    close() { if (current) { current = 0; tell(); } },
+    sub(fn) { subs.add(fn); return () => { subs.delete(fn); }; }
+  };
+})();
+
+/**
+ * 설명 상자가 잘리는 테두리.
+ *
+ * 왼쪽 입력 칸은 제 높이만큼 따로 구르는 칸(overflow-y-auto)이라, 그 안에서
+ * 절대 위치로 띄운 상자는 칸 밖으로 나가는 순간 잘리거나 가로 스크롤바를
+ * 만든다. 실제로 오른쪽 열의 '?' 를 누르면 설명이 잘려 나갔다. 구르는 조상이
+ * 있으면 그 상자를, 없으면 화면을 테두리로 삼는다.
+ */
+function clipRectOf(el) {
+  const vw = window.innerWidth, vh = window.innerHeight;
+  for (let p = el.parentElement; p; p = p.parentElement) {
+    const st = window.getComputedStyle(p);
+    if (/(auto|scroll|hidden)/.test(st.overflowX) || /(auto|scroll|hidden)/.test(st.overflowY)) {
+      const r = p.getBoundingClientRect();
+      return {
+        left: Math.max(0, r.left), right: Math.min(vw, r.right),
+        top: Math.max(0, r.top), bottom: Math.min(vh, r.bottom)
+      };
+    }
+  }
+  return { left: 0, right: vw, top: 0, bottom: vh };
+}
+
+/**
  * 눌러서 펼치는 설명. 상담 중에 근거를 바로 보여줄 수 있도록 라벨 옆에 붙인다.
  * 인쇄물에는 나오지 않는다(.screen-only 안에서만 쓴다).
  *
  * title 은 한 줄 요약, children 은 근거 조문까지 담은 본문.
  */
 function Help({ title, children }) {
+  const idRef = React.useRef(0);
+  if (!idRef.current) idRef.current = helpBus.nextId();
+  const id = idRef.current;
+
   const [open, setOpen] = React.useState(false);
+  const rootRef = React.useRef(null);
+  const popRef = React.useRef(null);
+
+  React.useEffect(() => helpBus.sub((cur) => setOpen(cur === id)), [id]);
+
+  /* 밖을 누르거나 Esc 를 누르면 닫는다. 제 '?' 를 누른 것은 지나간다 -
+     여기서 먼저 닫아 버리면 이어지는 click 이 다시 열어 토글이 되지 않는다. */
+  React.useEffect(() => {
+    if (!open) return undefined;
+    const down = (e) => {
+      if (rootRef.current && rootRef.current.contains(e.target)) return;
+      helpBus.close();
+    };
+    const key = (e) => { if (e.key === 'Escape') helpBus.close(); };
+    document.addEventListener('pointerdown', down, true);
+    document.addEventListener('keydown', key, true);
+    return () => {
+      document.removeEventListener('pointerdown', down, true);
+      document.removeEventListener('keydown', key, true);
+    };
+  }, [open]);
+
+  /* 테두리 안으로 밀어 넣는다. 오른쪽으로 넘치면 왼쪽으로 당기고, 아래로
+     넘치는데 위가 더 넓으면 단추 위로 올린다. */
+  React.useLayoutEffect(() => {
+    if (!open) return undefined;
+    const place = () => {
+      const pop = popRef.current;
+      if (!pop) return;
+      pop.style.marginLeft = '0px';
+      pop.style.top = '22px';
+      pop.style.bottom = 'auto';
+      const clip = clipRectOf(pop);
+      const pad = 8;
+      let r = pop.getBoundingClientRect();
+      if (r.bottom > clip.bottom - pad && (r.top - clip.top) > (clip.bottom - r.bottom)) {
+        pop.style.top = 'auto';
+        pop.style.bottom = '22px';
+        r = pop.getBoundingClientRect();
+      }
+      let dx = 0;
+      if (r.right > clip.right - pad) dx = (clip.right - pad) - r.right;
+      if (r.left + dx < clip.left + pad) dx = (clip.left + pad) - r.left;
+      pop.style.marginLeft = Math.round(dx) + 'px';
+    };
+    place();
+    window.addEventListener('resize', place);
+    window.addEventListener('scroll', place, true);
+    return () => {
+      window.removeEventListener('resize', place);
+      window.removeEventListener('scroll', place, true);
+    };
+  }, [open]);
+
   return (
-    <span className="relative inline-block align-middle">
+    <span ref={rootRef} className="relative inline-block align-middle">
       <button
         type="button"
-        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen((v) => !v); }}
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); helpBus.toggle(id); }}
         aria-label={title + ' 설명'}
         aria-expanded={open}
         className={'ml-1 w-[16px] h-[16px] leading-[15px] text-[11px] font-bold rounded-full border align-middle transition ' +
@@ -1433,6 +1538,7 @@ function Help({ title, children }) {
       </button>
       {open && (
         <span
+          ref={popRef}
           role="note"
           /* 이름을 붙여 둔다. 화면에 늘 떠 있는 안내문도 role="note" 라서,
              'note 가 몇 개냐' 로 세면 설명이 열렸는지와 섞인다. */
@@ -1443,7 +1549,7 @@ function Help({ title, children }) {
           <span className="block font-bold mb-1 text-[12px]">{title}</span>
           <span className="block opacity-90">{children}</span>
           <button type="button" aria-label={title + ' 설명 닫기'}
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(false); }}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); helpBus.close(); }}
             className="absolute top-1 right-2 text-white/70 hover:text-white text-[14px] leading-none">×</button>
         </span>
       )}
@@ -2191,9 +2297,10 @@ const GUIDE_STEPS = [
     body: [
       '회차별로 한도 · 인출액(월 환산) · 감면율 · 세액 · 잔액이 나옵니다.',
       '인출액 칸에 마우스를 올리면 재원별(과세제외 / 퇴직금 / 운용수익) 분해가 뜹니다.',
-      '분할 입금이면 머리의 선택 상자에서 계좌를 바꿔 가며 봅니다.'
+      "머리의 선택 상자에서 계좌를 바꿔 가며 봅니다. '지금 받는 계좌' 묶음은 보는 대상만 옮기고, '이 계좌로 바꿔서 보기' 묶음은 그 계좌로 받는 것으로 바꿉니다."
     ],
     trap: [
+      ['바꿔서 보기는 판정까지 바꿉니다', "'이 계좌로 바꿔서 보기' 에서 고르면 판정 · 인쇄물 · 엑셀이 모두 그 계좌 기준으로 바뀝니다. 잠깐 견주어만 보려던 것이면 옆의 '추천 계좌로 되돌리기' 로 되돌리세요."],
       ['한도는 인출 상한이 아닙니다', '넘겨서 뺄 수 있고, 넘은 부분만 연금외수령으로 과세됩니다. 그래서 균등 분할이 한도를 넘으면 자르지 않고 초과분을 따로 표시합니다.'],
       ['수령 기간을 줄이면 세금이 늘 수 있습니다', "계좌마다 '최소 권장 수령 기간' 이 표시됩니다. 그보다 짧으면 한도를 넘겨 연금외수령이 생깁니다."]
     ]
@@ -2868,8 +2975,8 @@ function App() {
    * 시뮬레이션 대상으로 고를 수 있는 계좌.
    *
    * 판정 탭에서 카드를 눌러 고르는 것과 **같은 집합**이다(실제로 돈이 배정된 계좌).
-   * 분할 입금이면 둘 이상이 되고, 그때 스케줄을 보다가 다른 계좌로 바꾸려면
-   * 판정 탭까지 되돌아가야 했다. 스케줄 탭 머리에도 같은 선택을 둔다.
+   * 분할 입금이면 둘 이상이 된다. 스케줄 탭의 선택 상자는 여기에 비교 후보까지
+   * 더해 만든다 - scheduleChoices 를 보라.
    */
   const pickables = useMemo(
     () => candidates.filter((c) => c.allocatedAmount > 0),
@@ -3004,6 +3111,51 @@ function App() {
       })
       .sort((a, b) => (b.afterTax + b.residual) - (a.afterTax + a.residual));
   }, [candidates, retireTotal, effectiveDeferredTax, pastCount, years, mode, rate, startYear, startAge]);
+
+  /**
+   * 인출 스케줄에서 고를 수 있는 계좌 - 배정된 계좌 + 계좌 비교에 오른 후보.
+   *
+   * 전에는 '실제로 돈이 배정된 계좌' 만 올렸다. 그런데 계좌 비교 탭에는 후보가
+   * 보통 둘 이상 나란히 서는데(신규 IRP vs 기존 IRP) 돈이 가는 곳은 하나뿐이라,
+   * 분할 입금이 아닌 보통의 상담에서는 스케줄 탭에 상자 자체가 뜨지 않았다.
+   * 정작 상담 자리에서 묻는 것은 **'저 계좌로 받으면 어떻게 되느냐'** 인데,
+   * 그걸 보려면 판정 탭까지 되돌아가 재원별 선택 상자를 고쳐야 했다.
+   *
+   * 그래서 비교 후보도 같이 올린다. 다만 둘은 성격이 다르다 - 배정된 계좌를
+   * 고르면 보는 대상만 옮기고, 배정되지 않은 후보를 고르면 **받을 계좌 자체가
+   * 바뀐다**(판정·인쇄물·엑셀까지). 상자 안에서 묶음을 갈라 두고, 바꾼 뒤에는
+   * 되돌릴 수 있게 안내를 띄운다.
+   */
+  const scheduleChoices = useMemo(() => {
+    const out = pickables.map((c) => ({ c: c, allocated: true }));
+    comparison.forEach((r) => {
+      if (!out.some((x) => x.c.id === r.c.id)) out.push({ c: r.c, allocated: false });
+    });
+    return out;
+  }, [pickables, comparison]);
+
+  /**
+   * 스케줄에서 계좌를 바꾼다.
+   *
+   * 배정되지 않은 후보를 골랐으면 그 계좌로 받을 수 있는 재원만 돌린다. 받을 수
+   * 없는 재원(연금저축계좌에 DC 퇴직급여 같은)까지 싸잡아 지정하면 buildAllocation
+   * 이 조용히 무시해 선택 상태와 화면이 어긋난다. 옮길 수 없는 재원은 제자리에
+   * 남고, 그러면 분할 입금이 되어 아래 분할 안내가 그대로 사정을 적는다.
+   */
+  const chooseScheduleAccount = (id) => {
+    const hit = scheduleChoices.find((x) => x.c.id === id);
+    if (!hit) return;
+    if (!hit.allocated) {
+      setManualPick((m) => {
+        const next = Object.assign({}, m);
+        allocation.forEach((a) => {
+          if (a.options.some((o) => o.id === id)) next[a.source.kind] = id;
+        });
+        return next;
+      });
+    }
+    setPickedId(id);
+  };
 
   // 수령 기간이 최소 권장보다 짧으면 경고
   const shortSpan = picked && years < picked.minYears;
@@ -4525,8 +4677,8 @@ function App() {
                     ))}
                   </div>
                   <p className="text-[12px] text-ink-soft mt-3 leading-relaxed">
-                    이 차이는 세액 계산에 들어가지 않습니다. 위 추천 카드의 계좌 선택 상자에서 직접 바꾸면
-                    시뮬레이션과 인쇄물에 그대로 반영됩니다.
+                    이 차이는 세액 계산에 들어가지 않습니다. 판정 탭의 추천 카드나 인출 스케줄 탭의
+                    계좌 선택 상자에서 직접 바꾸면 시뮬레이션과 인쇄물에 그대로 반영됩니다.
                   </p>
                 </Section>
               )}
@@ -4536,7 +4688,7 @@ function App() {
               <div style={{ display: tab === 'schedule' ? 'block' : 'none' }}>
               {ready && sim && (
                 <Section
-                  title={pickables.length > 1 ? '인출 시뮬레이션' : '인출 시뮬레이션 - ' + picked.label}
+                  title={scheduleChoices.length > 1 ? '인출 시뮬레이션' : '인출 시뮬레이션 - ' + picked.label}
                   right={
                     <div className="flex items-center gap-2 screen-only">
                       {/*
@@ -4544,23 +4696,39 @@ function App() {
 
                         고를 수 있는 것이 하나뿐이면 상자를 두지 않는다 - 고를 것이 없는
                         선택 상자는 '뭘 골라야 하나' 를 묻는 것처럼 보인다.
+
+                        묶음을 갈라 두는 이유: 위 묶음은 보는 대상만 옮기지만 아래
+                        묶음을 고르면 받을 계좌 자체가 바뀐다. 한 줄로 섞어 두면
+                        고르는 사람이 그 차이를 알 길이 없다.
                       */}
-                      {pickables.length > 1 && (
+                      {scheduleChoices.length > 1 && (
                         <select value={picked.id} aria-label="시뮬레이션 계좌"
-                          onChange={(e) => setPickedId(e.target.value)}
+                          onChange={(e) => chooseScheduleAccount(e.target.value)}
                           className="h-[38px] px-3 pr-8 text-[14px] font-medium bg-white text-ink
-                                     border border-mas-orange rounded-xs cursor-pointer max-w-[280px]
+                                     border border-mas-orange rounded-xs cursor-pointer max-w-[380px]
                                      focus:outline-none focus:ring-2 focus:ring-mas-orange/25">
-                          {pickables.map((c) => (
-                            <option key={c.id} value={c.id}>
-                              {c.label + ' · ' + c.startLimitYear + '년차 · 배정 ' + krw(c.allocatedAmount)}
-                            </option>
-                          ))}
+                          <optgroup label={isSplit ? '지금 나누어 받는 계좌' : '지금 받는 계좌'}>
+                            {scheduleChoices.filter((x) => x.allocated).map(({ c }) => (
+                              <option key={c.id} value={c.id}>
+                                {c.label + ' · ' + c.startLimitYear + '년차 · 배정 ' + krw(c.allocatedAmount)}
+                              </option>
+                            ))}
+                          </optgroup>
+                          {scheduleChoices.some((x) => !x.allocated) && (
+                            <optgroup label="이 계좌로 바꿔서 보기">
+                              {scheduleChoices.filter((x) => !x.allocated).map(({ c }) => (
+                                <option key={c.id} value={c.id}>
+                                  {c.label + ' · ' + c.startLimitYear + '년차 · ' +
+                                    (c.feeRate > 0 ? '연 ' + (c.feeRate * 100).toFixed(2) + '%' : '수수료 없음')}
+                                </option>
+                              ))}
+                            </optgroup>
+                          )}
                         </select>
                       )}
                       {/*
                         내보내기 단추는 여기 두지 않는다. 엑셀과 CSV 는 고를 때 서로
-                        비교하는 것이라 한자리에 있어야 하고(왼쪽 저장 카드), 여기
+                        비교하는 것이라 한자리에 있어야 하고(맨 위 머리줄), 여기
                         하나만 있으면 탭을 열기 전에는 보이지 않아 '없는 기능' 이 된다.
                       */}
                     </div>
@@ -4571,6 +4739,30 @@ function App() {
                       재원이 <strong>{pickables.length}개 계좌로 나뉘어</strong> 입금됩니다. 위에서 계좌를 바꾸면
                       그 계좌의 인출 스케줄을 봅니다 — 판정 탭으로 돌아가지 않아도 됩니다.
                       (인쇄물에는 지금 고른 계좌가 담깁니다.)
+                    </p>
+                  )}
+                  {/*
+                    고를 후보가 더 있다는 것과, 그것을 고르면 무엇이 함께 바뀌는지를
+                    적는다. 바꾸고 나면 되돌리는 단추를 같은 자리에 내놓는다 - 판정
+                    탭까지 가야 되돌릴 수 있으면 바꿔 보기가 부담이 된다.
+                  */}
+                  {(scheduleChoices.some((x) => !x.allocated) || allocation.some((a) => a.manual)) && (
+                    <p className="text-[12px] mb-3 leading-snug screen-only flex flex-wrap items-center gap-2"
+                      role="note" aria-label="다른 계좌로 바꿔 보기 안내">
+                      {scheduleChoices.some((x) => !x.allocated) && (
+                        <span className="text-ink-soft">
+                          계좌 비교에 오른 <strong className="text-ink-body">다른 후보도 위 상자에서 고를 수 있습니다.</strong>{' '}
+                          고르면 그 계좌로 <strong className="text-ink-body">받는 것으로 바뀌어</strong> 판정 · 인쇄물 ·
+                          엑셀까지 함께 따라갑니다.
+                        </span>
+                      )}
+                      {allocation.some((a) => a.manual) && (
+                        <button type="button" onClick={() => setManualPick({})}
+                          className="h-[26px] px-2 text-[12px] font-medium text-mas-active bg-white
+                                     border border-mas-orange rounded-xs hover:bg-mas-soft transition shrink-0">
+                          추천 계좌로 되돌리기
+                        </button>
+                      )}
                     </p>
                   )}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">

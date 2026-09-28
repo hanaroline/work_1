@@ -99,6 +99,9 @@ module.exports = async function run(t) {
     t.includes(guide, '제도 가입일을 비우지 마세요', '빈 가입일 함정을 적는다');
     t.includes(guide, '명예퇴직금은 따로 넣습니다', '명퇴금 칸을 따로 둔 이유를 적는다');
     t.includes(guide, '한도는 인출 상한이 아닙니다', '가장 흔한 오해를 적는다');
+    // 스케줄 탭에서 다른 후보를 고르면 판정까지 바뀐다 - 보는 것만 바뀐다고 읽히면 안 된다
+    t.includes(guide, '바꿔서 보기는 판정까지 바꿉니다', '계좌를 바꿔 보면 판정도 바뀐다고 적는다');
+    t.includes(guide, '추천 계좌로 되돌리기', '되돌리는 길을 적는다');
 
     // 닫는 길이 둘 - Esc 와 바깥 누르기
     await page.keyboard.press('Escape');
