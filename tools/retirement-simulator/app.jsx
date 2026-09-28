@@ -2757,10 +2757,17 @@ function MatrixTab({ current }) {
         </p>
       </Section>
 
-      {/* ── 3. 근거 - 평소에는 접어 둔다 ── */}
+      {/*
+        ── 3. 근거 ──
+        배포본에는 실리지 않는다. 빌드가 자료를 비워 보내므로(build.js 의
+        INCLUDE_SOURCES) 이 묶음은 그려지지 않는다. 화면에서만 가리면 파일을
+        편집기로 열었을 때 그대로 읽히므로, 자료 자체를 심지 않는 쪽으로 둔다.
+        되돌리면 이 자리에 그대로 다시 나온다.
+      */}
+      {(M.sources || []).length > 0 && (
       <details className="border border-hair rounded-sm bg-white">
         <summary className="px-4 py-3 text-[14px] font-bold text-ink cursor-pointer">
-          근거 <span className="text-ink-soft font-normal text-[13px]">사내 연금 업무 Q&A {M.sources.length}건</span>
+          근거
         </summary>
         <div className="px-4 pb-4 space-y-2">
           {M.sources.map((src) => (
@@ -2773,6 +2780,7 @@ function MatrixTab({ current }) {
           ))}
         </div>
       </details>
+      )}
     </div>
   );
 }

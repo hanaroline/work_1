@@ -2,7 +2,8 @@
 /**
  * 퇴직급여 수령 의사결정 시뮬레이터 — 자립형 단일 HTML 빌드
  *
- *   node scripts/build-retirement-simulator.js
+ *   node scripts/build-retirement-simulator.js            배포본
+ *   node scripts/build-retirement-simulator.js --근거     근거까지 담은 내부용
  *
  * tools/retirement-simulator/{app.jsx, styles.css, shell.html} 를
  * React·Tailwind 와 함께 인라인하여 retirement-simulator.html 하나로 만든다.
@@ -14,7 +15,25 @@ const { execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const SRC = path.join(ROOT, 'tools', 'retirement-simulator');
-const OUT = path.join(ROOT, 'retirement-simulator.html');
+
+/*
+ * 판이 둘이다.
+ *
+ *   배포본  retirement-simulator.html          근거 없음 — 지점으로 돌아다니는 파일
+ *   내부용  retirement-simulator-근거포함.html  근거 18건 포함 — 손에 두고 보는 파일
+ *
+ * 파일 하나가 사람 손을 타고 도는 형태라, 사내 연금 업무 Q&A 원문 요약이 그대로 실려
+ * 나가면 파일을 받은 누구나 읽는다. 서버가 없어 화면에서만 가리는 잠금은 편집기로 여는
+ * 순간 뚫리므로 자료 자체를 심지 않는다.
+ *
+ * 내부용은 **이름을 달리 해서** 따로 쓴다 - 같은 이름으로 덮으면 어느 것이 손에 있는지
+ * 알 수 없고, 배포본인 줄 알고 근거가 든 파일을 보내게 된다. .gitignore 에도 올려 두어
+ * 실수로 커밋되지 않게 한다.
+ */
+const WITH_SOURCES = process.argv.slice(2).some((a) => a === '--근거' || a === '--sources');
+const OUT = path.join(ROOT, WITH_SOURCES
+  ? 'retirement-simulator-근거포함.html'
+  : 'retirement-simulator.html');
 
 const read = (p) => fs.readFileSync(p, 'utf8');
 
@@ -108,7 +127,8 @@ const appJs = babel.transform(jsx, {
  * 앱은 앱의 판정을, 이 표는 규칙표의 답을 보여 주고 어긋나면 crosscheck 가 잡는다.
  */
 const matrix = require(path.join(ROOT, 'tools', 'pension-decision-matrix', 'build.js'));
-const matrixJs = 'window.__MATRIX__ = ' + JSON.stringify(matrix.matrixData()) + ';';
+const matrixJs = 'window.__MATRIX__ = ' +
+  JSON.stringify(matrix.matrixData({ sources: WITH_SOURCES })) + ';';
 
 // 3) React UMD 번들
 console.log('[3/5] React 번들 인라인');
@@ -128,4 +148,5 @@ if (html.includes('__STYLES__') || html.includes('__REACT__') || html.includes('
 }
 
 fs.writeFileSync(OUT, html);
-console.log('완료 → ' + path.relative(ROOT, OUT) + ' (' + Math.round(html.length / 1024) + ' KB)');
+console.log('완료 → ' + path.relative(ROOT, OUT) + ' (' + Math.round(html.length / 1024) + ' KB)' +
+  (WITH_SOURCES ? '  ※ 근거 포함 — 내부용입니다. 그대로 내보내지 마세요.' : ''));
