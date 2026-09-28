@@ -1193,7 +1193,14 @@ function buildSchedule(cfg) {
     // 계좌 수수료는 매년 적립금 기준으로 차감한다. 운용수익·세액공제분에서 먼저 빼고,
     // 모자라면 퇴직소득 재원에서 뺀다(이연퇴직소득세는 실제 인출한 퇴직소득분에만
     // 비례하므로 재원이 줄면 그만큼 세액도 줄어든다).
+    // 수수료를 떼기 직전의 재원별 잔액. 엑셀 내보내기의 수식이 이 값을 캐시로 쓴다 -
+    // 밖에서 다시 계산하면 두 벌이 되어 언젠가 어긋난다.
+    const carryE = E,
+      carryP = P,
+      carryG = G;
     const feeThisYear = feeOf ? Math.max(0, feeOf(E + P + G, k)) : Math.max(0, (E + P + G) * fRate);
+    let feeRest1 = 0,
+      feeRest2 = 0;
     if (feeThisYear > 0) {
       const fee = feeThisYear;
       const fromG = Math.min(fee, Math.max(0, G));
@@ -1202,8 +1209,13 @@ function buildSchedule(cfg) {
       const fromP = Math.min(rest, Math.max(0, P));
       P -= fromP;
       E = Math.max(0, E - (rest - fromP));
+      feeRest1 = rest;
+      feeRest2 = rest - fromP;
       totalFee += fee;
     }
+    const beginE = E,
+      beginP = P,
+      beginG = G;
     const begin = E + P + G;
     if (begin <= 1) break;
     const limitYear = startLimitYear + k - 1;
@@ -1273,6 +1285,20 @@ function buildSchedule(cfg) {
       otherTax,
       tax: retTax + otherTax,
       end: E + P + G,
+      // 엑셀 내보내기가 수식의 계산값으로 쓰는 중간값들. 화면에는 쓰지 않는다.
+      fee: feeThisYear,
+      feeRest1,
+      feeRest2,
+      carryE,
+      carryP,
+      carryG,
+      beginE,
+      beginP,
+      beginG,
+      penP,
+      penG,
+      ovP,
+      ovG,
       // 사적연금 분리과세 한도는 ③ 재원의 연금수령분에만 걸린다.
       // 퇴직소득 재원의 연금수령분은 금액과 무관하게 분리과세된다.
       over1500
@@ -1387,6 +1413,430 @@ function scheduleCsv(rows, meta) {
   lines.push(['회차', '연도', '나이', '한도 연차', '실제 연차', '기초자산', '연금수령한도', '연간 인출액', '월 환산', '감면율', '예상 세액', '기말잔액'].map(esc).join(','));
   rows.forEach(r => lines.push([r.k, r.year, r.age, r.limitYear + '년차' + (r.unlimited ? '(한도해제)' : ''), r.actualYear + '년차', Math.round(r.begin), r.unlimited ? '전액' : Math.round(r.limit), Math.round(r.draw), Math.round(r.monthly), r.drawRet > 0 ? Math.round(r.reduction * 100) + '%' : '-', Math.round(r.tax), Math.round(r.end)].map(esc).join(',')));
   return '﻿' + lines.join('\r\n');
+}
+
+/* ================================================================
+   3-3. 엑셀 내보내기 (.xlsx)
+
+   CSV 와 갈라 둔다. 둘은 하는 일이 다르다.
+
+     · CSV  - 인출 스케줄 **표 한 장**을 다른 곳으로 넘긴다. 사내 시스템에 올리거나
+              다른 도구로 읽는 용도라 값만 있으면 되고, 어디서나 열린다.
+     · 엑셀 - 고객 앞에서 **숫자를 바꿔 본다**. 그래서 값이 아니라 **수식**으로 쓴다.
+              금액이나 운용수익률을 고치면 인출표가 엑셀 안에서 다시 계산된다.
+
+   라이브러리를 쓰지 않는다. 이 도구는 인터넷 없이 파일 하나로 도는 것이라 CDN 을 못
+   쓰고, 번들을 심으면 파일이 수백 KB 불어난다. xlsx 는 zip 안에 XML 몇 장이므로
+   필요한 만큼만 직접 쓴다.
+   ================================================================ */
+
+const CRC32_TABLE = function () {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ c >>> 1 : c >>> 1;
+    t[n] = c >>> 0;
+  }
+  return t;
+}();
+function crc32(b) {
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < b.length; i++) c = CRC32_TABLE[(c ^ b[i]) & 0xFF] ^ c >>> 8;
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+const utf8Bytes = s => new TextEncoder().encode(s);
+
+/**
+ * 저장(STORE) 방식 zip.
+ *
+ * 압축하지 않는다. 이 파일은 수십 KB 라 줄일 것이 거의 없고, 브라우저가 가진 압축기가
+ * 제각각이라(CompressionStream 은 구형 브라우저에 없다) 지점 PC 에서 갈릴 수 있다.
+ * zip 규격은 무압축을 그대로 허용하고 엑셀도 읽는다.
+ *
+ * 타임스탬프는 고정값으로 둔다. 같은 입력이면 같은 바이트가 나와야 검사가 맞대 볼 수 있다.
+ */
+function zipStore(files) {
+  const u16 = n => [n & 0xFF, n >>> 8 & 0xFF];
+  const u32 = n => [n & 0xFF, n >>> 8 & 0xFF, n >>> 16 & 0xFF, n >>> 24 & 0xFF];
+  const parts = [];
+  const dir = [];
+  let offset = 0;
+  const push = arr => {
+    const u = new Uint8Array(arr);
+    parts.push(u);
+    offset += u.length;
+  };
+  for (const f of files) {
+    const name = utf8Bytes(f.name);
+    const data = f.data;
+    const crc = crc32(data);
+    const at = offset;
+    // 0x0800 = 파일명이 UTF-8 이라는 표시
+    push([].concat(u32(0x04034b50), u16(20), u16(0x0800), u16(0), u16(0), u16(0x2821), u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0)));
+    push(Array.prototype.slice.call(name));
+    push(Array.prototype.slice.call(data));
+    dir.push([].concat(u32(0x02014b50), u16(20), u16(20), u16(0x0800), u16(0), u16(0), u16(0x2821), u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0), u16(0), u16(0), u16(0), u32(0), u32(at), Array.prototype.slice.call(name)));
+  }
+  const dirAt = offset;
+  for (const d of dir) push(d);
+  const dirSize = offset - dirAt;
+  push([].concat(u32(0x06054b50), u16(0), u16(0), u16(dir.length), u16(dir.length), u32(dirSize), u32(dirAt), u16(0)));
+  let total = 0;
+  for (const p of parts) total += p.length;
+  const out = new Uint8Array(total);
+  let at = 0;
+  for (const p of parts) {
+    out.set(p, at);
+    at += p.length;
+  }
+  return out;
+}
+const xmlEsc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+/** 0 -> A, 25 -> Z, 26 -> AA */
+function colName(i) {
+  let s = '';
+  let n = i;
+  while (n >= 0) {
+    s = String.fromCharCode(65 + n % 26) + s;
+    n = Math.floor(n / 26) - 1;
+  }
+  return s;
+}
+
+/* 서식 번호 - styles.xml 의 cellXfs 순서와 같아야 한다 */
+const S = {
+  plain: 0,
+  bold: 1,
+  won: 2,
+  pct: 3,
+  head: 4,
+  wonBold: 5,
+  pct3: 6
+};
+
+/** 셀 하나. 값(v) 또는 수식(f) 중 하나를 준다. 수식에도 계산값을 함께 적어 둔다 */
+const num = (v, s) => ({
+  t: 'n',
+  v: v,
+  s: s === undefined ? S.won : s
+});
+const txt = (v, s) => ({
+  t: 's',
+  v: v,
+  s: s === undefined ? S.plain : s
+});
+const fx = (f, v, s) => ({
+  t: 'n',
+  f: f,
+  v: v,
+  s: s === undefined ? S.won : s
+});
+function sheetXml(rows, cols) {
+  const out = ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?>', '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'];
+  if (cols && cols.length) {
+    out.push('<cols>');
+    cols.forEach((w, i) => out.push('<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>'));
+    out.push('</cols>');
+  }
+  out.push('<sheetData>');
+  rows.forEach((cells, r) => {
+    if (!cells || !cells.length) return;
+    const rn = r + 1;
+    const buf = ['<row r="' + rn + '">'];
+    cells.forEach((c, i) => {
+      if (c === null || c === undefined) return;
+      const ref = colName(i) + rn;
+      const st = ' s="' + (c.s || 0) + '"';
+      if (c.f !== undefined) {
+        buf.push('<c r="' + ref + '"' + st + '><f>' + xmlEsc(c.f) + '</f><v>' + (isFinite(c.v) ? c.v : 0) + '</v></c>');
+      } else if (c.t === 'n') {
+        buf.push('<c r="' + ref + '"' + st + '><v>' + (isFinite(c.v) ? c.v : 0) + '</v></c>');
+      } else {
+        buf.push('<c r="' + ref + '"' + st + ' t="inlineStr"><is><t xml:space="preserve">' + xmlEsc(c.v) + '</t></is></c>');
+      }
+    });
+    buf.push('</row>');
+    out.push(buf.join(''));
+  });
+  out.push('</sheetData></worksheet>');
+  return out.join('');
+}
+const STYLES_XML = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' + '<numFmts count="3">' + '<numFmt numFmtId="164" formatCode="#,##0"/>' + '<numFmt numFmtId="165" formatCode="0.0%"/>' + '<numFmt numFmtId="166" formatCode="0.000%"/>' + '</numFmts>' + '<fonts count="3">' + '<font><sz val="11"/><color theme="1"/><name val="맑은 고딕"/><family val="2"/></font>' + '<font><b/><sz val="11"/><color theme="1"/><name val="맑은 고딕"/><family val="2"/></font>' + '<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="맑은 고딕"/><family val="2"/></font>' + '</fonts>' + '<fills count="3">' + '<fill><patternFill patternType="none"/></fill>' + '<fill><patternFill patternType="gray125"/></fill>' + '<fill><patternFill patternType="solid"><fgColor rgb="FFF58220"/><bgColor indexed="64"/></patternFill></fill>' + '</fills>' + '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>' + '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' + '<cellXfs count="7">' + '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' + '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>' + '<xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' + '<xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' + '<xf numFmtId="0" fontId="2" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>' + '<xf numFmtId="164" fontId="1" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"/>' + '<xf numFmtId="166" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' + '</cellXfs>' + '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>' + '</styleSheet>';
+
+/** 시트 이름에 쓸 수 없는 글자를 걷어내고 31자로 자른다 (엑셀 제한) */
+function sheetName(s, used) {
+  let base = String(s || '시트').replace(/[\[\]:*?\/\\]/g, ' ').trim().slice(0, 31) || '시트';
+  let name = base;
+  let n = 2;
+  while (used.indexOf(name) >= 0) {
+    const tail = ' (' + n + ')';
+    name = base.slice(0, 31 - tail.length) + tail;
+    n += 1;
+  }
+  used.push(name);
+  return name;
+}
+
+/**
+ * 워크북을 통째로 만든다.
+ *
+ * sheets: [{ name, rows, cols }]
+ *
+ * fullCalcOnLoad 를 켜 둔다. 수식에 계산값을 함께 적어 두지만, 엑셀이 열 때 스스로
+ * 다시 계산하게 해야 입력 칸을 고치기 전에도 둘이 어긋나 있지 않다.
+ */
+function buildXlsx(sheets) {
+  const files = [];
+  const add = (name, s) => files.push({
+    name: name,
+    data: utf8Bytes(s)
+  });
+  add('[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' + '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' + '<Default Extension="xml" ContentType="application/xml"/>' + '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' + sheets.map((s, i) => '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join('') + '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' + '</Types>');
+  add('_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>' + '</Relationships>');
+  add('xl/workbook.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' + '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' + 'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>' + sheets.map((s, i) => '<sheet name="' + xmlEsc(s.name) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>').join('') + '</sheets><calcPr calcId="0" fullCalcOnLoad="1"/></workbook>');
+  add('xl/_rels/workbook.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + sheets.map((s, i) => '<Relationship Id="rId' + (i + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>').join('') + '<Relationship Id="rId' + (sheets.length + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' + '</Relationships>');
+  add('xl/styles.xml', STYLES_XML);
+  sheets.forEach((s, i) => add('xl/worksheets/sheet' + (i + 1) + '.xml', sheetXml(s.rows, s.cols)));
+  return zipStore(files);
+}
+
+/* ---------------------------------------------------------------
+   인출 스케줄 시트 - 여기만 수식이다
+
+   화면의 buildSchedule 과 **같은 순서로** 계산한다. 회차마다
+
+     ① 이월 → ③에 운용수익 더하기 → 수수료 차감(③→②→① 순) → 기초자산
+     ② 한도 = 기초 ÷ (11 - 연차) × 120%  (11년차부터 한도 없음)
+     ③ 인출액 = 균등 또는 한도 최대, 기초자산을 넘지 않음
+     ④ 인출 순서 ①→②→③, 한도까지가 연금수령 나머지는 연금외수령
+     ⑤ 세액 = ②의 감면분 + ③의 연령별 연금소득세(1,500만원 초과 시 16.5%)
+
+   재원별 잔액을 칸으로 드러내 두는 것이 요점이다. 이 칸들이 없으면 인출 순서를
+   수식으로 표현할 수 없어 '금액을 바꾸면 다시 계산되는' 표가 아니게 된다.
+   --------------------------------------------------------------- */
+
+/** 입력 블록의 행 번호 (1부터). 수식이 절대참조로 가리킨다 */
+const XI = {
+  exempt: 4,
+  retire: 5,
+  other: 6,
+  total: 7,
+  tax: 8,
+  perWon: 9,
+  rate: 10,
+  years: 11,
+  modeText: 12,
+  modeMax: 13,
+  startLimitYear: 14,
+  startYear: 15,
+  startAge: 16,
+  pastCount: 17,
+  feeKind: 18,
+  feeRate: 19,
+  irpOffset: 20,
+  irpOurDb: 21,
+  irpWaived: 22
+};
+const XHEAD = 25; // 표 머리행
+const XFIRST = XHEAD + 1; // 첫 자료행
+
+const XCOL = ['회차', '연도', '나이', '한도 연차', '실제 연차', '기초자산', '연금수령한도', '연간 인출액', '월 환산', '연금수령분', '연금외수령분', '감면율', '예상 세액', '수수료', '기말잔액', '', '①기초', '②기초', '③기초', '①인출', '②인출', '③인출', '②연금수령분', '③연금수령분', '②연금외수령분', '③연금외수령분', '②세액', '③세액', '①이월', '②이월', '③이월+수익', '수수료잔여1', '수수료잔여2'];
+
+/* 열 문자 - XCOL 의 순서에 매인다 */
+const XC = {};
+XCOL.forEach((name, i) => {
+  if (name) XC[name] = colName(i);
+});
+function scheduleSheet(ctx) {
+  const rows = [];
+  const put = (r, cells) => {
+    rows[r - 1] = cells;
+  };
+  const pair = (r, label, cell) => put(r, [txt(label, S.bold), cell]);
+  const c = ctx;
+  put(1, [txt('인출 스케줄 — ' + c.label, S.bold)]);
+  put(2, [txt('파란 칸(B4~B22)을 고치면 아래 표가 다시 계산됩니다. 표의 숫자는 모두 수식입니다.')]);
+  pair(XI.exempt, '① 세액공제 받지 않은 금액 (과세제외)', num(c.exemptPrincipal));
+  pair(XI.retire, '② 이연퇴직소득 원금 (퇴직급여)', num(c.retirePrincipal));
+  pair(XI.other, '③ 세액공제분 + 기존 운용수익', num(c.otherPrincipal));
+  pair(XI.total, '시작 자산 합계', fx('B' + XI.exempt + '+B' + XI.retire + '+B' + XI.other, c.exemptPrincipal + c.retirePrincipal + c.otherPrincipal, S.wonBold));
+  pair(XI.tax, '이연퇴직소득세 (지방소득세 포함)', num(c.deferredTax));
+  pair(XI.perWon, '퇴직소득 1원당 세액', fx('IF(B' + XI.retire + '>0,B' + XI.tax + '/B' + XI.retire + ',0)', c.retirePrincipal > 0 ? c.deferredTax / c.retirePrincipal : 0, S.pct3));
+  pair(XI.rate, '운용수익률 (연)', num(c.rate, S.pct));
+  pair(XI.years, '수령 기간 (년)', num(c.years, S.plain));
+  pair(XI.modeText, '인출 방식', txt(c.mode === 'max' ? '세법 한도 내 최대' : '기간 균등 분할'));
+  pair(XI.modeMax, '   한도 내 최대면 1, 균등이면 0', num(c.mode === 'max' ? 1 : 0, S.plain));
+  pair(XI.startLimitYear, '기산 연차', num(c.startLimitYear, S.plain));
+  pair(XI.startYear, '시작 연도', num(c.startYear, S.plain));
+  pair(XI.startAge, '개시 첫 해 만 나이', num(c.startAge, S.plain));
+  pair(XI.pastCount, '과거 연금 수령 횟수', num(c.pastCount, S.plain));
+  pair(XI.feeKind, '수수료 방식', txt(c.masIrp ? '미래에셋증권 개인형IRP 공시 (체차적용·할인)' : '연 정률'));
+  pair(XI.feeRate, '   연 수수료율 (정률일 때)', num(c.feeRate || 0, S.pct3));
+  pair(XI.irpOffset, '   신규 IRP 계약 차년도 보정', num(c.irpOffset || 0, S.plain));
+  pair(XI.irpOurDb, '   당사 DB·DC 가입자면 1', num(c.irpOurDb ? 1 : 0, S.plain));
+  pair(XI.irpWaived, '   전액 면제면 1', num(c.irpWaived ? 1 : 0, S.plain));
+  const headRow = [];
+  XCOL.forEach((name, i) => {
+    headRow[i] = name ? txt(name, S.head) : null;
+  });
+  headRow[16] = txt('①기초', S.head);
+  put(XHEAD - 1, [txt('결과', S.bold), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, txt('계산 과정 — 재원별 잔액·인출과 세액 분해', S.bold)]);
+  put(XHEAD, headRow);
+  const A = r => 'A' + r,
+    Bi = k => '$B$' + k;
+  c.rows.forEach((row, idx) => {
+    const r = XFIRST + idx;
+    const p = r - 1; // 앞 회차 행
+    const first = idx === 0;
+    const cell = [];
+    const at = nm => XC[nm] + r;
+    const prev = nm => XC[nm] + p;
+
+    // 이월 - 첫 회차는 입력값, 그 뒤는 앞 회차 기말
+    const carryE = first ? Bi(XI.exempt) : '(' + prev('①기초') + '-' + prev('①인출') + ')';
+    const carryP = first ? Bi(XI.retire) : '(' + prev('②기초') + '-' + prev('②인출') + ')';
+    const prevEnd = first ? '' : '(' + prev('①기초') + '-' + prev('①인출') + '+' + prev('②기초') + '-' + prev('②인출') + '+' + prev('③기초') + '-' + prev('③인출') + ')';
+    const carryG = first ? Bi(XI.other) : '(' + prev('③기초') + '-' + prev('③인출') + ')+' + prevEnd + '*' + Bi(XI.rate);
+    const bal = at('①이월') + '+' + at('②이월') + '+' + at('③이월+수익');
+    const feeF = c.masIrp ? 'IF(' + Bi(XI.irpWaived) + '=1,0,IF((' + bal + ')<=0,0,(' + 'IF(AND(' + Bi(XI.irpOurDb) + '=1,' + A(r) + '+' + Bi(XI.irpOffset) + '<=1),0,' + 'MIN(' + bal + ',100000000)*0.002' + '+MAX(0,MIN(' + bal + ',300000000)-100000000)*0.0018' + '+MAX(0,(' + bal + ')-300000000)*0.0015)' + '+(' + bal + ')*0.001' + ')*(1-IF(' + A(r) + '+' + Bi(XI.irpOffset) + '>=11,0.15,IF(' + A(r) + '+' + Bi(XI.irpOffset) + '>=5,0.12,IF(' + A(r) + '+' + Bi(XI.irpOffset) + '>=2,0.1,0))))' + '*(1-IF(' + A(r) + '>1,0.2,0))))' : 'MAX(0,(' + bal + ')*' + Bi(XI.feeRate) + ')';
+    cell[0] = num(row.k, S.plain);
+    cell[1] = fx(Bi(XI.startYear) + '+' + A(r) + '-1', row.year, S.plain);
+    cell[2] = fx(Bi(XI.startAge) + '+' + A(r) + '-1', row.age, S.plain);
+    cell[3] = fx(Bi(XI.startLimitYear) + '+' + A(r) + '-1', row.limitYear, S.plain);
+    cell[4] = fx(Bi(XI.pastCount) + '+' + A(r), row.actualYear, S.plain);
+    cell[5] = fx(at('①기초') + '+' + at('②기초') + '+' + at('③기초'), row.begin);
+    cell[6] = fx('IF(' + at('한도 연차') + '>=11,' + at('기초자산') + ',' + at('기초자산') + '/(11-' + at('한도 연차') + ')*1.2)', row.unlimited ? row.begin : row.limit);
+    cell[7] = fx('MAX(0,MIN(IF(' + Bi(XI.modeMax) + '=1,' + at('연금수령한도') + ',' + at('기초자산') + '/(' + Bi(XI.years) + '-' + A(r) + '+1)),' + at('기초자산') + '))', row.draw);
+    cell[8] = fx(at('연간 인출액') + '/12', row.monthly);
+    cell[9] = fx('MIN(' + at('연간 인출액') + ',' + at('연금수령한도') + ')', row.pensionPart);
+    cell[10] = fx(at('연간 인출액') + '-' + at('연금수령분'), row.overPart);
+    cell[11] = fx('IF(' + at('실제 연차') + '<=10,0.3,IF(' + at('실제 연차') + '<=20,0.4,0.5))', row.reduction, S.pct);
+    cell[12] = fx(at('②세액') + '+' + at('③세액'), row.tax);
+    cell[13] = fx(feeF, row.fee);
+    cell[14] = fx(at('①기초') + '-' + at('①인출') + '+' + at('②기초') + '-' + at('②인출') + '+' + at('③기초') + '-' + at('③인출'), row.end);
+    cell[16] = fx('MAX(0,' + at('①이월') + '-' + at('수수료잔여2') + ')', row.beginE);
+    cell[17] = fx('MAX(0,' + at('②이월') + '-' + at('수수료잔여1') + ')', row.beginP);
+    cell[18] = fx('MAX(0,' + at('③이월+수익') + '-' + at('수수료') + ')', row.beginG);
+    cell[19] = fx('MIN(' + at('연간 인출액') + ',' + at('①기초') + ')', row.drawExempt);
+    cell[20] = fx('MIN(' + at('연간 인출액') + '-' + at('①인출') + ',' + at('②기초') + ')', row.drawRet);
+    cell[21] = fx(at('연간 인출액') + '-' + at('①인출') + '-' + at('②인출'), row.drawOther);
+    cell[22] = fx('MIN(MAX(0,' + at('연금수령분') + '-' + at('①인출') + '),' + at('②인출') + ')', row.penP);
+    cell[23] = fx(at('연금수령분') + '-MIN(' + at('연금수령분') + ',' + at('①인출') + ')-' + at('②연금수령분'), row.penG);
+    cell[24] = fx(at('②인출') + '-' + at('②연금수령분'), row.ovP);
+    cell[25] = fx(at('③인출') + '-' + at('③연금수령분'), row.ovG);
+    cell[26] = fx(Bi(XI.perWon) + '*(' + at('②연금수령분') + '*(1-' + at('감면율') + ')+' + at('②연금외수령분') + ')', row.retTax);
+    cell[27] = fx(at('③연금수령분') + '*IF(' + at('③연금수령분') + '>15000000,0.165,IF(' + at('나이') + '<70,0.055,IF(' + at('나이') + '<80,0.044,0.033)))+' + at('③연금외수령분') + '*0.165', row.otherTax);
+    cell[28] = fx(carryE, row.carryE);
+    cell[29] = fx(carryP, row.carryP);
+    cell[30] = fx(carryG, row.carryG);
+    cell[31] = fx('MAX(0,' + at('수수료') + '-' + at('③이월+수익') + ')', row.feeRest1);
+    cell[32] = fx('MAX(0,' + at('수수료잔여1') + '-' + at('②이월') + ')', row.feeRest2);
+    put(r, cell);
+  });
+  const last = XFIRST + c.rows.length - 1;
+  const sum = nm => 'SUM(' + XC[nm] + XFIRST + ':' + XC[nm] + last + ')';
+  const tr = last + 2;
+  put(tr, [txt('합계', S.bold), null, null, null, null, null, null, fx(sum('연간 인출액'), c.totals.totalDraw, S.wonBold), null, null, null, null, fx(sum('예상 세액'), c.totals.totalTax, S.wonBold), fx(sum('수수료'), c.totals.totalFee, S.wonBold)]);
+  put(tr + 1, [txt('세후 수령액 (인출액 − 세액)', S.bold), null, null, null, null, null, null, fx('H' + tr + '-M' + tr, c.totals.afterTax, S.wonBold)]);
+  put(tr + 3, [txt('행 수는 화면에서 계산된 회차 그대로입니다. 기간을 크게 늘리려면 마지막 행을 복사해 내리세요.')]);
+  const cols = [6, 7, 6, 9, 9, 14, 14, 14, 12, 14, 14, 8, 13, 11, 14, 2];
+  for (let i = cols.length; i < XCOL.length; i++) cols.push(13);
+  return {
+    name: c.sheet,
+    rows: rows,
+    cols: cols
+  };
+}
+
+/* ---------------------------------------------------------------
+   요약 · 계좌 비교 · 퇴직소득세 시트
+
+   이 셋은 **값**이다. 인출 스케줄만 수식으로 둔 것은, 고객 앞에서 실제로 바꿔 보는
+   것이 금액과 수익률과 수령 기간이기 때문이다. 판정과 세액 산출까지 수식으로 옮기면
+   같은 규칙이 앱과 엑셀 두 곳에 살게 되어 언젠가 한쪽이 낡는다 - 이 도구에서 이미
+   여러 번 겪은 일이라, 옮기지 않고 '화면에서 나온 값' 이라고 적어 둔다.
+   --------------------------------------------------------------- */
+
+function summarySheet(c) {
+  const rows = [];
+  const put = cells => rows.push(cells);
+  const kv = (k, v, s) => put([txt(k, S.bold), typeof v === 'number' ? num(v, s) : txt(v)]);
+  put([txt('퇴직급여 수령 의사결정 — 상담 요약', S.bold)]);
+  put([txt('미래에셋증권 [사내한] 상담 도구에서 내보냈습니다. 작성일 ' + c.today)]);
+  put([]);
+  put([txt('고객 및 퇴직 정보', S.head)]);
+  kv('고객명', c.custName || '-');
+  kv('생년월일', c.birthRaw || '-');
+  kv('현재 만 나이', c.age === null ? '-' : c.age, S.plain);
+  kv('퇴직제도', c.systemLabel);
+  kv('제도 가입일', c.joinStr || '-');
+  kv('퇴직(예정)일', c.retireStr || '-');
+  kv('규약상 퇴직급여(원)', c.amtLegal);
+  kv('명예(법정외) 퇴직금(원)', c.amtHonor);
+  kv('퇴직급여 합계(원)', c.retireTotal);
+  kv('이연퇴직소득세 — 국세(원)', c.deferredNational);
+  kv('이연퇴직소득세 — 지방소득세(원)', c.deferredLocal);
+  kv('이연퇴직소득세 — 합계(원)', c.deferredTotal);
+  kv('이연퇴직소득세 산출', c.taxCalc ? '이 도구가 직접 계산' : '원천징수영수증 값 입력');
+  put([]);
+  put([txt('시뮬레이션 옵션', S.head)]);
+  kv('인출 방식', c.mode === 'max' ? '세법 한도 내 최대' : '기간 균등 분할');
+  kv('수령 기간(년)', c.years, S.plain);
+  kv('운용수익률', c.rate / 100, S.pct);
+  kv('합산한 기존 계좌', c.mergedLabel || '없음 (퇴직급여 단독)');
+  put([]);
+  put([txt('재원별 배정', S.head)]);
+  put([txt('재원', S.bold), txt('금액(원)', S.bold), txt('받는 계좌', S.bold), txt('연금수령연차', S.bold), txt('사유', S.bold)]);
+  c.allocation.forEach(a => put([txt(a.source), num(a.amount), txt(a.target), txt(a.startLimitYear, S.plain), txt(a.reason)]));
+  put([]);
+  put([txt('계좌별 판정', S.head)]);
+  put([txt('계좌', S.bold), txt('재원', S.bold), txt('상태', S.bold), txt('기산 연차', S.bold), txt('연금수령연차', S.bold), txt('사유', S.bold)]);
+  c.verdicts.forEach(v => put([txt(v.label), txt(v.source), txt(v.state), txt(v.basis, S.plain), txt(v.year, S.plain), txt(v.reason)]));
+  put([]);
+  put([txt('이 요약은 화면에서 나온 값입니다. 수식으로 이어진 것은 인출 스케줄 시트입니다.')]);
+  put([txt('상담 보조용 추정치이며 최종 판단은 원천징수영수증과 금융기관 확인을 거쳐야 합니다.')]);
+  if (c.memo) {
+    put([]);
+    put([txt('상담 메모', S.bold)]);
+    put([txt(c.memo)]);
+  }
+  return {
+    name: '요약',
+    rows: rows,
+    cols: [34, 18, 26, 13, 13, 70]
+  };
+}
+function compareSheet(c) {
+  const rows = [];
+  rows.push([txt('계좌별 비교 — 받는 계좌만 바꾸고 나머지 조건은 같게 둔 값', S.bold)]);
+  rows.push([txt('기존 잔고 합산은 빼고 퇴직급여 단독으로 비교합니다. 화면의 계좌 비교 탭과 같은 값입니다.')]);
+  rows.push([]);
+  rows.push([txt('계좌', S.head), txt('기산 연차', S.head), txt('배정액(원)', S.head), txt('총 수수료(원)', S.head), txt('총 세액(원)', S.head), txt('세후 수령액(원)', S.head), txt('잔존액(원)', S.head), txt('비고', S.head)]);
+  c.comparison.forEach(r => rows.push([txt(r.label), txt(r.startLimitYear, S.plain), num(r.amount), num(r.totalFee), num(r.totalTax), num(r.afterTax), num(r.residual), txt(r.note || '')]));
+  rows.push([]);
+  rows.push([txt('세후 수령액 + 잔존액이 큰 순서입니다. 수수료·세액은 위 수령 기간과 수익률 기준입니다.')]);
+  return {
+    name: '계좌 비교',
+    rows: rows,
+    cols: [28, 11, 18, 16, 16, 18, 16, 40]
+  };
+}
+function taxSheet(c) {
+  const rows = [];
+  rows.push([txt('이연퇴직소득세 계산 과정', S.bold)]);
+  rows.push([txt(c.note)]);
+  rows.push([]);
+  rows.push([txt('단계', S.head), txt('금액(원)', S.head), txt('근거', S.head), txt('해설', S.head)]);
+  c.lines.forEach(l => rows.push([txt(l.title), l.amount === null ? txt('-') : num(l.amount), txt(l.law || ''), txt(l.body || '')]));
+  rows.push([]);
+  rows.push([txt('이 시트는 화면에서 나온 값입니다 - 공제표와 세율표를 엑셀 수식으로 한 벌 더 두면')]);
+  rows.push([txt('같은 규칙이 두 곳에 살게 되어 한쪽이 낡습니다. 금액을 바꿔 보시려면 화면에서 바꾸세요.')]);
+  return {
+    name: '퇴직소득세',
+    rows: rows,
+    cols: [30, 18, 20, 78]
+  };
 }
 
 /* ================================================================
@@ -2133,10 +2583,10 @@ const GUIDE_STEPS = [{
   n: '8',
   title: '저장하고 출력합니다',
   where: '왼쪽 위 · 오른쪽 위',
-  body: ["'상담 저장' 은 이 PC 의 브라우저에 담습니다 (최대 50건).", "'파일로 내보내기' 는 .json 으로 받아 다른 PC 에서 '가져오기' 로 엽니다.", "'A4 1장 인쇄' 는 보고 있는 탭과 무관하게 판정 · 계좌 비교 · 인출 스케줄을 모두 담습니다.", "PDF 가 필요하면 'PDF 저장' 을 누르고 인쇄 창에서 대상을 'PDF로 저장' 으로 고릅니다."],
-  trap: [['상담 메모는 기본적으로 인쇄되지 않습니다', '내부 메모로 보기 때문입니다. 고객에게 주려면 체크박스를 켜세요.'], ["'전체 초기화' 는 화면 입력만 비웁니다", '저장된 상담은 그대로 남습니다. 지우려면 목록에서 항목별로 삭제합니다.']]
+  body: ["'상담 저장' 은 이 PC 의 브라우저에 담습니다 (최대 50건).", "'파일로 내보내기' 는 .json 으로 받아 다른 PC 에서 '가져오기' 로 엽니다.", "'엑셀 내보내기' 는 요약 · 계좌 비교 · 계좌별 인출 스케줄을 한 파일(.xlsx)로 받습니다.", "인출 스케줄 탭의 'CSV 내보내기' 는 지금 보고 있는 표 한 장만 내보냅니다.", "'A4 1장 인쇄' 는 보고 있는 탭과 무관하게 판정 · 계좌 비교 · 인출 스케줄을 모두 담습니다.", "PDF 가 필요하면 'PDF 저장' 을 누르고 인쇄 창에서 대상을 'PDF로 저장' 으로 고릅니다."],
+  trap: [['엑셀과 CSV 는 하는 일이 다릅니다', "엑셀은 인출표가 **수식**이라 파일을 열어 금액이나 운용수익률을 바꾸면 그 자리에서 다시 계산됩니다. CSV 는 표 한 장을 값으로만 넘기는 것이라 바꿔도 다시 계산되지 않습니다 - 사내 시스템에 올리거나 다른 도구로 읽을 때 쓰세요."], ['엑셀에서 바뀌는 것은 인출 스케줄까지입니다', '요약 · 계좌 비교 · 퇴직소득세 시트는 화면에서 나온 값입니다. 판정이나 세액을 바꿔 보시려면 화면에서 바꾸고 다시 내보내세요.'], ['상담 메모는 기본적으로 인쇄되지 않습니다', '내부 메모로 보기 때문입니다. 고객에게 주려면 체크박스를 켜세요.'], ["'전체 초기화' 는 화면 입력만 비웁니다", '저장된 상담은 그대로 남습니다. 지우려면 목록에서 항목별로 삭제합니다.']]
 }];
-const GUIDE_LIMITS = ['이 도구는 상담 보조용 추정치입니다. 최종 판단은 원천징수영수증과 금융기관 확인을 거쳐야 합니다.', '퇴직소득세 자체 계산은 2023.1.1 이후 퇴직분 기준이고, 임원 퇴직소득 한도는 반영하지 않습니다.', '신규 IRP 수수료는 미래에셋증권 공시 요율로만 계산합니다. 타사 신규 IRP 는 표현할 수 없습니다.', '사적연금 연 1,500만원을 넘으면 16.5% 분리과세를 택한 기준으로 계산합니다. 종합과세가 더 유리한 경우는 계산하지 않습니다.', '연금수령한도는 실제로 계좌별로 따로 산정됩니다. 연차가 다른 계좌를 합산하면 화면에 주의가 뜹니다.', '계좌 간 계약이전 자체는 시뮬레이션하지 않습니다. 옮긴 뒤를 보려면 옮긴 상태를 입력해 다시 봅니다.'];
+const GUIDE_LIMITS = ['이 도구는 상담 보조용 추정치입니다. 최종 판단은 원천징수영수증과 금융기관 확인을 거쳐야 합니다.', '퇴직소득세 자체 계산은 2023.1.1 이후 퇴직분 기준이고, 임원 퇴직소득 한도는 반영하지 않습니다.', '신규 IRP 수수료는 미래에셋증권 공시 요율로만 계산합니다. 타사 신규 IRP 는 표현할 수 없습니다.', '사적연금 연 1,500만원을 넘으면 16.5% 분리과세를 택한 기준으로 계산합니다. 종합과세가 더 유리한 경우는 계산하지 않습니다.', '연금수령한도는 실제로 계좌별로 따로 산정됩니다. 연차가 다른 계좌를 합산하면 화면에 주의가 뜹니다.', '계좌 간 계약이전 자체는 시뮬레이션하지 않습니다. 옮긴 뒤를 보려면 옮긴 상태를 입력해 다시 봅니다.', '엑셀 내보내기에서 수식으로 살아 있는 것은 인출 스케줄뿐입니다. 판정·비교·퇴직소득세 시트는 화면에서 나온 값입니다.'];
 
 /** 사용법 본문 - 화면 덮개와 인쇄물이 같은 것을 쓴다 (두 벌이면 한쪽이 낡는다) */
 function GuideBody({
@@ -3221,6 +3671,183 @@ function App() {
     say('CSV 로 내보냈습니다 - ' + fn);
   };
 
+  /**
+   * 엑셀(.xlsx) 내보내기.
+   *
+   * CSV 와 겹치지 않는다. CSV 는 인출 스케줄 표 한 장을 **다른 곳으로 넘기는** 것이고,
+   * 엑셀은 상담 결과 전부를 담고 인출표를 **수식으로** 써서 고객 앞에서 금액이나
+   * 운용수익률을 바꿔 볼 수 있게 하는 것이다.
+   *
+   * 배정된 계좌마다 스케줄 시트를 하나씩 만든다. 분할 입금이면 화면에서는 한 번에
+   * 하나만 보지만, 파일로 내려받은 뒤에는 나란히 놓고 볼 수 있는 편이 낫다.
+   */
+  const doXlsx = () => {
+    if (!sim || !picked) return;
+    const sheets = [];
+    const used = [];
+    sheets.push(summarySheet({
+      today: TODAY_STR,
+      custName,
+      birthRaw,
+      age,
+      systemLabel: system === 'SEV' ? '퇴직금제도' : system,
+      joinStr: systemJoinStr,
+      retireStr: retireDateStr,
+      amtLegal: system === 'SEV' ? amtLegal : amtSingle,
+      amtHonor,
+      retireTotal,
+      deferredNational: deferredTaxNational,
+      deferredLocal: effectiveDeferredTax - deferredTaxNational,
+      deferredTotal: effectiveDeferredTax,
+      taxCalc,
+      mode,
+      years,
+      rate,
+      mergedLabel: merged.map(a => accountNames[a.id]).join(' · '),
+      memo: memo.trim(),
+      allocation: allocation.map(a => ({
+        source: a.source.label,
+        amount: a.source.amount,
+        target: a.target ? a.target.label : '배정 가능한 계좌 없음',
+        startLimitYear: a.target ? a.target.startLimitYear + '년차' : '-',
+        reason: a.manual ? '상담자가 직접 고름' : a.target ? '자동 추천' : '아래 판정의 사유를 보세요'
+      })),
+      verdicts: candidates.reduce((out, c) => {
+        c.perSource.forEach(p => out.push({
+          label: c.label,
+          source: p.source.label,
+          state: p.blockers.length ? '불가' : p.cautions.length ? '조건부' : '가능',
+          basis: c.seniorityIndex + '년차',
+          year: c.startLimitYear + '년차' + (c.unlimited ? ' (한도 없음)' : ''),
+          reason: p.blockers.concat(p.cautions).join(' / ')
+        }));
+        return out;
+      }, [])
+    }, used));
+    sheets.push(compareSheet({
+      comparison: comparison.map(r => ({
+        label: r.c.label,
+        startLimitYear: r.c.startLimitYear + '년차',
+        amount: r.amount,
+        totalFee: r.totalFee,
+        totalTax: r.totalTax,
+        afterTax: r.afterTax,
+        residual: r.residual,
+        note: r.partial ? '퇴직급여의 일부만 받을 수 있는 계좌입니다' : ''
+      }))
+    }));
+
+    // 배정된 계좌마다 하나씩. 화면과 같은 조건으로 다시 돌려 캐시값을 얻는다.
+    pickables.forEach(cand => {
+      const allocTax = retireTotal > 0 ? effectiveDeferredTax * (cand.allocatedAmount / retireTotal) : 0;
+      const isPicked = cand.id === picked.id;
+      const feeOf = merged.length === 0 ? cand.feeOf : null;
+      const s = buildSchedule({
+        exemptPrincipal: isPicked ? exemptPrincipal : 0,
+        retirePrincipal: cand.allocatedAmount,
+        otherPrincipal: isPicked ? otherPrincipal : 0,
+        deferredTax: allocTax,
+        startLimitYear: cand.startLimitYear,
+        pastCount,
+        feeRate: isPicked ? blendedFeeRate : cand.feeRate,
+        feeOf: isPicked ? feeOf : cand.feeOf,
+        years,
+        mode,
+        rate: rate / 100,
+        startYear,
+        startAge
+      });
+      if (!s.rows.length) return;
+      sheets.push(scheduleSheet({
+        sheet: sheetName('스케줄 · ' + cand.label, used),
+        label: cand.label + (isPicked && merged.length ? ' (합산 포함)' : ''),
+        exemptPrincipal: isPicked ? exemptPrincipal : 0,
+        retirePrincipal: cand.allocatedAmount,
+        otherPrincipal: isPicked ? otherPrincipal : 0,
+        deferredTax: allocTax,
+        rate: rate / 100,
+        years,
+        mode,
+        startLimitYear: cand.startLimitYear,
+        startYear,
+        startAge,
+        pastCount,
+        feeRate: isPicked ? blendedFeeRate : cand.feeRate,
+        masIrp: !!(isPicked ? feeOf : cand.feeOf),
+        irpOffset: Math.max(0, startYear - depositYear),
+        irpOurDb: !!fees.ourDbDc,
+        irpWaived: !!fees.direct,
+        rows: s.rows,
+        totals: s.totals
+      }));
+    });
+    if (taxCalc && taxResult) {
+      const t = taxResult.chosen;
+      sheets.push(taxSheet({
+        note: (taxResult.mode === 'settle' ? '중간정산 정산특례(소득세법 §148)로 계산했습니다 - 분리 계산보다 유리합니다.' : taxResult.settle ? '중간정산 분리 계산입니다 - 정산특례보다 유리합니다.' : '중간정산이 없는 경우의 계산입니다.') + ' 지방소득세 10%(지방세법 §103의3)를 포함한 값입니다.',
+        lines: [{
+          title: '① 퇴직소득금액',
+          amount: t.income,
+          law: '소득세법 §22',
+          body: '법정퇴직금 + 명예퇴직금 - 비과세 퇴직급여. 둘 다 퇴직소득이라 합해서 한 번 계산합니다.'
+        }, {
+          title: '   근속연수(년)',
+          amount: t.years,
+          law: '시행령 §105②',
+          body: '1년 미만의 기간도 1년으로 셉니다. 10년 하고 하루를 더 다녔으면 11년입니다.'
+        }, {
+          title: '② 근속연수공제',
+          amount: t.svcDed,
+          law: '소득세법 §48①1',
+          body: '5년 이하 100만원×년, 6~10년 500만+200만×(년-5), 11~20년 1,500만+250만×(년-10), 20년 초과 4,000만+300만×(년-20).'
+        }, {
+          title: '③ 환산급여',
+          amount: t.converted,
+          law: '소득세법 §48②',
+          body: '(① - ②) ÷ 근속연수 × 12. 여러 해에 걸쳐 쌓인 돈을 한 해에 몰아 받으므로 1년치로 나눈 뒤 12를 곱합니다(연분연승).'
+        }, {
+          title: '④ 환산급여공제',
+          amount: t.convDed,
+          law: '소득세법 §48③',
+          body: '800만 이하 전액, 7,000만 이하 800만+60%, 1억 이하 4,520만+55%, 3억 이하 6,170만+45%, 초과 1억5,170만+35%.'
+        }, {
+          title: '⑤ 과세표준',
+          amount: t.base,
+          law: '③ - ④',
+          body: '1년치로 환산한 금액이라 실제 퇴직금과 크게 다릅니다.'
+        }, {
+          title: '⑥ 환산산출세액',
+          amount: t.convertedTax,
+          law: '소득세법 §55①',
+          body: '기본세율(6~45% 누진)을 환산 과세표준에 적용한 금액입니다.'
+        }, {
+          title: '⑦ 산출세액 (국세)',
+          amount: t.tax,
+          law: '⑥ ÷ 12 × 근속연수',
+          body: '원 미만은 절사합니다. 이것이 원천징수영수증의 이연퇴직소득세 란에 적히는 금액입니다.'
+        }, {
+          title: '   중간정산 기납부세액',
+          amount: t.paid === undefined ? null : t.paid,
+          law: '소득세법 §148',
+          body: '이중과세를 막는 장치이고 퇴직자가 회사에 신고해야 적용됩니다.'
+        }, {
+          title: '   지방소득세',
+          amount: t.local,
+          law: '지방세법 §103의3',
+          body: '국세의 10%. 영수증에는 적히지 않아 국세만 보면 약 10% 작습니다.'
+        }, {
+          title: '이연퇴직소득세 합계',
+          amount: t.total,
+          law: '⑦ + 지방소득세',
+          body: '인출 스케줄의 ② 재원 세액은 이 금액을 기준으로 안분·감면해 계산합니다.'
+        }]
+      }));
+    }
+    const fn = downloadName('retirement-simulation', custName, 'xlsx');
+    downloadBlob(fn, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buildXlsx(sheets));
+    say('엑셀로 내보냈습니다 (' + sheets.length + '개 시트) - ' + fn);
+  };
+
   // 계좌 목록의 표시 이름 (종류별 순번). 판정 카드와 같은 규칙으로 매긴다.
   // 표시 이름에는 금융기관명을 붙이지만, aria-label 로 쓰는 키에는 붙이지 않는다.
   // 기관명을 타이핑하는 도중 라벨이 계속 바뀌면 그 칸을 다시 잡을 수 없게 된다.
@@ -3349,7 +3976,16 @@ function App() {
       doImport(e.target.files && e.target.files[0]);
       e.target.value = '';
     }
-  })), cases.length > 0 && /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "mb-2"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: doXlsx,
+    disabled: !sim,
+    className: 'w-full h-[38px] text-[14px] font-medium rounded-xs transition ' + (sim ? 'bg-white text-ink-body border border-hair hover:bg-surf-subtle' : 'bg-surf-subtle text-ink-soft border border-hair cursor-not-allowed')
+  }, "\uC5D1\uC140 \uB0B4\uBCF4\uB0B4\uAE30"), /*#__PURE__*/React.createElement("span", {
+    className: "block mt-1 text-[11px] text-ink-soft leading-snug"
+  }, "\uC694\uC57D \xB7 \uACC4\uC88C \uBE44\uAD50 \xB7 \uACC4\uC88C\uBCC4 \uC778\uCD9C \uC2A4\uCF00\uC904\uC744 \uD55C \uD30C\uC77C\uB85C. \uC778\uCD9C\uD45C\uB294 ", /*#__PURE__*/React.createElement("strong", null, "\uC218\uC2DD"), "\uC774\uB77C \uC5D1\uC140\uC5D0\uC11C \uAE08\uC561\uC774\uB098 \uC218\uC775\uB960\uC744 \uBC14\uAFB8\uBA74 \uB2E4\uC2DC \uACC4\uC0B0\uB429\uB2C8\uB2E4.")), cases.length > 0 && /*#__PURE__*/React.createElement("div", {
     className: "border-t border-hair-soft pt-2"
   }, /*#__PURE__*/React.createElement("div", {
     className: "text-[12px] font-medium text-ink-soft mb-1.5"
