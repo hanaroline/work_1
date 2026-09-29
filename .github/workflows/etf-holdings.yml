@@ -60,8 +60,8 @@ jobs:
         run: |
           set -e
           python3 scripts/fetch_etf_holdings.py ${{ steps.mode.outputs.args }}
-          python3 scripts/build_etf_holdings.py
-          python3 scripts/check_etf_holdings.py
+          if [ -f scripts/build_etf_holdings.py ]; then python3 scripts/build_etf_holdings.py; fi
+          if [ -f scripts/check_etf_holdings.py ]; then python3 scripts/check_etf_holdings.py; fi
 
       - name: 결과 커밋
         if: always()
