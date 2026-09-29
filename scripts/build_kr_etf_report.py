@@ -242,7 +242,11 @@ def build(doc, bt, vd=None, hidden=False):
     asm = doc['backtest_assumptions']
 
     _CCY['code'] = m.get('currency') or 'KRW'
-    _mb = market_block((vd or {}).get('markets', {}).get(MARKET))
+    _vm = (vd or {}).get('markets', {}).get(MARKET)
+    _mb = market_block(_vm)
+    # **묵음 경고를 막음 경고보다 앞에 둔다.** 자료가 묵었으면 그 아래의 판단은
+    # 전부 묵은 것이라, 읽는 차례에서도 먼저 와야 한다.
+    _mb = (market_stale(_vm) + _mb[0], _mb[1])
     _blocked_why = ' '.join(
         f['text'] for f in (((vd or {}).get('markets', {}).get(MARKET) or {})
                             .get('market_flags') or []) if f['level'] == 'block')
@@ -478,6 +482,30 @@ def market_block(vmarket):
             '다른 말입니다. 들고 있는 것을 내려놓는 쪽(청산)은 그대로 읽으셔도 '
             '됩니다 — 막힌 것은 사는 쪽입니다.</p></div>' % why,
             '보류 — 합의는 모였지만 이 시장에서는 사지 않습니다')
+
+
+def market_stale(vmarket):
+    """이 시장의 일봉이 통째로 묵었는가. (경고 HTML)
+
+    **이 한 장은 인쇄되어 돌아다닌다.** 화면이라면 옆에 날짜가 있고 언제든 다시
+    열어 볼 수 있지만, 종이로 건네진 뒤에는 그것이 언제 자료인지 받는 사람이
+    알 길이 없다. 묵은 봉으로 낸 자리를 오늘 자리로 읽으면 그건 틀린 것을
+    읽는 것이다.
+
+    묵었다는 판단은 판정 산출물에서 그대로 가져온다(build_verdict.market_behind_flag).
+    여기서 다시 셈하면 두 화면이 다른 말을 한다.
+    """
+    st = [f for f in ((vmarket or {}).get('market_flags') or [])
+          if f.get('kind') == '자료' and f['level'] == 'warn']
+    if not st:
+        return ''
+    why = ' '.join(esc(f['text']) for f in st)
+    return ('<div class="warn" style="border-left-color:#A61C1C">'
+            '<p><b>이 판의 일봉이 묵었습니다.</b> %s</p>'
+            '<p class="cap">아래 자리는 <b>그 마지막 봉으로 낸 것</b>이고 오늘 '
+            '자리가 아닙니다. 진입은 신호 다음 거래일 시가이므로, 그 날이 이미 '
+            '지났으면 이 자리는 만료된 것입니다. 수집을 돌려 새 봉을 받은 뒤 '
+            '다시 내십시오.</p></div>' % why)
 
 
 def _mvars(m, g, gt):

@@ -274,6 +274,26 @@ def verify(path):
             bad_block.append('%s 자료는 막혔다는데 탭에 딱지가 없다' % mk)
     check('막힘 표시가 탭·띠·이름표에서 한목소리', not bad_block, '; '.join(bad_block[:3]))
 
+    # 4. 묵은 판에는 묵었다는 띠가 나는가
+    #
+    # **이 한 장은 인쇄되어 돌아다닌다.** 종이로 건네진 뒤에는 그것이 언제
+    # 자료인지 받는 사람이 알 길이 없다. 판정이 묵었다고 한 시장에 띠가 안 나면
+    # 그 종이는 묵은 자리를 오늘 자리인 양 싣고 다닌다.
+    bad_stale, n_stale = [], 0
+    for mk, panel in panels.items():
+        want = [f for f in ((vd.get('markets', {}).get(mk) or {}).get('market_flags') or [])
+                if f.get('kind') == '자료' and f.get('level') == 'warn']
+        got = '<b>이 판의 일봉이 묵었습니다.</b>' in panel
+        if bool(want) != got:
+            bad_stale.append('%s 판정은 %s 인데 띠는 %s'
+                             % (mk, '묵었다' if want else '안 묵었다',
+                                '있다' if got else '없다'))
+        elif want:
+            n_stale += 1
+            if text(want[0]['text']) not in text(panel):
+                bad_stale.append('%s 띠에 판정이 말한 까닭이 없다' % mk)
+    check('묵은 판 %d 개에 묵었다는 띠가 남' % n_stale, not bad_stale, '; '.join(bad_stale[:3]))
+
     # 4. 딱지(실적·이벤트)가 판정 자료와 같은가
     bad_flag, n_flag = [], 0
     by_sym = {}

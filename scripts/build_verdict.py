@@ -139,6 +139,61 @@ def _flag(kind, level, text, detail=None):
     return {'kind': kind, 'level': level, 'text': text, 'detail': detail}
 
 
+# 시장이 **통째로** 뒤처진 것을 잡는 잣대. 이만큼 이상 거래일이 밀리면 딱지를 단다.
+MARKET_BEHIND_SESSIONS = 2
+
+# 지역마다 「마지막 거래일」을 말해 주는 지수. **이것이 달력 노릇을 한다** —
+# 장이 쉰 날에는 지수도 안 움직이므로, 주말·공휴일을 따로 적어 둘 필요가 없다.
+REGION_INDEX = {'KR': ('kospi', '코스피'), 'US': ('sp500', 'S&P500')}
+
+
+def _weekdays_between(a, b):
+    """a 다음날부터 b 까지의 평일 수. 공휴일은 모르므로 **많게** 셀 수 있다 —
+    그래서 이 값은 막는 데(block) 쓰지 않고 주의(warn)로만 쓴다."""
+    try:
+        f = '%Y-%m-%d'
+        d0 = datetime.strptime(a, f).date()
+        d1 = datetime.strptime(b, f).date()
+    except (ValueError, TypeError):
+        return 0
+    n, d = 0, d0
+    while d < d1:
+        d += timedelta(days=1)
+        if d.weekday() < 5:
+            n += 1
+    return n
+
+
+def market_behind_flag(rg, region, latest_d, label):
+    """시장이 통째로 뒤처졌는가.
+
+    **종목별 stale 로는 이것을 볼 수 없다.** 그 잣대는 한 시장 안에서 남들보다
+    처진 종목을 찾는 것이라, 시장 전체가 같이 밀리면 모두가 나란하니 아무도
+    처지지 않은 것으로 읽힌다.
+
+    2026-09-29(화)에 미국주식 자리를 물었을 때 자료가 **9/24 기준**이었는데
+    stale 은 비어 있었다. 99 종이 똑같이 9/24 였기 때문이다. 긴 일봉을 주 1 회만
+    받게 해 둔 탓인데, 묵었다는 사실이 어디에도 나지 않아 물어보고서야 알았다.
+
+    그래서 **바깥의 달력**과 맞댄다. 지수는 장이 열린 날에만 움직이므로
+    「마지막 거래일」을 스스로 말해 준다.
+    """
+    key, nm = REGION_INDEX.get(region, (None, None))
+    idx = ((rg.get('indices') or {}).get(key) or {}) if key else {}
+    idx_d = idx.get('date')
+    if not idx_d or not latest_d or idx_d <= latest_d:
+        return None
+    n = _weekdays_between(latest_d, idx_d)
+    if n < MARKET_BEHIND_SESSIONS:
+        return None
+    # 지수 이름이 변수라 조사를 붙이지 않는다 — 「코스피 는」·「S&P500 은」이
+    # 갈리는데, 한 벌로 맞추려다 둘 다 어색해진다.
+    return _flag('자료', 'warn',
+                 '이 시장의 일봉이 %d 거래일쯤 묵었습니다 — 마지막 봉 %s / '
+                 '%s 마지막 거래일 %s' % (n, latest_d, nm, idx_d),
+                 '%s · 수집이 밀렸는지 확인하십시오' % label)
+
+
 def slim(fa):
     """검색 화면이 쓸 만큼만 남긴다 — **브라우저가 내려받는 파일이다.**
 
@@ -472,6 +527,10 @@ def main(argv=None):
         latest_d = max(it['bars'][-1]['d'] for it in rows)
 
         mflags = list(region_flags[D.MARKETS[mk]['region']])
+        _behind = market_behind_flag(rg, D.MARKETS[mk]['region'], latest_d,
+                                     D.MARKETS[mk]['label'])
+        if _behind:
+            mflags.append(_behind)
         if edge is not None and edge <= 0:
             mflags.append(_flag('시장', 'block',
                                 BLOCK_BY_ID['market_negative']['text'] % {'edge': edge},
