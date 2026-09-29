@@ -2945,7 +2945,7 @@ function App() {
   const shortSpan = picked && years < picked.minYears;
   const ready = !!birth && retireTotal > 0;
   useEffect(() => {
-    const wanted = '퇴직급여 의사결정' + (custName ? '_' + safeName(custName) : '') + '_' + TODAY_STR;
+    const wanted = '퇴직급여 상담결과' + (custName ? '_' + safeName(custName) : '') + '_' + TODAY_STR;
     const before = () => {
       document.title = wanted;
     };

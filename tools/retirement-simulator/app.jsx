@@ -3294,7 +3294,7 @@ function App() {
    * beforeprint/afterprint 이벤트에 건다.
    */
   useEffect(() => {
-    const wanted = '퇴직급여 의사결정' + (custName ? '_' + safeName(custName) : '') + '_' + TODAY_STR;
+    const wanted = '퇴직급여 상담결과' + (custName ? '_' + safeName(custName) : '') + '_' + TODAY_STR;
     const before = () => { document.title = wanted; };
     const after = () => { document.title = DOC_TITLE; };
     window.addEventListener('beforeprint', before);

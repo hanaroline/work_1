@@ -70,7 +70,7 @@ module.exports = async function run(t) {
     await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
     await page.waitForTimeout(200);
     const printing = await page.title();
-    t.includes(printing, '퇴직급여 의사결정', '인쇄 직전 제목이 PDF 파일명으로 바뀜');
+    t.includes(printing, '퇴직급여 상담결과', '인쇄 직전 제목이 PDF 파일명으로 바뀜');
     t.includes(printing, '홍길동', 'PDF 파일명에 고객명이 들어감');
 
     await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
