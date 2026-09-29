@@ -75,6 +75,7 @@ async function one(it) {
   rec.dev = a.deviationRate === undefined || a.deviationRate === null ? null : (a.deviationSign === '-' ? -1 : 1) * num(a.deviationRate);
   rec.te = num(a.chaseErrorRate);
   rec.divYield = num(a.dividend?.dividendYieldTtm);
+  rec.divTtmNaver = num(a.dividend?.dividendPerShareTtm); // 야후 분배금 대조용
   rec.flow3mEok = eokFromKorean(a.cumulativeNetInflowList?.cumulativeNetInflow3m);
   rec.flowDate = a.cumulativeNetInflowList?.referenceDate || null;
   rec.theme = { large: a.themeReturns?.themeLargeCodeDesc || null, middle: a.themeReturns?.themeMiddleCodeDesc || null };
@@ -116,19 +117,34 @@ async function one(it) {
       bars = bars.map((x) => (x.d < sp.d ? { d: x.d, c: x.c / r } : x));
     }
     if (y.splits.length) rec.splits = y.splits;
+    // **종가 수준으로 대조하지 않는다.** 야후의 한국 ETF 종가는 분배금이 반영된(수정) 값이라
+    // 분배가 큰 커버드콜은 원가격과 8~13% 벌어진다(2026-09-29 첫 수집에서 241종목이 그렇게
+    // 떨어졌다). 수정 종가라도 분배락일이 아닌 날의 하루 등락률은 원가격과 같아야 하므로,
+    // 그 등락률을 대조해 같은 상품인지 가른다.
     const ym = new Map(y.bars.map((x) => [x.d, x.c]));
+    const divDays = new Set(y.divs.map((x) => x.d));
+    const recent = bars.slice(-260);
     const diffs = [];
-    for (const x of bars.slice(-250)) { const yc = ym.get(x.d); if (yc) diffs.push(Math.abs(x.c / yc - 1)); }
+    for (let i = 1; i < recent.length; i++) {
+      const a = recent[i - 1], b = recent[i];
+      const ya = ym.get(a.d), yb = ym.get(b.d);
+      if (!ya || !yb || divDays.has(b.d)) continue;
+      diffs.push(Math.abs((b.c / a.c) - (yb / ya)));
+    }
     diffs.sort((p, q) => p - q);
     const med = diffs.length ? diffs[diffs.length >> 1] : null;
-    rec.yahoo = { type: y.type, overlap: diffs.length, medDiff: med === null ? null : Math.round(med * 1e5) / 1e5 };
-    if (y.type === 'ETF' && diffs.length >= 20 && med < 0.01) divs = y.divs;
-    else rec.divErr = `야후 ${code}.KS 가 같은 상품으로 확인되지 않음(종류 ${y.type}, 겹친 날 ${diffs.length}, 종가 차 중앙값 ${med})`;
+    const last = bars.at(-1), yLast = last ? ym.get(last.d) : null;
+    rec.yahoo = { type: y.type, pairs: diffs.length, medDailyDiff: med === null ? null : Math.round(med * 1e6) / 1e6, lastCloseRatio: yLast ? Math.round((last.c / yLast) * 1e5) / 1e5 : null };
+    if (y.type === 'ETF' && diffs.length >= 20 && med < 0.002) divs = y.divs;
+    else rec.divErr = `야후 ${code}.KS 가 같은 상품으로 확인되지 않음(종류 ${y.type}, 대조한 날 ${diffs.length}, 하루 등락률 차 중앙값 ${med})`;
   } else if (y?.missing) rec.divErr = `야후에 ${code}.KS 없음`;
 
   if (divs) {
     rec.divSrc = `Yahoo ${code}.KS`;
     rec.divCount = divs.length;
+    // 네이버의 1년 분배금 합과 대조할 수 있게 야후 쪽 1년 합을 남긴다(판정에는 안 쓴다)
+    const from = new Date(Date.parse(rec.priceDate) - 365 * 864e5).toISOString().slice(0, 10);
+    rec.divTtmYahoo = Math.round(divs.filter((x) => x.d > from && x.d <= rec.priceDate).reduce((s2, x) => s2 + (num(x.a) || 0), 0) * 100) / 100;
     rec.ret = periodReturns(bars, trIndex(bars, divs));
   } else {
     // 분배금을 모르면 총수익률을 셀 수 없다. 가격수익률로 대신하지 않는다.
