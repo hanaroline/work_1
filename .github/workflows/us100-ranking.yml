@@ -71,10 +71,7 @@ jobs:
             ${{ github.event.inputs.emit_top != '' && github.event.inputs.emit_top != '0'
                 && format('--emit-top {0}', github.event.inputs.emit_top) || '' }}
 
-      - name: 줄 세운 목록을 산출물로 올린다
-        # 목록을 넓힐 때(100 → 200) 사람이 받아 보고 한글명을 채우는 파일이다.
-        # 데이터 브랜치에 올리지 않는 까닭 — 날마다 쓰는 자료가 아니라 목록을
-        # 손볼 때만 쓰는 한 번짜리다.
+      - name: 줄 세운 목록을 산출물로도 올린다
         if: hashFiles('data/us100/ranking-top.json') != ''
         uses: actions/upload-artifact@v4
         with:
@@ -83,7 +80,12 @@ jobs:
           retention-days: 14
 
       - name: 데이터 브랜치에 올리기
+        # ranking-top.json 을 **함께 올린다.** 산출물(artifact)만으로는 모자랐다 —
+        # 내려받기가 Azure 블롭으로 넘어가는데 세션의 이그레스 정책이 그것을
+        # 막는다(CONNECT 403). 데이터 브랜치에 두면 `git show` 로 읽을 수 있다.
+        # 30KB 짜리이고 이 브랜치는 이력을 남기지 않으므로 값이 싸다.
         env:
           COMMIT_LABEL: 목록점검
-          PUBLISH_FILES: ranking.json
+          PUBLISH_FILES: ${{ hashFiles('data/us100/ranking-top.json') != ''
+                             && 'ranking.json ranking-top.json' || 'ranking.json' }}
         run: bash scripts/publish_us100_data.sh
