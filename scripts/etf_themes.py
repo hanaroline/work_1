@@ -28,7 +28,8 @@ RULES = [
      ['S&P500', 'S&P 500', 'SP500', '500 index', 'total stock market', 'total market', '标普500',
       '미국500', '다우존스30', 'dow jones industrial']),
     ('kospi', '코스피·코스닥 대표지수', 'KOSPI & KOSDAQ',
-     [r'^[A-Z]+ 200$', '코스피', 'KOSPI', '코스닥', 'KOSDAQ', ' 200 ', '200TR', 'TOP10', '코리아밸류업',
+     # 'TOP10' 은 뺐다 — 'TIGER 반도체TOP10' 같은 업종 TOP10 을 대표지수로 붙였다.
+     [r'^[A-Z]+ 200$', '코스피', 'KOSPI', '코스닥', 'KOSDAQ', ' 200 ', '200TR', '코리아TOP10', '코리아밸류업',
       '밸류업']),
     ('china', '중국', 'China',
      ['중국', '차이나', 'china', 'chinese', 'CSI', '沪深', '中证', '上证', '深证', '创业板', 'chinext',
@@ -37,7 +38,8 @@ RULES = [
      ['일본', 'japan', 'nikkei', '니케이', 'TOPIX', '日経', 'JPX', '日本']),
     ('india', '인도', 'India', ['인도', 'india', 'nifty', 'sensex', '印度']),
     ('dividend', '배당', 'Dividend',
-     ['배당', 'dividend', 'income', '高配当', '红利', '红利', 'yield']),
+     # 'income'·'yield' 는 뺐다 — 채권(High Yield·Income)과 옵션 인컴 ETF 를 배당으로 붙였다(700건).
+     ['배당', 'dividend', '高配当', '红利']),
     ('covered', '커버드콜·옵션', 'Covered call & options',
      ['커버드콜', 'covered call', 'buywrite', 'premium income', '프리미엄', 'option income', 'buffer']),
     ('bond', '채권·금리', 'Bonds & rates',
@@ -54,7 +56,7 @@ RULES = [
     ('bio', '바이오·헬스케어', 'Biotech & health care',
      ['바이오', '헬스케어', '제약', 'biotech', 'health', 'pharma', 'medical', '医药', '医疗', '生物']),
     ('energy', '에너지·전력·원자력', 'Energy, power & nuclear',
-     ['에너지', '전력', '원자력', '원전', 'SMR', 'energy', 'uranium', 'nuclear', 'utilities', 'power',
+     ['에너지', '전력', '원자력', '원전', 'SMR', 'energy', 'uranium', 'nuclear', 'utilities', r'\bpower (grid|infra)',
       '태양광', 'solar', 'clean', '수소', 'hydrogen', '能源', '电力', '光伏']),
     ('finance', '금융·은행', 'Financials',
      ['금융', '은행', '증권', '보험', 'bank', 'financ', 'insurance', '银行', '证券', '金融']),
