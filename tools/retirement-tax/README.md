@@ -59,7 +59,7 @@
 세율표는 한 자리 틀려도 숫자가 그럴듯하게 나오고 그대로 고객에게 나갑니다.
 
 ```bash
-node scripts/build-retirement-simulator.js
+node scripts/build-retire-payout.js
 node tools/retirement-tax/crosscheck.js
 ```
 

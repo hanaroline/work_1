@@ -242,9 +242,9 @@ module.exports = async function run(t) {
        끊겨 있어도 배포본 검사는 그대로 통과하므로 여기서 짚지 않으면
        아무도 모른다. --근거 로 한 판 지어 18건이 들어 있는지 센다. */
     const ROOT = path.resolve(__dirname, '..', '..', '..');
-    const full = path.join(ROOT, 'retirement-simulator-근거포함.html');
+    const full = path.join(ROOT, 'retire-payout-internal.html');
     execFileSync(process.execPath,
-      [path.join(ROOT, 'scripts', 'build-retirement-simulator.js'), '--근거'],
+      [path.join(ROOT, 'scripts', 'build-retire-payout.js'), '--근거'],
       { cwd: ROOT, stdio: 'ignore' });
     const fullHtml = fs.readFileSync(full, 'utf8');
     const kept = Object.keys(SOURCES).filter((k) => fullHtml.indexOf(SOURCES[k].note) >= 0);
