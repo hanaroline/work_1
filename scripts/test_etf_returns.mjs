@@ -9,7 +9,7 @@
  * tools/discovery/etf_audit_verify.md 에 적힌 관측값 그대로다.
  */
 
-import { computeReturns, dropUnsettledBar, pendingBarOf } from './etf_lib.mjs';
+import { computeReturns, dropUnsettledBar, pendingBarOf, isStaleHistory } from './etf_lib.mjs';
 
 let pass = 0, fail = 0;
 function check(name, cond, detail) {
@@ -238,6 +238,23 @@ console.log('\n9. 이력이 짧으면 그 기간은 비운다');
   check('4년치로 3년은 낸다', r.price?.Y3 != null, `price.Y3=${r.price?.Y3}`);
   check('4년치로 5년은 안 낸다', r.price?.Y5 == null, `price.Y5=${r.price?.Y5}`);
   check('4년치로 10년은 안 낸다', r.price?.Y10 == null, `price.Y10=${r.price?.Y10}`);
+}
+
+// 이력을 max 로 늘린 뒤 실제로 난 사고. 원천이 같은 코드로 **예전에 멈춘
+// 다른 실체**의 계열을 내주면, 5y 시절에는 빈손이라 네이버로 채우던 것이
+// "값이 있다" 로 바뀌어 7년 묵은 수익률이 오늘 자리에 앉는다.
+console.log('\n10. 몇 해 전에 끝난 이력은 받지 않은 것으로 친다');
+{
+  const now = new Date('2026-09-29T00:00:00Z').getTime();
+  check('2019년에 끝난 계열은 묵은 것으로 본다',
+        isStaleHistory('2019-01-06', now) === true);
+  check('어제 것은 묵지 않았다', isStaleHistory('2026-09-28', now) === false);
+  // 홍콩·일본은 한 달쯤 뒤지는 일이 있다. 그것까지 버리면 멀쩡한 시장이 통째로 빈다.
+  check('한 달 뒤진 시장은 버리지 않는다', isStaleHistory('2026-08-31', now) === false);
+  check('한도(180일) 언저리 — 179일은 남긴다', isStaleHistory('2026-04-03', now) === false);
+  check('한도 너머 — 200일은 버린다', isStaleHistory('2026-03-13', now) === true);
+  check('기준일이 없으면 판단하지 않는다', isStaleHistory(null, now) === false);
+  check('날짜가 아니면 판단하지 않는다', isStaleHistory('어제', now) === false);
 }
 
 console.log(`\n통과 ${pass} · 실패 ${fail}`);

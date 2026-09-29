@@ -490,7 +490,28 @@ export async function fetchYahooReturns(symbol, { headers = {}, range = HISTORY_
 
   const pend = pendingBarOf(r);
   if (out && pend) { out.pendingBar = pend.day; out.pendingBars = pend.count; }
+
+  // 죽은 이력은 값이 아니다.
+  //
+  // 이력을 max 로 늘리자 310970·310960·301400 에서 **2019-01-06 에 끝난**
+  // 계열이 돌아왔다. 같은 코드로 예전에 멈춘 다른 실체를 내주는 것이다.
+  // 5y 로 받던 시절에는 최근 5년에 봉이 없어 빈손으로 왔고, 그래서 네이버
+  // 값으로 채우고 있었다. 이력을 늘리자 "값이 있다" 가 되어 네이버 대체가
+  // 꺼지고, 7년 묵은 수익률이 오늘 자리에 앉았다.
+  //
+  // 빈칸은 화면이 말해 주지만 묵은 값은 아무도 못 알아본다. 그러니 받지
+  // 않은 것으로 친다. 홍콩·일본이 한 달쯤 뒤지는 일이 있어 한도는 넉넉히
+  // 잡는다 — 가리려는 것은 몇 해짜리 간극이지 며칠짜리가 아니다.
+  if (out && isStaleHistory(out.asOf)) return null;
   return out;
+}
+
+/** 마지막 봉이 너무 오래됐나. 며칠짜리 지연이 아니라 몇 해짜리 간극을 가린다. */
+export function isStaleHistory(asOf, now = Date.now(), maxDays = 180) {
+  if (!asOf) return false;
+  const t = new Date(asOf).getTime();
+  if (!Number.isFinite(t)) return false;
+  return (now - t) / 864e5 > maxDays;
 }
 
 /**
