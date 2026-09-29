@@ -340,12 +340,17 @@ export function computeReturns(timestamps, closes, adjcloses, dividends, splits)
     Y1: back((d) => d.setFullYear(d.getFullYear() - 1)),
     Y3: back((d) => d.setFullYear(d.getFullYear() - 3)),
     Y5: back((d) => d.setFullYear(d.getFullYear() - 5)),
+    Y10: back((d) => d.setFullYear(d.getFullYear() - 10)),
   };
-  // 3년·5년은 연율로 환산한다. 국내(네이버)가 연율로 주므로 기준을 맞춘다.
-  const ANNUALIZE = { Y3: 3, Y5: 5 };
+  // 3년·5년·10년은 연율로 환산한다. 국내(네이버)가 연율로 주므로 기준을 맞춘다.
+  //
+  // 10년이 오래 빠져 있었다. 화면의 기간 이름은 '10년(연율)' 인데 계산기는
+  // 그 기간을 아예 만들지 않아, 칸이 늘 비어 있어서 드러나지 않았다. 원천이
+  // 채워 주는 날 누적값에 '연율' 이라는 이름이 붙을 자리였다.
+  const ANNUALIZE = { Y3: 3, Y5: 5, Y10: 10 };
   // 구간이 몇 해치인지. 내포 분배율을 연율로 되돌려 한도와 견주는 데만 쓴다.
   const PERIOD_YEARS = {
-    D1: 1 / 252, W1: 1 / 52, M1: 1 / 12, M3: 0.25, M6: 0.5, Y1: 1, Y3: 3, Y5: 5,
+    D1: 1 / 252, W1: 1 / 52, M1: 1 / 12, M3: 0.25, M6: 0.5, Y1: 1, Y3: 3, Y5: 5, Y10: 10,
     YTD: Math.max((last.t - PERIODS.YTD) / (365.25 * 864e5), 1 / 252),
   };
 
@@ -460,7 +465,18 @@ function dropUnsettledBar(r) {
   };
 }
 
-export async function fetchYahooReturns(symbol, { headers = {}, range = '5y' } = {}) {
+/**
+ * 받아 오는 이력의 길이.
+ *
+ * 5y 로 받으면 **5년 수익률이 영영 나오지 않는다.** 기준봉은 "구간 시작일
+ * 이전의 마지막 봉" 인데, 5y 범위의 첫 봉이 곧 5년 전이라 그보다 앞선 봉이
+ * 없다(`cutoff < first.t` 에서 걸러진다). 실제로 1,353종목 전부가 5년·10년
+ * 칸이 비어 있었다. 화면은 두 기간을 고르게 해 놓고 자료는 못 채운 셈이다.
+ * 그래서 넉넉히 받는다 — 10년 구간에도 앞선 봉이 남도록.
+ */
+const HISTORY_RANGE = 'max';
+
+export async function fetchYahooReturns(symbol, { headers = {}, range = HISTORY_RANGE } = {}) {
   const json = await getJson(
     `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}` +
     `?range=${range}&interval=1d&events=div,split`, { headers });

@@ -204,5 +204,41 @@ console.log('\n6. 장이 열려 있으면 오늘 봉을 쓰지 않는다');
         (pendingBarOf({ timestamp: [d(2026, 9, 8)] }) || {}).count === 1);
 }
 
+// 3년·5년·10년은 **연율**이다. 화면의 기간 이름이 '10년(연율)' 인데 계산기가
+// 10년을 아예 만들지 않아 오래 비어 있었다. 이름과 값이 어긋나지 않도록 못 박는다.
+console.log('\n8. 3년·5년·10년은 연율로 낸다');
+{
+  // 정확히 연 10% 씩 불어나는 11년치. 연율이면 세 기간 모두 10 근처,
+  // 누적이면 10년이 159 근처로 나온다 — 두 답이 자릿수로 갈린다.
+  const DAYS = Math.round(365.25 * 11);
+  const closes = Array.from({ length: DAYS }, (_, i) => 10000 * 1.1 ** (i / 365.25));
+  const { ts } = series(closes, '2015-01-01');
+  const r = computeReturns(ts, closes, null, {}, null);
+
+  for (const k of ['Y3', 'Y5', 'Y10']) {
+    check(`${k} 이 연율이다 (10% 안팎)`,
+          r.price?.[k] != null && Math.abs(r.price[k] - 10) < 0.6,
+          `price.${k}=${r.price?.[k]}`);
+  }
+  // 누적으로 새어 나오면 여기서 걸린다.
+  check('10년이 누적(159% 안팎)으로 새지 않는다',
+        r.price?.Y10 != null && r.price.Y10 < 20, `price.Y10=${r.price?.Y10}`);
+  check('10년 기준일도 같이 낸다',
+        !!(r.baseDays && r.baseDays.Y10), JSON.stringify(r.baseDays || {}).slice(0, 80));
+}
+
+// 이력이 구간보다 짧으면 값을 내지 않는다. 5y 만 받아 오던 시절 5년·10년이
+// 통째로 비었던 것이 이 규칙 때문이다 — 규칙은 맞고, 받는 길이가 짧았다.
+console.log('\n9. 이력이 짧으면 그 기간은 비운다');
+{
+  const DAYS = Math.round(365.25 * 4);
+  const closes = Array.from({ length: DAYS }, (_, i) => 10000 + i);
+  const { ts } = series(closes, '2022-01-01');
+  const r = computeReturns(ts, closes, null, {}, null);
+  check('4년치로 3년은 낸다', r.price?.Y3 != null, `price.Y3=${r.price?.Y3}`);
+  check('4년치로 5년은 안 낸다', r.price?.Y5 == null, `price.Y5=${r.price?.Y5}`);
+  check('4년치로 10년은 안 낸다', r.price?.Y10 == null, `price.Y10=${r.price?.Y10}`);
+}
+
 console.log(`\n통과 ${pass} · 실패 ${fail}`);
 process.exit(fail ? 1 : 0);
