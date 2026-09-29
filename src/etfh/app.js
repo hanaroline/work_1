@@ -112,6 +112,7 @@
     if (!isNum(it.aum)) return '';
     return `${money(it.aum, it.aumCur || it.cur)}${isNum(it.aumKrw) ? `<span class="sm">≈ ${eok(it.aumKrw)}</span>` : ''}${it.aumWide ? `<span class="sm">${t().wide}</span>` : ''}`;
   }
+  const nm = (it) => (lang === 'en' && it.nameEn ? it.nameEn : it.name);
   const mmdd = (d) => (d ? d.slice(5) : '');
   const since = (d, p) => (d ? (/^Y(3|5|10)$/.test(p) ? d : mmdd(d)) : '');
 
@@ -127,7 +128,7 @@
     if (!isNum(v)) return 4;
     if (v >= 10000) return 0; if (v >= 3000) return 1; if (v >= 1000) return 2; return 3;
   }
-  const searchText = ITEMS.map((it) => [it.name, it.nameLocal, it.code, it.index, ...(it.holdings || []).map((h) => h.name)].filter(Boolean).join('\u0001').toLowerCase());
+  const searchText = ITEMS.map((it) => [it.name, it.nameEn, it.nameLocal, it.code, it.index, ...(it.holdings || []).map((h) => h.name)].filter(Boolean).join('\u0001').toLowerCase());
 
   function filtered() {
     const q = S.q.trim().toLowerCase();
@@ -141,6 +142,7 @@
       if (f.asset && it.asset !== f.asset) return;
       if (f.index && it.index !== f.index) return;
       if (f.sector && it.sector1 !== f.sector) return;
+      if (f.theme && !(it.themes || []).includes(f.theme)) return;
       if (f.issuer && it.issuer !== f.issuer) return;
       if (f.aum !== '' && String(aumBand(it)) !== f.aum) return;
       if (q && !searchText[i].includes(q)) return;
@@ -205,7 +207,7 @@
       ['asset', byCount('asset'), (v) => L('asset', v)],
       ['index', uniq('index').sort((a, b) => a.localeCompare(b, 'ko')), null],
       ['sector', SECTORS.filter((s) => ITEMS.some((it) => it.sector1 === s)), (v) => L('sector', v)],
-      ['theme', [], null],
+      ['theme', [...new Set(ITEMS.flatMap((it) => it.themes || []))].sort((a, b) => a.localeCompare(b, 'ko')), null],
       ['issuer', byCount('issuer'), null],
       ['aum', ['0', '1', '2', '3', '4'], (v) => tt.aumBands[+v]],
     ];
@@ -245,7 +247,7 @@
       const open = S.open === it.id;
       h += `<tr class="row${open ? ' open' : ''}" data-id="${it.id}" tabindex="0" aria-expanded="${open}">` +
         `<td class="chk"><input type="checkbox" data-cmp="${it.id}" aria-label="${esc(c.cmp)}"${S.cmp.has(it.id) ? ' checked' : ''}></td>` +
-        `<td><span class="nm">${esc(it.name)}</span><span class="cd">${esc(it.code)}</span>${badges(it)}${it.nameLocal ? `<span class="sm">${esc(it.nameLocal)}</span>` : ''}</td>` +
+        `<td><span class="nm">${esc(nm(it))}</span><span class="cd">${esc(it.code)}</span>${badges(it)}${it.nameLocal ? `<span class="sm">${esc(it.nameLocal)}</span>` : ''}</td>` +
         `<td>${esc(tt.mk[it.mkt] || it.mkt)}</td>` +
         `<td class="hide-m">${esc(it.issuer || '')}</td>` +
         `<td class="hide-m">${esc(it.index || '')}</td>` +
@@ -272,7 +274,7 @@
       [d.price, price(it) + (it.priceDate ? `<span class="sm">${esc(it.priceDate)}</span>` : '')], [d.top10, pct(it.top10)], [d.cash, pct(it.cash)], [d.div, pct(it.divYield)],
       [d.dev, isNum(it.dev) ? (it.dev > 0 ? '+' : '') + f2(it.dev) + '%' : ''], [d.te, pct(it.te)], [d.listed, esc(it.listed || '')], [d.retBase, esc(it.retBase || '')],
     ];
-    let h = `<div class="det"><div class="det-h"><h3>${esc(it.name)} <span class="cd">${esc(it.code)} · ${esc(tt.mk[it.mkt])}</span></h3>` +
+    let h = `<div class="det"><div class="det-h"><h3>${esc(nm(it))} <span class="cd">${esc(it.code)} · ${esc(tt.mk[it.mkt])}</span></h3>` +
       `<span class="sm">${esc(L('asset', it.asset || tt.unknown))} · ${esc(L('region', it.region || tt.unknown))}${it.li ? ' · ' + esc(tt.li[it.li]) : ''}</span></div>`;
     h += `<dl class="kv">${kv.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${v || tt.na}</dd></div>`).join('')}</dl>`;
     h += `<div class="det-grid"><div>${holdingsBlock(it)}</div><div>${donut(it)}</div></div>`;

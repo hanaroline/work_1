@@ -1,6 +1,7 @@
 // etfh_lib.mjs 단위시험 — 망 없이 돈다.  node scripts/etfh_test.mjs
 import assert from 'node:assert/strict';
 import { num, eokFromKorean, cleanBars, trIndex, periodReturns, addMonths, holdingKey } from './etfh_lib.mjs';
+import { hasWord, matchList, levInv, loadDict, fromCategory } from './etfh_classify.mjs';
 
 let n = 0;
 const t = (name, fn) => { fn(); n++; console.log('ok', name); };
@@ -88,6 +89,59 @@ t('편입종목 열쇠 — 코드 우선, 없으면 소문자 이름', () => {
   assert.equal(holdingKey({ code: '005930', name: '삼성전자' }), 'c:005930');
   assert.equal(holdingKey({ code: null, name: 'SP 0 05/15/55' }), 'n:sp 0 05/15/55');
   assert.equal(holdingKey({ code: '', name: 'Apple  Inc' }), holdingKey({ code: '', name: 'apple inc' }));
+});
+
+// ── 이름 맞추기 — 실제로 겪은 오분류 셋 ──
+const G = { 금: ['금융', '금리'], 은: ['은행'] };
+t("'고배당주' 가 'US' 로 미국에 걸리지 않는다 (PLUS 안의 US)", () => {
+  assert.equal(hasWord('PLUS 고배당주', 'US'), false);
+  assert.equal(hasWord('PLUS고배당주', 'US'), false);
+  assert.equal(hasWord('TIGER 미국S&P500 / US', 'US'), true);
+  assert.equal(hasWord('Vanguard U.S. Growth', 'U.S.'), true);
+});
+t("'Dividend Equity' 가 'IT' 테마에 걸리지 않는다", () => {
+  assert.equal(hasWord('Schwab US Dividend Equity ETF', 'IT'), false);
+  assert.equal(hasWord('KODEX IT', 'IT'), true);
+  assert.equal(hasWord('TIGER 200 IT', 'it'), true);
+});
+t("'금융'·'은행' 이 '금'·'은' 으로 원자재에 걸리지 않는다", () => {
+  assert.equal(matchList('TIGER 200 금융', ['금', 'Gold'], G), false);
+  assert.equal(matchList('KODEX CD금리액티브', ['금'], G), false);
+  assert.equal(matchList('KODEX 은행', ['은'], G), false);
+  assert.equal(matchList('ACE KRX금현물', ['금'], G), true);
+  assert.equal(matchList('KODEX 은선물(H)', ['은'], G), true);
+  assert.equal(matchList('TIGER 금은선물(H)', ['은'], G), true);
+});
+t('띄어쓰기를 지운 형태도 보되, 원래 형태를 놓치지 않는다', () => {
+  assert.equal(hasWord('SPDR Gold Shares', 'GOLD'), true);
+  assert.equal(hasWord('KODEX 2차전지산업', '2차 전지'), true);
+  assert.equal(hasWord('SOL 2차 전지', '2차전지'), true);
+  assert.equal(hasWord('S&P 500 Index', 'S&P500'), true);
+});
+t("'!' 낱말은 뺀다", () => {
+  assert.equal(matchList('KODEX 반도체 레버리지', ['반도체', '!레버리지']), false);
+  assert.equal(matchList('KODEX 반도체', ['반도체', '!레버리지']), true);
+});
+t('레버리지·인버스 — 울트라 국채선물은 레버리지가 아니다', () => {
+  const d = loadDict();
+  assert.equal(levInv({ name: 'KODEX 미국30년국채울트라선물(H)' }, d), null);
+  assert.equal(levInv({ name: 'KODEX 200선물인버스2X' }, d), 'I');
+  assert.equal(levInv({ name: 'KODEX 레버리지' }, d), 'L');
+  assert.equal(levInv({ name: 'Direxion Daily Semiconductor Bull 3X Shares' }, d), 'L');
+  assert.equal(levInv({ name: 'iShares Short Treasury Bond ETF' }, d), null);
+  assert.equal(levInv({ name: 'ProShares UltraPro QQQ', category: 'Trading--Leveraged Equity' }, d), 'L');
+  assert.equal(levInv({ name: 'x', summary: '일간변동률의 음의 2배수를 추적' }, d), 'I');
+  // 'Ultra Short-Term' 은 단기채다 (띄어쓰기를 지우면 UltraShort 처럼 보인다)
+  assert.equal(levInv({ name: 'IBK 초단기채권액티브', nameEn: 'IBK Ultra Short-Term Bond Active' }, d), null);
+  assert.equal(levInv({ name: 'CSOP Leveraged and Inverse Series - CSOP Hang Seng TECH Index Daily (2x) Leveraged Product' }, d), 'L');
+  assert.equal(levInv({ name: 'CSOP Leveraged and Inverse Series - CSOP Nikkei 225 Daily (-2x) Inverse Product' }, d), 'I');
+  assert.equal(levInv({ name: 'KODEX 200선물인버스2X', wiseType: '국내파생, 인버스' }, d), 'I');
+});
+t('야후 분류명', () => {
+  assert.deepEqual(fromCategory('Intermediate Core Bond'), { asset: '채권', region: '미국' });
+  assert.deepEqual(fromCategory('Japan Stock'), { asset: '주식', region: '일본' });
+  assert.deepEqual(fromCategory('Commodities Focused'), { asset: '원자재', region: '글로벌·기타' });
+  assert.deepEqual(fromCategory('Foreign Large Blend'), { asset: '주식', region: '글로벌·기타' });
 });
 
 console.log(`\n${n}개 통과`);

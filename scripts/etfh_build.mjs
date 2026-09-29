@@ -5,7 +5,7 @@
 // 결과 파일은 바깥을 부르지 않는다(글꼴·그림·자료 모두 안에). 시험: scripts/etfh_check_page.mjs
 
 import fs from 'node:fs';
-import { classifyKR, classifyGlobal, sector1 } from './etfh_classify.mjs';
+import { classify, loadDict, sector1 } from './etfh_classify.mjs';
 import { PERIODS } from './etfh_lib.mjs';
 
 const args = process.argv.slice(2);
@@ -14,6 +14,7 @@ const read = (p) => (fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf8')) :
 const kr = read('data/etfh/kr.json');
 const gl = read('data/etfh/global.json');
 
+const dict = loadDict();
 const items = [];
 const meta = { sample: false, base: {}, collectedAt: {}, fx: gl?.fx || null, notes: [] };
 const r4 = (v) => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v * 1e4) / 1e4 : null);
@@ -29,21 +30,22 @@ if (kr) {
   meta.base.KR = kr.base;
   meta.collectedAt.KR = kr.collectedAt;
   for (const r of kr.items) {
-    const c = classifyKR(r);
+    const c = classify({ ...r, market: 'KR' }, dict);
     items.push({
-      code: r.code, name: r.name, mkt: 'KR', cur: 'KRW', issuer: r.issuer, index: r.index,
+      code: r.code, name: r.name, nameEn: r.nameEn || null, mkt: 'KR', cur: 'KRW', issuer: r.issuer, index: r.index,
       aumKrw: r.aumKrw ?? r.aumEok, aum: null, fee: r.fee, cash: r.cash, divYield: r.divYield, dev: r.dev, te: r.te,
       listed: r.listed, price: r.price, priceDate: r.priceDate, stop: r.tradeStop || null, flow3m: r.flow3mEok,
       holdings: r.holdings, sectors: r.sectors, sector1: sector1(r.sectors), top10: top10Of(r.holdings),
       asset: c.asset, region: c.region, li: c.li, ret: retOf(r.ret), retBase: r.ret?.r ? r.ret.base : null, divSrc: r.divSrc || null, retWhy: r.ret?.r ? null : (r.divErr || null),
-      raw: { tab: r.tab, theme: r.theme },
+      themes: c.themes, nameRegion: c.nameRegion, regionSrc: c.regionSrc,
+      raw: { tab: r.tab, theme: r.theme?.large || null, middle: r.theme?.middle || null, wise: r.wiseType || null },
     });
   }
 }
 if (gl) {
   const fx = gl.fx || {};
   for (const r of gl.items) {
-    const c = classifyGlobal(r);
+    const c = classify(r, dict);
     const rate = fx[r.currency]?.rate;
     const base = r.ret?.base;
     if (base) meta.base[r.market] = !meta.base[r.market] || base > meta.base[r.market] ? base : meta.base[r.market];
@@ -54,6 +56,7 @@ if (gl) {
       price: r.price, priceKrw: typeof r.price === 'number' && rate ? r.price * rate : null, priceDate: r.priceDate, stop: null, flow3m: null,
       holdings: r.holdings, sectors: r.sectors, sector1: sector1(r.sectors), top10: top10Of(r.holdings),
       asset: c.asset, region: c.region, li: c.li, ret: retOf(r.ret), retBase: r.ret?.r ? r.ret.base : null, divSrc: r.divSrc || null, retWhy: r.ret?.r ? null : (r.retNote === 'cn_mmf_units' ? 'cn_mmf' : null),
+      themes: c.themes, nameRegion: c.nameRegion, regionSrc: c.regionSrc,
       category: r.category || null, sharesOut: r.sharesOut ?? null, aumCur: r.financialCurrency || r.currency,
     });
   }
@@ -114,7 +117,11 @@ for (const g of Object.values(groups)) {
   }
 }
 
-items.forEach((it, i) => { it.id = i; delete it.raw; });
+items.forEach((it, i) => { it.id = i; });
+meta.themeCount = Object.keys(dict.themes).length;
+// 분류 점검용 — 화면 [5] 에 넘기고, 원천 값(raw)은 화면 자료에서 뺀다
+fs.writeFileSync('data/etfh/classify.json', JSON.stringify(items.map((it) => ({ code: it.code, name: it.name, mkt: it.mkt, asset: it.asset, region: it.region, regionSrc: it.regionSrc, nameRegion: it.nameRegion, li: it.li, themes: it.themes, raw: it.raw || { category: it.category } })), null, 0));
+items.forEach((it) => { delete it.raw; });
 const data = JSON.stringify({ meta, items }).replace(/</g, '\\u003c');
 const css = fs.readFileSync('src/etfh/style.css', 'utf8');
 const js = fs.readFileSync('src/etfh/app.js', 'utf8');
