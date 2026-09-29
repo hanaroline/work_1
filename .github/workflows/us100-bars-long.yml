@@ -64,9 +64,9 @@ concurrency:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    # 100 종목에 한 번씩만 두드리므로 평소 3~4 분이면 끝난다. 야후가 느린 날을
+    # 200 종목에 한 번씩만 두드리므로 평소 6~8 분이면 끝난다. 야후가 느린 날을
     # 견디게 넉넉히 둔다 — 끝나는 즉시 잡이 끝나므로 평소 비용은 그대로다.
-    timeout-minutes: 45
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 
