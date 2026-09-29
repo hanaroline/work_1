@@ -231,6 +231,24 @@ def companies_from_page():
         out.append({"sym": sym, "en": en1 or en2, "ko": ko, "sector": sector})
     if len(out) < 50:
         raise SystemExit("COMPANIES 파싱 결과가 %d개다 — 정규식을 확인해야 한다" % len(out))
+
+    # **적어 둔 줄 수와 읽어 낸 수가 같아야 한다.**
+    #
+    # 「50 개보다 적으면 멈춘다」만으로는 모자랐다. 목록을 100 → 200 으로 넓힐 때
+    # `Moody's`·`O'Reilly` 두 줄이 **말없이 빠졌다** — 위 정규식의 '([^']*)' 가
+    # 아포스트로피를 못 넘기기 때문이다. 198 종은 50 보다 크니 아무 표도 나지 않고,
+    # 두 종목은 수집·백테스트·화면 어디에도 없이 조용히 사라진다.
+    #
+    # 세는 쪽은 정규식이 아니라 **줄머리**다. 같은 정규식으로 세면 같이 틀린다.
+    # (영문명에 아포스트로피가 있으면 큰따옴표로 적으면 된다 — 위 패턴이 받는다.)
+    declared = len(re.findall(r"^\s*\[\s*['\"]", m.group(1), re.M))
+    if declared != len(out):
+        lost = declared - len(out)
+        raise SystemExit(
+            "COMPANIES 에 %d 줄이 적혀 있는데 %d 개만 읽혔다 — %d 줄이 조용히 빠졌다.\n"
+            "  영문명·한글명에 작은따옴표(')가 들어 있지 않은지 보십시오. "
+            "그런 줄은 영문명을 큰따옴표로 적습니다: ['MCO',\"Moody's\",'무디스','fin']"
+            % (declared, len(out), lost))
     return out
 
 
