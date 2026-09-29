@@ -1,9 +1,9 @@
 {
- "builtAt": "2026-09-28 11:35 KST",
- "builtAtUtc": "2026-09-28T02:35:12Z",
+ "builtAt": "2026-09-29 12:34 KST",
+ "builtAtUtc": "2026-09-29T03:34:05Z",
  "window": {
-  "from": "2026-08-14",
-  "to": "2028-02-10"
+  "from": "2026-08-15",
+  "to": "2028-02-11"
  },
  "note": "증시 일정 캘린더. confirmed 는 official(공식 확인) · websearch(검색 교차 확인) · tentative(기관이 잠정으로 공표) · estimate(제공사 추정 구간) · rule(규칙으로 만든 날짜) 다. 확정이 아닌 것은 화면에서 배지로 구분한다.",
  "confirmed_legend": {
@@ -78,10 +78,10 @@
  "context": {
   "policy_rate_us": {
    "effr_pct": 3.88,
-   "date": "2026-09-24",
+   "date": "2026-09-25",
    "percentile_1": 3.85,
-   "percentile_99": 3.94,
-   "volume_bn_usd": 105,
+   "percentile_99": 3.9,
+   "volume_bn_usd": 112,
    "note": "실효 연방기금금리. 하루 지연 공표라 시세일보다 하루 이르다",
    "source_url": "https://markets.newyorkfed.org/api/rates/unsecured/effr",
    "perf": {
@@ -92,31 +92,31 @@
     "y1": -21.0,
     "ytd": 24.0,
     "unit": "bp",
-    "from": "2025-02-24"
+    "from": "2025-02-25"
    },
    "series_days": 400
   },
   "fed_implied": {
-   "contract_price": 95.955,
-   "implied_rate_pct": 4.045,
-   "quote_date": "2026-09-28",
+   "contract_price": 95.95,
+   "implied_rate_pct": 4.05,
+   "quote_date": "2026-09-29",
    "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 — 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
    "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
    "effr_pct": 3.88,
    "vs_effr_bp": 17,
    "perf": {
     "w1": 29.8,
-    "m1": 41.4,
-    "m3": 41.4,
-    "m6": 40.5,
+    "m1": 42.4,
+    "m3": 42.4,
+    "m6": 41.4,
     "y1": -18.2,
-    "ytd": 31.8,
+    "ytd": 32.7,
     "unit": "bp",
     "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
    }
   },
   "rates_kr": {
-   "call": 3.074,
+   "call": 3.048,
    "cd91": 3.21,
    "cofix_new": 3.18,
    "cofix_balance": 3.05,
@@ -134,27 +134,27 @@
     "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(135785 bytes)",
     "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
    ],
-   "ktb1y": 3.667,
-   "ktb5y": 4.22,
-   "ktb10y": 4.392,
+   "ktb1y": 3.726,
+   "ktb5y": 4.345,
+   "ktb10y": 4.539,
    "perf": {
     "ktb1y": {
-     "w1": -0.7,
-     "m1": 24.4,
+     "w1": 5.2,
+     "m1": 30.3,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb5y": {
-     "w1": -4.7,
-     "m1": 19.9,
+     "w1": 7.8,
+     "m1": 32.4,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb10y": {
-     "w1": -6.9,
-     "m1": 10.8,
+     "w1": 7.8,
+     "m1": 25.5,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
@@ -167,8 +167,8 @@
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "call": {
-     "w1": -0.4,
-     "m1": 7.4,
+     "w1": -3.0,
+     "m1": 4.8,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
@@ -189,7 +189,7 @@
     }
    }
   },
-  "asof_kst": "2026-09-28 09:32:56"
+  "asof_kst": "2026-09-29 10:46:44"
  },
  "holidays": [
   {
@@ -2471,7 +2471,7 @@
    "source_en": "Federal Reserve — FOMC meeting calendars",
    "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local",
    "meetings_per_year": 8,
-   "fetched_at": "2026-09-28"
+   "fetched_at": "2026-09-29"
   },
   {
    "key": "bok",
@@ -2544,7 +2544,7 @@
    "source_en": "Bank of England — Upcoming MPC dates",
    "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-09-28"
+   "fetched_at": "2026-09-29"
   },
   {
    "key": "pboc",
