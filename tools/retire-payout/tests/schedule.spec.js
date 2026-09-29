@@ -337,6 +337,23 @@ module.exports = async function run(t) {
     t.is(await field(page, '시뮬레이션 계좌').count(), 0,
       '고를 계좌가 하나면 선택 상자를 두지 않는다');
 
+    /*
+     * 넓은 화면에서는 '좌우로 밀라' 는 표시를 두지 않는다.
+     *
+     * 휴대폰 쪽은 phone 스펙이 '넘치는데 표시가 없으면 실패' 로 잡는다. 그것만
+     * 두면 표시를 붙박이 문구로 바꿔도 통과하므로, 다 보이는 폭(1500px)에서
+     * 표시가 없어야 한다는 반대쪽 못을 여기 박는다. **거짓 표시는 표시가 없는
+     * 것보다 나쁘다** - 한 번 헛말을 하면 그 다음부터 아무도 믿지 않는다.
+     */
+    const wide = await page.evaluate(() => {
+      const box = [...document.querySelectorAll('div.overflow-x-auto')].filter((e) => e.offsetParent)[0];
+      const hint = [...document.querySelectorAll('[role="note"][aria-label$="가로 스크롤 안내"]')]
+        .filter((e) => e.offsetParent).length;
+      return { over: box ? box.scrollWidth - box.clientWidth : 0, hints: hint };
+    });
+    t.ok(wide.over <= 1, '1500px 에서는 인출표가 넘치지 않는다 (' + wide.over + 'px)');
+    t.is(wide.hints, 0, '넘치지 않으면 좌우로 밀라는 표시를 두지 않는다');
+
     t.is(errors.length, 0, '런타임 에러 없음');
   } finally {
     await browser.close();
