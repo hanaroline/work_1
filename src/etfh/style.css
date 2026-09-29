@@ -109,6 +109,13 @@ tr.detail > td { background: #fff; padding: 0; border-bottom: 2px solid var(--or
   .top h1 { font-size: 22px; }
   .dt { font-size: 13px; }
   .dt .hide-m { display: none; }
+  .dt th { white-space: normal; padding: 6px 4px; }
+  .dt td { padding: 6px 4px; }
+  .dt td.n, .dt td:nth-child(3) { white-space: nowrap; }
+  .dt td .nm { overflow-wrap: anywhere; }
+  .det { padding: 12px 2px 16px; }
+  .det-h h3 { font-size: 17px; overflow-wrap: anywhere; }
+  .kv { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }
 
 @media print {

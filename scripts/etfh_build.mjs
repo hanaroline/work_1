@@ -57,18 +57,14 @@ if (gl) {
       category: r.category || null, sharesOut: r.sharesOut ?? null, aumCur: r.financialCurrency || r.currency,
     });
   }
-  // 펀드 전체 순자산 가르기 — 이 상장 클래스의 값(발행좌수 × 가격)보다 30% 넘게 크면 펀드 전체(또는
-  // 다른 나라 본펀드) 값으로 본다. 좌수가 없으면 같은 순자산 숫자가 다른 상장에도 있는지로 가른다.
-  const seenAum = {};
-  for (const it of items) if (it.mkt !== 'KR' && typeof it.aum === 'number') seenAum[it.aum] = (seenAum[it.aum] || 0) + 1;
+  // 펀드 전체 순자산 가르기 — 같은 순자산 숫자가 미국 상장본에도 있으면, 미국 밖 상장본(3455.HK =
+  // Invesco QQQ, 2840.HK = SPDR Gold)은 본펀드 값을 받은 것으로 본다.
+  // 발행좌수 × 가격과 견주는 방법은 쓰지 않는다 — 야후 v7 좌수가 순자산과 안 맞아(IVV 좌수×가격
+  // ≈ $435B, 순자산 $884B) 순수 ETF 까지 잘못 잡았다. VTI·BND 처럼 한 펀드 안의 다른 클래스까지
+  // 센 값은 이 방법으로 못 가른다 — 남은 숙제로 둔다.
+  const usAum = new Set(items.filter((it) => it.mkt === 'US' && typeof it.aum === 'number').map((it) => it.aum));
   for (const it of items) {
-    if (it.mkt === 'KR' || typeof it.aum !== 'number') continue;
-    const cls = typeof it.sharesOut === 'number' && typeof it.price === 'number' ? it.sharesOut * it.price : null;
-    if (cls ? it.aum > cls * 1.3 : seenAum[it.aum] > 1) {
-      // 펀드 전체 값은 통화 표시도 본펀드 것일 수 있어(3455.HK 는 미국 QQQ 의 달러 값에 HKD 가 붙어 온다)
-      // 원화로 바꾸면 틀린 숫자가 된다 — 환산하지 않는다.
-      it.aumWide = true; it.aumKrw = null;
-    }
+    if (it.mkt !== 'KR' && it.mkt !== 'US' && typeof it.aum === 'number' && usAum.has(it.aum)) { it.aumWide = true; it.aumKrw = null; }
     delete it.sharesOut;
   }
   meta.collectedAt.GLOBAL = gl.collectedAt;
