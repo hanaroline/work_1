@@ -118,6 +118,28 @@ def main():
         res['kr'].append(row)
         print(json.dumps(row, ensure_ascii=False)[:1200], flush=True)
 
+    # ── 국내: 운용사 화면 (거래소가 막히면 운용사 공시가 다음 1차 원천이다)
+    res['issuer'] = []
+    for tag, url in [
+        ('tiger_102110', 'https://investments.miraeasset.com/tigeretf/ko/product/search/detail/index.do?ksdFund=KR7102110004'),
+        ('tiger_102110_pdf', 'https://investments.miraeasset.com/tigeretf/ko/product/search/detail/pdf.ajax?ksdFund=KR7102110004'),
+        ('kodex_069500', 'https://www.samsungfund.com/etf/product/view.do?id=2ETF01'),
+        ('kodex_069500_api', 'https://www.samsungfund.com/api/v1/kodex/product-pdf/2ETF01.do'),
+        ('wcomp_069500', 'https://wcomp.fnguide.com/SVO2/ASP/etf_snapshot.asp?gicode=A069500'),
+    ]:
+        row = {'tag': tag, 'url': url}
+        try:
+            t = F._req(url, retry=2).decode('utf-8', 'replace')
+            row['bytes'] = len(t)
+            hits = [m.start() for m in re.finditer('삼성전자', t)][:3]
+            row['around'] = [re.sub(r'\s+', ' ', t[max(0, i - 300):i + 900]) for i in hits]
+            if not hits:
+                row['head'] = re.sub(r'\s+', ' ', t[:800])
+        except Exception as e:                              # noqa: BLE001
+            row['err'] = str(e)
+        res['issuer'].append(row)
+        print(tag, row.get('bytes'), row.get('err'), flush=True)
+
     # ── 미국: 야후 ↔ State Street
     spy = {}
     try:
