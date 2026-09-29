@@ -413,7 +413,7 @@ node tools/retire-payout/tests/run.js verdict  # 이름으로 일부만
 
 빌드 산출물 `retire-payout.html` 을 그대로 열어 검사한다. 실패가 있으면 종료 코드가 1 이다.
 
-**PR 에서도 돈다.** `.github/workflows/pr-check.yml` 의 `퇴직급여 시뮬레이터` 작업이 소스에서 단일
+**PR 에서도 돈다.** `.github/workflows/pr-check.yml` 의 `퇴직급여` 작업이 소스에서 단일
 HTML 을 다시 만들어 이 검사를 전부 돌리고, **커밋된 `retire-payout.html` 이 소스와 같은지도**
 본다 - `app.jsx` 만 고치고 빌드를 잊으면 지점에 내려가는 파일이 옛 판이 되기 때문이다.
 

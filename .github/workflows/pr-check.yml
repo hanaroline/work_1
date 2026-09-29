@@ -119,7 +119,7 @@ jobs:
           PY
 
   retirement:
-    name: 퇴직급여 시뮬레이터 — 판정·세액 재검산과 A4
+    name: 퇴직급여 — 판정·세액 재검산과 A4
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -178,7 +178,7 @@ jobs:
           node tools/retire-payout/tests/run.js 2>&1 | tee /tmp/rs.txt
           code=$?
           {
-            echo '### 퇴직급여 시뮬레이터'
+            echo '### 퇴직급여 — 계좌 선택 · 인출 설계'
             echo '```'
             grep -E '^ (OK|FAIL)|^검사|✗' /tmp/rs.txt | head -40
             echo '```'
