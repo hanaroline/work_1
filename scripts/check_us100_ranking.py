@@ -49,6 +49,15 @@ OK_EXCHANGES = ("NMS", "NYQ", "NGM", "ASE", "NCM", "NYS")   # 정규 거래소 �
 SP500_CSV = "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
 OUT = os.path.join(OUT_DIR, "ranking.json")
 
+# GICS 섹터 → 화면(us-top100.html)이 쓰는 코드. 목록을 넓힐 때 새 종목의 섹터를
+# 손으로 찍지 않으려고 둔다 — 화면의 SECTORS 와 같은 열한 가지다.
+GICS_TO_CODE = {
+    "Information Technology": "it", "Financials": "fin", "Health Care": "hc",
+    "Industrials": "ind", "Consumer Discretionary": "cd", "Consumer Staples": "cs",
+    "Communication Services": "comm", "Energy": "eng", "Utilities": "util",
+    "Materials": "mat", "Real Estate": "re",
+}
+
 
 def _post_json(url, payload):
     req = urllib.request.Request(
@@ -102,11 +111,14 @@ def sp500_ranking():
     with urllib.request.urlopen(
             urllib.request.Request(SP500_CSV, headers={"User-Agent": F.UA}), timeout=F.TIMEOUT) as r:
         txt = r.read().decode("utf-8", "replace")
-    syms = []
+    syms, sec = [], {}
     for row in csv.DictReader(io.StringIO(txt)):
         s = (row.get("Symbol") or row.get("symbol") or "").strip()
         if s:
-            syms.append(s.replace(".", "-"))          # BRK.B → BRK-B (야후 표기)
+            s = s.replace(".", "-")                   # BRK.B → BRK-B (야후 표기)
+            syms.append(s)
+            # 목록을 넓힐 때 한글명과 함께 채워야 하는 칸이라 여기서 들고 간다.
+            sec[s] = GICS_TO_CODE.get((row.get("GICS Sector") or "").strip())
     if len(syms) < 400:
         raise RuntimeError("구성종목이 %d개다" % len(syms))
     out = {}
@@ -122,7 +134,8 @@ def sp500_ranking():
         for q in ((j.get("quoteResponse") or {}).get("result") or []):
             sym, cap = q.get("symbol"), num(q.get("marketCap"))
             if sym and cap:
-                out[sym] = {"cap": cap, "name": q.get("shortName") or q.get("longName") or sym}
+                out[sym] = {"cap": cap, "name": q.get("shortName") or q.get("longName") or sym,
+                            "sector": sec.get(sym)}
     if len(out) < 300:
         raise RuntimeError("시총을 받은 종목이 %d개다" % len(out))
     return out, "sp500"
@@ -273,7 +286,15 @@ def norm_name(v):
     return " ".join(parts)[:18]
 
 
-def main():
+def main(argv=None):
+    argv = list(sys.argv[1:] if argv is None else argv)
+    emit_top, emit_path = 0, os.path.join(OUT_DIR, "ranking-top.json")
+    if "--emit-top" in argv:
+        i = argv.index("--emit-top")
+        emit_top = int(argv[i + 1])
+    if "--emit-out" in argv:
+        emit_path = argv[argv.index("--emit-out") + 1]
+
     ours = companies_from_page()
     have = [c["sym"] for c in ours]
     ko = {c["sym"]: c["ko"] for c in ours}
@@ -359,6 +380,27 @@ def main():
     ranked = sorted(universe.items(), key=lambda kv: -kv[1]["cap"])
     rank = {sym: i + 1 for i, (sym, _) in enumerate(ranked)}
     top = [sym for sym, _ in ranked[:TOP]]
+
+    # **줄 세운 것을 그대로 내어 준다.** 목록을 넓힐 때(100 → 200) 어느 종목이
+    # 어느 자리인지 손으로 옮겨 적을 일이 아니다. 여기서 낸 파일을 보고 한글명을
+    # 채운 뒤 us-top100.html 의 COMPANIES 를 고친다 — 자동으로 갈아치우지 않는
+    # 까닭은 이 대본 머리말에 적어 두었다(한글이 빈 종목이 조용히 섞인다).
+    if emit_top:
+        emit = [{"rank": i + 1, "sym": sym, "name": rec.get("name") or sym,
+                 "cap": rec.get("cap"), "sector": rec.get("sector"),
+                 "country": rec.get("country"), "exch": rec.get("exch"),
+                 "ours": sym in have, "ko": ko.get(sym)}
+                for i, (sym, rec) in enumerate(ranked[:emit_top])]
+        with open(emit_path, "w", encoding="utf-8") as f:
+            json.dump({"builtAt": datetime.datetime.now(datetime.timezone.utc)
+                                  .strftime("%Y-%m-%dT%H:%M:%SZ"),
+                       "source": src, "universe": len(universe),
+                       "asked": emit_top, "got": len(emit),
+                       "note": ("시총 내림차순. ours=true 는 지금 화면 목록에 있는 종목. "
+                                "한글명(ko)이 비어 있는 줄이 새로 채워야 할 자리다."),
+                       "rows": emit}, f, ensure_ascii=False, indent=1)
+        print("줄 세운 %d 종을 %s 에 적었다 (우리 목록에 없는 것 %d 종)"
+              % (len(emit), emit_path, sum(1 for r in emit if not r["ours"])), flush=True)
 
     add = []
     for s in top:
