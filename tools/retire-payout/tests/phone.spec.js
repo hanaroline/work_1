@@ -125,6 +125,84 @@ module.exports = async function run(t) {
     t.ok(withAcc.doc <= withAcc.win + 1,
       '계좌 카드가 있어도 가로 스크롤 없음 (' + withAcc.doc + '/' + withAcc.win + 'px)');
 
+    /*
+     * ── 가로로 넘치는 표에는 넘친다는 표시가 있다 ─────────────────
+     *
+     * 인출 스케줄은 아홉 열, 계좌 비교는 일곱 열이라 412px 에서 화면 밖으로
+     * 나간다. 밀면 보이지만 **밀 수 있다는 표시가 없어** 마지막 열이 아예
+     * 없는 줄 알았다는 보고를 받았다(세후 수령액이 잘려 보이지 않았다).
+     *
+     * '넘치는데 표시가 없다' 와 '안 넘치는데 표시가 있다' 를 둘 다 본다.
+     * 붙박이 문구로 바꿔 놓으면 뒤엣것이 잡는다 - 거짓 표시는 표시가 없는
+     * 것보다 나쁘다.
+     */
+    for (const tab of ['계좌 비교', '인출 스케줄']) {
+      await B(tab).click();
+      await page.waitForTimeout(400);
+      const g = await page.evaluate(() => {
+        const box = [...document.querySelectorAll('div.overflow-x-auto')].filter((e) => e.offsetParent)[0];
+        const hint = [...document.querySelectorAll('[role="note"][aria-label$="가로 스크롤 안내"]')]
+          .filter((e) => e.offsetParent)[0];
+        return {
+          found: !!box,
+          over: box ? box.scrollWidth - box.clientWidth : 0,
+          hint: hint ? hint.textContent.replace(/\s+/g, ' ').trim() : null
+        };
+      });
+      t.is(g.found, true, tab + ' 탭에 표가 있다');
+      t.ok(g.over > 1, tab + ' 표가 휴대폰 폭보다 넓다 (' + g.over + 'px 넘침)');
+      t.ok(!!g.hint, tab + ' 표에 좌우로 밀라는 표시가 있다');
+      if (g.hint) t.includes(g.hint, '좌우로', tab + ' 표시가 미는 방향을 말한다: ' + g.hint);
+    }
+
+    /*
+     * ── 불가·조건부 사유가 제 줄을 쓴다 ──────────────────────────
+     *
+     * 앞의 셋(불가 · 재원 이름 · 금액)이 shrink-0 이라 폭을 먼저 먹어, 사유가
+     * 남은 132px 에 눌려 130자가 열 줄로 쪼개졌다(412px 실측). 좁은 화면에서는
+     * 사유가 아래 줄을 통째로 쓰는지 본다 - 글자 수가 아니라 **사유 상자가
+     * 앞 조각보다 아래에서 시작하는지**로 본다. 문구가 바뀌어도 성립한다.
+     */
+    await B('판정').click();
+    await page.waitForTimeout(300);
+    await L('DC').click().catch(() => {});
+    await B('DC').click();
+    await page.waitForTimeout(200);
+    await L('제도 가입일').fill('2016-04-01');
+    await L('퇴직급여').fill('250000000');
+    await L('명예퇴직금').fill('350000000');
+    await L('연금저축 1 가입일').fill('2009-03-02');
+    await L('연금저축 1 평가액').fill('10000000');
+    await page.waitForTimeout(700);
+
+    /*
+     * 줄은 **클래스가 아니라 글자로** 찾는다.
+     *
+     * 처음에는 'div.flex.flex-wrap' 으로 잡았는데, 음성 대조에서 flex-wrap 을
+     * 떼자 줄을 아예 못 찾아 '0개' 로 실패했다. 배치가 깨진 것을 잡은 것이
+     * 아니라 클래스가 바뀐 것을 잡은 것이라, 클래스를 다르게 쓰면서 같은
+     * 회귀를 넣으면 통과해 버린다. '불가' 라고 적힌 조각의 부모를 쓴다.
+     */
+    const why = await page.evaluate(() => {
+      const out = [];
+      document.querySelectorAll('span').forEach((tagEl) => {
+        const tag = tagEl.textContent.trim();
+        if (!['불가', '조건부'].includes(tag) || !tagEl.offsetParent) return;
+        const row = tagEl.parentElement;
+        const kids = [...row.children];
+        if (kids.length < 4 || kids[0] !== tagEl) return;
+        const head = tagEl.getBoundingClientRect();
+        const body = kids[3].getBoundingClientRect();
+        out.push({ tag, ownLine: body.top >= head.bottom - 2, w: Math.round(body.width) });
+      });
+      return out;
+    });
+    t.ok(why.length > 0, '불가 사유가 있는 줄을 찾았다 (' + why.length + '개)');
+    for (const r of why) {
+      t.is(r.ownLine, true, r.tag + ' 사유가 아래 줄을 통째로 쓴다');
+      t.ok(r.w >= 250, r.tag + ' 사유 칸이 250px 이상이다 (실제 ' + r.w + 'px)');
+    }
+
     t.is(errors.length, 0, '휴대폰 폭에서 런타임 에러 없음');
 
     // ── 스크립트가 막힌 뷰어에서 무엇을 해야 하는지 알려 준다 ─────
