@@ -12,6 +12,7 @@ on:
       - 'claude/elegant-mendel-**'
     paths:
       - 'scripts/probe_etf_holdings_src.mjs'
+      - 'scripts/probe_etfh_wise.mjs'
       - '.github/workflows/etf-src-probe.yml'
 
 permissions:
@@ -35,14 +36,16 @@ jobs:
           node-version: '22'
 
       - name: 원천 찔러 보기
-        run: node scripts/probe_etf_holdings_src.mjs
+        run: |
+          # 1차 탐침(probe_etf_holdings_src.mjs)은 끝났다 — 같은 곳을 또 부르지 않는다.
+          node scripts/probe_etfh_wise.mjs
 
       - name: 결과 커밋
         if: always()
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tools/discovery/etf_src_probe.json tools/discovery/etf_src_probe.md || true
+          git add tools/discovery/etf_src_probe.* tools/discovery/etfh_wise_probe.* || true
           if git diff --cached --quiet; then
             echo "남길 결과가 없습니다"
             exit 0
