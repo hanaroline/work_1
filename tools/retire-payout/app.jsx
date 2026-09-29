@@ -2237,6 +2237,91 @@ function Badge({ tone = 'neutral', children }) {
   );
 }
 
+/**
+ * 가로로 넘치는 표를 감싸고, **넘친다는 것을 눈에 보이게** 한다.
+ *
+ * 휴대폰에서 인출 스케줄과 계좌 비교는 열이 아홉·일곱이라 화면 밖으로 나간다.
+ * 밀면 보이기는 하는데 **밀 수 있다는 표시가 없어** 마지막 열이 아예 없는 줄
+ * 안다 - 실제로 그런 보고를 받았다(세후 수령액이 잘려 보이지 않았다).
+ *
+ * 표시는 **정말로 넘칠 때만** 띄운다. 늘 띄워 두면 다 보이는 넓은 화면에서도
+ * "뭘 더 밀라는 거지" 가 되고, 표시가 거짓이 되는 순간 아무도 믿지 않는다.
+ * 그래서 붙박이 문구가 아니라 실제 폭을 재서 정한다.
+ *
+ * 가장자리 그라데이션은 **아직 남은 쪽에만** 둔다. 끝까지 민 뒤에도 그늘이
+ * 남아 있으면 더 남은 줄 알고 계속 민다.
+ */
+function ScrollBox({ children, label }) {
+  const ref = React.useRef(null);
+  const [st, setSt] = React.useState({ over: false, atStart: true, atEnd: true });
+
+  /*
+   * 값이 그대로면 **같은 객체를 돌려준다.**
+   *
+   * 새 객체를 매번 넣으면 React 가 바뀐 것으로 보아 다시 그리고, 다시 그리면
+   * 또 재고... 무한 고리가 된다(만들면서 실제로 화면이 멈췄다). 같은 값일 때
+   * prev 를 그대로 돌려주면 React 가 렌더를 건너뛴다.
+   */
+  const measure = React.useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    const next = { over: max > 1, atStart: el.scrollLeft <= 1, atEnd: el.scrollLeft >= max - 1 };
+    setSt((prev) => (prev.over === next.over && prev.atStart === next.atStart
+      && prev.atEnd === next.atEnd) ? prev : next);
+  }, []);
+
+  // 붙였다 떼는 것은 한 번만 한다. 매 렌더마다 다시 걸면 스크롤 중에 헛돈다.
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.addEventListener('scroll', measure, { passive: true });
+    window.addEventListener('resize', measure);
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+    if (ro) ro.observe(el);
+    return () => {
+      el.removeEventListener('scroll', measure);
+      window.removeEventListener('resize', measure);
+      if (ro) ro.disconnect();
+    };
+  }, [measure]);
+
+  // 회차 수·계좌 수가 바뀌면 표 폭이 달라진다. 그릴 때마다 다시 잰다 -
+  // 값이 같으면 위 bail-out 이 렌더를 막으므로 고리가 되지 않는다.
+  React.useLayoutEffect(measure);
+
+  const fade = (side) => ({
+    background: 'linear-gradient(to ' + (side === 'right' ? 'left' : 'right') +
+      ', rgba(255,255,255,0.97), rgba(255,255,255,0))'
+  });
+
+  return (
+    <div>
+      {st.over && (
+        <div role="note" aria-label={label + ' 가로 스크롤 안내'}
+          className="flex items-center justify-end gap-1 mb-1 text-[12px] text-ink-soft">
+          <span aria-hidden="true">←</span>
+          <span className="break-keep">좌우로 밀면 나머지 칸이 보입니다</span>
+          <span aria-hidden="true">→</span>
+        </div>
+      )}
+      <div className="relative">
+        <div ref={ref} className="overflow-x-auto border border-hair rounded-sm bg-white">
+          {children}
+        </div>
+        {st.over && !st.atStart && (
+          <div aria-hidden="true" style={fade('left')}
+            className="pointer-events-none absolute inset-y-px left-px w-8 rounded-l-sm" />
+        )}
+        {st.over && !st.atEnd && (
+          <div aria-hidden="true" style={fade('right')}
+            className="pointer-events-none absolute inset-y-px right-px w-8 rounded-r-sm" />
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Section({ title, children, right }) {
   return (
     <section className="mb-8">
@@ -4688,15 +4773,27 @@ function App() {
                               {c.perSource.map((p, i) => {
                                 const state = p.ok ? 'ok' : p.selectable ? 'caution' : 'blocked';
                                 return (
-                                  <div key={i} className="flex items-start gap-2 text-[13px] leading-snug">
+                                  /*
+                                    사유는 좁은 화면에서 제 줄을 갖는다.
+
+                                    앞의 셋(가능/불가 · 재원 이름 · 금액)이 shrink-0 이라 폭을 먼저
+                                    먹고 사유만 남은 자리에 눌린다. 412px 에서 사유 칸이 132px 로
+                                    좁아져 130자가 열 줄(줄당 13자)로 쪼개졌다 - 읽을 수 없는 상태다.
+
+                                    flex-wrap 에 basis-full 을 얹어 좁은 화면에서는 사유가 아래 줄을
+                                    통째로 쓰게 하고, sm 부터는 예전처럼 한 줄에 붙인다. 글자를 두 벌
+                                    두지 않으므로(hidden 으로 감추는 방식) 읽어 가는 검사가 같은
+                                    문장을 두 번 보지 않는다.
+                                  */
+                                  <div key={i} className="flex flex-wrap items-start gap-x-2 gap-y-0.5 text-[13px] leading-snug">
                                     <span className={'font-medium shrink-0 ' +
                                       (state === 'ok' ? 'text-sig-ok' : state === 'caution' ? 'text-[#8A6A0B]' : 'text-sig-err')}>
                                       {state === 'ok' ? '가능' : state === 'caution' ? '조건부' : '불가'}
                                     </span>
                                     <span className="text-ink-muted shrink-0">{p.source.label}</span>
                                     <span className="num text-ink-body shrink-0">{krw(p.source.amount)}</span>
-                                    {state === 'blocked' && <span className="text-sig-err">- {p.blockers[0]}</span>}
-                                    {state === 'caution' && <span className="text-[#8A6A0B]">- {p.cautions[0]}</span>}
+                                    {state === 'blocked' && <span className="basis-full sm:basis-auto sm:flex-1 min-w-0 text-sig-err">- {p.blockers[0]}</span>}
+                                    {state === 'caution' && <span className="basis-full sm:basis-auto sm:flex-1 min-w-0 text-[#8A6A0B]">- {p.cautions[0]}</span>}
                                   </div>
                                 );
                               })}
@@ -4736,7 +4833,7 @@ function App() {
                     퇴직급여를 받는 계좌만 바꾸고 나머지 조건({years}년 · 연 {rate.toFixed(1)}% ·
                     {mode === 'max' ? ' 한도 내 최대' : ' 균등 분할'})은 동일하게 둔 결과입니다. 기존 잔고 합산은 제외했습니다.
                   </p>
-                  <div className="overflow-x-auto border border-hair rounded-sm bg-white">
+                  <ScrollBox label="계좌 비교">
                     <table className="w-full text-[13px] num">
                       <thead>
                         <tr className="bg-mas-soft text-ink">
@@ -4773,7 +4870,7 @@ function App() {
                         })}
                       </tbody>
                     </table>
-                  </div>
+                  </ScrollBox>
                   <p className="text-[12px] text-ink-soft mt-2 leading-relaxed">
                     단위: 만원 · 수수료는 매년 적립금 기준으로 차감 · '일부만'은 그 계좌가 퇴직급여 전액을 받을 수 없는 경우 ·
                     '+잔액'은 수령 기간 내 전액 인출이 안 되어 남는 금액
@@ -4957,7 +5054,7 @@ function App() {
                     </p>
                   )}
 
-                  <div className="overflow-x-auto border border-hair rounded-sm bg-white">
+                  <ScrollBox label="인출 스케줄">
                     <table className="w-full text-[13px] num">
                       <thead>
                         <tr className="bg-mas-soft text-ink">
@@ -4970,7 +5067,9 @@ function App() {
                         {sim.rows.map((r) => (
                           <tr key={r.k} className="border-b border-hair-soft hover:bg-surf-subtle">
                             <td className="px-2 py-1.5 text-center">{r.k}<span className="text-[11px] text-ink-soft ml-1">({r.year})</span></td>
-                            <td className="px-2 py-1.5 text-center">
+                            {/* 좁은 화면에서 '한도해제' 가 '한도해 / 제' 로 끊겼다.
+                                표는 옆으로 밀어 보는 것이라 폭을 아낄 이유가 없다. */}
+                            <td className="px-2 py-1.5 text-center whitespace-nowrap">
                               {r.limitYear}년차{r.unlimited ? <span className="text-sig-ok font-bold ml-1">한도해제</span> : null}
                             </td>
                             <td className="px-2 py-1.5 text-center">{r.actualYear}년차</td>
@@ -5011,7 +5110,7 @@ function App() {
                         ))}
                       </tbody>
                     </table>
-                  </div>
+                  </ScrollBox>
                   <p className="text-[12px] text-ink-soft mt-3 leading-relaxed">
                     단위: 만원 · 연금수령한도 = 과세기간 개시일 평가액 ÷ (11 - 연금수령연차) × 120%
                     <Help title="연금수령한도는 인출 한도가 아닙니다">
