@@ -11,6 +11,7 @@ check_etf_holdings.py 가 그것을 확인한다.
 여기서 **판정**하는 것이 셋이다. 셋 다 원천이 준 값만 보고, 판정 까닭을 레코드에 남긴다.
 
   규모 기준(ab) — 'fund' 펀드 전체(다른 클래스·다른 상장 합산) 값 → 순위에서 뺀다
+                  'dup'  이름이 다른 펀드와 값이 똑같음 — 원천 오류로 보고 순위에서 뺀다
                   'etf'  그런 증거가 없음
       증거는 **한 푼도 안 틀리고 같은 순자산** 하나뿐이다.
       · 미국 ETF 의 순자산이 어느 뮤추얼펀드 클래스의 순자산과 똑같으면(VTI ↔ VTSAX)
@@ -190,6 +191,9 @@ def main():
             e['r'] = [ret.get(p) for p in F.PERIODS]
             e['ra'] = r.get('ret_at')
             e['rs'] = (r.get('src') or {}).get('ret')
+            if r.get('jumps'):
+                d0, pct = r['jumps'][0]
+                e['rj'] = '야후 일봉 %s 하루 %+.1f%% — 분할 미반영 의심, 이 날을 걸치는 기간은 비움' % (d0, pct)
             e['alt'] = None           # 다른 원천으로 메운 값이 생기면 {'field': 'src'} — 지금은 없다
             # ── 구성
             hs = r.get('h_status') or 'none'
@@ -201,10 +205,19 @@ def main():
                 key = H.resolve(h['k'], h['n'])
                 i = H.add(key, h['n'], 'ko' if m == 'KR' and key.startswith('KR:') else 'en')
                 hl.append([i, h.get('w')])
+            # 말이 안 되는 비중(±300% 밖)을 원천이 주면 그 ETF 의 비중은 믿지 않는다.
+            # 이름은 남기고 비중만 비운다 — 레버리지 ETF 의 스와프 200% 는 정상이라 둔다.
+            wild = [w for _, w in hl if w is not None and abs(w) > 300]
+            if wild:
+                hl = [[i, None] for i, _ in hl]
+                hs = 'noweight'
+                e['hs'] = hs
+                e['hbad'] = '원천이 준 비중 %s%% 가 말이 안 되어 비중을 비움' % '{:,.2f}'.format(wild[0])
             e['h'] = hl
             ws = [w for _, w in hl if w is not None]
             e['hsum'] = round(sum(ws), 2) if ws else None
             e['hsrc'] = (r.get('src') or {}).get('hold')
+            e['fb'] = r.get('first_bar')
             e['hat'] = raw.get('at')
             # ── 테마 (이름만 보고)
             th = T.themes_for(e['n'], e['ne'])
@@ -217,21 +230,39 @@ def main():
         if e['m'] != 'KR' and e['aum']:
             by_aum.setdefault(e['aum'], []).append(e)
     shared = 0
+    GENERIC = {'ETF', 'FUND', 'TRUST', 'SERIES', 'INDEX', 'SHARES', 'ISHARES', 'THE', 'OF', 'AND', 'EXCHANGE',
+               'TRADED', 'LISTED', '1', 'I', 'II', 'PORTFOLIO', 'CLASS'}
+
+    def toks(e):
+        return {t for t in F.norm_name(e['n']).split() if t not in GENERIC}
+
+    def similar(x, y):
+        a_, b_ = toks(x), toks(y)
+        return bool(a_ and b_) and len(a_ & b_) / len(a_ | b_) >= 0.5
+
     for v, grp in by_aum.items():
         if len(grp) < 2:
             continue
-        home = [e for e in grp if e['m'] == 'US']
-        home = home if len(home) == 1 else []
+        us = [e for e in grp if e['m'] == 'US']
+        if len(us) == 1 and all(similar(us[0], e) for e in grp if e is not us[0]):
+            home = us[0]
+        elif not us and all(similar(grp[0], e) for e in grp[1:]):
+            home = min(grp, key=lambda e: e.get('fb') or '9999')        # 가장 오래 거래된 상장
+        else:
+            home = None
         for e in grp:
-            if e in home:
+            if e is home:
                 continue
             others = ', '.join(x['c'] for x in grp if x is not e)
-            if home:
+            if home is not None:
                 e['ab'] = 'fund'
-                e['abw'] = '순자산 %s 이(가) %s 와 똑같음 — 그 펀드 전체 값(교차 상장)' % ('{:,.0f}'.format(v), home[0]['c'])
+                e['abw'] = '순자산 %s 이(가) 같은 펀드의 다른 상장 %s 와 똑같음 — 그 펀드 전체 값(교차 상장)' % (
+                    '{:,.0f}'.format(v), home['c'])
             else:
-                e['ab'] = 'fund'
-                e['abw'] = '순자산이 %s 와 똑같음 — 여러 상장이 함께 쓰는 펀드 전체 값' % others
+                # 이름이 다른 펀드끼리 값이 한 푼도 안 틀리면 원천이 값을 잘못 옮긴 것이다.
+                # 어느 쪽 값인지 모르므로 둘 다 믿지 않는다 — 순위에서 뺀다.
+                e['ab'] = 'dup'
+                e['abw'] = '순자산 %s 이(가) 이름이 다른 %s 와 똑같음 — 우연인지 원천 오류인지 가릴 수 없음' % ('{:,.0f}'.format(v), others)
             shared += 1
 
     for row in H.rows:
@@ -257,6 +288,7 @@ def main():
                                 'mine': x.get('mine'), 'diff': x.get('diff')} for x in ver]},
         'shared_aum': shared,
         'n_fund': sum(1 for e in etfs if e.get('ab') == 'fund'),
+        'n_dup': sum(1 for e in etfs if e.get('ab') == 'dup'),
         'themes': T.theme_table(),
     }
     data = {'meta': meta, 'H': H.rows, 'E': etfs}
