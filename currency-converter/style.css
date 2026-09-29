@@ -1,92 +1,187 @@
+/* 색·글꼴·모서리는 메인 페이지(mapo-wm.html)의 값을 그대로 쓴다 */
+:root {
+  --orange: #F58220;
+  --orange-active: #CB6015;
+  --navy: #043B72;
+  --ink: #1A1A1A;
+  --body: #3D3D3D;
+  --muted: #6C6C6C;
+  --canvas: #FFFFFF;
+  --surface-soft: #ECEFF4;
+  --surface-subtle: #F7F8FA;
+  --hairline: #CDCECB;
+  --hairline-soft: #E5E4E1;
+  --danger: #C62828;
+  --font-kr: 'Spoqa Han Sans Neo', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-en: 'Inter', 'Aptos', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
 * {
   box-sizing: border-box;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
+  background: var(--surface-subtle);
+  color: var(--body);
+  font-family: var(--font-kr);
+  font-size: 17px;
+  line-height: 1.65;
+  font-variant-numeric: tabular-nums;
+  word-break: keep-all;
+}
+
+.shell {
+  max-width: 560px;
+  margin: 0 auto;
+  background: var(--canvas);
   min-height: 100vh;
+}
+
+/* ---------- hero ---------- */
+.hero {
+  background: var(--orange);
+  color: #fff;
+  padding: 22px 20px 26px;
+}
+
+.eyebrow {
+  margin: 0;
+  padding-top: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .2px;
+  color: rgba(255, 255, 255, .92);
+}
+
+.hero h1 {
+  margin: 12px 0 8px;
+  font-size: 34px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -.5px;
+}
+
+.hero p:last-child {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, .95);
+}
+
+/* ---------- form ---------- */
+.section {
+  display: block;
+  padding: 28px 20px 40px;
+}
+
+.section-rule {
+  height: 1px;
+  margin-bottom: 20px;
+  background: var(--orange);
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.row {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
-  background: #f3f4f6;
-  color: #111827;
+  gap: 10px;
 }
 
-.converter {
-  width: 100%;
-  max-width: 400px;
-  padding: 24px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-}
-
-h1 {
-  margin: 0 0 20px;
-  font-size: 22px;
-  text-align: center;
+.row .field {
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 label {
   display: block;
   margin-bottom: 6px;
   font-size: 14px;
-  color: #4b5563;
+  font-weight: 700;
+  color: var(--ink);
 }
 
 input,
 select,
 button {
   width: 100%;
+  min-height: 48px;
   padding: 10px 12px;
-  font-size: 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  font-family: inherit;
+  font-size: 17px;
+  border-radius: 2px;
 }
 
-input {
-  margin-bottom: 16px;
+input,
+select {
+  border: 1px solid var(--hairline);
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--font-en);
 }
 
-.row {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.field {
-  flex: 1;
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 1px var(--orange);
 }
 
 button {
+  margin-top: 4px;
   border: none;
-  background: #2563eb;
-  color: #ffffff;
-  font-weight: 600;
+  background: var(--orange);
+  color: #fff;
+  font-weight: 500;
   cursor: pointer;
+  transition: background .12s ease;
 }
 
-button:hover {
-  background: #1d4ed8;
+button:hover,
+button:active {
+  background: var(--orange-active);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
 }
 
 button:disabled {
-  background: #93c5fd;
+  background: var(--hairline);
   cursor: default;
 }
 
+/* ---------- result ---------- */
 .result {
-  min-height: 28px;
   margin-top: 20px;
-  font-size: 18px;
-  font-weight: 600;
+  padding: 16px;
+  border-radius: 4px;
+  background: var(--surface-soft);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
   text-align: center;
+}
+
+.result:empty {
+  display: none;
 }
 
 .result.error {
   font-size: 14px;
-  font-weight: 400;
-  color: #dc2626;
+  font-weight: 500;
+  color: var(--danger);
+}
+
+@media (max-width: 360px) {
+  .hero h1 {
+    font-size: 29px;
+  }
 }
