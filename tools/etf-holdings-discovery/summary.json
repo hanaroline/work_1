@@ -1,0 +1,809 @@
+{
+ "crumb": true,
+ "at": "2026-09-29 05:37:46 UTC",
+ "rows": [
+  {
+   "tag": "nv_etf_list",
+   "url": "https://finance.naver.com/api/sise/etfItemList.nhn?etfType=0&targetColumn=market_sum&sortOrder=desc",
+   "status": 200,
+   "bytes": 262269,
+   "sec": 1.37,
+   "ctype": "text/plain;charset=EUC-KR"
+  },
+  {
+   "tag": "nv_etfAnalysis_069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/etfAnalysis",
+   "status": 200,
+   "bytes": 4869,
+   "sec": 0.81,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nv_integration_069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/integration",
+   "status": 200,
+   "bytes": 9444,
+   "sec": 0.53,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nv_basic_069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/basic",
+   "status": 200,
+   "bytes": 3551,
+   "sec": 0.54,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nv_etfComponent_069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/etfComponent",
+   "status": 404,
+   "bytes": 4209,
+   "sec": 0.54,
+   "ctype": null
+  },
+  {
+   "tag": "nv_dividend_069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/dividend",
+   "status": 404,
+   "bytes": 4209,
+   "sec": 0.54,
+   "ctype": null
+  },
+  {
+   "tag": "nv_dividendHist_069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/dividend/history",
+   "status": 404,
+   "bytes": 4209,
+   "sec": 0.41,
+   "ctype": null
+  },
+  {
+   "tag": "nv_etfDividend_069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/etfDividend",
+   "status": 404,
+   "bytes": 4209,
+   "sec": 0.42,
+   "ctype": null
+  },
+  {
+   "tag": "nv_finance_069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/finance/annual",
+   "status": 200,
+   "bytes": 95,
+   "sec": 0.53,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nv_wise_etf_069500",
+   "url": "https://navercomp.wisereport.co.kr/v2/ETF/index.aspx?cmp_cd=069500",
+   "status": 200,
+   "bytes": 72340,
+   "sec": 1.22,
+   "ctype": "text/html; charset=utf-8"
+  },
+  {
+   "tag": "nv_item_main_069500",
+   "url": "https://finance.naver.com/item/main.naver?code=069500",
+   "status": 200,
+   "bytes": 139721,
+   "sec": 1.66,
+   "ctype": "text/html; charset=utf-8"
+  },
+  {
+   "tag": "nv_item_coinfo_069500",
+   "url": "https://finance.naver.com/item/coinfo.naver?code=069500",
+   "status": 200,
+   "bytes": 150994,
+   "sec": 2.28,
+   "ctype": "text/html; charset=utf-8"
+  },
+  {
+   "tag": "nv_etfAnalysis_091160",
+   "url": "https://m.stock.naver.com/api/stock/091160/etfAnalysis",
+   "status": 200,
+   "bytes": 4971,
+   "sec": 0.41,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nv_integration_091160",
+   "url": "https://m.stock.naver.com/api/stock/091160/integration",
+   "status": 200,
+   "bytes": 9372,
+   "sec": 0.41,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nv_basic_091160",
+   "url": "https://m.stock.naver.com/api/stock/091160/basic",
+   "status": 200,
+   "bytes": 3556,
+   "sec": 0.39,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nv_etfComponent_091160",
+   "url": "https://m.stock.naver.com/api/stock/091160/etfComponent",
+   "status": 404,
+   "bytes": 4209,
+   "sec": 0.4,
+   "ctype": null
+  },
+  {
+   "tag": "nv_dividend_091160",
+   "url": "https://m.stock.naver.com/api/stock/091160/dividend",
+   "status": 404,
+   "bytes": 4209,
+   "sec": 0.4,
+   "ctype": null
+  },
+  {
+   "tag": "nv_dividendHist_091160",
+   "url": "https://m.stock.naver.com/api/stock/091160/dividend/history",
+   "status": 404,
+   "bytes": 4209,
+   "sec": 0.4,
+   "ctype": null
+  },
+  {
+   "tag": "nv_etfDividend_091160",
+   "url": "https://m.stock.naver.com/api/stock/091160/etfDividend",
+   "status": 404,
+   "bytes": 4209,
+   "sec": 0.41,
+   "ctype": null
+  },
+  {
+   "tag": "nv_finance_091160",
+   "url": "https://m.stock.naver.com/api/stock/091160/finance/annual",
+   "status": 200,
+   "bytes": 95,
+   "sec": 0.4,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nv_wise_etf_091160",
+   "url": "https://navercomp.wisereport.co.kr/v2/ETF/index.aspx?cmp_cd=091160",
+   "status": 200,
+   "bytes": 55780,
+   "sec": 1.24,
+   "ctype": "text/html; charset=utf-8"
+  },
+  {
+   "tag": "nv_item_main_091160",
+   "url": "https://finance.naver.com/item/main.naver?code=091160",
+   "status": 200,
+   "bytes": 139721,
+   "sec": 1.26,
+   "ctype": "text/html; charset=utf-8"
+  },
+  {
+   "tag": "nv_item_coinfo_091160",
+   "url": "https://finance.naver.com/item/coinfo.naver?code=091160",
+   "status": 200,
+   "bytes": 150994,
+   "sec": 2.53,
+   "ctype": "text/html; charset=utf-8"
+  },
+  {
+   "tag": "nv_etfAnalysis_360750",
+   "url": "https://m.stock.naver.com/api/stock/360750/etfAnalysis",
+   "status": 200,
+   "bytes": 4618,
+   "sec": 0.41,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nv_integration_360750",
+   "url": "https://m.stock.naver.com/api/stock/360750/integration",
+   "status": 200,
+   "bytes": 9437,
+   "sec": 0.42,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nv_basic_360750",
+   "url": "https://m.stock.naver.com/api/stock/360750/basic",
+   "status": 200,
+   "bytes": 3559,
+   "sec": 0.4,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nv_etfComponent_360750",
+   "url": "https://m.stock.naver.com/api/stock/360750/etfComponent",
+   "status": 404,
+   "bytes": 4209,
+   "sec": 0.4,
+   "ctype": null
+  },
+  {
+   "tag": "nv_dividend_360750",
+   "url": "https://m.stock.naver.com/api/stock/360750/dividend",
+   "status": 404,
+   "bytes": 4209,
+   "sec": 0.4,
+   "ctype": null
+  },
+  {
+   "tag": "nv_dividendHist_360750",
+   "url": "https://m.stock.naver.com/api/stock/360750/dividend/history",
+   "status": 404,
+   "bytes": 4209,
+   "sec": 0.41,
+   "ctype": null
+  },
+  {
+   "tag": "nv_etfDividend_360750",
+   "url": "https://m.stock.naver.com/api/stock/360750/etfDividend",
+   "status": 404,
+   "bytes": 4209,
+   "sec": 0.41,
+   "ctype": null
+  },
+  {
+   "tag": "nv_finance_360750",
+   "url": "https://m.stock.naver.com/api/stock/360750/finance/annual",
+   "status": 200,
+   "bytes": 95,
+   "sec": 0.4,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nv_wise_etf_360750",
+   "url": "https://navercomp.wisereport.co.kr/v2/ETF/index.aspx?cmp_cd=360750",
+   "status": 200,
+   "bytes": 102211,
+   "sec": 0.94,
+   "ctype": "text/html; charset=utf-8"
+  },
+  {
+   "tag": "nv_item_main_360750",
+   "url": "https://finance.naver.com/item/main.naver?code=360750",
+   "status": 200,
+   "bytes": 139721,
+   "sec": 1.52,
+   "ctype": "text/html; charset=utf-8"
+  },
+  {
+   "tag": "nv_item_coinfo_360750",
+   "url": "https://finance.naver.com/item/coinfo.naver?code=360750",
+   "status": 200,
+   "bytes": 150994,
+   "sec": 2.15,
+   "ctype": "text/html; charset=utf-8"
+  },
+  {
+   "tag": "nv_sisejson_069500",
+   "url": "https://api.finance.naver.com/siseJson.naver?symbol=069500&requestType=1&startTime=20150101&endTime=20260929&timeframe=day",
+   "status": 200,
+   "bytes": 175316,
+   "sec": 1.26,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "nv_wise_dps_069500",
+   "url": "https://navercomp.wisereport.co.kr/v2/ETF/ETFdps.aspx?cmp_cd=069500",
+   "status": 200,
+   "bytes": 1154,
+   "sec": 1.6,
+   "ctype": "text/html; charset=utf-8"
+  },
+  {
+   "tag": "nvw_basic_SPY",
+   "url": "https://api.stock.naver.com/stock/SPY/basic",
+   "status": 200,
+   "bytes": 6329,
+   "sec": 0.8,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nvw_integration_SPY",
+   "url": "https://api.stock.naver.com/stock/SPY/integration",
+   "status": 200,
+   "bytes": 602,
+   "sec": 0.41,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nvw_etf_SPY",
+   "url": "https://api.stock.naver.com/etf/SPY/basic",
+   "status": 200,
+   "bytes": 6759,
+   "sec": 0.42,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nvw_etfAnalysis_SPY",
+   "url": "https://api.stock.naver.com/stock/SPY/etfAnalysis",
+   "status": 404,
+   "bytes": 142,
+   "sec": 0.61,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_basic_SOXX",
+   "url": "https://api.stock.naver.com/stock/SOXX/basic",
+   "status": 409,
+   "bytes": 60,
+   "sec": 0.54,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_integration_SOXX",
+   "url": "https://api.stock.naver.com/stock/SOXX/integration",
+   "status": 409,
+   "bytes": 39,
+   "sec": 0.53,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_etf_SOXX",
+   "url": "https://api.stock.naver.com/etf/SOXX/basic",
+   "status": 409,
+   "bytes": 60,
+   "sec": 0.54,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_etfAnalysis_SOXX",
+   "url": "https://api.stock.naver.com/stock/SOXX/etfAnalysis",
+   "status": 404,
+   "bytes": 143,
+   "sec": 0.48,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_basic_QQQ",
+   "url": "https://api.stock.naver.com/stock/QQQ/basic",
+   "status": 409,
+   "bytes": 59,
+   "sec": 0.53,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_integration_QQQ",
+   "url": "https://api.stock.naver.com/stock/QQQ/integration",
+   "status": 409,
+   "bytes": 39,
+   "sec": 0.41,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_etf_QQQ",
+   "url": "https://api.stock.naver.com/etf/QQQ/basic",
+   "status": 409,
+   "bytes": 59,
+   "sec": 0.4,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_etfAnalysis_QQQ",
+   "url": "https://api.stock.naver.com/stock/QQQ/etfAnalysis",
+   "status": 404,
+   "bytes": 142,
+   "sec": 0.61,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_basic_VTI",
+   "url": "https://api.stock.naver.com/stock/VTI/basic",
+   "status": 200,
+   "bytes": 6339,
+   "sec": 0.4,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nvw_integration_VTI",
+   "url": "https://api.stock.naver.com/stock/VTI/integration",
+   "status": 200,
+   "bytes": 298,
+   "sec": 0.54,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nvw_etf_VTI",
+   "url": "https://api.stock.naver.com/etf/VTI/basic",
+   "status": 200,
+   "bytes": 6773,
+   "sec": 0.55,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nvw_etfAnalysis_VTI",
+   "url": "https://api.stock.naver.com/stock/VTI/etfAnalysis",
+   "status": 404,
+   "bytes": 142,
+   "sec": 0.48,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_basic_2800.HK",
+   "url": "https://api.stock.naver.com/stock/2800.HK/basic",
+   "status": 200,
+   "bytes": 6325,
+   "sec": 0.4,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nvw_integration_2800.HK",
+   "url": "https://api.stock.naver.com/stock/2800.HK/integration",
+   "status": 200,
+   "bytes": 26715,
+   "sec": 0.74,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nvw_etf_2800.HK",
+   "url": "https://api.stock.naver.com/etf/2800.HK/basic",
+   "status": 200,
+   "bytes": 4791,
+   "sec": 0.4,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nvw_etfAnalysis_2800.HK",
+   "url": "https://api.stock.naver.com/stock/2800.HK/etfAnalysis",
+   "status": 404,
+   "bytes": 146,
+   "sec": 0.49,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_basic_1321.T",
+   "url": "https://api.stock.naver.com/stock/1321.T/basic",
+   "status": 200,
+   "bytes": 6128,
+   "sec": 0.41,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nvw_integration_1321.T",
+   "url": "https://api.stock.naver.com/stock/1321.T/integration",
+   "status": 200,
+   "bytes": 1590,
+   "sec": 0.41,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nvw_etf_1321.T",
+   "url": "https://api.stock.naver.com/etf/1321.T/basic",
+   "status": 200,
+   "bytes": 4741,
+   "sec": 0.4,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nvw_etfAnalysis_1321.T",
+   "url": "https://api.stock.naver.com/stock/1321.T/etfAnalysis",
+   "status": 404,
+   "bytes": 145,
+   "sec": 0.47,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_search_SPY",
+   "url": "https://m.stock.naver.com/front-api/search/autoComplete?query=SPY&target=stock,index,marketindicator",
+   "status": 200,
+   "bytes": 2894,
+   "sec": 0.43,
+   "ctype": "application/json; charset=utf-8"
+  },
+  {
+   "tag": "nvw_basic_SPY.K",
+   "url": "https://api.stock.naver.com/stock/SPY.K/basic",
+   "status": 409,
+   "bytes": 61,
+   "sec": 0.53,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_integ_SPY.K",
+   "url": "https://api.stock.naver.com/stock/SPY.K/integration",
+   "status": 409,
+   "bytes": 39,
+   "sec": 0.41,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_etf_SPY.K",
+   "url": "https://api.stock.naver.com/etf/SPY.K/basic",
+   "status": 409,
+   "bytes": 61,
+   "sec": 0.41,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_integ_SOXX.O",
+   "url": "https://api.stock.naver.com/stock/SOXX.O/integration",
+   "status": 200,
+   "bytes": 1455,
+   "sec": 0.41,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nvw_integ_2800.HK",
+   "url": "https://api.stock.naver.com/stock/2800.HK/integration",
+   "status": 200,
+   "bytes": 26715,
+   "sec": 0.57,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nvw_integ_1321.T",
+   "url": "https://api.stock.naver.com/stock/1321.T/integration",
+   "status": 200,
+   "bytes": 1590,
+   "sec": 0.41,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "nvw_integ_510300.SS",
+   "url": "https://api.stock.naver.com/stock/510300.SS/integration",
+   "status": 200,
+   "bytes": 298,
+   "sec": 0.42,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "y_qs_SPY",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/SPY?modules=topHoldings,fundProfile,defaultKeyStatistics,summaryDetail,price,quoteType,fundPerformance,assetProfile&formatted=false&crumb=b08Ci2MSape",
+   "status": 200,
+   "bytes": 9688,
+   "sec": 0.07,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_qs_VTI",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/VTI?modules=topHoldings,fundProfile,defaultKeyStatistics,summaryDetail,price,quoteType,fundPerformance,assetProfile&formatted=false&crumb=b08Ci2MSape",
+   "status": 200,
+   "bytes": 9652,
+   "sec": 0.07,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_qs_SOXX",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/SOXX?modules=topHoldings,fundProfile,defaultKeyStatistics,summaryDetail,price,quoteType,fundPerformance,assetProfile&formatted=false&crumb=b08Ci2MSape",
+   "status": 200,
+   "bytes": 9389,
+   "sec": 0.07,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_qs_TQQQ",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/TQQQ?modules=topHoldings,fundProfile,defaultKeyStatistics,summaryDetail,price,quoteType,fundPerformance,assetProfile&formatted=false&crumb=b08Ci2MSape",
+   "status": 200,
+   "bytes": 6797,
+   "sec": 0.07,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_qs_2800.HK",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/2800.HK?modules=topHoldings,fundProfile,defaultKeyStatistics,summaryDetail,price,quoteType,fundPerformance,assetProfile&formatted=false&crumb=b08Ci2MSape",
+   "status": 200,
+   "bytes": 6875,
+   "sec": 0.06,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_qs_3033.HK",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/3033.HK?modules=topHoldings,fundProfile,defaultKeyStatistics,summaryDetail,price,quoteType,fundPerformance,assetProfile&formatted=false&crumb=b08Ci2MSape",
+   "status": 200,
+   "bytes": 6269,
+   "sec": 0.06,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_qs_1321.T",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/1321.T?modules=topHoldings,fundProfile,defaultKeyStatistics,summaryDetail,price,quoteType,fundPerformance,assetProfile&formatted=false&crumb=b08Ci2MSape",
+   "status": 200,
+   "bytes": 7045,
+   "sec": 0.05,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_qs_1306.T",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/1306.T?modules=topHoldings,fundProfile,defaultKeyStatistics,summaryDetail,price,quoteType,fundPerformance,assetProfile&formatted=false&crumb=b08Ci2MSape",
+   "status": 200,
+   "bytes": 6963,
+   "sec": 0.06,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_qs_510300.SS",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/510300.SS?modules=topHoldings,fundProfile,defaultKeyStatistics,summaryDetail,price,quoteType,fundPerformance,assetProfile&formatted=false&crumb=b08Ci2MSape",
+   "status": 200,
+   "bytes": 2185,
+   "sec": 0.05,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_qs_159915.SZ",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/159915.SZ?modules=topHoldings,fundProfile,defaultKeyStatistics,summaryDetail,price,quoteType,fundPerformance,assetProfile&formatted=false&crumb=b08Ci2MSape",
+   "status": 200,
+   "bytes": 2147,
+   "sec": 0.06,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_qs_069500.KS",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/069500.KS?modules=topHoldings,fundProfile,defaultKeyStatistics,summaryDetail,price,quoteType,fundPerformance,assetProfile&formatted=false&crumb=b08Ci2MSape",
+   "status": 200,
+   "bytes": 2074,
+   "sec": 0.06,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_chart_SPY",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?range=10y&interval=1d&events=div,split&includeAdjustedClose=true",
+   "status": 200,
+   "bytes": 275761,
+   "sec": 0.18,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_chart_2800.HK",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/2800.HK?range=10y&interval=1d&events=div,split&includeAdjustedClose=true",
+   "status": 200,
+   "bytes": 268618,
+   "sec": 0.12,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_chart_1321.T",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/1321.T?range=10y&interval=1d&events=div,split&includeAdjustedClose=true",
+   "status": 200,
+   "bytes": 160632,
+   "sec": 0.09,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_chart_510300.SS",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/510300.SS?range=10y&interval=1d&events=div,split&includeAdjustedClose=true",
+   "status": 200,
+   "bytes": 273260,
+   "sec": 0.12,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_chart_069500.KS",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/069500.KS?range=10y&interval=1d&events=div,split&includeAdjustedClose=true",
+   "status": 200,
+   "bytes": 163446,
+   "sec": 0.13,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "y_quote_multi",
+   "url": "https://query2.finance.yahoo.com/v7/finance/quote?symbols=SPY,VTI,2800.HK,1321.T,510300.SS,069500.KS&crumb=b08Ci2MSape",
+   "status": 200,
+   "bytes": 12321,
+   "sec": 0.16,
+   "ctype": "application/json;charset=utf-8"
+  },
+  {
+   "tag": "nasdaq_etf_list",
+   "url": "https://api.nasdaq.com/api/screener/etf?download=true",
+   "status": 200,
+   "bytes": 1155314,
+   "sec": 1.37,
+   "ctype": "application/json; charset=utf-8"
+  },
+  {
+   "tag": "hkex_list",
+   "url": "https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx",
+   "status": 200,
+   "bytes": 1368150,
+   "sec": 0.26,
+   "ctype": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  },
+  {
+   "tag": "jpx_etf_list",
+   "url": "https://www.jpx.co.jp/english/equities/products/etfs/issues/01.html",
+   "status": 200,
+   "bytes": 262710,
+   "sec": 0.45,
+   "ctype": "text/html"
+  },
+  {
+   "tag": "em_cn_etf",
+   "url": "https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20&po=1&np=1&fltt=2&invt=2&fid=f20&fs=b:MK0021,b:MK0022,b:MK0023,b:MK0024&fields=f12,f13,f14,f2,f3,f20,f21",
+   "status": 502,
+   "bytes": 559,
+   "sec": 1.05,
+   "ctype": null
+  },
+  {
+   "tag": "sse_etf_list",
+   "url": "https://query.sse.com.cn/commonQuery.do?isPagination=true&pageHelp.pageSize=25&pageHelp.pageNo=1&sqlId=COMMON_SSE_ZQPZ_ETFLB_L_NEW",
+   "status": 200,
+   "bytes": 130,
+   "sec": 1.59,
+   "ctype": "application/json;charset=UTF-8"
+  },
+  {
+   "tag": "szse_etf_list",
+   "url": "https://www.szse.cn/api/report/ShowReport/data?SHOWTYPE=JSON&CATALOGID=1945&PAGENO=1",
+   "status": null,
+   "bytes": 52,
+   "sec": 3.09,
+   "ctype": null
+  },
+  {
+   "tag": "em_cn_etf2",
+   "url": "https://88.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20&po=1&np=1&fltt=2&invt=2&fid=f20&fs=b:MK0021,b:MK0022,b:MK0023,b:MK0024&fields=f12,f13,f14,f2,f20",
+   "status": null,
+   "bytes": 45,
+   "sec": 1.15,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_etf_2800_holdings",
+   "url": "https://api.stock.naver.com/etf/2800.HK/holdings",
+   "status": 404,
+   "bytes": 141,
+   "sec": 0.47,
+   "ctype": null
+  },
+  {
+   "tag": "nvw_etf_VTI_holdings",
+   "url": "https://api.stock.naver.com/etf/VTI/holdings",
+   "status": 404,
+   "bytes": 137,
+   "sec": 0.48,
+   "ctype": null
+  },
+  {
+   "tag": "sa_spy_holdings",
+   "url": "https://stockanalysis.com/etf/spy/holdings/",
+   "status": 200,
+   "bytes": 86877,
+   "sec": 0.14,
+   "ctype": "text/html"
+  },
+  {
+   "tag": "sa_etf_list",
+   "url": "https://stockanalysis.com/api/screener/e/f?m=aum&s=desc&c=no,s,n,aum&i=etf",
+   "status": 404,
+   "bytes": 14,
+   "sec": 0.03,
+   "ctype": null
+  },
+  {
+   "tag": "y_screener_us",
+   "status": 200,
+   "bytes": 11368
+  },
+  {
+   "tag": "y_screener_hk",
+   "status": 200,
+   "bytes": 9020
+  },
+  {
+   "tag": "y_screener_jp",
+   "status": 200,
+   "bytes": 10018
+  },
+  {
+   "tag": "y_screener_cn",
+   "status": 200,
+   "bytes": 100
+  },
+  {
+   "tag": "y_screener_kr",
+   "status": 200,
+   "bytes": 8777
+  },
+  {
+   "tag": "y_screener_SHH",
+   "status": 200,
+   "bytes": 100
+  },
+  {
+   "tag": "y_screener_SHZ",
+   "status": 200,
+   "bytes": 100
+  }
+ ]
+}
