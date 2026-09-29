@@ -2,11 +2,11 @@
 /**
  * 퇴직급여 계좌 선택 · 인출 설계 — 자립형 단일 HTML 빌드
  *
- *   node scripts/build-retirement-simulator.js            배포본
- *   node scripts/build-retirement-simulator.js --근거     근거까지 담은 내부용
+ *   node scripts/build-retire-payout.js            배포본
+ *   node scripts/build-retire-payout.js --근거     근거까지 담은 내부용
  *
- * tools/retirement-simulator/{app.jsx, styles.css, shell.html} 를
- * React·Tailwind 와 함께 인라인하여 retirement-simulator.html 하나로 만든다.
+ * tools/retire-payout/{app.jsx, styles.css, shell.html} 를
+ * React·Tailwind 와 함께 인라인하여 retire-payout.html 하나로 만든다.
  * 지점 PC 에서 CDN 없이 열리도록 외부 의존을 전부 제거한다.
  */
 const fs = require('fs');
@@ -14,13 +14,13 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const SRC = path.join(ROOT, 'tools', 'retirement-simulator');
+const SRC = path.join(ROOT, 'tools', 'retire-payout');
 
 /*
  * 판이 둘이다.
  *
- *   배포본  retirement-simulator.html          근거 없음 — 지점으로 돌아다니는 파일
- *   내부용  retirement-simulator-근거포함.html  근거 18건 포함 — 손에 두고 보는 파일
+ *   배포본  retire-payout.html          근거 없음 — 지점으로 돌아다니는 파일
+ *   내부용  retire-payout-internal.html  근거 18건 포함 — 손에 두고 보는 파일
  *
  * 파일 하나가 사람 손을 타고 도는 형태라, 사내 연금 업무 Q&A 원문 요약이 그대로 실려
  * 나가면 파일을 받은 누구나 읽는다. 서버가 없어 화면에서만 가리는 잠금은 편집기로 여는
@@ -32,8 +32,8 @@ const SRC = path.join(ROOT, 'tools', 'retirement-simulator');
  */
 const WITH_SOURCES = process.argv.slice(2).some((a) => a === '--근거' || a === '--sources');
 const OUT = path.join(ROOT, WITH_SOURCES
-  ? 'retirement-simulator-근거포함.html'
-  : 'retirement-simulator.html');
+  ? 'retire-payout-internal.html'
+  : 'retire-payout.html');
 
 const read = (p) => fs.readFileSync(p, 'utf8');
 
@@ -70,7 +70,7 @@ const FONT_LICENSE_NOTICE = [
   ' *     with Reserved Font Name Spoqa Han Sans Neo.',
   ' *   Inter - Copyright (c) 2016 The Inter Project Authors (https://github.com/rsms/inter),',
   ' *     with Reserved Font Name Inter.',
-  ' *   전문: https://scripts.sil.org/OFL · 사본은 tools/retirement-simulator/fonts/ 에 있음',
+  ' *   전문: https://scripts.sil.org/OFL · 사본은 tools/retire-payout/fonts/ 에 있음',
   ' */'
 ].join('\n');
 

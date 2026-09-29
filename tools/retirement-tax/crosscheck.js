@@ -14,7 +14,7 @@ const path = require('path');
 const { chromium } = require('playwright');
 const rules = require('./rules.js');
 
-const APP = 'file://' + path.resolve(__dirname, '..', '..', 'retirement-simulator.html');
+const APP = 'file://' + path.resolve(__dirname, '..', '..', 'retire-payout.html');
 
 /**
  * 입사일.

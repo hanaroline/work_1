@@ -18,7 +18,7 @@
 const path = require('path');
 const { canDeposit } = require('./rules');
 
-const HELPERS = path.resolve(__dirname, '..', 'retirement-simulator', 'tests', 'helpers');
+const HELPERS = path.resolve(__dirname, '..', 'retire-payout', 'tests', 'helpers');
 const { openApp, fillCase, field, button, setAccounts } = require(HELPERS);
 
 const THIS_YEAR = new Date().getFullYear();
