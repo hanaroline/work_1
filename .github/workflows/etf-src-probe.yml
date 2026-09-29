@@ -1,0 +1,55 @@
+name: ETF 편입종목 원천 탐침 (일회성)
+
+# 클로드 세션 컨테이너에서는 네이버·야후·KRX 가 전부 CONNECT 403 이다.
+# 그래서 어느 원천이 열리고 무엇을 주는지는 러너에서 찔러 본다.
+# 아무것도 만들지 않고 아무것도 덮어쓰지 않는다 — 결과를
+# tools/discovery/etf_src_probe.{json,md} 에 적기만 한다.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/elegant-mendel-**'
+    paths:
+      - 'scripts/probe_etf_holdings_src.mjs'
+      - '.github/workflows/etf-src-probe.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: etf-src-probe-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 원천 찔러 보기
+        run: node scripts/probe_etf_holdings_src.mjs
+
+      - name: 결과 커밋
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/discovery/etf_src_probe.json tools/discovery/etf_src_probe.md || true
+          if git diff --cached --quiet; then
+            echo "남길 결과가 없습니다"
+            exit 0
+          fi
+          git commit -m "chore(etf): 원천 탐침 결과"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+          done
+          exit 1
