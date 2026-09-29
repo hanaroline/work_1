@@ -4,9 +4,10 @@
  * 지금까지 검사는 모두 1500px 데스크탑 폭에서만 돌았다. 지점 PC 가 주 사용처지만
  * 외부에서 휴대폰으로 여는 일이 실제로 있었고, 그때 확인된 것이 하나도 없었다.
  *
- * 여기서 보는 것은 두 가지다.
+ * 여기서 보는 것은 세 가지다.
  *   1. 가로 스크롤이 생기지 않는가 - 휴대폰에서 가장 흔한 깨짐이다.
- *   2. 스크립트가 돌지 않는 뷰어에서 무엇을 해야 하는지 알려 주는가.
+ *   2. 글자가 줄바꿈으로 쪼개지지 않는가 - 넘치지 않아도 읽을 수 없으면 깨진 것이다.
+ *   3. 스크립트가 돌지 않는 뷰어에서 무엇을 해야 하는지 알려 주는가.
  */
 const path = require('path');
 const { chromium } = require('playwright');
@@ -19,6 +20,24 @@ const overflow = (page) => page.evaluate(() => ({
   doc: document.documentElement.scrollWidth,
   win: window.innerWidth
 }));
+
+/**
+ * 글자가 몇 줄로 그려졌는가.
+ *
+ * 요소 높이를 줄높이로 나누는 방법은 여백이 섞여 어림값밖에 못 준다. Range 로
+ * 글자 자체를 감싸면 브라우저가 실제로 그린 줄상자 수가 그대로 나오므로, 단추
+ * 안에서 '인출 스케/줄' 로 끊긴 것까지 정확히 잡힌다.
+ */
+const lineCounts = (page, sel) => page.evaluate((s) => {
+  const out = [];
+  document.querySelectorAll(s).forEach((el) => {
+    if (!el.offsetParent) return;
+    const r = document.createRange();
+    r.selectNodeContents(el);
+    out.push({ text: el.textContent.trim().slice(0, 30), lines: r.getClientRects().length });
+  });
+  return out;
+}, sel);
 
 module.exports = async function run(t) {
   const browser = await chromium.launch();
@@ -50,12 +69,37 @@ module.exports = async function run(t) {
     await page.waitForTimeout(600);
     t.is((await L('퇴직급여').inputValue()).replace(/,/g, ''), '300000000', '휴대폰 폭에서도 금액 입력이 된다');
 
-    // ── 어느 탭에서도 가로로 넘치지 않는다 ────────────────────────
-    for (const tab of ['판정', '계좌 비교', '인출 스케줄', '판단표']) {
+    /*
+     * ── 탭 이름이 한 줄로 읽힌다 ─────────────────────────────────
+     *
+     * 넘치지만 않으면 된 것이 아니다. 좁은 폭에서 탭이 '인출 스케/줄' 로 끊겨
+     * 있었다 - 가로 스크롤은 없었으므로 위의 검사로는 잡히지 않았다.
+     */
+    const TABS = ['판정', '계좌 비교', '인출 스케줄', '판단표'];
+    const tabSel = TABS.map((n) => 'button[aria-label="' + n + '"]').join(',');
+    const tabLines = await lineCounts(page, tabSel);
+    t.is(tabLines.length, 4, '탭 단추 넷을 찾았다');
+    for (const x of tabLines) {
+      t.is(x.lines, 1, '탭 이름이 한 줄이다: ' + x.text);
+    }
+
+    // ── 어느 탭에서도 가로로 넘치지 않고 제목이 쪼개지지 않는다 ───
+    for (const tab of TABS) {
       await B(tab).click();
       await page.waitForTimeout(400);
       const o = await overflow(page);
       t.ok(o.doc <= o.win + 1, tab + ' 탭에서 가로 스크롤 없음 (' + o.doc + '/' + o.win + 'px)');
+
+      /*
+       * 구역 제목은 두 줄까지 봐준다.
+       *
+       * '인출 시뮬레이션 - IRP 1 · 2013년' 처럼 계좌 이름이 붙으면 길어져 접히는
+       * 것이 정상이다. 막으려는 것은 오른쪽 조작부에 밀려 한 글자씩 세로로
+       * 쪼개지던 것이라(412px 에서 실제로 그랬다) 상한만 둔다.
+       */
+      for (const h of await lineCounts(page, 'h2')) {
+        t.ok(h.lines <= 2, tab + ' 탭 제목이 두 줄 이내: ' + h.text + ' (' + h.lines + '줄)');
+      }
     }
 
     // 계좌를 여러 개 넣어도 넘치지 않는지 (카드가 가장 넓다)
