@@ -71,9 +71,14 @@ def selftest():
         (good if got == want else bad)('열쇠 %s → %s' % (s, got))
     for n, want in [('KODEX 레버리지', 1), ('KODEX 200선물인버스2X', -1), ('iShares Short Treasury Bond ETF', 0),
                     ('Vanguard Short-Term Bond ETF', 0), ('ProShares UltraShort QQQ', -1), ('SPDR S&P 500 ETF', 0),
-                    ('Direxion Daily Semiconductor Bull 3X Shares', 1), ('Direxion Daily Semiconductor Bear 3X Shares', -1)]:
+                    ('Direxion Daily Semiconductor Bull 3X Shares', 1), ('Direxion Daily Semiconductor Bear 3X Shares', -1),
+                    ('AB Ultra Short Income ETF', 0), ('First Trust Long/Short Equity ETF', 0),
+                    ('KODEX 코스닥150롱코스피200숏선물', 0), ('EA Bridgeway Ultra-Small Company Market ETF', 0),
+                    ('JPMorgan Ultra-Short Municipal Income ETF', 0), ('ProShares Ultra Bitcoin ETF', 1)]:
         got = F.leverage_flag(n)[0]
         (good if got == want else bad)('레버리지 판정 %s → %s' % (n, got))
+    (good if F.leverage_flag('MFS Active Short Muni Bond ETF', 'Muni National Short')[0] == 0 else bad)(
+        '야후 분류가 채권이면 이름의 Short 로 인버스라 하지 않음')
     # 수익률 엔진 — 하루 0.03% 씩 오르는 평일 계열
     ser, d, v = [], date(2015, 1, 1), 100.0
     while d <= date(2026, 9, 28):
@@ -90,6 +95,11 @@ def selftest():
     gap = [x for x in ser if not ('2023-06-01' <= x[0] <= '2023-10-15')]
     g, _ = F.returns_from_series(gap)
     (good if g['3y'] is None else bad)('엔진: 기준일 앞 자료가 빠져 있으면 비움')
+    split = [(d_, v_ if d_ < '2026-03-02' else v_ / 10) for d_, v_ in ser]
+    gd = []
+    sp, _ = F.returns_from_series(split, guard=gd)
+    (good if sp['1y'] is None and sp['1m'] is not None and gd else bad)(
+        '엔진: 분할이 안 반영된 날(하루 -90%%)을 걸치는 기간은 비움 — 1년 %s, 1개월 %s' % (sp['1y'], sp['1m']))
     (good if F.parse_korean_amount('950억') == 95e9 and F.parse_korean_amount('-') is None else bad)('금액 읽기')
     (good if T._selftest() == 0 else bad)('테마 규칙 자체 시험')
 
@@ -118,7 +128,7 @@ def check_page():
         for i, w in e['h']:
             if not 0 <= i < len(H):
                 probs.append('%s 없는 보유 종목 번호' % e['k'])
-            if w is not None and not (-5 <= w <= 100.5):
+            if w is not None and not (-300 <= w <= 300):   # 헤지·레버리지 ETF 는 100 을 넘는다(HEFA 100.7%, GLL 205%)
                 probs.append('%s 비중 %s' % (e['k'], w))
         if e['hs'] == 'ok' and not any(w is not None for _, w in e['h']):
             probs.append('%s ok 인데 비중 없음' % e['k'])

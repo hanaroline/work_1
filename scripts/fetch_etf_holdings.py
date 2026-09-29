@@ -314,7 +314,22 @@ def _minus_months(d, n):
     return date(y, m, min(d.day, calendar.monthrange(y, m)[1]))
 
 
-def returns_from_series(series, gap_days=10):
+JUMP_UP, JUMP_DOWN = 2.5, 0.4     # 하루에 +150% 넘게, 또는 -60% 넘게
+
+
+def find_jumps(series):
+    """하루 사이 값이 2.5배 넘게 뛰거나 0.4배 밑으로 떨어진 날. ETF 가 하루에 그렇게
+    움직이는 일은 사실상 없고, 야후에서는 **분할이 반영 안 된 종가**가 이렇게 보인다
+    (1545.T 1년 −99%, 홍콩 몇 종목 하루 +685%)."""
+    out = []
+    for i in range(1, len(series)):
+        a, b = series[i - 1][1], series[i][1]
+        if a and b and (b / a > JUMP_UP or b / a < JUMP_DOWN):
+            out.append((series[i][0], round((b / a - 1) * 100, 1)))
+    return out
+
+
+def returns_from_series(series, gap_days=10, guard=None):
     """[(YYYY-MM-DD, 값)] → 기간별 수익률(%). 네이버와 같은 약속.
 
     기준일 = 마지막 날. 기간 시작 = 목표일 당일 또는 그 앞의 가장 가까운 거래일.
@@ -347,10 +362,23 @@ def returns_from_series(series, gap_days=10):
                '6m': _minus_months(end, 6), 'ytd': date(end.year - 1, 12, 31),
                '1y': _minus_months(end, 12), '3y': _minus_months(end, 36), '5y': _minus_months(end, 60),
                '10y': _minus_months(end, 120)}
-    out['1d'] = round((ve / vals[-2] - 1) * 100, 2)
+    jumps = find_jumps(series) if guard is not None else []
+
+    def spoiled(start_day):
+        """기간 (시작, 끝] 안에 튄 날이 있으면 그 기간은 믿지 않는다 — 비운다."""
+        hit = [j for j in jumps if j[0] > start_day]
+        if hit and guard is not None:
+            guard.append({'from': start_day, 'jump': hit[0]})
+        return bool(hit)
+
+    if not spoiled(series[-2][0]):
+        out['1d'] = round((ve / vals[-2] - 1) * 100, 2)
     for p, t in targets.items():
         b = base(t)
         if b is None or b <= 0:
+            continue
+        bday = series[max(i for i in range(len(days)) if days[i] <= t)][0]
+        if spoiled(bday):
             continue
         g = ve / b
         if p in ANNUALIZED:
@@ -362,22 +390,34 @@ def returns_from_series(series, gap_days=10):
 
 
 LEV_PATTERNS = [
-    (1, re.compile(r'레버리지|\b[2-5] ?[xX]\b|[2-5]배|ultra ?pro(?! ?short)|\bultra\b(?![- ]?short)|leveraged'
-                   r'|\bbull\b|レバレッジ|daily .*bull|2倍|3倍', re.I)),
-    (-1, re.compile(r'인버스|곱버스|inverse|\bbear\b|ultra ?short|ultrapro ?short|インバース'
-                    r'|\bshort\b(?![- ]?(term|duration|maturity|dated|treasury|bond|high|corporate|income|vol))'
-                    r'|-[1-5] ?[xX]\b|反向', re.I)),
+    (1, re.compile(r'레버리지|\b[2-5] ?[xX]\b|[2-5]배|ultra ?pro(?! ?short)|\bultra\b(?![- ]?(short|small))|leveraged'
+                   r'|\bbull\b(?! hedge)|レバレッジ|daily .*bull|2倍|3倍', re.I)),
+    (-1, re.compile(r'인버스|곱버스|inverse|\bbear\b|ultrapro ?short'
+                    r'|ultra ?short(?![- ]?(term|duration|bond|income|muni|fixed|dur|treasury))'
+                    r'|\bshort\b(?![- ]?(term|duration|maturity|dated|treasury|bond|high|corporate|income|vol|muni))'
+                    r'|-[1-5] ?[xX]\b|インバース|反向', re.I)),
 ]
+# 걸려도 레버리지·인버스가 아닌 것 — 롱숏(시장 중립)·초단기채
+NOT_LEV = re.compile(r'long ?[/-] ?short|롱.{0,12}숏|market neutral|ultra[- ]?short[- ]?(term|duration|bond|income|muni|fixed)', re.I)
 
 
 def leverage_flag(name, category=None, naver_tab=None):
-    """(-1 인버스 | 1 레버리지 | 0, 까닭). 이름·분류가 주는 말만 본다."""
+    """(-1 인버스 | 1 레버리지 | 0, 까닭). 이름·분류가 주는 말만 본다.
+
+    야후 분류가 있고 그것이 'Trading--' 계열이 아니면(예: 'Ultrashort Bond',
+    'Long-Short Equity') 이름보다 분류를 믿는다 — 'Ultra Short Bond' 를 인버스로,
+    'Long/Short Equity' 를 인버스로 읽던 잘못을 여기서 막는다.
+    """
     cat = category or ''
     if cat.startswith('Trading--Inverse'):
         return -1, 'yahoo:' + cat
     if cat.startswith('Trading--Leveraged'):
         return 1, 'yahoo:' + cat
+    if cat and not cat.startswith('Trading'):
+        return 0, None
     nm = name or ''
+    if NOT_LEV.search(nm):
+        return 0, None
     for flag, rx in (LEV_PATTERNS[1], LEV_PATTERNS[0]):     # 인버스 먼저 — '인버스2X' 는 인버스
         m = rx.search(nm)
         if m:
@@ -594,7 +634,9 @@ def overseas_one(q, market, with_holdings=True):
         ser, meta = parse_yahoo_chart(yq('/v8/finance/chart/%s?period1=%d&period2=%d&interval=1d'
                                          '&events=div,split&includeAdjustedClose=true'
                                          % (urllib.parse.quote(sym), p1, int(time.time()) + 86400)))
-        rec['ret'], rec['ret_at'] = returns_from_series(ser)
+        guard = []
+        rec['ret'], rec['ret_at'] = returns_from_series(ser, guard=guard)
+        rec['jumps'] = find_jumps(ser)[:5] or None
         rec['n_bars'] = len(ser)
         if ser:
             rec['first_bar'] = ser[0][0]
