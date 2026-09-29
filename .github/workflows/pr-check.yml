@@ -185,6 +185,27 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           exit $code
 
+  etf-holdings:
+    name: ETF 속보기 — 검산과 오프라인 화면
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # 자료를 새로 받지 않는다(망이 필요하다). 커밋된 raw_*.json 으로 다시 구워
+      # 검산하고, 그 한 장을 **바깥 요청을 모두 끊은** 브라우저에서 연다.
+      - name: 커밋된 자료로 다시 굽고 검산한다
+        run: |
+          python3 scripts/build_etf_holdings.py
+          python3 scripts/check_etf_holdings.py
+      - name: 브라우저 준비
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: 인터넷 없이 열리고, 휴대폰 폭에서 안 넘치고, 인쇄가 한 화면만인가
+        run: node scripts/check_etf_holdings_page.mjs etf-holdings.html
+
   volatility:
     name: 변동성 — 모델 재검산과 화면
     runs-on: ubuntu-latest
