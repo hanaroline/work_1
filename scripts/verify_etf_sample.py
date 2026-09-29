@@ -31,8 +31,23 @@ OUT = os.path.join(ROOT, 'tools', 'etf-holdings-discovery', 'verify_sample.json'
 KST = timezone(timedelta(hours=9))
 
 
-def krx_pdf(isin, day):
-    url = 'http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd'
+def krx_warm():
+    for u in ('http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201030108',
+              'https://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201030108'):
+        try:
+            F._req(u, retry=1)
+        except Exception:                                   # noqa: BLE001
+            pass
+
+
+def fnguide(code):
+    t = F._req('https://comp.fnguide.com/SVO2/ASP/etf_snapshot.asp?pGB=1&gicode=A%s&MenuYn=Y' % code).decode('utf-8', 'replace')
+    i = t.find('구성종목')
+    return {'bytes': len(t), 'around': t[i - 200:i + 4000] if i >= 0 else t[:1500]}
+
+
+def krx_pdf(isin, day, https=False):
+    url = ('https' if https else 'http') + '://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd'
     body = urllib.parse.urlencode({'bld': 'dbms/MDC/STAT/standard/MDCSTAT05001', 'locale': 'ko_KR',
                                    'trdDd': day, 'isuCd': isin, 'share': '1', 'money': '1',
                                    'csvxls_isNo': 'false'}).encode()
@@ -71,20 +86,28 @@ def main():
 
     # ── 국내: 네이버 ↔ 거래소 PDF
     res['kr'] = []
-    for code, isin in (('069500', 'KR7069500007'), ('102110', 'KR7102110004')):
+    for code, isin in (('069500', 'KR7069500007'), ('102110', 'KR7102110004'), ('360750', 'KR7360750004')):
         row = {'code': code}
         try:
             nv = F.parse_naver_analysis(F.get_json('https://m.stock.naver.com/api/stock/%s/etfAnalysis' % code))
             row['naver'] = [(h['n'], h['w']) for h in nv['hold']]
         except Exception as e:                              # noqa: BLE001
             row['naver_err'] = str(e)
+        try:
+            row['fnguide'] = fnguide(code)
+        except Exception as e:                              # noqa: BLE001
+            row['fnguide_err'] = str(e)
+        krx_warm()
         for back in range(0, 6):
             day = (datetime.now(KST) - timedelta(days=back)).strftime('%Y%m%d')
             try:
                 rows, raw = krx_pdf(isin, day)
             except Exception as e:                          # noqa: BLE001
-                row['krx_err'] = str(e)
-                break
+                try:
+                    rows, raw = krx_pdf(isin, day, https=True)
+                except Exception as e2:                     # noqa: BLE001
+                    row['krx_err'] = '%s / https %s' % (e, e2)
+                    break
             if rows:
                 rows = sorted(rows, key=lambda r: -(F.num(r.get('COMPST_RTO')) or 0))
                 row['krx_day'] = day
@@ -120,14 +143,17 @@ def main():
     try:
         fp = ((F.yq('/v10/finance/quoteSummary/SPY?modules=fundPerformance&formatted=false')['quoteSummary']
                ['result'][0])['fundPerformance'])
-        tr = fp['trailingReturns']
-        as_of = datetime.fromtimestamp(tr['asOfDate'], timezone.utc).strftime('%Y-%m-%d')
+        tr = fp['trailingReturns']          # 월말 기준 — 날짜가 달라 비교용이 아니다
+        po = fp['performanceOverview']      # 기준일 기준(일간) — 이것과 맞댄다
+        spy['morningstar_month_end'] = tr
+        as_of = datetime.fromtimestamp(po['asOfDate'], timezone.utc).strftime('%Y-%m-%d')
         p1 = int((datetime.now(timezone.utc) - timedelta(days=366 * 10 + 30)).timestamp())
         ser, _ = F.parse_yahoo_chart(F.yq('/v8/finance/chart/SPY?period1=%d&period2=%d&interval=1d&events=div,split'
                                           '&includeAdjustedClose=true' % (p1, int(time.time()))))
         mine, at = F.returns_from_series([x for x in ser if x[0] <= as_of])
-        ms = {'1m': tr.get('oneMonth'), '3m': tr.get('threeMonth'), 'ytd': tr.get('ytd'), '1y': tr.get('oneYear'),
-              '3y': tr.get('threeYear'), '5y': tr.get('fiveYear'), '10y': tr.get('tenYear')}
+        ms = {'ytd': po.get('ytdReturnPct'), '1y': po.get('oneYearTotalReturn'),
+              '3y': po.get('threeYearTotalReturn'), '5y': po.get('fiveYrAvgReturnPct')}
+        spy['morningstar_as_of'] = datetime.fromtimestamp(po['asOfDate'], timezone.utc).strftime('%Y-%m-%d')
         spy['returns'] = {'as_of': as_of, 'engine_at': at,
                           'rows': {p: {'engine': mine[p], 'morningstar': None if v is None else round(v * 100, 2),
                                        'diff': None if v is None or mine[p] is None else round(mine[p] - v * 100, 2)}
