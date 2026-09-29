@@ -262,6 +262,13 @@ jobs:
           npm i -D playwright@1.56.1 --no-audit --no-fund
           npx playwright install --with-deps chromium
 
+      - name: 화면과 수집기가 같은 비율을 내는가
+        # 같은 규칙이 두 곳에 산다 — fetch_us100.reconcile_ratios(스냅숏을 만들 때)
+        # 와 us-top100.html 의 reconcileRatios(브라우저가 야후에 직접 붙을 때).
+        # 한 곳만 고치면 절반만 고친 것이고, 따로 두면 언젠가 갈라진다.
+        # 시험 자료를 한 곳에 두고 두 구현에 같은 것을 먹여 맞대어 본다.
+        run: node scripts/check_us100_ratios.mjs
+
       - name: 화면이 브라우저에서 깨지지 않는가
         # 재검산은 **수**가 맞는지를 본다. 자료가 다 맞아도 화면은 깨진다 —
         # 칸 이름을 바꾸면 화면이 undefined 를 찍고, 차트 라이브러리를 못 찾으면

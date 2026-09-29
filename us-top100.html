@@ -1790,6 +1790,49 @@ function sampleSummary(sym) {
 /* ============================================================
    6. quoteSummary → 화면 모델로 정규화
    ============================================================ */
+/* ── 비율 맞대기 ────────────────────────────────────────────────────
+   **scripts/fetch_us100.py 의 reconcile_ratios 와 같은 규칙이다.** 상수와
+   시험 자료(data/fixtures/ratio_cases.json)를 함께 쓰고, PR 점검의
+   check_us100_ratios.mjs 가 두 쪽이 같은 답을 내는지 맞대어 본다.
+
+   왜 화면에도 두는가 — 수집기가 저장하는 스냅숏만 고치면 절반만 고친 것이다.
+   이 화면은 브라우저에서 **야후에 직접 붙어** 같은 값을 다시 받아 덮어쓴다.
+   거기에도 같은 잣대가 없으면, 실시간으로 볼 때는 여전히 PBR 1,499배가 찍힌다.
+
+   까닭과 문턱을 정한 경위는 파이썬 쪽 주석에 적어 두었다. */
+var RATIO_TOL = 3.0, RATIO_MIN_BASE = 1.0, RATIO_MAX_PER = 200.0, REVENUE_TOL = 5.0;
+
+function reconcileRatios(q) {
+  var dropped = [];
+  [['pbr', 'roe', 'ROE'], ['psr', 'netMargin', '순이익률']].forEach(function (t) {
+    var key = t[0], got = q[key], base = q[t[1]], per = q.per;
+    if (got == null || base == null || per == null) return;
+    if (per <= 0 || base <= 0 || got <= 0) return;
+    if (base < RATIO_MIN_BASE || per > RATIO_MAX_PER) return;   /* 잴 수 없는 자리 */
+    var want = per * base / 100;
+    if (!want) return;
+    var ratio = got / want;
+    if (ratio > RATIO_TOL || ratio < 1 / RATIO_TOL) {
+      dropped.push(key + ' ' + got + ' → 버림 (' + (ratio > 1 ? ratio : 1 / ratio).toFixed(1) + ' 배 어긋남)');
+      q[key] = null;
+    }
+  });
+  var rev = q.revenue, eps = q.eps, sh = q.shares, nm = q.netMargin;
+  if (rev != null && eps != null && sh != null && nm != null
+      && rev > 0 && eps > 0 && sh > 0 && nm >= RATIO_MIN_BASE) {
+    var w = eps * sh / (nm / 100);
+    if (w) {
+      var r2 = rev / w;
+      if (r2 > REVENUE_TOL || r2 < 1 / REVENUE_TOL) {
+        dropped.push('revenue ' + rev + ' → 버림 (' + (r2 > 1 ? r2 : 1 / r2).toFixed(1) + ' 배 어긋남)');
+        q.revenue = null;
+      }
+    }
+  }
+  return dropped;
+}
+if (typeof window !== 'undefined') window.reconcileRatios = reconcileRatios;
+
 function normalizeSummary(m) {
   var o = { profile: {}, quote: {}, target: {}, calendar: {}, surprises: [], epsTrend: [], financials: {}, events: [] };
 
@@ -1846,6 +1889,13 @@ function normalizeSummary(m) {
   q.revenue = raw(fd.totalRevenue); q.revenueGrowth = pctize(raw(fd.revenueGrowth));
   q.earningsGrowth = pctize(raw(fd.earningsGrowth));
   q.debtToEquity = raw(fd.debtToEquity); q.cash = raw(fd.totalCash); q.fcf = raw(fd.freeCashflow);
+
+  /* **단위·통화가 섞여 온 값을 여기서 버린다.** ADR 은 bookValue·totalRevenue 가
+     현지 기준으로 오는데 price·cap 은 ADR 기준이라 그대로 섞인다 — ASML 이
+     PBR 1,499배, TSMC 가 매출 31.8배(=TWD/USD 환율)로 찍히고 있었다.
+     모르는 것으로 두는 편이 틀린 것을 찍는 것보다 낫다. */
+  q.ratioNotes = reconcileRatios(q);
+  if (!q.ratioNotes.length) q.ratioNotes = null;
 
   /* 목표주가 · 투자의견 */
   o.target = { low: raw(fd.targetLowPrice), mean: raw(fd.targetMeanPrice), high: raw(fd.targetHighPrice),
