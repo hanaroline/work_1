@@ -90,6 +90,13 @@ async function one(it) {
   rec.holdings = (a.etfTop10MajorConstituentAssets || []).map((h) => ({ code: (h.itemCode || '').trim() || null, name: (h.itemName || '').trim(), w: num(h.etfWeight) }));
   rec.naverRet = { date: a.returnPerformanceReferenceDate || null, price: Object.fromEntries((a.returnPerformanceList || []).map((x) => [x.periodTypeCode, num(x.value)])), nav: Object.fromEntries((a.navPerformanceList || []).map((x) => [x.periodTypeCode, num(x.value)])) };
 
+  // wisereport 요약 — 유형(예: "해외주식형, 시장대표")과 영문명. 없어도 된다(분류는 탭 코드로 떨어진다).
+  try {
+    const w = await get(`https://navercomp.wisereport.co.kr/v2/ETF/index.aspx?cmp_cd=${code}`);
+    const m = w.text.match(/var summary_data = (\{.*?\});/);
+    if (m) { const j = JSON.parse(m[1]); rec.wiseType = j.ETF_TYP_SVC_NM || null; rec.nameEn = j.CMP_ENG || null; }
+  } catch (e) { rec.wiseErr = String(e.message || e); }
+
   // 거래 상태
   const b = await getJson(`https://m.stock.naver.com/api/stock/${code}/basic`);
   rec.exch = b.stockExchangeName || null;
