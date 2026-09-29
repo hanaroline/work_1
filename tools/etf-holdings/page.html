@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>ETF 속보기</title>
+<!--
+  ETF 속보기 — ETF 가 실제로 무엇을 담고 있는지 보는 한 파일 화면.
+
+  이 파일은 scripts/build_etf_holdings.py 가 tools/etf-holdings/page.html(틀)에 자료를
+  심어 만든다. 틀을 고치고 다시 구울 것. 바깥 주소는 하나도 부르지 않는다 — 글꼴도
+  내려받지 않고 PC 에 깔린 것을 쓴다(사내망 PC 에서 두 번 눌러 열려야 한다).
+
+  모르는 값은 비운다. 빈 칸을 0 으로 세지 않는다 — 특히 겹침 셈에서.
+-->
+<style>
+:root{
+  --orange:#F58220; --orange-active:#CB6015; --orange-soft:#FAB072; --orange-tint:#FEF1E6;
+  --navy:#043B72; --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --canvas:#FFFFFF; --soft:#ECEFF4; --subtle:#F7F8FA; --hair:#CDCECB; --hair-soft:#E5E4E1;
+  --hl:#D7D7D7; --up:#C62828; --down:#0B5FB0; --warn:#8A6100;
+  --font-kr:'Spoqa Han Sans Neo','Noto Sans KR',sans-serif;
+  --font-en:'Aptos','Inter','Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--canvas);color:var(--body);font-family:var(--font-kr);font-size:16px;line-height:1.6;
+  font-variant-numeric:tabular-nums;word-break:keep-all;overflow-wrap:anywhere}
+html[lang="en"] body{font-family:var(--font-en);word-break:normal}
+button,input,select{font:inherit;color:inherit}
+.page{max-width:1200px;margin:0 auto;padding:0 24px}
+@media (max-width:768px){.page{padding:0 16px}}
+
+/* 머리 */
+.top{border-bottom:1px solid var(--hair-soft)}
+.top .page{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-top:20px;padding-bottom:16px}
+.eyebrow{margin:0;font-size:13px;color:var(--muted);letter-spacing:.2px}
+h1{margin:4px 0 4px;font-size:30px;line-height:1.2;font-weight:700;color:var(--ink);letter-spacing:-.4px}
+.sub{margin:0;font-size:14px;color:var(--muted)}
+@media (max-width:768px){h1{font-size:24px}}
+.lang-toggle{display:inline-flex;flex:none;border:1px solid var(--hair);border-radius:2px;overflow:hidden;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.lang-toggle button{font-family:var(--font-en);font-size:14px;font-weight:500;letter-spacing:.5px;padding:8px 15px;border:0;background:#fff;color:var(--muted);cursor:pointer}
+.lang-toggle button+button{border-left:1px solid var(--hair)}
+.lang-toggle button[aria-checked="true"]{background:var(--orange);color:#fff}
+.lang-toggle button:not([aria-checked="true"]):hover{background:var(--subtle);color:var(--ink)}
+
+/* 탭 */
+.tabs{display:flex;flex-wrap:wrap;gap:0;border-bottom:1px solid var(--orange);margin-top:8px}
+.tabs button{border:0;background:none;padding:10px 14px;font-size:15px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--orange);font-weight:700}
+.tabs button:hover{color:var(--ink)}
+@media (max-width:560px){.tabs button{padding:9px 10px;font-size:14px}}
+
+/* 공통 막대 */
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding:12px 0;font-size:14px;border-bottom:1px solid var(--hair-soft)}
+.bar label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.bar .sp{flex:1}
+select,input[type=text],input[type=search]{border:1px solid var(--hair);border-radius:2px;background:#fff;padding:7px 9px;font-size:15px;min-width:0;max-width:100%}
+input[type=checkbox]{accent-color:var(--orange);width:16px;height:16px}
+.btn{border:1px solid var(--hair);background:#fff;border-radius:2px;padding:7px 12px;font-size:14px;cursor:pointer}
+.btn:hover{background:var(--subtle)}
+.btn.primary{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:500}
+.btn.primary:hover{background:var(--orange-active)}
+.btn:focus-visible,.tabs button:focus-visible,.chip:focus-visible,.row:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
+
+section.tab{display:none;padding:18px 0 56px}
+section.tab.active{display:block}
+.rule{height:1px;background:var(--orange);margin:26px 0 12px}
+h2{margin:0 0 10px;font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+h3{margin:18px 0 8px;font-size:18px;font-weight:700;color:var(--ink)}
+.note{font-size:14px;color:var(--muted);margin:6px 0}
+.note b{color:var(--body)}
+.lead{font-size:17px;margin:0 0 12px}
+
+/* 거르기 */
+.filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px 14px;margin:0 0 12px}
+.filters .f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);min-width:0}
+.filters .f.wide{grid-column:1/-1}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--hair);background:#fff;border-radius:2px;padding:5px 10px;font-size:14px;cursor:pointer;color:var(--body)}
+.chip[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:#fff}
+.chip .n{font-size:12px;opacity:.8;margin-left:4px}
+.count{font-size:14px;color:var(--muted);margin:6px 0 8px}
+
+/* 목록 줄 */
+.rows{border-top:1px solid var(--hair)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 128px 100px;gap:4px 14px;padding:10px 6px;border-bottom:1px solid var(--hair-soft);cursor:pointer;align-items:start}
+.row:hover{background:var(--subtle)}
+.row .nm{font-weight:700;color:var(--ink);font-size:16px;line-height:1.35}
+.row .meta{font-size:13px;color:var(--muted)}
+.row .num{text-align:right;font-size:15px;white-space:nowrap}
+.row .num small{display:block;font-size:12px;color:var(--muted)}
+.row .top3{grid-column:1/-1;font-size:13.5px;color:var(--body)}
+.row .top3 .w{color:var(--muted)}
+.row.head{cursor:default;font-size:12.5px;color:var(--muted);padding-top:6px;padding-bottom:6px;background:var(--orange-soft);color:var(--ink);font-weight:700}
+.row.head:hover{background:var(--orange-soft)}
+@media (max-width:560px){.row{grid-template-columns:minmax(0,1fr) auto}.row .num.aum{display:none}.row.head .aum{display:none}}
+.pos{color:var(--up)} .neg{color:var(--down)}
+.na{color:var(--muted-soft)}
+.badge{display:inline-block;font-size:11.5px;line-height:1.5;padding:0 5px;border-radius:2px;border:1px solid var(--hair);color:var(--muted);margin-left:5px;vertical-align:1px;white-space:nowrap;font-weight:500}
+.badge.o{border-color:var(--orange);color:var(--orange-active)}
+.badge.r{border-color:#E4A3A3;color:var(--up)}
+.badge.g{background:var(--hl);border-color:var(--hl);color:var(--ink)}
+.more{margin:14px 0}
+
+/* 표 */
+table.dt{width:100%;border-collapse:collapse;font-size:14.5px;border:1px solid var(--hair)}
+table.dt th{background:var(--orange-soft);color:var(--ink);font-weight:700;text-align:left;padding:7px 8px;font-size:13.5px}
+table.dt td{padding:7px 8px;border-top:1px solid var(--hair-soft);vertical-align:top}
+table.dt td.r,table.dt th.r{text-align:right;white-space:nowrap}
+table.dt tr:hover td{background:var(--subtle)}
+table.dt tr.hl td{background:var(--hl)}
+.tbl-fit{width:100%;table-layout:fixed}
+
+/* 상세 */
+.overlay{position:fixed;inset:0;background:rgba(26,26,26,.45);display:none;z-index:20;overflow-y:auto;padding:24px 12px}
+.overlay.open{display:block}
+.panel{background:#fff;max-width:760px;margin:0 auto;border-radius:4px;padding:20px 22px 26px;position:relative}
+@media (max-width:560px){.panel{padding:16px 14px 22px}}
+.panel .x{position:absolute;right:10px;top:8px;border:0;background:none;font-size:26px;line-height:1;cursor:pointer;color:var(--muted);padding:6px 10px}
+.panel h2{padding-right:34px;font-size:21px}
+.kv{display:grid;grid-template-columns:130px minmax(0,1fr);gap:4px 12px;font-size:14.5px;margin:10px 0}
+.kv dt{color:var(--muted)} .kv dd{margin:0;color:var(--body)}
+@media (max-width:560px){.kv{grid-template-columns:100px minmax(0,1fr)}}
+.hbar{display:grid;grid-template-columns:22px minmax(0,1fr) 64px;gap:2px 8px;align-items:center;font-size:14.5px;padding:4px 0;border-bottom:1px solid var(--hair-soft)}
+.hbar .i{color:var(--muted);font-size:13px;text-align:right}
+.hbar .w{text-align:right;white-space:nowrap}
+.hbar .track{grid-column:2/4;height:6px;background:var(--soft)}
+.hbar .fill{height:6px;background:var(--orange)}
+.msg{border-left:3px solid var(--orange);background:var(--orange-tint);padding:10px 12px;font-size:14.5px;margin:10px 0}
+.msg.gray{border-left-color:var(--muted-soft);background:var(--subtle)}
+.src{font-size:12.5px;color:var(--muted);margin-top:14px;line-height:1.55}
+.retgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:1px solid var(--hair);font-size:14px}
+.retgrid div{padding:6px 6px;text-align:center;border-bottom:1px solid var(--hair-soft);border-right:1px solid var(--hair-soft)}
+.retgrid .p{background:var(--orange-soft);color:var(--ink);font-weight:700;font-size:12.5px}
+@media (max-width:420px){.retgrid{font-size:13px}.retgrid div{padding:5px 2px}}
+
+/* 찾기 칸 제안 */
+.sugg{position:relative}
+.sugg-list{position:absolute;left:0;right:0;top:100%;z-index:10;background:#fff;border:1px solid var(--hair);max-height:300px;overflow-y:auto;display:none;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.sugg-list.open{display:block}
+.sugg-list button{display:block;width:100%;text-align:left;border:0;background:#fff;padding:8px 10px;font-size:14.5px;cursor:pointer;border-bottom:1px solid var(--hair-soft)}
+.sugg-list button:hover,.sugg-list button.on{background:var(--subtle)}
+.sugg-list small{color:var(--muted);margin-left:6px}
+.searchline{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.searchline .sugg{flex:1;min-width:0}
+.searchline input{width:100%}
+
+/* 겹침 */
+.basket{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.bk{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--orange);border-radius:2px;padding:4px 4px 4px 9px;font-size:14px;max-width:100%}
+.bk span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bk button{border:0;background:none;cursor:pointer;color:var(--muted);font-size:17px;line-height:1;padding:0 5px}
+.pair{border:1px solid var(--hair);border-radius:2px;padding:10px 12px;margin:8px 0}
+.pair .ph{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 12px;align-items:baseline}
+.pair .pv{font-size:22px;font-weight:700;color:var(--ink);white-space:nowrap}
+.pair .pv.unk{font-size:16px;color:var(--muted-soft);font-weight:500}
+.pair .common{font-size:13.5px;margin-top:6px}
+.meter{height:6px;background:var(--soft);margin-top:6px}
+.meter i{display:block;height:6px;background:var(--orange)}
+.mx{border-collapse:collapse;font-size:13.5px;margin:8px 0}
+.mx th,.mx td{border:1px solid var(--hair-soft);padding:5px 7px;text-align:center}
+.mx th{background:var(--orange-soft);color:var(--ink);font-weight:700}
+.mx th.rh{text-align:left;max-width:220px}
+.mx td.unk{color:var(--muted-soft)}
+.mx-wrap{display:block}
+@media (max-width:760px){.mx-wrap{display:none}}
+.guide p,.guide li{font-size:17px;line-height:1.7}
+.guide ul{padding-left:20px}
+.guide .note{font-size:14.5px}
+mark{background:var(--orange-soft);color:var(--ink);padding:0 1px}
+
+/* 인쇄 — 지금 보고 있는 화면만 */
+@media print{
+  .lang-toggle,.tabs,.bar,.filters,.more,.no-print,.sugg-list,.panel .x{display:none !important}
+  body{font-size:11pt}
+  .page{max-width:100%;padding:0}
+  section.tab:not(.active){display:none !important}
+  body.detail-open main,body.detail-open .top{display:none !important}
+  .overlay{position:static;background:none;padding:0;overflow:visible}
+  .overlay:not(.open){display:none !important}
+  .panel{max-width:100%;padding:0}
+  .row{break-inside:avoid}
+  .pair{break-inside:avoid}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="page">
+    <div>
+      <p class="eyebrow" data-i18n="eyebrow">사내용 · 고객 상담 참고</p>
+      <h1 data-i18n="title">ETF 속보기</h1>
+      <p class="sub" id="asof"></p>
+    </div>
+    <div class="lang-toggle" role="radiogroup" aria-label="언어 / Language">
+      <button type="button" role="radio" aria-checked="true" data-lang="ko">KO</button>
+      <button type="button" role="radio" aria-checked="false" data-lang="en">EN</button>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="page">
+    <nav class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="list" aria-selected="true" data-i18n="tab_list">목록</button>
+      <button role="tab" data-tab="rev" aria-selected="false" data-i18n="tab_rev">종목으로 찾기</button>
+      <button role="tab" data-tab="ovl" aria-selected="false" data-i18n="tab_ovl">겹침 비교</button>
+      <button role="tab" data-tab="rank" aria-selected="false" data-i18n="tab_rank">순위</button>
+      <button role="tab" data-tab="theme" aria-selected="false" data-i18n="tab_theme">테마 점검</button>
+      <button role="tab" data-tab="guide" aria-selected="false" data-i18n="tab_guide">사용법</button>
+    </nav>
+    <div class="bar">
+      <label><input type="checkbox" id="optLev"> <span data-i18n="opt_lev">레버리지·인버스 포함</span></label>
+      <label><span data-i18n="opt_period">수익률 기간</span>
+        <select id="optPeriod"></select></label>
+      <span class="sp"></span>
+      <button class="btn" type="button" id="btnPrint" data-i18n="print">이 화면 인쇄</button>
+    </div>
+
+    <!-- 목록 -->
+    <section class="tab active" id="tab-list" role="tabpanel">
+      <div class="filters">
+        <div class="f wide"><span data-i18n="f_market">나라</span><div class="chips" id="fMarket"></div></div>
+        <div class="f"><span data-i18n="f_q">이름·코드</span><input type="search" id="fQ" data-i18n-ph="ph_q" placeholder="예: 반도체, 069500, SOXX"></div>
+        <div class="f"><span data-i18n="f_ix">기초지수</span><input type="search" id="fIx" list="ixList" data-i18n-ph="ph_ix" placeholder="예: 코스피 200, S&P 500"><datalist id="ixList"></datalist></div>
+        <div class="f"><span data-i18n="f_is">운용사</span><select id="fIs"></select></div>
+        <div class="f"><span data-i18n="f_aum">규모 (원화 환산)</span><select id="fAum"></select></div>
+        <div class="f"><span data-i18n="f_th">테마 (이름으로 붙임)</span><select id="fTh"></select></div>
+        <div class="f"><span data-i18n="f_sort">정렬</span><select id="fSort"></select></div>
+      </div>
+      <p class="note" id="ixNote" data-i18n="ix_note">기초지수는 한국 상장만 원천(네이버)이 줍니다. 해외 상장은 원천이 기초지수를 주지 않아 ETF 이름 안에서 찾습니다.</p>
+      <div class="count" id="listCount"></div>
+      <div class="rows" id="listRows"></div>
+      <div class="more"><button class="btn" id="listMore" type="button" data-i18n="more">더 보기</button></div>
+    </section>
+
+    <!-- 거꾸로 찾기 -->
+    <section class="tab" id="tab-rev" role="tabpanel">
+      <p class="lead" data-i18n="rev_lead">종목 이름이나 코드를 치면, 그 종목을 상위 10종목 안에 담은 ETF 가 비중 순으로 나옵니다.</p>
+      <div class="searchline">
+        <div class="sugg"><input type="search" id="revQ" autocomplete="off" data-i18n-ph="ph_rev" placeholder="예: 삼성전자, 엔비디아, NVDA, 005930"><div class="sugg-list" id="revSugg"></div></div>
+      </div>
+      <div class="filters" style="margin-top:10px"><div class="f wide"><span data-i18n="f_market">나라</span><div class="chips" id="revMarket"></div></div></div>
+      <div id="revOut"></div>
+    </section>
+
+    <!-- 겹침 -->
+    <section class="tab" id="tab-ovl" role="tabpanel">
+      <p class="lead" data-i18n="ovl_lead">ETF 를 두 개 이상 담으면 서로 얼마나 겹치는지 셉니다. 고객이 여러 개를 사도 알고 보면 같은 종목을 두 번 사는 경우를 여기서 잡습니다.</p>
+      <div class="searchline no-print">
+        <div class="sugg"><input type="search" id="ovlQ" autocomplete="off" data-i18n-ph="ph_ovl" placeholder="ETF 이름이나 코드로 담기"><div class="sugg-list" id="ovlSugg"></div></div>
+        <button class="btn" type="button" id="ovlClear" data-i18n="clear">모두 비우기</button>
+      </div>
+      <div class="basket" id="basket"></div>
+      <div id="ovlOut"></div>
+    </section>
+
+    <!-- 순위 -->
+    <section class="tab" id="tab-rank" role="tabpanel">
+      <div class="filters">
+        <div class="f"><span data-i18n="rk_metric">무엇으로</span><select id="rkMetric"></select></div>
+        <div class="f"><span data-i18n="rk_order">순서</span><select id="rkOrder"></select></div>
+        <div class="f"><span data-i18n="rk_n">몇 개</span><select id="rkN"></select></div>
+        <div class="f wide"><span data-i18n="f_market">나라</span><div class="chips" id="rkMarket"></div></div>
+      </div>
+      <div id="rkOut"></div>
+    </section>
+
+    <!-- 테마 점검 -->
+    <section class="tab" id="tab-theme" role="tabpanel">
+      <p class="lead" data-i18n="th_lead">테마는 ETF 이름만 보고 자동으로 붙였습니다. 이름에서 어느 낱말에 걸렸는지를 표시했으니, 상위 종목과 맞춰 보며 잘못 붙은 것을 훑어보세요.</p>
+      <div class="chips" id="thChips"></div>
+      <div id="thOut"></div>
+    </section>
+
+    <!-- 사용법 -->
+    <section class="tab guide" id="tab-guide" role="tabpanel"></section>
+  </div>
+</main>
+
+<div class="overlay" id="ov" role="dialog" aria-modal="true" aria-labelledby="dTitle">
+  <div class="panel" id="panel"></div>
+</div>
+
+<script id="etf-data" type="application/json">/*__ETF_DATA__*/null</script>
+<script>
+(function(){
+'use strict';
+var D = JSON.parse(document.getElementById('etf-data').textContent);
+var M = D.meta, H = D.H, E = D.E;
+var PERIODS = M.periods;
+var ANN = {'3y':1,'5y':1,'10y':1};
+var MARKETS = ['KR','US','HK','JP','CN'];
+
+/* ---------------------------------------------------------------- 말 */
+var I = {
+ ko:{eyebrow:'사내용 · 고객 상담 참고',title:'ETF 속보기',tab_list:'목록',tab_rev:'종목으로 찾기',tab_ovl:'겹침 비교',tab_rank:'순위',tab_theme:'테마 점검',tab_guide:'사용법',
+  opt_lev:'레버리지·인버스 포함',opt_period:'수익률 기간',print:'이 화면 인쇄',f_market:'나라',f_q:'이름·코드',f_ix:'기초지수',f_is:'운용사',f_aum:'규모 (원화 환산)',f_th:'테마 (이름으로 붙임)',f_sort:'정렬',
+  ph_q:'예: 반도체, 069500, SOXX',ph_ix:'예: 코스피 200, S&P 500',ph_rev:'예: 삼성전자, 엔비디아, NVDA, 005930',ph_ovl:'ETF 이름이나 코드로 담기',
+  ix_note:'기초지수는 한국 상장만 원천(네이버)이 줍니다. 해외 상장은 원천이 기초지수를 주지 않아 ETF 이름 안에서 찾습니다.',
+  more:'더 보기',clear:'모두 비우기',all:'전체',none_theme:'테마 없음',
+  mk_KR:'한국',mk_US:'미국',mk_HK:'홍콩',mk_JP:'일본',mk_CN:'중국 본토',
+  rev_lead:'종목 이름이나 코드를 치면, 그 종목을 상위 10종목 안에 담은 ETF 가 비중 순으로 나옵니다.',
+  ovl_lead:'ETF 를 두 개 이상 담으면 서로 얼마나 겹치는지 셉니다. 고객이 여러 개를 사도 알고 보면 같은 종목을 두 번 사는 경우를 여기서 잡습니다.',
+  th_lead:'테마는 ETF 이름만 보고 자동으로 붙였습니다. 이름에서 어느 낱말에 걸렸는지를 표시했으니, 상위 종목과 맞춰 보며 잘못 붙은 것을 훑어보세요.',
+  rk_metric:'무엇으로',rk_order:'순서',rk_n:'몇 개',rk_ret:'수익률',rk_aum:'규모',rk_desc:'높은 순',rk_asc:'낮은 순',
+  aum_any:'전체',sort_aum:'규모 큰 순',sort_ret:'수익률 높은 순',sort_name:'이름 순',
+  lev:'레버리지',inv:'인버스',halt:'거래 정지',stale:'최근 거래 없음',fund:'펀드 전체 기준',aumq:'기준 미확인',noh:'구성 미제공',now:'비중 미제공',cnh:'구성 없음',
+  top3_none:'구성종목을 원천이 주지 않았습니다.',top3_now:'비중 미제공 — 네이버가 이름만 주고 비중은 비워 둡니다.',top3_cn:'중국 본토 상장 — 구성종목을 주는 원천이 없습니다.',top3_err:'구성종목을 받지 못했습니다.',
+  cnt:'{n}개',cnt_of:'{total}개 가운데 {n}개',h_name:'ETF',h_aum:'규모',h_ret:'수익률',
+  d_code:'코드',d_market:'상장',d_issuer:'운용사',d_index:'기초지수',d_cat:'분류 (야후)',d_fee:'보수',d_aum:'규모',d_aumk:'원화 환산',d_lev:'레버리지·인버스',d_halt:'거래',d_ret:'수익률 (분배금 포함)',d_hold:'상위 10종목',d_hsum:'상위 10종목 합계',
+  d_add:'겹침 비교에 담기',d_added:'담았습니다',d_close:'닫기',d_trading:'정상',d_unknown:'모름',d_none:'—',
+  ann:'연환산',cum:'누적',ret_at:'기준일',src:'출처',hold_at:'구성 수집',
+  cn_msg:'중국 본토(상해·심천) 상장 ETF 는 구성종목을 주는 원천이 없어 비워 둡니다. 같은 지수를 따르는 홍콩·미국 상장 ETF 를 보세요.',cn_sugg:'같은 지수로 보이는 홍콩·미국 상장 (이름으로 찾음)',cn_nosugg:'이름으로 찾을 수 있는 같은 지수 ETF 가 없습니다.',
+  now_msg:'이 ETF 는 네이버가 보유 종목 이름만 주고 비중은 비워 둡니다(해외 주식을 담은 국내 ETF 에 많습니다). 순서도 비중 순이 아니라 보유 수량 순입니다. 비중을 모르므로 겹침 셈에서 빠집니다.',
+  none_msg:'원천이 구성종목을 주지 않았습니다. 겹침 셈에서 빠집니다.',
+  fund_msg:'이 값은 ETF 만의 순자산이 아니라 펀드 전체(다른 종류·다른 상장 합산) 값입니다. 규모 순위에서 뺐습니다.',
+  aumq_msg:'원천이 발행 좌수를 주지 않아 ETF 단독 값인지 확인하지 못했습니다.',
+  rev_pick:'어느 종목을 찾으세요?',rev_n:'{name} 을(를) 상위 10종목 안에 담은 ETF {n}개',rev_none:'이 종목을 상위 10종목 안에 담은 ETF 를 찾지 못했습니다.',
+  rev_blind:'구성종목을 알 수 없는 ETF {n}개(중국 본토 {cn}개 포함)는 여기서 찾을 수 없습니다. 상위 10종목 밖에 담긴 경우도 잡히지 않습니다.',
+  rev_w:'비중',rev_alias:'한글 이름은 검색 편의용 별칭',
+  ovl_empty:'아직 담은 ETF 가 없습니다. 위 칸에서 찾거나, 목록에서 ETF 를 눌러 「겹침 비교에 담기」를 누르세요.',ovl_one:'하나 더 담으면 겹침을 셉니다.',
+  ovl_pairs:'둘씩 짝지어 본 겹침',ovl_mx:'한눈에 보기',ovl_common:'함께 담은 종목',ovl_union:'종목별로 누가 얼마나 담았나',
+  ovl_unk:'모름',ovl_unk_why:'{name} 의 구성 비중을 원천이 주지 않아 셀 수 없습니다 (0 으로 세지 않았습니다).',
+  ovl_def:'겹침 = 두 ETF 가 함께 담은 종목마다 둘 중 작은 비중을 더한 값. 원천이 상위 10종목만 주므로 <b>실제 겹침은 이 값보다 크거나 같습니다</b>(최소값).',
+  ovl_nocommon:'상위 10종목 가운데 함께 담은 종목이 없습니다. (10위 밖에서는 겹칠 수 있습니다.)',ovl_max:'최대 8개까지 담을 수 있습니다.',
+  ovl_blank:'빈 칸 = 상위 10종목 안에 없음(10위 밖이거나 안 담음). ? = 그 ETF 의 비중을 모름.',
+  rk_ex:'순위에서 뺀 것',rk_ex_halt:'거래 정지·최근 거래 없음 {n}',rk_ex_fund:'펀드 전체 기준 규모 {n}',rk_ex_alt:'다른 출처로 메운 값 {n}',rk_ex_null:'값 없음 {n}',rk_ex_lev:'레버리지·인버스 {n} (위에서 켜면 포함)',
+  rk_ccy:'수익률은 각 상장 통화 기준입니다. 나라가 섞이면 환율 효과가 다르다는 점을 감안하세요.',rk_aumk:'규모는 수집 시점 환율로 원화 환산해 견줍니다.',
+  th_words:'걸리는 낱말',th_hit:'걸린 낱말',th_n:'{n}개',th_top:'상위 종목',
+  ret_basis:'수익률 = 분배금 포함 총수익률. 1년 이하는 누적, 3·5·10년은 연환산.'
+ },
+ en:{eyebrow:'Internal · client conversations',title:'ETF Look-Through',tab_list:'Browse',tab_rev:'Find by holding',tab_ovl:'Overlap',tab_rank:'Rankings',tab_theme:'Theme check',tab_guide:'How to use',
+  opt_lev:'Include leveraged / inverse',opt_period:'Return period',print:'Print this view',f_market:'Market',f_q:'Name / code',f_ix:'Benchmark index',f_is:'Issuer',f_aum:'Size (in KRW)',f_th:'Theme (from name)',f_sort:'Sort',
+  ph_q:'e.g. semiconductor, 069500, SOXX',ph_ix:'e.g. KOSPI 200, S&P 500',ph_rev:'e.g. Samsung Electronics, NVDA, 005930',ph_ovl:'Add an ETF by name or code',
+  ix_note:'Only Korean listings come with a benchmark index from the source (Naver). For other listings the source gives none, so the index is matched against the ETF name.',
+  more:'Show more',clear:'Clear all',all:'All',none_theme:'No theme',
+  mk_KR:'Korea',mk_US:'US',mk_HK:'Hong Kong',mk_JP:'Japan',mk_CN:'Mainland China',
+  rev_lead:'Type a stock name or code to list every ETF that has it in its top 10, by weight.',
+  ovl_lead:'Add two or more ETFs to see how much they overlap — catches clients buying the same stocks twice under different names.',
+  th_lead:'Themes are assigned automatically from the ETF name only. The matching word is highlighted so you can scan for wrong tags against the top holdings.',
+  rk_metric:'Rank by',rk_order:'Order',rk_n:'How many',rk_ret:'Return',rk_aum:'Size',rk_desc:'Highest first',rk_asc:'Lowest first',
+  aum_any:'Any',sort_aum:'Largest first',sort_ret:'Best return first',sort_name:'By name',
+  lev:'Leveraged',inv:'Inverse',halt:'Halted',stale:'No recent trades',fund:'Whole-fund figure',aumq:'Basis unverified',noh:'No holdings',now:'No weights',cnh:'No holdings',
+  top3_none:'The source did not provide holdings.',top3_now:'No weights — Naver gives names only.',top3_cn:'Mainland China listing — no source provides holdings.',top3_err:'Holdings could not be fetched.',
+  cnt:'{n}',cnt_of:'{n} of {total}',h_name:'ETF',h_aum:'Size',h_ret:'Return',
+  d_code:'Code',d_market:'Listing',d_issuer:'Issuer',d_index:'Index',d_cat:'Category (Yahoo)',d_fee:'Fee',d_aum:'Size',d_aumk:'In KRW',d_lev:'Leveraged / inverse',d_halt:'Trading',d_ret:'Return (incl. distributions)',d_hold:'Top 10 holdings',d_hsum:'Top 10 total',
+  d_add:'Add to overlap',d_added:'Added',d_close:'Close',d_trading:'Normal',d_unknown:'Unknown',d_none:'—',
+  ann:'annualized',cum:'cumulative',ret_at:'As of',src:'Source',hold_at:'Holdings fetched',
+  cn_msg:'Mainland China (Shanghai/Shenzhen) ETFs are left blank because no source provides their holdings. Look at a Hong Kong or US listing that tracks the same index.',cn_sugg:'HK / US listings that appear to track the same index (matched by name)',cn_nosugg:'No same-index ETF could be found by name.',
+  now_msg:'Naver lists holding names for this ETF but leaves the weights blank (common for Korean ETFs holding foreign stocks), and orders them by share count, not weight. With weights unknown it is left out of overlap figures.',
+  none_msg:'The source did not provide holdings. Left out of overlap figures.',
+  fund_msg:'This is not the ETF’s own net assets but the whole fund’s (all share classes / listings). Excluded from size rankings.',
+  aumq_msg:'The source gives no share count, so it could not be verified that this is the ETF’s own figure.',
+  rev_pick:'Which stock do you mean?',rev_n:'{n} ETFs hold {name} in their top 10',rev_none:'No ETF has this stock in its top 10.',
+  rev_blind:'{n} ETFs with unknown holdings ({cn} mainland China) cannot be searched. Positions outside the top 10 are not caught either.',
+  rev_w:'Weight',rev_alias:'Korean names are search aliases',
+  ovl_empty:'Nothing added yet. Search above, or open an ETF from the list and press “Add to overlap”.',ovl_one:'Add one more to compute overlap.',
+  ovl_pairs:'Pairwise overlap',ovl_mx:'Matrix',ovl_common:'Held by both',ovl_union:'Who holds what',
+  ovl_unk:'Unknown',ovl_unk_why:'The source gives no holding weights for {name}, so this cannot be computed (not counted as 0).',
+  ovl_def:'Overlap = for each stock both hold, the smaller of the two weights, summed. Only top-10 holdings are published, so <b>the true overlap is at least this figure</b> (a lower bound).',
+  ovl_nocommon:'No common stock within the top 10. (They may still overlap below the top 10.)',ovl_max:'Up to 8 ETFs.',
+  ovl_blank:'Blank = not in that ETF’s top 10. ? = weights unknown for that ETF.',
+  rk_ex:'Excluded from ranking',rk_ex_halt:'halted / no recent trades {n}',rk_ex_fund:'whole-fund size figure {n}',rk_ex_alt:'filled from another source {n}',rk_ex_null:'no value {n}',rk_ex_lev:'leveraged / inverse {n} (tick above to include)',
+  rk_ccy:'Returns are in each listing’s own currency; mixing markets mixes currency effects.',rk_aumk:'Sizes are converted to KRW at collection-time FX rates.',
+  th_words:'Trigger words',th_hit:'Matched',th_n:'{n}',th_top:'Top holdings',
+  ret_basis:'Return = total return including distributions. Cumulative up to 1 year; 3/5/10 years annualized.'
+ }
+};
+var LANG = 'ko';
+try{ var s = localStorage.getItem('etfLook.lang'); if(s==='en'||s==='ko') LANG = s; }catch(e){}
+function t(k, o){ var s = (I[LANG][k] != null ? I[LANG][k] : I.ko[k]) || k; if(o) for(var x in o) s = s.split('{'+x+'}').join(o[x]); return s; }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function norm(s){ return String(s||'').toLowerCase().replace(/[\s\-_.·,()&]/g,''); }
+
+/* ---------------------------------------------------------------- 셈 도구 */
+var byKey = {}; E.forEach(function(e, i){ e.i = i; byKey[e.k] = e; });
+E.forEach(function(e){ e._q = norm([e.n, e.ne, e.c].join(' ')); });
+// 보유 종목 → ETF 거꾸로 사전
+var REV = H.map(function(){ return []; });
+E.forEach(function(e){ (e.h||[]).forEach(function(p, rank){ REV[p[0]].push([e.i, p[1], rank]); }); });
+H.forEach(function(h){ h._q = norm([h[0].replace(/^[A-Z]+:/,''), h[1], h[2]].join(' ')); });
+
+function hName(i){ var h = H[i]; return LANG === 'ko' ? (h[1] || h[2] || h[0]) : (h[2] || h[1] || h[0]); }
+function eName(e){ return LANG === 'en' ? (e.ne || e.n) : e.n; }
+function fmtPct(v, plus){ if(v == null || isNaN(v)) return '<span class="na">—</span>'; var s = (Math.abs(v) >= 1000 ? v.toFixed(0) : v.toFixed(2)); if(plus !== false && v > 0) s = '+' + s; return '<span class="'+(v>0?'pos':(v<0?'neg':''))+'">'+s+'%</span>'; }
+function fmtW(v){ return v == null ? '<span class="na">—</span>' : v.toFixed(2) + '%'; }
+function fmtKRW(v){
+  if(v == null) return '<span class="na">—</span>';
+  if(LANG === 'ko'){
+    if(v >= 1e12){ var jo = v/1e12; return (jo >= 100 ? jo.toFixed(0) : jo.toFixed(1)).replace(/\.0$/,'') + '조원'; }
+    if(v >= 1e8) return Math.round(v/1e8).toLocaleString('ko-KR') + '억원';
+    return Math.round(v/1e4).toLocaleString('ko-KR') + '만원';
+  }
+  if(v >= 1e12) return 'KRW ' + (v/1e12).toFixed(1) + 'T';
+  if(v >= 1e9) return 'KRW ' + (v/1e9).toFixed(1) + 'B';
+  return 'KRW ' + (v/1e6).toFixed(0) + 'M';
+}
+function fmtLocal(v, ccy){
+  if(v == null) return '—';
+  if(ccy === 'KRW') return fmtKRW(v);
+  var u = v >= 1e12 ? [1e12,'T'] : v >= 1e9 ? [1e9,'B'] : [1e6,'M'];
+  return ccy + ' ' + (v/u[0]).toFixed(2) + u[1];
+}
+function mkName(m){ return t('mk_' + m); }
+function periodLabel(p){
+  var ko = {'1d':'1일','1w':'1주','1m':'1개월','3m':'3개월','6m':'6개월','ytd':'연초 이후','1y':'1년','3y':'3년','5y':'5년','10y':'10년'};
+  var en = {'1d':'1D','1w':'1W','1m':'1M','3m':'3M','6m':'6M','ytd':'YTD','1y':'1Y','3y':'3Y','5y':'5Y','10y':'10Y'};
+  return (LANG==='ko'?ko:en)[p] + (ANN[p] ? ' (' + t('ann') + ')' : '');
+}
+function srcName(s){
+  var ko = {naver:'네이버 증권', yahoo:'야후 파이낸스', yahoo_adj:'야후 파이낸스 (배당 보정 종가로 셈)'};
+  var en = {naver:'Naver Finance', yahoo:'Yahoo Finance', yahoo_adj:'Yahoo Finance (computed from dividend-adjusted closes)'};
+  return (LANG==='ko'?ko:en)[s] || s || '—';
+}
+function badges(e){
+  var b = '';
+  if(e.lv === 1) b += '<span class="badge o">'+t('lev')+'</span>';
+  if(e.lv === -1) b += '<span class="badge o">'+t('inv')+'</span>';
+  if(e.st === 1) b += '<span class="badge r">'+(e.m==='KR'?t('halt'):t('stale'))+'</span>';
+  if(e.ab === 'fund') b += '<span class="badge g">'+t('fund')+'</span>';
+  if(e.hs === 'noweight') b += '<span class="badge">'+t('now')+'</span>';
+  else if(e.hs === 'cn') b += '<span class="badge">'+t('cnh')+'</span>';
+  else if(e.hs !== 'ok') b += '<span class="badge">'+t('noh')+'</span>';
+  return b;
+}
+function levOK(e){ return state.lev || !e.lv; }
+
+/* ---------------------------------------------------------------- 상태 */
+var state = {tab:'list', lev:false, period:'1y', list:{mk:{}, q:'', ix:'', is:'', aum:0, th:'', sort:'aum', n:50},
+  rev:{key:null, q:'', mk:{}}, basket:[], rank:{metric:'ret', order:'desc', n:50, mk:{KR:1}}, th:{id:null}};
+MARKETS.forEach(function(m){ state.list.mk[m] = 1; state.rev.mk[m] = 1; });
+try{ var b = JSON.parse(localStorage.getItem('etfLook.basket') || '[]'); if(Array.isArray(b)) state.basket = b.filter(function(k){ return byKey[k]; }).slice(0,8); }catch(e){}
+function saveBasket(){ try{ localStorage.setItem('etfLook.basket', JSON.stringify(state.basket)); }catch(e){} }
+function pIdx(){ return PERIODS.indexOf(state.period); }
+
+/* ---------------------------------------------------------------- 공통 조각 */
+function top3(e, n){
+  n = n || 3;
+  if(e.hs === 'cn') return '<span class="na">'+t('top3_cn')+'</span>';
+  if(e.hs === 'err') return '<span class="na">'+t('top3_err')+'</span>';
+  if(!e.h || !e.h.length) return '<span class="na">'+t('top3_none')+'</span>';
+  if(e.hs === 'noweight') return '<span class="na">'+t('top3_now')+'</span> ' + e.h.slice(0,n).map(function(p){ return esc(hName(p[0])); }).join(' · ');
+  return e.h.slice(0,n).map(function(p){ return esc(hName(p[0])) + ' <span class="w">' + (p[1]==null?'—':p[1].toFixed(1)+'%') + '</span>'; }).join(' · ');
+}
+function rowHTML(e, extraRight){
+  var r = e.r[pIdx()];
+  return '<div class="row" tabindex="0" data-k="'+esc(e.k)+'">' +
+    '<div><div class="nm">'+esc(eName(e))+badges(e)+'</div>' +
+    '<div class="meta">'+esc(e.c)+' · '+mkName(e.m)+(e.is?' · '+esc(e.is):'')+(e.ix?' · '+esc(e.ix):'')+'</div></div>' +
+    '<div class="num aum">'+fmtKRW(e.aumK)+(e.ab==='fund'?'<small>'+t('fund')+'</small>':'')+'</div>' +
+    '<div class="num">'+(extraRight != null ? extraRight : fmtPct(r))+'<small>'+periodLabel(state.period)+'</small></div>' +
+    '<div class="top3">'+top3(e)+'</div></div>';
+}
+function headHTML(right){
+  return '<div class="row head"><div>'+t('h_name')+'</div><div class="num aum">'+t('h_aum')+'</div><div class="num">'+(right||t('h_ret'))+'</div></div>';
+}
+function bindRows(root){
+  root.querySelectorAll('.row[data-k]').forEach(function(el){
+    el.addEventListener('click', function(){ openDetail(el.getAttribute('data-k')); });
+    el.addEventListener('keydown', function(ev){ if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); openDetail(el.getAttribute('data-k')); } });
+  });
+}
+function marketChips(el, obj, onChange, counts){
+  el.innerHTML = MARKETS.map(function(m){
+    return '<button type="button" class="chip" data-m="'+m+'" aria-pressed="'+(obj[m]?'true':'false')+'">'+mkName(m)+(counts?'<span class="n">'+(counts[m]||0).toLocaleString()+'</span>':'')+'</button>';
+  }).join('');
+  el.querySelectorAll('.chip').forEach(function(c){ c.addEventListener('click', function(){
+    var m = c.getAttribute('data-m'); if(obj[m]) delete obj[m]; else obj[m] = 1; onChange(); }); });
+}
+
+/* ---------------------------------------------------------------- 목록 */
+var AUM_STEPS = [0, 1e10, 1e11, 1e12, 1e13];
+function listFiltered(){
+  var L = state.list, q = norm(L.q), ix = norm(L.ix);
+  return E.filter(function(e){
+    if(!L.mk[e.m]) return false;
+    if(!levOK(e)) return false;
+    if(q && e._q.indexOf(q) < 0) return false;
+    if(ix){ var hay = e.ix ? norm(e.ix) : (e.m === 'KR' ? '' : e._q); if(hay.indexOf(ix) < 0) return false; }
+    if(L.is && e.is !== L.is) return false;
+    if(L.aum && !(e.aumK != null && e.aumK >= L.aum)) return false;
+    if(L.th === '_none'){ if(Object.keys(e.th||{}).length) return false; }
+    else if(L.th && !(e.th && e.th[L.th])) return false;
+    return true;
+  });
+}
+function sortList(arr, how){
+  var p = pIdx();
+  if(how === 'aum') arr.sort(function(a,b){ return (b.aumK==null?-1:b.aumK) - (a.aumK==null?-1:a.aumK); });
+  else if(how === 'ret') arr.sort(function(a,b){ var x=a.r[p], y=b.r[p]; if(x==null&&y==null) return 0; if(x==null) return 1; if(y==null) return -1; return y-x; });
+  else arr.sort(function(a,b){ return String(eName(a)).localeCompare(String(eName(b)), LANG); });
+  return arr;
+}
+function renderList(){
+  var arr = sortList(listFiltered(), state.list.sort);
+  var total = E.filter(function(e){ return state.list.mk[e.m]; }).length;
+  document.getElementById('listCount').innerHTML = t('cnt_of', {n: arr.length.toLocaleString(), total: total.toLocaleString()});
+  var box = document.getElementById('listRows');
+  box.innerHTML = headHTML() + arr.slice(0, state.list.n).map(function(e){ return rowHTML(e); }).join('');
+  bindRows(box);
+  document.getElementById('listMore').style.display = arr.length > state.list.n ? '' : 'none';
+}
+function initListControls(){
+  var counts = {}; E.forEach(function(e){ counts[e.m] = (counts[e.m]||0) + 1; });
+  marketChips(document.getElementById('fMarket'), state.list.mk, function(){ state.list.n = 50; initListControls(); renderList(); }, counts);
+  var iss = {}; E.forEach(function(e){ if(e.is) iss[e.is] = (iss[e.is]||0) + 1; });
+  var isSel = document.getElementById('fIs');
+  isSel.innerHTML = '<option value="">'+t('all')+'</option>' + Object.keys(iss).sort(function(a,b){ return iss[b]-iss[a]; }).map(function(k){ return '<option value="'+esc(k)+'"'+(state.list.is===k?' selected':'')+'>'+esc(k)+' ('+iss[k]+')</option>'; }).join('');
+  var ixs = {}; E.forEach(function(e){ if(e.ix) ixs[e.ix] = 1; });
+  document.getElementById('ixList').innerHTML = Object.keys(ixs).sort().map(function(k){ return '<option value="'+esc(k)+'">'; }).join('');
+  var aumSel = document.getElementById('fAum');
+  var labK = LANG==='ko' ? ['전체','100억원 이상','1,000억원 이상','1조원 이상','10조원 이상'] : ['Any','≥ KRW 10B','≥ KRW 100B','≥ KRW 1T','≥ KRW 10T'];
+  aumSel.innerHTML = AUM_STEPS.map(function(v,i){ return '<option value="'+v+'"'+(state.list.aum===v?' selected':'')+'>'+labK[i]+'</option>'; }).join('');
+  var thSel = document.getElementById('fTh');
+  thSel.innerHTML = '<option value="">'+t('all')+'</option>' + M.themes.map(function(x){ return '<option value="'+x.id+'"'+(state.list.th===x.id?' selected':'')+'>'+esc(LANG==='ko'?x.ko:x.en)+'</option>'; }).join('') + '<option value="_none"'+(state.list.th==='_none'?' selected':'')+'>'+t('none_theme')+'</option>';
+  var so = document.getElementById('fSort');
+  so.innerHTML = [['aum',t('sort_aum')],['ret',t('sort_ret')],['name',t('sort_name')]].map(function(x){ return '<option value="'+x[0]+'"'+(state.list.sort===x[0]?' selected':'')+'>'+x[1]+'</option>'; }).join('');
+}
+
+/* ---------------------------------------------------------------- 상세 */
+var lastFocus = null, curDetail = null;
+function openDetail(k){
+  var e = byKey[k]; if(!e) return;
+  curDetail = k;
+  lastFocus = document.activeElement;
+  var p = document.getElementById('panel');
+  var html = '<button class="x" type="button" aria-label="'+t('d_close')+'" id="dClose">×</button>';
+  html += '<h2 id="dTitle">'+esc(eName(e))+'</h2>';
+  if(LANG==='ko' && e.ne) html += '<div class="note">'+esc(e.ne)+'</div>';
+  if(LANG==='en' && e.ne && e.ne !== e.n) html += '<div class="note">'+esc(e.n)+'</div>';
+  html += '<div>'+badges(e)+'</div>';
+  html += '<dl class="kv">';
+  html += '<dt>'+t('d_code')+'</dt><dd>'+esc(e.c)+'</dd>';
+  html += '<dt>'+t('d_market')+'</dt><dd>'+mkName(e.m)+'</dd>';
+  html += '<dt>'+t('d_issuer')+'</dt><dd>'+(e.is?esc(e.is):'<span class="na">'+t('d_none')+'</span>')+'</dd>';
+  html += '<dt>'+t('d_index')+'</dt><dd>'+(e.ix?esc(e.ix):'<span class="na">'+t('d_none')+'</span>')+'</dd>';
+  if(e.cat) html += '<dt>'+t('d_cat')+'</dt><dd>'+esc(e.cat)+'</dd>';
+  html += '<dt>'+t('d_fee')+'</dt><dd>'+(e.fee!=null?e.fee.toFixed(2)+'%':'<span class="na">'+t('d_none')+'</span>')+'</dd>';
+  html += '<dt>'+t('d_aum')+'</dt><dd>'+fmtLocal(e.aum, e.ccy)+(e.ccy!=='KRW'&&e.aumK!=null?' · '+t('d_aumk')+' '+fmtKRW(e.aumK):'')+'</dd>';
+  html += '<dt>'+t('d_halt')+'</dt><dd>'+(e.st===1?'<span class="pos">'+esc(e.stw||t('halt'))+'</span>':(e.st===0?t('d_trading'):'<span class="na">'+t('d_unknown')+(e.stw?' — '+esc(e.stw):'')+'</span>'))+'</dd>';
+  if(e.lv) html += '<dt>'+t('d_lev')+'</dt><dd>'+(e.lv===1?t('lev'):t('inv'))+' <span class="note">('+esc(e.lvw||'')+')</span></dd>';
+  html += '</dl>';
+  if(e.ab === 'fund') html += '<div class="msg">'+t('fund_msg')+(e.abw?'<br><span class="note">'+esc(e.abw)+'</span>':'')+'</div>';
+  else if(e.ab === '?') html += '<div class="msg gray">'+t('aumq_msg')+'</div>';
+  // 수익률
+  html += '<h3>'+t('d_ret')+'</h3><div class="retgrid">';
+  for(var rr=0; rr<2; rr++){
+    PERIODS.slice(rr*5, rr*5+5).forEach(function(pp){ html += '<div class="p">'+periodLabel(pp).replace(' ('+t('ann')+')','*')+'</div>'; });
+    e.r.slice(rr*5, rr*5+5).forEach(function(v){ html += '<div>'+fmtPct(v)+'</div>'; });
+  }
+  html += '</div><p class="note">* '+t('ann')+' · '+t('ret_basis')+' '+t('ret_at')+' '+esc(e.ra||'—')+' · '+t('src')+': '+srcName(e.rs)+'</p>';
+  // 구성
+  html += '<h3>'+t('d_hold')+'</h3>';
+  if(e.hs === 'cn'){
+    html += '<div class="msg">'+t('cn_msg')+'</div>' + cnSuggest(e);
+  } else if(!e.h || !e.h.length){
+    html += '<div class="msg gray">'+(e.hs==='err'?t('top3_err'):t('none_msg'))+'</div>';
+  } else {
+    if(e.hs === 'noweight') html += '<div class="msg gray">'+t('now_msg')+'</div>';
+    var mx = 0; e.h.forEach(function(p){ if(p[1] != null && p[1] > mx) mx = p[1]; });
+    e.h.forEach(function(p, i){
+      html += '<div class="hbar"><div class="i">'+(i+1)+'</div><div>'+esc(hName(p[0]))+(H[p[0]][3]&&LANG==='ko'?' <span class="note">('+esc(H[p[0]][2]||'')+')</span>':'')+'</div><div class="w">'+fmtW(p[1])+'</div>' +
+        (p[1]!=null?'<div class="track"><div class="fill" style="width:'+(mx?Math.max(1,p[1]/mx*100):0).toFixed(1)+'%"></div></div>':'')+'</div>';
+    });
+    if(e.hsum != null) html += '<p class="note">'+t('d_hsum')+': <b>'+e.hsum.toFixed(2)+'%</b></p>';
+  }
+  html += '<div class="no-print" style="margin-top:14px"><button class="btn primary" type="button" id="dAdd">'+(state.basket.indexOf(e.k)>=0?t('d_added'):t('d_add'))+'</button></div>';
+  html += '<div class="src">'+t('src')+': '+srcName(e.hsrc || (e.m==='KR'?'naver':'yahoo'))+' · '+t('hold_at')+' '+esc(e.hat||'—')+(e.err&&e.err.length?'<br>'+esc(e.err.join(' / ')):'')+'</div>';
+  p.innerHTML = html;
+  document.getElementById('ov').classList.add('open');
+  document.body.classList.add('detail-open');
+  document.getElementById('dClose').addEventListener('click', closeDetail);
+  document.getElementById('dAdd').addEventListener('click', function(){ addBasket(e.k); this.textContent = t('d_added'); });
+  p.querySelectorAll('[data-k]').forEach(function(el){ el.addEventListener('click', function(ev){ ev.preventDefault(); openDetail(el.getAttribute('data-k')); }); });
+  document.getElementById('dClose').focus();
+}
+function closeDetail(){
+  curDetail = null;
+  document.getElementById('ov').classList.remove('open');
+  document.body.classList.remove('detail-open');
+  if(lastFocus && lastFocus.focus) lastFocus.focus();
+}
+document.getElementById('ov').addEventListener('click', function(ev){ if(ev.target.id === 'ov') closeDetail(); });
+document.addEventListener('keydown', function(ev){ if(ev.key === 'Escape' && document.body.classList.contains('detail-open')) closeDetail(); });
+
+// 중국 본토 → 같은 지수의 홍콩·미국 상장 (이름으로)
+var CN_IX = [
+  [/沪深\s*300|CSI\s*300/i, /CSI\s*300/i], [/中证\s*500|CSI\s*500/i, /CSI\s*500/i], [/中证\s*1000|CSI\s*1000/i, /CSI\s*1000/i],
+  [/A500/i, /A500/i], [/科创|STAR\s*50/i, /STAR\s*50/i], [/创业板|ChiNext/i, /ChiNext/i], [/上证\s*50|SSE\s*50/i, /SSE\s*50/i],
+  [/恒生科技|Hang\s*Seng\s*TECH/i, /Hang\s*Seng\s*TECH/i], [/恒生|Hang\s*Seng(?!\s*TECH)/i, /Hang\s*Seng(?!\s*TECH)/i],
+  [/纳斯达克|纳指|Nasdaq/i, /Nasdaq[\s-]*100|QQQ/i], [/标普\s*500|S&P\s*500/i, /S&P\s*500/i], [/日经|Nikkei/i, /Nikkei/i],
+  [/半导体|芯片|Semiconductor|Chip/i, /China.*Semiconductor|Semiconductor.*China/i], [/MSCI\s*China|A50/i, /A50|MSCI\s*China/i]
+];
+function cnSuggest(e){
+  var name = (e.n||'') + ' ' + (e.ne||'');
+  var rx = null; for(var i=0;i<CN_IX.length;i++){ if(CN_IX[i][0].test(name)){ rx = CN_IX[i][1]; break; } }
+  if(!rx) return '<p class="note">'+t('cn_nosugg')+'</p>';
+  var c = E.filter(function(x){ return (x.m==='HK'||x.m==='US') && x.hs==='ok' && !x.lv && rx.test(x.n); })
+           .sort(function(a,b){ return (b.aumK||0)-(a.aumK||0); }).slice(0,6);
+  if(!c.length) return '<p class="note">'+t('cn_nosugg')+'</p>';
+  return '<p class="note">'+t('cn_sugg')+'</p><div class="rows">'+c.map(function(x){ return rowHTML(x); }).join('')+'</div>';
+}
+
+/* ---------------------------------------------------------------- 제안 칸 */
+function suggest(input, list, source, onPick){
+  var cur = -1, items = [];
+  function close(){ list.classList.remove('open'); cur = -1; }
+  input.addEventListener('input', function(){
+    var q = norm(input.value);
+    if(!q){ close(); list.innerHTML = ''; return; }
+    items = source(q).slice(0, 30);
+    list.innerHTML = items.map(function(it, i){ return '<button type="button" data-i="'+i+'">'+it.html+'</button>'; }).join('');
+    list.classList.toggle('open', items.length > 0);
+    list.querySelectorAll('button').forEach(function(b){ b.addEventListener('mousedown', function(ev){ ev.preventDefault(); onPick(items[+b.getAttribute('data-i')]); close(); }); });
+  });
+  input.addEventListener('keydown', function(ev){
+    var bs = list.querySelectorAll('button');
+    if(ev.key === 'ArrowDown'){ cur = Math.min(bs.length-1, cur+1); ev.preventDefault(); }
+    else if(ev.key === 'ArrowUp'){ cur = Math.max(0, cur-1); ev.preventDefault(); }
+    else if(ev.key === 'Enter'){ if(items.length){ onPick(items[cur >= 0 ? cur : 0]); close(); } ev.preventDefault(); return; }
+    else if(ev.key === 'Escape'){ close(); return; }
+    bs.forEach(function(b, i){ b.classList.toggle('on', i === cur); });
+  });
+  input.addEventListener('blur', function(){ setTimeout(close, 150); });
+}
+function etfSource(q){
+  var out = [];
+  for(var i=0;i<E.length && out.length < 200;i++){ if(E[i]._q.indexOf(q) >= 0) out.push(E[i]); }
+  out.sort(function(a,b){ var ea = norm(a.c)===q ? 1 : 0, eb = norm(b.c)===q ? 1 : 0; if(ea!==eb) return eb-ea; return (b.aumK||0)-(a.aumK||0); });
+  return out.map(function(e){ return {k:e.k, html: esc(eName(e)) + '<small>'+esc(e.c)+' · '+mkName(e.m)+'</small>'}; });
+}
+
+/* ---------------------------------------------------------------- 거꾸로 찾기 */
+function holdSource(q){
+  var out = [];
+  for(var i=0;i<H.length;i++){ if(REV[i].length && H[i]._q.indexOf(q) >= 0) out.push(i); }
+  out.sort(function(a,b){ var ea = norm(H[a][1])===q||norm(H[a][2])===q||norm(H[a][0].replace(/^[A-Z]+:/,''))===q ? 1 : 0, eb = norm(H[b][1])===q||norm(H[b][2])===q||norm(H[b][0].replace(/^[A-Z]+:/,''))===q ? 1 : 0; if(ea!==eb) return eb-ea; return REV[b].length - REV[a].length; });
+  return out.map(function(i){ var h = H[i]; return {i:i, html: esc(hName(i)) + '<small>'+esc(h[0].indexOf('N:')===0?'':h[0])+(h[1]&&h[2]&&LANG==='ko'?' · '+esc(h[2]):'')+' · ETF '+REV[i].length+'</small>'}; });
+}
+function renderRev(){
+  var out = document.getElementById('revOut');
+  var blind = E.filter(function(e){ return e.hs !== 'ok' && e.hs !== 'noweight'; });
+  var blindCN = blind.filter(function(e){ return e.m === 'CN'; }).length;
+  var blindNote = '<p class="note">'+t('rev_blind', {n: blind.length.toLocaleString(), cn: blindCN.toLocaleString()})+'</p>';
+  if(state.rev.key == null){ out.innerHTML = blindNote; return; }
+  var i = state.rev.key;
+  var list = REV[i].map(function(x){ return {e:E[x[0]], w:x[1]}; })
+    .filter(function(x){ return state.rev.mk[x.e.m] && levOK(x.e); })
+    .sort(function(a,b){ if(a.w==null&&b.w==null) return (b.e.aumK||0)-(a.e.aumK||0); if(a.w==null) return 1; if(b.w==null) return -1; return b.w-a.w; });
+  var html = '<div class="rule"></div><h2>'+t('rev_n', {name: esc(hName(i)), n: list.length})+'</h2>';
+  if(H[i][3]) html += '<p class="note">'+t('rev_alias')+' — '+esc(H[i][2]||H[i][0])+'</p>';
+  if(!list.length) html += '<p>'+t('rev_none')+'</p>';
+  else html += '<div class="rows">'+headHTML(t('rev_w'))+list.map(function(x){ return rowHTML(x.e, x.w==null?'<span class="na">'+t('now')+'</span>':'<b>'+x.w.toFixed(2)+'%</b>'); }).join('')+'</div>';
+  out.innerHTML = html + blindNote;
+  out.querySelectorAll('.row .num small').forEach(function(s){ s.textContent = ''; });
+  bindRows(out);
+}
+
+/* ---------------------------------------------------------------- 겹침 */
+function addBasket(k){
+  if(state.basket.indexOf(k) >= 0) return;
+  if(state.basket.length >= 8){ alert(t('ovl_max')); return; }
+  state.basket.push(k); saveBasket(); renderOvl();
+}
+function wmap(e){ var m = {}; (e.h||[]).forEach(function(p){ if(p[1] != null) m[p[0]] = p[1]; }); return m; }
+function overlap(a, b){
+  if(a.hs !== 'ok' || b.hs !== 'ok') return null;
+  var ma = wmap(a), mb = wmap(b), s = 0, common = [];
+  for(var k in ma){ if(mb[k] != null){ s += Math.min(ma[k], mb[k]); common.push([+k, ma[k], mb[k]]); } }
+  common.sort(function(x,y){ return Math.min(y[1],y[2]) - Math.min(x[1],x[2]); });
+  return {v:s, common:common};
+}
+function renderOvl(){
+  var bk = document.getElementById('basket');
+  var es = state.basket.map(function(k){ return byKey[k]; }).filter(Boolean);
+  bk.innerHTML = es.map(function(e, i){ return '<span class="bk"><span title="'+esc(eName(e))+'">'+(i+1)+'. '+esc(eName(e))+'</span><button type="button" class="no-print" aria-label="remove" data-k="'+esc(e.k)+'">×</button></span>'; }).join('');
+  bk.querySelectorAll('button').forEach(function(b){ b.addEventListener('click', function(){ state.basket = state.basket.filter(function(k){ return k !== b.getAttribute('data-k'); }); saveBasket(); renderOvl(); }); });
+  var out = document.getElementById('ovlOut');
+  if(!es.length){ out.innerHTML = '<p class="note">'+t('ovl_empty')+'</p>'; return; }
+  var html = '<div class="rows">'+es.map(function(e){ return rowHTML(e); }).join('')+'</div>';
+  if(es.length < 2){ out.innerHTML = html + '<p class="note">'+t('ovl_one')+'</p>'; bindRows(out); return; }
+  html += '<p class="note">'+t('ovl_def')+'</p>';
+  // 짝
+  var pairs = [];
+  for(var a=0;a<es.length;a++) for(var b=a+1;b<es.length;b++) pairs.push([es[a], es[b], overlap(es[a], es[b]), a, b]);
+  pairs.sort(function(x,y){ if(x[2]==null&&y[2]==null) return 0; if(x[2]==null) return 1; if(y[2]==null) return -1; return y[2].v - x[2].v; });
+  // 행렬 (넓은 화면)
+  html += '<div class="mx-wrap"><div class="rule"></div><h2>'+t('ovl_mx')+'</h2><table class="mx"><tr><th></th>'+es.map(function(e,i){ return '<th>'+(i+1)+'</th>'; }).join('')+'</tr>';
+  es.forEach(function(ea, i){
+    html += '<tr><th class="rh">'+(i+1)+'. '+esc(eName(ea))+'</th>';
+    es.forEach(function(eb, j){
+      if(i === j){ html += '<td>—</td>'; return; }
+      var o = overlap(ea, eb);
+      html += o == null ? '<td class="unk">'+t('ovl_unk')+'</td>' : '<td>'+o.v.toFixed(1)+'%</td>';
+    });
+    html += '</tr>';
+  });
+  html += '</table></div>';
+  html += '<div class="rule"></div><h2>'+t('ovl_pairs')+'</h2>';
+  pairs.forEach(function(p){
+    var o = p[2], ea = p[0], eb = p[1];
+    html += '<div class="pair"><div class="ph"><div>'+(p[3]+1)+'. '+esc(eName(ea))+' ↔ '+(p[4]+1)+'. '+esc(eName(eb))+'</div>';
+    if(o == null){
+      var who = [ea, eb].filter(function(x){ return x.hs !== 'ok'; }).map(eName).join(', ');
+      html += '<div class="pv unk">'+t('ovl_unk')+'</div></div><div class="common na">'+t('ovl_unk_why', {name: esc(who)})+'</div></div>';
+      return;
+    }
+    html += '<div class="pv">≥ '+o.v.toFixed(1)+'%</div></div><div class="meter"><i style="width:'+Math.min(100,o.v).toFixed(1)+'%"></i></div>';
+    html += '<div class="common">'+(o.common.length ? '<b>'+t('ovl_common')+'</b>: '+o.common.map(function(c){ return esc(hName(c[0]))+' ('+c[1].toFixed(1)+' / '+c[2].toFixed(1)+')'; }).join(' · ') : '<span class="na">'+t('ovl_nocommon')+'</span>')+'</div></div>';
+  });
+  // 종목별
+  var u = {};
+  es.forEach(function(e, j){ (e.h||[]).forEach(function(p){ if(e.hs !== 'ok') return; (u[p[0]] = u[p[0]] || {})[j] = p[1]; }); });
+  var keys = Object.keys(u).map(Number).sort(function(a,b){ return Object.keys(u[b]).length - Object.keys(u[a]).length || sumv(u[b]) - sumv(u[a]); });
+  function sumv(o){ var s=0; for(var k in o) s += o[k]||0; return s; }
+  html += '<div class="rule"></div><h2>'+t('ovl_union')+'</h2><p class="note">'+t('ovl_blank')+'</p><div class="rows">';
+  keys.forEach(function(k){
+    var cells = es.map(function(e, j){ return u[k][j] != null ? (j+1)+'. '+u[k][j].toFixed(1)+'%' : (e.hs !== 'ok' ? (j+1)+'. ?' : null); }).filter(Boolean);
+    html += '<div class="row" style="cursor:default;grid-template-columns:minmax(0,1fr)"><div><b>'+esc(hName(k))+'</b> <span class="note">'+Object.keys(u[k]).length+'/'+es.length+'</span></div><div class="top3" style="grid-column:auto">'+cells.join(' · ')+'</div></div>';
+  });
+  html += '</div>';
+  out.innerHTML = html;
+  bindRows(out);
+}
+
+/* ---------------------------------------------------------------- 순위 */
+function renderRank(){
+  var R = state.rank, p = pIdx();
+  var pool = E.filter(function(e){ return R.mk[e.m]; });
+  var ex = {halt:0, fund:0, alt:0, nul:0, lev:0};
+  var ok = pool.filter(function(e){
+    if(!levOK(e)){ ex.lev++; return false; }
+    if(e.st === 1){ ex.halt++; return false; }
+    if(R.metric === 'aum'){
+      if(e.ab === 'fund'){ ex.fund++; return false; }
+      if(e.alt && e.alt.aum){ ex.alt++; return false; }
+      if(e.aumK == null){ ex.nul++; return false; }
+    } else {
+      if(e.alt && e.alt.ret){ ex.alt++; return false; }
+      if(e.r[p] == null){ ex.nul++; return false; }
+    }
+    return true;
+  });
+  var val = function(e){ return R.metric === 'aum' ? e.aumK : e.r[p]; };
+  ok.sort(function(a,b){ return R.order === 'desc' ? val(b) - val(a) : val(a) - val(b); });
+  var top = ok.slice(0, R.n);
+  var html = '<div class="count">'+t('cnt_of', {n: ok.length.toLocaleString(), total: pool.length.toLocaleString()})+'</div>';
+  html += '<table class="dt tbl-fit"><thead><tr><th style="width:44px" class="r">#</th><th>'+t('h_name')+'</th><th class="r" style="width:30%">'+(R.metric==='aum'?t('h_aum'):t('h_ret')+' · '+periodLabel(state.period))+'</th></tr></thead><tbody>';
+  top.forEach(function(e, i){
+    html += '<tr data-k="'+esc(e.k)+'" style="cursor:pointer"><td class="r">'+(i+1)+'</td><td><b>'+esc(eName(e))+'</b>'+badges(e)+'<div class="note" style="margin:0">'+esc(e.c)+' · '+mkName(e.m)+(R.metric==='aum'?'':' · '+fmtKRW(e.aumK))+'</div></td><td class="r">'+(R.metric==='aum'?fmtKRW(e.aumK):fmtPct(e.r[p]))+'</td></tr>';
+  });
+  html += '</tbody></table>';
+  var exl = [];
+  if(ex.halt) exl.push(t('rk_ex_halt', {n: ex.halt}));
+  if(ex.fund) exl.push(t('rk_ex_fund', {n: ex.fund}));
+  if(ex.alt) exl.push(t('rk_ex_alt', {n: ex.alt}));
+  if(ex.nul) exl.push(t('rk_ex_null', {n: ex.nul}));
+  if(ex.lev) exl.push(t('rk_ex_lev', {n: ex.lev}));
+  html += '<p class="note"><b>'+t('rk_ex')+'</b>: '+(exl.length?exl.join(' · '):'—')+'</p>';
+  html += '<p class="note">'+(R.metric==='aum'?t('rk_aumk'):t('rk_ccy')+' '+t('ret_basis'))+'</p>';
+  var out = document.getElementById('rkOut'); out.innerHTML = html;
+  out.querySelectorAll('tr[data-k]').forEach(function(tr){ tr.addEventListener('click', function(){ openDetail(tr.getAttribute('data-k')); }); });
+}
+function initRankControls(){
+  var R = state.rank;
+  document.getElementById('rkMetric').innerHTML = [['ret',t('rk_ret')],['aum',t('rk_aum')]].map(function(x){ return '<option value="'+x[0]+'"'+(R.metric===x[0]?' selected':'')+'>'+x[1]+'</option>'; }).join('');
+  document.getElementById('rkOrder').innerHTML = [['desc',t('rk_desc')],['asc',t('rk_asc')]].map(function(x){ return '<option value="'+x[0]+'"'+(R.order===x[0]?' selected':'')+'>'+x[1]+'</option>'; }).join('');
+  document.getElementById('rkN').innerHTML = [20,50,100,200].map(function(n){ return '<option value="'+n+'"'+(R.n===n?' selected':'')+'>'+n+'</option>'; }).join('');
+  marketChips(document.getElementById('rkMarket'), R.mk, function(){ initRankControls(); renderRank(); });
+}
+
+/* ---------------------------------------------------------------- 테마 점검 */
+function hiName(name, word){
+  if(!name) return '';
+  if(!word) return esc(name);
+  var i = name.toLowerCase().indexOf(String(word).toLowerCase());
+  if(i < 0) return esc(name);
+  return esc(name.slice(0,i)) + '<mark>' + esc(name.slice(i, i+word.length)) + '</mark>' + esc(name.slice(i+word.length));
+}
+function renderTheme(){
+  var cnt = {}; E.forEach(function(e){ var ks = Object.keys(e.th||{}); if(!ks.length) cnt._none = (cnt._none||0)+1; ks.forEach(function(k){ cnt[k] = (cnt[k]||0)+1; }); });
+  var chips = document.getElementById('thChips');
+  if(state.th.id == null) state.th.id = M.themes[0].id;
+  chips.innerHTML = M.themes.concat([{id:'_none', ko:t('none_theme'), en:t('none_theme')}]).map(function(x){
+    return '<button type="button" class="chip" data-id="'+x.id+'" aria-pressed="'+(state.th.id===x.id?'true':'false')+'">'+esc(LANG==='ko'?x.ko:x.en)+'<span class="n">'+(cnt[x.id]||0).toLocaleString()+'</span></button>'; }).join('');
+  chips.querySelectorAll('.chip').forEach(function(c){ c.addEventListener('click', function(){ state.th.id = c.getAttribute('data-id'); renderTheme(); }); });
+  var id = state.th.id, th = M.themes.filter(function(x){ return x.id === id; })[0];
+  var list = E.filter(function(e){ return id === '_none' ? !Object.keys(e.th||{}).length : (e.th && e.th[id]); })
+              .sort(function(a,b){ return (b.aumK||0)-(a.aumK||0); });
+  var html = '<div class="rule"></div><h2>'+esc(th ? (LANG==='ko'?th.ko:th.en) : t('none_theme'))+' · '+t('th_n',{n:list.length.toLocaleString()})+'</h2>';
+  if(th) html += '<p class="note words"><b>'+t('th_words')+'</b>: '+th.words.map(function(w){ return esc(w.replace(/\\b/g,'')); }).join(', ')+'</p>';
+  html += '<table class="dt tbl-fit"><thead><tr><th>'+t('h_name')+'</th><th style="width:44%">'+t('th_top')+'</th></tr></thead><tbody>';
+  list.slice(0, 400).forEach(function(e){
+    var w = e.th && e.th[id];
+    var others = Object.keys(e.th||{}).filter(function(k){ return k !== id; }).map(function(k){ var x = M.themes.filter(function(y){ return y.id===k; })[0]; return x ? (LANG==='ko'?x.ko:x.en) : k; });
+    html += '<tr data-k="'+esc(e.k)+'" style="cursor:pointer"><td><b>'+hiName(eName(e), w && (LANG==='ko'||!e.ne ? w : null))+'</b>'+(LANG==='en'&&e.ne&&w?'<div class="note" style="margin:0">'+hiName(e.n, w)+'</div>':'')+'<div class="note" style="margin:0">'+esc(e.c)+' · '+mkName(e.m)+(w?' · '+t('th_hit')+': <mark>'+esc(w)+'</mark>':'')+(others.length?' · +'+esc(others.join(', ')):'')+'</div></td><td style="font-size:13px">'+top3(e, 4)+'</td></tr>';
+  });
+  html += '</tbody></table>';
+  if(list.length > 400) html += '<p class="note">'+(LANG==='ko'?'규모 순으로 앞의 400개만 보입니다. 나머지는 목록 화면에서 테마로 거르세요.':'Showing the 400 largest. Use the theme filter on Browse for the rest.')+'</p>';
+  var out = document.getElementById('thOut'); out.innerHTML = html;
+  out.querySelectorAll('tr[data-k]').forEach(function(tr){ tr.addEventListener('click', function(){ openDetail(tr.getAttribute('data-k')); }); });
+}
+
+/* ---------------------------------------------------------------- 사용법 */
+function renderGuide(){
+  var mk = M.markets, fx = M.fx || {}, v = M.verify_kr || {};
+  var mkLines = MARKETS.filter(function(m){ return mk[m]; }).map(function(m){
+    return '<li><b>'+mkName(m)+'</b> '+(mk[m].n||0).toLocaleString()+(LANG==='ko'?'개 · 수집 ':' ETFs · fetched ')+esc(mk[m].at||'—')+'</li>'; }).join('');
+  var fxl = Object.keys(fx).map(function(c){ var x = fx[c]; return c+' '+(x.krw!=null?x.krw.toFixed(c==='JPY'?4:2):'—')+(LANG==='ko'?'원':' KRW'); }).join(' · ');
+  var ko = LANG === 'ko';
+  var h = '';
+  h += '<h2>'+(ko?'무엇을 보는 화면인가':'What this is')+'</h2>';
+  h += '<p>'+(ko?'ETF 이름만으로는 속을 알 수 없습니다. 이 화면은 ETF 를 누르면 <b>상위 10종목과 비중</b>이 바로 보이게 하고, 조건으로 좁히기 · 종목으로 거꾸로 찾기 · 여러 ETF 겹침 · 순위 · 테마 점검을 한 파일 안에서 합니다. 인터넷이 없어도 열립니다.':'Fund names don’t tell you what’s inside. Tap an ETF to see its <b>top 10 holdings and weights</b>; filter, search by holding, measure overlap, rank, and review themes — all in one file that opens offline.')+'</p>';
+  h += '<div class="rule"></div><h2>'+(ko?'이렇게 씁니다':'How to use')+'</h2><ul>';
+  h += ko ? '<li><b>목록</b> — 나라·기초지수·운용사·규모·테마로 좁힙니다. 줄을 누르면 상세가 열립니다.</li><li><b>종목으로 찾기</b> — 「삼성전자」를 치면 삼성전자를 상위 10종목 안에 담은 ETF 가 비중 순으로 나옵니다.</li><li><b>겹침 비교</b> — 상세의 「겹침 비교에 담기」나 겹침 화면의 검색으로 최대 8개를 담습니다. 짝마다 겹침과 함께 담은 종목이 나옵니다.</li><li><b>순위</b> — 수익률(위 막대의 기간) 또는 규모로 줄 세웁니다. 뺀 것과 그 까닭을 아래에 적습니다.</li><li><b>테마 점검</b> — 이름으로 붙인 테마가 맞는지 훑어봅니다. 걸린 낱말이 칠해져 있습니다.</li><li><b>인쇄</b> — 「이 화면 인쇄」는 지금 보고 있는 탭만(상세가 열려 있으면 상세만) 찍습니다.</li><li><b>레버리지·인버스</b>는 기본으로 뺍니다. 위 막대에서 켜면 모든 화면에 들어옵니다.</li>'
+            : '<li><b>Browse</b> — filter by market, index, issuer, size and theme. Tap a row for details.</li><li><b>Find by holding</b> — type “Samsung Electronics” to list ETFs holding it in their top 10, by weight.</li><li><b>Overlap</b> — add up to 8 ETFs (from a detail panel or the search box). Each pair shows its overlap and the stocks held by both.</li><li><b>Rankings</b> — by return (period in the top bar) or size. What was excluded, and why, is listed below the table.</li><li><b>Theme check</b> — scan the name-based themes; the matched word is highlighted.</li><li><b>Print</b> prints only the current tab (or only the detail panel if open).</li><li><b>Leveraged / inverse</b> funds are hidden by default; tick the box in the top bar to include them everywhere.</li>';
+  h += '</ul>';
+  h += '<div class="rule"></div><h2>'+(ko?'숫자를 읽는 법':'Reading the numbers')+'</h2><ul>';
+  h += ko ? '<li><b>수익률은 한 가지입니다 — 분배금 포함 총수익률.</b> 1일~1년은 누적, 3·5·10년은 연환산입니다. 한국은 네이버가 주는 값(분배금이 반영된 수정 종가 기준), 해외는 야후의 배당 보정 종가로 같은 약속에 맞춰 셈했습니다. 각 상장 통화 기준입니다.</li>'
+            : '<li><b>One return measure — total return including distributions.</b> Cumulative up to 1 year; 3/5/10 years annualized. Korea uses Naver’s figures (based on distribution-adjusted closes); other markets are computed from Yahoo dividend-adjusted closes with the same conventions. Each in its listing currency.</li>';
+  if(v.n) h += ko ? '<li>같은 약속인지 확인했습니다 — 한국 표본 '+v.n+'종을 네이버 일봉으로 직접 셈해 네이버 값과 맞대 보니 '+v.cells+'칸 가운데 '+v.within_0_1+'칸이 0.1%p 안, 가장 큰 차이 '+(v.max_abs_diff!=null?v.max_abs_diff.toFixed(2):'—')+'%p 였습니다.</li>'
+                  : '<li>Checked: recomputing '+v.n+' Korean ETFs from Naver daily closes, '+v.within_0_1+' of '+v.cells+' figures were within 0.1pp of Naver’s; largest gap '+(v.max_abs_diff!=null?v.max_abs_diff.toFixed(2):'—')+'pp.</li>';
+  h += ko ? '<li><b>규모</b>는 순자산(한국: 네이버 순자산총액, 해외: 야후 순자산)이며 수집 시점 환율로 원화 환산했습니다: '+esc(fxl)+'.</li><li><b>「펀드 전체 기준」</b> — 야후는 뱅가드처럼 ETF 가 한 펀드의 한 종류일 때, 또는 다른 거래소에 교차 상장된 것일 때 ETF 만의 값이 아니라 펀드 전체 순자산을 줍니다. 그 값은 같은 펀드의 뮤추얼펀드 클래스나 다른 상장의 순자산과 <b>한 푼도 틀리지 않고 같습니다</b>. 그렇게 같은 것을 찾아 「펀드 전체 기준」으로 적고 규모 순위에서 뺍니다(이 판 '+M.n_fund+'개). 이 증거가 안 잡히는 경우는 남아 있을 수 있습니다.</li><li><b>거래 정지</b> — 한국은 네이버의 거래 정지 표시, 해외는 원천이 따로 주지 않아 마지막 체결이 '+M.stale_days+'일 넘게 지난 것을 「최근 거래 없음」으로 봅니다. 둘 다 순위에서 뺍니다.</li><li><b>빈 칸(—)은 모르는 값입니다.</b> 대충 채우지 않았습니다. 다른 출처로 메운 값이 있으면 그 출처를 적고 순위에서 뺍니다(지금 판에는 없습니다).</li>'
+            : '<li><b>Size</b> is net assets (Korea: Naver total NAV; elsewhere: Yahoo net assets), converted to KRW at collection-time rates: '+esc(fxl)+'.</li><li><b>“Whole-fund figure”</b> — for share-class ETFs (e.g. Vanguard) and cross-listings, Yahoo reports the whole fund’s net assets, which then <b>exactly equal</b> those of a mutual-fund class of the same fund or of another listing. Such ETFs are labelled and dropped from size rankings ('+M.n_fund+' in this edition). Cases without that evidence may remain.</li><li><b>Halted</b> — Korea uses Naver’s trading-halt flag. Elsewhere the source has no flag, so no trade for over '+M.stale_days+' days counts as “no recent trades”. Both are excluded from rankings.</li><li><b>A dash (—) means unknown.</b> Nothing is estimated. Values filled from another source would be labelled and excluded from rankings (there are none in this edition).</li>';
+  h += '</ul>';
+  h += '<div class="rule"></div><h2>'+(ko?'구성종목 — 모르는 것은 모른다고':'Holdings — unknown stays unknown')+'</h2><ul>';
+  h += ko ? '<li>원천이 <b>상위 10종목</b>만 줍니다. 겹침은 그 안에서 센 것이라 <b>실제 겹침의 최소값</b>입니다.</li><li>구성 비중을 주지 않는 ETF(「구성 미제공」「비중 미제공」)는 겹침을 <b>0 이 아니라 「모름」</b>으로 둡니다. 똑같은 것을 담은 두 ETF 가 「안 겹침」으로 나오지 않게 하려는 것입니다.</li><li>해외 주식을 담은 한국 ETF 는 네이버가 종목 이름만 주고 비중을 비워 둡니다. 순서도 비중 순이 아닙니다.</li><li><b>중국 본토(상해·심천) 상장은 구성종목을 주는 원천이 없어 「없음」입니다.</b> 상세에서 같은 지수로 보이는 홍콩·미국 상장을 이름으로 찾아 보여 줍니다.</li><li>한글로 외국 종목을 찾을 수 있게 주요 종목에 한글 별칭을 붙였습니다(검색용).</li>'
+            : '<li>Sources publish only the <b>top 10</b>. Overlap is computed within them, so it is a <b>lower bound</b>.</li><li>ETFs without weights (“No holdings”, “No weights”) show overlap as <b>“Unknown”, never 0</b> — so two funds holding the same thing are never reported as “no overlap”.</li><li>For Korean ETFs holding foreign stocks, Naver gives names only, not weights, and not in weight order.</li><li><b>Mainland China (Shanghai/Shenzhen) listings have no holdings source and are marked “none”.</b> The detail panel suggests HK/US listings that appear (by name) to track the same index.</li><li>Major foreign stocks carry Korean search aliases.</li>';
+  h += '</ul>';
+  h += '<div class="rule"></div><h2>'+(ko?'자료':'Data')+'</h2><ul>'+mkLines+'</ul>';
+  h += '<p class="note">'+(ko?'한국: 네이버 증권(목록·구성·운용사·기초지수·순자산·수익률·거래 정지), 영문 이름만 야후. 미국·홍콩·일본: 야후 파이낸스(목록·순자산·구성·운용사·일봉). 중국 본토: 야후 파이낸스(일봉). 홍콩은 같은 ETF 의 위안화·달러 카운터를 빼고 홍콩달러 카운터 하나만 둡니다. 화면 생성 ':'Korea: Naver Finance (list, holdings, issuer, index, NAV, returns, halts); English names from Yahoo. US/HK/Japan: Yahoo Finance (list, net assets, holdings, issuer, daily prices). Mainland China: Yahoo Finance (daily prices). For HK, RMB/USD counters of the same ETF are dropped in favour of the HKD counter. Built ')+esc(M.built)+'</p>';
+  h += '<p class="note">'+(ko?'투자 권유가 아닌 상담 참고 자료입니다. 원천 자료의 오류·지연이 있을 수 있으니 주문 전에는 증권사 화면에서 확인하세요.':'For reference in client conversations, not investment advice. Source data may contain errors or delays; confirm on the brokerage screen before trading.')+'</p>';
+  document.getElementById('tab-guide').innerHTML = h;
+}
+
+/* ---------------------------------------------------------------- 뼈대 */
+function applyLang(){
+  document.documentElement.lang = LANG;
+  document.title = t('title');
+  document.querySelectorAll('[data-i18n]').forEach(function(el){ el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el){ el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
+  document.querySelectorAll('.lang-toggle button').forEach(function(b){ b.setAttribute('aria-checked', b.getAttribute('data-lang') === LANG ? 'true' : 'false'); });
+  var ps = document.getElementById('optPeriod');
+  ps.innerHTML = PERIODS.map(function(p){ return '<option value="'+p+'"'+(state.period===p?' selected':'')+'>'+periodLabel(p)+'</option>'; }).join('');
+  var n = E.length.toLocaleString();
+  document.getElementById('asof').textContent = (LANG==='ko' ? 'ETF '+n+'개 · 자료 생성 ' : n+' ETFs · built ') + M.built;
+  initListControls(); initRankControls();
+  renderAll();
+  var ov = document.getElementById('ov');
+  if(ov.classList.contains('open') && curDetail) openDetail(curDetail); else document.getElementById('panel').innerHTML = '';
+}
+function revChips(){ marketChips(document.getElementById('revMarket'), state.rev.mk, function(){ renderRev(); revChips(); }); }
+function renderAll(){
+  renderList(); renderRev(); renderOvl(); renderRank(); renderTheme(); renderGuide();
+  revChips();
+}
+function setTab(tab){
+  state.tab = tab;
+  document.querySelectorAll('#tabs button').forEach(function(b){ b.setAttribute('aria-selected', b.getAttribute('data-tab') === tab ? 'true' : 'false'); });
+  document.querySelectorAll('section.tab').forEach(function(s){ s.classList.toggle('active', s.id === 'tab-' + tab); });
+  try{ history.replaceState(null, '', '#' + tab); }catch(e){}
+}
+document.querySelectorAll('#tabs button').forEach(function(b){ b.addEventListener('click', function(){ setTab(b.getAttribute('data-tab')); }); });
+document.querySelectorAll('.lang-toggle button').forEach(function(b){ b.addEventListener('click', function(){ LANG = b.getAttribute('data-lang'); try{ localStorage.setItem('etfLook.lang', LANG); }catch(e){} applyLang(); }); });
+document.getElementById('optLev').addEventListener('change', function(){ state.lev = this.checked; renderAll(); });
+document.getElementById('optPeriod').addEventListener('change', function(){ state.period = this.value; renderAll(); });
+document.getElementById('btnPrint').addEventListener('click', function(){ window.print(); });
+var deb; function later(fn){ clearTimeout(deb); deb = setTimeout(fn, 120); }
+document.getElementById('fQ').addEventListener('input', function(){ state.list.q = this.value; state.list.n = 50; later(renderList); });
+document.getElementById('fIx').addEventListener('input', function(){ state.list.ix = this.value; state.list.n = 50; later(renderList); });
+document.getElementById('fIs').addEventListener('change', function(){ state.list.is = this.value; state.list.n = 50; renderList(); });
+document.getElementById('fAum').addEventListener('change', function(){ state.list.aum = +this.value; state.list.n = 50; renderList(); });
+document.getElementById('fTh').addEventListener('change', function(){ state.list.th = this.value; state.list.n = 50; renderList(); });
+document.getElementById('fSort').addEventListener('change', function(){ state.list.sort = this.value; renderList(); });
+document.getElementById('listMore').addEventListener('click', function(){ state.list.n += 100; renderList(); });
+document.getElementById('rkMetric').addEventListener('change', function(){ state.rank.metric = this.value; renderRank(); });
+document.getElementById('rkOrder').addEventListener('change', function(){ state.rank.order = this.value; renderRank(); });
+document.getElementById('rkN').addEventListener('change', function(){ state.rank.n = +this.value; renderRank(); });
+document.getElementById('ovlClear').addEventListener('click', function(){ state.basket = []; saveBasket(); renderOvl(); });
+suggest(document.getElementById('revQ'), document.getElementById('revSugg'), holdSource, function(it){ state.rev.key = it.i; document.getElementById('revQ').value = hName(it.i); renderRev(); });
+suggest(document.getElementById('ovlQ'), document.getElementById('ovlSugg'), etfSource, function(it){ addBasket(it.k); document.getElementById('ovlQ').value = ''; });
+
+var h0 = (location.hash || '').replace('#','');
+if(['list','rev','ovl','rank','theme','guide'].indexOf(h0) >= 0) setTab(h0);
+applyLang();
+window.__etf = {E:E, H:H, M:M, overlap:overlap, state:state, openDetail:openDetail, setTab:setTab};
+})();
+</script>
+</body>
+</html>

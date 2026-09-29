@@ -502,6 +502,37 @@ def y_universe(region):
     return out, total
 
 
+def us_mutualfund_assets(limit=4000):
+    """미국 뮤추얼펀드의 순자산 — 「펀드 전체 기준」을 가려낼 증거로만 쓴다.
+
+    뱅가드 ETF 는 한 펀드의 한 종류(클래스)라 야후가 ETF 순자산 칸에 펀드 전체 값을
+    준다. 그 값은 같은 펀드의 뮤추얼펀드 클래스(VTI ↔ VTSAX)의 순자산과 **한 푼도 안
+    틀리고 같다.** 같으면 펀드 전체 값이라는 증거가 된다. 짐작(비율·운용사 이름)으로
+    가르지 않는다 — 야후의 발행 좌수가 낡아 비율로 가르면 iShares 까지 잘못 걸렸다.
+    """
+    out, off = [], 0
+    while off < limit:
+        payload = {'size': 250, 'offset': off, 'sortField': 'fundnetassets', 'sortType': 'DESC',
+                   'quoteType': 'MUTUALFUND', 'topOperator': 'AND',
+                   'query': {'operator': 'AND', 'operands': [{'operator': 'eq', 'operands': ['region', 'us']}]},
+                   'userId': '', 'userIdType': 'guid'}
+        try:
+            r = y_screener(payload)['finance']['result'][0]
+        except Exception as e:                              # noqa: BLE001
+            print('뮤추얼펀드 목록 실패 offset %d: %s' % (off, e), flush=True)
+            break
+        qs = r.get('quotes') or []
+        for q in qs:
+            if q.get('netAssets'):
+                out.append({'symbol': q['symbol'], 'name': q.get('longName') or q.get('shortName'),
+                            'aum': num(q['netAssets'])})
+        off += len(qs)
+        if not qs or off >= (r.get('total') or 0):
+            break
+        time.sleep(0.4)
+    return out
+
+
 def cn_universe():
     """상해 510000-519999·560000-563999·588000-589999, 심천 159000-159999 를 v7 quote 로 훑는다."""
     cands = ['%06d.SS' % i for i in list(range(510000, 520000)) + list(range(560000, 564000)) + list(range(588000, 590000))]
@@ -658,6 +689,11 @@ def main():
                                   'etfs': recs})
         report += ['## %s' % mk, '목록 %d (스크리너 총 %s) · 받은 것 %d · 구성 있음 %d' % (
             len(qs), total, len(recs), sum(1 for r in recs if r.get('h_status') == 'ok')), '']
+
+    if 'US' in markets:
+        mf = us_mutualfund_assets(400 if a.limit else 4000)
+        save('raw_MF.json', {'at': now_kst().strftime('%Y-%m-%d %H:%M:%S KST'), 'funds': mf})
+        report += ['## 미국 뮤추얼펀드 (펀드 전체 기준 가리기용)', '%d 종' % len(mf), '']
 
     if 'CN' in markets:
         qs = cn_universe()
