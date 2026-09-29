@@ -1,8 +1,8 @@
 /** 퇴직급여 계좌 선택 · 인출 설계 — Tailwind 설정 (미래에셋 디자인 토큰) */
 module.exports = {
   content: [
-    './tools/retirement-simulator/app.jsx',
-    './tools/retirement-simulator/shell.html'
+    './tools/retire-payout/app.jsx',
+    './tools/retire-payout/shell.html'
   ],
   theme: {
     extend: {

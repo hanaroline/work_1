@@ -3,8 +3,8 @@
 "이 고객의 퇴직급여를 어느 계좌로 받을 수 있고, 어느 계좌가 유리한가" 를 조합마다 답하는
 판단표를 **손으로 적지 않고 규칙에서 전개해** 만듭니다.
 
-기존 `tools/retirement-simulator` 는 고객 한 명의 수치를 넣고 답을 보는 상담 도구입니다.
-이쪽은 그 앞단 - **조합 전체를 한눈에 보는 참조표**이고, 동시에 시뮬레이터가 맞는지
+기존 `tools/retire-payout` 는 고객 한 명의 수치를 넣고 답을 보는 상담 도구입니다.
+이쪽은 그 앞단 - **조합 전체를 한눈에 보는 참조표**이고, 동시에 상담 도구가 맞는지
 대조하는 잣대입니다. 둘은 서로를 베끼지 않습니다.
 
 ## 왜 이렇게 만드는가
@@ -21,7 +21,7 @@
 ```
 ① 규칙을 자료로      rules.js      근거(Q번호·조문)와 확인상태를 셀마다 붙인다
 ② 조합을 전개        build.js      규칙에서 표를 만든다. 표는 산출물이지 원본이 아니다
-③ 교차 검증          crosscheck.js 기존 시뮬레이터와 모든 칸을 대조한다
+③ 교차 검증          crosscheck.js 상담 도구와 모든 칸을 대조한다
 ④ 빈칸을 보고        crosscheck.js 화면으로 입력할 수 없는 조합을 따로 모은다
 ```
 
@@ -44,7 +44,7 @@ node tools/pension-decision-matrix/build.js --md MATRIX.md   # 파일로
 
 #### 근거는 배포본 HTML 에 심지 않습니다
 
-시뮬레이터는 **파일 하나가 지점으로 돌아다니는** 형태라, 사내 Q&A 원문 요약이 그대로 실려
+상담 도구는 **파일 하나가 지점으로 돌아다니는** 형태라, 사내 Q&A 원문 요약이 그대로 실려
 나가면 파일을 받은 누구나 읽습니다. 서버가 없으므로 화면에서만 가리는 잠금은 파일을 편집기로
 여는 순간 뚫립니다 — 잠긴 줄 알고 돌리는 편이 더 위험합니다. 그래서 **자료 자체를 심지
 않습니다.** 화면은 근거 묶음을 아예 그리지 않고, 출처·건수를 적던 글자도 없앴습니다.
@@ -52,14 +52,14 @@ node tools/pension-decision-matrix/build.js --md MATRIX.md   # 파일로
 판은 둘입니다.
 
 ```bash
-node scripts/build-retirement-simulator.js            # 배포본 — 근거 없음
-node scripts/build-retirement-simulator.js --근거     # 내부용 — 근거 18건 포함
+node scripts/build-retire-payout.js            # 배포본 — 근거 없음
+node scripts/build-retire-payout.js --근거     # 내부용 — 근거 18건 포함
 ```
 
 | | 파일 | 근거 | 저장소 |
 |---|---|---|---|
-| 배포본 | `retirement-simulator.html` | 없음 | 커밋됨 |
-| 내부용 | `retirement-simulator-근거포함.html` | **18건** | `.gitignore` |
+| 배포본 | `retire-payout.html` | 없음 | 커밋됨 |
+| 내부용 | `retire-payout-internal.html` | **18건** | `.gitignore` |
 
 **이름을 달리 해 둔 이유**가 있습니다. 같은 이름으로 덮어쓰면 지금 손에 있는 것이 어느 판인지
 알 수 없고, 배포본인 줄 알고 근거가 든 파일을 보내게 됩니다.
@@ -80,12 +80,12 @@ Q 번호가 남아 있으면 **끊습니다** — 규칙 설명문에 `Q23② �
 ### ③ 교차 검증 — `crosscheck.js`
 
 ```bash
-node scripts/build-retirement-simulator.js      # 먼저 시뮬레이터를 빌드
+node scripts/build-retire-payout.js      # 먼저 상담 도구를 빌드
 node tools/pension-decision-matrix/crosscheck.js
 ```
 
 규칙표의 답과 상담 화면의 판정을 **모든 조합에서** 맞춰 봅니다. 둘은 서로 다른 데서
-나왔으므로(규칙표는 Q&A 원문에서, 시뮬레이터는 상담 화면 요구에서) 같은 답이 나오면
+나왔으므로(규칙표는 Q&A 원문에서, 화면 판정은 상담 요구에서) 같은 답이 나오면
 서로가 서로의 검산이 됩니다. 어긋나면 어느 쪽이 틀렸는지는 사람이 Q&A 를 보고 정합니다.
 
 현재: **120칸 대조 · 어긋남 0건.**
@@ -99,7 +99,7 @@ node tools/pension-decision-matrix/crosscheck.js
 DC 에서 특히 문제였는데, 규약상 퇴직급여는 연금저축계좌로 못 가지만 규약에 규정되지 않은
 명퇴금은 갈 수 있는데도(Q12) 전액을 '불가' 로 판정했습니다.
 
-시뮬레이터에 명예퇴직금 칸을 모든 제도에 열어 메웠고, 그 뒤 대조 칸이 72개에서
+상담 도구에 명예퇴직금 칸을 모든 제도에 열어 메웠고, 그 뒤 대조 칸이 72개에서
 120개로 늘었습니다. **현재 빈칸은 없습니다.**
 
 ## 원본 확인 상태
@@ -126,5 +126,5 @@ DC 에서 특히 문제였는데, 규약상 퇴직급여는 연금저축계좌�
 |---|---|
 | `rules.js` | 판정 규칙 + 출처 대장 (여기만 고칩니다) |
 | `build.js` | 조합 전개 → 판단표 |
-| `crosscheck.js` | 시뮬레이터와 교차 검증 |
+| `crosscheck.js` | 상담 도구와 교차 검증 |
 | `MATRIX.md` | 산출물 (직접 고치지 않습니다) |

@@ -9,7 +9,7 @@
 const path = require('path');
 const { chromium } = require('playwright');
 
-const APP = 'file://' + path.resolve(__dirname, '..', '..', '..', 'retirement-simulator.html');
+const APP = 'file://' + path.resolve(__dirname, '..', '..', '..', 'retire-payout.html');
 
 /** 라벨이 고유해야 하는 컨트롤 (selectors 스펙이 검사한다) */
 const FIELDS = {
