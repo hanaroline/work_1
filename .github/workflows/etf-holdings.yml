@@ -1,0 +1,82 @@
+name: ETF 구성종목 수집
+
+# ETF 속보기(etf-holdings.html)가 먹는 자료를 받는다.
+#
+# 클로드 세션은 이그레스 정책 때문에 네이버·야후에 못 붙는다(CONNECT 403).
+# 세션 토큰에는 Actions 쓰기 권한도 없어 workflow_dispatch 를 부르지 못한다.
+# 그래서 git push 로 깨운다 — data/etf_holdings/REFRESH 한 줄을 더 붙여 민다.
+#
+# 단계가 둘이다.
+#   probe   — 후보 주소가 무엇을 주는지 떠서 tools/etf-holdings-discovery/ 에 남긴다.
+#             파서를 짐작으로 짜지 않으려고 둔다. REFRESH 에 'probe' 가 들어 있을 때만.
+#   collect — 실제 수집. data/etf_holdings/*.json 을 쓰고 한 파일 화면을 다시 만든다.
+
+on:
+  push:
+    paths:
+      - 'data/etf_holdings/REFRESH'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: etf-holdings-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 무엇을 할지 고른다
+        id: mode
+        run: |
+          last=$(grep -v '^#' data/etf_holdings/REFRESH | tail -n 1)
+          echo "last=$last"
+          if echo "$last" | grep -q 'probe'; then echo "mode=probe" >> "$GITHUB_OUTPUT";
+          else echo "mode=collect" >> "$GITHUB_OUTPUT"; fi
+          echo "args=$(echo "$last" | sed -n 's/.*args=\[\(.*\)\].*/\1/p')" >> "$GITHUB_OUTPUT"
+
+      - name: 원천 탐색
+        if: steps.mode.outputs.mode == 'probe'
+        run: python3 scripts/probe_etf_holdings.py
+
+      - name: 수집
+        if: steps.mode.outputs.mode == 'collect'
+        run: |
+          set -e
+          python3 scripts/fetch_etf_holdings.py ${{ steps.mode.outputs.args }}
+          python3 scripts/build_etf_holdings.py
+          python3 scripts/check_etf_holdings.py
+
+      - name: 결과 커밋
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/etf-holdings-discovery data/etf_holdings etf-holdings.html 2>/dev/null || true
+          if git diff --cached --quiet; then echo "바뀐 것 없음"; exit 0; fi
+          git commit -q -m "ETF 구성종목 ${{ steps.mode.outputs.mode }} $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+          done
+          exit 1
+
+      - name: 요약
+        if: always()
+        run: |
+          {
+            echo "### ETF 구성종목 (${{ steps.mode.outputs.mode }})"
+            [ -f data/etf_holdings/report.md ] && cat data/etf_holdings/report.md
+            [ -f tools/etf-holdings-discovery/summary.json ] && head -c 20000 tools/etf-holdings-discovery/summary.json
+          } >> "$GITHUB_STEP_SUMMARY"
