@@ -20,6 +20,11 @@ on:
       - 'data/us100/RANK_REFRESH'
 
   workflow_dispatch:
+    inputs:
+      emit_top:
+        description: '줄 세운 상위 몇 종을 파일로 낼까 (0 이면 내지 않음)'
+        required: false
+        default: '0'
 
 permissions:
   contents: write
@@ -61,7 +66,21 @@ jobs:
         env:
           US100_RANK_ISSUE: '1'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/check_us100_ranking.py
+        run: |
+          python scripts/check_us100_ranking.py \
+            ${{ github.event.inputs.emit_top != '' && github.event.inputs.emit_top != '0'
+                && format('--emit-top {0}', github.event.inputs.emit_top) || '' }}
+
+      - name: 줄 세운 목록을 산출물로 올린다
+        # 목록을 넓힐 때(100 → 200) 사람이 받아 보고 한글명을 채우는 파일이다.
+        # 데이터 브랜치에 올리지 않는 까닭 — 날마다 쓰는 자료가 아니라 목록을
+        # 손볼 때만 쓰는 한 번짜리다.
+        if: hashFiles('data/us100/ranking-top.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: us-ranking-top
+          path: data/us100/ranking-top.json
+          retention-days: 14
 
       - name: 데이터 브랜치에 올리기
         env:

@@ -1007,54 +1007,19 @@ def main():
 def selftest():
     """망 없이 **비율 맞대기**만 시험한다.
 
-    숫자는 지어내지 않았다 — 2026-09-28 판 us100/latest.json 에서 그대로 옮겼다.
-    어긋난 둘(TSM·ASML)과, 같은 파일에서 성한 쪽의 양 끝(NEE 1.39배 · PANW 0.70배)을
-    함께 걸어 **문턱이 성한 것을 버리지 않는지**도 본다.
+    시험 자료는 data/fixtures/ratio_cases.json 에 있고 **화면(us-top100.html)도
+    같은 파일을 읽는다.** 두 곳에 따로 두면 언젠가 갈라지고, 갈라진 뒤에는 어느
+    쪽이 맞는지 알 수 없다 — 화면은 브라우저에서 야후에 직접 붙으므로 여기서
+    막아도 그쪽은 그대로 틀릴 수 있다.
+
+    숫자는 지어내지 않았다. 2026-09-28 판 us100/kr100 latest.json 에서 그대로
+    옮겼다 — 어긋난 것들과, 같은 파일에서 **성한 쪽의 양 끝**을 함께 걸어
+    문턱이 멀쩡한 값을 버리지 않는지도 본다.
     """
-    cases = [
-        # (이름, quote, 버려야 하는 칸)
-        ('TSM  ADR 단위 어긋남', dict(per=33.55, roe=39.97, netMargin=49.92,
-                                 pbr=92.17, psr=0.53), {'pbr', 'psr'}),
-        ('ASML ADR 단위 어긋남', dict(per=60.24, roe=53.94, netMargin=30.19,
-                                 pbr=1499.02, psr=18.31), {'pbr'}),
-        ('NEE  성한 쪽 위 끝', dict(per=17.10, roe=11.68, netMargin=22.55,
-                                pbr=2.78, psr=3.86), set()),
-        ('PANW 성한 쪽 아래 끝', dict(per=914.00, roe=1.74, netMargin=2.67,
-                                 pbr=11.11, psr=26.70), set()),
-        ('NVDA 높은 ROE', dict(per=28.49, roe=117.21, netMargin=52.41,
-                             pbr=23.73, psr=14.93), set()),
-        ('적자라 잴 수 없음', dict(per=12.0, roe=-8.0, netMargin=-3.0,
-                             pbr=2.0, psr=1.0), set()),
-        ('PER 이 없음', dict(per=None, roe=20.0, netMargin=10.0,
-                          pbr=999.0, psr=999.0), set()),
-        # 아래 둘은 **문턱만 두었을 때 멀쩡한 값을 버렸던** 실제 자리다.
-        # 국내 100 종에 대 보고서야 드러났고, 이 둘이 다시 버려지면 회귀다.
-        ('삼성SDI ROE 가 0 에 가까움', dict(per=13.79, roe=0.2, netMargin=0.26,
-                                    pbr=1.75, psr=2.99), set()),
-        ('포스코퓨처엠 PER 이 1,175배', dict(per=1175.48, roe=1.36, netMargin=1.55,
-                                      pbr=3.86, psr=5.7), set()),
-        # 이쪽은 진짜로 망가진 국내 값 — 매출이 통째로 잘못 들어와 PSR 이 892배다.
-        ('두산밥캣 매출 단위 어긋남', dict(per=11.61, roe=8.5, netMargin=5.39,
-                                  pbr=0.8, psr=891.72), {'psr'}),
-        # ── 매출 되셈 ────────────────────────────────────────────────
-        ('TSM 매출이 대만달러', dict(per=33.55, roe=39.97, netMargin=49.92,
-                               pbr=13.4, psr=16.7,
-                               revenue=4.44e12, eps=13.43, shares=5.186e9),
-         {'revenue'}),
-        ('두산밥캣 매출이 조 단위가 아님', dict(per=11.61, roe=8.5, netMargin=5.39,
-                                   pbr=0.8, psr=0.57,
-                                   revenue=6.335e9, eps=5601.0, shares=9.575e7),
-         {'revenue'}),
-        # **문턱만 두었을 때 잘못 버렸던 자리.** 순이익률 75% 는 일회성 기술료가
-        # 섞인 해라 되셈이 3.9 배까지 흔들린다 — 그래도 성한 값이다.
-        ('알테오젠 순이익률 75%', dict(per=40.0, roe=25.0, netMargin=75.47,
-                                 pbr=9.0, psr=30.2,
-                                 revenue=2.54e11, eps=706.15, shares=6.956e7),
-         set()),
-        ('매출은 있는데 주식수가 없음', dict(per=20.0, roe=10.0, netMargin=8.0,
-                                 pbr=2.0, psr=1.6,
-                                 revenue=1e9, eps=5.0, shares=None), set()),
-    ]
+    path = os.path.join(ROOT, 'data', 'fixtures', 'ratio_cases.json')
+    with open(path, encoding='utf-8') as f:
+        cases = [(c['name'], c['quote'], set(c['drop']))
+                 for c in json.load(f)['cases']]
     fails = []
     for nm, q, want in cases:
         before = dict(q)
