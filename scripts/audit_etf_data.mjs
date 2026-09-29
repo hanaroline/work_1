@@ -666,6 +666,41 @@ if (globalThis.__perMarket) {
               '그만큼은 "자료가 낡은 것" 이 아니라 **원천이 아직 확정하지 않은 것**이다.');
 }
 
+/* 기간별 채움률.
+ *
+ * 화면은 1일부터 10년까지 열 기간을 고르게 해 놓는다. 그런데 **5년·10년이
+ * 한 종목도 없는 채로 오래 있었다.** 야후에서 5년치만 받아 와 5년 구간의
+ * 기준봉이 없었고(구간 시작일 이전의 봉이 필요하다), 10년은 계산기에 아예
+ * 없었다. 종목별 규칙은 이것을 못 잡는다 — 한 종목의 문제가 아니라 기간
+ * 전체가 비어 있는 것이라서, 전 종목이 똑같이 비면 아무 규칙도 울지 않는다.
+ * 그래서 기간을 가로로 세어 표로 남긴다. */
+{
+  const PER = ['D1', 'W1', 'M1', 'M3', 'M6', 'YTD', 'Y1', 'Y3', 'Y5', 'Y10'];
+  const cov = PER.map((p) => ({
+    p,
+    tr: ETFS.filter((e) => e.ret?.tr?.[p] != null).length,
+    price: ETFS.filter((e) => e.ret?.price?.[p] != null).length,
+    nav: ETFS.filter((e) => e.ret?.nav?.[p] != null).length,
+  }));
+  console.log('\n=== 기간별 채움 (tr / price / nav) ===');
+  for (const c of cov) {
+    console.log(`  ${c.p.padEnd(4)} tr ${String(c.tr).padStart(5)} · ` +
+                `price ${String(c.price).padStart(5)} · nav ${String(c.nav).padStart(5)}` +
+                (c.tr === 0 ? '   ← 총수익률이 한 종목도 없다' : ''));
+  }
+  md.push('', '## 기간별 채움', '',
+    '화면이 고르게 해 둔 기간마다 값이 실제로 몇 종목에 있는지. 종목별 규칙은',
+    '전 종목이 똑같이 비는 경우를 못 잡으므로 여기서 가로로 센다.', '',
+    '| 기간 | 총수익률 | 시장가 | 기준가 |', '|---|---:|---:|---:|');
+  for (const c of cov) md.push(`| ${c.p} | ${c.tr} | ${c.price} | ${c.nav} |`);
+  const empty = cov.filter((c) => c.tr === 0).map((c) => c.p);
+  if (empty.length) {
+    md.push('', `**${empty.join(' · ')} 은 총수익률이 한 종목도 없다.** 화면에서 그 기간을 ` +
+                '고를 수 있는데 표는 통째로 빈다 — 원천에서 받는 이력이 짧거나 계산기가 ' +
+                '그 기간을 만들지 않는 것이다.');
+  }
+}
+
 md.push('', '## 오류 상세', '', '| 종목 | 규칙 | 내용 |', '|---|---|---|');
 for (const f of findings.filter((x) => x.sev === 'error').slice(0, 300)) {
   md.push(`| ${f.code} ${f.name} | ${f.rule} | ${f.detail.replace(/\|/g, '\\|')} |`);
