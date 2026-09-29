@@ -19,7 +19,12 @@
 import { readFileSync } from 'node:fs';
 
 const html = readFileSync(new URL('../etf.html', import.meta.url), 'utf8');
-const prompt = readFileSync(new URL('../etf-prompt.txt', import.meta.url), 'utf8');
+// 어느 판을 재는지 인자로 받는다. 줄인 판과 원래 판을 나란히 재 보려면
+// 두 파일을 번갈아 가리킬 수 있어야 한다.
+const promptPath = process.argv[2]
+  ? new URL(process.argv[2], `file://${process.cwd()}/`)
+  : new URL('../etf-prompt.txt', import.meta.url);
+const prompt = readFileSync(promptPath, 'utf8');
 
 /* ── 대조용 정규화 ──────────────────────────────────────────────────────
    프롬프트는 산문이라 화면 라벨과 띄어쓰기·가운뎃점이 어긋난다.
