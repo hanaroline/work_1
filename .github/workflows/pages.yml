@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - 'mapo-wm.html'
+      - 'currency-converter/**'
       - '.github/workflows/pages.yml'
 
 permissions:
@@ -35,6 +36,7 @@ jobs:
           mkdir -p _site
           cp mapo-wm.html _site/index.html
           cp mapo-wm.html _site/mapo-wm.html
+          cp -r currency-converter _site/currency-converter
           printf 'User-agent: *\nDisallow: /\n' > _site/robots.txt
 
       - uses: actions/upload-pages-artifact@v3
