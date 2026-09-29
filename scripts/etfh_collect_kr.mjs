@@ -135,16 +135,30 @@ async function one(it) {
     const med = diffs.length ? diffs[diffs.length >> 1] : null;
     const last = bars.at(-1), yLast = last ? ym.get(last.d) : null;
     rec.yahoo = { type: y.type, pairs: diffs.length, medDailyDiff: med === null ? null : Math.round(med * 1e6) / 1e6, lastCloseRatio: yLast ? Math.round((last.c / yLast) * 1e5) / 1e5 : null };
-    if (y.type === 'ETF' && diffs.length >= 20 && med < 0.002) divs = y.divs;
+    // 막 상장한 종목은 대조할 날이 20일이 안 된다 — 그때는 겹치는 날 전부를 본다.
+    const need = Math.max(1, Math.min(20, bars.length - 1));
+    if (y.type === 'ETF' && diffs.length >= need && med < 0.002) divs = y.divs;
     else rec.divErr = `야후 ${code}.KS 가 같은 상품으로 확인되지 않음(종류 ${y.type}, 대조한 날 ${diffs.length}, 하루 등락률 차 중앙값 ${med})`;
   } else if (y?.missing) rec.divErr = `야후에 ${code}.KS 없음`;
 
+  // 야후 분배금 자체도 믿을 수 없는 경우가 있다(2026-09-29 수집 1,153종목 중 100종목이
+  // 네이버 1년 합과 어긋남 — 1,000배 단위 오류, 누락, 중복). 두 가지로 걸러 어긋나면 총수익률을 비운다.
+  //  ① 분배금 하나가 그날 종가의 25% 를 넘으면 단위 오류로 본다
+  //  ② 최근 1년 분배금 합이 네이버의 1년 합(dividendPerShareTtm)과 2%(최소 1원) 넘게 다르면 버린다
   if (divs) {
-    rec.divSrc = `Yahoo ${code}.KS`;
     rec.divCount = divs.length;
-    // 네이버의 1년 분배금 합과 대조할 수 있게 야후 쪽 1년 합을 남긴다(판정에는 안 쓴다)
     const from = new Date(Date.parse(rec.priceDate) - 365 * 864e5).toISOString().slice(0, 10);
     rec.divTtmYahoo = Math.round(divs.filter((x) => x.d > from && x.d <= rec.priceDate).reduce((s2, x) => s2 + (num(x.a) || 0), 0) * 100) / 100;
+    const closeOn = new Map(bars.map((x) => [x.d, x.c]));
+    const huge = divs.find((x) => { const c = closeOn.get(x.d) ?? bars.find((b) => b.d >= x.d)?.c; return c && num(x.a) > 0.25 * c; });
+    if (huge) { rec.divErr = `야후 분배금 ${huge.d} ${huge.a}원이 종가의 25% 를 넘음 — 단위 오류로 봄`; divs = null; }
+    else if (rec.divTtmNaver !== null && Math.abs(rec.divTtmNaver - rec.divTtmYahoo) > Math.max(1, 0.02 * rec.divTtmNaver)) {
+      rec.divErr = `1년 분배금 합이 어긋남 — 네이버 ${rec.divTtmNaver}원 / 야후 ${rec.divTtmYahoo}원`; divs = null;
+    }
+  }
+  if (divs) {
+    rec.divSrc = `Yahoo ${code}.KS`;
+    rec.divCheck = rec.divTtmNaver === null ? '네이버 1년 합 없음 — 대조 못 함' : '네이버 1년 합과 일치';
     rec.ret = periodReturns(bars, trIndex(bars, divs));
   } else {
     // 분배금을 모르면 총수익률을 셀 수 없다. 가격수익률로 대신하지 않는다.

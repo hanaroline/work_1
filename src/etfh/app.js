@@ -33,6 +33,7 @@
       since: (d) => `${d} 대비`, rankOf: (n) => `모수 ${n}`,
       rankNote: (g) => `동일 유형: ${g}. 순위는 1이 최고, 100이 최저입니다. 값을 가진 ETF가 20개 미만이면 순위를 비웁니다.`,
       retNone: '총수익률을 셀 수 없습니다', retWhy: '분배금 자료를 확인하지 못해 총수익률을 비워 둡니다(가격수익률로 대신하지 않습니다).',
+      retWhyMmf: '중국 본토 머니마켓 ETF는 수익을 좌수로 나눠 주어 가격만으로는 총수익률을 셀 수 없습니다.',
       divSrc: '분배금 출처', aumSrcOther: (s) => `출처: ${s} — 순위·평균에서 제외`,
       bandNoPeriod: (ps) => `${ps} 총수익률은 자료에 없어 칸을 비웠습니다 — 받은 가격 이력이 그 기간보다 짧습니다.`,
       unknown: '미분류', na: '—',
@@ -60,6 +61,7 @@
       since: (d) => `since ${d}`, rankOf: (n) => `of ${n}`,
       rankNote: (g) => `Peer group: ${g}. 1 = best, 100 = worst. Left blank when fewer than 20 peers have a value.`,
       retNone: 'Total return unavailable', retWhy: 'Distributions could not be verified, so total return is left blank (price return is not substituted).',
+      retWhyMmf: 'Mainland-China money-market ETFs distribute income as new units, so total return cannot be computed from price.',
       divSrc: 'Distribution source', aumSrcOther: (s) => `Source: ${s} — excluded from ranks and averages`,
       bandNoPeriod: (ps) => `${ps} total returns are blank: the price history received is shorter than that period.`,
       unknown: 'Unclassified', na: '—',
@@ -108,7 +110,7 @@
   function aumCell(it) {
     if (it.cur === 'KRW') return eok(it.aumKrw);
     if (!isNum(it.aum)) return '';
-    return `${money(it.aum, it.cur)}${isNum(it.aumKrw) ? `<span class="sm">≈ ${eok(it.aumKrw)}</span>` : ''}${it.aumWide ? `<span class="sm">${t().wide}</span>` : ''}`;
+    return `${money(it.aum, it.aumCur || it.cur)}${isNum(it.aumKrw) ? `<span class="sm">≈ ${eok(it.aumKrw)}</span>` : ''}${it.aumWide ? `<span class="sm">${t().wide}</span>` : ''}`;
   }
   const mmdd = (d) => (d ? d.slice(5) : '');
   const since = (d, p) => (d ? (/^Y(3|5|10)$/.test(p) ? d : mmdd(d)) : '');
@@ -323,7 +325,7 @@
   function returnsBlock(it) {
     const tt = t();
     let h = `<h4 style="margin-top:18px">${esc(tt.retH)}</h4>`;
-    if (!it.ret) return h + `<p class="empty">${esc(tt.retNone)} — ${esc(tt.retWhy)}</p>`;
+    if (!it.ret) return h + `<p class="empty">${esc(tt.retNone)} — ${esc(it.retWhy === 'cn_mmf' ? tt.retWhyMmf : tt.retWhy)}${it.retWhy && it.retWhy !== 'cn_mmf' && lang === 'ko' ? `<span class="sm">${esc(it.retWhy)}</span>` : ''}</p>`;
     h += `<div class="tw"><table class="dt"><thead><tr>${tt.rCols.map((c, i) => `<th${i ? ' class="n"' : ''}>${esc(c)}</th>`).join('')}</tr></thead><tbody>`;
     for (const p of PERIODS) {
       if (!periodHas[p]) continue;

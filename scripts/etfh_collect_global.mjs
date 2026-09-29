@@ -132,12 +132,33 @@ async function one(p) {
     rec.emptyBars = c.empty;
     rec.divSrc = `Yahoo ${p.symbol}`;
     rec.divCount = c.divs.length;
-    rec.ret = periodReturns(c.bars, trIndex(c.bars, c.divs));
+    // 본토 머니마켓 ETF 는 수익을 좌수로 나눠 주고 가격은 100 근처에 머문다. 야후 분배 기록이
+    // 0건이라 가격으로 세면 10년 0% 가 나온다 — 틀린 값이므로 비운다(이름은 동방재부 목록의 '货币').
+    if (p.cnName && /货币|现金|快线|理财/.test(p.cnName)) { rec.ret = { base: rec.priceDate, r: null }; rec.retNote = 'cn_mmf_units'; }
+    else rec.ret = periodReturns(c.bars, trIndex(c.bars, c.divs));
   } else rec.ret = { base: null, r: null };
   return rec;
 }
 
 const recs = await pool(pick, 3, async (p) => { const r = await one(p); await sleep(300); return r; });
+
+// 발행좌수·시가총액(v7 quote) — 순자산이 이 상장 클래스 값인지 펀드 전체 값인지 가르는 데 쓴다.
+// (BND 는 뮤추얼펀드 클래스까지, 3455.HK 는 미국 QQQ 본펀드 값을 준다.)
+for (let i = 0; i < pick.length; i += 40) {
+  const syms = pick.slice(i, i + 40).map((p) => p.symbol);
+  try {
+    const j = JSON.parse((await get(`https://query2.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(syms.join(','))}&crumb=${encodeURIComponent(crumb)}`, { headers: yh })).text);
+    for (const q of j.quoteResponse?.result || []) {
+      const r = recs.find((x) => x && x.code === q.symbol);
+      if (!r) continue;
+      r.sharesOut = num(q.sharesOutstanding) ?? r.sharesOut;
+      r.mcap = num(q.marketCap) ?? r.mcap;
+      r.quoteCurrency = q.currency || null;
+      r.financialCurrency = q.financialCurrency || null;
+    }
+  } catch (e) { note(`v7 quote 실패 ${e.message}`); }
+  await sleep(500);
+}
 const ok = recs.filter((r) => r && !r.error);
 recs.forEach((r, i) => { if (r?.error) note(`  실패 ${pick[i].symbol}: ${r.error}`); });
 

@@ -35,7 +35,7 @@ if (kr) {
       aumKrw: r.aumKrw ?? r.aumEok, aum: null, fee: r.fee, cash: r.cash, divYield: r.divYield, dev: r.dev, te: r.te,
       listed: r.listed, price: r.price, priceDate: r.priceDate, stop: r.tradeStop || null, flow3m: r.flow3mEok,
       holdings: r.holdings, sectors: r.sectors, sector1: sector1(r.sectors), top10: top10Of(r.holdings),
-      asset: c.asset, region: c.region, li: c.li, ret: retOf(r.ret), retBase: r.ret?.r ? r.ret.base : null, divSrc: r.divSrc || null,
+      asset: c.asset, region: c.region, li: c.li, ret: retOf(r.ret), retBase: r.ret?.r ? r.ret.base : null, divSrc: r.divSrc || null, retWhy: r.ret?.r ? null : (r.divErr || null),
       raw: { tab: r.tab, theme: r.theme },
     });
   }
@@ -53,9 +53,23 @@ if (gl) {
       fee: r.fee, cash: r.cash, divYield: r.divYield, dev: null, te: null, listed: r.listed,
       price: r.price, priceKrw: typeof r.price === 'number' && rate ? r.price * rate : null, priceDate: r.priceDate, stop: null, flow3m: null,
       holdings: r.holdings, sectors: r.sectors, sector1: sector1(r.sectors), top10: top10Of(r.holdings),
-      asset: c.asset, region: c.region, li: c.li, ret: retOf(r.ret), retBase: r.ret?.r ? r.ret.base : null, divSrc: r.divSrc || null,
-      category: r.category || null,
+      asset: c.asset, region: c.region, li: c.li, ret: retOf(r.ret), retBase: r.ret?.r ? r.ret.base : null, divSrc: r.divSrc || null, retWhy: r.ret?.r ? null : (r.retNote === 'cn_mmf_units' ? 'cn_mmf' : null),
+      category: r.category || null, sharesOut: r.sharesOut ?? null, aumCur: r.financialCurrency || r.currency,
     });
+  }
+  // 펀드 전체 순자산 가르기 — 이 상장 클래스의 값(발행좌수 × 가격)보다 30% 넘게 크면 펀드 전체(또는
+  // 다른 나라 본펀드) 값으로 본다. 좌수가 없으면 같은 순자산 숫자가 다른 상장에도 있는지로 가른다.
+  const seenAum = {};
+  for (const it of items) if (it.mkt !== 'KR' && typeof it.aum === 'number') seenAum[it.aum] = (seenAum[it.aum] || 0) + 1;
+  for (const it of items) {
+    if (it.mkt === 'KR' || typeof it.aum !== 'number') continue;
+    const cls = typeof it.sharesOut === 'number' && typeof it.price === 'number' ? it.sharesOut * it.price : null;
+    if (cls ? it.aum > cls * 1.3 : seenAum[it.aum] > 1) {
+      // 펀드 전체 값은 통화 표시도 본펀드 것일 수 있어(3455.HK 는 미국 QQQ 의 달러 값에 HKD 가 붙어 온다)
+      // 원화로 바꾸면 틀린 숫자가 된다 — 환산하지 않는다.
+      it.aumWide = true; it.aumKrw = null;
+    }
+    delete it.sharesOut;
   }
   meta.collectedAt.GLOBAL = gl.collectedAt;
   if (gl.cnNote) meta.notes.push(gl.cnNote);
