@@ -1,0 +1,5117 @@
+{
+ "ranAt": "2026-09-29T05:07:14.827Z",
+ "probes": [
+  {
+   "group": "KR",
+   "label": "네이버 ETF 전체 목록",
+   "url": "https://finance.naver.com/api/sise/etfItemList.nhn?etfType=0&targetColumn=market_sum&sortOrder=desc",
+   "status": 200,
+   "contentType": "text/plain;charset=EUC-KR",
+   "bytes": 262064,
+   "ms": 1571,
+   "kind": "json",
+   "shape": {
+    "resultCode": "str:success",
+    "result": {
+     "etfItemList": [
+      "len=1171",
+      {
+       "itemcode": "str:069500",
+       "etfTabCode": "number:1",
+       "itemname": "str:KODEX 200",
+       "nowVal": "number:108985",
+       "risefall": "str:5",
+       "changeVal": "number:-515",
+       "changeRate": "number:-0.47",
+       "nav": "number:109198",
+       "threeMonthEarnRate": "number:-20.1337",
+       "quant": "number:15320966",
+       "amonut": "number:1680262",
+       "marketSum": "number:248268"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "group": "KR",
+   "label": "모바일 integration 069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/integration",
+   "status": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "bytes": 9445,
+   "ms": 1079,
+   "kind": "json",
+   "shape": {
+    "stockEndType": "str:etf",
+    "itemCode": "str:069500",
+    "reutersCode": "str:069500",
+    "stockName": "str:KODEX 200",
+    "totalInfos": [
+     "len=18",
+     {
+      "code": "str:lastClosePrice",
+      "key": "str:전일",
+      "value": "str:109,500"
+     }
+    ],
+    "iconInfos": [
+     "len=1",
+     {
+      "code": "str:isDividend",
+      "value": "str:Y"
+     }
+    ],
+    "description": "str:1좌당 순자산가치의 변동률을 기초지수인 KOSPI200의 변동률과 유사하도록 투자신탁재산을 운용하는 것을 목",
+    "etfKeyIndicator": {
+     "issuerName": "str:삼성자산운용(ETF)",
+     "marketValue": "str:24조 8,359억",
+     "dividendYieldTtm": "number:0.78",
+     "totalNav": "str:24조 9,450억",
+     "nav": "str:109,503.88",
+     "deviationRate": "number:0",
+     "totalFee": "number:0.15",
+     "returnRate1m": "number:2.16",
+     "returnRate3m": "number:-20.13",
+     "returnRate1y": "number:135.09"
+    },
+    "dealTrendInfos": [
+     "len=5",
+     {
+      "itemCode": "str:069500",
+      "bizdate": "str:20260928",
+      "foreignerPureBuyQuant": "str:+61,929",
+      "foreignerHoldRatio": "str:22.44%",
+      "organPureBuyQuant": "str:-689,176",
+      "individualPureBuyQuant": "str:+623,855",
+      "closePrice": "str:109,500",
+      "compareToPreviousClosePrice": "str:-3,645",
+      "compareToPreviousPrice": {
+       "code": "str:5",
+       "text": "str:하락",
+       "name": "str:FALLING"
+      },
+      "accumulatedTradingVolume": "str:23,611,461"
+     }
+    ],
+    "researches": "[]",
+    "industryCode": "str:25",
+    "industryCompareInfo": [
+     "len=6",
+     {
+      "stockType": "str:domestic",
+      "stockEndType": "str:stock",
+      "itemCode": "str:360750",
+      "reutersCode": "str:360750",
+      "stockName": "str:TIGER 미국S&P500",
+      "sosok": "str:0",
+      "closePrice": "str:25,845",
+      "compareToPreviousClosePrice": "str:-260",
+      "compareToPreviousPrice": {
+       "code": "str:5",
+       "text": "str:하락",
+       "name": "str:FALLING"
+      },
+      "fluctuationsRatio": "str:-1.00",
+      "accumulatedTradingVolume": "str:-",
+      "accumulatedTradingValue": "str:-",
+      "marketValue": "str:20,735,443",
+      "nav": "str:0",
+      "threeMonthEarningRate": "str:0",
+      "stockExchangeType": {
+       "code": "str:KS",
+       "zoneId": "str:Asia/Seoul",
+       "nationType": "str:KOR",
+       "delayTime": "number:0",
+       "startTime": "str:0900",
+       "endTime": "str:1530",
+       "closePriceSendTime": "str:1630",
+       "nameKor": "str:코스피",
+       "nameEng": "str:KOSPI",
+       "stockType": "str:domestic",
+       "nationCode": "str:KOR",
+       "nationName": "str:대한민국",
+       "name": "str:KOSPI"
+      },
+      "endUrl": "str:https://m.stock.naver.com/domestic/stock/360750",
+      "newPcUrl": "str:https://stock.naver.com/domestic/stock/360750"
+     }
+    ],
+    "consensusInfo": "null",
+    "shareholdersMeetingInfo": "null",
+    "irScheduleInfo": "null"
+   },
+   "pick": {
+    "keys": [
+     "stockEndType",
+     "itemCode",
+     "reutersCode",
+     "stockName",
+     "totalInfos",
+     "iconInfos",
+     "description",
+     "etfKeyIndicator",
+     "dealTrendInfos",
+     "researches",
+     "industryCode",
+     "industryCompareInfo",
+     "consensusInfo",
+     "shareholdersMeetingInfo",
+     "irScheduleInfo"
+    ],
+    "etfKeyIndicator": {
+     "issuerName": "삼성자산운용(ETF)",
+     "marketValue": "24조 8,359억",
+     "dividendYieldTtm": 0.78,
+     "totalNav": "24조 9,450억",
+     "nav": "109,503.88",
+     "deviationRate": 0,
+     "totalFee": 0.15,
+     "returnRate1m": 2.16,
+     "returnRate3m": -20.13,
+     "returnRate1y": 135.09
+    },
+    "totalInfos": [
+     [
+      "lastClosePrice",
+      "전일",
+      "109,500"
+     ],
+     [
+      "openPrice",
+      "시가",
+      "109,285"
+     ],
+     [
+      "highPrice",
+      "고가",
+      "110,470"
+     ],
+     [
+      "lowPrice",
+      "저가",
+      "108,895"
+     ],
+     [
+      "accumulatedTradingVolume",
+      "거래량",
+      "15,248,885"
+     ],
+     [
+      "accumulatedTradingValue",
+      "대금",
+      "1조 6,724억"
+     ],
+     [
+      "highPriceOf52WeeksAdjusted",
+      "52주 최고",
+      "152,148"
+     ],
+     [
+      "highPriceOf52Weeks",
+      "원주가 기준",
+      "152,455"
+     ],
+     [
+      "lowPriceOf52WeeksAdjusted",
+      "52주 최저",
+      "47,078"
+     ],
+     [
+      "lowPriceOf52Weeks",
+      "원주가 기준",
+      "47,550"
+     ],
+     [
+      "oneMonthEarnRate",
+      "최근 1개월 수익률",
+      "+2.16%"
+     ],
+     [
+      "threeMonthEarnRate",
+      "최근 3개월 수익률",
+      "-20.13%"
+     ],
+     [
+      "sixMonthEarnRate",
+      "최근 6개월 수익률",
+      "+35.68%"
+     ],
+     [
+      "oneYearEarnRate",
+      "최근 1년 수익률",
+      "+135.09%"
+     ],
+     [
+      "nav",
+      "NAV",
+      "109,197.52"
+     ],
+     [
+      "fundPay",
+      "펀드보수",
+      "0.15%"
+     ],
+     [
+      "etfBaseIdx",
+      "기초지수",
+      "코스피 200"
+     ],
+     [
+      "issueName",
+      "운용사",
+      "삼성자산운용(ETF)"
+     ]
+    ],
+    "etfTop10": null
+   }
+  },
+  {
+   "group": "KR",
+   "label": "모바일 basic 069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/basic",
+   "status": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "bytes": 3551,
+   "ms": 187,
+   "kind": "json",
+   "shape": {
+    "stockEndType": "str:etf",
+    "itemCode": "str:069500",
+    "reutersCode": "str:069500",
+    "stockName": "str:KODEX 200",
+    "itemLogoUrl": "str:https://ssl.pstatic.net/imgstock/fn/real/logo/etf/StockKRETF",
+    "itemLogoPngUrl": "str:https://ssl.pstatic.net/imgstock/fn/real/logo/png/etf/StockK",
+    "sosok": "str:0",
+    "closePrice": "str:109,025",
+    "compareToPreviousClosePrice": "str:-475",
+    "compareToPreviousPrice": {
+     "code": "str:5",
+     "text": "str:하락",
+     "name": "str:FALLING"
+    },
+    "fluctuationsRatio": "str:-0.43",
+    "marketStatus": "str:OPEN",
+    "marketStatusDetailType": "str:open",
+    "localTradedAt": "str:2026-09-29T14:06:17+09:00",
+    "tradeStopType": {
+     "code": "str:1",
+     "text": "str:운영.Trading",
+     "name": "str:TRADING"
+    },
+    "tradableStatus": "str:tradable",
+    "tradableStatusCode": "str:ok",
+    "tradableStatusUpdatedAt": "str:2026-09-29T08:02:12.437+09:00",
+    "stockExchangeType": {
+     "code": "str:KS",
+     "zoneId": "str:Asia/Seoul",
+     "nationType": "str:KOR",
+     "delayTime": "number:0",
+     "startTime": "str:0900",
+     "endTime": "str:1530",
+     "closePriceSendTime": "str:1630",
+     "nameKor": "str:코스피",
+     "nameEng": "str:KOSPI",
+     "stockType": "str:domestic",
+     "nationCode": "str:KOR",
+     "nationName": "str:대한민국",
+     "name": "str:KOSPI"
+    },
+    "stockExchangeName": "str:KOSPI",
+    "imageCharts": {
+     "areaYearTen": "str:https://financial-vn.pstatic.net/chart/mobile/area/year10/06",
+     "day": "str:https://financial-vn.pstatic.net/chart/mobile/day/krx/069500",
+     "candleMonth": "str:https://financial-vn.pstatic.net/chart/mobile/candle/month/0",
+     "areaYear": "str:https://financial-vn.pstatic.net/chart/mobile/area/year/0695",
+     "day_up_tablet": "str:https://financial-vn.pstatic.net/chart/mobile/mini/krx/06950",
+     "transparent": "str:https://financial-vn.pstatic.net/chart/mobile/mini/krx/06950",
+     "candleDay": "str:https://financial-vn.pstatic.net/chart/mobile/candle/day/069",
+     "day_up": "str:https://financial-vn.pstatic.net/chart/mobile/mini/krx/06950",
+     "areaYearThree": "str:https://financial-vn.pstatic.net/chart/mobile/area/year3/069",
+     "candleWeek": "str:https://financial-vn.pstatic.net/chart/mobile/candle/week/06",
+     "areaMonthThree": "str:https://financial-vn.pstatic.net/chart/mobile/area/month3/06"
+    },
+    "imageChartUrlInfo": {
+     "line": {
+      "day": "str:https://financial-vn.pstatic.net/chart/mobile/day/krx/069500",
+      "month3": "str:https://financial-vn.pstatic.net/chart/mobile/area/month3/06",
+      "year": "str:https://financial-vn.pstatic.net/chart/mobile/area/year/0695",
+      "year3": "str:https://financial-vn.pstatic.net/chart/mobile/area/year3/069",
+      "year5": "str:https://financial-vn.pstatic.net/chart/mobile/area/year5/069",
+      "year10": "str:https://financial-vn.pstatic.net/chart/mobile/area/year10/06"
+     },
+     "candle": {
+      "day": "str:https://financial-vn.pstatic.net/chart/mobile/candle/day/069",
+      "week": "str:https://financial-vn.pstatic.net/chart/mobile/candle/week/06",
+      "month": "str:https://financial-vn.pstatic.net/chart/mobile/candle/month/0"
+     },
+     "mini": {
+      "transparent": "str:https://financial-vn.pstatic.net/chart/mobile/mini/krx/06950",
+      "dayUp": "str:https://financial-vn.pstatic.net/chart/mobile/mini/krx/06950",
+      "dayUpTablet": "str:https://financial-vn.pstatic.net/chart/mobile/mini/krx/06950"
+     }
+    },
+    "scriptChartTypes": [
+     "len=9",
+     "str:candleMinuteFive"
+    ],
+    "delayTime": "number:0",
+    "delayTimeName": "str:실시간",
+    "endUrl": "str:https://m.stock.naver.com/domestic/stock/069500",
+    "newPcUrl": "str:https://stock.naver.com/domestic/stock/069500",
+    "chartIqEndUrl": "str:https://m.stock.naver.com/fchart/domestic/stock/069500",
+    "newlyListed": "boolean:false",
+    "nationType": "str:KOR",
+    "nationName": "str:대한민국",
+    "marketSessionType": "str:regularMarket"
+   },
+   "pick": {
+    "stockEndType": "etf",
+    "itemCode": "069500",
+    "reutersCode": "069500",
+    "stockName": "KODEX 200",
+    "itemLogoUrl": "https://ssl.pstatic.net/imgstock/fn/real/logo/etf/StockKRETFKODEX.svg",
+    "itemLogoPngUrl": "https://ssl.pstatic.net/imgstock/fn/real/logo/png/etf/StockKRETFKODEX.png",
+    "sosok": "0",
+    "closePrice": "109,025",
+    "compareToPreviousClosePrice": "-475",
+    "compareToPreviousPrice": {
+     "code": "5",
+     "text": "하락",
+     "name": "FALLING"
+    },
+    "fluctuationsRatio": "-0.43",
+    "marketStatus": "OPEN",
+    "marketStatusDetailType": "open",
+    "localTradedAt": "2026-09-29T14:06:17+09:00",
+    "tradeStopType": {
+     "code": "1",
+     "text": "운영.Trading",
+     "name": "TRADING"
+    },
+    "tradableStatus": "tradable",
+    "tradableStatusCode": "ok",
+    "tradableStatusUpdatedAt": "2026-09-29T08:02:12.437+09:00",
+    "stockExchangeType": {
+     "code": "KS",
+     "zoneId": "Asia/Seoul",
+     "nationType": "KOR",
+     "delayTime": 0,
+     "startTime": "0900",
+     "endTime": "1530",
+     "closePriceSendTime": "1630",
+     "nameKor": "코스피",
+     "nameEng": "KOSPI",
+     "stockType": "domestic",
+     "nationCode": "KOR",
+     "nationName": "대한민국",
+     "name": "KOSPI"
+    },
+    "stockExchangeName": "KOSPI",
+    "imageCharts": {
+     "areaYearTen": "https://financial-vn.pstatic.net/chart/mobile/area/year10/069500_end.png",
+     "day": "https://financial-vn.pstatic.net/chart/mobile/day/krx/069500_end.png",
+     "candleMonth": "https://financial-vn.pstatic.net/chart/mobile/candle/month/069500_end.png",
+     "areaYear": "https://financial-vn.pstatic.net/chart/mobile/area/year/069500_end.png",
+     "day_up_tablet": "https://financial-vn.pstatic.net/chart/mobile/mini/krx/069500_end_up_tablet.png",
+     "transparent": "https://financial-vn.pstatic.net/chart/mobile/mini/krx/069500_transparent.png",
+     "candleDay": "https://financial-vn.pstatic.net/chart/mobile/candle/day/069500_end.png",
+     "day_up": "https://financial-vn.pstatic.net/chart/mobile/mini/krx/069500_end_up.png",
+     "areaYearThree": "https://financial-vn.pstatic.net/chart/mobile/area/year3/069500_end.png",
+     "candleWeek": "https://financial-vn.pstatic.net/chart/mobile/candle/week/069500_end.png",
+     "areaMonthThree": "https://financial-vn.pstatic.net/chart/mobile/area/month3/069500_end.png"
+    },
+    "imageChartUrlInfo": {
+     "line": {
+      "day": "https://financial-vn.pstatic.net/chart/mobile/day/krx/069500_end.png",
+      "month3": "https://financial-vn.pstatic.net/chart/mobile/area/month3/069500_end.png",
+      "year": "https://financial-vn.pstatic.net/chart/mobile/area/year/069500_end.png",
+      "year3": "https://financial-vn.pstatic.net/chart/mobile/area/year3/069500_end.png",
+      "year5": "https://financial-vn.pstatic.net/chart/mobile/area/year5/069500_end.png",
+      "year10": "https://financial-vn.pstatic.net/chart/mobile/area/year10/069500_end.png"
+     },
+     "candle": {
+      "day": "https://financial-vn.pstatic.net/chart/mobile/candle/day/069500_end.png",
+      "week": "https://financial-vn.pstatic.net/chart/mobile/candle/week/069500_end.png",
+      "month": "https://financial-vn.pstatic.net/chart/mobile/candle/month/069500_end.png"
+     },
+     "mini": {
+      "transparent": "https://financial-vn.pstatic.net/chart/mobile/mini/krx/069500_transparent.png",
+      "dayUp": "https://financial-vn.pstatic.net/chart/mobile/mini/krx/069500_end_up.png",
+      "dayUpTablet": "https://financial-vn.pstatic.net/chart/mobile/mini/krx/069500_end_up_tablet.png"
+     }
+    },
+    "scriptChartTypes": [
+     "candleMinuteFive",
+     "candleDay",
+     "candleWeek",
+     "candleMonth",
+     "day",
+     "areaMonthThree",
+     "areaYear",
+     "areaYearThree",
+     "areaYearTen"
+    ],
+    "delayTime": 0,
+    "delayTimeName": "실시간",
+    "endUrl": "https://m.stock.naver.com/domestic/stock/069500",
+    "newPcUrl": "https://stock.naver.com/domestic/stock/069500",
+    "chartIqEndUrl": "https://m.stock.naver.com/fchart/domestic/stock/069500",
+    "newlyListed": false,
+    "nationType": "KOR",
+    "nationName": "대한민국",
+    "marketSessionType": "regularMarket"
+   }
+  },
+  {
+   "group": "KR",
+   "label": "모바일 integration 360750",
+   "url": "https://m.stock.naver.com/api/stock/360750/integration",
+   "status": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "bytes": 9400,
+   "ms": 216,
+   "kind": "json",
+   "shape": {
+    "stockEndType": "str:etf",
+    "itemCode": "str:360750",
+    "reutersCode": "str:360750",
+    "stockName": "str:TIGER 미국S&P500",
+    "totalInfos": [
+     "len=18",
+     {
+      "code": "str:lastClosePrice",
+      "key": "str:전일",
+      "value": "str:26,105"
+     }
+    ],
+    "iconInfos": [
+     "len=1",
+     {
+      "code": "str:isDividend",
+      "value": "str:Y"
+     }
+    ],
+    "description": "str:이 ETF는 미국 주식을 주된 투자대상자산으로 하며, “S&P500 지수”를 기초지수로 하여 1좌당 순자산가",
+    "etfKeyIndicator": {
+     "issuerName": "str:미래에셋자산운용",
+     "marketValue": "str:20조 7,354억",
+     "dividendYieldTtm": "number:0.97",
+     "totalNav": "str:21조 234억",
+     "nav": "str:26,226.79",
+     "deviationSign": "str:-",
+     "deviationRate": "number:0.46",
+     "totalFee": "number:0.0068",
+     "returnRate1m": "number:-0.67",
+     "returnRate3m": "number:-6.17",
+     "returnRate1y": "number:13.56"
+    },
+    "dealTrendInfos": [
+     "len=5",
+     {
+      "itemCode": "str:360750",
+      "bizdate": "str:20260928",
+      "foreignerPureBuyQuant": "str:-330,401",
+      "foreignerHoldRatio": "str:0.00%",
+      "organPureBuyQuant": "str:-1,225,361",
+      "individualPureBuyQuant": "str:+1,542,647",
+      "closePrice": "str:26,105",
+      "compareToPreviousClosePrice": "str:-95",
+      "compareToPreviousPrice": {
+       "code": "str:5",
+       "text": "str:하락",
+       "name": "str:FALLING"
+      },
+      "accumulatedTradingVolume": "str:33,017,382"
+     }
+    ],
+    "researches": "[]",
+    "industryCode": "str:25",
+    "industryCompareInfo": [
+     "len=6",
+     {
+      "stockType": "str:domestic",
+      "stockEndType": "str:stock",
+      "itemCode": "str:069500",
+      "reutersCode": "str:069500",
+      "stockName": "str:KODEX 200",
+      "sosok": "str:0",
+      "closePrice": "str:108,985",
+      "compareToPreviousClosePrice": "str:-515",
+      "compareToPreviousPrice": {
+       "code": "str:5",
+       "text": "str:하락",
+       "name": "str:FALLING"
+      },
+      "fluctuationsRatio": "str:-0.47",
+      "accumulatedTradingVolume": "str:-",
+      "accumulatedTradingValue": "str:-",
+      "marketValue": "str:24,826,783",
+      "nav": "str:0",
+      "threeMonthEarningRate": "str:0",
+      "stockExchangeType": {
+       "code": "str:KS",
+       "zoneId": "str:Asia/Seoul",
+       "nationType": "str:KOR",
+       "delayTime": "number:0",
+       "startTime": "str:0900",
+       "endTime": "str:1530",
+       "closePriceSendTime": "str:1630",
+       "nameKor": "str:코스피",
+       "nameEng": "str:KOSPI",
+       "stockType": "str:domestic",
+       "nationCode": "str:KOR",
+       "nationName": "str:대한민국",
+       "name": "str:KOSPI"
+      },
+      "endUrl": "str:https://m.stock.naver.com/domestic/stock/069500",
+      "newPcUrl": "str:https://stock.naver.com/domestic/stock/069500"
+     }
+    ],
+    "consensusInfo": "null",
+    "shareholdersMeetingInfo": "null",
+    "irScheduleInfo": "null"
+   },
+   "pick": {
+    "keys": [
+     "stockEndType",
+     "itemCode",
+     "reutersCode",
+     "stockName",
+     "totalInfos",
+     "iconInfos",
+     "description",
+     "etfKeyIndicator",
+     "dealTrendInfos",
+     "researches",
+     "industryCode",
+     "industryCompareInfo",
+     "consensusInfo",
+     "shareholdersMeetingInfo",
+     "irScheduleInfo"
+    ],
+    "etfKeyIndicator": {
+     "issuerName": "미래에셋자산운용",
+     "marketValue": "20조 7,354억",
+     "dividendYieldTtm": 0.97,
+     "totalNav": "21조 234억",
+     "nav": "26,226.79",
+     "deviationSign": "-",
+     "deviationRate": 0.46,
+     "totalFee": 0.0068,
+     "returnRate1m": -0.67,
+     "returnRate3m": -6.17,
+     "returnRate1y": 13.56
+    },
+    "totalInfos": [
+     [
+      "lastClosePrice",
+      "전일",
+      "26,105"
+     ],
+     [
+      "openPrice",
+      "시가",
+      "25,955"
+     ],
+     [
+      "highPrice",
+      "고가",
+      "25,970"
+     ],
+     [
+      "lowPrice",
+      "저가",
+      "25,807"
+     ],
+     [
+      "accumulatedTradingVolume",
+      "거래량",
+      "26,950,940"
+     ],
+     [
+      "accumulatedTradingValue",
+      "대금",
+      "6,978억"
+     ],
+     [
+      "highPriceOf52WeeksAdjusted",
+      "52주 최고",
+      "28,929"
+     ],
+     [
+      "highPriceOf52Weeks",
+      "원주가 기준",
+      "29,000"
+     ],
+     [
+      "lowPriceOf52WeeksAdjusted",
+      "52주 최저",
+      "22,924"
+     ],
+     [
+      "lowPriceOf52Weeks",
+      "원주가 기준",
+      "23,152"
+     ],
+     [
+      "oneMonthEarnRate",
+      "최근 1개월 수익률",
+      "-0.67%"
+     ],
+     [
+      "threeMonthEarnRate",
+      "최근 3개월 수익률",
+      "-6.17%"
+     ],
+     [
+      "sixMonthEarnRate",
+      "최근 6개월 수익률",
+      "+7.41%"
+     ],
+     [
+      "oneYearEarnRate",
+      "최근 1년 수익률",
+      "+13.56%"
+     ],
+     [
+      "nav",
+      "NAV",
+      "25,902.51"
+     ],
+     [
+      "fundPay",
+      "펀드보수",
+      "0.007%"
+     ],
+     [
+      "etfBaseIdx",
+      "기초지수",
+      "S&P 500"
+     ],
+     [
+      "issueName",
+      "운용사",
+      "미래에셋자산운용"
+     ]
+    ],
+    "etfTop10": null
+   }
+  },
+  {
+   "group": "KR",
+   "label": "모바일 basic 360750",
+   "url": "https://m.stock.naver.com/api/stock/360750/basic",
+   "status": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "bytes": 3559,
+   "ms": 187,
+   "kind": "json",
+   "shape": {
+    "stockEndType": "str:etf",
+    "itemCode": "str:360750",
+    "reutersCode": "str:360750",
+    "stockName": "str:TIGER 미국S&P500",
+    "itemLogoUrl": "str:https://ssl.pstatic.net/imgstock/fn/real/logo/etf/StockKRETF",
+    "itemLogoPngUrl": "str:https://ssl.pstatic.net/imgstock/fn/real/logo/png/etf/StockK",
+    "sosok": "str:0",
+    "closePrice": "str:25,845",
+    "compareToPreviousClosePrice": "str:-260",
+    "compareToPreviousPrice": {
+     "code": "str:5",
+     "text": "str:하락",
+     "name": "str:FALLING"
+    },
+    "fluctuationsRatio": "str:-1.00",
+    "marketStatus": "str:OPEN",
+    "marketStatusDetailType": "str:open",
+    "localTradedAt": "str:2026-09-29T14:07:18+09:00",
+    "tradeStopType": {
+     "code": "str:1",
+     "text": "str:운영.Trading",
+     "name": "str:TRADING"
+    },
+    "tradableStatus": "str:tradable",
+    "tradableStatusCode": "str:ok",
+    "tradableStatusUpdatedAt": "str:2026-09-29T08:02:48.954+09:00",
+    "stockExchangeType": {
+     "code": "str:KS",
+     "zoneId": "str:Asia/Seoul",
+     "nationType": "str:KOR",
+     "delayTime": "number:0",
+     "startTime": "str:0900",
+     "endTime": "str:1530",
+     "closePriceSendTime": "str:1630",
+     "nameKor": "str:코스피",
+     "nameEng": "str:KOSPI",
+     "stockType": "str:domestic",
+     "nationCode": "str:KOR",
+     "nationName": "str:대한민국",
+     "name": "str:KOSPI"
+    },
+    "stockExchangeName": "str:KOSPI",
+    "imageCharts": {
+     "areaMonthThree": "str:https://financial-vn.pstatic.net/chart/mobile/area/month3/36",
+     "day_up_tablet": "str:https://financial-vn.pstatic.net/chart/mobile/mini/krx/36075",
+     "day": "str:https://financial-vn.pstatic.net/chart/mobile/day/krx/360750",
+     "areaYearThree": "str:https://financial-vn.pstatic.net/chart/mobile/area/year3/360",
+     "candleMonth": "str:https://financial-vn.pstatic.net/chart/mobile/candle/month/3",
+     "transparent": "str:https://financial-vn.pstatic.net/chart/mobile/mini/krx/36075",
+     "day_up": "str:https://financial-vn.pstatic.net/chart/mobile/mini/krx/36075",
+     "candleDay": "str:https://financial-vn.pstatic.net/chart/mobile/candle/day/360",
+     "areaYear": "str:https://financial-vn.pstatic.net/chart/mobile/area/year/3607",
+     "candleWeek": "str:https://financial-vn.pstatic.net/chart/mobile/candle/week/36",
+     "areaYearTen": "str:https://financial-vn.pstatic.net/chart/mobile/area/year10/36"
+    },
+    "imageChartUrlInfo": {
+     "line": {
+      "day": "str:https://financial-vn.pstatic.net/chart/mobile/day/krx/360750",
+      "month3": "str:https://financial-vn.pstatic.net/chart/mobile/area/month3/36",
+      "year": "str:https://financial-vn.pstatic.net/chart/mobile/area/year/3607",
+      "year3": "str:https://financial-vn.pstatic.net/chart/mobile/area/year3/360",
+      "year5": "str:https://financial-vn.pstatic.net/chart/mobile/area/year5/360",
+      "year10": "str:https://financial-vn.pstatic.net/chart/mobile/area/year10/36"
+     },
+     "candle": {
+      "day": "str:https://financial-vn.pstatic.net/chart/mobile/candle/day/360",
+      "week": "str:https://financial-vn.pstatic.net/chart/mobile/candle/week/36",
+      "month": "str:https://financial-vn.pstatic.net/chart/mobile/candle/month/3"
+     },
+     "mini": {
+      "transparent": "str:https://financial-vn.pstatic.net/chart/mobile/mini/krx/36075",
+      "dayUp": "str:https://financial-vn.pstatic.net/chart/mobile/mini/krx/36075",
+      "dayUpTablet": "str:https://financial-vn.pstatic.net/chart/mobile/mini/krx/36075"
+     }
+    },
+    "scriptChartTypes": [
+     "len=9",
+     "str:candleMinuteFive"
+    ],
+    "delayTime": "number:0",
+    "delayTimeName": "str:실시간",
+    "endUrl": "str:https://m.stock.naver.com/domestic/stock/360750",
+    "newPcUrl": "str:https://stock.naver.com/domestic/stock/360750",
+    "chartIqEndUrl": "str:https://m.stock.naver.com/fchart/domestic/stock/360750",
+    "newlyListed": "boolean:false",
+    "nationType": "str:KOR",
+    "nationName": "str:대한민국",
+    "marketSessionType": "str:regularMarket"
+   },
+   "pick": {
+    "stockEndType": "etf",
+    "itemCode": "360750",
+    "reutersCode": "360750",
+    "stockName": "TIGER 미국S&P500",
+    "itemLogoUrl": "https://ssl.pstatic.net/imgstock/fn/real/logo/etf/StockKRETFTIGER.svg",
+    "itemLogoPngUrl": "https://ssl.pstatic.net/imgstock/fn/real/logo/png/etf/StockKRETFTIGER.png",
+    "sosok": "0",
+    "closePrice": "25,845",
+    "compareToPreviousClosePrice": "-260",
+    "compareToPreviousPrice": {
+     "code": "5",
+     "text": "하락",
+     "name": "FALLING"
+    },
+    "fluctuationsRatio": "-1.00",
+    "marketStatus": "OPEN",
+    "marketStatusDetailType": "open",
+    "localTradedAt": "2026-09-29T14:07:18+09:00",
+    "tradeStopType": {
+     "code": "1",
+     "text": "운영.Trading",
+     "name": "TRADING"
+    },
+    "tradableStatus": "tradable",
+    "tradableStatusCode": "ok",
+    "tradableStatusUpdatedAt": "2026-09-29T08:02:48.954+09:00",
+    "stockExchangeType": {
+     "code": "KS",
+     "zoneId": "Asia/Seoul",
+     "nationType": "KOR",
+     "delayTime": 0,
+     "startTime": "0900",
+     "endTime": "1530",
+     "closePriceSendTime": "1630",
+     "nameKor": "코스피",
+     "nameEng": "KOSPI",
+     "stockType": "domestic",
+     "nationCode": "KOR",
+     "nationName": "대한민국",
+     "name": "KOSPI"
+    },
+    "stockExchangeName": "KOSPI",
+    "imageCharts": {
+     "areaMonthThree": "https://financial-vn.pstatic.net/chart/mobile/area/month3/360750_end.png",
+     "day_up_tablet": "https://financial-vn.pstatic.net/chart/mobile/mini/krx/360750_end_up_tablet.png",
+     "day": "https://financial-vn.pstatic.net/chart/mobile/day/krx/360750_end.png",
+     "areaYearThree": "https://financial-vn.pstatic.net/chart/mobile/area/year3/360750_end.png",
+     "candleMonth": "https://financial-vn.pstatic.net/chart/mobile/candle/month/360750_end.png",
+     "transparent": "https://financial-vn.pstatic.net/chart/mobile/mini/krx/360750_transparent.png",
+     "day_up": "https://financial-vn.pstatic.net/chart/mobile/mini/krx/360750_end_up.png",
+     "candleDay": "https://financial-vn.pstatic.net/chart/mobile/candle/day/360750_end.png",
+     "areaYear": "https://financial-vn.pstatic.net/chart/mobile/area/year/360750_end.png",
+     "candleWeek": "https://financial-vn.pstatic.net/chart/mobile/candle/week/360750_end.png",
+     "areaYearTen": "https://financial-vn.pstatic.net/chart/mobile/area/year10/360750_end.png"
+    },
+    "imageChartUrlInfo": {
+     "line": {
+      "day": "https://financial-vn.pstatic.net/chart/mobile/day/krx/360750_end.png",
+      "month3": "https://financial-vn.pstatic.net/chart/mobile/area/month3/360750_end.png",
+      "year": "https://financial-vn.pstatic.net/chart/mobile/area/year/360750_end.png",
+      "year3": "https://financial-vn.pstatic.net/chart/mobile/area/year3/360750_end.png",
+      "year5": "https://financial-vn.pstatic.net/chart/mobile/area/year5/360750_end.png",
+      "year10": "https://financial-vn.pstatic.net/chart/mobile/area/year10/360750_end.png"
+     },
+     "candle": {
+      "day": "https://financial-vn.pstatic.net/chart/mobile/candle/day/360750_end.png",
+      "week": "https://financial-vn.pstatic.net/chart/mobile/candle/week/360750_end.png",
+      "month": "https://financial-vn.pstatic.net/chart/mobile/candle/month/360750_end.png"
+     },
+     "mini": {
+      "transparent": "https://financial-vn.pstatic.net/chart/mobile/mini/krx/360750_transparent.png",
+      "dayUp": "https://financial-vn.pstatic.net/chart/mobile/mini/krx/360750_end_up.png",
+      "dayUpTablet": "https://financial-vn.pstatic.net/chart/mobile/mini/krx/360750_end_up_tablet.png"
+     }
+    },
+    "scriptChartTypes": [
+     "candleMinuteFive",
+     "candleDay",
+     "candleWeek",
+     "candleMonth",
+     "day",
+     "areaMonthThree",
+     "areaYear",
+     "areaYearThree",
+     "areaYearTen"
+    ],
+    "delayTime": 0,
+    "delayTimeName": "실시간",
+    "endUrl": "https://m.stock.naver.com/domestic/stock/360750",
+    "newPcUrl": "https://stock.naver.com/domestic/stock/360750",
+    "chartIqEndUrl": "https://m.stock.naver.com/fchart/domestic/stock/360750",
+    "newlyListed": false,
+    "nationType": "KOR",
+    "nationName": "대한민국",
+    "marketSessionType": "regularMarket"
+   }
+  },
+  {
+   "group": "KR",
+   "label": "모바일 etfAnalysis 069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/etfAnalysis",
+   "status": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "bytes": 4869,
+   "ms": 200,
+   "kind": "json",
+   "shape": {
+    "itemCode": "str:069500",
+    "itemName": "str:KODEX 200",
+    "etfSummary": "str:1좌당 순자산가치의 변동률을 기초지수인 KOSPI200의 변동률과 유사하도록 투자신탁재산을 운용하는 것을 목",
+    "listedDate": "str:20021014",
+    "issuerName": "str:삼성자산운용(ETF)",
+    "etfBaseIndex": "str:코스피 200",
+    "marketValue": "str:24조 8,268억",
+    "totalNav": "str:24조 9,450억",
+    "nav": "number:109503.88",
+    "etfChaseEarningRateSymbol": "str:+",
+    "etfChaseEarningRate": "number:1",
+    "deviationRate": "number:0",
+    "totalFee": "number:0.15",
+    "chaseErrorRate": "number:0.38",
+    "taxationTypeCode": "str:1",
+    "themeReturns": {
+     "themeId": "number:115",
+     "themeLargeCode": "str:0501",
+     "themeLargeCodeDesc": "str:(주식)지수",
+     "themeMiddleCode": "str:0501002",
+     "themeMiddleCodeDesc": "str:코스피200",
+     "todayChangeRate": "number:-0.4",
+     "returnRate1d": "number:-2.44",
+     "returnRate1w": "number:-1.4",
+     "returnRate1m": "number:1.87",
+     "returnRate3m": "number:-14.87",
+     "returnRate6m": "number:31.18",
+     "returnRateYtd": "number:69.86",
+     "returnRate1y": "number:114.8",
+     "returnRate3y": "number:45.12",
+     "returnRate5y": "number:20.5",
+     "returnRate10y": "number:14.83"
+    },
+    "returnPerformanceReferenceDate": "str:2026.09.28",
+    "returnPerformanceList": [
+     "len=10",
+     {
+      "periodTypeCode": "str:D1",
+      "value": "number:-3.22"
+     }
+    ],
+    "navPerformanceReferenceDate": "str:2026.09.28",
+    "navPerformanceList": [
+     "len=10",
+     {
+      "periodTypeCode": "str:D1",
+      "value": "number:-3.28"
+     }
+    ],
+    "cumulativeNetInflowList": {
+     "referenceDate": "str:2026.09.28",
+     "cumulativeNetInflow1d": "str:-1,259억",
+     "cumulativeNetInflow1w": "str:-3,235억",
+     "cumulativeNetInflow1m": "str:-5,286억",
+     "cumulativeNetInflow3m": "str:1조 8,838억",
+     "cumulativeNetInflow6m": "str:1조 2,834억",
+     "cumulativeNetInflowYtd": "str:2조 8,653억",
+     "cumulativeNetInflow1y": "str:3조 5,100억"
+    },
+    "assetPortfolioTotalWeight": "number:99.62",
+    "assetPortfolioList": [
+     "len=5",
+     {
+      "detailTypeCode": "str:EQUITY",
+      "weight": "number:99.59"
+     }
+    ],
+    "countryPortfolioTotalWeight": "number:99.62",
+    "countryPortfolioList": [
+     "len=6",
+     {
+      "detailTypeCode": "str:KR",
+      "weight": "number:99.62"
+     }
+    ],
+    "sectorPortfolioTotalWeight": "number:99.62",
+    "sectorPortfolioList": [
+     "len=12",
+     {
+      "detailTypeCode": "str:IT",
+      "weight": "number:66.12"
+     }
+    ],
+    "etfTop10MajorConstituentAssets": [
+     "len=10",
+     {
+      "seq": "number:1",
+      "itemCode": "str:005930",
+      "itemName": "str:삼성전자",
+      "stockCount": "str:6,930",
+      "etfWeight": "str:34.17%"
+     }
+    ],
+    "dividend": {
+     "dividendYieldTtm": "number:0.78",
+     "dividendPerShareTtm": "number:849",
+     "dividendCountThisYear": "number:3",
+     "dividendMonthThisYear": "str:1,4,7"
+    },
+    "marketValueRaw": "str:24826783000000"
+   },
+   "pick": {
+    "itemCode": "069500",
+    "itemName": "KODEX 200",
+    "etfSummary": "1좌당 순자산가치의 변동률을 기초지수인 KOSPI200의 변동률과 유사하도록 투자신탁재산을 운용하는 것을 목표로 합니다.한국거래소가 산출하는 KOSPI200 지수는 한국을 대표하는 200개 종목의 시가총액을 지수화한 것입니다. 200개 종목은 시장 대표성, 유동성, 업종 대표성을 고려하여 선정하는데, 전체 종목을 9개업 군으로 분류하여 시가총액과 거래량 비중이 높은 종목들을 우선 선정합니다.",
+    "listedDate": "20021014",
+    "issuerName": "삼성자산운용(ETF)",
+    "etfBaseIndex": "코스피 200",
+    "marketValue": "24조 8,268억",
+    "totalNav": "24조 9,450억",
+    "nav": 109503.88,
+    "etfChaseEarningRateSymbol": "+",
+    "etfChaseEarningRate": 1,
+    "deviationRate": 0,
+    "totalFee": 0.15,
+    "chaseErrorRate": 0.38,
+    "taxationTypeCode": "1",
+    "themeReturns": {
+     "themeId": 115,
+     "themeLargeCode": "0501",
+     "themeLargeCodeDesc": "(주식)지수",
+     "themeMiddleCode": "0501002",
+     "themeMiddleCodeDesc": "코스피200",
+     "todayChangeRate": -0.4,
+     "returnRate1d": -2.44,
+     "returnRate1w": -1.4,
+     "returnRate1m": 1.87,
+     "returnRate3m": -14.87,
+     "returnRate6m": 31.18,
+     "returnRateYtd": 69.86,
+     "returnRate1y": 114.8,
+     "returnRate3y": 45.12,
+     "returnRate5y": 20.5,
+     "returnRate10y": 14.83
+    },
+    "returnPerformanceReferenceDate": "2026.09.28",
+    "returnPerformanceList": [
+     {
+      "periodTypeCode": "D1",
+      "value": -3.22
+     },
+     {
+      "periodTypeCode": "W1",
+      "value": -1.97
+     },
+     {
+      "periodTypeCode": "M1",
+      "value": 2.16
+     },
+     {
+      "periodTypeCode": "M3",
+      "value": -20.13
+     },
+     {
+      "periodTypeCode": "M6",
+      "value": 35.68
+     },
+     {
+      "periodTypeCode": "YTD",
+      "value": 81.17
+     },
+     {
+      "periodTypeCode": "Y1",
+      "value": 135.09
+     },
+     {
+      "periodTypeCode": "Y3",
+      "value": 52.12
+     },
+     {
+      "periodTypeCode": "Y5",
+      "value": 24.37
+     },
+     {
+      "periodTypeCode": "Y10",
+      "value": 17.88
+     }
+    ],
+    "navPerformanceReferenceDate": "2026.09.28",
+    "navPerformanceList": [
+     {
+      "periodTypeCode": "D1",
+      "value": -3.28
+     },
+     {
+      "periodTypeCode": "W1",
+      "value": -2.07
+     },
+     {
+      "periodTypeCode": "M1",
+      "value": 2.19
+     },
+     {
+      "periodTypeCode": "M3",
+      "value": -20.2
+     },
+     {
+      "periodTypeCode": "M6",
+      "value": 35.74
+     },
+     {
+      "periodTypeCode": "YTD",
+      "value": 80.97
+     },
+     {
+      "periodTypeCode": "Y1",
+      "value": 135.38
+     },
+     {
+      "periodTypeCode": "Y3",
+      "value": 52.1
+     },
+     {
+      "periodTypeCode": "Y5",
+      "value": 24.3
+     },
+     {
+      "periodTypeCode": "Y10",
+      "value": 17.85
+     }
+    ],
+    "cumulativeNetInflowList": {
+     "referenceDate": "2026.09.28",
+     "cumulativeNetInflow1d": "-1,259억",
+     "cumulativeNetInflow1w": "-3,235억",
+     "cumulativeNetInflow1m": "-5,286억",
+     "cumulativeNetInflow3m": "1조 8,838억",
+     "cumulativeNetInflow6m": "1조 2,834억",
+     "cumulativeNetInflowYtd": "2조 8,653억",
+     "cumulativeNetInflow1y": "3조 5,100억"
+    },
+    "assetPortfolioTotalWeight": 99.62,
+    "assetPortfolioList": [
+     {
+      "detailTypeCode": "EQUITY",
+      "weight": 99.59
+     },
+     {
+      "detailTypeCode": "CASH",
+      "weight": 0.03
+     },
+     {
+      "detailTypeCode": "OTHERS",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "DERIVATIVES",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "BOND",
+      "weight": 0
+     }
+    ],
+    "countryPortfolioTotalWeight": 99.62,
+    "countryPortfolioList": [
+     {
+      "detailTypeCode": "KR",
+      "weight": 99.62
+     },
+     {
+      "detailTypeCode": "US",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "MISC",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "JP",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "HK",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "CN",
+      "weight": 0
+     }
+    ],
+    "sectorPortfolioTotalWeight": 99.62,
+    "sectorPortfolioList": [
+     {
+      "detailTypeCode": "IT",
+      "weight": 66.12
+     },
+     {
+      "detailTypeCode": "INDUSTRIALS",
+      "weight": 13.59
+     },
+     {
+      "detailTypeCode": "FINANCIALS",
+      "weight": 7.54
+     },
+     {
+      "detailTypeCode": "CONSUMER_DISCRETIONARY",
+      "weight": 4.23
+     },
+     {
+      "detailTypeCode": "COMMUNICATION",
+      "weight": 2.22
+     },
+     {
+      "detailTypeCode": "MATERIALS",
+      "weight": 1.85
+     },
+     {
+      "detailTypeCode": "HEALTHCARE",
+      "weight": 1.54
+     },
+     {
+      "detailTypeCode": "CONSUMER_STAPLES",
+      "weight": 1.37
+     },
+     {
+      "detailTypeCode": "ENERGY",
+      "weight": 0.75
+     },
+     {
+      "detailTypeCode": "UTILITIES",
+      "weight": 0.29
+     },
+     {
+      "detailTypeCode": "UNCLASSIFIED",
+      "weight": 0.12
+     },
+     {
+      "detailTypeCode": "REAL_ESTATE",
+      "weight": 0
+     }
+    ],
+    "etfTop10MajorConstituentAssets": [
+     {
+      "seq": 1,
+      "itemCode": "005930",
+      "itemName": "삼성전자",
+      "stockCount": "6,930",
+      "etfWeight": "34.17%"
+     },
+     {
+      "seq": 2,
+      "itemCode": "000660",
+      "itemName": "SK하이닉스",
+      "stockCount": "844",
+      "etfWeight": "27.25%"
+     },
+     {
+      "seq": 3,
+      "itemCode": "402340",
+      "itemName": "SK스퀘어",
+      "stockCount": "137",
+      "etfWeight": "2.75%"
+     },
+     {
+      "seq": 4,
+      "itemCode": "009150",
+      "itemName": "삼성전기",
+      "stockCount": "83",
+      "etfWeight": "2.27%"
+     },
+     {
+      "seq": 5,
+      "itemCode": "105560",
+      "itemName": "KB금융",
+      "stockCount": "452",
+      "etfWeight": "1.44%"
+     },
+     {
+      "seq": 6,
+      "itemCode": "005380",
+      "itemName": "현대차",
+      "stockCount": "202",
+      "etfWeight": "1.31%"
+     },
+     {
+      "seq": 7,
+      "itemCode": "055550",
+      "itemName": "신한지주",
+      "stockCount": "605",
+      "etfWeight": "1.23%"
+     },
+     {
+      "seq": 8,
+      "itemCode": "034020",
+      "itemName": "두산에너빌리티",
+      "stockCount": "644",
+      "etfWeight": "0.96%"
+     },
+     {
+      "seq": 9,
+      "itemCode": "012450",
+      "itemName": "한화에어로스페이스",
+      "stockCount": "49",
+      "etfWeight": "0.93%"
+     },
+     {
+      "seq": 10,
+      "itemCode": "086790",
+      "itemName": "하나금융지주",
+      "stockCount": "370",
+      "etfWeight": "0.91%"
+     }
+    ],
+    "dividend": {
+     "dividendYieldTtm": 0.78,
+     "dividendPerShareTtm": 849,
+     "dividendCountThisYear": 3,
+     "dividendMonthThisYear": "1,4,7"
+    },
+    "marketValueRaw": "24826783000000"
+   }
+  },
+  {
+   "group": "KR",
+   "label": "모바일 etfAnalysis 360750",
+   "url": "https://m.stock.naver.com/api/stock/360750/etfAnalysis",
+   "status": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "bytes": 4618,
+   "ms": 196,
+   "kind": "json",
+   "shape": {
+    "itemCode": "str:360750",
+    "itemName": "str:TIGER 미국S&P500",
+    "etfSummary": "str:이 ETF는 미국 주식을 주된 투자대상자산으로 하며, “S&P500 지수”를 기초지수로 하여 1좌당 순자산가",
+    "listedDate": "str:20200807",
+    "issuerName": "str:미래에셋자산운용",
+    "etfBaseIndex": "str:S&P 500",
+    "marketValue": "str:20조 7,354억",
+    "totalNav": "str:21조 234억",
+    "nav": "number:26226.79",
+    "etfChaseEarningRateSymbol": "str:+",
+    "etfChaseEarningRate": "number:1",
+    "deviationSign": "str:-",
+    "deviationRate": "number:0.46",
+    "totalFee": "number:0.0068",
+    "chaseErrorRate": "number:0.09",
+    "taxationTypeCode": "str:2",
+    "themeReturns": {
+     "themeId": "number:120",
+     "themeLargeCode": "str:0501",
+     "themeLargeCodeDesc": "str:(주식)지수",
+     "themeMiddleCode": "str:0501007",
+     "themeMiddleCodeDesc": "str:S&P500",
+     "todayChangeRate": "number:-0.78",
+     "returnRate1d": "number:-0.43",
+     "returnRate1w": "number:-0.92",
+     "returnRate1m": "number:-0.8",
+     "returnRate3m": "number:-4.91",
+     "returnRate6m": "number:7.69",
+     "returnRateYtd": "number:6.57",
+     "returnRate1y": "number:12.32",
+     "returnRate3y": "number:22.37",
+     "returnRate5y": "number:13.33",
+     "returnRate10y": "number:12.25"
+    },
+    "returnPerformanceReferenceDate": "str:2026.09.28",
+    "returnPerformanceList": [
+     "len=9",
+     {
+      "periodTypeCode": "str:D1",
+      "value": "number:-0.36"
+     }
+    ],
+    "navPerformanceReferenceDate": "str:2026.09.28",
+    "navPerformanceList": [
+     "len=9",
+     {
+      "periodTypeCode": "str:D1",
+      "value": "number:0.22"
+     }
+    ],
+    "cumulativeNetInflowList": {
+     "referenceDate": "str:2026.09.28",
+     "cumulativeNetInflow1d": "str:629억",
+     "cumulativeNetInflow1w": "str:1,585억",
+     "cumulativeNetInflow1m": "str:5,816억",
+     "cumulativeNetInflow3m": "str:2조 7,760억",
+     "cumulativeNetInflow6m": "str:5조 2,868억",
+     "cumulativeNetInflowYtd": "str:7조 5,273억",
+     "cumulativeNetInflow1y": "str:9조 8,805억"
+    },
+    "assetPortfolioTotalWeight": "number:97.42",
+    "assetPortfolioList": [
+     "len=5",
+     {
+      "detailTypeCode": "str:EQUITY",
+      "weight": "number:97.38"
+     }
+    ],
+    "countryPortfolioTotalWeight": "number:97.42",
+    "countryPortfolioList": [
+     "len=6",
+     {
+      "detailTypeCode": "str:US",
+      "weight": "number:94.85"
+     }
+    ],
+    "sectorPortfolioTotalWeight": "number:97.42",
+    "sectorPortfolioList": [
+     "len=12",
+     {
+      "detailTypeCode": "str:IT",
+      "weight": "number:39.11"
+     }
+    ],
+    "etfTop10MajorConstituentAssets": [
+     "len=10",
+     {
+      "seq": "number:1",
+      "itemCode": "str:",
+      "itemName": "str:NVIDIA CORP",
+      "stockCount": "str:348",
+      "etfWeight": "str:-"
+     }
+    ],
+    "dividend": {
+     "dividendYieldTtm": "number:0.97",
+     "dividendPerShareTtm": "number:253",
+     "dividendCountThisYear": "number:3",
+     "dividendMonthThisYear": "str:1,4,7"
+    },
+    "marketValueRaw": "str:20735443500000"
+   },
+   "pick": {
+    "itemCode": "360750",
+    "itemName": "TIGER 미국S&P500",
+    "etfSummary": "이 ETF는 미국 주식을 주된 투자대상자산으로 하며, “S&P500 지수”를 기초지수로 하여 1좌당 순자산가치의 변동률을 기초지수의 변동률과 유사하도록 투자신탁재산을 운용함을 목적으로 합니다.<br><br>“S&P500 지수”는 S&P Dow Jones Indices에서 발표하는 지수로서, 미국에 상장된 종목 중 시가 총액 상위 500 종목을 편입시키는 미국 대형주 시장대표 지수입니다.",
+    "listedDate": "20200807",
+    "issuerName": "미래에셋자산운용",
+    "etfBaseIndex": "S&P 500",
+    "marketValue": "20조 7,354억",
+    "totalNav": "21조 234억",
+    "nav": 26226.79,
+    "etfChaseEarningRateSymbol": "+",
+    "etfChaseEarningRate": 1,
+    "deviationSign": "-",
+    "deviationRate": 0.46,
+    "totalFee": 0.0068,
+    "chaseErrorRate": 0.09,
+    "taxationTypeCode": "2",
+    "themeReturns": {
+     "themeId": 120,
+     "themeLargeCode": "0501",
+     "themeLargeCodeDesc": "(주식)지수",
+     "themeMiddleCode": "0501007",
+     "themeMiddleCodeDesc": "S&P500",
+     "todayChangeRate": -0.78,
+     "returnRate1d": -0.43,
+     "returnRate1w": -0.92,
+     "returnRate1m": -0.8,
+     "returnRate3m": -4.91,
+     "returnRate6m": 7.69,
+     "returnRateYtd": 6.57,
+     "returnRate1y": 12.32,
+     "returnRate3y": 22.37,
+     "returnRate5y": 13.33,
+     "returnRate10y": 12.25
+    },
+    "returnPerformanceReferenceDate": "2026.09.28",
+    "returnPerformanceList": [
+     {
+      "periodTypeCode": "D1",
+      "value": -0.36
+     },
+     {
+      "periodTypeCode": "W1",
+      "value": -0.89
+     },
+     {
+      "periodTypeCode": "M1",
+      "value": -0.67
+     },
+     {
+      "periodTypeCode": "M3",
+      "value": -6.17
+     },
+     {
+      "periodTypeCode": "M6",
+      "value": 7.41
+     },
+     {
+      "periodTypeCode": "YTD",
+      "value": 6.26
+     },
+     {
+      "periodTypeCode": "Y1",
+      "value": 13.56
+     },
+     {
+      "periodTypeCode": "Y3",
+      "value": 23.15
+     },
+     {
+      "periodTypeCode": "Y5",
+      "value": 15.98
+     }
+    ],
+    "navPerformanceReferenceDate": "2026.09.28",
+    "navPerformanceList": [
+     {
+      "periodTypeCode": "D1",
+      "value": 0.22
+     },
+     {
+      "periodTypeCode": "W1",
+      "value": 0.06
+     },
+     {
+      "periodTypeCode": "M1",
+      "value": -0.3
+     },
+     {
+      "periodTypeCode": "M3",
+      "value": -6.04
+     },
+     {
+      "periodTypeCode": "M6",
+      "value": 8.6
+     },
+     {
+      "periodTypeCode": "YTD",
+      "value": 7.02
+     },
+     {
+      "periodTypeCode": "Y1",
+      "value": 14.24
+     },
+     {
+      "periodTypeCode": "Y3",
+      "value": 23.48
+     },
+     {
+      "periodTypeCode": "Y5",
+      "value": 16.05
+     }
+    ],
+    "cumulativeNetInflowList": {
+     "referenceDate": "2026.09.28",
+     "cumulativeNetInflow1d": "629억",
+     "cumulativeNetInflow1w": "1,585억",
+     "cumulativeNetInflow1m": "5,816억",
+     "cumulativeNetInflow3m": "2조 7,760억",
+     "cumulativeNetInflow6m": "5조 2,868억",
+     "cumulativeNetInflowYtd": "7조 5,273억",
+     "cumulativeNetInflow1y": "9조 8,805억"
+    },
+    "assetPortfolioTotalWeight": 97.42,
+    "assetPortfolioList": [
+     {
+      "detailTypeCode": "EQUITY",
+      "weight": 97.38
+     },
+     {
+      "detailTypeCode": "CASH",
+      "weight": 0.04
+     },
+     {
+      "detailTypeCode": "OTHERS",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "DERIVATIVES",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "BOND",
+      "weight": 0
+     }
+    ],
+    "countryPortfolioTotalWeight": 97.42,
+    "countryPortfolioList": [
+     {
+      "detailTypeCode": "US",
+      "weight": 94.85
+     },
+     {
+      "detailTypeCode": "MISC",
+      "weight": 2.53
+     },
+     {
+      "detailTypeCode": "KR",
+      "weight": 0.04
+     },
+     {
+      "detailTypeCode": "JP",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "HK",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "CN",
+      "weight": 0
+     }
+    ],
+    "sectorPortfolioTotalWeight": 97.42,
+    "sectorPortfolioList": [
+     {
+      "detailTypeCode": "IT",
+      "weight": 39.11
+     },
+     {
+      "detailTypeCode": "FINANCIALS",
+      "weight": 11.2
+     },
+     {
+      "detailTypeCode": "COMMUNICATION",
+      "weight": 9.72
+     },
+     {
+      "detailTypeCode": "HEALTHCARE",
+      "weight": 8.97
+     },
+     {
+      "detailTypeCode": "CONSUMER_DISCRETIONARY",
+      "weight": 8.39
+     },
+     {
+      "detailTypeCode": "INDUSTRIALS",
+      "weight": 7.54
+     },
+     {
+      "detailTypeCode": "CONSUMER_STAPLES",
+      "weight": 4.23
+     },
+     {
+      "detailTypeCode": "ENERGY",
+      "weight": 3.27
+     },
+     {
+      "detailTypeCode": "UTILITIES",
+      "weight": 1.68
+     },
+     {
+      "detailTypeCode": "MATERIALS",
+      "weight": 1.61
+     },
+     {
+      "detailTypeCode": "REAL_ESTATE",
+      "weight": 1.54
+     },
+     {
+      "detailTypeCode": "UNCLASSIFIED",
+      "weight": 0.16
+     }
+    ],
+    "etfTop10MajorConstituentAssets": [
+     {
+      "seq": 1,
+      "itemCode": "",
+      "itemName": "NVIDIA CORP",
+      "stockCount": "348",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 2,
+      "itemCode": "",
+      "itemName": "APPLE INC",
+      "stockCount": "210",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 3,
+      "itemCode": "",
+      "itemName": "AMAZON.COM INC",
+      "stockCount": "141",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 4,
+      "itemCode": "",
+      "itemName": "MICROSOFT CORP",
+      "stockCount": "107",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 5,
+      "itemCode": "",
+      "itemName": "AT&T INC",
+      "stockCount": "99",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 6,
+      "itemCode": "",
+      "itemName": "BANK OF AMERICA CORP",
+      "stockCount": "94",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 7,
+      "itemCode": "",
+      "itemName": "ALPHABET INC-CL A",
+      "stockCount": "84",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 8,
+      "itemCode": "",
+      "itemName": "PFIZER INC",
+      "stockCount": "82",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 9,
+      "itemCode": "",
+      "itemName": "INTEL CORP",
+      "stockCount": "72",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 10,
+      "itemCode": "",
+      "itemName": "BROADCOM INC",
+      "stockCount": "68",
+      "etfWeight": "-"
+     }
+    ],
+    "dividend": {
+     "dividendYieldTtm": 0.97,
+     "dividendPerShareTtm": 253,
+     "dividendCountThisYear": 3,
+     "dividendMonthThisYear": "1,4,7"
+    },
+    "marketValueRaw": "20735443500000"
+   }
+  },
+  {
+   "group": "KR",
+   "label": "모바일 etfAnalysis 305720",
+   "url": "https://m.stock.naver.com/api/stock/305720/etfAnalysis",
+   "status": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "bytes": 4514,
+   "ms": 200,
+   "kind": "json",
+   "shape": {
+    "itemCode": "str:305720",
+    "itemName": "str:KODEX 2차전지산업",
+    "etfSummary": "str:FnGuide 2차전지산업 지수 (이하 “기초지수”라 한다)를 기초지수로 하여 1좌당 순자산가치의 변동률을 ",
+    "listedDate": "str:20180912",
+    "issuerName": "str:삼성자산운용(ETF)",
+    "etfBaseIndex": "str:FnGuide 2차전지 산업 지수",
+    "marketValue": "str:1조 7,517억",
+    "totalNav": "str:1조 8,315억",
+    "nav": "number:14842.36",
+    "etfChaseEarningRateSymbol": "str:+",
+    "etfChaseEarningRate": "number:1",
+    "deviationSign": "str:-",
+    "deviationRate": "number:0.29",
+    "totalFee": "number:0.45",
+    "chaseErrorRate": "number:0.27",
+    "taxationTypeCode": "str:1",
+    "themeReturns": {
+     "themeId": "number:58",
+     "themeLargeCode": "str:0201",
+     "themeLargeCodeDesc": "str:투자국가",
+     "themeMiddleCode": "str:0201001",
+     "themeMiddleCodeDesc": "str:한국",
+     "todayChangeRate": "number:-0.69",
+     "returnRate1d": "number:-0.44",
+     "returnRate1w": "number:-0.09",
+     "returnRate1m": "number:-0.68",
+     "returnRate3m": "number:-5.33",
+     "returnRate6m": "number:6.71",
+     "returnRateYtd": "number:28.85",
+     "returnRate1y": "number:51.44",
+     "returnRate3y": "number:24.16",
+     "returnRate5y": "number:11.23",
+     "returnRate10y": "number:9.44"
+    },
+    "returnPerformanceReferenceDate": "str:2026.09.28",
+    "returnPerformanceList": [
+     "len=9",
+     {
+      "periodTypeCode": "str:D1",
+      "value": "number:3.32"
+     }
+    ],
+    "navPerformanceReferenceDate": "str:2026.09.28",
+    "navPerformanceList": [
+     "len=9",
+     {
+      "periodTypeCode": "str:D1",
+      "value": "number:3.54"
+     }
+    ],
+    "cumulativeNetInflowList": {
+     "referenceDate": "str:2026.09.28",
+     "cumulativeNetInflow1d": "str:416억",
+     "cumulativeNetInflow1w": "str:803억",
+     "cumulativeNetInflow1m": "str:1,042억",
+     "cumulativeNetInflow3m": "str:1,695억",
+     "cumulativeNetInflow6m": "str:1,418억",
+     "cumulativeNetInflowYtd": "str:2,380억",
+     "cumulativeNetInflow1y": "str:3,708억"
+    },
+    "assetPortfolioTotalWeight": "number:99.89",
+    "assetPortfolioList": [
+     "len=5",
+     {
+      "detailTypeCode": "str:EQUITY",
+      "weight": "number:99.71"
+     }
+    ],
+    "countryPortfolioTotalWeight": "number:99.89",
+    "countryPortfolioList": [
+     "len=6",
+     {
+      "detailTypeCode": "str:KR",
+      "weight": "number:99.89"
+     }
+    ],
+    "sectorPortfolioTotalWeight": "number:99.89",
+    "sectorPortfolioList": [
+     "len=12",
+     {
+      "detailTypeCode": "str:INDUSTRIALS",
+      "weight": "number:44.55"
+     }
+    ],
+    "etfTop10MajorConstituentAssets": [
+     "len=10",
+     {
+      "seq": "number:1",
+      "itemCode": "str:373220",
+      "itemName": "str:LG에너지솔루션",
+      "stockCount": "str:841",
+      "etfWeight": "str:20.63%"
+     }
+    ],
+    "dividend": {
+     "dividendYieldTtm": "number:0.12",
+     "dividendPerShareTtm": "number:18",
+     "dividendCountThisYear": "number:1",
+     "dividendMonthThisYear": "str:4"
+    },
+    "marketValueRaw": "str:1751663000000"
+   },
+   "pick": {
+    "itemCode": "305720",
+    "itemName": "KODEX 2차전지산업",
+    "etfSummary": "FnGuide 2차전지산업 지수 (이하 “기초지수”라 한다)를 기초지수로 하여 1좌당 순자산가치의 변동률을 기초지수의 변동률과 유사하도록 투자신탁재산을 운용함을 그 운용목적으로 합니다.",
+    "listedDate": "20180912",
+    "issuerName": "삼성자산운용(ETF)",
+    "etfBaseIndex": "FnGuide 2차전지 산업 지수",
+    "marketValue": "1조 7,517억",
+    "totalNav": "1조 8,315억",
+    "nav": 14842.36,
+    "etfChaseEarningRateSymbol": "+",
+    "etfChaseEarningRate": 1,
+    "deviationSign": "-",
+    "deviationRate": 0.29,
+    "totalFee": 0.45,
+    "chaseErrorRate": 0.27,
+    "taxationTypeCode": "1",
+    "themeReturns": {
+     "themeId": 58,
+     "themeLargeCode": "0201",
+     "themeLargeCodeDesc": "투자국가",
+     "themeMiddleCode": "0201001",
+     "themeMiddleCodeDesc": "한국",
+     "todayChangeRate": -0.69,
+     "returnRate1d": -0.44,
+     "returnRate1w": -0.09,
+     "returnRate1m": -0.68,
+     "returnRate3m": -5.33,
+     "returnRate6m": 6.71,
+     "returnRateYtd": 28.85,
+     "returnRate1y": 51.44,
+     "returnRate3y": 24.16,
+     "returnRate5y": 11.23,
+     "returnRate10y": 9.44
+    },
+    "returnPerformanceReferenceDate": "2026.09.28",
+    "returnPerformanceList": [
+     {
+      "periodTypeCode": "D1",
+      "value": 3.32
+     },
+     {
+      "periodTypeCode": "W1",
+      "value": 2.96
+     },
+     {
+      "periodTypeCode": "M1",
+      "value": -2.05
+     },
+     {
+      "periodTypeCode": "M3",
+      "value": 5.79
+     },
+     {
+      "periodTypeCode": "M6",
+      "value": -12.21
+     },
+     {
+      "periodTypeCode": "YTD",
+      "value": 6.98
+     },
+     {
+      "periodTypeCode": "Y1",
+      "value": 26.81
+     },
+     {
+      "periodTypeCode": "Y3",
+      "value": -15.13
+     },
+     {
+      "periodTypeCode": "Y5",
+      "value": -8.43
+     }
+    ],
+    "navPerformanceReferenceDate": "2026.09.28",
+    "navPerformanceList": [
+     {
+      "periodTypeCode": "D1",
+      "value": 3.54
+     },
+     {
+      "periodTypeCode": "W1",
+      "value": 3.25
+     },
+     {
+      "periodTypeCode": "M1",
+      "value": -2.4
+     },
+     {
+      "periodTypeCode": "M3",
+      "value": 6.44
+     },
+     {
+      "periodTypeCode": "M6",
+      "value": -12.31
+     },
+     {
+      "periodTypeCode": "YTD",
+      "value": 7.19
+     },
+     {
+      "periodTypeCode": "Y1",
+      "value": 27
+     },
+     {
+      "periodTypeCode": "Y3",
+      "value": -15.1
+     },
+     {
+      "periodTypeCode": "Y5",
+      "value": -8.39
+     }
+    ],
+    "cumulativeNetInflowList": {
+     "referenceDate": "2026.09.28",
+     "cumulativeNetInflow1d": "416억",
+     "cumulativeNetInflow1w": "803억",
+     "cumulativeNetInflow1m": "1,042억",
+     "cumulativeNetInflow3m": "1,695억",
+     "cumulativeNetInflow6m": "1,418억",
+     "cumulativeNetInflowYtd": "2,380억",
+     "cumulativeNetInflow1y": "3,708억"
+    },
+    "assetPortfolioTotalWeight": 99.89,
+    "assetPortfolioList": [
+     {
+      "detailTypeCode": "EQUITY",
+      "weight": 99.71
+     },
+     {
+      "detailTypeCode": "CASH",
+      "weight": 0.18
+     },
+     {
+      "detailTypeCode": "BOND",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "OTHERS",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "DERIVATIVES",
+      "weight": 0
+     }
+    ],
+    "countryPortfolioTotalWeight": 99.89,
+    "countryPortfolioList": [
+     {
+      "detailTypeCode": "KR",
+      "weight": 99.89
+     },
+     {
+      "detailTypeCode": "US",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "MISC",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "JP",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "HK",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "CN",
+      "weight": 0
+     }
+    ],
+    "sectorPortfolioTotalWeight": 99.89,
+    "sectorPortfolioList": [
+     {
+      "detailTypeCode": "INDUSTRIALS",
+      "weight": 44.55
+     },
+     {
+      "detailTypeCode": "MATERIALS",
+      "weight": 29.08
+     },
+     {
+      "detailTypeCode": "IT",
+      "weight": 18.7
+     },
+     {
+      "detailTypeCode": "ENERGY",
+      "weight": 7.21
+     },
+     {
+      "detailTypeCode": "UNCLASSIFIED",
+      "weight": 0.18
+     },
+     {
+      "detailTypeCode": "CONSUMER_DISCRETIONARY",
+      "weight": 0.17
+     },
+     {
+      "detailTypeCode": "UTILITIES",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "REAL_ESTATE",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "HEALTHCARE",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "FINANCIALS",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "CONSUMER_STAPLES",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "COMMUNICATION",
+      "weight": 0
+     }
+    ],
+    "etfTop10MajorConstituentAssets": [
+     {
+      "seq": 1,
+      "itemCode": "373220",
+      "itemName": "LG에너지솔루션",
+      "stockCount": "841",
+      "etfWeight": "20.63%"
+     },
+     {
+      "seq": 2,
+      "itemCode": "006400",
+      "itemName": "삼성SDI",
+      "stockCount": "411",
+      "etfWeight": "14.77%"
+     },
+     {
+      "seq": 3,
+      "itemCode": "005490",
+      "itemName": "POSCO홀딩스",
+      "stockCount": "672",
+      "etfWeight": "14.34%"
+     },
+     {
+      "seq": 4,
+      "itemCode": "051910",
+      "itemName": "LG화학",
+      "stockCount": "609",
+      "etfWeight": "10.78%"
+     },
+     {
+      "seq": 5,
+      "itemCode": "096770",
+      "itemName": "SK이노베이션",
+      "stockCount": "677",
+      "etfWeight": "7.22%"
+     },
+     {
+      "seq": 6,
+      "itemCode": "086520",
+      "itemName": "에코프로",
+      "stockCount": "1,300",
+      "etfWeight": "7.18%"
+     },
+     {
+      "seq": 7,
+      "itemCode": "247540",
+      "itemName": "에코프로비엠",
+      "stockCount": "898",
+      "etfWeight": "6.74%"
+     },
+     {
+      "seq": 8,
+      "itemCode": "003670",
+      "itemName": "포스코퓨처엠",
+      "stockCount": "420",
+      "etfWeight": "5.24%"
+     },
+     {
+      "seq": 9,
+      "itemCode": "066970",
+      "itemName": "엘앤에프",
+      "stockCount": "351",
+      "etfWeight": "2.70%"
+     },
+     {
+      "seq": 10,
+      "itemCode": "011790",
+      "itemName": "SKC",
+      "stockCount": "263",
+      "etfWeight": "1.62%"
+     }
+    ],
+    "dividend": {
+     "dividendYieldTtm": 0.12,
+     "dividendPerShareTtm": 18,
+     "dividendCountThisYear": 1,
+     "dividendMonthThisYear": "4"
+    },
+    "marketValueRaw": "1751663000000"
+   }
+  },
+  {
+   "group": "KR",
+   "label": "모바일 etfAnalysis 453850",
+   "url": "https://m.stock.naver.com/api/stock/453850/etfAnalysis",
+   "status": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "bytes": 5041,
+   "ms": 214,
+   "kind": "json",
+   "shape": {
+    "itemCode": "str:453850",
+    "itemName": "str:ACE 미국30년국채액티브(H)",
+    "etfSummary": "str:· 본 투자신탁은 해외 채권을 법시행령 제94조 제2항 제4호에서 규정하는 주된 투자 대상자산으로 하여 비교",
+    "listedDate": "str:20230314",
+    "issuerName": "str:한국투자신탁운용",
+    "etfBaseIndex": "str:Bloomberg U.S Treasury 20+ Year Total Return Index",
+    "marketValue": "str:1조 4,200억",
+    "totalNav": "str:1조 4,330억",
+    "nav": "number:6906",
+    "etfChaseEarningRateSymbol": "str:+",
+    "etfChaseEarningRate": "number:1",
+    "deviationSign": "str:+",
+    "deviationRate": "number:0.06",
+    "totalFee": "number:0.05",
+    "chaseErrorRate": "number:2.63",
+    "taxationTypeCode": "str:2",
+    "themeReturns": {
+     "themeId": "number:7",
+     "themeLargeCode": "str:0102",
+     "themeLargeCodeDesc": "str:채권",
+     "themeMiddleCode": "str:0102001",
+     "themeMiddleCodeDesc": "str:국공채",
+     "todayChangeRate": "number:-0.1",
+     "returnRate1d": "number:-1.41",
+     "returnRate1w": "number:-1.44",
+     "returnRate1m": "number:-2.09",
+     "returnRate3m": "number:-5.46",
+     "returnRate6m": "number:-5.75",
+     "returnRateYtd": "number:-7.39",
+     "returnRate1y": "number:-8.4",
+     "returnRate3y": "number:0.96",
+     "returnRate5y": "number:0.15",
+     "returnRate10y": "number:1.35"
+    },
+    "returnPerformanceReferenceDate": "str:2026.09.28",
+    "returnPerformanceList": [
+     "len=8",
+     {
+      "periodTypeCode": "str:D1",
+      "value": "number:-3.49"
+     }
+    ],
+    "navPerformanceReferenceDate": "str:2026.09.28",
+    "navPerformanceList": [
+     "len=8",
+     {
+      "periodTypeCode": "str:D1",
+      "value": "number:-3.07"
+     }
+    ],
+    "cumulativeNetInflowList": {
+     "referenceDate": "str:2026.09.28",
+     "cumulativeNetInflow1d": "str:41.4억",
+     "cumulativeNetInflow1w": "str:-1.47억",
+     "cumulativeNetInflow1m": "str:-244억",
+     "cumulativeNetInflow3m": "str:-1,038억",
+     "cumulativeNetInflow6m": "str:-2,438억",
+     "cumulativeNetInflowYtd": "str:-5,957억",
+     "cumulativeNetInflow1y": "str:-6,870억"
+    },
+    "assetPortfolioTotalWeight": "number:172.04",
+    "assetPortfolioList": [
+     "len=5",
+     {
+      "detailTypeCode": "str:BOND",
+      "weight": "number:37.43"
+     }
+    ],
+    "countryPortfolioTotalWeight": "number:169.58",
+    "countryPortfolioList": [
+     "len=6",
+     {
+      "detailTypeCode": "str:US",
+      "weight": "number:77.42"
+     }
+    ],
+    "sectorPortfolioTotalWeight": "number:27.66",
+    "sectorPortfolioList": [
+     "len=12",
+     {
+      "detailTypeCode": "str:UNCLASSIFIED",
+      "weight": "number:27.66"
+     }
+    ],
+    "etfTop10MajorConstituentAssets": [
+     "len=10",
+     {
+      "seq": "number:1",
+      "itemCode": "str:",
+      "itemName": "str:SP 0 05/15/55",
+      "stockCount": "str:97,349",
+      "etfWeight": "str:-"
+     }
+    ],
+    "dividend": {
+     "dividendYieldTtm": "number:4.3",
+     "dividendPerShareTtm": "number:296",
+     "dividendCountThisYear": "number:9",
+     "dividendMonthThisYear": "str:1,2,3,4,5,6,7,8,9"
+    },
+    "marketValueRaw": "str:1419984000000"
+   },
+   "pick": {
+    "itemCode": "453850",
+    "itemName": "ACE 미국30년국채액티브(H)",
+    "etfSummary": "· 본 투자신탁은 해외 채권을 법시행령 제94조 제2항 제4호에서 규정하는 주된 투자 대상자산으로 하여 비교지수인 Bloomberg US Treasury 20+ Year Total return Index 대비 초과성과 달성을 목표로 하는 액티브 상장지수집합투자기구입니다.<br><br>· 본 투자신탁은 약 30년 만기 수준의 미국 국채가 갖는 듀레이션 수준의 포트폴리오 구축을 주된 투자전략으로 하며, 이를 위하여 미국상장 장기 국채, 국채관련 ETF에 주로 투자하며, 운용 목적 달성 및 운용 효율성 제고를 위하여 약관상 허용 한도 내 집합투자증권 및 파생상품에도 일부 투자할 수 있습니다.<br><br>· 본 투자신탁은 환헤지형 상품으로, 상대국의 환율 변동 노출을 최소화하는 환헷지 전략을 실시합니다.",
+    "listedDate": "20230314",
+    "issuerName": "한국투자신탁운용",
+    "etfBaseIndex": "Bloomberg U.S Treasury 20+ Year Total Return Index",
+    "marketValue": "1조 4,200억",
+    "totalNav": "1조 4,330억",
+    "nav": 6906,
+    "etfChaseEarningRateSymbol": "+",
+    "etfChaseEarningRate": 1,
+    "deviationSign": "+",
+    "deviationRate": 0.06,
+    "totalFee": 0.05,
+    "chaseErrorRate": 2.63,
+    "taxationTypeCode": "2",
+    "themeReturns": {
+     "themeId": 7,
+     "themeLargeCode": "0102",
+     "themeLargeCodeDesc": "채권",
+     "themeMiddleCode": "0102001",
+     "themeMiddleCodeDesc": "국공채",
+     "todayChangeRate": -0.1,
+     "returnRate1d": -1.41,
+     "returnRate1w": -1.44,
+     "returnRate1m": -2.09,
+     "returnRate3m": -5.46,
+     "returnRate6m": -5.75,
+     "returnRateYtd": -7.39,
+     "returnRate1y": -8.4,
+     "returnRate3y": 0.96,
+     "returnRate5y": 0.15,
+     "returnRate10y": 1.35
+    },
+    "returnPerformanceReferenceDate": "2026.09.28",
+    "returnPerformanceList": [
+     {
+      "periodTypeCode": "D1",
+      "value": -3.49
+     },
+     {
+      "periodTypeCode": "W1",
+      "value": -3.15
+     },
+     {
+      "periodTypeCode": "M1",
+      "value": -3.83
+     },
+     {
+      "periodTypeCode": "M3",
+      "value": -8.37
+     },
+     {
+      "periodTypeCode": "M6",
+      "value": -6.13
+     },
+     {
+      "periodTypeCode": "YTD",
+      "value": -7.72
+     },
+     {
+      "periodTypeCode": "Y1",
+      "value": -8.19
+     },
+     {
+      "periodTypeCode": "Y3",
+      "value": -2.53
+     }
+    ],
+    "navPerformanceReferenceDate": "2026.09.28",
+    "navPerformanceList": [
+     {
+      "periodTypeCode": "D1",
+      "value": -3.07
+     },
+     {
+      "periodTypeCode": "W1",
+      "value": -2.62
+     },
+     {
+      "periodTypeCode": "M1",
+      "value": -3.76
+     },
+     {
+      "periodTypeCode": "M3",
+      "value": -8.19
+     },
+     {
+      "periodTypeCode": "M6",
+      "value": -6.09
+     },
+     {
+      "periodTypeCode": "YTD",
+      "value": -7.5
+     },
+     {
+      "periodTypeCode": "Y1",
+      "value": -8.03
+     },
+     {
+      "periodTypeCode": "Y3",
+      "value": -2.13
+     }
+    ],
+    "cumulativeNetInflowList": {
+     "referenceDate": "2026.09.28",
+     "cumulativeNetInflow1d": "41.4억",
+     "cumulativeNetInflow1w": "-1.47억",
+     "cumulativeNetInflow1m": "-244억",
+     "cumulativeNetInflow3m": "-1,038억",
+     "cumulativeNetInflow6m": "-2,438억",
+     "cumulativeNetInflowYtd": "-5,957억",
+     "cumulativeNetInflow1y": "-6,870억"
+    },
+    "assetPortfolioTotalWeight": 172.04,
+    "assetPortfolioList": [
+     {
+      "detailTypeCode": "BOND",
+      "weight": 37.43
+     },
+     {
+      "detailTypeCode": "EQUITY",
+      "weight": 37.25
+     },
+     {
+      "detailTypeCode": "CASH",
+      "weight": 23.94
+     },
+     {
+      "detailTypeCode": "OTHERS",
+      "weight": 1.23
+     },
+     {
+      "detailTypeCode": "DERIVATIVES",
+      "weight": -72.19
+     }
+    ],
+    "countryPortfolioTotalWeight": 169.58,
+    "countryPortfolioList": [
+     {
+      "detailTypeCode": "US",
+      "weight": 77.42
+     },
+     {
+      "detailTypeCode": "KR",
+      "weight": 21.2
+     },
+     {
+      "detailTypeCode": "JP",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "HK",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "CN",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "MISC",
+      "weight": -70.96
+     }
+    ],
+    "sectorPortfolioTotalWeight": 27.66,
+    "sectorPortfolioList": [
+     {
+      "detailTypeCode": "UNCLASSIFIED",
+      "weight": 27.66
+     },
+     {
+      "detailTypeCode": "UTILITIES",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "REAL_ESTATE",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "MATERIALS",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "IT",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "INDUSTRIALS",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "HEALTHCARE",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "FINANCIALS",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "ENERGY",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "CONSUMER_STAPLES",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "CONSUMER_DISCRETIONARY",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "COMMUNICATION",
+      "weight": 0
+     }
+    ],
+    "etfTop10MajorConstituentAssets": [
+     {
+      "seq": 1,
+      "itemCode": "",
+      "itemName": "SP 0 05/15/55",
+      "stockCount": "97,349",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 2,
+      "itemCode": "",
+      "itemName": "SP 0 08/15/55",
+      "stockCount": "97,349",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 3,
+      "itemCode": "",
+      "itemName": "SP 0 02/15/55",
+      "stockCount": "81,928",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 4,
+      "itemCode": "",
+      "itemName": "T 4 5/8 11/15/55",
+      "stockCount": "56,488",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 5,
+      "itemCode": "",
+      "itemName": "T 4 1/4 02/15/54",
+      "stockCount": "20,964",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 6,
+      "itemCode": "",
+      "itemName": "[USD] 예금",
+      "stockCount": "15,989",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 7,
+      "itemCode": "",
+      "itemName": "T 1 7/8 02/15/51",
+      "stockCount": "12,048",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 8,
+      "itemCode": "",
+      "itemName": "SP 0 05/15/56",
+      "stockCount": "10,602",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 9,
+      "itemCode": "",
+      "itemName": "SP 0 11/15/55",
+      "stockCount": "10,120",
+      "etfWeight": "-"
+     },
+     {
+      "seq": 10,
+      "itemCode": "",
+      "itemName": "SP 0 02/15/56",
+      "stockCount": "9,639",
+      "etfWeight": "-"
+     }
+    ],
+    "dividend": {
+     "dividendYieldTtm": 4.3,
+     "dividendPerShareTtm": 296,
+     "dividendCountThisYear": 9,
+     "dividendMonthThisYear": "1,2,3,4,5,6,7,8,9"
+    },
+    "marketValueRaw": "1419984000000"
+   }
+  },
+  {
+   "group": "KR",
+   "label": "모바일 etfAnalysis 252670",
+   "url": "https://m.stock.naver.com/api/stock/252670/etfAnalysis",
+   "status": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "bytes": 4473,
+   "ms": 199,
+   "kind": "json",
+   "shape": {
+    "itemCode": "str:252670",
+    "itemName": "str:KODEX 200선물인버스2X",
+    "etfSummary": "str:투자신탁의 순자산가치의 일간변동률을 F-KOSPI200 지수의 일별 수익률의 음 2배수(-2배수)의 수익률로",
+    "listedDate": "str:20160922",
+    "issuerName": "str:삼성자산운용(ETF)",
+    "etfBaseIndex": "str:코스피 200 선물인버스 -2X 지수",
+    "marketValue": "str:8,039억",
+    "totalNav": "str:7,976억",
+    "nav": "number:72.43",
+    "etfChaseEarningRateSymbol": "str:-",
+    "etfChaseEarningRate": "number:2",
+    "deviationSign": "str:+",
+    "deviationRate": "number:0.79",
+    "totalFee": "number:0.64",
+    "chaseErrorRate": "number:2.81",
+    "taxationTypeCode": "str:2",
+    "themeReturns": {
+     "themeId": "number:93",
+     "themeLargeCode": "str:0301",
+     "themeLargeCodeDesc": "str:배율",
+     "themeMiddleCode": "str:0301005",
+     "themeMiddleCodeDesc": "str:인버스2X",
+     "todayChangeRate": "number:0.27"
+    },
+    "returnPerformanceReferenceDate": "str:2026.09.28",
+    "returnPerformanceList": [
+     "len=10",
+     {
+      "periodTypeCode": "str:D1",
+      "value": "number:8.96"
+     }
+    ],
+    "navPerformanceReferenceDate": "str:2026.09.28",
+    "navPerformanceList": [
+     "len=10",
+     {
+      "periodTypeCode": "str:D1",
+      "value": "number:6.86"
+     }
+    ],
+    "cumulativeNetInflowList": {
+     "referenceDate": "str:2026.09.28",
+     "cumulativeNetInflow1d": "str:181억",
+     "cumulativeNetInflow1w": "str:282억",
+     "cumulativeNetInflow1m": "str:1,221억",
+     "cumulativeNetInflow3m": "str:-2,484억",
+     "cumulativeNetInflow6m": "str:7,381억",
+     "cumulativeNetInflowYtd": "str:1조 6,516억",
+     "cumulativeNetInflow1y": "str:2조 2,317억"
+    },
+    "assetPortfolioTotalWeight": "number:278.8",
+    "assetPortfolioList": [
+     "len=5",
+     {
+      "detailTypeCode": "str:CASH",
+      "weight": "number:79.21"
+     }
+    ],
+    "countryPortfolioTotalWeight": "number:78.82",
+    "countryPortfolioList": [
+     "len=6",
+     {
+      "detailTypeCode": "str:US",
+      "weight": "number:0"
+     }
+    ],
+    "sectorPortfolioTotalWeight": "number:78.82",
+    "sectorPortfolioList": [
+     "len=12",
+     {
+      "detailTypeCode": "str:UTILITIES",
+      "weight": "number:0"
+     }
+    ],
+    "etfTop10MajorConstituentAssets": [
+     "len=4",
+     {
+      "seq": "number:4",
+      "itemCode": "str:",
+      "itemName": "str:설정현금액",
+      "stockCount": "str:-",
+      "etfWeight": "str:100.00%"
+     }
+    ],
+    "dividend": {
+     "dividendYieldTtm": "number:0",
+     "dividendPerShareTtm": "number:0",
+     "dividendCountThisYear": "number:0",
+     "dividendMonthThisYear": "str:"
+    },
+    "marketValueRaw": "str:803912500000"
+   },
+   "pick": {
+    "itemCode": "252670",
+    "itemName": "KODEX 200선물인버스2X",
+    "etfSummary": "투자신탁의 순자산가치의 일간변동률을 F-KOSPI200 지수의 일별 수익률의 음 2배수(-2배수)의 수익률로 추적하고자 하는 운용목적을 달성하기 위하여 KOSPI200 지수 관련 파생상품 및 집합투자기구 등으로 포트폴리오를 구성하고, 필요에 따라 증권의 차입 등 기타 효율적인 방법을 활용할 예정입니다. <br>※ F-KOSPI200 지수란 KOSPI200지수선물의 가격수준을 종합적으로 표시하는 지수로서 한국거래소(KRX)에서 산출 발표하는 주가 선물 지수입니다. 기초지수 일별 수익률의 음(陰)의 2배수로 추종함에 있어 그 운용 방법은 KOSPI200지수 관련 장내선물 및 합성선물의 매도포지션으로 운용할 수 있습니다. 또한, 증권의 차입 매도 등 기타 효율적인 방법을 통하여 투자목적을 달성할 예정입니다.",
+    "listedDate": "20160922",
+    "issuerName": "삼성자산운용(ETF)",
+    "etfBaseIndex": "코스피 200 선물인버스 -2X 지수",
+    "marketValue": "8,039억",
+    "totalNav": "7,976억",
+    "nav": 72.43,
+    "etfChaseEarningRateSymbol": "-",
+    "etfChaseEarningRate": 2,
+    "deviationSign": "+",
+    "deviationRate": 0.79,
+    "totalFee": 0.64,
+    "chaseErrorRate": 2.81,
+    "taxationTypeCode": "2",
+    "themeReturns": {
+     "themeId": 93,
+     "themeLargeCode": "0301",
+     "themeLargeCodeDesc": "배율",
+     "themeMiddleCode": "0301005",
+     "themeMiddleCodeDesc": "인버스2X",
+     "todayChangeRate": 0.27
+    },
+    "returnPerformanceReferenceDate": "2026.09.28",
+    "returnPerformanceList": [
+     {
+      "periodTypeCode": "D1",
+      "value": 8.96
+     },
+     {
+      "periodTypeCode": "W1",
+      "value": 5.8
+     },
+     {
+      "periodTypeCode": "M1",
+      "value": -5.19
+     },
+     {
+      "periodTypeCode": "M3",
+      "value": 5.8
+     },
+     {
+      "periodTypeCode": "M6",
+      "value": -73.74
+     },
+     {
+      "periodTypeCode": "YTD",
+      "value": -88.13
+     },
+     {
+      "periodTypeCode": "Y1",
+      "value": -93.34
+     },
+     {
+      "periodTypeCode": "Y3",
+      "value": -70.08
+     },
+     {
+      "periodTypeCode": "Y5",
+      "value": -49.09
+     },
+     {
+      "periodTypeCode": "Y10",
+      "value": -38.74
+     }
+    ],
+    "navPerformanceReferenceDate": "2026.09.28",
+    "navPerformanceList": [
+     {
+      "periodTypeCode": "D1",
+      "value": 6.86
+     },
+     {
+      "periodTypeCode": "W1",
+      "value": 4.43
+     },
+     {
+      "periodTypeCode": "M1",
+      "value": -6.71
+     },
+     {
+      "periodTypeCode": "M3",
+      "value": 4.99
+     },
+     {
+      "periodTypeCode": "M6",
+      "value": -74.13
+     },
+     {
+      "periodTypeCode": "YTD",
+      "value": -88.22
+     },
+     {
+      "periodTypeCode": "Y1",
+      "value": -93.4
+     },
+     {
+      "periodTypeCode": "Y3",
+      "value": -70.16
+     },
+     {
+      "periodTypeCode": "Y5",
+      "value": -49.19
+     },
+     {
+      "periodTypeCode": "Y10",
+      "value": -38.79
+     }
+    ],
+    "cumulativeNetInflowList": {
+     "referenceDate": "2026.09.28",
+     "cumulativeNetInflow1d": "181억",
+     "cumulativeNetInflow1w": "282억",
+     "cumulativeNetInflow1m": "1,221억",
+     "cumulativeNetInflow3m": "-2,484억",
+     "cumulativeNetInflow6m": "7,381억",
+     "cumulativeNetInflowYtd": "1조 6,516억",
+     "cumulativeNetInflow1y": "2조 2,317억"
+    },
+    "assetPortfolioTotalWeight": 278.8,
+    "assetPortfolioList": [
+     {
+      "detailTypeCode": "CASH",
+      "weight": 79.21
+     },
+     {
+      "detailTypeCode": "EQUITY",
+      "weight": 20.78
+     },
+     {
+      "detailTypeCode": "BOND",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "OTHERS",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "DERIVATIVES",
+      "weight": -178.81
+     }
+    ],
+    "countryPortfolioTotalWeight": 78.82,
+    "countryPortfolioList": [
+     {
+      "detailTypeCode": "US",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "MISC",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "JP",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "HK",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "CN",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "KR",
+      "weight": -78.82
+     }
+    ],
+    "sectorPortfolioTotalWeight": 78.82,
+    "sectorPortfolioList": [
+     {
+      "detailTypeCode": "UTILITIES",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "REAL_ESTATE",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "MATERIALS",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "IT",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "INDUSTRIALS",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "HEALTHCARE",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "FINANCIALS",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "ENERGY",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "CONSUMER_STAPLES",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "CONSUMER_DISCRETIONARY",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "COMMUNICATION",
+      "weight": 0
+     },
+     {
+      "detailTypeCode": "UNCLASSIFIED",
+      "weight": -78.82
+     }
+    ],
+    "etfTop10MajorConstituentAssets": [
+     {
+      "seq": 4,
+      "itemCode": "",
+      "itemName": "설정현금액",
+      "stockCount": "-",
+      "etfWeight": "100.00%"
+     },
+     {
+      "seq": 3,
+      "itemCode": "",
+      "itemName": "원화현금",
+      "stockCount": "-",
+      "etfWeight": "78.38%"
+     },
+     {
+      "seq": 1,
+      "itemCode": "114800",
+      "itemName": "KODEX 인버스",
+      "stockCount": "151,656",
+      "etfWeight": "22.33%"
+     },
+     {
+      "seq": 2,
+      "itemCode": "",
+      "itemName": "2026-12 코스피200지수선물",
+      "stockCount": "-4",
+      "etfWeight": "-"
+     }
+    ],
+    "dividend": {
+     "dividendYieldTtm": 0,
+     "dividendPerShareTtm": 0,
+     "dividendCountThisYear": 0,
+     "dividendMonthThisYear": ""
+    },
+    "marketValueRaw": "803912500000"
+   }
+  },
+  {
+   "group": "KR",
+   "label": "모바일 etfComponent 069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/etfComponent",
+   "status": 404,
+   "contentType": "text/html;charset=UTF-8",
+   "bytes": 4209,
+   "ms": 198,
+   "kind": "text",
+   "head": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no\">\n    <title>Npay 증권</title>\n    <link rel=\"shortcut icon\" href=\"https://ssl.pstatic.net/imgstock/favicon.ico\">\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"https://ssl.pstatic.net/imgstock/static.mobile/css/finance/min/20260916172503/mstock_error.css\">\n</head>\n<body>\n<!-- header -->\n<header id=\"header\">\n    <div class=\"header\">\n        <h1>\n            <a href=\"/\" class=\"button\">\n                <spa"
+  },
+  {
+   "group": "KR",
+   "label": "모바일 etf/component 069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/etf/component",
+   "status": 404,
+   "contentType": "text/html;charset=UTF-8",
+   "bytes": 4209,
+   "ms": 188,
+   "kind": "text",
+   "head": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no\">\n    <title>Npay 증권</title>\n    <link rel=\"shortcut icon\" href=\"https://ssl.pstatic.net/imgstock/favicon.ico\">\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"https://ssl.pstatic.net/imgstock/static.mobile/css/finance/min/20260916172503/mstock_error.css\">\n</head>\n<body>\n<!-- header -->\n<header id=\"header\">\n    <div class=\"header\">\n        <h1>\n            <a href=\"/\" class=\"button\">\n                <spa"
+  },
+  {
+   "group": "KR",
+   "label": "모바일 constituent 069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/constituent",
+   "status": 404,
+   "contentType": "text/html;charset=UTF-8",
+   "bytes": 4209,
+   "ms": 200,
+   "kind": "text",
+   "head": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no\">\n    <title>Npay 증권</title>\n    <link rel=\"shortcut icon\" href=\"https://ssl.pstatic.net/imgstock/favicon.ico\">\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"https://ssl.pstatic.net/imgstock/static.mobile/css/finance/min/20260916172503/mstock_error.css\">\n</head>\n<body>\n<!-- header -->\n<header id=\"header\">\n    <div class=\"header\">\n        <h1>\n            <a href=\"/\" class=\"button\">\n                <spa"
+  },
+  {
+   "group": "KR",
+   "label": "모바일 etfTop10 069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/etfTop10",
+   "status": 404,
+   "contentType": "text/html;charset=UTF-8",
+   "bytes": 4209,
+   "ms": 189,
+   "kind": "text",
+   "head": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no\">\n    <title>Npay 증권</title>\n    <link rel=\"shortcut icon\" href=\"https://ssl.pstatic.net/imgstock/favicon.ico\">\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"https://ssl.pstatic.net/imgstock/static.mobile/css/finance/min/20260916172503/mstock_error.css\">\n</head>\n<body>\n<!-- header -->\n<header id=\"header\">\n    <div class=\"header\">\n        <h1>\n            <a href=\"/\" class=\"button\">\n                <spa"
+  },
+  {
+   "group": "KR",
+   "label": "PC 종목 페이지 069500 (구성종목 표가 있나)",
+   "url": "https://finance.naver.com/item/main.naver?code=069500",
+   "status": 200,
+   "contentType": "text/html; charset=utf-8",
+   "bytes": 139721,
+   "ms": 2120,
+   "kind": "text",
+   "head": "<!DOCTYPE html><html lang=\"ko\" class=\"\" data-theme=\"light\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=1366, initial-scale=1.0, user-scalable=yes\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"https://ssl.pstatic.net/imgstock/fn/real/pc/_next/static/css/9349f3b462cc41d1.css\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"https://ssl.pstatic.net/imgstock/fn/real/pc/_next/static/css/e214f03651dfa526.css\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"https://ssl.pstatic.net/imgstock/fn/real/pc/_next/static/css",
+   "grep": {
+    "cu": null,
+    "iframe": null,
+    "wise": null
+   }
+  },
+  {
+   "group": "KR",
+   "label": "wisereport ETF 069500",
+   "url": "https://navercomp.wisereport.co.kr/v2/ETF/index.aspx?cmp_cd=069500",
+   "status": 200,
+   "contentType": "text/html; charset=utf-8",
+   "bytes": 72340,
+   "ms": 1711,
+   "kind": "text",
+   "head": "\r\n<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n<head>\r\n\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\" />\r\n\t<title>온라인기업정보 - ETF/ETN</title>\r\n\t<link type=\"text/css\" rel=\"shortcut icon\" href=\"/favicon.ico\" />\r\n\t<script language=\"javascript\" src=\"/include/domain.js\" type=\"text/javascript\"></script>\r\n\t<link href=\"/v2/include/css?v=q7Pq73b9jj00gmFmOVUSxzXv_5FtLNW9qxkqFwJqh-g1\" rel=\"stylesheet\"/>\r\n\r\n\t<link href=\"/v2/include/ETF?v=BiZyXYXVVFnyjoveBGiH4mCYzFvER0sUwNy-YnXFUf81\" rel=\"stylesheet",
+   "grep": {
+    "ajax": [
+     "url: \"../company/autocomplete.aspx\""
+    ],
+    "data": [
+     "var summary_data = {\"CMP_KOR\":\"KODEX 200\",\"URL\":\"www.kodex.com\",\"CMP_CD\":\"069500\",\"CMP_ENG\":\"KODEX 200\",\"BASE_IDX_NM_KOR\":\"코스피 200\",\"ISSUE_NM_KOR\":\"삼성자산운용(주)\",\"ETF_TYP_SVC_NM\":\"국내주식형, 대표지수\",\"TOT_PAY\":\"0.150\",\"CMP_TYP\":\"5\"}",
+     "var status_data = {\"CLS_PRC\":\"109,500\",\"PRC_CHG\":\"-3,645\",\"ADJ_CHG\":\"-3.22\",\"YR_HIGH\":\"152,149\",\"YR_LOW\":\"46,892\",\"LIST_STK_CNT\":\"228,950\",\"trD_QTY\":\"23,611,461\",\"trD_AMT\":\"2,605,661\",\"MKT_VAL\":\"250,700\",\"YR_BETA\":\"1.11\",\"AVG_TRD_QTY20\":\"23,409,457\",\"AVG_TRD_AMT20\":\"2,539,343\",\"FRG_RT\":\"22.19\",\"ERN1\":\"2.16\",\"ERN3\":\"-2",
+     "var stock_price_relative_chart_data = {\"name\":[{\"CMP_CD\":\"069500\",\"CMP_NM\":\"KODEX 200\",\"MKT_NM\":\"KOSPI\"}],\"CMP_CLS\":[[1759104000000.0,47293.0],[1759190400000.0,47164.0],[1759276800000.0,47659.0],[1759363200000.0,49080.0],[1760054400000.0,50328.0],[1760313600000.0,49867.0],[1760400000000.0,49362.0],[1760486400000.0,50734.0],[1760572800000"
+    ],
+    "names": [
+     "삼성전자\",\"ETF_WEIGHT\":34.17},{\"TRD_DT\":\"2026-09-28\",\"AGMT_STK_CNT\":844.00,\"STK_NM_KOR\":",
+     "SK하이닉스\",\"ETF_WEIGHT\":27.25},{\"TRD_DT\":\"2026-09-28\",\"AGMT_STK_CNT\":137.00,\"STK_NM_KOR\":",
+     "삼성전자\",34.17],[\"SK하이닉스\",27.25],[\"SK스퀘어\",2.75],[\"삼성전기\",2.27],[\"KB금융\",1.44],[\"현대차\",1.31"
+    ]
+   }
+  },
+  {
+   "group": "KR",
+   "label": "wisereport ETF 453850 (채권)",
+   "url": "https://navercomp.wisereport.co.kr/v2/ETF/index.aspx?cmp_cd=453850",
+   "status": 200,
+   "contentType": "text/html; charset=utf-8",
+   "bytes": 57212,
+   "ms": 198,
+   "kind": "text",
+   "head": "\r\n<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n<head>\r\n\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\" />\r\n\t<title>온라인기업정보 - ETF/ETN</title>\r\n\t<link type=\"text/css\" rel=\"shortcut icon\" href=\"/favicon.ico\" />\r\n\t<script language=\"javascript\" src=\"/include/domain.js\" type=\"text/javascript\"></script>\r\n\t<link href=\"/v2/include/css?v=q7Pq73b9jj00gmFmOVUSxzXv_5FtLNW9qxkqFwJqh-g1\" rel=\"stylesheet\"/>\r\n\r\n\t<link href=\"/v2/include/ETF?v=BiZyXYXVVFnyjoveBGiH4mCYzFvER0sUwNy-YnXFUf81\" rel=\"stylesheet",
+   "grep": {
+    "data": [
+     "var summary_data = {\"CMP_KOR\":\"ACE 미국30년국채액티브(H)\",\"URL\":\"www.aceetf.co.kr/\",\"CMP_CD\":\"453850\",\"CMP_ENG\":\"ACE U.S. Long Term T-Bond Active(H)\",\"BASE_IDX_NM_KOR\":\"Bloomberg U.S Treasury 20+ Year Total Return Index\",\"ISSUE_NM_KOR\":\"한국투자신탁운용\",\"ETF_TYP_SVC_NM\":\"해외채권형, 일반\",\"TOT_PAY\":\"0.050\",\"CMP_TYP\":\"5\"}",
+     "var status_data = {\"CLS_PRC\":\"6,910\",\"PRC_CHG\":\"-250\",\"ADJ_CHG\":\"-3.49\",\"YR_HIGH\":\"7,852\",\"YR_LOW\":\"6,905\",\"LIST_STK_CNT\":\"207,000\",\"trD_QTY\":\"2,474,126\",\"trD_AMT\":\"17,111\",\"MKT_VAL\":\"14,304\",\"YR_BETA\":\"0.08\",\"AVG_TRD_QTY20\":\"912,403\",\"AVG_TRD_AMT20\":\"6,472\",\"FRG_RT\":\"0.00\",\"ERN1\":\"-3.83\",\"ERN3\":\"-8.39\",\"ERN6\":\"-6.17\"",
+     "var stock_price_relative_chart_data = {\"name\":[{\"CMP_CD\":\"453850\",\"CMP_NM\":\"ACE 미국30년국채액티브(H)\",\"MKT_NM\":\"KOSPI\"}],\"CMP_CLS\":[[1759104000000.0,7581.0],[1759190400000.0,7605.0],[1759276800000.0,7567.0],[1759363200000.0,7591.0],[1760054400000.0,7596.0],[1760313600000.0,7663.0],[1760400000000.0,7726.0],[1760486400000.0,7736.0],[1760572800000"
+    ]
+   }
+  },
+  {
+   "group": "KR",
+   "label": "네이버 siseJson 일봉 069500",
+   "url": "https://api.finance.naver.com/siseJson.naver?symbol=069500&requestType=1&startTime=20150101&endTime=20260930&timeframe=day",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 175316,
+   "ms": 1743,
+   "kind": "text",
+   "head": "\n [['날짜', '시가', '고가', '저가', '종가', '거래량', '외국인소진율'],\n\n\t\n\t\n\t\t\n[\"20150102\", 19569, 19684, 19528, 19667, 4221683, 4.48316],\n\t\t\n[\"20150105\", 19625, 19673, 19431, 19626, 9253936, 4.24114],\n\t\t\n[\"20150106\", 19421, 19459, 19226, 19277, 16571012, 4.29467],\n\t\t\n[\"20150107\", 19277, 19349, 19236, 19321, 22387817, 4.25276],\n\t\t\n[\"20150108\", 19417, 19625, 19417, 19565, 15915921, 4.09313],\n\t\t\n[\"20150109\", 19763, 19853, 19705, 19784, 13513642, 4.17323],\n\t\t\n[\"20150112\", 19684, 19810, 19680, 19737, 11186777, 4.05617],\n\t\t\n[\"20150113\", 19700, 19826, 19647, 19823, 6064178, 3.69296],\n\t\t\n[\"20150114\", 19795, 19893, 1973",
+   "pick": {
+    "rows": 2881,
+    "first": "[\"20150102\", 19569, 19684, 19528, 19667, 4221683, 4.48316],",
+    "last": [
+     "[\"20260923\", 114290, 114305, 111945, 113145, 21157647, 22.19],",
+     "[\"20260928\", 112740, 112870, 109500, 109500, 23611461, 22.56],",
+     "[\"20260929\", 109285, 110470, 108895, 108985, 15320966, 22.56]"
+    ]
+   }
+  },
+  {
+   "group": "KR",
+   "label": "네이버 fchart 일봉 069500",
+   "url": "https://fchart.stock.naver.com/sise.nhn?symbol=069500&timeframe=day&count=3000&requestType=0",
+   "status": 200,
+   "contentType": "text/xml;charset=EUC-KR",
+   "bytes": 196374,
+   "ms": 1791,
+   "kind": "text",
+   "head": "<?xml version=\"1.0\" encoding=\"EUC-KR\" ?>\n\n<protocol>\n\n\n\n\t\n\t\n\t\t\t<chartdata symbol=\"069500\" name=\"KODEX 200\" count=\"3000\" timeframe=\"day\" precision=\"0\" origintime=\"20021014\">\n\t\t\t\n\t\t\t\t<item data=\"20140708|20617|20664|20518|20601|5737660\" />\n\t\t\t\n\t\t\t\t<item data=\"20140709|20514|20542|20446|20505|6106172\" />\n\t\t\t\n\t\t\t\t<item data=\"20140710|20553|20601|20511|20542|8069114\" />\n\t\t\t\n\t\t\t\t<item data=\"20140711|20454|20454|20336|20377|10360797\" />\n\t\t\t\n\t\t\t\t<item data=\"20140714|20479|20537|20415|20454|17549473\" />\n\t\t\t\n\t\t\t\t<item data=\"20140715|20514|20720|20511|20668|7767130\" />\n\t\t\t\n\t\t\t\t<item data=\"20140716|20664|",
+   "pick": {
+    "rows": 3000,
+    "first": "data=\"20140708|20617|20664|20518|20601|5737660\"",
+    "last": [
+     "data=\"20260928|112740|112870|109500|109500|23611461\"",
+     "data=\"20260929|109285|110470|108895|108985|15320966\""
+    ]
+   }
+  },
+  {
+   "group": "KR",
+   "label": "모바일 분배금 069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/dividend/history?pageSize=20",
+   "status": 404,
+   "contentType": "text/html;charset=UTF-8",
+   "bytes": 4209,
+   "ms": 764,
+   "kind": "text",
+   "head": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no\">\n    <title>Npay 증권</title>\n    <link rel=\"shortcut icon\" href=\"https://ssl.pstatic.net/imgstock/favicon.ico\">\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"https://ssl.pstatic.net/imgstock/static.mobile/css/finance/min/20260916172503/mstock_error.css\">\n</head>\n<body>\n<!-- header -->\n<header id=\"header\">\n    <div class=\"header\">\n        <h1>\n            <a href=\"/\" class=\"button\">\n                <spa"
+  },
+  {
+   "group": "KR",
+   "label": "모바일 price 069500",
+   "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=5&page=1",
+   "status": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "bytes": 1453,
+   "ms": 193,
+   "kind": "json",
+   "shape": [
+    "len=5",
+    {
+     "localTradedAt": "str:2026-09-29",
+     "closePrice": "str:108,985",
+     "compareToPreviousClosePrice": "str:-515",
+     "compareToPreviousPrice": {
+      "code": "str:5",
+      "text": "str:하락",
+      "name": "str:FALLING"
+     },
+     "fluctuationsRatio": "str:-0.47",
+     "openPrice": "str:109,285",
+     "highPrice": "str:110,470",
+     "lowPrice": "str:108,895",
+     "accumulatedTradingVolume": "number:15320966"
+    }
+   ],
+   "pick": [
+    {
+     "localTradedAt": "2026-09-29",
+     "closePrice": "108,985",
+     "compareToPreviousClosePrice": "-515",
+     "compareToPreviousPrice": {
+      "code": "5",
+      "text": "하락",
+      "name": "FALLING"
+     },
+     "fluctuationsRatio": "-0.47",
+     "openPrice": "109,285",
+     "highPrice": "110,470",
+     "lowPrice": "108,895",
+     "accumulatedTradingVolume": 15320966
+    },
+    {
+     "localTradedAt": "2026-09-28",
+     "closePrice": "109,500",
+     "compareToPreviousClosePrice": "-3,645",
+     "compareToPreviousPrice": {
+      "code": "5",
+      "text": "하락",
+      "name": "FALLING"
+     },
+     "fluctuationsRatio": "-3.22",
+     "openPrice": "112,740",
+     "highPrice": "112,870",
+     "lowPrice": "109,500",
+     "accumulatedTradingVolume": 23611461
+    },
+    {
+     "localTradedAt": "2026-09-23",
+     "closePrice": "113,145",
+     "compareToPreviousClosePrice": "1,265",
+     "compareToPreviousPrice": {
+      "code": "2",
+      "text": "상승",
+      "name": "RISING"
+     },
+     "fluctuationsRatio": "1.13",
+     "openPrice": "114,290",
+     "highPrice": "114,305",
+     "lowPrice": "111,945",
+     "accumulatedTradingVolume": 21157647
+    },
+    {
+     "localTradedAt": "2026-09-22",
+     "closePrice": "111,880",
+     "compareToPreviousClosePrice": "180",
+     "compareToPreviousPrice": {
+      "code": "2",
+      "text": "상승",
+      "name": "RISING"
+     },
+     "fluctuationsRatio": "0.16",
+     "openPrice": "114,345",
+     "highPrice": "114,635",
+     "lowPrice": "111,400",
+     "accumulatedTradingVolume": 25168267
+    },
+    {
+     "localTradedAt": "2026-09-21",
+     "closePrice": "111,700",
+     "compareToPreviousClosePrice": "2,415",
+     "compareToPreviousPrice": {
+      "code": "2",
+      "text": "상승",
+      "name": "RISING"
+     },
+     "fluctuationsRatio": "2.21",
+     "openPrice": "110,185",
+     "highPrice": "112,135",
+     "lowPrice": "110,095",
+     "accumulatedTradingVolume": 20877625
+    }
+   ]
+  },
+  {
+   "group": "KR",
+   "label": "KRX 정보데이터시스템 첫 화면",
+   "url": "https://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201030101",
+   "status": 200,
+   "contentType": "text/html;charset=utf-8",
+   "bytes": 407,
+   "ms": 878,
+   "kind": "text",
+   "head": "<!DOCTYPE html>\n<html>\n<head>\n<title></title>\n</head>\n<body>\n<script type='text/javascript'>\nalert('로그인 또는 회원가입이 필요합니다.');\nlocation.href='/contents/MDC/COMS/client/MDCCOMS001.cmd?locale=ko_KR&redirectURL=b2h0aEZNWThrQ2s4amxkQjNPS3pLdmxteXFTdGFHRElNWlh0c2pYbU4rRnRVSml4MXpWeWwrZUpBVUlJUmlERXFGejloREliZlpCQm9rd1c0Q2JjaE5kL25na0RXa1BXcDE3elNES0tBUHc9';\n</script>\n</body>\n</html>\n"
+  },
+  {
+   "group": "KR",
+   "label": "KRX ETF 전종목 시세(JSON)",
+   "url": "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd",
+   "status": 400,
+   "contentType": "text/html; charset=utf-8",
+   "bytes": 6,
+   "ms": 277,
+   "kind": "text",
+   "head": "LOGOUT"
+  },
+  {
+   "group": "Y",
+   "label": "쿠키 받기 fc.yahoo.com",
+   "url": "https://fc.yahoo.com",
+   "status": 404,
+   "contentType": "text/html",
+   "setCookies": 1,
+   "bytes": 4580,
+   "ms": 129,
+   "kind": "text",
+   "head": "<!DOCTYPE html>\n<html lang=\"en-us\">\n  <head>\n    <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">\n    <meta charset=\"utf-8\">\n    <title>Yahoo</title>\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1,minimal-ui\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\">\n    <style>\n      html {\n          height: 100%;\n      }\n      body {\n          background: #fafafc url(https://s.yimg.com/nn/img/sad-panda-201402200631.png) 50% 50%;\n          background-size: cover;\n          height: 100%;\n          text-align: center;\n          font: 300 18px \""
+  },
+  {
+   "group": "Y",
+   "label": "crumb",
+   "url": "https://query1.finance.yahoo.com/v1/test/getcrumb",
+   "status": 200,
+   "contentType": "text/plain;charset=utf-8",
+   "bytes": 11,
+   "ms": 74,
+   "kind": "text",
+   "head": "Jhgm2tWX68k",
+   "pick": "Jhgm2tWX68k"
+  },
+  {
+   "group": "Y",
+   "label": "quoteSummary SPY",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/SPY?modules=quoteType,price,topHoldings,fundProfile,summaryDetail,defaultKeyStatistics,fundPerformance&crumb=Jhgm2tWX68k",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 17204,
+   "ms": 97,
+   "kind": "json",
+   "shape": {
+    "quoteSummary": {
+     "result": [
+      "len=1",
+      {
+       "fundProfile": "{…}",
+       "summaryDetail": "{…}",
+       "price": "{…}",
+       "defaultKeyStatistics": "{…}",
+       "topHoldings": "{…}",
+       "fundPerformance": "{…}",
+       "quoteType": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "quoteType": "ETF",
+    "longName": "State Street SPDR S&P 500 ETF Trust",
+    "exchange": "PCX",
+    "currency": "USD",
+    "holdings": 10,
+    "holdingsSample": [
+     {
+      "symbol": "NVDA",
+      "holdingName": "NVIDIA Corp",
+      "holdingPercent": {
+       "raw": 0.08078709,
+       "fmt": "8.08%"
+      }
+     },
+     {
+      "symbol": "AAPL",
+      "holdingName": "Apple Inc",
+      "holdingPercent": {
+       "raw": 0.0703063,
+       "fmt": "7.03%"
+      }
+     },
+     {
+      "symbol": "MSFT",
+      "holdingName": "Microsoft Corp",
+      "holdingPercent": {
+       "raw": 0.0569307,
+       "fmt": "5.69%"
+      }
+     }
+    ],
+    "sectorWeightings": 11,
+    "cashPosition": {
+     "raw": 0.0011,
+     "fmt": "0.11%"
+    },
+    "stockPosition": {
+     "raw": 0.9988,
+     "fmt": "99.88%"
+    },
+    "bondPosition": {
+     "raw": 0,
+     "fmt": "0.00%"
+    },
+    "family": "State Street Investment Management",
+    "categoryName": "Large Blend",
+    "expense": {
+     "raw": 0.000945,
+     "fmt": "0.09%"
+    },
+    "totalAssets": {
+     "raw": 811937038336,
+     "fmt": "811.94B",
+     "longFmt": "811,937,038,336"
+    },
+    "yieldTTM": {
+     "raw": 0.0098,
+     "fmt": "0.98%"
+    },
+    "navPrice": {
+     "raw": 771.35333,
+     "fmt": "771.35"
+    },
+    "fundInceptionDate": {
+     "raw": 727660800,
+     "fmt": "1993-01-22"
+    },
+    "trailingReturns": [
+     "asOfDate",
+     "ytd",
+     "oneMonth",
+     "threeMonth",
+     "oneYear",
+     "threeYear",
+     "fiveYear",
+     "tenYear",
+     "lastBullMkt",
+     "lastBearMkt"
+    ]
+   }
+  },
+  {
+   "group": "Y",
+   "label": "quoteSummary QQQ",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/QQQ?modules=quoteType,price,topHoldings,fundProfile,summaryDetail,defaultKeyStatistics,fundPerformance&crumb=Jhgm2tWX68k",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 16749,
+   "ms": 132,
+   "kind": "json",
+   "shape": {
+    "quoteSummary": {
+     "result": [
+      "len=1",
+      {
+       "fundProfile": "{…}",
+       "summaryDetail": "{…}",
+       "price": "{…}",
+       "defaultKeyStatistics": "{…}",
+       "topHoldings": "{…}",
+       "fundPerformance": "{…}",
+       "quoteType": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "quoteType": "ETF",
+    "longName": "Invesco QQQ Trust",
+    "exchange": "NGM",
+    "currency": "USD",
+    "holdings": 10,
+    "holdingsSample": [
+     {
+      "symbol": "NVDA",
+      "holdingName": "NVIDIA Corp",
+      "holdingPercent": {
+       "raw": 0.0850652,
+       "fmt": "8.51%"
+      }
+     },
+     {
+      "symbol": "AAPL",
+      "holdingName": "Apple Inc",
+      "holdingPercent": {
+       "raw": 0.0740928,
+       "fmt": "7.41%"
+      }
+     },
+     {
+      "symbol": "MSFT",
+      "holdingName": "Microsoft Corp",
+      "holdingPercent": {
+       "raw": 0.059995297,
+       "fmt": "6.00%"
+      }
+     }
+    ],
+    "sectorWeightings": 11,
+    "cashPosition": {
+     "raw": 0.0011,
+     "fmt": "0.11%"
+    },
+    "stockPosition": {
+     "raw": 0.9989,
+     "fmt": "99.89%"
+    },
+    "bondPosition": {
+     "raw": 0,
+     "fmt": "0.00%"
+    },
+    "family": "Invesco",
+    "categoryName": "Large Growth",
+    "expense": {
+     "raw": 0.0018000001,
+     "fmt": "0.18%"
+    },
+    "totalAssets": {
+     "raw": 488981004288,
+     "fmt": "488.98B",
+     "longFmt": "488,981,004,288"
+    },
+    "yieldTTM": {
+     "raw": 0.0042,
+     "fmt": "0.42%"
+    },
+    "navPrice": {
+     "raw": 744.46,
+     "fmt": "744.46"
+    },
+    "fundInceptionDate": {
+     "raw": 921024000,
+     "fmt": "1999-03-10"
+    },
+    "trailingReturns": [
+     "asOfDate",
+     "ytd",
+     "oneMonth",
+     "threeMonth",
+     "oneYear",
+     "threeYear",
+     "fiveYear",
+     "tenYear",
+     "lastBullMkt",
+     "lastBearMkt"
+    ]
+   }
+  },
+  {
+   "group": "Y",
+   "label": "quoteSummary AGG",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/AGG?modules=quoteType,price,topHoldings,fundProfile,summaryDetail,defaultKeyStatistics,fundPerformance&crumb=Jhgm2tWX68k",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 15318,
+   "ms": 60,
+   "kind": "json",
+   "shape": {
+    "quoteSummary": {
+     "result": [
+      "len=1",
+      {
+       "fundProfile": "{…}",
+       "summaryDetail": "{…}",
+       "price": "{…}",
+       "defaultKeyStatistics": "{…}",
+       "topHoldings": "{…}",
+       "fundPerformance": "{…}",
+       "quoteType": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "quoteType": "ETF",
+    "longName": "iShares Core U.S. Aggregate Bond ETF",
+    "exchange": "PCX",
+    "currency": "USD",
+    "holdings": 1,
+    "holdingsSample": [
+     {
+      "symbol": "BISXX",
+      "holdingName": "BlackRock Cash Funds Instl SL Agency",
+      "holdingPercent": {
+       "raw": 0.030071102,
+       "fmt": "3.01%"
+      }
+     }
+    ],
+    "sectorWeightings": 0,
+    "cashPosition": {
+     "raw": 0.007900001,
+     "fmt": "0.79%"
+    },
+    "stockPosition": {
+     "raw": 0,
+     "fmt": "0.00%"
+    },
+    "bondPosition": {
+     "raw": 0.992,
+     "fmt": "99.20%"
+    },
+    "family": "iShares",
+    "categoryName": "Intermediate Core Bond",
+    "expense": {
+     "raw": 0.00029999999,
+     "fmt": "0.03%"
+    },
+    "totalAssets": {
+     "raw": 138317873152,
+     "fmt": "138.32B",
+     "longFmt": "138,317,873,152"
+    },
+    "yieldTTM": {
+     "raw": 0.0405,
+     "fmt": "4.05%"
+    },
+    "navPrice": {
+     "raw": 95.1136,
+     "fmt": "95.11"
+    },
+    "fundInceptionDate": {
+     "raw": 1064188800,
+     "fmt": "2003-09-22"
+    },
+    "trailingReturns": [
+     "asOfDate",
+     "ytd",
+     "oneMonth",
+     "threeMonth",
+     "oneYear",
+     "threeYear",
+     "fiveYear",
+     "tenYear",
+     "lastBullMkt",
+     "lastBearMkt"
+    ]
+   }
+  },
+  {
+   "group": "Y",
+   "label": "quoteSummary 2800.HK",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/2800.HK?modules=quoteType,price,topHoldings,fundProfile,summaryDetail,defaultKeyStatistics,fundPerformance&crumb=Jhgm2tWX68k",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 13226,
+   "ms": 51,
+   "kind": "json",
+   "shape": {
+    "quoteSummary": {
+     "result": [
+      "len=1",
+      {
+       "fundProfile": "{…}",
+       "summaryDetail": "{…}",
+       "price": "{…}",
+       "defaultKeyStatistics": "{…}",
+       "topHoldings": "{…}",
+       "fundPerformance": "{…}",
+       "quoteType": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "quoteType": "ETF",
+    "longName": "Tracker Fund Of Hong Kong",
+    "exchange": "HKG",
+    "currency": "HKD",
+    "holdings": 10,
+    "holdingsSample": [
+     {
+      "symbol": "HSBA.L",
+      "holdingName": "HSBC Holdings PLC",
+      "holdingPercent": {
+       "raw": 0.090306,
+       "fmt": "9.03%"
+      }
+     },
+     {
+      "symbol": "0700.HK",
+      "holdingName": "Tencent Holdings Ltd",
+      "holdingPercent": {
+       "raw": 0.0802113,
+       "fmt": "8.02%"
+      }
+     },
+     {
+      "symbol": "9988.HK",
+      "holdingName": "Alibaba Group Holding Ltd Ordinary Shares",
+      "holdingPercent": {
+       "raw": 0.0637528,
+       "fmt": "6.38%"
+      }
+     }
+    ],
+    "sectorWeightings": 11,
+    "cashPosition": {
+     "raw": 0.0047999998,
+     "fmt": "0.48%"
+    },
+    "stockPosition": {
+     "raw": 0.9889,
+     "fmt": "98.89%"
+    },
+    "bondPosition": {
+     "raw": 0.0062,
+     "fmt": "0.62%"
+    },
+    "family": "Hang Seng Investment Management Ltd",
+    "categoryName": null,
+    "expense": {
+     "raw": 0.001,
+     "fmt": "0.10%"
+    },
+    "totalAssets": {
+     "raw": 139852283904,
+     "fmt": "139.85B",
+     "longFmt": "139,852,283,904"
+    },
+    "yieldTTM": {
+     "raw": 0.028299998,
+     "fmt": "2.83%"
+    },
+    "navPrice": {
+     "raw": 25.155,
+     "fmt": "25.16"
+    },
+    "fundInceptionDate": {
+     "raw": 942278400,
+     "fmt": "1999-11-11"
+    },
+    "trailingReturns": [
+     "asOfDate",
+     "ytd",
+     "oneMonth",
+     "threeMonth",
+     "oneYear",
+     "threeYear",
+     "fiveYear",
+     "tenYear",
+     "lastBullMkt",
+     "lastBearMkt"
+    ]
+   }
+  },
+  {
+   "group": "Y",
+   "label": "quoteSummary 3033.HK",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/3033.HK?modules=quoteType,price,topHoldings,fundProfile,summaryDetail,defaultKeyStatistics,fundPerformance&crumb=Jhgm2tWX68k",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 12329,
+   "ms": 91,
+   "kind": "json",
+   "shape": {
+    "quoteSummary": {
+     "result": [
+      "len=1",
+      {
+       "fundProfile": "{…}",
+       "summaryDetail": "{…}",
+       "price": "{…}",
+       "defaultKeyStatistics": "{…}",
+       "topHoldings": "{…}",
+       "fundPerformance": "{…}",
+       "quoteType": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "quoteType": "ETF",
+    "longName": "CSOP ETF Series - CSOP Hang Seng TECH Index ETF",
+    "exchange": "HKG",
+    "currency": "HKD",
+    "holdings": 10,
+    "holdingsSample": [
+     {
+      "symbol": "9999.HK",
+      "holdingName": "NetEase Inc Ordinary Shares",
+      "holdingPercent": {
+       "raw": 0.0864299,
+       "fmt": "8.64%"
+      }
+     },
+     {
+      "symbol": "0700.HK",
+      "holdingName": "Tencent Holdings Ltd",
+      "holdingPercent": {
+       "raw": 0.0835576,
+       "fmt": "8.36%"
+      }
+     },
+     {
+      "symbol": "1810.HK",
+      "holdingName": "Xiaomi Corp Class B",
+      "holdingPercent": {
+       "raw": 0.0827448,
+       "fmt": "8.27%"
+      }
+     }
+    ],
+    "sectorWeightings": 11,
+    "cashPosition": {
+     "raw": 0.00059999997,
+     "fmt": "0.06%"
+    },
+    "stockPosition": {
+     "raw": 0.9994,
+     "fmt": "99.94%"
+    },
+    "bondPosition": {
+     "raw": 0,
+     "fmt": "0.00%"
+    },
+    "family": "CSOP Asset Management Limited",
+    "categoryName": null,
+    "expense": {
+     "raw": 0.0099,
+     "fmt": "0.99%"
+    },
+    "totalAssets": {
+     "raw": 62675496960,
+     "fmt": "62.68B",
+     "longFmt": "62,675,496,960"
+    },
+    "yieldTTM": {
+     "raw": 0,
+     "fmt": "0.00%"
+    },
+    "navPrice": {
+     "raw": 4.2294,
+     "fmt": "4.23"
+    },
+    "fundInceptionDate": {
+     "raw": 1630281600,
+     "fmt": "2021-08-30"
+    },
+    "trailingReturns": [
+     "asOfDate",
+     "ytd",
+     "oneMonth",
+     "threeMonth",
+     "oneYear",
+     "threeYear",
+     "fiveYear",
+     "tenYear",
+     "lastBullMkt",
+     "lastBearMkt"
+    ]
+   }
+  },
+  {
+   "group": "Y",
+   "label": "quoteSummary 1306.T",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/1306.T?modules=quoteType,price,topHoldings,fundProfile,summaryDetail,defaultKeyStatistics,fundPerformance&crumb=Jhgm2tWX68k",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 13495,
+   "ms": 92,
+   "kind": "json",
+   "shape": {
+    "quoteSummary": {
+     "result": [
+      "len=1",
+      {
+       "fundProfile": "{…}",
+       "summaryDetail": "{…}",
+       "price": "{…}",
+       "defaultKeyStatistics": "{…}",
+       "topHoldings": "{…}",
+       "fundPerformance": "{…}",
+       "quoteType": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "quoteType": "ETF",
+    "longName": "NEXT FUNDS TOPIX Exchange Traded Fund",
+    "exchange": "JPX",
+    "currency": "JPY",
+    "holdings": 10,
+    "holdingsSample": [
+     {
+      "symbol": "8306.T",
+      "holdingName": "Mitsubishi UFJ Financial Group Inc",
+      "holdingPercent": {
+       "raw": 0.0394594,
+       "fmt": "3.95%"
+      }
+     },
+     {
+      "symbol": "7203.T",
+      "holdingName": "Toyota Motor Corp",
+      "holdingPercent": {
+       "raw": 0.0267542,
+       "fmt": "2.68%"
+      }
+     },
+     {
+      "symbol": "8316.T",
+      "holdingName": "Sumitomo Mitsui Financial Group Inc",
+      "holdingPercent": {
+       "raw": 0.0258447,
+       "fmt": "2.58%"
+      }
+     }
+    ],
+    "sectorWeightings": 11,
+    "cashPosition": {
+     "raw": 0,
+     "fmt": "0.00%"
+    },
+    "stockPosition": {
+     "raw": 1,
+     "fmt": "100.00%"
+    },
+    "bondPosition": {
+     "raw": 0,
+     "fmt": "0.00%"
+    },
+    "family": "Nomura Asset Management Co Ltd",
+    "categoryName": null,
+    "expense": {},
+    "totalAssets": {
+     "raw": 34967610458112,
+     "fmt": "34.97T",
+     "longFmt": "34,967,610,458,112"
+    },
+    "yieldTTM": {
+     "raw": 0.0182,
+     "fmt": "1.82%"
+    },
+    "navPrice": {
+     "raw": 430.38,
+     "fmt": "430.38"
+    },
+    "fundInceptionDate": {
+     "raw": 994809600,
+     "fmt": "2001-07-11"
+    },
+    "trailingReturns": [
+     "asOfDate",
+     "ytd",
+     "oneMonth",
+     "threeMonth",
+     "oneYear",
+     "threeYear",
+     "fiveYear",
+     "tenYear",
+     "lastBullMkt",
+     "lastBearMkt"
+    ]
+   }
+  },
+  {
+   "group": "Y",
+   "label": "quoteSummary 1321.T",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/1321.T?modules=quoteType,price,topHoldings,fundProfile,summaryDetail,defaultKeyStatistics,fundPerformance&crumb=Jhgm2tWX68k",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 13605,
+   "ms": 65,
+   "kind": "json",
+   "shape": {
+    "quoteSummary": {
+     "result": [
+      "len=1",
+      {
+       "fundProfile": "{…}",
+       "summaryDetail": "{…}",
+       "price": "{…}",
+       "defaultKeyStatistics": "{…}",
+       "topHoldings": "{…}",
+       "fundPerformance": "{…}",
+       "quoteType": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "quoteType": "ETF",
+    "longName": "NEXT FUNDS Nikkei 225 Exchange Traded Fund",
+    "exchange": "JPX",
+    "currency": "JPY",
+    "holdings": 10,
+    "holdingsSample": [
+     {
+      "symbol": "6857.T",
+      "holdingName": "Advantest Corp",
+      "holdingPercent": {
+       "raw": 0.1226226,
+       "fmt": "12.26%"
+      }
+     },
+     {
+      "symbol": "9983.T",
+      "holdingName": "Fast Retailing Co Ltd",
+      "holdingPercent": {
+       "raw": 0.087899595,
+       "fmt": "8.79%"
+      }
+     },
+     {
+      "symbol": "8035.T",
+      "holdingName": "Tokyo Electron Ltd",
+      "holdingPercent": {
+       "raw": 0.08559439,
+       "fmt": "8.56%"
+      }
+     }
+    ],
+    "sectorWeightings": 11,
+    "cashPosition": {
+     "raw": 0,
+     "fmt": "0.00%"
+    },
+    "stockPosition": {
+     "raw": 1,
+     "fmt": "100.00%"
+    },
+    "bondPosition": {
+     "raw": 0,
+     "fmt": "0.00%"
+    },
+    "family": "Nomura Asset Management Co Ltd",
+    "categoryName": null,
+    "expense": {},
+    "totalAssets": {
+     "raw": 17643123769344,
+     "fmt": "17.64T",
+     "longFmt": "17,643,123,769,344"
+    },
+    "yieldTTM": {
+     "raw": 0.0117999995,
+     "fmt": "1.18%"
+    },
+    "navPrice": {
+     "raw": 68693.15,
+     "fmt": "68,693.15"
+    },
+    "fundInceptionDate": {
+     "raw": 994636800,
+     "fmt": "2001-07-09"
+    },
+    "trailingReturns": [
+     "asOfDate",
+     "ytd",
+     "oneMonth",
+     "threeMonth",
+     "oneYear",
+     "threeYear",
+     "fiveYear",
+     "tenYear",
+     "lastBullMkt",
+     "lastBearMkt"
+    ]
+   }
+  },
+  {
+   "group": "Y",
+   "label": "quoteSummary 510300.SS",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/510300.SS?modules=quoteType,price,topHoldings,fundProfile,summaryDetail,defaultKeyStatistics,fundPerformance&crumb=Jhgm2tWX68k",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 4124,
+   "ms": 50,
+   "kind": "json",
+   "shape": {
+    "quoteSummary": {
+     "result": [
+      "len=1",
+      {
+       "summaryDetail": "{…}",
+       "quoteType": "{…}",
+       "price": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "quoteType": "EQUITY",
+    "longName": "Huatai-PineBridge CSI 300 ETF",
+    "exchange": "SHH",
+    "currency": "CNY",
+    "holdings": 0,
+    "holdingsSample": [],
+    "sectorWeightings": 0,
+    "totalAssets": {},
+    "yieldTTM": {},
+    "navPrice": {},
+    "trailingReturns": null
+   }
+  },
+  {
+   "group": "Y",
+   "label": "quoteSummary 159919.SZ",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/159919.SZ?modules=quoteType,price,topHoldings,fundProfile,summaryDetail,defaultKeyStatistics,fundPerformance&crumb=Jhgm2tWX68k",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 4127,
+   "ms": 52,
+   "kind": "json",
+   "shape": {
+    "quoteSummary": {
+     "result": [
+      "len=1",
+      {
+       "summaryDetail": "{…}",
+       "quoteType": "{…}",
+       "price": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "quoteType": "EQUITY",
+    "longName": "Harvest SZSE SME-CHINEXT 300 Transactional Open-End Index Fund",
+    "exchange": "SHZ",
+    "currency": "CNY",
+    "holdings": 0,
+    "holdingsSample": [],
+    "sectorWeightings": 0,
+    "totalAssets": {},
+    "yieldTTM": {},
+    "navPrice": {},
+    "trailingReturns": null
+   }
+  },
+  {
+   "group": "Y",
+   "label": "quoteSummary 069500.KS",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/069500.KS?modules=quoteType,price,topHoldings,fundProfile,summaryDetail,defaultKeyStatistics,fundPerformance&crumb=Jhgm2tWX68k",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 4086,
+   "ms": 53,
+   "kind": "json",
+   "shape": {
+    "quoteSummary": {
+     "result": [
+      "len=1",
+      {
+       "summaryDetail": "{…}",
+       "quoteType": "{…}",
+       "price": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "quoteType": "ETF",
+    "longName": "KODEX 200",
+    "exchange": "KSC",
+    "currency": "KRW",
+    "holdings": 0,
+    "holdingsSample": [],
+    "sectorWeightings": 0,
+    "totalAssets": {},
+    "yieldTTM": {},
+    "navPrice": {},
+    "trailingReturns": null
+   }
+  },
+  {
+   "group": "Y",
+   "label": "quoteSummary 069500.KQ",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/069500.KQ?modules=quoteType,price,topHoldings,fundProfile,summaryDetail,defaultKeyStatistics,fundPerformance&crumb=Jhgm2tWX68k",
+   "status": 404,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 115,
+   "ms": 49,
+   "kind": "json",
+   "shape": {
+    "quoteSummary": {
+     "result": "null",
+     "error": {
+      "code": "str:Not Found",
+      "description": "str:Quote not found for symbol: 069500.KQ"
+     }
+    }
+   },
+   "pick": {
+    "error": {
+     "code": "Not Found",
+     "description": "Quote not found for symbol: 069500.KQ"
+    }
+   }
+  },
+  {
+   "group": "Y",
+   "label": "quoteSummary 360750.KS",
+   "url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/360750.KS?modules=quoteType,price,topHoldings,fundProfile,summaryDetail,defaultKeyStatistics,fundPerformance&crumb=Jhgm2tWX68k",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 4086,
+   "ms": 50,
+   "kind": "json",
+   "shape": {
+    "quoteSummary": {
+     "result": [
+      "len=1",
+      {
+       "summaryDetail": "{…}",
+       "quoteType": "{…}",
+       "price": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "quoteType": "ETF",
+    "longName": "Mirae Asset Maps Management - Mirae Asset Tiger S&P500 ETF",
+    "exchange": "KSC",
+    "currency": "KRW",
+    "holdings": 0,
+    "holdingsSample": [],
+    "sectorWeightings": 0,
+    "totalAssets": {},
+    "yieldTTM": {},
+    "navPrice": {},
+    "trailingReturns": null
+   }
+  },
+  {
+   "group": "Y",
+   "label": "chart 10y SPY",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?range=10y&interval=1d&events=div%7Csplit",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 275841,
+   "ms": 115,
+   "kind": "json",
+   "shape": {
+    "chart": {
+     "result": [
+      "len=1",
+      {
+       "meta": "{…}",
+       "timestamp": [
+        "len=2512",
+        "…"
+       ],
+       "events": "{…}",
+       "indicators": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "instrumentType": "ETF",
+    "currency": "USD",
+    "exchangeName": "PCX",
+    "bars": 2512,
+    "first": "2016-09-29",
+    "last": "2026-09-28",
+    "lastClose": 765.6099853515625,
+    "lastAdj": 765.6099853515625,
+    "nullCloses": 0,
+    "dividends": 40
+   }
+  },
+  {
+   "group": "Y",
+   "label": "chart 10y 2800.HK",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/2800.HK?range=10y&interval=1d&events=div%7Csplit",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 268673,
+   "ms": 86,
+   "kind": "json",
+   "shape": {
+    "chart": {
+     "result": [
+      "len=1",
+      {
+       "meta": "{…}",
+       "timestamp": [
+        "len=2462",
+        "…"
+       ],
+       "events": "{…}",
+       "indicators": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "instrumentType": "ETF",
+    "currency": "HKD",
+    "exchangeName": "HKG",
+    "bars": 2462,
+    "first": "2016-09-29",
+    "last": "2026-09-29",
+    "lastClose": 25.100000381469727,
+    "lastAdj": 25.100000381469727,
+    "nullCloses": 2,
+    "dividends": 20
+   }
+  },
+  {
+   "group": "Y",
+   "label": "chart 10y 1306.T",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/1306.T?range=10y&interval=1d&events=div%7Csplit",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 252570,
+   "ms": 113,
+   "kind": "json",
+   "shape": {
+    "chart": {
+     "result": [
+      "len=1",
+      {
+       "meta": "{…}",
+       "timestamp": [
+        "len=2462",
+        "…"
+       ],
+       "events": "{…}",
+       "indicators": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "instrumentType": "ETF",
+    "currency": "JPY",
+    "exchangeName": "JPX",
+    "bars": 2462,
+    "first": "2016-09-29",
+    "last": "2026-09-29",
+    "lastClose": 424.29998779296875,
+    "lastAdj": 424.29998779296875,
+    "nullCloses": 1,
+    "dividends": 10
+   }
+  },
+  {
+   "group": "Y",
+   "label": "chart 10y 510300.SS",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/510300.SS?range=10y&interval=1d&events=div%7Csplit",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 273261,
+   "ms": 79,
+   "kind": "json",
+   "shape": {
+    "chart": {
+     "result": [
+      "len=1",
+      {
+       "meta": "{…}",
+       "timestamp": [
+        "len=2425",
+        "…"
+       ],
+       "events": "{…}",
+       "indicators": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "instrumentType": "EQUITY",
+    "currency": "CNY",
+    "exchangeName": "SHH",
+    "bars": 2425,
+    "first": "2016-09-29",
+    "last": "2026-09-29",
+    "lastClose": 4.4120001792907715,
+    "lastAdj": 4.4120001792907715,
+    "nullCloses": 1,
+    "dividends": 10
+   }
+  },
+  {
+   "group": "Y",
+   "label": "chart 10y 069500.KS",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/069500.KS?range=10y&interval=1d&events=div%7Csplit",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 163386,
+   "ms": 87,
+   "kind": "json",
+   "shape": {
+    "chart": {
+     "result": [
+      "len=1",
+      {
+       "meta": "{…}",
+       "timestamp": [
+        "len=2448",
+        "…"
+       ],
+       "events": "{…}",
+       "indicators": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "instrumentType": "ETF",
+    "currency": "KRW",
+    "exchangeName": "KSC",
+    "bars": 2448,
+    "first": "2016-09-29",
+    "last": "2026-09-29",
+    "lastClose": 108990,
+    "lastAdj": 108990,
+    "nullCloses": 27,
+    "dividends": 36
+   }
+  },
+  {
+   "group": "Y",
+   "label": "screener ETF region=us",
+   "url": "https://query2.finance.yahoo.com/v1/finance/screener?crumb=Jhgm2tWX68k&lang=en-US&region=US&formatted=false",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 54835,
+   "ms": 87,
+   "kind": "json",
+   "shape": {
+    "finance": {
+     "result": [
+      "len=1",
+      {
+       "start": "number:0",
+       "count": "number:25",
+       "total": "number:5996",
+       "quotes": [
+        "len=25",
+        "…"
+       ],
+       "useRecords": "boolean:false"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "total": 5996,
+    "count": 25,
+    "sample": [
+     [
+      "VTI",
+      "Vanguard Morningstar Total Stoc",
+      2343736710000,
+      "PCX"
+     ],
+     [
+      "VOO",
+      "Vanguard S&P 500 ETF",
+      1756880440000,
+      "PCX"
+     ],
+     [
+      "IVV",
+      "iShares Core S&P 500 ETF",
+      883985420000,
+      "PCX"
+     ],
+     [
+      "SPY",
+      "State Street SPDR S&P 500 ETF T",
+      811937040000,
+      "PCX"
+     ],
+     [
+      "VXUS",
+      "Vanguard Total International St",
+      665693060000,
+      "NGM"
+     ]
+    ]
+   }
+  },
+  {
+   "group": "Y",
+   "label": "screener ETF region=hk",
+   "url": "https://query2.finance.yahoo.com/v1/finance/screener?crumb=Jhgm2tWX68k&lang=en-US&region=US&formatted=false",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 47282,
+   "ms": 69,
+   "kind": "json",
+   "shape": {
+    "finance": {
+     "result": [
+      "len=1",
+      {
+       "start": "number:0",
+       "count": "number:25",
+       "total": "number:352",
+       "quotes": [
+        "len=25",
+        "…"
+       ],
+       "useRecords": "boolean:false"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "total": 352,
+    "count": 25,
+    "sample": [
+     [
+      "3455.HK",
+      "INVESCO QQQ",
+      488981004000,
+      "HKG"
+     ],
+     [
+      "83455.HK",
+      "INVESCO QQQ-R",
+      488981004000,
+      "HKG"
+     ],
+     [
+      "9455.HK",
+      "INVESCO QQQ-U",
+      452800643000,
+      "HKG"
+     ],
+     [
+      "2840.HK",
+      "SPDR GOLD TRT",
+      152861196000,
+      "HKG"
+     ],
+     [
+      "82840.HK",
+      "SPDR GOLD TRT-R",
+      152861196000,
+      "HKG"
+     ]
+    ]
+   }
+  },
+  {
+   "group": "Y",
+   "label": "screener ETF region=jp",
+   "url": "https://query2.finance.yahoo.com/v1/finance/screener?crumb=Jhgm2tWX68k&lang=en-US&region=US&formatted=false",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 49578,
+   "ms": 100,
+   "kind": "json",
+   "shape": {
+    "finance": {
+     "result": [
+      "len=1",
+      {
+       "start": "number:0",
+       "count": "number:25",
+       "total": "number:477",
+       "quotes": [
+        "len=25",
+        "…"
+       ],
+       "useRecords": "boolean:false"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "total": 477,
+    "count": 25,
+    "sample": [
+     [
+      "1306.T",
+      "NOMURA ASSET MANAGEMENT CO LTD ",
+      34967610500000,
+      "JPX"
+     ],
+     [
+      "1321.T",
+      "NOMURA ASSET MANAGEMENT CO LTD ",
+      17643123800000,
+      "JPX"
+     ],
+     [
+      "1308.T",
+      "AMOVA ASSET MANAGEMENT CO LTD E",
+      16363366100000,
+      "JPX"
+     ],
+     [
+      "1305.T",
+      "DAIWA ASSET MANAGEMENT IFREEETF",
+      15774158700000,
+      "JPX"
+     ],
+     [
+      "1330.T",
+      "AMOVA ASSET MANAGEMENT CO LTD N",
+      8660569800000,
+      "JPX"
+     ]
+    ]
+   }
+  },
+  {
+   "group": "Y",
+   "label": "screener ETF region=cn",
+   "url": "https://query2.finance.yahoo.com/v1/finance/screener?crumb=Jhgm2tWX68k&lang=en-US&region=US&formatted=false",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 100,
+   "ms": 53,
+   "kind": "json",
+   "shape": {
+    "finance": {
+     "result": [
+      "len=1",
+      {
+       "start": "number:0",
+       "count": "number:0",
+       "total": "number:0",
+       "quotes": "[]",
+       "useRecords": "boolean:false"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "total": 0,
+    "count": 0,
+    "sample": []
+   }
+  },
+  {
+   "group": "CN",
+   "label": "eastmoney 510300 보유종목",
+   "url": "https://fundf10.eastmoney.com/FundArchivesDatas.aspx?type=jjcc&code=510300&topline=10&year=&month=",
+   "status": 404,
+   "contentType": "text/html",
+   "bytes": 1163,
+   "ms": 1567,
+   "kind": "text",
+   "head": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=gb2312\"/>\r\n<title>404 - �Ҳ����ļ���Ŀ¼��</title>\r\n<style type=\"text/css\">\r\n<!--\r\nbody{margin:0;font-size:.7em;font-family:Verdana, Arial, Helvetica, sans-serif;background:#EEEEEE;}\r\nfieldset{padding:0 15px 10px 15px;} \r\nh1{font-size:2.4em;margin:0;color:#FFF;}\r\nh2{font-size:1.7em;margin:0;color:#CC0000;} \r\nh3{font-size:1.2em;margin:10px 0 0 0;color:#000000;} \r\n#header{width:9",
+   "grep": {
+    "rows": null,
+    "date": null
+   }
+  },
+  {
+   "group": "CN",
+   "label": "eastmoney 159919 보유종목",
+   "url": "https://fundf10.eastmoney.com/FundArchivesDatas.aspx?type=jjcc&code=159919&topline=10&year=&month=",
+   "status": 404,
+   "contentType": "text/html; charset=UTF-8,gbk",
+   "bytes": 1163,
+   "ms": 304,
+   "kind": "text",
+   "head": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=gb2312\"/>\r\n<title>404 - �Ҳ����ļ���Ŀ¼��</title>\r\n<style type=\"text/css\">\r\n<!--\r\nbody{margin:0;font-size:.7em;font-family:Verdana, Arial, Helvetica, sans-serif;background:#EEEEEE;}\r\nfieldset{padding:0 15px 10px 15px;} \r\nh1{font-size:2.4em;margin:0;color:#FFF;}\r\nh2{font-size:1.7em;margin:0;color:#CC0000;} \r\nh3{font-size:1.2em;margin:10px 0 0 0;color:#000000;} \r\n#header{width:9",
+   "grep": {
+    "rows": null
+   }
+  },
+  {
+   "group": "NV-US",
+   "label": "네이버 해외 basic SPY",
+   "url": "https://api.stock.naver.com/stock/SPY/basic",
+   "status": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "bytes": 6329,
+   "ms": 1195,
+   "kind": "json",
+   "shape": {
+    "stockEndType": "str:etf",
+    "reutersCode": "str:SPY",
+    "stockName": "str:State Street SPDR S&P 500 ETF Trust",
+    "stockNameEng": "str:State Street SPDR S&P 500 ETF Trust",
+    "itemLogoUrl": "str:https://ssl.pstatic.net/imgstock/fn/real/logo/brand/foreign/",
+    "itemLogoPngUrl": "str:https://ssl.pstatic.net/imgstock/fn/real/logo/png/brand/fore",
+    "symbolCode": "str:SPY",
+    "tradeStopType": {
+     "code": "str:1",
+     "text": "str:운영.Trading",
+     "name": "str:TRADING"
+    },
+    "stockExchangeType": {
+     "code": "str:AMX",
+     "zoneId": "str:EST5EDT",
+     "nationType": "str:USA",
+     "delayTime": "number:0",
+     "startTime": "str:0930",
+     "endTime": "str:1600",
+     "closePriceSendTime": "str:2031",
+     "nameKor": "str:아멕스 증권거래소",
+     "nameEng": "str:American Stock Exchange",
+     "stockType": "str:worldstock",
+     "nationName": "str:미국",
+     "nationCode": "str:USA",
+     "name": "str:AMEX"
+    },
+    "stockExchangeName": "str:AMEX",
+    "industryCodeType": "null",
+    "delayTime": "number:0",
+    "delayTimeName": "str:실시간",
+    "compareToPreviousPrice": {
+     "code": "str:5",
+     "text": "str:하락",
+     "name": "str:FALLING"
+    },
+    "closePrice": "str:765.61",
+    "compareToPreviousClosePrice": "str:-5.74",
+    "fluctuationsRatio": "str:-0.74",
+    "localTradedAt": "str:2026-09-28T16:00:00-04:00",
+    "marketStatus": "str:CLOSE",
+    "overMarketPriceInfo": "null",
+    "imageCharts": {
+     "transparent": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/day",
+     "areaYear": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/are",
+     "candleWeek": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/can",
+     "day_up": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/day",
+     "areaYearThree": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/are",
+     "areaYearTen": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/are",
+     "candleDay": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/can",
+     "areaMonthThree": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/are",
+     "candleMonth": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/can",
+     "day": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/day",
+     "day_up_tablet": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/day"
+    },
+    "imageChartUrlInfo": {
+     "line": {
+      "day": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/day",
+      "month3": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/are",
+      "year": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/are",
+      "year3": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/are",
+      "year5": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/are",
+      "year10": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/are"
+     },
+     "candle": {
+      "day": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/can",
+      "week": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/can",
+      "month": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/can"
+     },
+     "mini": {
+      "transparent": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/day",
+      "dayUp": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/day",
+      "dayUpTablet": "str:https://financial-vn.pstatic.net/chart/mobile/world/item/day"
+     }
+    },
+    "scriptChartTypes": [
+     "len=9",
+     "str:candleMinuteFive"
+    ],
+    "currencyType": {
+     "code": "str:USD",
+     "text": "str:US dollar",
+     "name": "str:USD"
+    },
+    "countOfListedStock": "number:1066782116",
+    "marketValueKrwRaw": "null",
+    "accumulatedTradingValueKrwRaw": "str:44468566212000",
+    "indexOrEtfToolTip": "null",
+    "endUrl": "str:https://m.stock.naver.com/worldstock/etf/SPY",
+    "newPcUrl": "str:https://stock.naver.com/worldstock/etf/SPY",
+    "chartIqEndUrl": "str:https://m.stock.naver.com/fchart/foreign/stock/SPY",
+    "stockItemTotalInfos": [
+     "len=20",
+     {
+      "code": "str:basePrice",
+      "key": "str:전일",
+      "value": "str:771.35"
+     }
+    ],
+    "etfThemaInfos": "null",
+    "isEtf": "boolean:true",
+    "isEtfAmerica": "boolean:true",
+    "isFinanceSummary": "boolean:false",
+    "hasNews": "boolean:true",
+    "researchs": "[]",
+    "nationType": "str:USA",
+    "nationName": "str:미국",
+    "newlyListed": "boolean:false",
+    "stockCodeClassificationType": "str:ETFE",
+    "stockEndUrl": "str:https://m.stock.naver.com/worldstock/etf/SPY",
+    "closePriceRaw": "str:765.61",
+    "fluctuationsRatioRaw": "str:-0.74",
+    "openPriceRaw": "str:768.35",
+    "highPriceRaw": "str:769.54",
+    "lowPriceRaw": "str:763.72",
+    "accumulatedTradingVolumeRaw": "str:42694469",
+    "compareToPreviousClosePriceRaw": "str:-5.74",
+    "accumulatedTradingValueRaw": "str:32728760000",
+    "marketOperatingTimeInfo": {
+     "zoneId": "str:EST5EDT",
+     "zoneName": "str:미국(동부)",
+     "isDst": "boolean:true",
+     "preMarketOpeningTime": "str:2026-09-28T04:00:00-04:00",
+     "preMarketClosingTime": "str:2026-09-28T09:30:00-04:00",
+     "regularMarketOpeningTime": "str:2026-09-28T09:30:00-04:00",
+     "regularMarketClosingTime": "str:2026-09-28T16:00:00-04:00",
+     "afterMarketOpeningTime": "str:2026-09-28T16:00:00-04:00",
+     "afterMarketClosingTime": "str:2026-09-28T20:00:00-04:00"
+    },
+    "marketValueFullRaw": "str:816739055831",
+    "exchangeOperatingTime": "boolean:false"
+   },
+   "pick": {
+    "keys": [
+     "stockEndType",
+     "reutersCode",
+     "stockName",
+     "stockNameEng",
+     "itemLogoUrl",
+     "itemLogoPngUrl",
+     "symbolCode",
+     "tradeStopType",
+     "stockExchangeType",
+     "stockExchangeName",
+     "industryCodeType",
+     "delayTime",
+     "delayTimeName",
+     "compareToPreviousPrice",
+     "closePrice",
+     "compareToPreviousClosePrice",
+     "fluctuationsRatio",
+     "localTradedAt",
+     "marketStatus",
+     "overMarketPriceInfo",
+     "imageCharts",
+     "imageChartUrlInfo",
+     "scriptChartTypes",
+     "currencyType",
+     "countOfListedStock",
+     "marketValueKrwRaw",
+     "accumulatedTradingValueKrwRaw",
+     "indexOrEtfToolTip",
+     "endUrl",
+     "newPcUrl",
+     "chartIqEndUrl",
+     "stockItemTotalInfos",
+     "etfThemaInfos",
+     "isEtf",
+     "isEtfAmerica",
+     "isFinanceSummary",
+     "hasNews",
+     "researchs",
+     "nationType",
+     "nationName",
+     "newlyListed",
+     "stockCodeClassificationType",
+     "stockEndUrl",
+     "closePriceRaw",
+     "fluctuationsRatioRaw",
+     "openPriceRaw",
+     "highPriceRaw",
+     "lowPriceRaw",
+     "accumulatedTradingVolumeRaw",
+     "compareToPreviousClosePriceRaw",
+     "accumulatedTradingValueRaw",
+     "marketOperatingTimeInfo",
+     "marketValueFullRaw",
+     "exchangeOperatingTime"
+    ],
+    "stockItemTotalInfos": [
+     [
+      "basePrice",
+      "전일",
+      "771.35"
+     ],
+     [
+      "openPrice",
+      "시가",
+      "768.35"
+     ],
+     [
+      "highPrice",
+      "고가",
+      "769.54"
+     ],
+     [
+      "lowPrice",
+      "저가",
+      "763.72"
+     ],
+     [
+      "accumulatedTradingVolume",
+      "거래량",
+      "42,694,469"
+     ],
+     [
+      "accumulatedTradingValue",
+      "대금",
+      "327억 USD"
+     ],
+     [
+      "marketValue",
+      "시총",
+      "8,167억 USD"
+     ],
+     [
+      "industryGroupKor",
+      "업종",
+      "-"
+     ],
+     [
+      "highPriceOf52Weeks",
+      "52주 최고",
+      "779.37"
+     ],
+     [
+      "lowPriceOf52Weeks",
+      "52주 최저",
+      "629.28"
+     ],
+     [
+      "per",
+      "PER",
+      "N/A"
+     ],
+     [
+      "eps",
+      "EPS",
+      "N/A"
+     ],
+     [
+      "pbr",
+      "PBR",
+      "N/A"
+     ],
+     [
+      "bps",
+      "BPS",
+      "N/A"
+     ],
+     [
+      "dividend",
+      "주당배당금",
+      "7.58"
+     ],
+     [
+      "dividendYieldRatio",
+      "배당수익률",
+      "0.98%"
+     ],
+     [
+      "dividendAt",
+      "배당일",
+      "2026.10.30."
+     ],
+     [
+      "exDividendAt",
+      "배당락일",
+      "2026.09.18."
+     ],
+     [
+      "faceValueDivisionRate",
+      "액면변경",
+      "N/A"
+     ],
+     [
+      "faceValue",
+      "액면가",
+      "N/A"
+     ]
+    ]
+   }
+  },
+  {
+   "group": "NV-US",
+   "label": "네이버 해외 integration SPY",
+   "url": "https://api.stock.naver.com/stock/SPY/integration",
+   "status": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "bytes": 602,
+   "ms": 202,
+   "kind": "json",
+   "shape": {
+    "reports": "[]",
+    "industryCompareInfo": {
+     "globalStocks": "null",
+     "domesticStocks": "null"
+    },
+    "corporateOverview": "str:이 펀드는 지출 전에 일반적으로 S&P 500 지수의 가격 및 수익률 성과에 해당하는 투자 결과를 제공하고자",
+    "consensusInfo": "null",
+    "summaries": {
+     "summary": "str:이 펀드는 지출 전에 일반적으로 S&P 500 지수의 가격 및 수익률 성과에 해당하는 투자 결과를 제공하고자",
+     "representativeName": "null",
+     "representativeId": "null",
+     "nation": "str:United States",
+     "employees": "number:0",
+     "employeesLastUpdated": "null",
+     "city": "null",
+     "address": "null",
+     "url": "null"
+    }
+   },
+   "pick": {
+    "keys": [
+     "reports",
+     "industryCompareInfo",
+     "corporateOverview",
+     "consensusInfo",
+     "summaries"
+    ]
+   }
+  },
+  {
+   "group": "NV-US",
+   "label": "네이버 해외 ETF 구성 SPY",
+   "url": "https://api.stock.naver.com/etf/SPY/holdings",
+   "status": 404,
+   "contentType": "application/json;charset=UTF-8",
+   "bytes": 137,
+   "ms": 278,
+   "kind": "json",
+   "shape": {
+    "timestamp": "str:2026-09-29T05:08:04.828+0000",
+    "status": "number:404",
+    "error": "str:Not Found",
+    "message": "str:No message available",
+    "path": "str:/etf/SPY/holdings"
+   },
+   "pick": {
+    "timestamp": "2026-09-29T05:08:04.828+0000",
+    "status": 404,
+    "error": "Not Found",
+    "message": "No message available",
+    "path": "/etf/SPY/holdings"
+   }
+  },
+  {
+   "group": "US",
+   "label": "nasdaq ETF 스크리너",
+   "url": "https://api.nasdaq.com/api/screener/etf?download=true",
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "bytes": 1155314,
+   "ms": 242,
+   "kind": "json",
+   "shape": {
+    "data": {
+     "dataAsOf": "str:9/25/2026 7:00:00 PM",
+     "data": {
+      "asOf": "null",
+      "headers": {
+       "symbol": "str:SYMBOL",
+       "companyName": "str:NAME",
+       "lastSalePrice": "str:LAST PRICE",
+       "netChange": "str:NET CHANGE",
+       "percentageChange": "str:% CHANGE",
+       "deltaIndicator": "str:DELTA",
+       "oneYearPercentage": "str:1 yr % CHANGE"
+      },
+      "rows": [
+       "len=5254",
+       "{…}"
+      ]
+     }
+    },
+    "message": "null",
+    "status": {
+     "rCode": "number:200",
+     "bCodeMessage": "null",
+     "developerMessage": "null"
+    }
+   },
+   "pick": {
+    "count": 5254,
+    "first": {
+     "oneYearPercentage": "-0.24%",
+     "symbol": "AAA",
+     "companyName": "Alternative Access First Priority CLO Bond ETF",
+     "lastSalePrice": "$25.0250",
+     "netChange": "-0.0250",
+     "percentageChange": "-0.0999000999000999%",
+     "deltaIndicator": "down"
+    }
+   }
+  },
+  {
+   "group": "FX",
+   "label": "chart KRW=X",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/KRW%3DX?range=5d&interval=1d",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 1744,
+   "ms": 49,
+   "kind": "json",
+   "shape": {
+    "chart": {
+     "result": [
+      "len=1",
+      {
+       "meta": "{…}",
+       "timestamp": [
+        "len=6",
+        "…"
+       ],
+       "indicators": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "last": 1358.48,
+    "time": 1790658485
+   }
+  },
+  {
+   "group": "FX",
+   "label": "chart HKDKRW=X",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/HKDKRW%3DX?range=5d&interval=1d",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 1784,
+   "ms": 38,
+   "kind": "json",
+   "shape": {
+    "chart": {
+     "result": [
+      "len=1",
+      {
+       "meta": "{…}",
+       "timestamp": [
+        "len=6",
+        "…"
+       ],
+       "indicators": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "last": 172.72,
+    "time": 1790658237
+   }
+  },
+  {
+   "group": "FX",
+   "label": "chart JPYKRW=X",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/JPYKRW%3DX?range=5d&interval=1d",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 1752,
+   "ms": 34,
+   "kind": "json",
+   "shape": {
+    "chart": {
+     "result": [
+      "len=1",
+      {
+       "meta": "{…}",
+       "timestamp": [
+        "len=6",
+        "…"
+       ],
+       "indicators": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "last": 8.602,
+    "time": 1790658237
+   }
+  },
+  {
+   "group": "FX",
+   "label": "chart CNYKRW=X",
+   "url": "https://query1.finance.yahoo.com/v8/finance/chart/CNYKRW%3DX?range=5d&interval=1d",
+   "status": 200,
+   "contentType": "application/json;charset=utf-8",
+   "bytes": 1268,
+   "ms": 38,
+   "kind": "json",
+   "shape": {
+    "chart": {
+     "result": [
+      "len=1",
+      {
+       "meta": "{…}",
+       "timestamp": [
+        "len=1",
+        "…"
+       ],
+       "indicators": "{…}"
+      }
+     ],
+     "error": "null"
+    }
+   },
+   "pick": {
+    "last": 202.648,
+    "time": 1790658237
+   }
+  }
+ ]
+}
