@@ -160,6 +160,15 @@ python3 <fin-data-integrity 스킬 경로>/scripts/check_claims.py tools/discove
 검산기(`check_claims.py`)는 스킬 안에만 있어 러너가 읽지 못하므로
 `vendor/check_claims.py` 로 들여왔다. **스킬이 갱신되면 이 사본도 같이 갈아야 한다.**
 
+첫 시험 실행(2026-09-29)에서 걸린 것 셋 — 앞으로 러너 쪽을 고칠 때 참고한다.
+1. `proposal_to_pdf.mjs` 가 크로미움 경로를 `/opt/pw-browsers/chromium` 로 박아 두어
+   러너에서 죽었다. 있으면 쓰고 없으면 playwright 가 찾게 바꿨다.
+2. `npm i -D` 가 `package.json` 의 핀을 `^1.56.1` 로 풀어 쓰고 그게 매 판 커밋됐다.
+   `--no-save` 를 붙였다.
+3. 러너 크로미움이 한글 글꼴을 통째로 넣어 분석자료 PDF 가 3.3MB 가 됐다
+   (컨테이너에서는 371KB). `scripts/shrink_pdf.py` 로 부분집합만 남긴다 —
+   쪽 수와 글자 수가 그대로이고 더 작을 때만 바꿔치기한다.
+
 손으로 돌릴 때는 `workflow_dispatch` 로 부르고, 새 회차가 없어도 다시 빌드하려면
 `force` 를 켠다.
 
