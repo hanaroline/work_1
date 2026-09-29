@@ -42,13 +42,18 @@ jobs:
         run: |
           last=$(grep -v '^#' data/etf_holdings/REFRESH | tail -n 1)
           echo "last=$last"
-          if echo "$last" | grep -q 'probe'; then echo "mode=probe" >> "$GITHUB_OUTPUT";
+          if echo "$last" | grep -q 'probe-tr'; then echo "mode=probe-tr" >> "$GITHUB_OUTPUT";
+          elif echo "$last" | grep -q 'probe'; then echo "mode=probe" >> "$GITHUB_OUTPUT";
           else echo "mode=collect" >> "$GITHUB_OUTPUT"; fi
           echo "args=$(echo "$last" | sed -n 's/.*args=\[\(.*\)\].*/\1/p')" >> "$GITHUB_OUTPUT"
 
       - name: 원천 탐색
         if: steps.mode.outputs.mode == 'probe'
         run: python3 scripts/probe_etf_holdings.py
+
+      - name: 수익률에 분배금이 들었는지 재기
+        if: steps.mode.outputs.mode == 'probe-tr'
+        run: python3 scripts/probe_etf_tr.py
 
       - name: 수집
         if: steps.mode.outputs.mode == 'collect'
