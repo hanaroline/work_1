@@ -2241,8 +2241,18 @@ function Section({ title, children, right }) {
   return (
     <section className="mb-8">
       <div className="rule mb-3" />
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-[20px] font-bold text-ink">{title}</h2>
+      {/*
+        좁은 화면에서는 제목과 오른쪽 조작부를 위아래로 쌓는다.
+
+        가로로 붙여 두면 `right` 가 제목 칸을 눌러 "인출 시뮬레이션" 이 한 글자씩
+        세로로 쪼개졌다(412px 에서 실제로 그랬다).
+
+        제목에는 nowrap 이 아니라 break-keep(word-break:keep-all) 을 쓴다.
+        '인출 시뮬레이션 - IRP 1 · 2013년' 처럼 길어질 수 있어 nowrap 은 화면을
+        밀어내고, 한국어는 기본값이 글자 단위로 끊어져 어절이 쪼개지기 때문이다.
+      */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
+        <h2 className="text-[20px] font-bold text-ink break-keep">{title}</h2>
         {right}
       </div>
       {children}
@@ -3610,10 +3620,12 @@ function App() {
         <header className="bg-mas-orange text-white">
           {/* 좁은 화면에서는 단추를 제목 아래로 내린다. 가로로 붙여 두면 글자 칸이
               눌려 제목이 여덟 줄로 쪼개진다(412px 에서 실제로 그랬다). */}
-          <div className="max-w-[1200px] mx-auto px-6 py-[18px]
+          {/* 위아래를 넉넉히 둔다. 18px 로 붙여 두면 글자 세 줄이 띠에 꽉 차서
+              답답하다는 말을 들었다 - 넓은 화면에서 130px 안팎이 되도록 잡았다. */}
+          <div className="max-w-[1200px] mx-auto px-6 py-[26px] md:py-[30px]
                           flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
             <div className="min-w-0">
-              <div className="text-[11px] font-medium tracking-wider opacity-85 leading-none mb-1">
+              <div className="text-[11px] font-medium tracking-wider opacity-85 leading-none mb-1.5">
                 [사내한] 퇴직급여 상담 도구
               </div>
               <h1 className="text-[21px] md:text-[27px] font-bold leading-[1.2] tracking-[-0.5px]">
@@ -3622,7 +3634,7 @@ function App() {
               {/* 넓은 화면에서는 한 줄로 떨어져야 머리가 두 줄치 높이를 먹지 않는다.
                   한 줄에 필요한 폭이 736px 라 제한은 그보다 넉넉히 두고, 좁아지면
                   알아서 접히게 둔다(max-width 는 상한일 뿐이다). */}
-              <p className="mt-1 text-[12px] md:text-[13px] leading-snug opacity-90 max-w-[860px]">
+              <p className="mt-1.5 text-[12px] md:text-[13px] leading-snug opacity-90 max-w-[860px]">
                 고객 나이 · 퇴직제도 · 연금계좌 가입일로 <strong className="font-bold">신규 계좌 개설과
                 기존 계좌 활용 중 무엇이 맞는지</strong> 판정하고 연차별 인출 한도를 시뮬레이션합니다.
               </p>
@@ -4476,6 +4488,9 @@ function App() {
                 어느 탭을 보고 있든 항상 전체 내용이 인쇄된다.
               */}
               <div className="rule mb-3" />
+              {/* 탭 이름은 절대 줄바꿈하지 않는다. 412px 에서 '인출 스케줄' 이
+                  '인출 스케/줄' 로 쪼개졌다 - 좁은 화면에서는 대신 좌우 여백과
+                  글자를 한 단계 줄여 세 탭이 한 줄에 들어가게 한다. */}
               <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
                 <div className="flex border border-hair rounded-xs overflow-hidden bg-white">
                   {TABS.map((t, i) => {
@@ -4486,7 +4501,8 @@ function App() {
                       <button key={t.id} type="button" onClick={() => setTab(t.id)} disabled={dim}
                         aria-label={t.label} aria-pressed={on}
                         className={
-                          'h-[44px] px-5 text-[15px] font-medium transition ' +
+                          'h-[44px] px-3 sm:px-5 text-[14px] sm:text-[15px] font-medium ' +
+                          'whitespace-nowrap transition ' +
                           (i > 0 ? 'border-l border-hair ' : '') +
                           (dim ? 'bg-surf-subtle text-mas-gray cursor-not-allowed'
                             : on ? 'bg-mas-orange text-white'
@@ -4500,14 +4516,16 @@ function App() {
                 <div className="flex gap-2">
                   <button type="button" onClick={() => window.print()} disabled={!ready}
                     className={
-                      'h-[44px] px-5 text-[15px] font-medium rounded-xs transition ' +
+                      'h-[44px] px-3 sm:px-5 text-[14px] sm:text-[15px] font-medium ' +
+                      'whitespace-nowrap rounded-xs transition ' +
                       (ready ? 'bg-mas-orange text-white hover:bg-mas-active' : 'bg-mas-gray text-white cursor-not-allowed')
                     }>
                     A4 1장 인쇄
                   </button>
                   <button type="button" onClick={doPdf} disabled={!ready}
                     className={
-                      'h-[44px] px-5 text-[15px] font-medium rounded-xs border transition ' +
+                      'h-[44px] px-3 sm:px-5 text-[14px] sm:text-[15px] font-medium ' +
+                      'whitespace-nowrap rounded-xs border transition ' +
                       (ready ? 'bg-white text-ink-body border-hair hover:bg-surf-subtle'
                         : 'bg-surf-subtle text-mas-gray border-hair cursor-not-allowed')
                     }>

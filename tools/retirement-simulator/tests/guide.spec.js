@@ -57,9 +57,13 @@ module.exports = async function run(t) {
      *
      * 처음에는 '140px 이하' 만 보았는데, 그 뒤 95px 까지 줄였더니 이번에는
      * "답답하다" 는 보고를 받았다. 한쪽만 막아 두면 반대쪽으로 넘어간다.
+     *
+     * 105px 도 여전히 답답하다는 말을 들어 위아래 여백을 18px→30px 로 키웠다
+     * (지금 133px). 아래 못을 118px 로 올려 두어, 여백을 예전으로 되돌리면
+     * 검사가 먼저 깨지게 한다.
      */
-    t.ok(geo.height >= 96 && geo.height <= 140,
-      '머리 높이가 96~140px 안에 있다 (실제 ' + Math.round(geo.height) + 'px)');
+    t.ok(geo.height >= 118 && geo.height <= 150,
+      '머리 높이가 118~150px 안에 있다 (실제 ' + Math.round(geo.height) + 'px)');
     t.is(geo.buttons, 3, '머리에 단추가 셋 - 엑셀 · CSV · 사용법');
     t.is(geo.sameRow, true, '사용법 단추가 제목과 같은 줄에 있다 - 높이를 따로 먹지 않는다');
     t.is(geo.right, true, '사용법 단추는 제목 오른쪽 빈자리에 있다');
