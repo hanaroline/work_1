@@ -64,6 +64,12 @@ jobs:
       - name: 새것 가리기가 맞는가
         run: python3 scripts/keep_newer_snapshot.py --selftest
 
+      - name: 기업 비율이 서로 아귀가 맞는가 (망 없이)
+        # 야후가 ADR 종목에 주는 bookValue 는 현지 보통주 기준인데 price 는 ADR
+        # 기준이라, 둘을 나눈 PBR 이 통째로 틀린다 — ASML 이 1,499배로 찍혀
+        # 있었다. 같은 응답 안의 값끼리 대수로 맞대어(PBR = PER × ROE) 잡는다.
+        run: python3 scripts/fetch_us100.py --selftest
+
       - name: 미국 긴 일봉 수집기를 망 없이 시험한다
         # 해치를 물려받는가, 창이 미끄러진 것을 잘린 것으로 읽지 않는가,
         # 정말 잘렸을 때 **쓰지 않고 멈추는가**. ETF 에서 이력을 한 번 잃고
