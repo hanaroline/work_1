@@ -24,7 +24,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, 'tools', 'etf-holdings-discovery')
 UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/125.0 Safari/537.36')
-KEEP = 6000          # 응답마다 앞에서 이만큼만 남긴다
+KEEP = 20000         # 응답마다 앞에서 이만큼만 남긴다
 
 _CJ = http.cookiejar.CookieJar()
 _OP = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(_CJ))
@@ -123,6 +123,13 @@ def probes(cr):
     out.append(('em_cn_etf', 'https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20&po=1&np=1'
                 '&fltt=2&invt=2&fid=f20&fs=b:MK0021,b:MK0022,b:MK0023,b:MK0024'
                 '&fields=f12,f13,f14,f2,f3,f20,f21', 'utf-8'))
+    out.append(('sse_etf_list', 'https://query.sse.com.cn/commonQuery.do?isPagination=true&pageHelp.pageSize=25'
+                '&pageHelp.pageNo=1&sqlId=COMMON_SSE_ZQPZ_ETFLB_L_NEW', 'utf-8'))
+    out.append(('szse_etf_list', 'https://www.szse.cn/api/report/ShowReport/data?SHOWTYPE=JSON&CATALOGID=1945&PAGENO=1', 'utf-8'))
+    out.append(('em_cn_etf2', 'https://88.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20&po=1&np=1'
+                '&fltt=2&invt=2&fid=f20&fs=b:MK0021,b:MK0022,b:MK0023,b:MK0024&fields=f12,f13,f14,f2,f20', 'utf-8'))
+    out.append(('nvw_etf_2800_holdings', 'https://api.stock.naver.com/etf/2800.HK/holdings', 'utf-8'))
+    out.append(('nvw_etf_VTI_holdings', 'https://api.stock.naver.com/etf/VTI/holdings', 'utf-8'))
     out.append(('sa_spy_holdings', 'https://stockanalysis.com/etf/spy/holdings/', 'utf-8'))
     out.append(('sa_etf_list', 'https://stockanalysis.com/api/screener/e/f?m=aum&s=desc&c=no,s,n,aum&i=etf', 'utf-8'))
     return out
@@ -132,7 +139,8 @@ def yahoo_screener(cr, region):
     payload = {'size': 5, 'offset': 0, 'sortField': 'fundnetassets', 'sortType': 'DESC',
                'quoteType': 'ETF', 'topOperator': 'AND',
                'query': {'operator': 'AND', 'operands': [
-                   {'operator': 'eq', 'operands': ['region', region]}]},
+                   ({'operator': 'eq', 'operands': ['exchange', region]} if region.isupper()
+                    else {'operator': 'eq', 'operands': ['region', region]})]},
                'userId': '', 'userIdType': 'guid'}
     url = ('https://query2.finance.yahoo.com/v1/finance/screener?crumb=' + urllib.parse.quote(cr or '')
            + '&lang=en-US&region=US&formatted=false')
@@ -159,7 +167,7 @@ def main():
             if len(text) > KEEP * 2:
                 f.write('\n\n...[중략]...\n\n' + text[-1500:])
         time.sleep(0.3)
-    for region in ('us', 'hk', 'jp', 'cn', 'kr'):
+    for region in ('us', 'hk', 'jp', 'cn', 'kr', 'SHH', 'SHZ'):
         st, body, sec, _ = yahoo_screener(cr, region)
         text = body.decode('utf-8', 'replace')
         summary['rows'].append({'tag': 'y_screener_' + region, 'status': st, 'bytes': len(body)})
