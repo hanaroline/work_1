@@ -1,4 +1,4 @@
-/** 퇴직급여 수령 의사결정 시뮬레이터 — Tailwind 설정 (미래에셋 디자인 토큰) */
+/** 퇴직급여 계좌 선택 · 인출 설계 — Tailwind 설정 (미래에셋 디자인 토큰) */
 module.exports = {
   content: [
     './tools/retirement-simulator/app.jsx',

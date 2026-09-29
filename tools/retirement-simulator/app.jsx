@@ -1412,7 +1412,7 @@ function summarySheet(c) {
   const put = (cells) => rows.push(cells);
   const kv = (k, v, s) => put([txt(k, S.bold), typeof v === 'number' ? num(v, s) : txt(v)]);
 
-  put([txt('퇴직급여 수령 의사결정 — 상담 요약', S.bold)]);
+  put([txt(DOC_TITLE + ' — 상담 요약', S.bold)]);
   put([txt('미래에셋증권 [사내한] 상담 도구에서 내보냈습니다. 작성일 ' + c.today)]);
   put([]);
   put([txt('고객 및 퇴직 정보', S.head)]);
@@ -2277,7 +2277,14 @@ function Stat({ label, value, tone }) {
    ================================================================ */
 
 // 결과 탭 - 상담 진행 순서와 같다
-const DOC_TITLE = '퇴직급여 수령 의사결정 시뮬레이터';
+/*
+ * 도구 이름은 여기 하나로 둔다.
+ *
+ * 화면 머리 · 브라우저 탭(인쇄 뒤 되돌릴 때) · 사용법 제목이 모두 이 값을 쓴다.
+ * 전에는 같은 문장을 네 군데에 따로 적어 두어, 이름을 바꿀 때 한 군데가 남았다.
+ * 인쇄물과 엑셀 제목은 뒤에 '결과' · '상담 요약' 이 붙어 따로 적는다.
+ */
+const DOC_TITLE = '퇴직급여 계좌 선택 · 인출 설계';
 
 const TABS = [
   { id: 'verdict', label: '판정' },
@@ -3629,14 +3636,22 @@ function App() {
                 [사내한] 퇴직급여 상담 도구
               </div>
               <h1 className="text-[21px] md:text-[27px] font-bold leading-[1.2] tracking-[-0.5px]">
-                퇴직급여 수령 의사결정 시뮬레이터
+                {DOC_TITLE}
               </h1>
-              {/* 넓은 화면에서는 한 줄로 떨어져야 머리가 두 줄치 높이를 먹지 않는다.
-                  한 줄에 필요한 폭이 736px 라 제한은 그보다 넉넉히 두고, 좁아지면
-                  알아서 접히게 둔다(max-width 는 상한일 뿐이다). */}
+              {/*
+                넓은 화면에서 한 줄로 떨어져야 머리가 두 줄치 높이를 먹지 않는다.
+
+                전에 쓰던 설명은 쓸 수 있는 폭 749px 를 **한 자도 남기지 않고**
+                749px 로 채워, 1024px 에서 이미 두 줄로 접혔다. 지금 것은 526px 라
+                1500px 에서 한글 25자를 더 붙일 때까지 한 줄로 버틴다. 그 이상
+                늘리면 guide 스펙의 '설명은 한 줄' 검사가 먼저 깨진다.
+
+                '세금' 을 넣은 것은 화면에서 가장 큰 숫자가 세액·세후 수령액인데
+                설명이 인출 한도까지만 말하고 있었기 때문이다.
+              */}
               <p className="mt-1.5 text-[12px] md:text-[13px] leading-snug opacity-90 max-w-[860px]">
-                고객 나이 · 퇴직제도 · 연금계좌 가입일로 <strong className="font-bold">신규 계좌 개설과
-                기존 계좌 활용 중 무엇이 맞는지</strong> 판정하고 연차별 인출 한도를 시뮬레이션합니다.
+                나이 · 퇴직제도 · 연금계좌 가입일로 <strong className="font-bold">받을 계좌를
+                판정</strong>하고, 연차별 인출 한도와 세금을 계산합니다.
               </p>
             </div>
 
@@ -5097,7 +5112,7 @@ function App() {
       {printMode === 'guide' && (
         <div className="print-only" style={{ padding: '10mm' }}>
           <h1 style={{ fontSize: '14pt', fontWeight: 700, margin: '0 0 2pt' }}>
-            퇴직급여 수령 의사결정 시뮬레이터 — 사용법
+            {DOC_TITLE} — 사용법
           </h1>
           <p style={{ fontSize: '8.5pt', color: '#6C6C6C', margin: '0 0 8pt' }}>
             [사내한] 상담 순서 그대로. 각 단계의 '자주 틀리는 것' 은 실제로 틀렸던 것들입니다.
@@ -5205,7 +5220,7 @@ function PrintSheet(props) {
       <div style={{ borderBottom: '1pt solid #F58220', paddingBottom: '1.6mm', marginBottom: '2.2mm' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
           <h1 style={{ fontSize: '13pt', fontWeight: 700, margin: 0, letterSpacing: '-0.3pt' }}>
-            퇴직급여 수령 의사결정 결과
+            {DOC_TITLE} 결과
           </h1>
           <span style={{ fontSize: '7pt', color: '#6C6C6C' }}>
             작성일 {TODAY.getFullYear()}.{TODAY.getMonth() + 1}.{TODAY.getDate()}

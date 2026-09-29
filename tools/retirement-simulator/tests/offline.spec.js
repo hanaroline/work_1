@@ -23,7 +23,7 @@ module.exports = async function run(t) {
       const measure = (stack) => {
         const c = document.createElement('canvas').getContext('2d');
         c.font = '400 20px ' + stack;
-        return c.measureText('퇴직급여 수령 의사결정').width;
+        return c.measureText('퇴직급여 계좌 선택 인출 설계').width;
       };
       const el = document.createElement('span');
       el.className = 'num';

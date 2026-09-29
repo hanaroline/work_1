@@ -91,7 +91,7 @@ module.exports = async function run(t) {
 
     await helps.nth(0).click();
     await page.waitForTimeout(150);
-    await page.getByRole('heading', { name: '퇴직급여 수령 의사결정 시뮬레이터' }).click();
+    await page.getByRole('heading', { name: '퇴직급여 계좌 선택 · 인출 설계' }).click();
     await page.waitForTimeout(150);
     t.is(await openCount(page), 0, '바깥을 누르면 닫힌다');
 
