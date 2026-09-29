@@ -2,10 +2,10 @@
 /**
  * 테스트 러너.
  *
- *   node tools/retirement-simulator/tests/run.js            전체
- *   node tools/retirement-simulator/tests/run.js selectors  일부 (이름으로 거르기)
+ *   node tools/retire-payout/tests/run.js            전체
+ *   node tools/retire-payout/tests/run.js selectors  일부 (이름으로 거르기)
  *
- * retirement-simulator.html 을 그대로 열어 검사하므로, 고치고 나면 먼저 빌드해야 한다.
+ * retire-payout.html 을 그대로 열어 검사하므로, 고치고 나면 먼저 빌드해야 한다.
  */
 const fs = require('fs');
 const path = require('path');
@@ -39,8 +39,8 @@ function makeT(results) {
     .sort();
 
   if (!specs.length) { console.error('실행할 스펙이 없습니다.'); process.exit(1); }
-  if (!fs.existsSync(path.resolve(DIR, '..', '..', '..', 'retirement-simulator.html'))) {
-    console.error('retirement-simulator.html 이 없습니다. 먼저 빌드하세요:\n  node scripts/build-retirement-simulator.js');
+  if (!fs.existsSync(path.resolve(DIR, '..', '..', '..', 'retire-payout.html'))) {
+    console.error('retire-payout.html 이 없습니다. 먼저 빌드하세요:\n  node scripts/build-retire-payout.js');
     process.exit(1);
   }
 

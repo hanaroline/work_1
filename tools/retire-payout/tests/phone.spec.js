@@ -12,7 +12,7 @@
 const path = require('path');
 const { chromium } = require('playwright');
 
-const APP = 'file://' + path.resolve(__dirname, '..', '..', '..', 'retirement-simulator.html');
+const APP = 'file://' + path.resolve(__dirname, '..', '..', '..', 'retire-payout.html');
 const PHONE = { width: 412, height: 915 };   // 갤럭시 계열의 흔한 폭
 
 /** 문서가 뷰포트보다 넓으면 가로 스크롤이 생긴다 */

@@ -3,7 +3,7 @@
 "이 고객의 퇴직급여를 어느 계좌로 받을 수 있고, 어느 계좌가 유리한가" 를 조합마다 답하는
 판단표를 **손으로 적지 않고 규칙에서 전개해** 만듭니다.
 
-기존 `tools/retirement-simulator` 는 고객 한 명의 수치를 넣고 답을 보는 상담 도구입니다.
+기존 `tools/retire-payout` 는 고객 한 명의 수치를 넣고 답을 보는 상담 도구입니다.
 이쪽은 그 앞단 - **조합 전체를 한눈에 보는 참조표**이고, 동시에 시뮬레이터가 맞는지
 대조하는 잣대입니다. 둘은 서로를 베끼지 않습니다.
 
@@ -52,14 +52,14 @@ node tools/pension-decision-matrix/build.js --md MATRIX.md   # 파일로
 판은 둘입니다.
 
 ```bash
-node scripts/build-retirement-simulator.js            # 배포본 — 근거 없음
-node scripts/build-retirement-simulator.js --근거     # 내부용 — 근거 18건 포함
+node scripts/build-retire-payout.js            # 배포본 — 근거 없음
+node scripts/build-retire-payout.js --근거     # 내부용 — 근거 18건 포함
 ```
 
 | | 파일 | 근거 | 저장소 |
 |---|---|---|---|
-| 배포본 | `retirement-simulator.html` | 없음 | 커밋됨 |
-| 내부용 | `retirement-simulator-근거포함.html` | **18건** | `.gitignore` |
+| 배포본 | `retire-payout.html` | 없음 | 커밋됨 |
+| 내부용 | `retire-payout-internal.html` | **18건** | `.gitignore` |
 
 **이름을 달리 해 둔 이유**가 있습니다. 같은 이름으로 덮어쓰면 지금 손에 있는 것이 어느 판인지
 알 수 없고, 배포본인 줄 알고 근거가 든 파일을 보내게 됩니다.
@@ -80,7 +80,7 @@ Q 번호가 남아 있으면 **끊습니다** — 규칙 설명문에 `Q23② �
 ### ③ 교차 검증 — `crosscheck.js`
 
 ```bash
-node scripts/build-retirement-simulator.js      # 먼저 시뮬레이터를 빌드
+node scripts/build-retire-payout.js      # 먼저 시뮬레이터를 빌드
 node tools/pension-decision-matrix/crosscheck.js
 ```
 

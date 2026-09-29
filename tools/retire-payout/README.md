@@ -3,7 +3,7 @@
 퇴직 시 퇴직급여를 **어느 연금계좌로 받아야 유리한지** 판정하고, 연차별 인출 한도와
 세액을 시뮬레이션해 고객에게 A4 1장으로 출력해 주는 상담 도구.
 
-산출물: 저장소 루트의 `retirement-simulator.html` (약 1MB) — **외부 네트워크 없이 열리는 단일 파일**.
+산출물: 저장소 루트의 `retire-payout.html` (약 1MB) — **외부 네트워크 없이 열리는 단일 파일**.
 React·Tailwind·웹폰트·앱 코드가 모두 인라인되어 있어 지점 PC에서 파일만 열면 동작한다.
 
 ## 빌드
@@ -13,7 +13,7 @@ React·Tailwind·웹폰트·앱 코드가 모두 인라인되어 있어 지점 P
 ```bash
 npm install --no-save react@18.3.1 react-dom@18.3.1 @babel/standalone@7.25.6 \
   tailwindcss@3.4.16 spoqa-han-sans@3.3.0 @fontsource/inter@5.3.0
-node scripts/build-retirement-simulator.js
+node scripts/build-retire-payout.js
 ```
 
 | 파일 | 역할 |
@@ -23,21 +23,21 @@ node scripts/build-retirement-simulator.js
 | `tailwind.config.js` | 브랜드 컬러/라운드/폰트 토큰 |
 | `shell.html` | 인라인 대상 자리표시자를 가진 HTML 껍데기 |
 | `fonts/` | 임베드 폰트의 OFL 라이선스 사본 |
-| `../../scripts/build-retirement-simulator.js` | 폰트 인라인 → Tailwind 추출 → JSX 트랜스파일 → 단일 HTML 조립 |
+| `../../scripts/build-retire-payout.js` | 폰트 인라인 → Tailwind 추출 → JSX 트랜스파일 → 단일 HTML 조립 |
 
-`retirement-simulator.html` 을 직접 고치지 말 것 — 빌드 산출물이라 덮어써진다.
+`retire-payout.html` 을 직접 고치지 말 것 — 빌드 산출물이라 덮어써진다.
 
 ### 판이 둘이다 — 배포본과 내부용
 
 ```bash
-node scripts/build-retirement-simulator.js            # 배포본
-node scripts/build-retirement-simulator.js --근거     # 내부용 (근거 18건 포함)
+node scripts/build-retire-payout.js            # 배포본
+node scripts/build-retire-payout.js --근거     # 내부용 (근거 18건 포함)
 ```
 
 | | 파일 | 판단표 하단 근거 | 저장소 |
 |---|---|---|---|
-| 배포본 | `retirement-simulator.html` | 없음 | 커밋됨 |
-| 내부용 | `retirement-simulator-근거포함.html` | **사내 Q&A 18건** | `.gitignore` |
+| 배포본 | `retire-payout.html` | 없음 | 커밋됨 |
+| 내부용 | `retire-payout-internal.html` | **사내 Q&A 18건** | `.gitignore` |
 
 이 도구는 **파일 하나가 사람 손을 타고 도는** 형태라, 사내 연금 업무 Q&A 원문 요약이 그대로
 실려 나가면 파일을 받은 누구나 읽는다. 서버가 없어 화면에서만 가리는 잠금은 편집기로 여는
@@ -406,15 +406,15 @@ IRP 요율은 **계좌마다 따로** 받는다. 금융기관마다 다를 뿐 �
 ## 검증
 
 ```bash
-node scripts/build-retirement-simulator.js            # 먼저 빌드
-node tools/retirement-simulator/tests/run.js          # 전체 (404건, 약 80초)
-node tools/retirement-simulator/tests/run.js verdict  # 이름으로 일부만
+node scripts/build-retire-payout.js            # 먼저 빌드
+node tools/retire-payout/tests/run.js          # 전체 (404건, 약 80초)
+node tools/retire-payout/tests/run.js verdict  # 이름으로 일부만
 ```
 
-빌드 산출물 `retirement-simulator.html` 을 그대로 열어 검사한다. 실패가 있으면 종료 코드가 1 이다.
+빌드 산출물 `retire-payout.html` 을 그대로 열어 검사한다. 실패가 있으면 종료 코드가 1 이다.
 
 **PR 에서도 돈다.** `.github/workflows/pr-check.yml` 의 `퇴직급여 시뮬레이터` 작업이 소스에서 단일
-HTML 을 다시 만들어 이 검사를 전부 돌리고, **커밋된 `retirement-simulator.html` 이 소스와 같은지도**
+HTML 을 다시 만들어 이 검사를 전부 돌리고, **커밋된 `retire-payout.html` 이 소스와 같은지도**
 본다 - `app.jsx` 만 고치고 빌드를 잊으면 지점에 내려가는 파일이 옛 판이 되기 때문이다.
 
 | 스펙 | 무엇을 지키는가 |

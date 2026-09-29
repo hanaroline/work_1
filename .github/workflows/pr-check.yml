@@ -142,16 +142,16 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: 단일 HTML 을 소스에서 다시 만든다
-        run: node scripts/build-retirement-simulator.js
+        run: node scripts/build-retire-payout.js
 
       # **커밋된 한 장이 소스와 어긋나면 지점에 내려가는 파일이 옛 판이다.**
       # app.jsx 만 고치고 빌드를 잊은 PR, 그리고 산출물을 손으로 고친 PR 을
       # 여기서 잡는다. 빌드는 고정된 판으로만 돌아가므로 같은 소스면 같은 바이트가 나온다.
       - name: 커밋된 한 장이 소스와 같은가
         run: |
-          if ! git diff --quiet -- retirement-simulator.html; then
-            echo "::error::retirement-simulator.html 이 소스와 어긋납니다 — 빌드해서 함께 커밋하세요"
-            git diff --stat -- retirement-simulator.html
+          if ! git diff --quiet -- retire-payout.html; then
+            echo "::error::retire-payout.html 이 소스와 어긋납니다 — 빌드해서 함께 커밋하세요"
+            git diff --stat -- retire-payout.html
             exit 1
           fi
           echo "커밋된 한 장이 소스와 일치합니다"
@@ -175,7 +175,7 @@ jobs:
       - name: 검사
         run: |
           set -o pipefail
-          node tools/retirement-simulator/tests/run.js 2>&1 | tee /tmp/rs.txt
+          node tools/retire-payout/tests/run.js 2>&1 | tee /tmp/rs.txt
           code=$?
           {
             echo '### 퇴직급여 시뮬레이터'
