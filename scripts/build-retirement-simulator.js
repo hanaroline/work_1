@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 퇴직급여 수령 의사결정 시뮬레이터 — 자립형 단일 HTML 빌드
+ * 퇴직급여 계좌 선택 · 인출 설계 — 자립형 단일 HTML 빌드
  *
  *   node scripts/build-retirement-simulator.js            배포본
  *   node scripts/build-retirement-simulator.js --근거     근거까지 담은 내부용

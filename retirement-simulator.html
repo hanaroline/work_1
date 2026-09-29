@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>퇴직급여 수령 의사결정 시뮬레이터</title>
+<title>퇴직급여 계좌 선택 · 인출 설계</title>
 <meta name="description" content="퇴직 시 퇴직급여를 IRP·연금저축 중 어느 계좌로 수령할지 판정하고 연차별 인출 한도를 시뮬레이션하는 상담 도구" />
 <!-- 자립형 단일 파일: 외부 네트워크 없이 동작합니다. 수정은 tools/retirement-simulator/ 소스에서 하고 scripts/build-retirement-simulator.js 로 다시 빌드하세요. -->
 <style>
@@ -1404,7 +1404,7 @@ function summarySheet(c) {
   const rows = [];
   const put = cells => rows.push(cells);
   const kv = (k, v, s) => put([txt(k, S.bold), typeof v === 'number' ? num(v, s) : txt(v)]);
-  put([txt('퇴직급여 수령 의사결정 — 상담 요약', S.bold)]);
+  put([txt(DOC_TITLE + ' — 상담 요약', S.bold)]);
   put([txt('미래에셋증권 [사내한] 상담 도구에서 내보냈습니다. 작성일 ' + c.today)]);
   put([]);
   put([txt('고객 및 퇴직 정보', S.head)]);
@@ -2106,7 +2106,7 @@ function Stat({
     className: 'num text-[17px] font-bold leading-tight whitespace-nowrap ' + color
   }, value));
 }
-const DOC_TITLE = '퇴직급여 수령 의사결정 시뮬레이터';
+const DOC_TITLE = '퇴직급여 계좌 선택 · 인출 설계';
 const TABS = [{
   id: 'verdict',
   label: '판정'
@@ -3294,11 +3294,11 @@ function App() {
     className: "text-[11px] font-medium tracking-wider opacity-85 leading-none mb-1.5"
   }, "[\uC0AC\uB0B4\uD55C] \uD1F4\uC9C1\uAE09\uC5EC \uC0C1\uB2F4 \uB3C4\uAD6C"), React.createElement("h1", {
     className: "text-[21px] md:text-[27px] font-bold leading-[1.2] tracking-[-0.5px]"
-  }, "\uD1F4\uC9C1\uAE09\uC5EC \uC218\uB839 \uC758\uC0AC\uACB0\uC815 \uC2DC\uBBAC\uB808\uC774\uD130"), React.createElement("p", {
+  }, DOC_TITLE), React.createElement("p", {
     className: "mt-1.5 text-[12px] md:text-[13px] leading-snug opacity-90 max-w-[860px]"
-  }, "\uACE0\uAC1D \uB098\uC774 \xB7 \uD1F4\uC9C1\uC81C\uB3C4 \xB7 \uC5F0\uAE08\uACC4\uC88C \uAC00\uC785\uC77C\uB85C ", React.createElement("strong", {
+  }, "\uB098\uC774 \xB7 \uD1F4\uC9C1\uC81C\uB3C4 \xB7 \uC5F0\uAE08\uACC4\uC88C \uAC00\uC785\uC77C\uB85C ", React.createElement("strong", {
     className: "font-bold"
-  }, "\uC2E0\uADDC \uACC4\uC88C \uAC1C\uC124\uACFC \uAE30\uC874 \uACC4\uC88C \uD65C\uC6A9 \uC911 \uBB34\uC5C7\uC774 \uB9DE\uB294\uC9C0"), " \uD310\uC815\uD558\uACE0 \uC5F0\uCC28\uBCC4 \uC778\uCD9C \uD55C\uB3C4\uB97C \uC2DC\uBBAC\uB808\uC774\uC158\uD569\uB2C8\uB2E4.")), React.createElement("div", {
+  }, "\uBC1B\uC744 \uACC4\uC88C\uB97C \uD310\uC815"), "\uD558\uACE0, \uC5F0\uCC28\uBCC4 \uC778\uCD9C \uD55C\uB3C4\uC640 \uC138\uAE08\uC744 \uACC4\uC0B0\uD569\uB2C8\uB2E4.")), React.createElement("div", {
     className: "flex flex-wrap items-center gap-2 md:shrink-0"
   }, React.createElement("button", {
     type: "button",
@@ -4397,7 +4397,7 @@ function App() {
       fontWeight: 700,
       margin: '0 0 2pt'
     }
-  }, "\uD1F4\uC9C1\uAE09\uC5EC \uC218\uB839 \uC758\uC0AC\uACB0\uC815 \uC2DC\uBBAC\uB808\uC774\uD130 \u2014 \uC0AC\uC6A9\uBC95"), React.createElement("p", {
+  }, DOC_TITLE, " \u2014 \uC0AC\uC6A9\uBC95"), React.createElement("p", {
     style: {
       fontSize: '8.5pt',
       color: '#6C6C6C',
@@ -4533,7 +4533,7 @@ function PrintSheet(props) {
       margin: 0,
       letterSpacing: '-0.3pt'
     }
-  }, "\uD1F4\uC9C1\uAE09\uC5EC \uC218\uB839 \uC758\uC0AC\uACB0\uC815 \uACB0\uACFC"), React.createElement("span", {
+  }, DOC_TITLE, " \uACB0\uACFC"), React.createElement("span", {
     style: {
       fontSize: '7pt',
       color: '#6C6C6C'

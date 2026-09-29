@@ -75,7 +75,7 @@ module.exports = async function run(t) {
 
     await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
     await page.waitForTimeout(200);
-    t.is(await page.title(), '퇴직급여 수령 의사결정 시뮬레이터', '인쇄가 끝나면 제목이 돌아옴');
+    t.is(await page.title(), '퇴직급여 계좌 선택 · 인출 설계', '인쇄가 끝나면 제목이 돌아옴');
 
     // --- 수동 선택이 인쇄물에 반영 ---
     await button(page, '판정').click();

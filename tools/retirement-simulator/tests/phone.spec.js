@@ -25,8 +25,13 @@ const overflow = (page) => page.evaluate(() => ({
  * 글자가 몇 줄로 그려졌는가.
  *
  * 요소 높이를 줄높이로 나누는 방법은 여백이 섞여 어림값밖에 못 준다. Range 로
- * 글자 자체를 감싸면 브라우저가 실제로 그린 줄상자 수가 그대로 나오므로, 단추
- * 안에서 '인출 스케/줄' 로 끊긴 것까지 정확히 잡힌다.
+ * 글자 자체를 감싸면 브라우저가 실제로 그린 상자가 그대로 나오므로, 단추 안에서
+ * '인출 스케/줄' 로 끊긴 것까지 정확히 잡힌다.
+ *
+ * 다만 **상자 수를 그대로 세면 안 된다.** getClientRects 는 텍스트 노드마다 따로
+ * 상자를 주어서, `{DOC_TITLE} 결과` 처럼 노드가 둘이면 한 줄인데도 2 가 나온다
+ * (인쇄물 제목에서 실제로 이 착각을 했다). 상자의 위쪽 좌표를 반올림해 묶어
+ * **서로 다른 줄의 수**를 센다.
  */
 const lineCounts = (page, sel) => page.evaluate((s) => {
   const out = [];
@@ -34,7 +39,12 @@ const lineCounts = (page, sel) => page.evaluate((s) => {
     if (!el.offsetParent) return;
     const r = document.createRange();
     r.selectNodeContents(el);
-    out.push({ text: el.textContent.trim().slice(0, 30), lines: r.getClientRects().length });
+    const tops = new Set();
+    for (const box of r.getClientRects()) {
+      if (box.width === 0 && box.height === 0) continue;
+      tops.add(Math.round(box.top));
+    }
+    out.push({ text: el.textContent.trim().slice(0, 30), lines: tops.size });
   });
   return out;
 }, sel);
