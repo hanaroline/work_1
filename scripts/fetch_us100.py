@@ -425,6 +425,14 @@ RATIO_TOL = 3.0
 RATIO_MIN_BASE = 1.0        # ROE·순이익률 (%)
 RATIO_MAX_PER = 200.0
 
+# 매출은 **두 단계**를 거쳐 되셈하므로(EPS×주식수 → 순이익, ÷순이익률 → 매출)
+# 기간이 어긋날 여지가 두 배다. 그래서 PBR·PSR 보다 느슨하게 둔다.
+#
+# 실제로 두 우주를 재 보니, 성한 쪽에서 가장 멀리 나간 것이 알테오젠 3.9 배였다
+# (순이익률 75% — 일회성 기술료가 섞인 해라 되셈이 흔들린다). 진짜로 망가진
+# 것은 31.8 배·1,571 배로 그보다 한참 멀다. 그 사이에 둔다.
+REVENUE_TOL = 5.0
+
 
 def reconcile_ratios(q):
     """PBR·PSR 을 **다른 칸으로 다시 셈해** 맞대어 보고, 어긋나면 버린다.
@@ -470,9 +478,38 @@ def reconcile_ratios(q):
             continue
         ratio = got / want
         if ratio > RATIO_TOL or ratio < 1.0 / RATIO_TOL:
+            # 어긋난 정도는 **늘 1 보다 큰 쪽으로** 적는다. 0.032 를 그대로
+            # 「0.0 배 어긋남」이라 쓰면 얼마나 벌어졌는지가 사라진다.
             dropped.append('%s %s → 버림 (PER %s × %s %s%% = %.2f · %.1f 배 어긋남)'
-                           % (key, got, per, lbl, base, want, ratio))
+                           % (key, got, per, lbl, base, want,
+                              ratio if ratio > 1 else 1.0 / ratio))
             q[key] = None
+
+    # ■ 매출도 통화가 섞여 들어온다
+    #
+    # ADR 은 bookValue 만 현지 기준인 게 아니었다. TSMC 의 totalRevenue 는
+    # **대만달러**로 오는데 cap·price 는 달러다 — 되셈한 값과 31.8 배 어긋나고,
+    # 그 31.8 이 곧 TWD/USD 환율이다. 국내에서도 두산밥캣의 매출이 63.4 억원으로
+    # 들어와 있었다(실제로는 조 단위). PSR = cap ÷ revenue 이므로 이 값이 틀리면
+    # PSR 도 함께 틀린다.
+    #
+    #     매출 = 순이익 ÷ 순이익률 = (EPS × 주식수) ÷ 순이익률
+    #
+    # 어느 쪽이 틀렸는지 여기서는 **가릴 수 있다.** 되셈은 EPS·주식수·순이익률
+    # 셋을 쓰고 그 셋은 서로 아귀가 맞는데 매출만 혼자 어긋나기 때문이다.
+    rev, eps, sh, nm = (q.get('revenue'), q.get('eps'),
+                        q.get('shares'), q.get('netMargin'))
+    if (rev and eps and sh and nm and rev > 0 and eps > 0 and sh > 0
+            and nm >= RATIO_MIN_BASE):
+        want = eps * sh / (nm / 100.0)
+        if want:
+            ratio = rev / want
+            if ratio > REVENUE_TOL or ratio < 1.0 / REVENUE_TOL:
+                dropped.append('revenue %.4g → 버림 '
+                               '(EPS %s × 주식수 %.4g ÷ 순이익률 %s%% = %.4g · %.1f 배 어긋남)'
+                               % (rev, eps, sh, nm, want,
+                                  ratio if ratio > 1 else 1.0 / ratio))
+                q['revenue'] = None
     return dropped
 
 
@@ -999,16 +1036,37 @@ def selftest():
         # 이쪽은 진짜로 망가진 국내 값 — 매출이 통째로 잘못 들어와 PSR 이 892배다.
         ('두산밥캣 매출 단위 어긋남', dict(per=11.61, roe=8.5, netMargin=5.39,
                                   pbr=0.8, psr=891.72), {'psr'}),
+        # ── 매출 되셈 ────────────────────────────────────────────────
+        ('TSM 매출이 대만달러', dict(per=33.55, roe=39.97, netMargin=49.92,
+                               pbr=13.4, psr=16.7,
+                               revenue=4.44e12, eps=13.43, shares=5.186e9),
+         {'revenue'}),
+        ('두산밥캣 매출이 조 단위가 아님', dict(per=11.61, roe=8.5, netMargin=5.39,
+                                   pbr=0.8, psr=0.57,
+                                   revenue=6.335e9, eps=5601.0, shares=9.575e7),
+         {'revenue'}),
+        # **문턱만 두었을 때 잘못 버렸던 자리.** 순이익률 75% 는 일회성 기술료가
+        # 섞인 해라 되셈이 3.9 배까지 흔들린다 — 그래도 성한 값이다.
+        ('알테오젠 순이익률 75%', dict(per=40.0, roe=25.0, netMargin=75.47,
+                                 pbr=9.0, psr=30.2,
+                                 revenue=2.54e11, eps=706.15, shares=6.956e7),
+         set()),
+        ('매출은 있는데 주식수가 없음', dict(per=20.0, roe=10.0, netMargin=8.0,
+                                 pbr=2.0, psr=1.6,
+                                 revenue=1e9, eps=5.0, shares=None), set()),
     ]
     fails = []
     for nm, q, want in cases:
         before = dict(q)
         reconcile_ratios(q)
-        got = {k for k in ('pbr', 'psr') if before[k] is not None and q[k] is None}
+        keys = ('pbr', 'psr', 'revenue')
+        got = {k for k in keys if before.get(k) is not None and q.get(k) is None}
         if got != want:
             fails.append('%s — 버린 칸 %s, 버려야 할 칸 %s' % (nm, sorted(got), sorted(want)))
-        for k in ('pbr', 'psr'):
-            if k not in got and q[k] != before[k]:
+        # **버리지 않은 칸은 손대지 않아야 한다.** 값을 조용히 고치면 어디서
+        # 바뀐 것인지 나중에 아무도 못 찾는다.
+        for k in keys:
+            if k not in got and q.get(k) != before.get(k):
                 fails.append('%s — %s 를 버리지도 않고 값을 바꿨다' % (nm, k))
 
     print('시험 %d 가지 (비율 맞대기)' % len(cases))
