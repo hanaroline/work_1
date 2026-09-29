@@ -180,13 +180,34 @@ for (const e of ETFS) {
     const listed = new Date(`${e.listedDate.slice(0, 4)}-${e.listedDate.slice(4, 6)}-${e.listedDate.slice(6)}`);
     const asOf = e.retAsOf ? new Date(e.retAsOf) : new Date(DATA.updatedAt);
     const ageY = (asOf - listed) / (365.25 * 864e5);
+
+    // 기준일이 통째로 과거로 간 종목. 원천이 같은 코드로 **다른 실체**(예전에
+    // 멈춘 펀드)의 이력을 내주면 retAsOf 가 몇 해 전으로 간다. 그러면 나이가
+    // 음수처럼 작아져 아래 '상장전-수익률' 이 무더기로 울리는데, 정작 틀린
+    // 것은 수익률이 아니라 기준일이다. 원인을 먼저 짚는다.
+    // 시장별 지연(홍콩·일본이 한 달 뒤지는 일이 있다)과 섞이지 않게 한 해로 끊는다.
+    if (!e.suspended && e.retAsOf) {
+      const lagY = (new Date(DATA.updatedAt) - new Date(e.retAsOf)) / (365.25 * 864e5);
+      if (lagY > 1) {
+        flag('error', '기준일-과거', e,
+             `수익률 기준일이 ${e.retAsOf.slice(0, 10)} — 자료 기준 ${String(DATA.updatedAt).slice(0, 10)} 보다 ` +
+             `${lagY.toFixed(1)}년 뒤졌다. 원천이 같은 코드로 다른 실체를 내줬을 수 있다`,
+             { asOf: e.retAsOf.slice(0, 10), lagYears: +lagY.toFixed(2) });
+      }
+    }
     for (const [basis, obj] of [['price', price], ['tr', tr], ['nav', nav]]) {
       for (const need of [['Y1', 1], ['Y3', 3], ['Y5', 5]]) {
         // 20 거래일(≈0.08년) 은 봐 준다 — 상장 직후 봉이 비는 경우가 있다.
         if (obj[need[0]] != null && ageY < need[1] - 0.08) {
+          // 어느 날까지로 잰 나이인지 같이 적는다. 이것이 없어서, 2018년
+          // 상장 종목이 "0.1년" 으로 나왔을 때 상장일이 틀린 것인지 기준일이
+          // 틀린 것인지 가리지 못하고 한참 헤맸다. 여기서는 기준일이
+          // 문제였다 — 원천이 옛 이력을 물고 와 retAsOf 가 과거로 갔다.
+          const asOfStr = (e.retAsOf || DATA.updatedAt || '').slice(0, 10);
           flag('error', '상장전-수익률', e,
-               `${basis}.${need[0]} 이 있는데 상장 ${ageY.toFixed(1)}년밖에 안 됐다 (상장 ${e.listedDate})`,
-               { period: need[0], ageYears: +ageY.toFixed(2) });
+               `${basis}.${need[0]} 이 있는데 상장 ${ageY.toFixed(1)}년밖에 안 됐다 ` +
+               `(상장 ${e.listedDate} → 기준일 ${asOfStr})`,
+               { period: need[0], ageYears: +ageY.toFixed(2), listed: e.listedDate, asOf: asOfStr });
         }
       }
     }
