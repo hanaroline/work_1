@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -585,6 +600,10 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
   <h1 class="hero-title"><span data-lang-ko>금리가 값을 매기고, 반도체가 먼저 치렀습니다</span><span data-lang-en>Rates repriced. Semiconductors paid first.</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>금요일 밤에 값이 매겨진 것은 주식이 아니라 금리였고, 오늘 아침 우리가 받는 것은 그 계산서입니다.</strong> 워시 의장의 잭슨홀 연설 뒤 시카고상품거래소가 반영한 <strong>9월 인상 확률이 35.4% 에서 57.5% 로</strong> 뛰었고, 정책금리에 가장 민감한 <strong>2년물이 하루에 +14bp</strong> 오르는 사이 30년물은 +3bp 에 그쳐 곡선이 눌렸습니다. 값을 먼저 치른 것은 반도체였습니다 &mdash; 필라델피아 반도체지수 <strong>&minus;3.47%</strong>, 엔비디아 <strong>&minus;4.58%</strong> 인데 같은 날 아마존은 <strong>+3.97%</strong> 올랐습니다. 오늘 09시에 국내가 받는 것은 이 <strong>한 번치 마감</strong>과, 서울이 닫힌 뒤 움직인 환율입니다.</span><span data-lang-en><strong>What got repriced on Friday night was not equities but rates &mdash; and this morning we receive the bill.</strong> After Warsh's Jackson Hole speech, CME-implied odds of a September hike jumped from <strong>35.4% to 57.5%</strong>, and the policy-sensitive <strong>2-year yield rose +14bp in a day</strong> against just +3bp at 30 years, flattening the curve. Semiconductors paid first: the Philadelphia Semiconductor Index fell <strong>&minus;3.47%</strong> and Nvidia <strong>&minus;4.58%</strong>, while Amazon rose <strong>+3.97%</strong> the same session. What Korea takes in at 09:00 is that <strong>single close</strong>, plus the currency move that happened after Seoul shut.</span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>금리가 매긴 값을 받는 아침</span><span data-lang-en>The morning after rates repriced</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 8월 28일(금) 마감 &middot; 환율은 오늘 아침 8월 31일 &middot; 시세 파일 08-31 07:40 수집 &middot; 작성 2026-08-31(월) 15:59 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: closes of Friday 28 August; FX as of this morning; data collected 08-31 07:40; compiled 15:59 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1499,6 +1518,7 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 8월 31일(월) 15:59 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 15:59 KST, Monday 31 August 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

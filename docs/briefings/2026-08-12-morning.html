@@ -181,6 +181,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -486,6 +501,10 @@ html[lang="en"] [data-lang-en]{display:revert}
   <p class="hero-lede"><span data-lang-ko>오늘 09시 국내 증시가 엽니다. 출발점은 어제(화) 종가 &mdash; 코스피 <strong>6,345.53 (+0.73%)</strong>, 코스닥 <strong>857.84 (+0.39%)</strong> 입니다. 끌어올린 것은 <strong>삼성전자 +4.13%</strong> 였고, 주주환원 확대 기대가 이유로 꼽힙니다. 간밤 미국은 <strong>지수가 이틀째 내렸는데 반도체는 올랐습니다</strong> &mdash; S&amp;P500 &minus;0.32%, 나스닥 &minus;0.60% 인데 <strong>SOX 는 +0.87%</strong>. 밀린 것은 <strong>알파벳 &minus;3.84%</strong>, 아마존 &minus;2.09% 로 빅테크였고, 오른 것은 ASML +3.80%, AMD +1.01% 로 반도체였습니다. <strong>하루 전과 부호가 정확히 뒤바뀌었습니다.</strong> 유가는 <strong>호르무즈 교착</strong>으로 이틀째 올라 WTI 83.52달러(+1.69%)가 됐고, 미 국채 10년물은 오히려 <strong>&minus;2bp 내린 4.70%</strong> 입니다. 외국인은 코스피 현물을 <strong>닷새 만에 순매수(+535억원)</strong>했습니다. 오늘 밤 <strong>21:30 미 7월 CPI</strong> 가 이번 주를 가릅니다.</span><span data-lang-en>Korea opens at 09:00. The starting point is Tuesday&rsquo;s close &mdash; KOSPI <strong>6,345.53 (+0.73%)</strong>, KOSDAQ <strong>857.84 (+0.39%)</strong>, carried by <strong>Samsung Electronics at +4.13%</strong> on expectations of larger shareholder returns. Overnight in the US, <strong>the indices fell a second day while semiconductors rose</strong> &mdash; S&amp;P 500 &minus;0.32%, Nasdaq &minus;0.60%, but <strong>the SOX +0.87%</strong>. The weakness was big tech (<strong>Alphabet &minus;3.84%</strong>, Amazon &minus;2.09%); the strength was chips (ASML +3.80%, AMD +1.01%). <strong>The signs are exactly reversed from the day before.</strong> Crude rose a second day on the <strong>Hormuz deadlock</strong>, taking WTI to USD 83.52 (+1.69%), while the 10-year Treasury actually fell <strong>2bp to 4.70%</strong>. Foreigners bought KOSPI cash equities for the <strong>first time in five sessions (+535)</strong>. <strong>US July CPI at 21:30 KST tonight</strong> decides the week.</span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>반도체는 올랐고 빅테크는 밀렸습니다</span><span data-lang-en>Chips up, big tech down</span></span> &nbsp; <span data-lang-ko>기준: 국내 8월 11일(화) 마감 · 미국·유럽 8월 11일(화) 마감 · 일본은 「산의 날」 휴장이라 8월 10일(월) 마감 · 시세 파일 08-12 07:23 수집 · 작성 2026-08-12(수) 08:05 KST</span><span data-lang-en>Basis: Korea, US and Europe close Tue 11 Aug · Japan closed for Mountain Day, so Mon 10 Aug · data collected 07:23 · compiled 08:05 KST, Wednesday 12 August 2026</span></p>
   <p class="hint"><span class="hint-inline"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 펼쳐집니다. 고객 전달용은 «요약 PDF», 브리핑 준비용은 «전체 PDF» 로 저장하십시오.</span><span data-lang-en>Click any item to reveal the underlying figures, background and source links. Use «Summary PDF» for client hand-outs and «Full PDF» for your own preparation.</span></span><span class="hint-pane"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 오른쪽 패널에 표시됩니다.</span><span data-lang-en>Click any item to show the underlying figures, background and source links in the panel on the right.</span></span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 
 <div class="shell">
@@ -1726,6 +1745,7 @@ html[lang="en"] [data-lang-en]{display:revert}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 8월 12일(수) 08:05 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 08:05 KST, Wednesday 12 August 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

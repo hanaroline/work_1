@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -585,6 +600,10 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
   <h1 class="hero-title"><span data-lang-ko>장마감 시황 브리핑</span><span data-lang-en>Market Close Briefing</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>10분 만에 240포인트가 빠졌다가 되돌아온 날입니다.</strong> 코스피는 1% 넘게 오른 채 출발해 장중 6,682.97 까지 올랐는데, 오후 2시를 지나며 <strong>10여 분 만에 6,439.49 까지</strong> 밀렸다가 다시 상승으로 돌아서 강보합으로 마쳤습니다. 그런데 <strong>그 10분에 무슨 일이 있었는지는 원천마다 답이 다릅니다</strong> &mdash; 「이란의 쿠웨이트 미군기지 공격」, 「환율 부담」, 그리고 「뚜렷한 악재가 없었고 연기금&middot;금융투자 매도가 겹쳤을 뿐」. 셋 다 오늘 나온 설명입니다.</span><span data-lang-en><strong>The index lost 240 points in ten minutes and took them back.</strong> The KOSPI opened more than 1% higher and reached 6,682.97, then after 2pm fell <strong>to 6,439.49 within about ten minutes</strong> before turning up again to close marginally higher. <strong>What happened in those ten minutes depends on which source you read</strong> &mdash; an Iranian strike on a US base in Kuwait, pressure from the currency, or simply pension and prop-desk selling with no identifiable catalyst. All three were offered today.</span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>얇은 시장에서는 <strong>작은 물량이 크게 움직입니다</strong></span><span data-lang-en>In a thin market, <strong>small flows move a lot</strong></span></span> &nbsp; <span data-lang-ko>기준: 국내는 오늘 9월 3일 마감 &middot; 해외는 9월 2일(수) 마감(아직 열지 않았습니다) &middot; 환율은 오늘 마감 &middot; 시세 파일 09-03 16:16 수집 &middot; 작성 2026-09-03(목) 16:23 KST &middot; <strong>오늘 15:30 국내 증시 마감</strong></span><span data-lang-en>Basis: Korea closed today; overseas closes of Wednesday 2 September (not yet open); FX at today&rsquo;s close; data collected 09-03 16:16; compiled 16:23 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1461,6 +1480,7 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 3일(목) 16:23 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 16:23 KST, Thursday 3 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

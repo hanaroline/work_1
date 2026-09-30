@@ -161,13 +161,17 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
    링크로도 나가므로, 꼬리말에만 두면 21쪽을 끝까지 내려간 사람만 본다.
    **첫 화면과 인쇄 1쪽에 반드시 걸리도록** 히어로 바로 밑에 둔다. 같은 문구가
    꼬리말에도 한 번 더 실린다(docs/briefing-chrome/tail.html). */
-.ai-notice{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
-  margin:19px 0 0;padding:13px 17px;border-radius:2px;
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
   background:var(--surface-subtle);border-left:3px solid var(--primary)}
-.ai-notice .lbl{flex:none;font-size:13px;font-weight:700;letter-spacing:.6px;
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
   color:var(--primary-active);text-transform:uppercase}
-.ai-notice p{margin:0;font-size:15px;line-height:1.55;color:var(--body);max-width:62em}
-@media (max-width:768px){ .ai-notice{padding:12px 14px} .ai-notice p{font-size:14px} }
+/* **한 줄로 유지한다.** max-width 를 두면(62em=930px) 본문 칸(약 1,100px)보다
+   좁아 두 줄로 접히면서 첫 화면을 그만큼 잡아먹는다 — 2026-09-30 에 그랬다.
+   좁은 화면에서는 접혀야 하므로 nowrap 은 쓰지 않는다(넘침 검사에 걸린다). */
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
 @media print{
   .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
     break-inside:avoid;page-break-inside:avoid}

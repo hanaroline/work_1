@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -597,6 +612,10 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
   <h1 class="hero-title"><span data-lang-ko>해외 증시 브리핑</span><span data-lang-en>Global Market Briefing</span></h1>
   <p class="hero-lede"><span data-lang-ko>사흘 전 이 자리에서 <strong>「유가가 비켜서자 길이 열렸다」</strong>고 적었습니다. 그 길이 <strong>그대로 닫혔습니다.</strong> 23일(현지시간) 뉴욕에서 미 10년물 국채금리가 장중 <strong>5.135%까지 올라 2007년 7월 이후 가장 높았고</strong>, 하루 상승폭도 지난해 4월 이후 가장 컸습니다. 세 가지가 겹쳤습니다 &mdash; <strong>브렌트유가 배럴당 103.08달러로 3.9% 뛰었고</strong>, 9월 미국 종합 PMI 잠정치가 <strong>58.4로 2021년 7월 이후 최고</strong>를 찍었는데 기업 투입가격지수가 59.9에서 <strong>66.4</strong>로 함께 뛰었으며, 마이클 바 연준 이사가 <strong>&ldquo;추가적인 정책 조정이 필요할 가능성이 크다&rdquo;</strong>고 말했습니다. 700억 달러 5년물 국채 입찰까지 부진했습니다. 그 결과 10월 FOMC 추가 인상(0.25%p) 확률이 <strong>68%</strong>로 뛰었습니다 &mdash; 전날 55.4%, 한 달 전 8.8%였습니다. 전날 사상 최고를 썼던 나스닥은 1.13% 밀렸고, <strong>엿새 연속 올랐던 반도체도 방향을 돌렸습니다.</strong> 국내는 9월 23일 코스피 7,080.92(&plus;0.90%)로 7,000선 위에서 연휴에 들어갔습니다. <strong>이 나흘치가 28일 아침 한 번에 반영됩니다.</strong></span><span data-lang-en>Three days ago this page said oil had stepped aside and the road had opened. <strong>The road has closed again.</strong> On the 23rd in New York the US 10-year yield reached <strong>5.135% intraday, its highest since July 2007</strong>, with the largest one-day rise since April last year. Three things landed together: <strong>Brent jumped 3.9% to $103.08</strong>; the flash September US composite PMI hit <strong>58.4, the highest since July 2021</strong>, with the input-price index leaping from 59.9 to <strong>66.4</strong>; and Fed Governor Michael Barr said <strong>further policy adjustment was &ldquo;likely needed.&rdquo;</strong> A soft $70bn five-year auction added to it. Odds of another 25bp hike at the October FOMC jumped to <strong>68%</strong>, from 55.4% a day earlier and 8.8% a month ago. The Nasdaq, at a record the day before, fell 1.13%, and <strong>semiconductors turned down after six straight gains.</strong> Korea entered the holiday above 7,000, with the KOSPI at 7,080.92 (&plus;0.90%) on 23 September. <strong>All four days of this land at once on the morning of the 28th.</strong></span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>금리 되돌림</span><span data-lang-en>Yields snap back</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 23일(수) 마감 &middot; 환율은 오늘 아침 9월 24일 &middot; 시세 파일 09-24 07:44 수집 &middot; 작성 2026-09-24(목) 07:50 KST</span><span data-lang-en>Basis: closes of Wednesday 23 September; FX as of this morning; data collected 09-24 07:44; compiled 07:50 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1461,6 +1480,7 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 24일(목) 07:50 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 07:50 KST, Thursday 24 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

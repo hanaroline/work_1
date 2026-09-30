@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -739,6 +754,10 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
   <h1 class="hero-title"><span data-lang-ko>이번에는 쥐고 끝냈습니다</span><span data-lang-en>This time it held on</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>코스피가 7,051.64 로 마쳐 종가로 7,000 선을 되찾았습니다</strong> &mdash; 종가 기준으로는 <strong>33거래일 만</strong>입니다 <span class="vf ok">2 SOURCES</span>. 어제와 견주면 흥미로운 모양입니다. <strong>장중에 더 높이 올라간 것은 어제</strong>였고(어제 고가 7,171.52, 오늘 고가 7,112.48), 그런데도 어제는 놓치고 오늘은 지켰습니다. <strong>덜 오른 날이 더 잘 끝난 것</strong>입니다. 오늘을 끌어올린 것은 어제와 다른 자리였습니다 &mdash; 어제 앞에 섰던 전력&middot;원전은 되밀렸고, 오늘은 <strong>이차전지와 화학</strong>이 업종표 위를 채웠습니다. 미국이 중국산 배터리 규제를 강화할 수 있다는 기대가 배경으로 꼽힙니다 <span class="vf ok">2 SOURCES</span>. 여기에 <strong>원&middot;달러가 1년 11개월 만의 최저</strong>로 내려앉았고 <span class="vf solo">1 SOURCE</span>, 오른 종목이 내린 종목보다 많아졌습니다.</span><span data-lang-en><strong>The KOSPI closed at 7,051.64, taking back the 7,000 line on a closing basis</strong> &mdash; the first close above it in <strong>33 sessions</strong> <span class="vf ok">2 SOURCES</span>. Set against yesterday the shape is instructive. <strong>Yesterday went higher intraday</strong> (7,171.52 against today&rsquo;s 7,112.48), and yet yesterday let it go while today held it: <strong>the day that rose less finished better.</strong> What lifted today sat in a different place. The power and nuclear names that led yesterday were pushed back, and today <strong>secondary batteries and chemicals</strong> filled the top of the sector table, on expectations that the US may tighten rules on Chinese batteries <span class="vf ok">2 SOURCES</span>. Alongside that, <strong>the won reached its strongest against the dollar in one year and eleven months</strong> <span class="vf solo">1 SOURCE</span>, and advancers outnumbered decliners.</span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>장중 고가는 어제가 높았고, <strong>종가는 오늘이 높습니다</strong></span><span data-lang-en>Yesterday had the higher intraday peak; <strong>today has the higher close</strong></span></span> &nbsp; <span data-lang-ko>기준: 국내는 오늘 9월 9일 마감 &middot; 해외는 9월 8일(화) 마감(아직 열지 않았습니다) &middot; 환율은 오늘 마감 &middot; 시세 파일 09-09 16:15 수집 &middot; 작성 2026-09-09(수) 16:29 KST &middot; <strong>오늘 15:30 국내 증시 마감</strong></span><span data-lang-en>Basis: Korea closed today; overseas closes of Tuesday 8 September (not yet open); FX at today&rsquo;s close; data collected 09-09 16:15; compiled 16:29 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1393,6 +1412,7 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 9일(수) 16:29 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 16:29 KST, Wednesday 9 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

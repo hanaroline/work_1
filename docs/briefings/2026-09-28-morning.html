@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -597,6 +612,10 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
   <h1 class="hero-title"><span data-lang-ko>모닝 마켓 브리핑</span><span data-lang-en>Morning Market Briefing</span></h1>
   <p class="hero-lede"><span data-lang-ko>나흘 만에 문이 열립니다. <strong>그 사이 주가는 거의 그대로입니다</strong> &mdash; 국내가 마지막으로 본 9월 22일 미국 종가와 견주면 S&amp;P500 &minus;0.27%, 나스닥 &minus;0.64%, 필라델피아반도체 &minus;0.16%로, 23일에 크게 밀렸다가 25일에 되돌렸습니다. 오늘 아침 미 지수선물도 0.2%대 약보합입니다. <strong>달라진 것은 두 가지입니다.</strong> 하나는 <strong>금리</strong> &mdash; 미 10년물이 미 재무부 확정 곡선 기준 4.96%에서 <strong>5.17%로 약 21bp</strong> 올라섰고 30년물은 5.49%입니다. 다른 하나는 <strong>환율</strong> &mdash; 원/달러가 1,350원대로 내려와 <strong>6월 5일 고점(1,561원) 대비 약 13% 낮습니다.</strong> 금리는 성장주의 할인율을 올리고 환율은 업종의 손익을 갈라놓습니다. 그리고 오늘은 <strong>삼성전자 3분기 배당을 받을 수 있는 마지막 매수일</strong>이기도 합니다. <strong>오늘 창구의 질문은 &lsquo;얼마나 빠졌나&rsquo;가 아니라 &lsquo;무엇이 달라졌나&rsquo;입니다.</strong></span><span data-lang-en>The market reopens after four days, and <strong>prices are almost where they were</strong> &mdash; against the 22 September US close, the last one Korea traded on, the S&P 500 is &minus;0.27%, the Nasdaq &minus;0.64% and the SOX &minus;0.16%, having fallen hard on the 23rd and recovered on the 25th. US index futures are a touch lower this morning, around 0.2%. <strong>Two things did change.</strong> One is <strong>the yield</strong>: on the Treasury's official curve the 10-year moved from 4.96% to <strong>5.17%, about 21bp</strong>, with the 30-year at 5.49%. The other is <strong>the won</strong>, now in the 1,350s and <strong>about 13% below its 5 June peak of 1,561.</strong> Yields raise the discount rate on growth; the currency splits the sector P&L. Today is also the <strong>last day to buy Samsung Electronics for its third-quarter dividend.</strong> <strong>The question at the desk today is not how far it fell, but what changed.</strong></span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>재개장 첫날</span><span data-lang-en>First day back</span></span> &nbsp; <span data-lang-ko>기준: 국내는 9월 23일(수) 마감(그 뒤 휴장) &middot; 해외는 9월 25일(금) 마감 &middot; 환율은 오늘 아침 9월 28일 &middot; 시세 파일 09-28 07:40 수집 &middot; 작성 2026-09-28(월) 08:00 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: Korea's close of Wednesday 23 September (shut since); overseas closes of Friday 25 September; FX as of this morning; data collected 09-28 07:40; compiled 08:00 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1450,6 +1469,7 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 28일(월) 08:00 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 08:00 KST, Monday 28 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

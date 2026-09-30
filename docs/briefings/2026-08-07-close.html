@@ -181,6 +181,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -462,6 +477,10 @@ html[lang="en"] [data-lang-en]{display:revert}
   <p class="hero-lede"><span data-lang-ko>코스피가 37.61포인트(&minus;0.60%) 내린 6,258.77로 마감했다. 종가만 보면 약보합이지만 <strong>장중 고가 6,415.60, 저가 6,158.73으로 하루 변동폭이 256.87포인트(고가 대비 4.00%)</strong>에 달했다. 1.09% 높게 출발해 오전에 6,415선까지 올랐다가 오후에 6,158선까지 밀렸고, 마지막에 100포인트를 되찾아 마감했다. 엔비디아가 차세대 AI 칩 &lsquo;루빈 울트라&rsquo;의 HBM 사양 하향을 검토한다는 소식에 SK하이닉스가 4.88% 급락한 것이 방아쇠였고, 외국인이 8,600억원 가까이 순매도했다. 다만 <strong>코스피에서는 오른 종목이 554개, 내린 종목이 322개로 상승이 더 많았다</strong> — LG에너지솔루션 +4.35%, 한화에어로스페이스 +4.08%, 삼성전기 +3.99%, KB금융 +2.51%로 지수를 누른 것은 반도체 대형주뿐이었다. 반면 <strong>코스닥은 내린 종목이 829개로 오른 종목 808개보다 많아</strong> 시장 전반이 고르게 약했다 — 두 시장의 성격이 정반대였다. 원/달러는 7.7원 내린 1,416.1원. 오늘 밤 21:30 미 7월 고용보고서가 남아 있다.</span><span data-lang-en>KOSPI closed at 6,258.77, down 37.61 points (&minus;0.60%). The close reads as a mild loss, but the index ran from a high of 6,415.60 to a low of 6,158.73 &mdash; <strong>a 256.87-point range, 4.00% of the high.</strong> It opened 1.09% higher, reached 6,415 in the morning, fell to 6,158 in the afternoon, and recovered 100 points into the close. The trigger was SK Hynix, down 4.88% on reports that Nvidia is considering lower HBM specifications for its next-generation &ldquo;Rubin Ultra&rdquo; chip, with foreigners selling close to KRW 860bn. Yet on KOSPI <strong>554 stocks rose against 322 that fell</strong>: LG Energy Solution +4.35%, Hanwha Aerospace +4.08%, Samsung Electro-Mechanics +3.99%, KB Financial +2.51% — only large-cap semis pushed the index down. On KOSDAQ, by contrast, <strong>829 fell against 808 that rose</strong>: broadly, evenly soft. The two markets behaved in opposite ways. The won firmed 7.7 to 1,416.1. The US July employment report lands tonight at 21:30 KST.</span></p>
   <p class="hero-meta"><span class="tone risk-off"><span data-lang-ko>위험회피</span><span data-lang-en>Risk-off</span></span> &nbsp; <span data-lang-ko>기준: 2026년 8월 7일(금) 국내 마감 15:30 KST · 작성 18:55 KST · 8월 8일 13:10 거래소 원천 시세로 보강</span><span data-lang-en>Basis: Korea close 15:30 KST, Friday 7 August 2026 · compiled 18:55 KST · augmented with exchange data 8 Aug 13:10</span></p>
   <p class="hint"><span class="hint-inline"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 펼쳐집니다. 고객 전달용은 «요약 PDF», 일일보고용은 «전체 PDF» 로 저장하십시오.</span><span data-lang-en>Click any item to reveal the underlying figures, background and source links. Use «Summary PDF» for client hand-outs and «Full PDF» for the daily report.</span></span><span class="hint-pane"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 오른쪽 패널에 표시됩니다. 고객 전달용은 «요약 PDF», 일일보고용은 «전체 PDF» 로 저장하십시오.</span><span data-lang-en>Click any item to show the underlying figures, background and source links in the panel on the right. Use «Summary PDF» for client hand-outs and «Full PDF» for the daily report.</span></span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 
 <div class="shell">
@@ -1349,6 +1368,7 @@ html[lang="en"] [data-lang-en]{display:revert}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 장마감 시황 브리핑 · 2026년 8월 7일(금) 18:55 KST 작성 · 이후 평일 16:00 자동 갱신</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Post-Close Briefing · compiled 18:55 KST, Friday 7 August 2026 · updated automatically at 16:00 on weekdays</span></p>
   <p><span data-lang-ko>본 자료는 사내 참고용으로 작성되었으며 투자 권유를 목적으로 하지 않습니다. 수치는 보도된 자료를 검증해 정리한 것이나 오류가 있을 수 있으므로, 고객 응대 전 원자료를 확인하시기 바랍니다. 검증 상태는 각 항목의 배지로 표시했습니다.</span><span data-lang-en>Prepared for internal reference only; not a solicitation to invest. Figures are verified against reported sources but may contain errors — confirm against primary data before client use. Verification status is shown by the badge on each item.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div>

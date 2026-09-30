@@ -181,6 +181,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -630,6 +645,10 @@ table.data .perfline{display:none}
   <p class="hero-lede"><span data-lang-ko><strong>코스피는 <span class="down">&minus;3.12%</span> 인데 오른 종목이 579개, 내린 종목이 286개였습니다.</strong> 사흘 전 8월 21일과 정확히 반대입니다 &mdash; 그날은 지수가 +0.88% 오르는 동안 193개만 올랐습니다. <strong>끌어내린 것은 삼성전자 <span class="down">&minus;8.70%</span> 한 종목</strong>이고, 돈은 사라진 것이 아니라 <strong>2차전지·화학·해운으로 옮겨 갔습니다</strong>(에코프로비엠 <span class="up">+10.80%</span>, LG화학 <span class="up">+8.12%</span>, 코스닥 <span class="up">+1.42%</span>). <strong>같은 주주환원인데 삼성전자만 빠진 이유는 규모가 아니라 「즉시성」</strong>입니다 &mdash; SK하이닉스는 발표 즉시 사기 시작했고, 삼성전자는 소각의 규모와 시기를 10월 이후로 미뤘습니다. <strong>미국은 반대로 금리가 내리고 반도체가 밀렸습니다</strong> &mdash; 엔비디아가 7거래일 연속 하락했고, <strong>내일 새벽 그 실적이 나옵니다.</strong></span><span data-lang-en><strong>The KOSPI fell <span class="down">&minus;3.12%</span> while 579 stocks rose and only 286 fell</strong> &mdash; the exact mirror of 21 August, when the index gained 0.88% on just 193 advancers. <strong>One stock did it: Samsung Electronics at <span class="down">&minus;8.70%</span></strong>, while the money <strong>moved into batteries, chemicals and shipping</strong> (EcoPro BM <span class="up">+10.80%</span>, LG Chem <span class="up">+8.12%</span>, the KOSDAQ <span class="up">+1.42%</span>). <strong>The difference between the two payout stories is immediacy, not size</strong> &mdash; SK hynix started buying at once; Samsung deferred the size and timing of any buyback past October. <strong>In the US, yields fell and chips fell with them</strong> &mdash; Nvidia has now dropped for seven sessions, and <strong>its results land overnight.</strong></span></p>
   <p class="hero-meta"><span class="tone down"><span data-lang-ko>지수 하나로 이 날을 설명할 수 없습니다</span><span data-lang-en>One index number cannot describe this day</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;미국 모두 8월 24일(월) 마감 &middot; 유럽&middot;아시아도 8월 24일 현지 마감 &middot; 환율은 8월 25일 아침 &middot; 시세 파일 08-25 07:36 수집 &middot; 작성 2026-08-25(화) 07:48 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: Korea and the US at their 24 August closes; Europe and Asia at their 24 August local closes; FX as of the morning of 25 August &middot; data collected 08-25 07:36 &middot; compiled 07:48 KST, Tuesday 25 August 2026 &middot; <strong>Korea opens at 09:00 today</strong></span></p>
   <p class="hint"><span class="hint-inline"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 펼쳐집니다. 고객 전달용은 «요약 PDF», 브리핑 준비용은 «전체 PDF» 로 저장하십시오.</span><span data-lang-en>Click any item to reveal the underlying figures, background and source links. Use «Summary PDF» for client hand-outs and «Full PDF» for your own preparation.</span></span><span class="hint-pane"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 오른쪽 패널에 표시됩니다.</span><span data-lang-en>Click any item to show the underlying figures, background and source links in the panel on the right.</span></span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 
 <div class="shell">
@@ -1879,6 +1898,7 @@ AA급 우량물 중심…기관 캐리 수요 유입 전망
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 8월 25일(화) 07:48 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 07:48 KST, Tuesday 25 August 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

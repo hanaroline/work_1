@@ -181,6 +181,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -602,6 +617,10 @@ table.data .perfline{display:none}
   <p class="hero-lede"><span data-lang-ko><strong>오늘 09:00 에 국내 증시가 사흘 만에 열립니다.</strong> 8/15 광복절·8/16 일요일·8/17 대체공휴일로 쉬는 동안 <strong>미국은 한 번 더 마감했습니다(8/17 월).</strong> 간밤 지수는 내렸습니다 &mdash; S&amp;P500 <strong>&minus;0.52%</strong>(7,745.06), 다우 &minus;0.51%, 나스닥 &minus;0.32%. <strong>그런데 반도체만 반대로 갔습니다 &mdash; SOX +1.64%</strong>(12,621.00). 같은 밤에 <strong>유가가 +3.43%</strong>(WTI 85.23달러), <strong>금이 +2.09%</strong>(4,471.80달러) 뛰었고 변동성 둘이 <strong>함께</strong> 튀었습니다 &mdash; VIX <strong>+6.60%</strong>(15.19), MOVE <strong>+6.70%</strong>(75.63). <strong>주식은 밀리는데 유가·금·변동성이 같이 오르는 조합은 경기가 아니라 지정학을 가리킵니다.</strong> 아시아는 반대로 강했습니다 &mdash; 상하이 +1.41%, 항셍 +1.34%, 니케이 +0.74%. 유럽은 약세였습니다. 국내는 금요일 <strong>코스피 6,977.94(+2.42%)</strong>, 장중 7,010.86 으로 7,000 을 터치하며 <strong>5거래일 연속·주간 +11.49%</strong> 로 마쳤습니다. <strong>오늘은 그 위에 사흘치 재료가 한꺼번에 얹히는 날</strong>이라 시가가 크게 벌어질 수 있습니다. <strong>반도체에는 순풍, 항공·전력에는 역풍</strong>이 동시에 옵니다 &mdash; 같은 밤의 숫자가 업종마다 부호가 다릅니다.</span><span data-lang-en><strong>Korea reopens at 09:00 today after three days shut</strong> &mdash; Liberation Day on the 15th, Sunday the 16th and the observed holiday on the 17th. <strong>The US traded once more in the meantime, on Monday 17 August.</strong> Indices fell: S&amp;P 500 <strong>&minus;0.52%</strong> to 7,745.06, Dow &minus;0.51%, Nasdaq &minus;0.32%. <strong>Semiconductors went the other way &mdash; the SOX rose 1.64%</strong> to 12,621. The same night, <strong>crude jumped 3.43%</strong> (WTI USD 85.23) and <strong>gold 2.09%</strong> (USD 4,471.80), while both volatility gauges spiked <strong>together</strong> &mdash; VIX <strong>+6.60%</strong> at 15.19 and MOVE <strong>+6.70%</strong> at 75.63. <strong>Equities down with crude, gold and volatility up points at geopolitics rather than the cycle.</strong> Asia was firm &mdash; Shanghai +1.41%, Hang Seng +1.34%, Nikkei +0.74% &mdash; while Europe slipped. Korea closed Friday with the <strong>KOSPI at 6,977.94 (+2.42%)</strong>, a fifth straight gain and +11.49% on the week. <strong>All three days of news arrive at once this morning</strong>, so expect a wide opening gap: <strong>a tailwind for semiconductors and a headwind for airlines and utilities</strong> from the very same session.</span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>유가·금·변동성이 같이 올랐습니다</span><span data-lang-en>Crude, gold and volatility rose together</span></span> &nbsp; <span data-lang-ko>기준: 해외 8월 17일(월) 마감 · 국내 8월 14일(금) 마감 · 시세 파일 08-18 07:33 수집 · 작성 2026-08-18(화) 07:45 KST · <strong>국내 개장일 판 &mdash; 사흘 만의 재개장</strong></span><span data-lang-en>Basis: overseas as of the close on Monday 17 August, Korea as of Friday 14 August · data collected 07:33 · compiled 07:45 KST, Tuesday 18 August 2026 · <strong>Korean trading day &mdash; first session in three days</strong></span></p>
   <p class="hint"><span class="hint-inline"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 펼쳐집니다. 고객 전달용은 «요약 PDF», 브리핑 준비용은 «전체 PDF» 로 저장하십시오.</span><span data-lang-en>Click any item to reveal the underlying figures, background and source links. Use «Summary PDF» for client hand-outs and «Full PDF» for your own preparation.</span></span><span class="hint-pane"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 오른쪽 패널에 표시됩니다.</span><span data-lang-en>Click any item to show the underlying figures, background and source links in the panel on the right.</span></span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 
 <div class="shell">
@@ -2006,6 +2025,7 @@ table.data .perfline{display:none}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 8월 18일(화) 07:45 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 07:45 KST, Tuesday 18 August 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

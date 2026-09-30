@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -754,6 +769,10 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
   <h1 class="hero-title"><span data-lang-ko>7,000을 되찾았는데 오른 종목은 셋 중 하나</span><span data-lang-en>Back above 7,000 &mdash; but only one stock in three rose</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>코스피가 113.49포인트(1.65%) 오른 7,007.72 로 마감해 이레 만에 7,000선을 되찾았습니다.</strong> 올린 것은 <strong>반도체</strong>입니다 &mdash; 관세청이 집계한 <strong>9월 1~20일 반도체 수출이 341억 달러로 지난해 같은 기간보다 259.4% 늘어</strong> 역대 최대였고, 지난 금요일 미국에서 메모리주가 강했습니다. 삼성전자가 <strong>4.98%</strong> 올랐습니다. <strong>그런데 오른 종목은 310개, 내린 종목은 552개입니다.</strong> 거래대금은 28조 1,050억원에서 <strong>19조 6,935억원으로 30% 줄었습니다.</strong> 산 쪽은 기관(<strong>+1조 4,982억원</strong>)과 자사주를 사들이는 기타법인이었고, 개인은 <strong>2조 9,910억원</strong>을 팔았습니다.</span><span data-lang-en><strong>KOSPI closed at 7,007.72, up 113.49 points (1.65%), back above 7,000 for the first time in seven sessions.</strong> What lifted it was <strong>semiconductors</strong>: customs data put <strong>chip exports for 1&ndash;20 September at US$34.1bn, up 259.4% year on year</strong> &mdash; a record &mdash; and memory names were strong in the United States on Friday. Samsung Electronics rose <strong>4.98%.</strong> <strong>Yet 310 stocks rose and 552 fell.</strong> Turnover shrank <strong>30%, from &#8361;28.11tn to &#8361;19.69tn.</strong> The buyers were institutions (<strong>+&#8361;1.4982tn</strong>) and the corporate account executing the two big buybacks; retail investors sold <strong>&#8361;2.9910tn.</strong></span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>산 쪽은 <strong>기관과 자사주</strong>, 오른 것은 <strong>지수와 반도체</strong>뿐이었습니다</span><span data-lang-en>The buyers were <strong>institutions and the buybacks</strong>; what rose was <strong>the index and chips</strong>, and little else</span></span> &nbsp; <span data-lang-ko>기준: 국내는 오늘 9월 21일 마감 &middot; 해외는 9월 18일(금) 마감(아직 열지 않았습니다) &middot; 환율은 오늘 마감 &middot; 시세 파일 09-21 16:20 수집 &middot; 작성 2026-09-21(월) 16:39 KST &middot; <strong>오늘 15:30 국내 증시 마감</strong></span><span data-lang-en>Basis: Korea closed today; overseas closes of Friday 18 September (not yet open); FX at today&rsquo;s close; data collected 09-21 16:20; compiled 16:39 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1517,6 +1536,7 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 21일(월) 16:39 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 16:39 KST, Monday 21 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

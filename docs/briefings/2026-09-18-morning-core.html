@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -754,6 +769,10 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
   <h1 class="hero-title"><span data-lang-ko>하루 만에 되돌렸습니다 &mdash; 유가와 금리가 함께 내려서</span><span data-lang-en>Reversed in a day &mdash; oil and yields fell together</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>인상 다음 날, 뉴욕은 오히려 크게 올랐습니다.</strong> S&amp;P500 은 6주 만에 가장 큰 폭으로 뛰었고 나스닥과 필라델피아 반도체지수는 더 올랐습니다. 이틀 전 지수를 눌렀던 것이 <strong>그대로 반대로 움직였기 때문</strong>입니다 &mdash; 사우디가 오만을 통해 아시아 공급을 늘리고 동서 송유관 조기 복구 기대가 커지며 <strong>유가가 이틀째 내렸고</strong>, 그러자 <strong>10년물이 다시 5% 아래로 내려와 8거래일 이어지던 금리 상승이 멈췄습니다.</strong> 변동성 지표도 큰 폭으로 내렸습니다. 전날 매도가 과했다는 인식에 저가매수가 붙었고, 웰스 얼라이언스 로버트 콘조 CEO 는 그날 분위기를 <strong>「한마디로 안도감」</strong>이라고 했습니다.<br><strong>다만 안도의 근거가 「연준이 덜 올릴 것」은 아닙니다.</strong> 같은 날 신규 실업수당 청구가 예상을 밑돌아 고용은 여전히 강했고, <strong>10월 추가 인상 확률은 오히려 53% 로 일주일 전 27% 에서 뛰었습니다.</strong> 시장이 산 것은 인하 기대가 아니라 <strong>「강한 경제가 긴축을 감당할 수 있다」</strong>는 쪽입니다. 국내는 하루 앞서 보합으로 끝났고, 원화는 엿새째 밀렸습니다.</span><span data-lang-en><strong>The day after the hike, New York rallied hard.</strong> The S&amp;P 500 posted its biggest gain in six weeks, with the Nasdaq and the Philadelphia semiconductor index gaining more. What pressed the market two sessions ago <strong>simply ran in reverse</strong>: <strong>oil fell for a second day</strong> as Saudi Arabia added Asian supply via Oman and expectations grew for an early pipeline repair, and <strong>the 10-year fell back below 5%, ending an eight-session run of rising yields.</strong> Volatility measures dropped sharply. Buyers returned on a sense the previous day's selling had been excessive; Robert Conzo of The Wealth Alliance called the mood <strong>"relief, in a word."</strong><br><strong>But the relief is not about the Fed doing less.</strong> Jobless claims came in below expectations the same day, and <strong>the implied odds of an October hike rose to 53% from 27% a week earlier.</strong> What the market bought was not rate-cut hope but the case that <strong>a strong economy can carry the tightening.</strong> Korea closed flat a day earlier, and the won weakened for a sixth session.</span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>안도 랠리</span><span data-lang-en>A relief rally</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 17일(목) 마감 &middot; 환율은 오늘 아침 9월 18일 &middot; 시세 파일 09-18 07:40 수집 &middot; 작성 2026-09-18(금) 07:54 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: closes of Thursday 17 September; FX as of this morning; data collected 09-18 07:40; compiled 07:54 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1480,6 +1499,7 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 18일(금) 07:54 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 07:54 KST, Friday 18 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

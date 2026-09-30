@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -754,6 +769,10 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
   <h1 class="hero-title"><span data-lang-ko>이틀 연속 개장에 올랐다가 반납했습니다</span><span data-lang-en>A second morning given back by the afternoon</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>코스피는 63.01포인트(0.90%) 오른 7,080.92 로 연휴 전 마지막 거래일을 마쳤습니다.</strong> 어제와 같은 모양입니다 &mdash; <strong>7,153.99 로 1.94% 뛰어 출발했다가</strong> 오후에 상승분을 대부분 반납했고, <strong>장중 7,014.98 로 전날 종가(7,017.91) 아래까지</strong> 내려갔습니다. 받친 것은 기관과 <strong>자사주를 사들이는 기타법인</strong>입니다 &mdash; 보도는 기타법인 <strong>1조 6,400억원</strong> 순매수를 전하면서, 개인이 <strong>1조 5,500억원</strong>, <strong>사흘 만에 매도로 돌아선 외국인</strong>이 <strong>5,570억원</strong>을 팔았다고 적었습니다. 코스닥은 <strong>+1.21%</strong> 로 더 올랐고 <strong>오른 종목이 내린 종목보다 많은</strong>, 최근 드문 하루였습니다.</span><span data-lang-en><strong>KOSPI closed the last session before the holiday at 7,080.92, up 63.01 points (0.90%).</strong> The shape repeated yesterday&rsquo;s: it <strong>opened 1.94% higher at 7,153.99</strong>, gave most of it back in the afternoon, and <strong>traded down to 7,014.98 &mdash; below the previous close of 7,017.91.</strong> What held it up was institutions and the <strong>corporate account executing the buybacks</strong>: reporting puts corporate buying at <strong>&#8361;1.6400tn</strong> against retail selling of <strong>&#8361;1.5500tn</strong> and <strong>&#8361;557.0bn</strong> from foreign investors, <strong>sellers again after three sessions of buying.</strong> KOSDAQ did better at <strong>+1.21%</strong>, and for once <strong>more of its stocks rose than fell.</strong></span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>받친 손은 <strong>사흘째 자사주</strong>이고, 판 쪽은 <strong>개인과 외국인</strong>이었습니다</span><span data-lang-en>The hand underneath was <strong>the buybacks, a third day running</strong>; the sellers were <strong>retail and foreign investors</strong></span></span> &nbsp; <span data-lang-ko>기준: 국내는 오늘 9월 23일 마감 &middot; 해외는 9월 22일(화) 마감(아직 열지 않았습니다) &middot; 환율은 오늘 마감 &middot; 시세 파일 09-23 16:11 수집 &middot; 작성 2026-09-23(수) 16:26 KST &middot; <strong>오늘 15:30 국내 증시 마감</strong></span><span data-lang-en>Basis: Korea closed today; overseas closes of Tuesday 22 September (not yet open); FX at today&rsquo;s close; data collected 09-23 16:11; compiled 16:26 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1528,6 +1547,7 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 23일(수) 16:26 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 16:26 KST, Wednesday 23 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

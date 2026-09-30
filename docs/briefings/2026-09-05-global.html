@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -585,6 +600,10 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
   <h1 class="hero-title"><span data-lang-ko>해외 증시 브리핑</span><span data-lang-en>Global Market Briefing</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>간밤 뉴욕은 「좋은 소식이 나쁜 소식」이었습니다.</strong> 미 8월 비농업 신규고용이 <strong>16만 2,000명</strong>으로 로이터 집계 전망치 5만 6,000명의 <strong>약 세 배</strong>가 나오자, CME 페드워치의 <strong>9월 인상 확률이 전날 49.4%에서 58.4%로</strong> 뛰었고 3대 지수가 일제히 내렸습니다. <strong>그런데 그 안에서 반도체만 반대로 갔습니다</strong> &mdash; 필라델피아 반도체지수가 크게 오르며 마이크론&middot;AMD&middot;ASML&middot;TSMC 가 함께 뛰었고, 같은 날 테슬라와 룰루레몬은 급락했습니다. <strong>금리 우려가 커진 날에 금리에 가장 약해야 할 업종이 홀로 오른 것입니다.</strong> 그 답은 곡선에 있습니다 &mdash; <strong>짧은 쪽만 오르고 30년물은 오히려 내렸습니다.</strong> 시장이 올린 것은 <strong>9월 한 번의 인상 확률</strong>이지 <strong>앞으로 몇 년의 성장&middot;물가 전망</strong>이 아니었습니다. 그리고 국내는 그 발표를 <strong>모르는 상태로 금요일 장을 크게 올려 마쳤습니다.</strong></span><span data-lang-en><strong>New York traded &ldquo;good news is bad news&rdquo; overnight.</strong> US August non-farm payrolls came in at <strong>162,000</strong> &mdash; roughly <strong>three times</strong> the 56,000 Reuters consensus &mdash; and the odds of a September hike on CME FedWatch jumped <strong>from 49.4% to 58.4%</strong>, sending all three indices lower. <strong>Yet semiconductors went the other way</strong>: the Philadelphia index rose sharply as Micron, AMD, ASML and TSMC all gained, while Tesla and Lululemon fell hard the same day. <strong>On a day rate fears grew, the sector most exposed to rates rose alone.</strong> The answer is in the curve &mdash; <strong>only the front end rose; the 30-year actually fell.</strong> What the market repriced was <strong>the odds of one hike in September</strong>, not <strong>the multi-year growth and inflation view</strong>. And Korea closed Friday sharply higher <strong>before that report was published.</strong></span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>값을 깎던 힘과 값을 올리는 힘이 같은 날 갈라졌습니다</span><span data-lang-en>The force cutting prices and the force lifting them split on the same day</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 4일(금) 마감 &middot; 환율은 오늘 아침 9월 5일 &middot; 시세 파일 09-05 08:56 수집 &middot; 작성 2026-09-05(토) 13:10 KST</span><span data-lang-en>Basis: closes of Friday 4 September; FX as of this morning; data collected 09-05 08:56; compiled 13:10 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1480,6 +1499,7 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 5일(토) 13:10 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 13:10 KST, Saturday 5 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

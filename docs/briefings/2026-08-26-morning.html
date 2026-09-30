@@ -181,6 +181,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -636,6 +651,10 @@ table.data .perfline{display:none}
   <p class="hero-lede"><span data-lang-ko><strong>이틀째 시장이 지수보다 넓습니다.</strong> 코스피는 <span class="up">+0.68%</span> 인데 오른 종목이 647개 대 내린 종목 226개이고, 코스닥은 <span class="up">+1.70%</span> 에 1,186 대 466 입니다. <strong>주도권이 삼전닉스에서 건설&middot;유틸리티&middot;기계&middot;비철금속으로 옮겨 갔습니다</strong>(두산에너빌리티 <span class="up">+10.55%</span>, 한국전력 <span class="up">+3.81%</span>). <strong>그런데 거래대금은 사흘 연속 줄어 24.09조입니다</strong> &mdash; 8월 21일 28.90조에서 내리 줄었고, 외국인은 이틀 연속 <span class="down">&minus;38,140억</span> 을 팔았습니다. <strong>간밤 미국은 유가가 무너지며 금리를 함께 끌어내렸습니다</strong> &mdash; 브렌트 <span class="down">&minus;6.53%</span>, 10년물 4.640%(8월 5일 이후 최저). 그 위에서 <strong>엔비디아가 8거래일 만에 올랐습니다</strong>. <strong>오늘 밤 그 실적이 나옵니다 &mdash; 다만 최근 네 번 모두 「서프라이즈 뒤 하락」이었습니다.</strong></span><span data-lang-en><strong>For a second day the market is wider than the index.</strong> The KOSPI rose <span class="up">+0.68%</span> with 647 advancers against 226, and the KOSDAQ <span class="up">+1.70%</span> with 1,186 against 466. <strong>Leadership has moved from the two chipmakers into construction, utilities, machinery and metals.</strong> <strong>Yet turnover fell for a third session to KRW 24.09tn</strong>, down from 28.90tn on the 21st, and foreigners sold <span class="down">&minus;38,140억</span> for a second day. <strong>Overnight, crude broke and pulled yields down with it</strong> &mdash; Brent <span class="down">&minus;6.53%</span>, the 10-year at 4.640%, its lowest since 5 August. On that, <strong>Nvidia rose for the first time in eight sessions</strong>. <strong>Its results land tonight &mdash; though the stock has fallen after each of the last four beats.</strong></span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>주도권은 옮겨 가는데 거래는 마르고 있습니다</span><span data-lang-en>Leadership is rotating while liquidity drains</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;미국 모두 8월 25일(화) 마감 &middot; 유럽&middot;아시아도 8월 25일 현지 마감 &middot; 환율은 8월 26일 아침 &middot; 시세 파일 08-26 07:36 수집 &middot; 작성 2026-08-26(수) 09:13 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: Korea and the US at their 25 August closes; Europe and Asia at their 25 August local closes; FX as of the morning of 26 August &middot; data collected 08-26 07:36 &middot; compiled 09:13 KST, Wednesday 26 August 2026 &middot; <strong>Korea opens at 09:00 today</strong></span></p>
   <p class="hint"><span class="hint-inline"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 펼쳐집니다. 고객 전달용은 «요약 PDF», 브리핑 준비용은 «전체 PDF» 로 저장하십시오.</span><span data-lang-en>Click any item to reveal the underlying figures, background and source links. Use «Summary PDF» for client hand-outs and «Full PDF» for your own preparation.</span></span><span class="hint-pane"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 오른쪽 패널에 표시됩니다.</span><span data-lang-en>Click any item to show the underlying figures, background and source links in the panel on the right.</span></span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 
 <div class="shell">
@@ -1766,6 +1785,7 @@ table.data .perfline{display:none}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 8월 26일(수) 09:13 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 09:13 KST, Wednesday 26 August 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

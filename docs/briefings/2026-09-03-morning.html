@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -585,6 +600,10 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
   <h1 class="hero-title"><span data-lang-ko>1989년 이후 처음 보는 조합이 값을 매기고 있습니다</span><span data-lang-en>A combination not seen since 1989 is setting the price</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>어제 코스피는 &minus;3.99% 로 6,600선을 내줬습니다.</strong> 원인은 국내에 없습니다 &mdash; 어제 <strong>일본 10년물 국채금리가 3%를 넘어 1996년 9월 이후 30년 만의 자리</strong>에 섰고, 미 10년물도 장중 <strong>4.81%</strong> 를 넘어 2023년 11월 이후 최고를 찍었습니다. 영국&middot;독일 장기금리도 함께 뛰었습니다. 시장이 값을 매기기 시작한 것은 <strong>미국과 일본이 같은 시기에 금리를 올리는 조합</strong>이고, 그것이 마지막으로 있었던 때는 <strong>1989년 봄</strong>입니다. 어제 국내에서는 개인이 홀로 <strong>2조원 넘게</strong> 받았고 기타법인은 <strong>열한 거래일 연속</strong> 순매수였지만, 외국인과 기관의 매도를 막지 못했습니다. <strong>다만 간밤 뉴욕은 반대로 갔습니다</strong> &mdash; 미 국채 금리가 <strong>2년 이상 주요 만기에서 전일과 같았고 짧은 쪽은 오히려 1~2bp 내리면서</strong> 변동성 지수가 크게 빠지고 3대 지수가 함께 올랐고, 며칠째 밀리던 <strong>금&middot;은&middot;구리도 반등</strong>했습니다. <strong>금리가 멈추자 값이 돌아온 것</strong>이고, 그것이 지금 무엇이 값을 매기고 있는지를 다시 확인해 줍니다.</span><span data-lang-en><strong>KOSPI fell 3.99% yesterday, losing the 6,600 line.</strong> The cause is not domestic: <strong>Japan's 10-year yield passed 3% for the first time since September 1996</strong>, and the US 10-year traded above <strong>4.81%</strong> intraday, its highest since November 2023. UK and German long yields rose with them. What the market has begun to price is <strong>the United States and Japan tightening at the same time</strong> &mdash; something last seen in <strong>the spring of 1989</strong>. In Korea, retail investors alone absorbed <strong>more than 2tn won</strong> and other corporates bought for an <strong>eleventh straight session</strong>, but neither stopped the foreign and institutional selling. <strong>New York, however, went the other way overnight</strong>: Treasury yields were <strong>unchanged at the major maturities from two years out, with the front end easing 1&ndash;2bp</strong>, the volatility index fell sharply and all three indices rose, while <strong>gold, silver and copper rebounded</strong> after several days of losses. <strong>Prices came back the moment yields stopped</strong> &mdash; which confirms again what is setting them.</span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>금리가 값을 매기는 국면입니다 — 종목이 아니라</span><span data-lang-en>This is a rates market, not a stock market</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 2일(수) 마감 &middot; 환율은 오늘 아침 9월 3일 &middot; 시세 파일 09-03 07:40 수집 &middot; 작성 2026-09-03(목) 08:50 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: closes of Wednesday 2 September; FX as of this morning; data collected 09-03 07:40; compiled 08:50 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1492,6 +1511,7 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 3일(목) 08:50 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 08:50 KST, Thursday 3 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

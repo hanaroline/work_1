@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -585,6 +600,10 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
   <h1 class="hero-title"><span data-lang-ko>장마감 시황 브리핑</span><span data-lang-en>Market Close Briefing</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>지수와 시장의 폭이 정반대를 가리킨 날입니다.</strong> 코스피는 4거래일 만에 내렸는데, 오른 종목이 내린 종목의 두 배를 훌쩍 넘었습니다. 지수를 끌어내린 것은 시장이 아니라 <strong>반도체 두 종목</strong>이었습니다 &mdash; 미국이 수입 반도체에 관세를 매기는 안을 검토한다는 소식이 나오면서, 간밤 엔비디아가 8% 넘게 오른 것도 국내 반도체주에는 닿지 않았습니다. 어제와 거울입니다: 어제는 지수가 올랐는데 내린 종목이 더 많았고, 오늘은 그 반대입니다.</span><span data-lang-en><strong>The index and the market pointed opposite ways today.</strong> The KOSPI fell for the first time in four sessions, yet more than twice as many stocks rose as fell. What pulled the index down was not the market but <strong>two semiconductor names</strong> &mdash; a report that Washington is weighing tariffs on imported chips, which severed Korean semis from Nvidia&rsquo;s 8%-plus overnight gain. It mirrors yesterday exactly, in reverse: the index rose then, while decliners outnumbered advancers.</span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>지수보다 <strong>폭</strong>을 보십시오</span><span data-lang-en>Watch <strong>breadth</strong>, not the index</span></span> &nbsp; <span data-lang-ko>기준: 국내는 오늘 8월 28일 마감 &middot; 해외는 8월 27일(목) 마감(아직 열지 않았습니다) &middot; 환율은 오늘 마감 &middot; 시세 파일 08-28 16:19 수집 &middot; 작성 2026-08-28(금) 16:27 KST &middot; <strong>오늘 15:30 국내 증시 마감</strong></span><span data-lang-en>Basis: Korea closed today; overseas closes of Thursday 27 August (not yet open); FX at today&rsquo;s close; data collected 08-28 16:19; compiled 16:27 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1483,6 +1502,7 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 8월 28일(금) 16:27 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 16:27 KST, Friday 28 August 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

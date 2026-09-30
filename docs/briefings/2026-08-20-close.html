@@ -181,6 +181,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -634,6 +649,10 @@ table.data .perfline{display:none}
   <p class="hero-lede"><span data-lang-ko><strong>코스피가 381.41포인트(+5.89%) 오른 6,852.58 로 마쳤습니다</strong> &mdash; 어제 &minus;5.80% 를 하루 만에 되돌렸고 장중 6,904.55 까지 올라 7,000선을 95포인트 앞에 두었습니다. 되돌린 힘은 둘입니다: <strong>간밤 미 재무부가 장기국채 바이백을 2배로 확대</strong>해 30년물이 <span class="down">&minus;9.0bp</span> 내렸고, <strong>전날 장 마감 뒤 SK하이닉스가 40조원 자사주 매입&middot;소각을 공시</strong>했습니다. 외국인이 3거래일 만에 1.71조원을 순매수했습니다. <strong>다만 오른 종목은 521개, 내린 종목은 338개입니다</strong> &mdash; 코스닥은 +1.99%, 은행 업종은 &minus;3.50% 였습니다. <strong>지수가 되돌린 것과 계좌가 되돌린 것은 다릅니다.</strong></span><span data-lang-en><strong>The KOSPI closed at 6,852.58, up 381.41 points or 5.89%</strong> &mdash; reversing yesterday&rsquo;s 5.80% fall in a session and reaching 6,904.55 intraday, 95 points short of 7,000. Two forces did it: <strong>the US Treasury doubled its long-bond buybacks</strong> overnight, sending the 30-year <span class="down">&minus;9.0bp</span> lower, and <strong>SK hynix filed a KRW 40tn buyback and cancellation</strong> after yesterday&rsquo;s close. Foreigners bought KRW 1.71조 for the first time in three sessions. <strong>Yet only 521 stocks rose against 338 that fell</strong>; the KOSDAQ managed 1.99% and banks fell 3.50%. <strong>What the index recovered and what an account recovered are different things.</strong></span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>지수는 돌아왔고 폭은 좁습니다</span><span data-lang-en>The index is back; the breadth is not</span></span> &nbsp; <span data-lang-ko>기준: 국내 8월 20일(목) 마감 &middot; 미국은 전일(8/19) 마감 &middot; 시세 파일 08-20 16:45 수집 &middot; 작성 2026-08-20(목) 19:29 KST &middot; <strong>장마감 판</strong></span><span data-lang-en>Basis: Korea as of the close on Thursday 20 August; the US as of the previous close, 19 August &middot; data collected 08-20 16:45 &middot; compiled 19:29 KST, Thursday 20 August 2026 &middot; <strong>close edition</strong></span></p>
   <p class="hint"><span class="hint-inline"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 펼쳐집니다. 고객 전달용은 «요약 PDF», 브리핑 준비용은 «전체 PDF» 로 저장하십시오.</span><span data-lang-en>Click any item to reveal the underlying figures, background and source links. Use «Summary PDF» for client hand-outs and «Full PDF» for your own preparation.</span></span><span class="hint-pane"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 오른쪽 패널에 표시됩니다.</span><span data-lang-en>Click any item to show the underlying figures, background and source links in the panel on the right.</span></span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 
 <div class="shell">
@@ -1544,6 +1563,7 @@ table.data .perfline{display:none}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 8월 20일(목) 19:29 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 19:29 KST, Thursday 20 August 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

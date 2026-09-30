@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -754,6 +769,10 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
   <h1 class="hero-title"><span data-lang-ko>7,171 까지 갔다가 제자리로 돌아왔습니다</span><span data-lang-en>Up to 7,171, and back where it started</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>코스피는 10.19포인트(0.15%) 오른 7,017.91 로 마쳤습니다.</strong> 숫자만 보면 조용한 하루인데 <strong>안은 그렇지 않았습니다</strong> &mdash; 간밤 나스닥이 사상 최고를 찍자 <strong>7,161.61 로 2.20% 뛰어 출발해 장중 7,171.44</strong> 까지 올랐고, 오후에 <strong>153.53포인트를 그대로 반납</strong>했습니다. 되돌린 자리는 반도체입니다: 장중 193만 5,000원이던 <strong>SK하이닉스가 &minus;1.50%</strong> 로 하락 전환했고, 28만 3,500원까지 올랐던 삼성전자는 <strong>+0.91%</strong> 로 마쳤습니다. 코스닥은 <strong>&minus;0.23%</strong> 로 돌아섰습니다. 그리고 <strong>원/달러가 22.8원(1.65%) 내린 1,358.2원</strong>에 마감했습니다 &mdash; 오늘 판에서 지수보다 큰 움직임입니다.</span><span data-lang-en><strong>KOSPI finished at 7,017.91, up 10.19 points (0.15%).</strong> The number looks like a quiet day; <strong>the session was not.</strong> With the Nasdaq at a record overnight, the index <strong>opened 2.20% higher at 7,161.61 and reached 7,171.44</strong> intraday, then <strong>gave back all 153.53 points</strong> in the afternoon. Semiconductors did the giving back: <strong>SK Hynix, at &#8361;1,935,000 intraday, closed &minus;1.50%</strong>, and Samsung Electronics, up to &#8361;283,500, ended <strong>+0.91%.</strong> KOSDAQ turned down, <strong>&minus;0.23%.</strong> And the won <strong>strengthened 22.8 to 1,358.2 per dollar, a 1.65% move</strong> &mdash; the largest number in today&rsquo;s edition.</span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>간밤 재료는 <strong>개장 한 시간</strong>에 다 쓰였고, 남은 것은 <strong>원화</strong>입니다</span><span data-lang-en>The overnight news was spent <strong>in the first hour</strong>; what remained was <strong>the won</strong></span></span> &nbsp; <span data-lang-ko>기준: 국내는 오늘 9월 22일 마감 &middot; 해외는 9월 21일(월) 마감(아직 열지 않았습니다) &middot; 환율은 오늘 마감 &middot; 시세 파일 09-22 16:12 수집 &middot; 작성 2026-09-22(화) 16:34 KST &middot; <strong>오늘 15:30 국내 증시 마감</strong></span><span data-lang-en>Basis: Korea closed today; overseas closes of Monday 21 September (not yet open); FX at today&rsquo;s close; data collected 09-22 16:12; compiled 16:34 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1495,6 +1514,7 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 22일(화) 16:34 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 16:34 KST, Tuesday 22 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

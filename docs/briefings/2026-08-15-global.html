@@ -181,6 +181,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -596,6 +611,10 @@ table.data .perfline{display:none}
   <p class="hero-lede"><span data-lang-ko><strong>오늘은 광복절이라 국내 증시가 열리지 않습니다.</strong> 이 판은 <strong>간밤 해외 마감</strong>과 <strong>다음 국내 거래일 준비</strong>를 위한 것이고, 기준은 <strong>8월 14일(금) 마감</strong>입니다. 간밤 미국은 <strong>7월 소매판매가 &minus;0.6%</strong>(전망 +0.1%)로 <strong>14개월 만에 최대 낙폭</strong>을 냈고 미시간대 소비자심리도 <strong>51.0</strong> 으로 급락했습니다. 그런데 지수만 내렸습니다 &mdash; S&amp;P500 &minus;0.17%(7,785.76), 나스닥 &minus;0.28% 인데 <strong>러셀2000 은 +0.51%</strong>, 업종 ETF 11개 중 <strong>7개가 상승</strong>했습니다. 지수를 누른 것은 <strong>브로드컴 &minus;5.94%</strong> &mdash; BofA 가 AI 가속기 자금조달에 걸린 <strong>3,700억 달러 부채</strong>를 지적했습니다. 반대로 <strong>AMD 는 +6.50%</strong>, 475억 달러 회사채를 찍고 목표주가가 두 배로 올랐습니다. <strong>쟁점이 「AI 수요」에서 「AI 부채」로 옮겨 갔습니다.</strong> 국내는 금요일 <strong>코스피 6,977.94(+2.42%)</strong>, 장중 <strong>7,010.86</strong> 으로 7,000 을 터치하며 <strong>5거래일 연속·주간 +11.49%</strong> 로 마쳤고, 상승 종목 수가 <strong>333 → 677</strong> 로 되돌아오면서 <strong>주도주가 반도체에서 현대차(+8.24%)·통신으로 바뀌었습니다.</strong> 다음 국내 거래일은 <strong>8/18(화)</strong> &mdash; 8/17(월) 휴장이라 <strong>미국·유럽 이틀치를 한꺼번에 받습니다.</strong></span><span data-lang-en><strong>Korean markets are closed today for Liberation Day.</strong> This edition covers <strong>the overnight close abroad</strong> and <strong>preparation for the next Korean session</strong>, with <strong>Friday 14 August</strong> as the reference point. Overnight, <strong>US July retail sales fell 0.6%</strong> against a +0.1% consensus &mdash; <strong>the steepest drop in 14 months</strong> &mdash; and Michigan consumer sentiment slumped to <strong>51.0</strong>. Yet only the indices fell: S&amp;P 500 &minus;0.17% at 7,785.76 and Nasdaq &minus;0.28%, while <strong>the Russell 2000 rose 0.51%</strong> and <strong>seven of the eleven sector ETFs gained</strong>. What weighed was <strong>Broadcom &minus;5.94%</strong>, after BofA flagged <strong>USD 370bn of debt</strong> behind AI accelerators &mdash; while <strong>AMD rose 6.50%</strong> on a USD 47.5bn bond and a doubled price target. <strong>The argument has moved from AI demand to AI debt.</strong> In Korea, Friday closed with the <strong>KOSPI at 6,977.94 (+2.42%)</strong> after touching <strong>7,010.86</strong>, a <strong>fifth straight gain and +11.49% on the week</strong>, with advancers rebounding from <strong>333 to 677</strong> as <strong>leadership shifted from semiconductors to Hyundai Motor (+8.24%) and telecoms.</strong> The next Korean session is <strong>Tuesday 18 August</strong> &mdash; with Monday closed, it <strong>absorbs two sessions each from the US and Europe.</strong></span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>소비는 꺾였고 금리는 올랐습니다</span><span data-lang-en>Consumption broke, yields rose</span></span> &nbsp; <span data-lang-ko>기준: 미국·유럽·아시아·국내 모두 8월 14일(금) 마감 · 시세 파일 08-15 15:28 수집(직접 요청) · 작성 2026-08-15(토) 16:20 KST · <strong>국내 증시 휴장일 판</strong></span><span data-lang-en>Basis: the US, Europe, Asia and Korea all as of the close on Friday 14 August · data collected 15:28 on request · compiled 16:20 KST, Saturday 15 August 2026 · <strong>Korean market holiday edition</strong></span></p>
   <p class="hint"><span class="hint-inline"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 펼쳐집니다. 고객 전달용은 «요약 PDF», 브리핑 준비용은 «전체 PDF» 로 저장하십시오.</span><span data-lang-en>Click any item to reveal the underlying figures, background and source links. Use «Summary PDF» for client hand-outs and «Full PDF» for your own preparation.</span></span><span class="hint-pane"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 오른쪽 패널에 표시됩니다.</span><span data-lang-en>Click any item to show the underlying figures, background and source links in the panel on the right.</span></span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 
 <div class="shell">
@@ -1961,6 +1980,7 @@ table.data .perfline{display:none}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 8월 15일(토) 16:20 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 16:20 KST, Saturday 15 August 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -597,6 +612,10 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
   <h1 class="hero-title"><span data-lang-ko>해외 증시 브리핑</span><span data-lang-en>Global Market Briefing</span></h1>
   <p class="hero-lede"><span data-lang-ko>내일 국내 증시가 나흘 만에 문을 엽니다. <strong>그 나흘에 무슨 일이 있었는지를 한 줄로 말하면 이렇습니다</strong> &mdash; 주가는 내렸다가 되돌아왔고, 금리는 올라가서 내려오지 않았습니다. 국내가 마지막으로 본 미국 종가는 9월 22일입니다. 그때와 지금(9월 25일 마감)을 견주면 <strong>S&amp;P500 &minus;0.27%, 나스닥 &minus;0.64%, 필라델피아반도체 &minus;0.16%</strong> &mdash; 사실상 제자리입니다. 그런데 <strong>미 10년물 국채금리는 미 재무부 확정 곡선 기준 4.96%에서 5.17%로 약 21bp 올랐습니다</strong>(30년물 &plus;20bp, 2년물 &plus;10bp). 23일에 유가·PMI·연준 매파 발언이 겹쳐 5.1%를 뚫은 뒤, 25일 주식이 반등하는 동안에도 금리는 더 올라갔습니다(30년물은 5.504%). 그 사이 <strong>미·중 정상회담은 무역 휴전을 2개월 연장</strong>하는 선에서 마무리돼 단기 불확실성은 낮아졌고, <strong>원/달러는 1,354원대로 내려(원화 강세)</strong> 있습니다. 내일 받을 것은 <strong>주가의 빈자리가 아니라 금리의 높이</strong>입니다.</span><span data-lang-en>Korea reopens tomorrow after four days. <strong>What happened in those four days, in one line:</strong> prices fell and came back; yields rose and stayed. The last US close Korea traded against was 22 September. Measured from there to Friday's close on the 25th, the <strong>S&P 500 is &minus;0.27%, the Nasdaq &minus;0.64% and the SOX &minus;0.16%</strong> &mdash; effectively flat. But the <strong>US 10-year yield went from 4.96% to 5.17% on the Treasury's official curve, about 21bp</strong> (30-year &plus;20bp, two-year &plus;10bp). After oil, the PMI and hawkish Fed comments pushed it through 5.1% on the 23rd, it kept climbing even as equities rebounded on the 25th (the 30-year is at 5.504%). In between, the <strong>US&ndash;China summit extended the trade truce by two months</strong>, lowering near-term uncertainty, and the <strong>won strengthened into the 1,354 area.</strong> What Monday has to absorb is <strong>not a gap in prices but the level of yields.</strong></span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>재개장 D-1</span><span data-lang-en>One day to the reopen</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 25일(금) 마감 &middot; 환율은 오늘 아침 9월 27일 &middot; 시세 파일 09-27 07:40 수집 &middot; 작성 2026-09-27(일) 07:46 KST</span><span data-lang-en>Basis: closes of Friday 25 September; FX as of this morning; data collected 09-27 07:40; compiled 07:46 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1451,6 +1470,7 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 27일(일) 07:46 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 07:46 KST, Sunday 27 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

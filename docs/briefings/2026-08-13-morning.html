@@ -181,6 +181,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -486,6 +501,10 @@ html[lang="en"] [data-lang-en]{display:revert}
   <p class="hero-lede"><span data-lang-ko>오늘 09시 국내 증시가 엽니다. 출발점은 어제(수) 종가 &mdash; 코스피 <strong>6,579.04 (+3.68%, +233.51p)</strong>, 코스닥 <strong>858.91 (+0.12%)</strong> 입니다. 오전 11시 57분에 <strong>매수 사이드카</strong>가 걸렸고 장중에는 +5.09%(6,668.43)까지 올랐습니다. 다만 <strong>코스피 상승 380 : 하락 477</strong> &mdash; 지수를 올린 것은 <strong>삼성전자 +6.68%, 삼성전기 +5.78%, SK하이닉스 +5.54%, 한화에어로스페이스 +5.28%</strong> 넷이고, 이유는 <strong>주주환원 확대 기대</strong>입니다(아직 발표 전). 외국인이 <strong>2조 8,354억원</strong>을 샀고 개인이 3조 1,911억원을 팔았습니다. 간밤 미국은 <strong>7월 CPI 가 3.4%로 예상에 부합</strong>하며 나스닥 +0.54%, <strong>SOX +2.49%</strong> &mdash; 마이크론 +4.92%, 엔비디아 +3.03% 인데 메타 &minus;3.38%, 마이크로소프트 &minus;2.26% 로 <strong>반도체만 올랐습니다</strong>. 오늘은 <strong>8월물 옵션 만기일</strong>이고 밤 21:30 에 <strong>미 7월 PPI</strong> 가 나옵니다. 그리고 <strong>8/17(월)은 광복절 대체공휴일 휴장</strong>이라 이번 주는 8/14(금)이 마지막 거래일입니다.</span><span data-lang-en>Korea opens at 09:00. The starting point is Wednesday&rsquo;s close &mdash; KOSPI <strong>6,579.04 (+3.68%, +233.51 points)</strong> and KOSDAQ <strong>858.91 (+0.12%)</strong>. A <strong>buy-side sidecar</strong> triggered at 11:57 and the index reached +5.09% (6,668.43) intraday. Yet <strong>380 KOSPI stocks rose against 477 that fell</strong> &mdash; the index was carried by four names, <strong>Samsung Electronics +6.68%, Samsung Electro-Mechanics +5.78%, SK Hynix +5.54% and Hanwha Aerospace +5.28%</strong>, on <strong>expectations of larger shareholder returns</strong> that have not been announced. Foreigners bought <strong>KRW 2,835bn</strong>; retail sold KRW 3,191bn. Overnight in the US, <strong>July CPI came in as expected at 3.4%</strong>, lifting the Nasdaq 0.54% and <strong>the SOX 2.49%</strong> &mdash; Micron +4.92%, Nvidia +3.03%, but Meta &minus;3.38% and Microsoft &minus;2.26%: <strong>only the chips rose</strong>. Today is the <strong>August options expiry</strong>, with <strong>US July PPI at 21:30 KST</strong>. And with <strong>Monday 17 August closed</strong> for the Liberation Day substitute holiday, Friday the 14th is this week&rsquo;s last session.</span></p>
   <p class="hero-meta"><span class="tone up"><span data-lang-ko>지수는 크게 올랐지만 폭은 좁습니다</span><span data-lang-en>A big index day, but a narrow one</span></span> &nbsp; <span data-lang-ko>기준: 국내·미국·유럽·아시아 모두 8월 12일(수) 마감 · 시세 파일 08-13 07:23 수집 · 작성 2026-08-13(목) 08:05 KST</span><span data-lang-en>Basis: Korea, the US, Europe and Asia all as of the close on Wednesday 12 August · data collected 07:23 · compiled 08:05 KST, Thursday 13 August 2026</span></p>
   <p class="hint"><span class="hint-inline"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 펼쳐집니다. 고객 전달용은 «요약 PDF», 브리핑 준비용은 «전체 PDF» 로 저장하십시오.</span><span data-lang-en>Click any item to reveal the underlying figures, background and source links. Use «Summary PDF» for client hand-outs and «Full PDF» for your own preparation.</span></span><span class="hint-pane"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 오른쪽 패널에 표시됩니다.</span><span data-lang-en>Click any item to show the underlying figures, background and source links in the panel on the right.</span></span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 
 <div class="shell">
@@ -1752,6 +1771,7 @@ html[lang="en"] [data-lang-en]{display:revert}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 8월 13일(목) 08:05 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 08:05 KST, Thursday 13 August 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

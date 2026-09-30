@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -754,6 +769,10 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
   <h1 class="hero-title"><span data-lang-ko>모닝 마켓 브리핑</span><span data-lang-en>Morning Market Briefing</span></h1>
   <p class="hero-lede"><span data-lang-ko>어제 코스피는 191.18포인트(<strong>2.70%</strong>) 내린 6,889.74로 <strong>7,000선을 도로 내줬습니다.</strong> 그런데 <strong>오른 종목이 611개, 내린 종목이 249개</strong>였고 코스닥은 오히려 올랐습니다. 지수를 끌어내린 것은 <strong>반도체 하나</strong>입니다 &mdash; 반도체·반도체장비 업종이 5%대로 빠지면서 시가총액 상위가 무너졌고, 코스피200은 3.27% 내려 코스피보다 더 빠졌습니다. 원인은 새것이 아닙니다. <strong>연휴 나흘 동안 쌓인 유가와 미 국채금리의 상승분을 어제 한 번에 받은 것</strong>입니다. 간밤 뉴욕에서도 같은 힘이 이어졌습니다 &mdash; 트럼프 대통령이 이란의 <strong>호르무즈 해협 7일 재개방 계획을 거부</strong>했다는 소식에 유가와 금리가 함께 올랐고, 미 10년물은 장중 5.20%를 넘어 <strong>2007년 이후 최고</strong>, 30년물은 5.50%를 넘어 <strong>2004년 이후 최고</strong>를 찍었습니다. S&amp;P500의 하루 낙폭은 8월 20일 이후 가장 컸습니다. 그리고 <strong>오늘은 삼성전자 배당락일</strong>입니다 &mdash; 오늘 삼성전자가 내려도 그 일부는 배당락이지 악재가 아닙니다.</span><span data-lang-en>The KOSPI fell 191.18 points (<strong>2.70%</strong>) to 6,889.74 yesterday, <strong>giving back 7,000.</strong> Yet <strong>611 stocks rose and 249 fell</strong>, and the KOSDAQ actually gained. <strong>Semiconductors alone</strong> pulled the index down: the chip and chip-equipment sector fell more than 5%, taking the largest weights with it, and the KOSPI 200 dropped 3.27%, more than the KOSPI itself. The cause is not new &mdash; it is <strong>the four days of oil and US yield increases from the holiday, absorbed in a single session.</strong> The same force carried into New York overnight: after President Trump <strong>rejected Iran's seven-day plan to reopen the Strait of Hormuz</strong>, oil and yields rose together; the US 10-year passed 5.20% intraday, its <strong>highest since 2007</strong>, and the 30-year cleared 5.50%, the <strong>highest since 2004.</strong> The S&P 500's one-day fall was its largest since 20 August. And <strong>today Samsung Electronics trades ex-dividend</strong> &mdash; part of any decline in the stock today is the ex-date, not bad news.</span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>반도체만 빠진 날</span><span data-lang-en>The day only chips fell</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 28일(월) 마감 &middot; 환율은 오늘 아침 9월 29일 &middot; 시세 파일 09-29 07:40 수집 &middot; 작성 2026-09-29(화) 07:56 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: closes of Monday 28 September; FX as of this morning; data collected 09-29 07:40; compiled 07:56 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1508,6 +1527,7 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 29일(화) 07:56 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 07:56 KST, Tuesday 29 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -754,6 +769,10 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
   <h1 class="hero-title"><span data-lang-ko>지수는 2.7% 내렸는데 오른 종목이 더 많습니다</span><span data-lang-en>Down 2.7%, with more risers than fallers</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>코스피는 191.18포인트(2.70%) 내린 6,889.74 로 재개장 첫날을 마쳤습니다.</strong> 7,000선과 6,900선을 하루에 내줬고 <strong>종가가 장중 저점</strong>입니다. 그런데 <strong>오른 종목이 611개, 내린 종목이 249개</strong>입니다 &mdash; <strong>지수를 끌어내린 것은 시장이 아니라 반도체 대형주 몇 자리</strong>입니다. 삼성전자가 <strong>&minus;5.43%</strong>, SK하이닉스가 <strong>&minus;5.05%</strong>, SK스퀘어가 <strong>&minus;7.56%</strong> 였고, 코스피200은 코스피보다 더 내린 <strong>&minus;3.27%</strong> 입니다. 외국인이 <strong>3조 2,399억원</strong>, 기관이 <strong>1조 174억원</strong>을 판 자리를 개인이 <strong>2조 6,188억원</strong>으로 받았습니다. <strong>코스닥은 오히려 +0.25% 로 올랐습니다.</strong></span><span data-lang-en><strong>KOSPI closed the first session back at 6,889.74, down 191.18 points (2.70%)</strong>, surrendering both 7,000 and 6,900 in a day and <strong>finishing at its intraday low.</strong> Yet <strong>611 stocks rose against 249 that fell</strong> &mdash; <strong>what pulled the index down was not the market but a handful of large semiconductor names.</strong> Samsung Electronics fell <strong>5.43%</strong>, SK Hynix <strong>5.05%</strong> and SK Square <strong>7.56%</strong>, and the KOSPI 200 fell further than the KOSPI at <strong>&minus;3.27%.</strong> Foreign investors sold <strong>&#8361;3.2399tn</strong> and institutions <strong>&#8361;1.0174tn</strong>, with retail taking the other side at <strong>&#8361;2.6188tn.</strong> <strong>KOSDAQ actually rose 0.25%.</strong></span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>내린 것은 <strong>지수와 반도체</strong>, 오른 것은 <strong>그 밖의 대부분</strong>이었습니다</span><span data-lang-en>What fell was <strong>the index and the chipmakers</strong>; what rose was <strong>most of everything else</strong></span></span> &nbsp; <span data-lang-ko>기준: 국내는 오늘 9월 28일 마감 &middot; 해외는 9월 25일(금) 마감(아직 열지 않았습니다) &middot; 환율은 오늘 마감 &middot; 시세 파일 09-28 16:22 수집 &middot; 작성 2026-09-28(월) 16:33 KST &middot; <strong>오늘 15:30 국내 증시 마감</strong></span><span data-lang-en>Basis: Korea closed today; overseas closes of Friday 25 September (not yet open); FX at today&rsquo;s close; data collected 09-28 16:22; compiled 16:33 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1532,6 +1551,7 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 28일(월) 16:33 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 16:33 KST, Monday 28 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -754,6 +769,10 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
   <h1 class="hero-title"><span data-lang-ko>인상은 나왔고, 6,800은 못 넘었습니다</span><span data-lang-en>The hike came; 6,800 did not</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>미국이 3년 만에 금리를 올렸습니다.</strong> 오늘 새벽 연방공개시장위원회가 기준금리를 <strong>3.75~4.00%</strong> 로 <strong>0.25%포인트&middot;만장일치</strong> 인상했습니다 &mdash; 2023년 7월 이후 <strong>3년 2개월</strong> 만입니다 <span class="vf ok">2 SOURCES</span>. 코스피는 <strong>0.91% 상승 출발해 장중 6,790선까지</strong> 올랐지만 장 후반에 밀려 <strong>6,715.41 로 사실상 보합(&minus;0.04%)</strong> 마감했습니다. 장중 고저차가 <strong>97.68포인트</strong>였습니다. <strong>그런데 속은 어제와 반대입니다</strong> &mdash; 어제는 지수가 1.37% 올랐는데 내린 종목이 두 배였고, <strong>오늘은 지수가 보합인데 오른 종목이 더 많습니다.</strong> 코스닥은 <strong>0.76% 올라 820선을 회복</strong>했습니다. 판을 끌어올린 것은 <strong>조선과 방산</strong>이고, 누른 것은 <strong>외국인의 2조원대 순매도(이레째)</strong>입니다. 원/달러는 <strong>13.6원 올라 1,382.2원</strong>으로 엿새째 상승했습니다 <span class="vf solo">1 SOURCE</span>.</span><span data-lang-en><strong>The United States raised rates for the first time in three years.</strong> Before dawn today the Federal Open Market Committee lifted the target range to <strong>3.75&ndash;4.00%</strong> by <strong>0.25 points, unanimously</strong> &mdash; the first increase in <strong>three years and two months</strong>, since July 2023 <span class="vf ok">2 SOURCES</span>. The KOSPI <strong>opened 0.91% higher and reached the high 6,790s intraday</strong>, then slipped late to close at <strong>6,715.41, effectively flat at &minus;0.04%.</strong> The intraday range was <strong>97.68 points.</strong> <strong>The internals, though, are the reverse of yesterday</strong>: yesterday the index rose 1.37% with twice as many decliners as advancers; <strong>today the index is flat and advancers outnumber decliners.</strong> The KOSDAQ <strong>rose 0.76% to regain 820.</strong> What lifted the board was <strong>shipbuilding and defence</strong>; what held it down was <strong>foreign net selling above &#8361;2tn, a seventh straight session.</strong> The won rose <strong>13.6 to 1,382.2</strong>, a sixth consecutive gain <span class="vf solo">1 SOURCE</span>.</span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>결정은 나왔고, <strong>값은 아직 정해지지 않았습니다</strong></span><span data-lang-en>The decision landed; <strong>the price has not settled</strong></span></span> &nbsp; <span data-lang-ko>기준: 국내는 오늘 9월 17일 마감 &middot; 해외는 9월 16일(수) 마감(아직 열지 않았습니다) &middot; 환율은 오늘 마감 &middot; 시세 파일 09-17 16:12 수집 &middot; 작성 2026-09-17(목) 16:21 KST &middot; <strong>오늘 15:30 국내 증시 마감</strong></span><span data-lang-en>Basis: Korea closed today; overseas closes of Wednesday 16 September (not yet open); FX at today&rsquo;s close; data collected 09-17 16:12; compiled 16:21 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1505,6 +1524,7 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 <footer class="foot">
   <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 17일(목) 16:21 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 16:21 KST, Thursday 17 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->
