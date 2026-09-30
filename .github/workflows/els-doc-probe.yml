@@ -57,6 +57,7 @@ jobs:
         run: |
           clean=$(printf '%s' "$NAMES" | tr -c 'A-Za-z0-9' ' ')
           if [ -z "$(printf '%s' "$clean" | tr -d ' ')" ]; then
-            clean='38165e 38158 38169e'      # 푸시로 돌 때 — 비었던 둘과 견줄 정상 한 건
+            node scripts/probe_doc_midredeem.mjs --try-fix
+            exit 0
           fi
           node scripts/probe_doc_midredeem.mjs --name $clean
