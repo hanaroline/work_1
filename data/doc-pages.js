@@ -6,7 +6,7 @@
  */
 (function (g) {
   g.DOC_PAGES = {
- "updatedAt": "2026-09-30T05:54:03.305Z",
+ "updatedAt": "2026-09-30T06:27:53.625Z",
  "source": "securities.miraeasset.com /public/editor/elsdls/<ISIN>.pdf",
  "docLabel": "간이투자설명서 및 투자설명서 (교부본)",
  "anchors": [
@@ -495,6 +495,7 @@
     "payoffChart": 15,
     "lossCase": 16,
     "sim": 17,
+    "midRedeem": 18,
     "caution": 21,
     "prospectus": 24,
     "offering": 29,
@@ -679,6 +680,7 @@
     "payoffChart": 15,
     "lossCase": 16,
     "sim": 17,
+    "midRedeem": 18,
     "caution": 21,
     "prospectus": 24,
     "offering": 29,
