@@ -59,7 +59,22 @@ const ANCHORS = [
   ['payoffChart', 'brief', /\(\s*예상\s*손익구조\s*그래프\s*\)/, '예상 손익구조 그래프'],
   ['lossCase', 'brief', /손실률\s*사례\s*1/, '손실 발생 사례'],
   ['sim', 'brief', /과거\s*데이터를\s*이용한\s*수익률\s*모의실험/, '수익률 모의실험'],
-  ['midRedeem', 'brief', /중도상환가격\s*평가일/, '중도상환 가격평가일'],
+  /* 중도상환 — 표가 쪽을 걸치면 제목행이 쪽 아래로 밀린다.
+     원문을 보고 알았다(조사 36676951759). 표현은 회차마다 똑같다.
+
+       38169e (76쪽)  p.18 맨 앞(0자) 에 「중도상환가격 평가일 …」 표가 시작   → 잡힌다
+       38165e·38158   간이 구간이 2쪽 길어(p.1~23) 자리가 밀리면서
+       (81쪽)         표 제목행이 p.18 맨 아래(531자)로 넘어간다              → 220자 밖
+                      표 본문은 p.19(26자)부터 이어진다
+
+     ★ 그래서 지금 규칙을 「쪽 전체」 로 넓히면 안 된다 ★ 그러면 p.18·p.19
+     둘 다 걸려 「여러 쪽이라 비움」 이 될 뿐 채워지지 않는다. 대신 1순위가
+     아무것도 못 찾았을 때만 절 제목을 쪽 전체에서 찾는다.
+
+     전량 38회차에 재 봤다 — 그대로 36건 · 새로 채움 2건 · **잃음 0 · 쪽 바뀜 0**.
+     (81쪽이라고 다 밀리는 것은 아니다. 38138 도 81쪽인데 1순위로 p.20 에서 잡힌다.) */
+  ['midRedeem', 'brief', /중도상환가격\s*평가일/, '중도상환 가격평가일',
+    { re: /5\s*\.\s*중도상환에\s*대한\s*사항/, whole: true, why: '절 제목' }],
   ['caution', 'brief', /투자자\s*유의사항/, '투자자 유의사항'],
   ['prospectus', 'full', BOUNDARY, '투자설명서 본문 시작'],
   ['riskFactors', 'full', /Ⅲ\.\s*투자위험요소/, '투자위험요소'],
@@ -96,19 +111,38 @@ function mapPages(pages) {
   let bIdx = pages.findIndex((t) => BOUNDARY.test(t.slice(0, HEAD_CHARS)));
   if (bIdx < 0) bIdx = pages.length;          /* 못 찾으면 전부 간이 구간으로 본다 */
 
-  const found = {}, ambiguous = [], missing = [];
-  for (const [key, zone, re, what] of ANCHORS) {
+  const found = {}, ambiguous = [], missing = [], viaFallback = [];
+  for (const [key, zone, re, what, fb] of ANCHORS) {
     const from = zone === 'full' ? bIdx : 0;
     const to = zone === 'full' ? pages.length : bIdx;
-    const hits = [];
-    for (let i = from; i < to; i++) {
-      if (re.test(pages[i].slice(0, HEAD_CHARS))) hits.push(i + 1);
+    const scan = (rx, whole) => {
+      const hits = [];
+      for (let i = from; i < to; i++) {
+        if (rx.test(whole ? pages[i] : pages[i].slice(0, HEAD_CHARS))) hits.push(i + 1);
+      }
+      return hits;
+    };
+
+    const hits = scan(re, false);
+    if (hits.length === 1) { found[key] = hits[0]; continue; }
+
+    /* 대비책 — 1순위가 **아무것도 못 찾았을 때만** 쓴다.
+       여러 쪽에 걸린 경우(ambiguous)에는 쓰지 않는다. 그건 표현이 달라서가
+       아니라 문서에 그 제목이 여러 번 나온다는 뜻이고, 대비책을 덧대면
+       어느 쪽을 짚을지 더 헷갈릴 뿐이다. */
+    if (fb && hits.length === 0) {
+      const fbHits = scan(fb.re, fb.whole);
+      if (fbHits.length === 1) {
+        found[key] = fbHits[0];
+        viaFallback.push(`${what} → p.${fbHits[0]} (${fb.why})`);
+        continue;
+      }
     }
-    if (hits.length === 1) found[key] = hits[0];
-    else if (hits.length === 0) missing.push(what);
+
+    if (hits.length === 0) missing.push(what);
     else ambiguous.push(`${what} (p.${hits.join(',')})`);
   }
-  return { found, ambiguous, missing, boundary: bIdx + 1 };
+  return { found, ambiguous, missing, viaFallback, boundary: bIdx + 1 };
 }
 
 async function main() {
@@ -143,7 +177,7 @@ async function main() {
       log(`  ✗ ${p.name} (${p.code}) — ${doc.error}`);
       continue;
     }
-    const { found, ambiguous, missing, boundary } = mapPages(doc.pages);
+    const { found, ambiguous, missing, viaFallback, boundary } = mapPages(doc.pages);
     /* 못 찾은 자리가 있으면 그 문서의 앞 구간 제목을 찍어 둔다.
        세 번째로 제목을 추측하지 않기 위해서다 — 문서가 뭐라고 쓰는지 보고 고친다.
        로그가 묻히지 않게 앞의 두 건만. */
@@ -159,7 +193,9 @@ async function main() {
     ok++;
     missing.concat(ambiguous).forEach((m) => { missTally[m] = (missTally[m] || 0) + 1; });
     log(`  ✓ ${p.name}  ${doc.numPages}쪽 · 짚을 자리 ${Object.keys(found).length}/${ANCHORS.length}`
-      + (ambiguous.length ? `  · 여러 쪽이라 비움: ${ambiguous.join(' / ')}` : ''));
+      + (ambiguous.length ? `  · 여러 쪽이라 비움: ${ambiguous.join(' / ')}` : '')
+      /* 대비책으로 채운 자리는 남겨 둔다 — 1순위가 왜 못 잡았는지 나중에 볼 수 있게 */
+      + (viaFallback.length ? `  · 대비책으로 채움: ${viaFallback.join(' / ')}` : ''));
   }
   await browser.close();
 
