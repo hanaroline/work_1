@@ -12,6 +12,29 @@ from briefing_lib import (
     d, DK, DE, DD, DS, n, pct, bp, eok, jo, esc,
     L, TH, THP, perf_cells, perf_line, tbl, sparkline, bar)
 
+# 생성형 AI 고지. 2026-09-30 에 넣었다.
+#
+# **자리를 히어로 바로 밑으로 잡은 이유.** 이 판은 사내 배포를 거쳐 아티팩트
+# 링크로도 나가고, 전체본은 인쇄하면 21쪽이다. 꼬리말에만 두면 끝까지 내려간
+# 사람만 본다 — 첫 쪽만 보고 고객 응대에 쓰는 것이 이 판의 실제 쓰임이므로,
+# 그 자리에서 이미 지나가 있어야 «분명히 고지»가 된다. 히어로 다음이면 첫
+# 화면과 인쇄 1쪽에 반드시 걸리고, 그날의 결론(01절)보다는 앞이다.
+#
+# **판을 가리지 않는다.** 모닝·장마감·해외 판이 모두 같은 방식으로 만들어지므로
+# 모닝에만 달면 나머지 판이 고지 없이 나간다. 그래서 kind 를 보지 않는다.
+#
+# 문구는 **받은 그대로** 싣는다 — 줄이거나 바꾸지 않는다. 영문은 같은 뜻을
+# 옮긴 것이고, 한/영 짝 검사(recheck·sweep)가 1:1 이어야 하므로 반드시 둘 다 둔다.
+AI_NOTICE_KO = ("본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 "
+                "작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.")
+AI_NOTICE_EN = ("This material was prepared with the use of generative AI from sources "
+                "believed to be reliable; we expressly disclose that its accuracy and "
+                "completeness cannot be guaranteed.")
+AI_NOTICE = ('<div class="ai-notice">\n'
+             '  <span class="lbl">' + L("유의", "Notice") + '</span>\n'
+             '  <p>' + L(AI_NOTICE_KO, AI_NOTICE_EN) + '</p>\n'
+             '</div>')
+
 
 def _pos52(close, fw):
     lo, hi = fw.get("low"), fw.get("high")
@@ -698,7 +721,7 @@ def _hero(C):
              + "; FX as of this morning")
             + "; data collected "
             + C["D"]["generated_at_kst"][5:16] + "; compiled " + now.strftime("%H:%M") + " KST")
-        + '</p>\n</div>')
+        + '</p>\n</div>\n' + AI_NOTICE)
 
 
 def _holidays(C):

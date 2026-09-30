@@ -157,6 +157,23 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 넣었다 — 이 판은 사내 배포를 거쳐 아티팩트
+   링크로도 나가므로, 꼬리말에만 두면 21쪽을 끝까지 내려간 사람만 본다.
+   **첫 화면과 인쇄 1쪽에 반드시 걸리도록** 히어로 바로 밑에 둔다. 같은 문구가
+   꼬리말에도 한 번 더 실린다(docs/briefing-chrome/tail.html). */
+.ai-notice{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  margin:19px 0 0;padding:13px 17px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:13px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:15px;line-height:1.55;color:var(--body);max-width:62em}
+@media (max-width:768px){ .ai-notice{padding:12px 14px} .ai-notice p{font-size:14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}

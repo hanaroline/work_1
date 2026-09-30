@@ -157,6 +157,23 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 넣었다 — 이 판은 사내 배포를 거쳐 아티팩트
+   링크로도 나가므로, 꼬리말에만 두면 21쪽을 끝까지 내려간 사람만 본다.
+   **첫 화면과 인쇄 1쪽에 반드시 걸리도록** 히어로 바로 밑에 둔다. 같은 문구가
+   꼬리말에도 한 번 더 실린다(docs/briefing-chrome/tail.html). */
+.ai-notice{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  margin:19px 0 0;padding:13px 17px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:13px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:15px;line-height:1.55;color:var(--body);max-width:62em}
+@media (max-width:768px){ .ai-notice{padding:12px 14px} .ai-notice p{font-size:14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -596,7 +613,11 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
   <p class="hero-kicker"><span data-lang-ko>2026년 9월 30일(수)</span><span data-lang-en>Wednesday 30 September 2026</span> &middot; <span data-lang-ko>미래에셋증권 마포WM &middot; 모닝 마켓 브리핑</span><span data-lang-en>Mirae Asset Securities, Mapo WM &middot; Morning Market Briefing</span></p>
   <h1 class="hero-title"><span data-lang-ko>모닝 마켓 브리핑</span><span data-lang-en>Morning Market Briefing</span></h1>
   <p class="hero-lede"><span data-lang-ko>어제 코스피는 18.93포인트(<strong>0.27%</strong>) 내린 6,870.81로 거의 제자리였습니다. 그런데 <strong>내린 종목이 624개, 오른 종목이 232개</strong>였습니다 &mdash; 하루 전인 9월 28일과 <strong>정확히 뒤집힌 모양</strong>입니다(그날은 오른 종목 611개에 지수 &minus;2.70%). 지수를 받친 것은 <strong>반도체&middot;반도체장비 +1.70%</strong>와 전자장비와기기 +3.39%이고, 밀린 것은 건설 &minus;3.96%와 무역회사와판매업체 &minus;3.67%입니다. 그리고 <strong>어제는 삼성전자 배당락일이었는데 삼성전자가 0.93% 올랐습니다.</strong> 같은 날 뉴욕에서도 <strong>필라델피아 반도체지수가 1.32% 올라</strong> 세 지수가 모두 내리는 가운데 혼자 방향이 달랐습니다 &mdash; 어제의 반도체 회복은 서울만의 일이 아니었습니다.</span><span data-lang-en>Yesterday the KOSPI fell 18.93 points (<strong>0.27%</strong>) to 6,870.81 &mdash; effectively flat. Yet <strong>624 stocks fell and 232 rose</strong>, <strong>the exact inverse of 28 September</strong>, when 611 rose while the index dropped 2.70%. Holding the index up were <strong>semiconductors and semiconductor equipment at +1.70%</strong> and electronic equipment at +3.39%; construction fell 3.96% and trading companies 3.67%. And <strong>yesterday was Samsung Electronics' ex-dividend date, yet the stock rose 0.93%.</strong> In New York the same day <strong>the Philadelphia Semiconductor Index rose 1.32%</strong> while all three headline indices fell &mdash; yesterday's chip recovery was not a Seoul-only event.</span></p>
-  <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>반도체가 돌아온 날</span><span data-lang-en>The day the chips came back</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 29일(화) 마감 &middot; 환율은 오늘 아침 9월 30일 &middot; 시세 파일 09-30 07:40 수집 &middot; 작성 2026-09-30(수) 08:03 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: closes of Tuesday 29 September; FX as of this morning; data collected 09-30 07:40; compiled 08:03 KST</span></p>
+  <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>반도체가 돌아온 날</span><span data-lang-en>The day the chips came back</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 29일(화) 마감 &middot; 환율은 오늘 아침 9월 30일 &middot; 시세 파일 09-30 07:40 수집 &middot; 작성 2026-09-30(수) 09:10 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: closes of Tuesday 29 September; FX as of this morning; data collected 09-30 07:40; compiled 09:10 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1451,8 +1472,9 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
 </div><!-- /shell -->
 
 <footer class="foot">
-  <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 30일(수) 08:03 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 08:03 KST, Wednesday 30 September 2026.</span></p>
+  <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 30일(수) 09:10 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 09:10 KST, Wednesday 30 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->
