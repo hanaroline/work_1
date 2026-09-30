@@ -17,6 +17,17 @@ on:
         type: string
         default: '38165e 38158'
 
+  # 새로 만든 워크플로는 workflow_dispatch 가 API 로 바로 안 불린다(404).
+  # 등록이 늦는 것이라 기다리면 되지만, 기다리는 동안에도 조사는 돌아야 한다.
+  # 그래서 푸시로도 도는 길을 함께 둔다 — fund-probe.yml 이 같은 이유로 쓰는 방식이다.
+  # 이때는 조사 대본에 적힌 기본 회차를 본다.
+  push:
+    branches:
+      - 'claude/els-**'
+    paths:
+      - 'scripts/probe_doc_midredeem.mjs'
+      - '.github/workflows/els-doc-probe.yml'
+
 permissions:
   contents: read
 
@@ -45,4 +56,7 @@ jobs:
           NAMES: ${{ inputs.names }}
         run: |
           clean=$(printf '%s' "$NAMES" | tr -c 'A-Za-z0-9' ' ')
+          if [ -z "$(printf '%s' "$clean" | tr -d ' ')" ]; then
+            clean='38165e 38158 38169e'      # 푸시로 돌 때 — 비었던 둘과 견줄 정상 한 건
+          fi
           node scripts/probe_doc_midredeem.mjs --name $clean
