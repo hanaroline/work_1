@@ -278,6 +278,25 @@
    ※ core.quotepath=false 를 빼면 한글 이름 파일이 \353\260… 로 나와
      걸러지지 않습니다. 반도체 세미나 자료 둘이 실제로 그래서 빠졌었습니다.
 
+  ★★ 예약 4건이 main 에 없는 파일을 부릅니다 — 새 계정에서 그대로 등록하면
+     조용히 실패합니다. 3절 지시문을 쓰기 전에 반드시 보십시오.
+
+      예약                                   필요한 파일          있는 가지
+      ────────────────────────────────────────────────────────────────────
+      ELS 상품 구조 페이지 주간 갱신         docs/els-autorun.md   claude/els-product-
+      ELS 신규 회차 점검·검증 (월·수·금)     docs/els-handoff.md   structure-page-ljsucw
+      ELS 신규 회차 오후 점검 (평일 14:30)   scripts/els_check_new.mjs
+                                             scripts/els_schedule_check.mjs
+                                             scripts/install_fonts.sh
+                                             scripts/proposal_to_pdf.mjs
+      세션 산출물 자료실 자동 갱신 (월·목)   docs/session-artifacts/   claude/organize-
+                                               README.md            session-artifacts-fbg82m
+
+     예약은 main 에서 시작하므로 이 파일들이 안 보입니다. 둘 중 하나를
+     하십시오 — ① 해당 파일을 main 으로 옮기거나(권함),
+     ② 지시문에 "먼저 그 가지를 fetch 하라"는 줄을 넣으십시오.
+     ①을 택했다면 이 표와 3절 지시문을 함께 고치십시오.
+
   ★ 가지를 만지기 전에 원격의 실제 끝을 보십시오.
     로컬의 origin/… 는 fetch 하지 않으면 며칠 전 값입니다. 2026-10-01 에
     반도체 자료 가지가 사라진 것처럼 보였는데, 원격은 멀쩡했고 로컬 참조만
@@ -1570,10 +1589,20 @@ docs/briefing-playbook.md 를 처음부터 끝까지 읽고 그대로 따라줘.
 # 9. 지금 열려 있는 일
 ################################################################################
 
+  - ELS 신규 회차 점검·검증 예약 — 10/1 16:34 실행 FAILED. ★단서 있음
+    이름(월·수·금)과 크론(평일 닷새)도 어긋나 있습니다.
+    ※ 이 예약이 부르는 docs/els-autorun.md · docs/els-handoff.md ·
+      scripts/els_check_new.mjs 등 여섯 파일이 **main 에 없습니다**
+      (claude/els-product-structure-page-ljsucw 가지에만 있음 — 1-3절).
+      예약은 main 에서 시작하므로 파일을 못 찾았을 가능성이 큽니다.
+      먼저 이것부터 확인하십시오.
+  - 예약이 부르는 파일을 main 으로 옮길지 — 결정 필요. (1-3절 표)
+    옮기지 않으면 새 계정에서 ELS 예약 3건과 자료실 예약 1건이
+    등록하자마자 같은 이유로 실패합니다.
   - 아티팩트 재발행 — 어디까지 할지 결정 필요.
     (docs/HANDOVER.md 3절에 선택지 셋)
-  - ELS 신규 회차 점검·검증 예약 — 10/1 16:34 실행 FAILED. 원인 미확인.
-    이름(월·수·금)과 크론(평일 닷새)도 어긋나 있습니다.
+    ※ 계정을 옮기면 옛 아티팩트 주소는 전부 죽습니다. 이미 내보낸
+      주소는 docs/briefings/index.json 의 url 에 남아 있습니다.
   - "가정용품" 업종 자료 오류의 원천 — 미확인.
   - 금융상품 조회를 main 에 합칠지 — 미결정.
   - 금융상품 조회의 RP·랩/신탁·연금은 예시 데이터.
