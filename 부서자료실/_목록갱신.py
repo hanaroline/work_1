@@ -151,6 +151,13 @@ def collect_source(src):
                     date=date_from_name(base, datepat),
                 ))
 
+    # limit 은 날짜 내림차순으로 자른다. 브리핑처럼 쌓이기만 하는 자료를
+    # 최근 몇 판만 담을 때 쓴다. 자르고 남은 수는 호출한 쪽에서 알린다.
+    limit = src.get("limit")
+    if limit and len(out) > limit:
+        out.sort(key=lambda f: str(f["mtime"]), reverse=True)
+        out = out[:limit]
+
     return out
 
 

@@ -1,27 +1,68 @@
 {
   "_설명": [
     "부서 자료실의 분류 정의입니다. 이 파일이 있으면 '_목록갱신.py' 가 설정 모드로 돌아갑니다.",
-    "파일을 복사하지 않고 원래 자리에 둔 채 목록에만 모으므로, 자동화가 새 브리핑을",
+    "파일을 복사하지 않고 원래 자리에 둔 채 목록에만 모으므로, 자동화가 새 자료를",
     "만들면 목록 갱신만으로 바로 반영됩니다.",
     "",
     "path        : 자료실.html 기준 상대 경로",
     "include     : 포함할 파일 패턴 (예: *.html)",
     "exclude     : 그중 뺄 파일 패턴",
-    "files       : 파일을 콕 집어 넣을 때. title 로 표시 이름을 바꿀 수 있습니다",
+    "recursive   : 하위 폴더까지 훑을지",
+    "files       : 파일을 콕 집어 넣을 때. title 로 표시 이름을 바꿉니다",
     "rename      : [정규식, 치환문자열] 목록. 파일명을 읽기 좋은 제목으로 바꿉니다",
     "date_from_name : 파일명에서 날짜를 뽑아 '수정일' 로 씁니다.",
     "                 git 으로 내려받으면 파일 날짜가 전부 내려받은 시각이 되므로,",
-    "                 날짜가 이름에 있는 자료는 이 값을 쓰는 편이 정확합니다."
+    "                 날짜가 이름에 있는 자료는 이 값을 쓰는 편이 정확합니다.",
+    "limit       : 날짜 내림차순으로 잘라 최근 N 건만 담습니다.",
+    "",
+    "담지 않는 것 — 의도적입니다.",
+    "  data/        107MB. 수집 원본이라 사람이 읽을 자료가 아닙니다.",
+    "  scripts/     3MB, 152개. 제작 도구이므로 저장소에서 보십시오.",
+    "  브리핑 전판  133판 39MB. 최근 10판만 담고 나머지는 저장소에 둡니다."
   ],
 
   "categories": [
     {
-      "name": "시장 브리핑",
-      "desc": "일자별 모닝·장마감·해외 증시 브리핑 보관본",
+      "name": "운영 화면",
+      "desc": "부서에서 쓰는 단일 HTML 화면 — 열면 바로 동작합니다",
+      "sources": [
+        {
+          "path": "..",
+          "files": [
+            { "name": "mapo-wm.html", "title": "마포 WM 모바일 창구 (고객 배포용 링크 페이지)" },
+            { "name": "market-calendar.html", "title": "증시 일정 캘린더" },
+            { "name": "els-product-search.html", "title": "ELS 상품 조회" },
+            { "name": "els.html", "title": "ELS 발행 현황" },
+            { "name": "kr-top100.html", "title": "국내 100대 기업 시세" },
+            { "name": "us-top100.html", "title": "미국 100대 기업 시세" },
+            { "name": "standalone.html", "title": "종목 통합 리포트 대시보드 (단독 실행본)" },
+            { "name": "proposal.html", "title": "자산배분 제안서" },
+            { "name": "retire-payout.html", "title": "퇴직급여 수령 설계" }
+          ]
+        },
+        {
+          "path": "../docs",
+          "files": [
+            { "name": "etf-proposal.html", "title": "월배당 커버드콜 ETF 제안서" }
+          ]
+        },
+        {
+          "path": "../currency-converter",
+          "files": [
+            { "name": "index.html", "title": "환율 계산기" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "시황 브리핑",
+      "desc": "하루 두 판 자동 생성 · 최근 10판만 담았습니다 (전판 133판은 저장소 docs/briefings/)",
       "sources": [
         {
           "path": "../docs/briefings",
           "include": ["*.html"],
+          "exclude": ["*-core.html", "archive.html", "index.html"],
+          "limit": 10,
           "date_from_name": "(\\d{4}-\\d{2}-\\d{2})",
           "rename": [
             ["^(\\d{4}-\\d{2}-\\d{2})-morning$", "\\1 모닝 마켓 브리핑"],
@@ -32,35 +73,29 @@
       ]
     },
     {
-      "name": "종목 대시보드",
-      "desc": "종목코드를 넣으면 시세·투자의견·재무·뉴스를 한 장으로 보여주는 화면",
+      "name": "인계 문서",
+      "desc": "계정을 옮기거나 일을 넘길 때 읽는 문서 — 이 자료실에서 가장 먼저 보십시오",
       "sources": [
         {
           "path": "..",
           "files": [
-            {
-              "name": "standalone.html",
-              "title": "종목 통합 리포트 대시보드 (단독 실행본)"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "업무 가이드",
-      "desc": "브리핑 제작 기준과 도구 사용법",
-      "sources": [
-        {
-          "path": "../docs",
-          "files": [
-            { "name": "briefing-playbook.md", "title": "브리핑 제작 플레이북" }
+            { "name": "인계-보관본.txt", "title": "★ 보관본 — 프롬프트·지침·설정 한 벌" },
+            { "name": "CLAUDE.md", "title": "저장소 전체 작업 규칙" },
+            { "name": "HANDOFF.md", "title": "인수인계 — 증시 일정 캘린더" },
+            { "name": "PROMPTS.txt", "title": "자주 쓰는 프롬프트 — 캘린더" }
           ]
         },
         {
-          "path": "..",
+          "path": "../docs",
           "files": [
-            { "name": "README.md", "title": "종목 대시보드 사용 설명서" }
+            { "name": "HANDOVER.md", "title": "인수인계 — 시황 브리핑" },
+            { "name": "briefing-playbook.md", "title": "브리핑 작업 규칙 전문 (1,992줄)" },
+            { "name": "routine-prompts.md", "title": "예약 프롬프트 — 브리핑" }
           ]
+        },
+        {
+          "path": "../docs/handover",
+          "include": ["*.md", "*.txt"]
         },
         {
           "path": ".",
@@ -71,43 +106,22 @@
       ]
     },
     {
-      "name": "시장 데이터",
-      "desc": "자동 수집한 일자별 시세 원본 (JSON)",
+      "name": "고객 제안 자료",
+      "desc": "엑셀 산출물 — 브라우저에서 열리지 않으므로 저장소에서 내려받으십시오",
       "sources": [
         {
-          "path": "../data/market",
-          "files": [
-            { "name": "latest.json", "title": "최신 시세 수집본 (자동 갱신)" }
-          ]
-        },
-        {
-          "path": "../data/market",
-          "include": ["*.json"],
-          "exclude": ["latest.json"],
-          "date_from_name": "(\\d{4}-\\d{2}-\\d{2})",
-          "rename": [
-            ["^(\\d{4}-\\d{2}-\\d{2})$", "\\1 시세 수집본"]
-          ]
+          "path": "..",
+          "include": ["고객제안서_*.xlsx", "고객제안서_*.xlsm"]
         }
       ]
     },
     {
-      "name": "제작 소스",
-      "desc": "브리핑·대시보드를 만드는 스크립트와 원본 파일",
+      "name": "자동화 설정",
+      "desc": "수집·생성을 돌리는 GitHub Actions 워크플로 44개",
       "sources": [
         {
-          "path": "../scripts",
-          "include": ["*.py", "*.sh", "*.mjs"]
-        },
-        {
-          "path": "..",
-          "files": [
-            { "name": "index.html", "title": "대시보드 원본 (분리 파일 버전)" }
-          ]
-        },
-        {
-          "path": "../data",
-          "include": ["*.js"]
+          "path": "../.github/workflows",
+          "include": ["*.yml"]
         }
       ]
     }

@@ -23,9 +23,18 @@ DEFAULT_OUT = os.path.join(HERE, "자료실-게시본.html")
 
 # iframe 으로 렌더링할 확장자. 나머지는 원문을 그대로 보여 준다.
 FRAME_EXT = {"html", "htm"}
-# 아예 담지 않을 확장자 (브라우저에서 읽을 수 없는 형식)
-BINARY_EXT = {"pdf", "xlsx", "xls", "pptx", "ppt", "docx", "doc",
-              "hwp", "hwpx", "zip", "png", "jpg", "jpeg", "gif"}
+# 아예 담지 않을 확장자 (브라우저에서 읽을 수 없는 형식).
+# 빠뜨리면 바이너리를 텍스트로 읽어 깨진 글자가 통째로 들어간다.
+BINARY_EXT = {"pdf",
+              "xlsx", "xls", "xlsm", "xlsb", "xltx",
+              "pptx", "ppt", "potx",
+              "docx", "doc", "dotx",
+              "hwp", "hwpx",
+              "zip", "7z", "rar", "gz", "tar",
+              "png", "jpg", "jpeg", "gif", "webp", "ico", "bmp",
+              "mp4", "mp3", "wav",
+              "woff", "woff2", "ttf", "otf", "eot",
+              "pyc", "so", "dll", "exe"}
 
 
 def read_archive():
