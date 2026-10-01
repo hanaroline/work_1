@@ -73,6 +73,20 @@ MIN_POINTS = 24           # 두 해는 있어야 변동성이라 부를 만하�
 STEP_K = 8                # 평소 폭의 몇 배부터 계단으로 보는가
 STEP_FLOOR = 1.15         # 절대 바닥 — 이보다 작은 점프는 계단으로 보지 않는다
 
+# 결산 재산정 — 작아서 위의 바닥(15%)에 안 걸리는 계단.
+#
+# MMF·단기채는 해마다 결산하며 분배하고 **기준가를 1000 으로 되돌린다.**
+# 그 폭이 3% 안팎이라 15% 바닥에 안 걸렸고, 그래서 한 해 쌓인 수익이 해마다
+# 지워져 MMF 가 「연 0% · 변동성 3.2%」로 찍혔다. 둘 다 틀린 수다.
+#
+# 시장 하락과 가르는 표는 **되돌아간 자리**다. 결산은 1000 배수로 되돌리므로
+# 떨어진 뒤 값이 1000 배수 바로 **위**에 붙는다. 실제로 이 규칙에 걸린 415
+# 개가 전부 배수에서 +0.5% 안(중앙값 +0.14%)이었다 — 시장 하락이면 아래위로
+# 흩어진다. 그래서 바닥을 낮추는 대신 이 자리 조건을 함께 건다.
+RESET_MIN = 0.01          # 1% 아래 움직임은 결산으로 보지 않는다
+RESET_BASE = 1000.0       # 기준가를 되돌리는 자리
+RESET_TOL = 0.005         # 되돌아간 자리가 배수에서 벗어나도 되는 폭
+
 
 def _get(url, tries=3, timeout=30):
     last = None
@@ -142,6 +156,46 @@ def find_steps(vals):
     return out
 
 
+def find_reset_steps(vals):
+    """결산 재산정 계단(1000 으로 되돌리는 작은 계단)의 자리와 배율.
+
+    `find_steps` 와 같은 「평소 폭의 8 배」를 쓰되 절대 바닥을 1%로 낮추고,
+    대신 **되돌아간 자리가 1000 배수 바로 위**라는 조건을 건다. 바닥만
+    낮추면 진짜 하락까지 지우게 되므로 자리 조건이 그 몫을 대신한다.
+    """
+    if len(vals) < 5:
+        return []
+    lr = [math.log(vals[i] / vals[i - 1]) for i in range(1, len(vals))]
+    med = median(lr) or 0.0
+    sigma = (median([abs(x - med) for x in lr]) or 0.0) * 1.4826
+    out = []
+    for i, x in enumerate(lr):
+        if x >= 0:
+            continue                       # (가) 결산은 떨어진다
+        dev = abs(x - med)
+        if dev < RESET_MIN:
+            continue                       # (나) 1% 바닥
+        if sigma > 0 and dev <= STEP_K * sigma:
+            continue                       # (다) 평소 폭의 8 배
+        v = vals[i + 1]
+        base = round(v / RESET_BASE) * RESET_BASE
+        if base <= 0 or not 0 <= v - base <= RESET_TOL * base:
+            continue                       # (라) 1000 배수 바로 위에 붙는가
+        out.append((i + 1, v / vals[i]))
+    return out
+
+
+def all_steps(vals):
+    """두 규칙을 합쳐 자리 순으로. 같은 자리가 겹치면 하나만 남긴다."""
+    seen, out = set(), []
+    for i, ratio in find_steps(vals) + find_reset_steps(vals):
+        if i in seen:
+            continue
+        seen.add(i)
+        out.append((i, ratio))
+    return sorted(out)
+
+
 def splice(vals, steps):
     """계단에서 앞뒤를 **이어 붙인다**.
 
@@ -192,8 +246,12 @@ def save(items):
         "source": "네이버 Npay 증권 (base-price/chart, term=5y, 달 간격)",
         "표본간격": "달",
         "계단보정": ("기준가 재산정·결산 계단을 찾아 앞뒤를 이어 붙였습니다"
-                     "(그 펀드 자신의 평소 폭 %d 배, 절대 바닥 %.2f 배)."
-                     % (STEP_K, STEP_FLOOR)),
+                     "(그 펀드 자신의 평소 폭 %d 배, 절대 바닥 %.2f 배). "
+                     "MMF·단기채가 해마다 %d 으로 되돌리는 작은 계단은 "
+                     "되돌아간 자리가 %d 배수 바로 위(+%.1f%% 안)인지로 "
+                     "가려 따로 이어 붙였습니다."
+                     % (STEP_K, STEP_FLOOR, int(RESET_BASE), int(RESET_BASE),
+                        RESET_TOL * 100)),
         "count": len(items),
         "items": items,
     }
@@ -236,7 +294,7 @@ def main():
 
         days = [d for d, _ in rows]
         vals = [v for _, v in rows]
-        steps = find_steps(vals)
+        steps = all_steps(vals)
         fixed = splice(vals, steps)
         if steps:
             stepped += 1
