@@ -50,9 +50,21 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAGE = os.path.join(ROOT, "us-top100.html")
 RANKING = os.path.join(ROOT, "data", "us100", "ranking.json")
 
-TARGET = 100            # 목록은 언제나 정확히 100개
-ADD_RANK_MAX = 100      # 편입 후보는 지금 시총 100위 안에 있어야 한다
-DROP_RANK_MIN = 130     # 제외 후보는 130위 밖으로 밀려나 있어야 한다(순위가 오가는 구간은 건드리지 않는다)
+# **이 셋은 check_us100_ranking.py 에서 끌어온다 — 손으로 적지 않는다.**
+#
+# 2026-10-01 에 목록을 100 → 200 종으로 넓히면서 그쪽 TOP 만 고치고 여기를
+# 두었더니, 이 도구의 validate 가 「목록이 200개다 — 100개여야 한다」로 바로
+# 걸렸다. 더 나쁜 것은 apply 쪽이다 — 그대로 돌리면 **목록을 100개로 되돌리려
+# 들어 100 종을 빼낸다.** 같은 수를 두 파일에 적어 두면 한쪽만 고쳐진다.
+#
+# 편입/제외 문턱도 TOP 에 따라 움직여야 한다. TOP 만 올리고 ADD_RANK_MAX 를
+# 100 으로 두면 101~200 위가 **들어오자마자 전부 「밀린 종목」으로** 잡힌다.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import check_us100_ranking as _rank                        # noqa: E402
+
+TARGET = _rank.TOP              # 목록은 언제나 정확히 이 수
+ADD_RANK_MAX = _rank.TOP        # 편입 후보는 지금 시총 이 순위 안에 있어야 한다
+DROP_RANK_MIN = _rank.DROP_RANK # 제외 후보는 이 순위 밖으로 밀려나 있어야 한다
 MAX_SWAPS = 3           # 한 번에 세 종목까지 — 화면이 주마다 낯설어지지 않게
 PROTECTED = {"TSM", "ASML"}   # 사용자가 명시적으로 담아 달라고 한 종목은 순위와 무관하게 둔다
 CHART = "https://query1.finance.yahoo.com/v8/finance/chart/%s?range=1mo&interval=1d"

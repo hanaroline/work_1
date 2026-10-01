@@ -231,7 +231,49 @@ def companies_from_page():
         out.append({"sym": sym, "en": en1 or en2, "ko": ko, "sector": sector})
     if len(out) < 50:
         raise SystemExit("COMPANIES 파싱 결과가 %d개다 — 정규식을 확인해야 한다" % len(out))
+
+    # **적어 둔 줄 수와 읽어 낸 수가 같아야 한다.**
+    #
+    # 「50 개보다 적으면 멈춘다」만으로는 모자랐다. 목록을 100 → 200 으로 넓힐 때
+    # `Moody's`·`O'Reilly` 두 줄이 **말없이 빠졌다** — 위 정규식의 '([^']*)' 가
+    # 아포스트로피를 못 넘기기 때문이다. 198 종은 50 보다 크니 아무 표도 나지 않고,
+    # 두 종목은 수집·백테스트·화면 어디에도 없이 조용히 사라진다.
+    #
+    # 세는 쪽은 정규식이 아니라 **줄머리**다. 같은 정규식으로 세면 같이 틀린다.
+    # (영문명에 아포스트로피가 있으면 큰따옴표로 적으면 된다 — 위 패턴이 받는다.)
+    declared = len(re.findall(r"^\s*\[\s*['\"]", m.group(1), re.M))
+    if declared != len(out):
+        lost = declared - len(out)
+        raise SystemExit(
+            "COMPANIES 에 %d 줄이 적혀 있는데 %d 개만 읽혔다 — %d 줄이 조용히 빠졌다.\n"
+            "  영문명·한글명에 작은따옴표(')가 들어 있지 않은지 보십시오. "
+            "그런 줄은 영문명을 큰따옴표로 적습니다: ['MCO',\"Moody's\",'무디스','fin']"
+            % (declared, len(out), lost))
     return out
+
+
+def watchlist_from_page(page=None):
+    """화면 파일의 WATCHLIST — **시가총액 순위와 무관하게 자리를 지키는** 종목.
+
+    왜 이것이 따로 있나
+      우주는 「시총 상위 100」이라는 **규칙 하나로** 뽑은 것이다. 보고 싶은 종목을
+      한둘 끼워 넣으면 그 규칙이 깨지고, 「이 목록이 무엇인가」를 더는 한 줄로
+      말할 수 없게 된다. 그렇다고 우주 밖 종목을 못 보는 것도 아쉽다.
+
+      그래서 규칙을 바꾼다 — **「시총 상위 100」 + 「따로 지정한 관심종목」**.
+      두 묶음은 같은 COMPANIES 배열에 살아서 수집·백테스트·화면이 똑같이 읽되,
+      여기 적힌 것은 주 1회 도는 순위 교체(update_kr100_list.py)가 **건드리지
+      않는다.** 적어 두지 않으면 어떻게 되는지는 분명하다 — 관심종목은 시총
+      100위 밖이므로 교체기가 「밀린 종목」으로 보고 **가장 먼저 빼낸다.**
+
+    모양은 심볼 문자열의 평평한 배열이다. 배열이 없으면 빈 집합을 돌려준다
+      var WATCHLIST = ['036540.KQ'];
+    """
+    src = open(page or PAGE, encoding="utf-8").read()
+    m = re.search(r"var WATCHLIST = \[(.*?)\];", src, re.S)
+    if not m:
+        return set()
+    return set(re.findall(r"'([^']+)'", m.group(1)))
 
 
 # ---------------------------------------------------------------- 차트
