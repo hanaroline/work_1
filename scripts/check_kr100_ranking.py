@@ -176,6 +176,10 @@ def main():
     companies = F.companies_from_page()
     have = [c["sym"] for c in companies]
     ko = {c["sym"]: c["ko"] for c in companies}
+    # 관심종목은 시총 순위로 들어온 것이 아니므로 순위 판정에서 뺀다. 그냥 두면
+    # 100위 밖이라 늘 「밀린 종목」으로 잡히고, 그 결과를 읽는 교체기가 빼낸다.
+    keep = F.watchlist_from_page()
+    ranked_have = [s for s in have if s not in keep]
 
     F.init_crumb(rounds=2)
     try:
@@ -204,9 +208,11 @@ def main():
            for s in top if s not in have]
     drop = sorted(
         [{"sym": s, "ko": ko.get(s, s), "cap": universe[s]["cap"], "rank": rank[s]}
-         for s in have if s in rank and rank[s] > DROP_RANK],
+         for s in ranked_have if s in rank and rank[s] > DROP_RANK],
         key=lambda r: r["rank"])
-    unknown = [s for s in have if s not in rank]
+    unknown = [s for s in ranked_have if s not in rank]
+    watch = [{"sym": s, "ko": ko.get(s, s), "cap": (universe.get(s) or {}).get("cap"),
+              "rank": rank.get(s)} for s in have if s in keep]
 
     out = {
         "builtAt": datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
@@ -214,6 +220,7 @@ def main():
         "source": "screener", "universe": len(universe), "krTotal": total,
         "top": TOP, "dropRank": DROP_RANK,
         "add": add, "drop": drop, "unknown": unknown, "deduped": [],
+        "watchlist": watch,
         "ourRanks": {s: rank.get(s) for s in have},
         "top100": top,
         "note": ("유니버스 = 야후 스크리너(region=kr) 시총 상위 + 이 화면의 목록. "
@@ -246,6 +253,13 @@ def main():
         lines.append("")
         lines.append("시총을 확인하지 못한 종목(상장폐지·합병·코드 변경일 수 있습니다): "
                      + ", ".join("`%s`" % s.split(".")[0] for s in unknown))
+    if watch:
+        lines.append("")
+        lines.append("**관심종목 %d개 — 순위와 무관하게 자리를 지킵니다**" % len(watch))
+        for r in watch:
+            lines.append("- `%s` %s — %s · 현재 %s"
+                         % (r["sym"].split(".")[0], r["ko"], won(r["cap"]) or "시총 미확인",
+                            ("%d위" % r["rank"]) if r["rank"] else "순위 미확인"))
 
     if not add and not drop and not unknown:
         msg = "대상 목록이 지금 시가총액 상위 %d 과 일치한다(유니버스 %d)." % (TOP, len(universe))

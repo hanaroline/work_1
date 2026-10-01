@@ -76,6 +76,23 @@ jobs:
         # 세운 규칙이라 같은 잣대를 여기에도 건다.
         run: python3 scripts/fetch_us_bars_long.py --selftest
 
+      - name: 종목 이름표를 빠짐없이 읽는가 (망 없이)
+        # 이름표가 빠져도 **아무 데서도 터지지 않는다** — 신호는 그대로 나오고
+        # 화면에만 티커가 한글명 대신 찍힌다. 영문명을 큰따옴표로 적은 네 줄
+        # (Lowe's·McDonald's·Moody's·O'Reilly)이 실제로 그렇게 빠져 있었다.
+        run: python3 scripts/build_signals.py --selftest
+
+      - name: 관심종목이 주간 교체기에 버티는가 (망 없이)
+        # 관심종목은 정의상 시총 100위 밖이라, 교체기가 보기에는 「밀린 종목」과
+        # 생김새가 똑같다. 보호막이 빠지면 넣은 다음 주에 **조용히** 사라진다 —
+        # 오류도 안 나고 100개라는 수도 맞으므로 어느 점검에도 걸리지 않는다.
+        run: python3 scripts/update_kr100_list.py --selftest
+
+      - name: 국내 목록의 앞뒤가 맞는가 (망 없이)
+        # COMPANIES · KEYWORDS · PROFILE_KO · 기본 비교 조합이 서로 가리키는 것이
+        # 같은지 본다. 종목을 손으로 더할 때 키워드·개요를 빠뜨리기 쉽다.
+        run: python3 scripts/update_kr100_list.py --check
+
       - name: 워크플로 YAML 이 읽히는가
         run: |
           python3 -m pip install --quiet pyyaml
