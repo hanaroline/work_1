@@ -39,6 +39,17 @@ GitHub 연결:
   모닝과 장마감은 **서로 다른 고정 창**에 붙입니다. 한 창에 몰면 맥락이 뒤섞이고,
   실행이 실패해도 보이지 않습니다(8/20 에 그래서 산출물이 조용히 사라졌습니다).
 
+[0-2] 그 밖의 갈래
+-------------------------------------------------------------------------------
+  docs/handover/00-저장소-전체-인계.md       전체 지도 (리포트·100대기업·
+                                             매매타이밍·마포WM 링크페이지 등)
+  docs/handover/자료검증-체크리스트.md       고객용 PPT·문서 검증 ([10] 참고)
+  docs/claude-handoff/ACCOUNT-SETUP.md       새 계정 설정 복원 체크리스트
+
+  ※ 인계 문서가 세 벌(뿌리 · docs/handover/ · docs/claude-handoff/) 있습니다.
+    겹치지만 어긋나지 않습니다. CLAUDE.md 의 표를 따르면 됩니다.
+
+
 [1] 증시 일정 캘린더 — 자주 쓰는 말
 -------------------------------------------------------------------------------
 지금 바로 다시 수집해 줘.
@@ -202,6 +213,64 @@ cron 은 UTC 로만 읽힙니다. KST = UTC+9, 서머타임 없음.
 한국어로, 무엇을 왜 고쳤는지와 어떻게 확인했는지를 적습니다.
 제목은 한 줄로 동사를 끝에 둡니다 — "가드가 자기가 만든 빈 판을 «돌았다»로 세던 것을 고친다"
 본문에는 관측한 사실(시각·건수·로그)을 그대로 넣습니다. 기존 커밋들이 본보기입니다.
+
+
+[10] 고객용 자료 검증 (PPT·문서)   — 전문: docs/handover/자료검증-체크리스트.md
+-------------------------------------------------------------------------------
+자주 쓰는 말:
+  이 자료 검증해 줘.
+    -> 네 층으로 봅니다. ① 수치를 1차 출처와 대조 ② 계산식 전수 검산
+       ③ 자료가 스스로와 어긋나는지 ④ 파일이 실제로 열리는지(스키마).
+       ①~③ 만 하면 반드시 샙니다 — ④ 를 빼먹어 25쪽이 백지로 나간 적이 있습니다.
+
+★ Office 파일은 공식 XSD 로 직접 검증하십시오.
+  스킬의 validate.py 는 차트 파트를 스키마로 보지 않습니다 (PASSED 로 나옵니다).
+  LibreOffice 는 잘못된 값을 무시하고 그립니다 (정상으로 보입니다).
+  둘 다 통과한 파일이 PowerPoint 에서 백지로 떴습니다.
+
+  pip install lxml python-pptx        # 둘 다 기본 설치가 아닙니다
+
+  python3 - <<'PY'
+  import glob, zipfile
+  from lxml import etree
+  # ★ 스킬 경로는 세션마다 다릅니다. 하드코딩하지 말고 찾으십시오.
+  xsd = (glob.glob('/mnt/skills/**/dml-chart.xsd', recursive=True) +
+         glob.glob('/root/.claude/skills/**/dml-chart.xsd', recursive=True))[0]
+  schema = etree.XMLSchema(etree.parse(xsd))
+  z = zipfile.ZipFile('deck.pptx')
+  for n in [x for x in z.namelist() if '/charts/chart' in x and x.endswith('.xml')]:
+      doc = etree.fromstring(z.read(n))
+      ok = schema.validate(doc.getroottree())
+      print(n, 'VALID' if ok else 'INVALID')
+      if not ok:
+          for e in schema.error_log: print('   ', e.message[:160])
+          schema._clear_error_log()
+  PY
+
+이 환경에 없어서 깔아야 하는 것 (세션은 매번 빈 상태로 시작합니다):
+  apt-get update                                         # 안 하면 404
+  apt-get install -y libreoffice-impress poppler-utils   # Impress 가 기본으로 없음
+  apt-get install -y fonts-nanum fonts-noto-cjk          # 없으면 한글이 깨짐
+  pip install lxml python-pptx 'markitdown[pptx]'        # 셋 다 기본으로 없음
+
+  soffice 는 그냥 부르면 멈춥니다. 래퍼를 찾아서 절대경로를 주십시오:
+  SOFFICE=$(find /mnt/skills /root/.claude/skills -name soffice.py 2>/dev/null | head -1)
+  python3 "$SOFFICE" --headless --convert-to pdf --outdir "$PWD" "$PWD/deck.pptx"
+
+★ 스킬 경로를 하드코딩하지 마십시오. 2026-10-01 하루 사이에
+  /root/.claude/skills/pptx/... -> /mnt/skills/public/pptx/... 로 옮겨졌습니다.
+
+★ 컨테이너는 휘발합니다. 세션이 재개되자 스크래치패드의 작업 파일과
+  /root/.claude/uploads/ 의 사용자 업로드 원본까지 전부 사라졌습니다.
+  전달만 하고 저장소에 커밋하지 않은 산출물은 다시 만들 수 없습니다.
+  완성했으면 전달과 함께 저장소에 커밋하십시오.
+
+고칠 때:
+  - 원문 교체는 "기존 문구가 정확히 일치할 때만" 단언(assert)을 걸고 합니다.
+  - 서식을 지키려면 text_frame.text 가 아니라 run.text 에 넣습니다.
+  - 문장을 늘리면 글상자를 넘칩니다. 폭·줄수를 재서 기존 줄 수를 유지하십시오.
+  - python-pptx 로 다시 저장하면 작아집니다(무압축 원본 1.2MB -> 180KB).
+    손실이 아닙니다. 파트 수와 임베드 파일 해시로 확인하십시오.
 
 
 [9] 주요 주소

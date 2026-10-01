@@ -3,11 +3,19 @@
 새 세션이 가장 먼저 읽는 파일입니다. 자세한 맥락은 **[HANDOFF.md](HANDOFF.md)**, 자주 쓰는
 프롬프트와 설정은 **[PROMPTS.txt](PROMPTS.txt)** 에 있습니다.
 
-**일거리가 둘입니다.** 위 두 문서는 **증시 일정 캘린더** 쪽이고, **시황 브리핑**
-파이프라인은 문서가 따로 있습니다 — 맥락은 **[docs/HANDOVER.md](docs/HANDOVER.md)**,
-예약 프롬프트와 설정은 **[docs/routine-prompts.md](docs/routine-prompts.md)**,
-작업 규칙 전체는 **[docs/briefing-playbook.md](docs/briefing-playbook.md)**(1,992줄)
-입니다. 브리핑 일을 맡았다면 playbook 을 **처음부터 끝까지** 읽고 시작하십시오.
+**일거리가 여럿입니다.** 위 두 문서는 **증시 일정 캘린더** 쪽입니다. 맡은 일에 따라
+아래를 더 읽으십시오.
+
+| 맡은 일 | 읽을 것 |
+|---|---|
+| 증시 일정 캘린더 | `HANDOFF.md` · `PROMPTS.txt` (위 두 문서) |
+| **시황 브리핑** | **[docs/briefing-playbook.md](docs/briefing-playbook.md)**(1,992줄)을 **처음부터 끝까지** · [docs/HANDOVER.md](docs/HANDOVER.md) · [docs/routine-prompts.md](docs/routine-prompts.md) |
+| 그 밖의 갈래(리포트·100대기업·매매타이밍 등) | [docs/handover/00-저장소-전체-인계.md](docs/handover/00-저장소-전체-인계.md) — 전체 지도 |
+| 고객용 PPT·문서 검증 | [docs/handover/자료검증-체크리스트.md](docs/handover/자료검증-체크리스트.md) |
+| 새 Claude 계정으로 이전 | `HANDOFF.md` §1 · [docs/claude-handoff/](docs/claude-handoff/) · `인계-보관본.txt`(저장소 밖에서 쓰는 사본) |
+
+> 인계 문서가 **세 벌**(뿌리 · `docs/handover/` · `docs/claude-handoff/`) 있습니다.
+> 서로 다른 세션이 각자 적은 것이라 겹치지만 어긋나지는 않습니다. 위 표만 따르면 됩니다.
 
 ## 무엇을 하는 저장소인가
 
@@ -45,6 +53,11 @@
 만든 것을 **실제로 돌려 보고** 결과를 보고합니다. 화면은 크로미움으로 열어 보고, 수집기는
 한 번 돌려 보고, 워크플로는 `bash -n` 과 YAML 파싱으로 확인합니다. 시험이 깨지면 깨졌다고
 그대로 적습니다.
+
+**고객에게 나갈 Office 파일(pptx·docx·xlsx)은 공식 XSD 로 따로 검증합니다.** 스킬의
+`validate.py` 는 차트 파트를 스키마로 보지 않고, LibreOffice 는 잘못된 값을 무시하고
+그려 버립니다 — 둘 다 통과한 파일이 PowerPoint 에서 백지로 뜬 적이 있습니다.
+방법과 사례는 [docs/handover/자료검증-체크리스트.md](docs/handover/자료검증-체크리스트.md) 4절에 있습니다.
 
 ## 데이터가 큰 파일은 데이터 브랜치로
 

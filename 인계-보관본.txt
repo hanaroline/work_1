@@ -2,10 +2,22 @@
  미래에셋증권 마포WM — Claude 작업 보관본
  프롬프트 · 프로젝트 지침 · 시스템 설정
 ================================================================================
- 작성 2026-10-01
+ 작성 2026-10-01 · 최신치 갱신 2026-10-01 21:00 KST
  저장소 hanaroline/work_1
  용도 : Claude 유료 계정을 옮길 때, 저장소 밖에서도 그대로 쓸 수 있는 사본.
         이 파일 하나만 있으면 새 계정에서 처음부터 다시 세울 수 있습니다.
+================================================================================
+
+ [이번 갱신에서 바뀐 것]
+   - 캘린더 538건 -> 638건 (official 294 -> 394), 기준 20:57 KST, 검사 통과
+   - 브리핑 131판 -> 132판 (발행본 81 + core 51), 세는 법을 함께 적음
+   - 스크립트 152개 -> 153개
+   - 1절 : 인계 문서가 세 벌이라 읽는 순서를 정해 둠
+   - 11절 신설 : 고객용 자료 검증 절차 (PPT/문서 수치 검증 + 파일 무결성)
+   - ★ 11절에 이번에 새로 안 두 가지를 적음
+       (1) 스킬 경로가 세션마다 바뀐다 — 하드코딩 금지
+       (2) 컨테이너가 휘발한다 — 업로드 원본과 스크래치패드까지 사라진다.
+           전달만 하고 커밋하지 않은 산출물은 다시 만들 수 없다.
 ================================================================================
 
 
@@ -18,7 +30,7 @@
 [ 넘어오는 것 ] — GitHub 저장소 hanaroline/work_1 을 새 계정에 연동하면 그대로
   - 완성 화면·산출물 전부 (루트 *.html, docs/, 고객제안서_*.xlsx)
   - 작업 규칙·지침 (docs/briefing-playbook.md 1,992줄, README.md 252KB)
-  - 스크립트 152개 (scripts/)
+  - 스크립트 153개 (scripts/)
   - 자동 수집 워크플로 44개 (.github/workflows/)
   - 수집된 자료와 그 이력 (data/) — 과거 어느 시각 스냅샷도 git 이력에서 꺼냄
   - 세션 시작 준비 (.claude/settings.json, .claude/hooks/session-start.sh)
@@ -63,7 +75,8 @@
 [ main 에 든 일 ]
 
    #  갈래                              산출물
-   1  시황 브리핑 (하루 두 판, 예약)     docs/briefings/ 131판          ★운영
+   1  시황 브리핑 (하루 두 판, 예약)     docs/briefings/ 132판          ★운영
+                                        (발행본 81 + core 51)
    2  증권사 리포트 다이제스트 (예약)     docs/reports/                  ★운영
    3  종목 통합 리포트 대시보드          index.html, standalone.html
    4  ELS 상품 조회                      els.html, els-product-search.html
@@ -83,7 +96,21 @@
 
 [ 저장소 안의 인계 문서 ]
 
-  docs/handover/00-저장소-전체-인계.md       전체 지도 (여기부터)
+  ※ 인계 문서가 세 벌 있습니다. 서로 다른 세션이 각자 적어 둔 것이라 겹칩니다.
+    모두 2026-10-01 작성이고 내용은 어긋나지 않습니다. 읽는 순서만 정해 두십시오.
+
+    (가) 뿌리   CLAUDE.md -> HANDOFF.md -> PROMPTS.txt   ← 새 세션이 먼저 읽는 길
+    (나) 전체   docs/handover/00-저장소-전체-인계.md     ← 갈래가 많을 때의 지도
+    (다) 계정   docs/claude-handoff/                     ← 계정 복원 절차 중심
+
+    맨 처음이면 (가) 로 충분합니다. CLAUDE.md 가 나머지로 안내합니다.
+
+  CLAUDE.md                                  저장소 전체 규칙 (가장 먼저)
+  HANDOFF.md                                 증시 일정 캘린더 + 계정 이전 요약
+  PROMPTS.txt                                자주 쓰는 말 · 설정 · 주소
+  docs/handover/00-저장소-전체-인계.md       전체 지도
+  docs/claude-handoff/ACCOUNT-SETUP.md       계정 설정 복원 체크리스트
+  docs/claude-handoff/ROUTINES.md            예약 프롬프트 (계정 복원용)
 
   [시황 브리핑]
   docs/HANDOVER.md                           상세
@@ -104,6 +131,13 @@
   docs/handover/국내100대기업-대시보드-인계.md
   docs/handover/국내100대기업-프롬프트와설정.txt
   docs/handover/미국100대기업-대시보드-인계.md
+
+  [증시 일정 캘린더]
+  HANDOFF.md                                 맥락 · 결정 · 함정 (뿌리에 있습니다)
+  PROMPTS.txt                                명령 · FRED 키 · 막힌 주소
+
+  [고객용 자료 검증]
+  docs/handover/자료검증-체크리스트.md       PPT·문서 수치 검증과 파일 무결성
 
   [그 밖의 갈래]
   README.md (252KB) 해당 절이 사실상의 지침입니다.
@@ -788,6 +822,116 @@ docs/briefing-playbook.md 를 처음부터 끝까지 읽고 그대로 따라줘.
     EGRESS_BLOCKED. 배포된 내 페이지조차 직접 못 엽니다 — 링크가 실제로
     동작하는지는 사용자가 눌러 봐야 압니다.
   - PDF 읽기: pdftoppm 없음, pypdf 는 _cffi_backend 오류 → pypdfium2 를 씁니다.
+
+################################################################################
+# 11. 고객용 자료 검증 — PPT·문서의 수치와 파일 무결성
+################################################################################
+
+ 2026-10-01 세션에서 30쪽짜리 투자 교육 PPT(「투자자가 반드시 봐야 할 지표와
+ 차트」, 마포WM, 2026-08)를 검증하며 세운 절차입니다. 전문은
+ docs/handover/자료검증-체크리스트.md 에 있습니다. 여기에는 요점만 둡니다.
+
+[ 검증은 네 층으로 합니다 — 한 층만 하면 반드시 샙니다 ]
+
+  1층 수치     인쇄될 숫자를 전부 뽑아 공개 1차 출처와 대조한다.
+               2차 보도를 1차 출처로 삼지 않는다.
+  2층 계산     자료 안의 모든 계산식을 손으로 다시 푼다.
+               (이번에 정당화 PER 12칸·환율 4시나리오 전수 검산 — 전부 맞았음)
+  3층 정합성   자료가 스스로와 어긋나지 않는가.
+               ★ 가장 많이 나오는 결함이 여기입니다. 규칙을 적어 놓고
+                 바로 옆에 그 규칙의 반례를 근거 없이 둔 경우.
+  4층 파일     열리기는 하는가. ★ 아래가 이번의 가장 큰 수확입니다.
+
+[ ★ 파일 무결성 — 스킬의 validate.py 를 믿지 마십시오 ]
+
+  이번 PPT 는 30쪽 중 25쪽이 사용자 PowerPoint 에서 백지로 떴습니다.
+  원인을 찾는 데 네 가지를 거쳤는데, 앞의 셋이 전부 "이상 없음"이라고
+  답했습니다.
+
+   - pptx 스킬의 validate.py        -> All validations PASSED  (차트를 XSD 로
+                                       검사하지 않습니다)
+   - LibreOffice 렌더링              -> 정상 출력 (잘못된 값을 무시하고 그림)
+   - python-pptx 파싱                -> 정상
+   - 공식 XSD 직접 검증              -> 6개 차트 전부 INVALID   ← 여기서 잡힘
+
+  그러므로 Office 파일을 넘기기 전에 **공식 스키마로 직접 검증**하십시오.
+
+    pip install lxml python-pptx       # 둘 다 기본 설치가 아닙니다
+
+    python3 - <<'PY'
+    import glob, zipfile
+    from lxml import etree
+    # ★ 스킬 경로는 세션마다 다릅니다. 하드코딩하지 말고 찾으십시오.
+    xsd = (glob.glob('/mnt/skills/**/dml-chart.xsd', recursive=True) +
+           glob.glob('/root/.claude/skills/**/dml-chart.xsd', recursive=True))[0]
+    schema = etree.XMLSchema(etree.parse(xsd))
+    z = zipfile.ZipFile('deck.pptx')
+    for n in [x for x in z.namelist() if '/charts/chart' in x and x.endswith('.xml')]:
+        doc = etree.fromstring(z.read(n))
+        ok = schema.validate(doc.getroottree())
+        print(n, 'VALID' if ok else 'INVALID')
+        if not ok:
+            for e in schema.error_log: print('   ', e.message[:160])
+            schema._clear_error_log()
+    PY
+
+  이번에 나온 결함 (생성 도구가 만든 것, 전부 원본에 있던 것):
+   - c:lineChart 에 필수 c:grouping 누락          (p.6·7·24·25)
+   - 선언되지 않은 3번째 c:axId                   (차트 6개 전부, 최대 2개)
+   - 선 계열에 막대 전용 c:invertIfNegative       (선 차트 4개)
+   - c:marker 와 c:dLbls 의 순서 역전             (선 차트 계열)
+   - prstDash val="solid,dash,dash"               (p.25 만) ← 25쪽 백지의 직접 원인
+     계열별 선 스타일 목록을 계열마다 인덱싱하지 않고 통째로 써 버린 것.
+     prstDash 는 단일 열거값만 받습니다.
+
+  교훈 한 줄 : **LibreOffice 가 그려 준다고 PowerPoint 가 연다는 뜻이 아닙니다.**
+  LibreOffice 는 관대하고 PowerPoint 는 엄격합니다. 고객에게 나갈 파일은
+  반드시 스키마로 검증하십시오. 그리고 "열어 보니 안 나온다"는 사용자 제보가
+  가장 빠른 탐지기였습니다 — 자동 검사만 믿지 마십시오.
+
+[ 이 환경에서 — 세션은 매번 빈 상태로 시작합니다 ]
+
+  - 전부 기본 설치가 아닙니다. 필요할 때 깔아 쓰십시오.
+      apt-get update                                        (안 하면 404)
+      apt-get install -y libreoffice-impress poppler-utils  (Impress 없음)
+      apt-get install -y fonts-nanum fonts-noto-cjk         (한글이 깨짐)
+      pip install lxml python-pptx 'markitdown[pptx]'
+  - soffice 는 그냥 부르면 멈춥니다. 래퍼를 찾아 절대경로를 주십시오.
+      SOFFICE=$(find /mnt/skills /root/.claude/skills -name soffice.py | head -1)
+
+  ★ 스킬 경로를 하드코딩하지 마십시오.
+    2026-10-01 하루 사이에 /root/.claude/skills/pptx/... 에서
+    /mnt/skills/public/pptx/... 로 옮겨졌습니다. 같은 대화 안에서도 바뀝니다.
+
+  ★ 컨테이너는 휘발합니다 — 이 보관본이 존재하는 이유입니다.
+    세션이 재개되자 다음이 전부 사라졌습니다:
+      - 스크래치패드의 작업 파일 (원본 deck · 수정본 v1~v3 · 렌더 이미지)
+      - /root/.claude/uploads/ 의 사용자가 올린 원본 파일
+      - pip·apt 로 깔아 둔 것 전부
+    그래서 전달만 하고 저장소에 커밋하지 않은 산출물은 다시 만들 수 없습니다.
+    채팅에 첨부한 파일은 사용자가 내려받아 둔 사본만 남습니다.
+
+    규칙 — 고객에게 나갈 자료를 완성했으면 전달과 **함께** 저장소에
+    커밋하십시오. 큰 파일이면 데이터 브랜치 방식(6절)을 쓰십시오.
+
+[ 수정할 때 ]
+
+  - 원문 교체는 "기존 문구가 정확히 일치할 때만" 바꾸도록 단언(assert)을 걸고
+    하십시오. 문단 번호로만 찾으면 엉뚱한 곳을 고칩니다.
+  - 서식을 지키려면 text_frame.text 가 아니라 run.text 에 넣습니다.
+  - 문장을 늘리면 글상자를 넘칩니다. 폰트 메트릭으로 폭·줄수를 재서
+    기존 줄 수를 유지하도록 길이를 맞추십시오.
+  - python-pptx 로 다시 저장하면 파일이 작아집니다(원본이 무압축이면 1.2MB
+    -> 180KB). 내용 손실이 아닙니다. 파트 수·임베드 파일 해시로 확인하십시오.
+
+[ 사용자 지시를 좁게 지킨다 ]
+
+  이번에 사용자가 "①②③은 고치지 말고 나머지만"이라고 했습니다. 그 셋은
+  틀린 수치였지만 그대로 두었습니다. 대신 그것과 모순이 생기는 추가 서술
+  (7/28 하루 -10.84%, 서킷브레이커 3회)은 넣지 않고, 숫자에 기대지 않는
+  교육적 요점만 넣었습니다. 지시 범위를 넘지 않으면서 모순도 만들지 않는
+  길을 찾는 것이 맞습니다.
+
 
 ================================================================================
  끝.
