@@ -2,8 +2,8 @@
  미래에셋증권 마포WM — Claude 작업 보관본
  프롬프트 · 프로젝트 지침 · 시스템 설정
 ================================================================================
- 작성 2026-10-01
- 저장소 hanaroline/work_1
+ 작성 2026-10-01 · 갱신 2026-10-01 22:57 KST
+ 저장소 hanaroline/work_1   기준 main = 068fe8c (기본 가지)
  용도 : Claude 유료 계정을 옮길 때, 저장소 밖에서도 그대로 쓸 수 있는 사본.
         이 파일 하나만 있으면 새 계정에서 처음부터 다시 세울 수 있습니다.
 ================================================================================
@@ -18,7 +18,7 @@
 [ 넘어오는 것 ] — GitHub 저장소 hanaroline/work_1 을 새 계정에 연동하면 그대로
   - 완성 화면·산출물 전부 (루트 *.html, docs/, 고객제안서_*.xlsx)
   - 작업 규칙·지침 (docs/briefing-playbook.md 1,992줄, README.md 252KB)
-  - 스크립트 152개 (scripts/)
+  - 스크립트 153개 (scripts/)
   - 자동 수집 워크플로 44개 (.github/workflows/)
   - 수집된 자료와 그 이력 (data/) — 과거 어느 시각 스냅샷도 git 이력에서 꺼냄
   - 세션 시작 준비 (.claude/settings.json, .claude/hooks/session-start.sh)
@@ -41,24 +41,36 @@
 # 1. 저장소 지도
 ################################################################################
 
-[ ★ 구조상 가장 먼저 알아야 할 것 — 가지가 둘이고 서로 조상이 없습니다 ]
+[ ★ 구조상 가장 먼저 알아야 할 것 — 가지가 셋이고 서로 조상이 없습니다 ]
 
-  main                                        851 파일  운영 전부
-  claude/mirae-asset-product-dashboard-cgyqu7  23 파일  금융상품 통합조회
+  main                                 068fe8c  882 파일  운영 전부 (기본 가지)
+  claude/mirae-asset-product-dashboard-cgyqu7
+                                       8fec95d   23 파일  금융상품 통합조회
+  claude/datacenter-value-chain-map-6s4fvs
+                                       cac48a8   11 파일  데이터센터 밸류체인 맵
+
+  ※ 원격에 가지가 82개 있지만 살아 있는 것은 위 셋입니다. 나머지는 지나간
+    작업 가지와 데이터 전용 가지(calendar-data · kr100-data · us100-data).
 
   $ git merge origin/main
   fatal: refusing to merge unrelated histories
 
-  두 가지는 공통 조상이 없습니다. 기능 가지는 별도로 초기화된 작은 저장소가
+  셋은 서로 공통 조상이 없습니다. 두 기능 가지는 별도로 초기화된 작은 저장소가
   같은 원격에 올라간 모양입니다.
 
   지켜야 할 것
    - 기능 가지에 main 을 덮어쓰지 마십시오.
      git checkout -B <기능가지> origin/main 뒤 그대로 푸시하면
-     금융상품 조회 작업 33커밋이 사라집니다.
+     그 가지의 작업이 사라집니다 (금융상품 33커밋 / 데이터센터 12커밋).
+   - ★ 푸시 전에 지금 들고 있는 것이 무엇인지 확인하십시오.
+     세션 컨테이너가 main 내용을 받아 놓고 가지 이름만 옛 기능 가지로
+     달아 주는 일이 있습니다 (2026-10-01 실제로 그랬습니다).
+         $ git rev-parse --short HEAD origin/main
+         두 값이 같으면 들고 있는 것은 main 입니다.
+     기능 가지에 -f 로 푸시하지 마십시오.
    - 기능 가지에서 겹치는 README.md / index.html / standalone.html /
      data/sample.js / data/tickers.js / vendor/chart.umd.js 는 main 의 옛 판입니다.
-     참고하지 말고 main 것을 보십시오.
+     참고하지 말고 main 것을 보십시오. (두 기능 가지 모두 같습니다)
 
 [ main 에 든 일 ]
 
@@ -76,10 +88,28 @@
   11  타이밍 신호 / 전략빌더 / 종목판정  docs/signal/, kis-timing/, kis-verdict/
   12  자산배분 제안서 · 퇴직급여 설계    proposal.html, retire-payout.html
 
-[ 기능 가지에만 있는 일 ]
+[ 기능 가지에만 있는 일 ]  — main 에서는 파일 자체가 보이지 않습니다
 
   13  금융상품 통합조회                  products.html, serve-products.py
                                          dist/mirae-product-finder.zip
+                                         (claude/mirae-asset-product-dashboard-cgyqu7)
+
+  14  데이터센터 밸류체인 종목 맵        datacenter.html
+                                         datacenter-standalone.html  ← 배포본
+                                         data/dc-chain.js, data/dc-chain-global.js
+                                         serve.py
+                                         (claude/datacenter-value-chain-map-6s4fvs)
+
+      9단계 × 84종목(국내 38 · 해외 46) 한/영 단일 화면. 종목을 누르면
+      사업 내용과 시세·수익률·변동성 지표가 상세 패널에 열립니다.
+      ★ 이 갈래의 핵심은 file:// 로 파일만 열어도 시세가 조회되도록
+        JSONP(<script> 태그) 경로를 1순위로 둔 것입니다. serve.py 는
+        사내망이 중계 서비스까지 막을 때의 선택지이지 필수가 아닙니다.
+      ★ 네이버 등락폭은 절대값입니다. 방향 코드(4·5=하락)로 부호를
+        뒤집지 않으면 하락이 상승으로 표시됩니다.
+      ★ 주식에 「위험등급」을 붙이지 마십시오. 변동성으로 계산한
+        「변동성 구간 1~6」으로 이름을 바꿔 두었습니다.
+      자세한 것은 docs/handover/데이터센터-밸류체인맵-인계.md
 
 [ 저장소 안의 인계 문서 ]
 
@@ -104,6 +134,16 @@
   docs/handover/국내100대기업-대시보드-인계.md
   docs/handover/국내100대기업-프롬프트와설정.txt
   docs/handover/미국100대기업-대시보드-인계.md
+
+  [마포 WM 링크 페이지]
+  docs/handover/마포WM-링크페이지-인계.md     공개 범위까지 — 손대기 전 필독
+
+  [기능 가지에만 있는 갈래]
+  docs/handover/데이터센터-밸류체인맵-인계.md
+
+  [예약]
+  docs/handover/예약-전체목록.md              설정 + 지시문 원문 전부
+  docs/handover/예약-점검메모.md
 
   [그 밖의 갈래]
   README.md (252KB) 해당 절이 사실상의 지침입니다.
@@ -675,6 +715,11 @@ docs/briefing-playbook.md 를 처음부터 끝까지 읽고 그대로 따라줘.
   - 금융상품 조회를 main 에 합칠지 — 미결정.
   - 금융상품 조회의 RP·랩/신탁·연금은 예시 데이터.
     사내 API 나 CSV 로만 채울 수 있습니다.
+  - 데이터센터 맵을 main 에 합칠지 — 미결정.
+  - 데이터센터 맵: 네이버 종목지표(/integration) 실응답 대조 미완.
+    세션이 원천에 못 붙어 모의 응답으로만 검증했습니다.
+    시가총액·PER 이 계속 '-' 로 나오면 그 파서부터 보십시오.
+  - 데이터센터 맵: 대만·유럽 종목은 시가총액·PER 공급처가 없습니다.
   - 마포 WM 링크 페이지 — 저장소 분리가 아직 안 끝났습니다.
     사용자가 hanaroline/mapo-wm 공개 저장소를 만들어 주셔야 진행됩니다.
     그 뒤 work_1 을 Private 으로 돌립니다. 자세한 것은 10절.
