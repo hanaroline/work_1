@@ -16,7 +16,7 @@ import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "data" / "earnings"
-ASOF = "2026-09-17"
+ASOF = "2026-10-01"
 
 # 컨센서스는 제공사마다 다르다(LSEG · Zacks · StreetAccount · Visible Alpha).
 # 한 기업 안에서는 한 출처를 쓰고, 기업 간 비교는 "서프라이즈율"로만 한다.
@@ -141,14 +141,17 @@ C = [
    src="https://www.intc.com/news-events/press-releases/detail/1776/intel-reports-second-quarter-2026-financial-results",
    csrc="https://www.cnbc.com/2026/07/23/intel-intc-earnings-report-q2-2026.html", tier=1),
  dict(t="MU", ko="마이크론", en="Micron", sec="정보기술", sub="반도체",
-   per="FY26 Q3", pend="2026-05-28", rep="2026-06-25", repapprox=True,
-   rev=41.5, cons=None, yoy=None, eps=25.11, epsc=None,
-   guide=1, gtxt="Q4 FY26 매출 500억달러 — 컨센 434.5억달러를 65.5억 상회", gkind="차기분기",
-   note="DRAM 313억달러(매출의 76%) +343% YoY, 총이익률 84.9%, HBM4 12단 램프 진행",
-   src="https://investors.micron.com/news/press-release/2026/Micron-Technology-Inc--Reports-Record-Results-for-the-Third-Quarter-of-Fiscal-2026/default.aspx",
-   csrc="https://tradethepool.com/fundamental/micron-q3-fy2026-earnings-revenue-ai-boom-guidance/", tier=1,
-   nextrep="2026-09-30", nextconf="확정",
-   nextsrc="https://investors.micron.com/news/press-release/2026/Micron-Technology-to-Report-Fiscal-Fourth-Quarter-Results-on-September-30-2026/default.aspx"),
+   per="FY26 Q4", pend="2026-09-03", rep="2026-09-30",
+   rev=54.23, cons=51.07, yoy=379.0, eps=33.42, epsc=31.61,
+   guide=1, gtxt="Q1 FY27 매출 615억달러 · non-GAAP EPS 38.15달러 — 컨센 570억달러·35.40달러 상회",
+   gkind="차기분기",
+   note="전년 동기 매출 113.2억달러 → 379% 증가(직전분기 414.6억달러 대비 +31%). 총이익률 87.0%, "
+        "GAAP 순이익 377.0억달러(희석주당 32.87달러), non-GAAP 순이익 384.0억달러",
+   src="https://www.globenewswire.com/news-release/2026/09/30/3372366/14450/en/"
+       "micron-technology-inc-reports-record-fiscal-fourth-quarter-and-full-year-2026-results.html",
+   csrc="https://www.cnbc.com/2026/09/30/micron-mu-q4-earnings-report-2026.html", tier=1,
+   consnote="컨센서스는 CNBC 보도치(매출 510.7억달러 · 조정 EPS 31.61달러)를 쓴다. 다른 매체는 "
+            "508.6억달러 · 31.41달러를 실었다 — 제공사가 달라 섞지 않고 한 쪽만 쓴다"),
  dict(t="NFLX", ko="넷플릭스", en="Netflix", sec="커뮤니케이션", sub="미디어",
    per="CY26 Q2", pend="2026-06-30", rep="2026-07-16",
    rev=12.56, cons=12.59, yoy=13.0, eps=None, epsc=None,
@@ -206,15 +209,17 @@ C = [
    csrc="https://www.cnbc.com/2026/08/20/walmart-wmt-q2-2027-earnings.html", tier=1,
    consnote="Zacks 컨센서스 기준. 다른 출처는 실적 187.94 / 컨센 186.77십억달러"),
  dict(t="COST", ko="코스트코", en="Costco", sec="필수소비재", sub="창고형할인",
-   per="FY26 Q4 (16주)", pend="2026-08-30", rep=None,
-   rev=93.9, cons=94.55, yoy=11.3, eps=None, epsc=None,
-   guide=None, gtxt="정식 실적발표 전 — 가이던스 없음", gkind="발표전",
-   note="월별 매출 공시로 순매출은 공개(FY26 연간 2,973억달러 +10.2%). 정식 발표는 9/24",
-   src="https://theshelbyreport.com/2026/09/15/costco-caps-fy26-with-297-3b-in-sales-up-10-2-percent/",
-   csrc="https://finance.yahoo.com/markets/stocks/articles/expect-costco-wholesales-q4-2026-134037110.html", tier=2,
-   upcoming=True, nextrep="2026-09-24", nextconf="확정",
-   nextsrc="https://investor.costco.com/events-and-presentations/events/event-details/2026/Q4-2026-Earnings-Call/default.aspx",
-   consnote="컨센서스는 94.2~94.9십억달러 구간의 중간값. 정식 실적발표(9/24) 전이라 실제치와의 대조는 미확정"),
+   per="FY26 Q4 (16주)", pend="2026-08-30", rep="2026-09-24",
+   rev=95.72, cons=94.97, yoy=11.1, eps=6.75, epsc=6.54,
+   guide=None, gtxt="가이던스를 제시하지 않는다(회사 관행)", gkind="미제시",
+   note="총매출 957.2억달러(전년 동기 861.6억달러) +11.1%. 순매출은 939억달러 +11.2%, "
+        "비교매장매출 +9.4%, 디지털 비교매출 +19.5%. IEEPA 관세 환급에 따른 주당 0.15달러의 "
+        "일회성 이익이 포함돼 있다(제외 시 약 6.60달러). FY26 총매출 3,031.5억달러로 3,000억달러를 처음 넘었다",
+   src="https://www.sec.gov/Archives/edgar/data/0000909832/000090983226000084/costex9918-k92426.htm",
+   csrc="https://www.fool.com/earnings/call-transcripts/2026/09/29/costco-cost-q4-2026-earnings-call-transcript/",
+   tier=1,
+   consnote="매출 컨센서스 949.7억달러는 총매출 기준이라 실제치도 총매출(957.2억달러)로 맞췄다 — "
+            "순매출(939억달러)과 대조하면 계열이 어긋난다. EPS 컨센서스는 6.54달러를 쓴다(다른 매체는 6.53달러)"),
  dict(t="HD", ko="홈디포", en="Home Depot", sec="경기소비재", sub="주택개량",
    per="FY26 Q2", pend="2026-08-02", rep="2026-08-18",
    rev=47.9, cons=None, yoy=5.7, eps=None, epsc=None,
@@ -270,8 +275,9 @@ EN = {
           "US commercial $764M +149%; TCV $3.37B +49%"),
  "INTC": ("Q3 revenue $15.8–16.8B; non-GAAP EPS $0.38",
           "Fastest growth in 15 years. DCAI $6.3B +59%; CCG $8.9B +13%; Foundry $5.8B +31%"),
- "MU": ("Q4 FY26 revenue $50B — $6.55B above the $43.45B consensus",
-        "DRAM $31.3B (76% of revenue) +343% YoY; gross margin 84.9%; HBM4 12-high ramping"),
+ "MU": ("Q1 FY27 revenue $61.5B and non-GAAP EPS $38.15 — above the $57B / $35.40 consensus",
+        "Revenue $11.32B a year ago to $54.23B, +379% (+31% QoQ from $41.46B); gross margin 87.0%; "
+        "GAAP net income $37.70B ($32.87 per diluted share)"),
  "NFLX": ("FY26 revenue narrowed to $51.0–51.4B (from $50.7–51.7B; same midpoint)",
           "One of the few revenue misses this season. Ads on track for ~$3B in 2026; 31.5% margin target"),
  "JPM": ("FY26 net interest income raised to ~$105.5B (from $103B three months earlier)",
@@ -286,8 +292,10 @@ EN = {
          "MedTech +4.5%. 28 products and platforms above $1B in annual sales — $100B in sight"),
  "WMT": ("FY27 net sales raised to +4–5% cc (from +3.5–4.5%); adjusted EPS $2.80–2.87 (from $2.75–2.85)",
          "US comps +2.6%, transaction-led (80bp health & wellness headwind). E-commerce, ads, membership plus tariff refunds"),
- "COST": ("Ahead of the formal release — no guidance",
-          "Net sales already public via monthly disclosure (FY26 $297.3B +10.2%). Formal release Sept 24"),
+ "COST": ("No guidance issued (company practice)",
+          "Total revenue $95.72B (from $86.16B) +11.1%; net sales $93.9B +11.2%; comps +9.4%, digital comps +19.5%. "
+          "Includes a one-off $0.15 per diluted share IEEPA tariff refund (~$6.60 excluding it). "
+          "FY26 total revenue $303.15B — past $300B for the first time"),
  "HD": ("FY26 guidance reaffirmed",
         "Comps +1.7% vs +0.9% expected (StreetAccount); US +1.3%. Adjusted EPS $4.92 (vs $4.68)"),
  "CAT": ("FY26 sales growth raised to mid-to-high teens (from the April outlook)",
@@ -305,7 +313,11 @@ CN_EN = {
  "JPM": "revenue consensus differs across sources ($51.35B / $58.02B / $57.3B, different bases) — treated as unverified",
  "GS": "the reported $15.77B consensus does not reconcile with the stated +26.2% surprise, so it was not used",
  "WMT": "Zacks consensus. Another source gives $187.94B actual against $186.77B consensus",
- "COST": "midpoint of the $94.2–94.9B consensus range. Ahead of the Sept 24 release, the comparison is provisional",
+ "MU": "the CNBC figures ($51.07B revenue, $31.61 adjusted EPS) are used. Another outlet reported "
+       "$50.86B / $31.41 — different providers, so only one set is used, never mixed",
+ "COST": "the $94.97B consensus is on total revenue, so the actual is matched on total revenue ($95.72B) "
+         "rather than net sales ($93.9B), which would be a different series. EPS consensus $6.54 "
+         "(another outlet gives $6.53)",
  "HD": "revenue consensus not found; only the comparable-sales consensus (+0.9%) was verified",
  "XOM": "the '$114.53B vs $109.94B consensus' report is a single social-media source and uses a different basis "
         "from the company release (revenues and other income $116.0B), so it was not used",
@@ -325,6 +337,16 @@ for _c in C:
 # 점수에는 **선행 P/E 만** 쓴다. PEG 는 제공사가 산식을 공개하지 않아
 # 화면에 참고로만 싣고 점수에는 넣지 않는다.
 VAL_SRC = "https://stockanalysis.com/stocks/%s/statistics/"
+#
+# 2026-10-01 에 25 종목 전체를 다시 조회해 하루로 맞추려 했으나 **중단했다.**
+# 같은 페이지를 두 번 물었을 때 서로 다른 스냅숏이 돌아왔기 때문이다:
+#   COST 선행 P/E 39.46 / 43.25, EV/EBITDA 27.30 / 29.63
+#   CRM  선행 P/E 15.65 / 17.45, EV/EBITDA 19.57 / 18.71
+#   LLY  시가총액 1.06조 / 1.02조, EV/EBITDA 34.04 / 25.65
+# 한편 HD · INTC · JNJ · GS 는 9/17 값과 완전히 동일하게(= 갱신되지 않은 채로)
+# 돌아왔다. 일부는 새 값, 일부는 묵은 값인 상태로 적으면 '한 제공사 · 한 날짜'
+# 라는 이 자료의 전제가 깨지고 섹터 중앙값과 순위가 통째로 뒤틀린다.
+# 그래서 밸류에이션 블록 전체를 9/17 스냅숏 그대로 둔다. 날짜를 올리지 않는다.
 VAL_ASOF = "2026-09-17"
 VAL = {   # 티커: (선행 P/E, PEG)
  "NVDA": (18.12, 0.35), "MSFT": (24.93, 1.55), "AAPL": (34.33, 3.25),
@@ -521,11 +543,11 @@ GNEXT = {   # 티커: (중간값 USD bn, 표기, 대상 분기)
  "META": (62.5,  "610~640억달러", "Q3 CY26"),
  "AMD":  (13.0,  "130억달러 ±3억달러", "Q3 CY26"),
  "INTC": (16.3,  "158~168억달러", "Q3 CY26"),
- "MU":   (50.0,  "500억달러", "Q4 FY26"),
+ "MU":   (61.5,  "615억달러", "Q1 FY27"),
 }
 GNEXT_EN = {
  "NVDA": "$108B ±2%", "AVGO": "$34.8B", "AMZN": "$197–202B", "META": "$61–64B",
- "AMD": "$13B ±$0.3B", "INTC": "$15.8–16.8B", "MU": "$50B",
+ "AMD": "$13B ±$0.3B", "INTC": "$15.8–16.8B", "MU": "$61.5B",
 }
 
 # ------------------------------------------------ 인사이트 카드가 인용하는 수치
@@ -537,8 +559,12 @@ FACTS = [
  # --- 카드 ① AI 인프라 -----------------------------------------------------
  dict(id="AVGO_AISEG", t="AVGO", v=221.0, unit="%",
       ko="브로드컴 AI 반도체 매출 증가율", en="Broadcom AI semiconductor revenue growth"),
- dict(id="MU_DRAM", t="MU", v=343.0, unit="%",
-      ko="마이크론 DRAM 매출 증가율", en="Micron DRAM revenue growth"),
+ dict(id="MU_DRAM_REV", t="MU", v=39.8, unit="USD bn",
+      ko="마이크론 DRAM 매출", en="Micron DRAM revenue",
+      note="FY26 Q4 기준. 직전 분기(FY26 Q3)의 313억달러·+343% 를 대체한 값 — "
+           "분기가 바뀌면 세그먼트 수치도 함께 바꾼다"),
+ dict(id="MU_DRAM_SH", t="MU", v=73.0, unit="%",
+      ko="마이크론 DRAM 매출 비중", en="Micron DRAM share of revenue"),
  dict(id="ORCL_IAAS", t="ORCL", v=121.0, unit="%",
       ko="오라클 IaaS 매출 증가율", en="Oracle IaaS revenue growth"),
  dict(id="ORCL_RPO", t="ORCL", v=664.0, unit="USD bn",
@@ -614,7 +640,7 @@ GRAISE_TXT = {
  "JNJ": ("FY26 매출 1,008~1,014억달러", "FY26 revenue $100.8–101.4B"),
  "CAT": ("FY26 매출 성장률 mid~high teens", "FY26 revenue growth to mid-to-high teens"),
  "MSFT": ("Azure +45%cc vs 컨센 41.4%", "Azure +45% cc vs 41.4% consensus"),
- "MU": ("500억 vs 컨센 434.5억달러", "$50B vs $43.45B consensus"),
+ "MU": ("615억 vs 컨센 570억달러", "$61.5B vs $57B consensus"),
 }
 
 # ---------------------------------------------------------------- 스코어
@@ -662,8 +688,14 @@ for c in C:
     ltm, ltmg = LTM.get(c["t"], (None, None))
     c["ltm"], c["ltmg"], c["ltmnote"] = ltm, ltmg, LTM_NOTE.get(c["t"], "")
     # 가속도 = 직전분기 YoY − LTM YoY. 양수면 최근 분기가 지난 1년보다 빠르다.
+    #
+    # 단, LTM 스냅숏(VAL_ASOF)보다 **뒤에** 발표된 분기는 그 LTM 창에 들어 있지
+    # 않다. 창이 어긋난 두 성장률을 빼면 가속도가 아니라 기저효과를 재게 된다.
+    # 종목을 손으로 적지 않고 날짜로 판정해 다음 갱신 때 저절로 풀리게 한다.
+    c["accelhold"] = bool(c.get("rep")) and c["rep"] > VAL_ASOF
     c["accel"] = (round(c["yoy"] - ltmg, 1)
-                  if c.get("yoy") is not None and ltmg is not None else None)
+                  if c.get("yoy") is not None and ltmg is not None
+                  and not c["accelhold"] else None)
     c["trend"] = (None if c["accel"] is None else
                   "up" if c["accel"] > ACCEL_BAND else
                   "down" if c["accel"] < -ACCEL_BAND else "flat")
@@ -1023,20 +1055,6 @@ for _sec, _b in sorted(SECBENCH.items()):
                             VG_NOTE.get(_sec, ""))),
         printed_on=["sector-benchmark", "table-main"]))
 
-ledger = dict(
-    deliverable="미국 주요기업 실적 어닝스 인텔리전스 대시보드 (earnings-intel.html)",
-    as_of=ASOF, series_policy=SERIES, claims=claims, derived=derived,
-    unit_policy={"분기 매출": "USD bn", "매출 컨센서스": "USD bn",
-                 "가이던스": "방향(+1/0/-1)", "선행 P/E": "배", "PEG": "배", "섹터 기준배수": "배",
-                 "LTM 매출": "USD bn", "LTM 성장률": "%",
-                 "시가총액": "USD bn", "EV/EBITDA": "배", "P/S": "배",
-                 "차기분기 매출 가이던스": "USD bn", "지수 집계": "%",
-                 "대조용 배수": "배", "대조용 지수 집계": "%",
-                 # 인용 수치는 항목마다 metric 이름이 달라 FACTS 에서 그대로 만든다
-                 **{f["ko"]: f["unit"] for f in FACTS}})
-
-OUT.mkdir(parents=True, exist_ok=True)
-(OUT / "claims.json").write_text(json.dumps(ledger, ensure_ascii=False, indent=1), "utf-8")
 
 # ---------------------------------------------------------------- 화면 데이터
 VG_ORDER = ["정보기술", "커뮤니케이션 · 인터넷", "커뮤니케이션 · 통신미디어",
@@ -1049,10 +1067,69 @@ for s in SEC_ORDER:
     y = [c["yoy"] for c in m if c.get("yoy") is not None]
     rv = [c["rev"] for c in m]
     sp = [c["surprise"] for c in m if c.get("surprise") is not None]
+    # 섹터 성장률은 **중앙값**을 싣는다. 단순평균은 구성원 한 곳의 극단값에
+    # 끌려간다 — 마이크론이 +379% 를 찍자 정보기술 평균이 +81.4% 로 뛰어,
+    # 9사 중 8사가 그 아래인 '평균'이 나왔다. 평균도 버리지 않고 함께 넘겨
+    # 화면 툴팁이 둘을 같이 보여준다.
     sectors.append(dict(sec=s, n=len(m), rev=round(sum(rv), 1),
-                        yoy=round(sum(y) / len(y), 1) if y else None, yoyn=len(y),
-                        surp=round(sum(sp) / len(sp), 2) if sp else None, surpn=len(sp),
+                        yoy=round(median(y), 1) if y else None,
+                        yoyavg=round(sum(y) / len(y), 1) if y else None, yoyn=len(y),
+                        surp=round(median(sp), 2) if sp else None,
+                        surpavg=round(sum(sp) / len(sp), 2) if sp else None, surpn=len(sp),
                         tickers=[c["t"] for c in m]))
+
+# 섹터 집계도 화면에 인쇄되는 수치다 — 구성원 값에서 계산한 것이라도 대장에 올린다.
+for _s in sectors:
+    for _k, _lbl, _unit in (("yoy", "매출 성장률 중앙값", "%"), ("surp", "서프라이즈 중앙값", "%")):
+        if _s[_k] is None:
+            continue
+        _avg = _s[_k + "avg" if _k == "yoy" else "surpavg"]
+        claims.append(dict(
+            id="SECAGG_%s_%s" % (_k.upper(),
+                                 hashlib.md5(_s["sec"].encode("utf-8")).hexdigest()[:6]),
+            kind="derived_aggregate", metric="섹터 집계",
+            text="%s %s" % (_s["sec"], _lbl), value=_s[_k], unit=_unit,
+            series=SERIES["분기 매출"], as_of=ASOF, tier=1,
+            source_url="scripts/build_earnings.py", verdict="confirmed", render="marked",
+            note=("구성원 %d사 중 확인된 %d사의 중앙값. 같은 집합의 단순평균은 %.2f%% 다 — "
+                  "한 종목의 극단값에 끌려가므로 막대에는 중앙값을 싣고 평균은 툴팁에만 둔다. "
+                  "구성: %s" % (_s["n"], _s[_k + "n" if _k == "yoy" else "surpn"],
+                              _avg, " ".join(_s["tickers"]))),
+            printed_on=["sector-charts"]))
+
+# 기업 한 곳의 문제가 아니라 자료 전체에 걸린 한계. 화면의 '확인하지 못한 항목'
+# 맨 위에 그대로 싣는다 — 빌드 때마다 손으로 적지 않게 여기 한 곳에만 둔다.
+LIMITS = [
+ dict(scope="밸류에이션 · 시세", scope_en="Valuation and market data",
+      ko=("%s 에 25개 종목을 다시 조회해 기준일을 하루로 맞추려 했으나 중단했다. 같은 페이지를 "
+          "두 번 물었을 때 서로 다른 스냅숏이 돌아왔고(코스트코 선행 P/E 39.46 / 43.25, "
+          "세일즈포스 15.65 / 17.45), 홈디포·인텔·존슨앤드존슨·골드만삭스는 %s 값 그대로였다. "
+          "일부만 새 값으로 바꾸면 '한 제공사 · 한 날짜'라는 전제가 깨져 섹터 중앙값과 순위가 "
+          "뒤틀린다. 밸류에이션 블록은 %s 스냅숏을 그대로 둔다 — 화면 상단의 작성일(%s)과 다르다.")
+         % (ASOF, VAL_ASOF, VAL_ASOF, ASOF),
+      en=("A refresh of all 25 tickers on %s was abandoned. Asking for the same page twice returned "
+          "different snapshots (Costco forward P/E 39.46 / 43.25; Salesforce 15.65 / 17.45), while "
+          "Home Depot, Intel, Johnson & Johnson and Goldman Sachs came back identical to %s. "
+          "Refreshing only part of the set would break the one-provider-one-date rule and reorder "
+          "the sector medians. The valuation block stays on the %s snapshot — which is not the "
+          "compilation date (%s) shown at the top of the page.")
+         % (ASOF, VAL_ASOF, VAL_ASOF, ASOF)),
+]
+
+ledger = dict(
+    deliverable="미국 주요기업 실적 어닝스 인텔리전스 대시보드 (earnings-intel.html)",
+    as_of=ASOF, series_policy=SERIES, claims=claims, derived=derived,
+    unit_policy={"분기 매출": "USD bn", "매출 컨센서스": "USD bn",
+                 "가이던스": "방향(+1/0/-1)", "선행 P/E": "배", "PEG": "배", "섹터 기준배수": "배",
+                 "LTM 매출": "USD bn", "LTM 성장률": "%",
+                 "시가총액": "USD bn", "EV/EBITDA": "배", "P/S": "배",
+                 "차기분기 매출 가이던스": "USD bn", "지수 집계": "%",
+                 "대조용 배수": "배", "대조용 지수 집계": "%", "섹터 집계": "%",
+                 # 인용 수치는 항목마다 metric 이름이 달라 FACTS 에서 그대로 만든다
+                 **{f["ko"]: f["unit"] for f in FACTS}})
+
+OUT.mkdir(parents=True, exist_ok=True)
+(OUT / "claims.json").write_text(json.dumps(ledger, ensure_ascii=False, indent=1), "utf-8")
 
 cov = dict(total=len(C),
            rev=sum(1 for c in C if c.get("rev") is not None),
@@ -1073,7 +1150,7 @@ keys = ("t ko en sec sub per pend rep repapprox rev cons consderived surprise yo
         "upcoming nextrep nextconf nextsrc consnote epsnote gtxt_en note_en consnote_en per_en "
         "fpe peg valscore valabs relpe secmed vgrp vgrpEn appeal appealgap valnote "
         "mcap mcapasof mcapnote eveb evebnote evebnote_en ps graise graisetxt graisetxt_en "
-        "ltm ltmg accel trend ltmnote gnext gnexttxt gnextper gnexten gnextqoq").split()
+        "ltm ltmg accel accelhold trend ltmnote gnext gnexttxt gnextper gnexten gnextqoq").split()
 payload = dict(
     asOf=ASOF,
     generated="scripts/build_earnings.py",
@@ -1081,9 +1158,10 @@ payload = dict(
     weights=W, bands=BANDS, minCoverage=MIN_COVERAGE, seriesPolicy=SERIES,
     valBand=VAL_BAND, relBand=REL_BAND, mix=MIX, valAsOf=VAL_ASOF,
     accelBand=ACCEL_BAND,
+    accelHoldAsOf=VAL_ASOF,
     secBench=[SECBENCH[k] for k in VG_ORDER if k in SECBENCH],
     seriesPolicyEn=SERIES_EN, coverage=cov,
-    index=INDEX,
+    index=INDEX, limits=LIMITS,
     # 카드가 문장 안에서 부르는 값. 화면은 여기서 꺼내 쓰기만 한다.
     facts={f["id"]: {k: f[k] for k in ("v", "unit", "ko", "en")} for f in FACTS},
     # 채택하지 않은 대조용 수치도 화면 문장에 인쇄된다 — 손으로 적지 않게 넘긴다.
