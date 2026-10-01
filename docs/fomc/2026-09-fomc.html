@@ -103,6 +103,26 @@ li{margin:0 0 5px}
   table,blockquote,.grid3,.kpi{break-inside:avoid}
   h2,h3{break-after:avoid}
 }
+
+/* 2026-10-01: 340px 넘침 수정(249px). 원인 둘 —
+   ① .grid3 가 repeat(3, minmax(min(190px,100%),1fr)) 이라 좁은 화면에서도
+      190px 세 칸(=570px+)을 고집한다. 좁으면 한 줄에 하나로 내린다.
+   ② 표가 가로 스크롤 그릇 없이 놓여 있다. 브리핑 판의 .table-wrap 과 같은
+      방식으로 표 자체를 스크롤되게 해 문서 밖으로 밀지 않는다. */
+@media (max-width:620px){
+  .grid3{grid-template-columns:minmax(0,1fr)}
+  .sheet table{display:block;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  p, li, dd, dt, .kpi .s{overflow-wrap:anywhere; word-break:break-word}
+}
+
+/* 2026-10-01: 좁은 화면에서 절 제목이 글자 단위로 쪼개졌다. .sec 가 flex 한 줄이고
+   .tag 가 white-space:nowrap + margin-left:auto 라, 배지가 제 폭을 다 가져가고
+   남은 60px 에 제목이 끼어 들어가 있었다. 배지를 아랫줄로 내린다. */
+@media (max-width:620px){
+  .sec{flex-wrap:wrap}
+  .sec h2{flex:1 1 auto; overflow-wrap:normal; word-break:keep-all}
+  .sec .tag{flex:1 1 100%; margin-left:0; white-space:normal; margin-top:6px}
+}
 </style>
 
 <div class="page">
