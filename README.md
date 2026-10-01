@@ -1609,6 +1609,12 @@ data/cc_etf.json              ← 그 파일의 유일한 원천
 자세한 것은 **[docs/etf-proposal.md](docs/etf-proposal.md)** 를 보십시오 —
 종목 선정 기준과 그 이유, 수치의 출처와 계산식, 갱신·검사 방식, ETFCHECK 을 읽는 법.
 
+이 일을 **이어받는 사람**은 두 문서를 먼저 봅니다 — 반드시 지킬 작업 규칙과,
+그렇게 정한 까닭이 거기 있습니다.
+
+- **[docs/handover/월배당ETF제안서-운영인계.md](docs/handover/월배당ETF제안서-운영인계.md)**
+- **[docs/handover/월배당ETF제안서-프롬프트.md](docs/handover/월배당ETF제안서-프롬프트.md)**
+
 ## 유의사항 (ETF 제안서)
 
 정보 제공 목적의 참고 자료이며 투자 권유가 아닙니다. 커버드콜 ETF 의 분배 재원은 옵션
