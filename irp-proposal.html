@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IRP 운용상품 제안서 — 미래에셋증권</title>
+<meta name="description" content="개인형퇴직연금(IRP) 계좌에서 운용할 ETF·펀드·TDF 포트폴리오 제안서. 세제·규제 이해, 투자성향별 포트폴리오, 추천 상품 라인업, 리밸런싱 계획.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand: #F58220; --brand-active: #CB6015; --brand-soft: #FAB072; --navy: #043B72;
+    --canvas: #ffffff; --surface: #f7f8fa; --surface-soft: #eceff4;
+    --ink: #1a1a1a; --body: #3d3d3d; --muted: #6c6c6c;
+    --hair: #cdcecb; --hair-soft: #e5e4e1;
+    --thead: #FAB072; --thead-ink: #3a1d07; --cell-hi: #D7D7D7;
+    --risk: #CB6015; --safe: #043B72; --good: #2E8540; --warn: #D4A017;
+    --shadow: 0 1px 2px rgba(26,26,26,.05), 0 4px 16px rgba(26,26,26,.05);
+    --font-kr: 'Noto Sans KR', 'Spoqa Han Sans Neo', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --font-num: 'Inter', 'SF Mono', ui-monospace, monospace;
+    --radius: 4px;
+  }
+  :root[data-theme="dark"] {
+    --canvas: #0d0d0d; --surface: #17171a; --surface-soft: #141417;
+    --ink: #ffffff; --body: #d8d7d2; --muted: #9a988f;
+    --hair: rgba(255,255,255,.14); --hair-soft: rgba(255,255,255,.08);
+    --navy: #6ea2e0; --brand-soft: #e4994c;
+    --thead: rgba(245,130,32,.24); --thead-ink: #f5b878; --cell-hi: rgba(255,255,255,.12);
+    --risk: #f09a4b; --safe: #6ea2e0; --good: #4caf66; --warn: #e2bb4b;
+    --shadow: 0 1px 2px rgba(0,0,0,.45), 0 4px 16px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --canvas: #0d0d0d; --surface: #17171a; --surface-soft: #141417;
+      --ink: #ffffff; --body: #d8d7d2; --muted: #9a988f;
+      --hair: rgba(255,255,255,.14); --hair-soft: rgba(255,255,255,.08);
+      --navy: #6ea2e0; --brand-soft: #e4994c;
+      --thead: rgba(245,130,32,.24); --thead-ink: #f5b878; --cell-hi: rgba(255,255,255,.12);
+      --risk: #f09a4b; --safe: #6ea2e0; --good: #4caf66; --warn: #e2bb4b;
+      --shadow: 0 1px 2px rgba(0,0,0,.45), 0 4px 16px rgba(0,0,0,.35);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; font-family: var(--font-kr);
+    background: var(--canvas); color: var(--body);
+    line-height: 1.65; font-size: 17px;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  .num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+
+  /* Topbar */
+  .topbar {
+    position: sticky; top: 0; z-index: 30;
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 20px; background: var(--canvas);
+    border-bottom: 1px solid var(--hair);
+  }
+  .brand-mark { font-weight: 700; color: var(--ink); font-size: 15px; letter-spacing: -.01em; }
+  .brand-mark .dot { color: var(--brand); }
+  .topbar .spacer { flex: 1; }
+  .btn {
+    border: 1px solid var(--hair); background: var(--surface); color: var(--body);
+    padding: 7px 13px; border-radius: 2px; font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: var(--font-kr);
+  }
+  .btn:hover { border-color: var(--brand); color: var(--ink); }
+
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 24px 96px; }
+
+  /* Hero */
+  .hero {
+    background: var(--brand); color: #fff;
+    margin: 0 -24px 48px; padding: 56px 24px 52px;
+  }
+  .hero-inner { max-width: 1060px; margin: 0 auto; }
+  .hero .tag {
+    display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .06em;
+    border: 1px solid rgba(255,255,255,.55); border-radius: 2px;
+    padding: 3px 9px; margin-bottom: 18px;
+  }
+  .hero h1 { margin: 0 0 14px; font-size: 42px; font-weight: 700; line-height: 1.15; letter-spacing: -.02em; }
+  .hero p { margin: 0; font-size: 18px; max-width: 680px; color: rgba(255,255,255,.94); }
+  .hero .meta { margin-top: 22px; font-size: 13px; color: rgba(255,255,255,.85); }
+  @media (max-width: 680px) { .hero h1 { font-size: 30px; } }
+
+  /* Section */
+  section { margin-bottom: 52px; }
+  .rule { height: 1px; background: var(--brand); margin-bottom: 16px; }
+  .sec-no { color: var(--brand); font-weight: 700; margin-right: 8px; }
+  h2 { margin: 0 0 6px; font-size: 25px; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
+  .sec-sub { margin: 0 0 22px; font-size: 15px; color: var(--muted); }
+  h3 { font-size: 19px; font-weight: 600; color: var(--ink); margin: 0 0 10px; }
+
+  /* KPI */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  @media (max-width: 760px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+  .kpi {
+    background: var(--surface); border: 1px solid var(--hair-soft); border-radius: var(--radius);
+    padding: 18px 16px; box-shadow: var(--shadow);
+  }
+  .kpi .k { font-size: 12.5px; color: var(--muted); font-weight: 500; }
+  .kpi .v { font-size: 27px; font-weight: 700; color: var(--ink); margin: 6px 0 2px; }
+  .kpi .v.navy { color: var(--navy); }
+  .kpi .n { font-size: 12.5px; color: var(--muted); }
+
+  /* Cards */
+  .cards { display: grid; gap: 16px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--hair-soft); border-radius: var(--radius);
+    padding: 20px 20px; box-shadow: var(--shadow);
+  }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 860px) { .grid-3 { grid-template-columns: 1fr; } }
+  .card ul { margin: 8px 0 0; padding-left: 18px; }
+  .card li { margin-bottom: 6px; }
+  .card li:last-child { margin-bottom: 0; }
+
+  .lead { color: var(--ink); font-weight: 600; }
+  .pill {
+    display: inline-block; font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--hair); color: var(--muted);
+  }
+  .pill.risk { color: var(--risk); border-color: color-mix(in srgb, var(--risk) 45%, transparent); }
+  .pill.safe { color: var(--safe); border-color: color-mix(in srgb, var(--safe) 45%, transparent); }
+  .pill.ex   { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 50%, transparent); }
+
+  /* Portfolio card */
+  .pf-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; }
+  .pf-name { font-size: 19px; font-weight: 700; color: var(--ink); }
+  .pf-risk { font-size: 12.5px; color: var(--muted); }
+  .pf-stat { font-size: 13px; color: var(--body); margin: 10px 0 14px; }
+  .pf-stat b { color: var(--ink); }
+  .bar { display: flex; height: 16px; border-radius: 3px; overflow: hidden; margin-bottom: 12px; border: 1px solid var(--hair-soft); }
+  .bar span { display: block; height: 100%; }
+  .legend { display: grid; gap: 4px; font-size: 12.5px; }
+  .legend .row { display: flex; align-items: center; gap: 7px; }
+  .legend .sw { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+  .legend .nm { flex: 1; color: var(--body); }
+  .legend .pc { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  /* Table */
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--hair); border-radius: var(--radius); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  thead th { background: var(--thead); color: var(--thead-ink); font-weight: 700; text-align: left; padding: 11px 13px; white-space: nowrap; }
+  tbody td { padding: 11px 13px; border-top: 1px solid var(--hair-soft); color: var(--body); vertical-align: top; }
+  tbody tr:hover td { background: var(--surface); }
+  td.num, th.num { text-align: right; font-family: var(--font-num); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td .asset { font-weight: 600; color: var(--ink); }
+
+  .note {
+    background: var(--surface-soft); border-left: 3px solid var(--brand); border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 14px 16px; font-size: 14px; color: var(--body); margin-top: 16px;
+  }
+  .disc { font-size: 13.5px; color: var(--muted); }
+  .disc li { margin-bottom: 7px; }
+  footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--hair); font-size: 12.5px; color: var(--muted); }
+
+  @media print {
+    .topbar { display: none !important; }
+    body { font-size: 11pt; line-height: 1.4; }
+    .hero { margin: 0 0 18pt; padding: 22pt 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .wrap { max-width: 100%; padding: 0; }
+    section { page-break-inside: avoid; margin-bottom: 20pt; }
+    .card, .kpi, .tbl-wrap { box-shadow: none; }
+    thead th, .bar span, .hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <span class="brand-mark">미래에셋증권<span class="dot">·</span>WM</span>
+  <span class="spacer"></span>
+  <button class="btn" id="themeBtn" type="button">☾ 다크</button>
+  <button class="btn" id="printBtn" type="button">⎙ 인쇄 · PDF</button>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <span class="tag">제안서 · 내부 검토용</span>
+    <h1>IRP 계좌 운용상품 제안</h1>
+    <p>개인형퇴직연금(IRP)의 세제혜택을 최대한 활용하면서, 규제 범위 안에서 ETF·펀드·TDF로 투자성향별 포트폴리오를 설계합니다.</p>
+    <div class="meta">작성 2026-10-01 · 미래에셋증권 WM · 투자권유가 아닌 자산배분 가이드</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- 1 -->
+  <section id="s1">
+    <div class="rule"></div>
+    <h2><span class="sec-no">01</span>제안 개요</h2>
+    <p class="sec-sub">IRP 한도를 채워 세액공제를 받고, 과세이연 효과를 복리로 굴리는 것이 핵심입니다.</p>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="k">연간 세액공제 한도</div><div class="v navy"><span class="num">900</span>만원</div><div class="n">연금저축 합산 기준</div></div>
+      <div class="kpi"><div class="k">최대 환급세액(예시)</div><div class="v"><span class="num">148.5</span>만원</div><div class="n">900만원 × 16.5%</div></div>
+      <div class="kpi"><div class="k">위험자산 투자한도</div><div class="v navy"><span class="num">70</span>%</div><div class="n">안전자산 30% 이상 편입</div></div>
+      <div class="kpi"><div class="k">연금수령 세율</div><div class="v"><span class="num">3.3~5.5</span>%</div><div class="n">만 55세+·가입 5년+</div></div>
+    </div>
+    <div class="note">본 제안서의 상품명·총보수(TER)·기대수익률은 <b>설명을 위한 예시</b>이며, 특정 상품의 매수 권유가 아닙니다. 세법·제도 수치는 집행 시점의 최신 규정으로 다시 확인하십시오.</div>
+  </section>
+
+  <!-- 2 -->
+  <section id="s2">
+    <div class="rule"></div>
+    <h2><span class="sec-no">02</span>IRP 계좌 핵심 이해</h2>
+    <p class="sec-sub">운용 전에 세제·규제·수령 규칙을 먼저 짚습니다. 포트폴리오 설계가 여기서 갈립니다.</p>
+    <div class="grid-3">
+      <div class="card">
+        <h3>세제 혜택</h3>
+        <ul>
+          <li><span class="lead">세액공제</span> — 연 900만원 한도(연금저축 합산)</li>
+          <li>공제율 <b>16.5%</b>(총급여 5,500만원 이하) / <b>13.2%</b>(초과)</li>
+          <li><span class="lead">과세이연</span> — 운용 중 매매차익·배당에 과세하지 않고 수령 시점으로 이연</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>운용 규제</h3>
+        <ul>
+          <li>위험자산(주식형 등) <b>70% 한도</b></li>
+          <li>안전자산 <b>30% 이상</b> 의무 편입</li>
+          <li>레버리지·인버스 ETF <b>편입 불가</b></li>
+          <li>적격 TDF는 안전자산으로 인정(상품별 요건 확인)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>수령 · 해지</h3>
+        <ul>
+          <li>연금수령: 만 55세+ & 가입 5년+ → 연금소득세 <b>3.3~5.5%</b></li>
+          <li>일시금·중도해지: 기타소득세 <b>16.5%</b> + 공제받은 금액 추징</li>
+          <li>장기 보유·연금 수령이 세후 수익률에 유리</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3">
+    <div class="rule"></div>
+    <h2><span class="sec-no">03</span>운용 원칙</h2>
+    <p class="sec-sub">퇴직연금은 장기·적립식 자금입니다. 비용을 낮추고 규칙대로 유지하는 쪽이 이깁니다.</p>
+    <div class="grid-3">
+      <div class="card"><h3>① 코어-새틀라이트</h3><p style="margin:0">넓게 분산된 저비용 지수 ETF를 <b>코어</b>로 두고, 테마·지역 ETF를 소수 <b>새틀라이트</b>로 더해 초과수익을 노립니다.</p></div>
+      <div class="card"><h3>② 글라이드패스</h3><p style="margin:0">은퇴가 가까워질수록 위험자산 비중을 단계적으로 낮춥니다. TDF 한 상품으로도 자동 적용이 가능합니다.</p></div>
+      <div class="card"><h3>③ 저비용 · 규칙 유지</h3><p style="margin:0">총보수(TER)가 낮은 상품을 우선하고, 시장 전망보다 <b>목표 비중·리밸런싱 규칙</b>을 지킵니다.</p></div>
+    </div>
+    <div class="note">안전자산 30% 슬롯은 국고채·종합채권 ETF, 원리금보장 예금, 또는 <b>적격 TDF</b>로 채웁니다. TDF는 안전자산 요건과 운용 전략을 겸해 한 칸으로 두 역할을 합니다.</div>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4">
+    <div class="rule"></div>
+    <h2><span class="sec-no">04</span>투자성향별 추천 포트폴리오</h2>
+    <p class="sec-sub">모두 위험자산 70% 한도·안전자산 30% 이상 규제를 지키도록 구성한 예시 배분입니다.</p>
+    <div class="cards grid-3">
+
+      <div class="card">
+        <div class="pf-head"><span class="pf-name">안정형</span><span class="pf-risk">위험 45 / 안전 55</span></div>
+        <div class="pf-stat">기대수익률 <b>4~5%</b> · 변동성 낮음 <span class="pill ex">예시·세전</span></div>
+        <div class="bar">
+          <span style="width:8%;background:#F58220"></span><span style="width:20%;background:#043B72"></span><span style="width:5%;background:#FAB072"></span><span style="width:12%;background:#0086B8"></span><span style="width:45%;background:#AD624E"></span><span style="width:10%;background:#84888B"></span>
+        </div>
+        <div class="legend">
+          <div class="row"><span class="sw" style="background:#F58220"></span><span class="nm">국내주식</span><span class="pc">8%</span></div>
+          <div class="row"><span class="sw" style="background:#043B72"></span><span class="nm">선진국주식</span><span class="pc">20%</span></div>
+          <div class="row"><span class="sw" style="background:#FAB072"></span><span class="nm">신흥국·테마</span><span class="pc">5%</span></div>
+          <div class="row"><span class="sw" style="background:#0086B8"></span><span class="nm">리츠·대체</span><span class="pc">12%</span></div>
+          <div class="row"><span class="sw" style="background:#AD624E"></span><span class="nm">채권·TDF</span><span class="pc">45%</span></div>
+          <div class="row"><span class="sw" style="background:#84888B"></span><span class="nm">예금·현금성</span><span class="pc">10%</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="pf-head"><span class="pf-name">중립형</span><span class="pf-risk">위험 65 / 안전 35</span></div>
+        <div class="pf-stat">기대수익률 <b>5~6.5%</b> · 변동성 중간 <span class="pill ex">예시·세전</span></div>
+        <div class="bar">
+          <span style="width:12%;background:#F58220"></span><span style="width:30%;background:#043B72"></span><span style="width:10%;background:#FAB072"></span><span style="width:13%;background:#0086B8"></span><span style="width:28%;background:#AD624E"></span><span style="width:7%;background:#84888B"></span>
+        </div>
+        <div class="legend">
+          <div class="row"><span class="sw" style="background:#F58220"></span><span class="nm">국내주식</span><span class="pc">12%</span></div>
+          <div class="row"><span class="sw" style="background:#043B72"></span><span class="nm">선진국주식</span><span class="pc">30%</span></div>
+          <div class="row"><span class="sw" style="background:#FAB072"></span><span class="nm">신흥국·테마</span><span class="pc">10%</span></div>
+          <div class="row"><span class="sw" style="background:#0086B8"></span><span class="nm">리츠·대체</span><span class="pc">13%</span></div>
+          <div class="row"><span class="sw" style="background:#AD624E"></span><span class="nm">채권·TDF</span><span class="pc">28%</span></div>
+          <div class="row"><span class="sw" style="background:#84888B"></span><span class="nm">예금·현금성</span><span class="pc">7%</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="pf-head"><span class="pf-name">성장형</span><span class="pf-risk">위험 70 / 안전 30</span></div>
+        <div class="pf-stat">기대수익률 <b>6.5~8%</b> · 변동성 높음 <span class="pill ex">예시·세전</span></div>
+        <div class="bar">
+          <span style="width:15%;background:#F58220"></span><span style="width:33%;background:#043B72"></span><span style="width:15%;background:#FAB072"></span><span style="width:7%;background:#0086B8"></span><span style="width:25%;background:#AD624E"></span><span style="width:5%;background:#84888B"></span>
+        </div>
+        <div class="legend">
+          <div class="row"><span class="sw" style="background:#F58220"></span><span class="nm">국내주식</span><span class="pc">15%</span></div>
+          <div class="row"><span class="sw" style="background:#043B72"></span><span class="nm">선진국주식</span><span class="pc">33%</span></div>
+          <div class="row"><span class="sw" style="background:#FAB072"></span><span class="nm">신흥국·테마</span><span class="pc">15%</span></div>
+          <div class="row"><span class="sw" style="background:#0086B8"></span><span class="nm">리츠·대체</span><span class="pc">7%</span></div>
+          <div class="row"><span class="sw" style="background:#AD624E"></span><span class="nm">채권·TDF</span><span class="pc">25%</span></div>
+          <div class="row"><span class="sw" style="background:#84888B"></span><span class="nm">예금·현금성</span><span class="pc">5%</span></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="note">위험자산 = 국내주식 + 선진국주식 + 신흥국·테마 + 리츠·대체. 세 유형 모두 위험자산 합계가 <b>70%를 넘지 않고</b>, 안전자산(채권·TDF·예금)이 <b>30% 이상</b>이 되도록 맞췄습니다.</div>
+  </section>
+
+  <!-- 5 -->
+  <section id="s5">
+    <div class="rule"></div>
+    <h2><span class="sec-no">05</span>추천 상품 라인업 (예시)</h2>
+    <p class="sec-sub">아래 상품·티커·보수는 자산군별 구성을 보여주기 위한 예시입니다. 집행 전 실제 상품과 보수를 확인하십시오.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>자산군</th><th>예시 상품</th><th>유형</th><th>분류</th><th class="num">예상 TER</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="asset">국내주식</span></td><td>TIGER 200 / KODEX 200</td><td>ETF</td><td><span class="pill risk">위험</span></td><td class="num">0.05~0.15%</td></tr>
+          <tr><td><span class="asset">선진국주식</span></td><td>TIGER 미국S&amp;P500</td><td>ETF</td><td><span class="pill risk">위험</span></td><td class="num">0.07%</td></tr>
+          <tr><td><span class="asset">신흥국·테마</span></td><td>TIGER 미국필라델피아반도체 등</td><td>ETF</td><td><span class="pill risk">위험</span></td><td class="num">0.40~0.50%</td></tr>
+          <tr><td><span class="asset">리츠·대체</span></td><td>TIGER 리츠부동산인프라</td><td>ETF</td><td><span class="pill risk">위험</span></td><td class="num">0.29%</td></tr>
+          <tr><td><span class="asset">채권·TDF</span></td><td>미래에셋 전략배분TDF2045 / KODEX 국고채</td><td>펀드·ETF</td><td><span class="pill safe">안전 편입</span></td><td class="num">0.20~0.70%</td></tr>
+          <tr><td><span class="asset">예금·현금성</span></td><td>원리금보장 예금 · MMF</td><td>예금·펀드</td><td><span class="pill safe">안전</span></td><td class="num">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">저비용 코어(지수 ETF)로 뼈대를 세우고, 신흥국·테마는 새틀라이트로 소수만 둡니다. 안전자산 30% 슬롯은 <b>적격 TDF</b>로 채우면 글라이드패스까지 자동으로 반영됩니다.</div>
+  </section>
+
+  <!-- 6 -->
+  <section id="s6">
+    <div class="rule"></div>
+    <h2><span class="sec-no">06</span>리밸런싱 &amp; 모니터링 계획</h2>
+    <p class="sec-sub">전망에 베팅하지 않고, 정해진 주기와 트리거에 따라 기계적으로 유지·조정합니다.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>주기</th><th>점검 항목</th><th>조정 트리거</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="asset">분기 (3개월)</span></td><td>자산군별 비중 점검</td><td>목표 대비 ±5%p 이상 이탈 시 원위치</td></tr>
+          <tr><td><span class="asset">반기 (6개월)</span></td><td>성과·보수 점검</td><td>벤치마크 대비 부진 지속 또는 TER 상승 시 교체 검토</td></tr>
+          <tr><td><span class="asset">연 1회</span></td><td>글라이드패스 재조정</td><td>은퇴 시점에 맞춰 위험자산 비중 단계적 축소</td></tr>
+          <tr><td><span class="asset">수시 (연말)</span></td><td>납입·세액공제 한도</td><td>900만원 한도 소진 여부 확인, 연내 추가 납입</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section id="s7">
+    <div class="rule"></div>
+    <h2><span class="sec-no">07</span>유의사항</h2>
+    <div class="card">
+      <ul class="disc" style="margin:0; padding-left:18px;">
+        <li>본 자료의 <b>상품명·총보수(TER)·기대수익률·배분 비중은 설명을 위한 예시</b>이며, 특정 상품의 매수·매도를 권유하는 것이 아닙니다.</li>
+        <li>세액공제 한도·공제율·연금수령 세율 등 <b>세법 및 퇴직연금 제도는 변경될 수 있으므로</b>, 집행 시점에 최신 규정과 본인 소득요건을 반드시 확인하십시오.</li>
+        <li>예금 등 원리금보장 상품을 제외한 투자상품은 <b>원금이 보장되지 않으며</b>, 기대수익률은 미래 성과를 약속하지 않습니다.</li>
+        <li>IRP는 장기 연금자산입니다. <b>중도해지·일시금 수령 시 기타소득세(16.5%)</b>와 그동안 받은 세액공제 혜택의 환원이 발생할 수 있습니다.</li>
+        <li>레버리지·인버스 등 일부 상품은 퇴직연금 계좌에 <b>편입이 제한</b>됩니다.</li>
+      </ul>
+    </div>
+    <footer>
+      미래에셋증권 WM · IRP 운용상품 제안서 · 작성 2026-10-01 · 내부 검토용 — 외부 배포 전 컴플라이언스 확인 필요.
+    </footer>
+  </section>
+
+</div>
+
+<script>
+  (function () {
+    var KEY = 'irp-theme';
+    var root = document.documentElement;
+    var btn = document.getElementById('themeBtn');
+    function sysDark() { return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; }
+    function isDark() {
+      var t = root.getAttribute('data-theme');
+      return t === 'dark' || (!t && sysDark());
+    }
+    function label() { btn.textContent = isDark() ? '☀ 라이트' : '☾ 다크'; }
+    try {
+      var saved = localStorage.getItem(KEY);
+      if (saved === 'dark' || saved === 'light') root.setAttribute('data-theme', saved);
+    } catch (e) {}
+    label();
+    btn.addEventListener('click', function () {
+      var next = isDark() ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem(KEY, next); } catch (e) {}
+      label();
+    });
+    document.getElementById('printBtn').addEventListener('click', function () { window.print(); });
+  })();
+</script>
+</body>
+</html>
