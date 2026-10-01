@@ -64,17 +64,18 @@ artifact-design, artifact-diagramming, artifact-capabilities, dataviz,
 code-review, security-review, simplify, init, run, loop, claude-api,
 update-config, keybindings-help, workflow-authoring, session-start-hook
 
-**이 계정에만 있던 것으로 보이는 스킬** — 새 계정에는 없습니다:
+**이 계정에만 있던 스킬** — ✅ **2026-10-01 백업 완료**. 본문 전문이
+[`skills/`](skills/) 에 있습니다(원본과 바이트 단위 일치 확인). 복원 방법은
+[`skills/README.md`](skills/README.md).
 
-| 스킬 | 역할 | 소실 시 영향 |
-|---|---|---|
-| **mas-design** | 미래에셋 브랜드 디자인 기준(오렌지/블루, 승인 폰트, 표·차트 스타일, 한/영 UI 규칙, 품질 점검) | 브리핑·제안서의 브랜드 일관성이 깨짐 |
-| **fin-data-integrity** | 금융 수치 검증 절차(주장 대장 등록 → 산술·단위·계열 검산 → 빌드) | 시황·전망 자료의 수치 검증 절차가 사라짐 |
-| **morning** | 모닝 브리프 렌더링·주간 작업 등록 | 모닝 브리프 자동화에 영향 |
+| 스킬 | 역할 | 소실 시 영향 | 상태 |
+|---|---|---|---|
+| **mas-design** | 미래에셋 브랜드 디자인 기준(오렌지/블루, 승인 폰트, 표·차트 스타일, 한/영 UI 규칙, 품질 점검) | 브리핑·제안서의 브랜드 일관성이 깨짐 | ✅ `skills/mas-design/` |
+| **fin-data-integrity** | 금융 수치 검증 절차(주장 대장 등록 → 산술·단위·계열 검산 → 빌드) | 시황·전망 자료의 수치 검증 절차가 사라짐 | ✅ `skills/fin-data-integrity/` (실행 코드 `scripts/check_claims.py` 포함) |
 
-> **계정 종료 전에 해야 할 일**: 이 세 스킬의 본문(SKILL.md와 참조 파일)을 저장소로 내보내
-> `docs/claude-handoff/skills/` 에 커밋해 두면, 새 계정에서 그대로 다시 만들 수 있습니다.
-> 지금 대화에서 "스킬 본문도 백업해줘"라고 요청하시면 추출해 드립니다.
+> **정정** — 이 표에는 `morning` 도 "계정 고유"로 적혀 있었으나, 2026-10-01 확인 결과
+> Anthropic 기본 제공본(`/mnt/skills/examples/morning`)과 **폴더 전체가 완전히 동일**했습니다.
+> 계정과 무관하게 새 계정에도 있으므로 백업·복원이 필요 없습니다. 재등록 대상은 **2종**입니다.
 
 ---
 
@@ -128,8 +129,49 @@ update-config, keybindings-help, workflow-authoring, session-start-hook
 - [ ] 새 대화에서 `docs/claude-handoff/` 읽히기 (README의 부팅 프롬프트)
 - [ ] Gmail 커넥터 재연결
 - [ ] Gamma 커넥터 재연결
-- [ ] 사용자 지정 스킬 3종 재등록 (계정 종료 전에 본문 백업 필수)
+- [x] ~~사용자 지정 스킬 본문 백업~~ — **2026-10-01 완료**, `skills/` 에 있음
+- [ ] 사용자 지정 스킬 **2종** 재등록 (`mas-design`, `fin-data-integrity`) — `skills/README.md` 참고
 - [ ] Routine 재등록 — 모닝 07:30, 장마감 16:10 **먼저**
 - [ ] Routine 재등록 — 리포트 배포, ELS 점검 2건, 펀드·ETF·자료실 갱신
 - [ ] 다음 날 아침 브리핑이 정상 생성되는지 확인
 - [ ] 엑셀 산식 원장 5종을 다시 발행할지 결정 (파일은 저장소에 있음)
+
+---
+
+## 7. 검증 기록 (2026-10-01)
+
+이 인수인계 묶음이 **실제 계정 상태와 맞는지** 대조한 결과입니다. 계정을 종료하면 다시
+확인할 수 없으므로 결과를 남겨 둡니다.
+
+| 항목 | 방법 | 결과 |
+|---|---|---|
+| Routine 19건 | 계정의 실제 예약 목록과 `routines.json` 을 이름으로 대조 | ✅ **19/19 전부 일치** (운영 12건 · 폐기 7건) |
+| 스킬 백업 | 원본 폴더와 `skills/` 를 `diff -r` | ✅ 2종 모두 바이트 단위 일치 |
+| `morning` 스킬 분류 | 기본 제공본과 폴더 전체 비교 | ⚠️ **정정** — 기본 제공본과 동일. 계정 고유 아님 |
+| `CLAUDE.md` 의 문서 링크 | 가리키는 경로 6개 실재 확인 | ✅ 전부 존재 |
+| ELS 데이터 최신성 | `data/els.js` 기준시각 | ✅ 2026-10-01 01:48 UTC · 38건 · `source: live` |
+
+### ⚠️ 넘기기 전에 손봐야 할 것
+
+**`ELS 신규 회차 점검·검증 (월·수·금 16:30 KST)`** (`trig_013cJbMp7sK3V`) 의 마지막 실행이
+**실패(`FAILED`)** 상태입니다. 나머지 운영 Routine 11건은 모두 `SUCCEEDED` 입니다.
+
+새 계정에서 이 Routine 을 그대로 다시 만들면 **같은 이유로 또 실패할 수 있습니다.**
+재등록 전에 실패 원인을 확인하십시오 — 실패한 실행의 로그는 옛 계정에만 남아 있으므로,
+**계정을 종료하기 전에** 보아 두는 편이 낫습니다.
+
+### 주의 — 가지를 `main` 으로 덮어쓰지 말 것
+
+`main` 은 이력이 **force-update** 된 적이 있습니다. 그래서 옛 작업 가지의 커밋이 `main` 의
+조상으로 잡히지 않습니다(SHA 계보만 끊겼을 뿐 내용은 `main` 에 들어가 있습니다).
+
+`git rev-list --count origin/main..<가지>` 가 큰 수를 뱉어도 그것만으로 "미병합 작업"이라고
+단정하지 마십시오. **파일 단위로 대조**해서 그 가지에만 있는 파일이 있는지 먼저 보십시오.
+
+```bash
+comm -23 <(git ls-tree -r --name-only <가지> | sort) \
+         <(git ls-tree -r --name-only origin/main | sort)
+```
+
+결과가 비어 있으면 그 가지의 내용은 `main` 에 모두 있습니다.
+비어 있지 않다면 **덮어쓰기 전에 반드시 보고하십시오.**
