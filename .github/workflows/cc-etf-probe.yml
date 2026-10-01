@@ -1,0 +1,72 @@
+name: ETFCHECK 관찰 (필드 매핑 확인용)
+
+# 수집기가 아니다. ETFCHECK 이 어떤 주소로 어떤 모양의 값을 주는지
+# 눈으로 확인하려고 부른다. data/ 는 건드리지 않고 관찰 결과만
+# tools/etfcheck-discovery/ 에 커밋한다.
+#
+# 클로드 세션에서는 etfcheck.co.kr 로 CONNECT 가 403 이라 붙지 못한다.
+# 그래서 원천을 보는 일은 전부 러너 몫이다.
+
+# 부를 때만 돈다. 밀어 넣을 때마다 도는 것으로 두었더니 수집기를 고칠
+# 때마다 관찰까지 같이 돌았다. 관찰은 원천이 바뀐 것 같을 때만 하면 된다.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cc-etf-probe-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Playwright 설치
+        run: npm i -D playwright@1.56.1 && npx playwright install --with-deps chromium
+
+      - name: 관찰
+        id: probe
+        continue-on-error: true
+        run: node scripts/probe_etfcheck.mjs
+
+      - name: 관찰 결과 커밋
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/etfcheck-discovery || true
+          if git diff --cached --quiet; then
+            echo "남은 관찰 결과가 없다 — 커밋 생략"
+            exit 0
+          fi
+          git commit -m "chore(etf): ETFCHECK 관찰 결과 ($(date -u +%Y-%m-%d\ %H:%M))"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+          done
+          exit 1
+
+      - name: 요약
+        if: always()
+        run: |
+          {
+            echo "### ETFCHECK 관찰"
+            echo ""
+            if [ -f tools/etfcheck-discovery/report.md ]; then
+              head -c 60000 tools/etfcheck-discovery/report.md
+            else
+              echo "관찰 결과 파일이 없습니다 — 스크립트가 시작조차 못 했을 수 있습니다."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

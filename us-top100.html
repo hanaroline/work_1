@@ -217,6 +217,17 @@ caption{caption-side:bottom; text-align:left; font-size:14px; color:var(--muted)
   #list-table{min-width:760px;}
   #list-table thead th:nth-child(4), #list-table tbody td:nth-child(4){display:none;}
 }
+/* 열이 13개인 이 표는 섹터 이름을 줄여 적어 넓은 화면에서 칸 안에 들어온다.
+   노트북 폭에서는 여기서 한 번 더 줄인다 — 먼저 접어도 되는 것(영문 사명·여백·기업명
+   최소폭) 순서다. 이 블록은 위 1080px 블록 **뒤에** 두어야 한다. 앞에 두면 뒤따르는
+   #list-table tbody td 규칙(padding:10px)에 덮여 아무 일도 하지 않는다. */
+/* 한글 머리글이 단어 중간에서 갈리지 않게 한다 — "상승여/력" 으로 접혔다. */
+#list-table thead th{word-break:keep-all;}
+@media (max-width:1160px){
+  #list-table tbody td, #list-table thead th{padding:10px 7px;}
+  #list-table .co{min-width:120px;}
+  #list-table .co .sm{display:none;}
+}
 .empty-row td{text-align:center; color:var(--muted); padding:34px 16px;}
 .up{color:var(--error);} .down{color:var(--blue-soft);} .flat{color:var(--muted);}
 .list-note{font-size:14px; color:var(--muted); margin-top:10px; line-height:1.6;}
@@ -754,11 +765,9 @@ var COMPANIES = [
   /* 미국 상장 외국 기업 두 곳. 미국 증시에서 시총 상위이고 사용자가 명시적으로
      요청해 담았다 — 화면에서는 이름 옆 "해외" 표시와 본사 소재지로 구분한다. */
   ['TSM','Taiwan Semiconductor','TSMC','it'],
-  ['GOOGL','Alphabet','알파벳(구글)','comm'],
   ['AMZN','Amazon.com','아마존','cd'],
   ['META','Meta Platforms','메타 플랫폼스','comm'],
   ['AVGO','Broadcom','브로드컴','it'],
-  ['TSLA','Tesla','테슬라','cd'],
   ['BRK-B','Berkshire Hathaway B','버크셔 해서웨이 B','fin'],
   ['JPM','JPMorgan Chase','JP모간체이스','fin'],
   ['WMT','Walmart','월마트','cs'],
@@ -784,7 +793,6 @@ var COMPANIES = [
   ['CVX','Chevron','셰브론','eng'],
   ['WFC','Wells Fargo','웰스파고','fin'],
   ['CRM','Salesforce','세일즈포스','it'],
-  ['IBM','IBM','IBM','it'],
   ['ABT','Abbott Laboratories','애보트','hc'],
   ['MCD',"McDonald's",'맥도날드','cd'],
   ['GE','GE Aerospace','GE에어로스페이스','ind'],
@@ -807,17 +815,14 @@ var COMPANIES = [
   ['CAT','Caterpillar','캐터필러','ind'],
   ['VZ','Verizon Communications','버라이즌','comm'],
   ['AMGN','Amgen','암젠','hc'],
-  ['BSX','Boston Scientific','보스턴사이언티픽','hc'],
   ['T','AT&T','AT&T','comm'],
   ['SPGI','S&P Global','S&P글로벌','fin'],
   ['PGR','Progressive','프로그레시브','fin'],
-  ['NEE','NextEra Energy','넥스트에라에너지','util'],
   ['BLK','BlackRock','블랙록','fin'],
   ['SYK','Stryker','스트라이커','hc'],
   ['ETN','Eaton','이튼','ind'],
   ['DHR','Danaher','다나허','hc'],
   ['UNP','Union Pacific','유니온퍼시픽','ind'],
-  ['HON','Honeywell International','허니웰','ind'],
   ['LOW',"Lowe's",'로우스','cd'],
   ['TJX','TJX Companies','TJX','cd'],
   ['C','Citigroup','시티그룹','fin'],
@@ -844,12 +849,22 @@ var COMPANIES = [
   ['DE','Deere & Co.','디어','ind'],
   ['INTC','Intel','인텔','it'],
   ['INTU','Intuit','인튜이트','it'],
-  ['AMT','American Tower','아메리칸타워','re'],
   ['MO','Altria Group','알트리아','cs'],
   ['SO','Southern Company','서던컴퍼니','util'],
   ['UPS','United Parcel Service','UPS','ind'],
   ['ELV','Elevance Health','엘리번스헬스','hc'],
-  ['ICE','Intercontinental Exchange','인터컨티넨털 익스체인지','fin']
+  ['ICE','Intercontinental Exchange','인터컨티넨털 익스체인지','fin'],
+  /* 주간 목록 점검으로 편입한 종목(scripts/us100_list_tool.py) */
+  /* 주간 목록 점검으로 편입한 종목(scripts/us100_list_tool.py) */
+  ['SPCX','SpaceX','스페이스X','ind'],
+  ['LRCX','Lam Research','램리서치','it'],
+  ['AMAT','Applied Materials','어플라이드 머티리얼즈','it'],
+  /* 주간 목록 점검으로 편입한 종목(scripts/us100_list_tool.py) */
+  ['IBM','IBM','IBM','it'],
+  ['GOOGL','Alphabet','알파벳(구글)','comm'],
+  ['TSLA','Tesla','테슬라','cd'],
+  /* 주간 목록 점검으로 편입한 종목(scripts/us100_list_tool.py) */
+  ['NEE','NextEra Energy','넥스트에라에너지','util'],
 ];
 
 var SECTORS = {
@@ -879,24 +894,31 @@ var KEYWORDS = {
   TXN: '반도체', ADI: '반도체', QCOM: '반도체 모바일', ANET: '네트워크 장비', CSCO: '네트워크 장비',
   TSM: '반도체 파운드리 위탁생산 대만 TSMC', ASML: '반도체 장비 노광 EUV 네덜란드',
   PANW: '보안 사이버', CRM: '소프트웨어 클라우드', NOW: '소프트웨어', ORCL: '소프트웨어 클라우드 데이터베이스',
-  MSFT: '소프트웨어 클라우드 AI', ADBE: '소프트웨어', INTU: '소프트웨어', IBM: '소프트웨어 컨설팅',
-  PLTR: '소프트웨어 AI 데이터', AAPL: '스마트폰 하드웨어', GOOGL: '검색 광고 AI', META: '소셜 광고',
+  MSFT: '소프트웨어 클라우드 AI', ADBE: '소프트웨어', INTU: '소프트웨어', PLTR: '소프트웨어 AI 데이터', AAPL: '스마트폰 하드웨어', META: '소셜 광고',
   AMZN: '이커머스 클라우드', NFLX: '스트리밍 미디어', DIS: '미디어 콘텐츠', CMCSA: '미디어 케이블',
-  TSLA: '전기차 자동차', LLY: '제약 비만', MRK: '제약', PFE: '제약', ABBV: '제약', BMY: '제약',
+  LLY: '제약 비만', MRK: '제약', PFE: '제약', ABBV: '제약', BMY: '제약',
   AMGN: '바이오', VRTX: '바이오', GILD: '바이오', ISRG: '의료기기 로봇', MDT: '의료기기', SYK: '의료기기',
-  BSX: '의료기기', ABT: '의료기기 진단', TMO: '생명과학 장비', DHR: '생명과학 장비',
+  ABT: '의료기기 진단', TMO: '생명과학 장비', DHR: '생명과학 장비',
   UNH: '건강보험', ELV: '건강보험', JPM: '은행', BAC: '은행', WFC: '은행', C: '은행',
   GS: '투자은행', MS: '투자은행', BLK: '자산운용', BX: '사모펀드 대체투자', KKR: '사모펀드 대체투자',
   SCHW: '증권 브로커', V: '결제 카드', MA: '결제 카드', AXP: '결제 카드', FI: '결제 인프라',
   SPGI: '신용평가 지수', ICE: '거래소', CB: '보험', PGR: '보험', MMC: '보험 중개',
   XOM: '석유 에너지', CVX: '석유 에너지', COP: '석유 에너지', LIN: '산업용가스 화학',
-  NEE: '전력 신재생', SO: '전력', PLD: '리츠 물류창고', AMT: '리츠 통신타워',
-  BRK: '지주회사', 'BRK-B': '지주회사 보험', CAT: '건설기계', DE: '농기계', GE: '항공엔진',
-  RTX: '방산 항공', LMT: '방산', HON: '산업재 복합', ETN: '전력기기', UNP: '철도', UPS: '물류 배송',
+  SO: '전력', PLD: '리츠 물류창고', BRK: '지주회사', 'BRK-B': '지주회사 보험', CAT: '건설기계', DE: '농기계', GE: '항공엔진',
+  RTX: '방산 항공', LMT: '방산', ETN: '전력기기', UNP: '철도', UPS: '물류 배송',
   ADP: '급여 아웃소싱', WMT: '유통 소매', COST: '유통 창고형', HD: '주택개조 유통', LOW: '주택개조 유통',
   TJX: '오프프라이스 유통', MCD: '외식 프랜차이즈', SBUX: '커피 외식', BKNG: '여행 예약',
   KO: '음료', PEP: '음료 스낵', PG: '생활용품', MO: '담배', PM: '담배',
-  JNJ: '제약 소비재', TMUS: '통신', VZ: '통신', T: '통신'
+  JNJ: '제약 소비재', TMUS: '통신', VZ: '통신', T: '통신',
+  
+  SPCX: '우주 발사 위성 스타링크 스페이스X 그록 AI',
+  LRCX: '반도체 장비 식각 증착',
+  AMAT: '반도체 장비 증착 이온주입',
+  IBM: '소프트웨어 컨설팅',
+  GOOGL: '검색 광고 AI',
+  TSLA: '전기차 자동차',
+  
+  NEE: '전력 신재생',
 };
 
 /* ------------------------------------------------------------
@@ -923,9 +945,6 @@ var PROFILE_KO = {
   NVDA: ['AI 데이터센터용 GPU 와 가속 컴퓨팅 플랫폼',
     '데이터센터 부문이 매출의 대부분을 차지하며, GPU 와 함께 쓰는 CUDA 소프트웨어 생태계가 진입장벽입니다. 게임용 지포스, 자동차·로보틱스, 전문 시각화가 나머지 부문입니다.',
     '데이터센터 GPU, CUDA, 네트워킹(NVLink·InfiniBand), 게임 GPU, 자동차'],
-  GOOGL: ['검색 광고와 유튜브, 구글 클라우드',
-    '검색·유튜브 광고가 매출의 큰 축이고, 구글 클라우드가 성장을 담당합니다. 안드로이드·크롬·지도 같은 무료 플랫폼으로 이용자를 모아 광고로 수익화하는 구조이며, 최근에는 자체 AI 모델(제미나이)과 TPU 를 함께 밀고 있습니다.',
-    '검색 광고, 유튜브, 구글 클라우드, 안드로이드, 제미나이·TPU'],
   AMZN: ['이커머스와 클라우드(AWS), 광고',
     '매출은 온라인 유통이 크지만 영업이익의 대부분은 AWS 에서 나옵니다. 여기에 빠르게 커지는 광고 사업과 프라임 구독이 얹혀 있고, 물류망 자체가 경쟁력이자 고정비입니다.',
     'AWS 클라우드, 온라인 유통, 광고, 프라임 구독, 물류'],
@@ -935,9 +954,6 @@ var PROFILE_KO = {
   AVGO: ['통신·데이터센터용 반도체와 인프라 소프트웨어',
     '네트워킹 칩과 맞춤형 AI 가속기(ASIC), 무선통신 부품이 반도체 부문의 축이고, VM웨어·CA 등을 인수해 만든 인프라 소프트웨어가 안정적인 구독 매출을 담당합니다. 인수·통합으로 성장해 온 회사입니다.',
     '네트워킹 칩, 맞춤형 AI 가속기, 무선 부품, VM웨어, 스토리지'],
-  TSLA: ['전기차 제조와 에너지 저장, 자율주행 소프트웨어',
-    '모델 3·Y 가 판매의 대부분이며, 가격 정책이 마진에 바로 반영됩니다. 에너지 저장장치(메가팩)와 FSD 소프트웨어·로보택시, 휴머노이드 로봇이 회사가 내세우는 성장축입니다.',
-    '전기차, 에너지 저장(메가팩), FSD·자율주행, 슈퍼차저, 로보틱스'],
   'BRK-B': ['보험 인수와 사업회사 지주, 대규모 주식 포트폴리오',
     '가이코 등 보험에서 나오는 보험료 운용자금(플로트)으로 철도(BNSF)·에너지·제조·유통 자회사를 사들여 굴리는 구조입니다. 애플 등 상장주식 포트폴리오와 대규모 현금이 순자산의 큰 부분을 차지합니다.',
     '보험(가이코), BNSF 철도, 버크셔 에너지, 제조·유통 자회사, 주식 포트폴리오'],
@@ -1010,9 +1026,6 @@ var PROFILE_KO = {
   CRM: ['기업용 고객관계관리(CRM) 소프트웨어',
     '영업·서비스·마케팅 클라우드의 구독 매출이 기반이며, 데이터 클라우드와 AI 에이전트(에이전트포스)가 성장 축입니다. 성장률이 낮아진 대신 영업이익률 개선과 주주환원을 내세우는 국면입니다.',
     '세일즈·서비스 클라우드, 데이터 클라우드, 슬랙, 태블로, AI 에이전트'],
-  IBM: ['하이브리드 클라우드 소프트웨어와 IT 컨설팅, 메인프레임',
-    '레드햇을 중심으로 한 소프트웨어, 컨설팅, 인프라(메인프레임 z 시리즈)의 세 부문 구조입니다. 신형 메인프레임 출시 주기와 컨설팅 수주, 왓슨x AI 채택이 실적 변수입니다.',
-    '레드햇, 왓슨x AI, 컨설팅, 메인프레임(z), 양자컴퓨팅'],
   ABT: ['진단·의료기기·영양제의 복합 헬스케어',
     '연속혈당측정기(리브레)가 성장의 중심이고, 심혈관 기기·진단·영양(시밀락) 부문이 균형을 이룹니다. 코로나 검사 특수가 사라진 뒤 기저 성장률이 정상화된 상태입니다.',
     '리브레(혈당), 심혈관 기기, 진단, 영양(시밀락), 제네릭 의약품'],
@@ -1079,9 +1092,6 @@ var PROFILE_KO = {
   AMGN: ['바이오의약품과 바이오시밀러',
     '골질환(프롤리아)·염증·항암 등 기존 제품이 특허 만료를 맞는 가운데, 비만 치료제(마리타이드) 임상 결과가 최대 관심사입니다. 호라이즌 인수로 희귀질환 제품군을 더했습니다.',
     '프롤리아·엔브렐, 희귀질환(호라이즌), 바이오시밀러, 비만 파이프라인'],
-  BSX: ['심혈관·중재시술 의료기기',
-    '심장 부정맥 치료(파포·전기천공)와 구조적 심장질환 기기가 성장을 이끌며, 의료기기 업종에서 가장 높은 성장률을 유지해 왔습니다. 시술 건수와 신제품 승인 속도가 실적 지표입니다.',
-    '전기천공(파포), 부정맥, 워치맨, 내시경, 인터벤션'],
   T: ['미국 이동통신과 광케이블 인터넷',
     '무선 후불 가입자와 광케이블(파이버) 가입자 순증이 실적의 축이며, 미디어 사업을 정리하고 통신에 집중했습니다. 부채 축소와 배당 유지가 투자 포인트입니다.',
     '후불 무선, 광케이블 인터넷, 기업 통신, 부채 감축'],
@@ -1091,9 +1101,6 @@ var PROFILE_KO = {
   PGR: ['자동차보험 중심의 손해보험',
     '직판 채널과 정교한 요율 산정으로 시장 점유율을 늘려 왔고, 합산비율(콤바인드 레이시오)이 실적의 핵심 지표입니다. 수리비·중고차 가격 등 손해율 요인에 민감합니다.',
     '자동차보험, 직판 채널, 주택보험, 상업용 차량, 요율 산정'],
-  NEE: ['플로리다 전력 사업과 신재생 발전',
-    '규제 요금으로 안정적 이익을 내는 플로리다 전력(FPL)과, 풍력·태양광·저장장치를 개발하는 에너지 리소시스가 결합된 구조입니다. 금리와 세액공제 정책, 데이터센터 전력 수요가 변수입니다.',
-    '플로리다 전력(FPL), 풍력·태양광, 배터리 저장, 송전, 데이터센터 전력'],
   BLK: ['세계 최대 자산운용사와 리스크 시스템(알라딘)',
     'ETF(아이셰어즈)를 중심으로 한 운용보수가 수익의 축이며, 운용자산 규모와 순유입액이 실적 지표입니다. 알라딘 소프트웨어 구독과 사모·인프라 확장이 마진을 보완합니다.',
     '아이셰어즈 ETF, 인덱스·액티브 운용, 알라딘, 사모·인프라'],
@@ -1109,9 +1116,6 @@ var PROFILE_KO = {
   UNP: ['미국 서부 화물 철도',
     '석탄·곡물·컨테이너 등 화물을 나르며, 열차 길이·정시성 같은 운영 효율(오퍼레이팅 레이시오)이 이익률을 좌우합니다. 산업 생산과 수출입 물동량에 민감합니다.',
     '벌크(곡물·석탄), 인터모달, 산업재 수송, 운영 효율'],
-  HON: ['항공부품·자동화·에너지의 산업 복합기업',
-    '항공(엔진 부품·항전)과 빌딩 자동화, 에너지·소재 부문으로 나뉘며, 소재(어드밴스드 머티리얼즈) 분사와 사업 분리를 추진해 왔습니다. 항공 애프터마켓이 이익의 중심입니다.',
-    '항공 항전·부품, 빌딩 자동화, 산업 자동화, 에너지·소재'],
   LOW: ['주택개조·건축자재 유통(2위)',
     '일반 소비자(DIY) 비중이 홈디포보다 높아 주택 경기와 소비 심리에 민감하며, 전문 시공업자 매출을 늘리는 것이 과제입니다. 동일점포 매출과 마진 개선이 실적 지표입니다.',
     'DIY 자재, 프로 고객 확대, 가전·정원, 옴니채널'],
@@ -1190,9 +1194,6 @@ var PROFILE_KO = {
   INTU: ['중소기업 회계(퀵북스)와 세무(터보택스) 소프트웨어',
     '세무 시즌에 매출이 몰리는 계절성이 있고, 퀵북스 구독과 결제·급여 부가서비스가 안정적 성장을 담당합니다. AI 자동화(인튜이트 어시스트)와 크레딧카마 연계가 성장 재료입니다.',
     '퀵북스, 터보택스, 크레딧카마, 메일침프, AI 어시스트'],
-  AMT: ['통신 타워 리츠(임대)',
-    '통신사에 타워 공간을 장기 임대하며, 한 타워에 여러 사업자를 얹을수록 마진이 좋아지는 구조입니다. 금리와 통신사 설비투자, 해외(인도 매각 후) 포트폴리오가 변수입니다.',
-    '통신 타워 임대, 장기 계약·에스컬레이터, 데이터센터(코어사이트)'],
   MO: ['미국 담배(말보로)와 무연 제품',
     '연소 담배 물량이 매년 줄지만 가격 인상으로 이익을 유지하는 구조이며, 높은 배당수익률이 투자 포인트입니다. 니코틴 파우치·전자담배 등 무연 전환 성과가 관건입니다.',
     '말보로(미국), 무연·니코틴 파우치, 시가, 가격 인상 전가'],
@@ -1207,7 +1208,28 @@ var PROFILE_KO = {
     '고용주 보험, 메디케이드·메디케어, 카렐론(PBM·행동건강)'],
   ICE: ['거래소 운영과 채권·모기지 데이터',
     '에너지·금융 선물 거래소(ICE·NYSE) 수수료와, 채권·모기지 데이터·시스템 구독이 두 축입니다. 변동성이 커지면 거래 수수료가 늘고, 데이터 부문은 경기와 무관하게 안정적입니다.',
-    '에너지 선물(브렌트), NYSE, 채권·ETF 데이터, 모기지 기술']
+    '에너지 선물(브렌트), NYSE, 채권·ETF 데이터, 모기지 기술'],
+  SPCX: ['우주 발사·스타링크 위성 인터넷·AI 의 세 부문',
+    '회사는 스페이스(Space)·커넥티비티(Connectivity)·AI 세 부문으로 나뉩니다. 스페이스는 재사용 로켓(팰컨 9·팰컨 헤비)으로 상업·정부 위성을 쏘아 올리고 스타십과 드래건 우주선을 개발합니다. 커넥티비티는 저궤도 위성망 스타링크로 개인·기업·정부에 인터넷을 팝니다. AI 부문은 대형언어모델 그록과 X 플랫폼, AI 연산 인프라를 묶어 운영합니다. 최근 상장해 시세 이력이 짧아 차트와 과거 실적이 다른 종목보다 얇게 보입니다.',
+    '재사용 로켓(팰컨 9), 스타링크 구독, 스타십·드래건, 그록·X, AI 인프라'],
+  LRCX: ['반도체 식각·증착 장비 — 웨이퍼를 깎고 막을 입히는 공정을 맡는다',
+    '웨이퍼에서 필요한 부분만 깎아 내는 식각 장비(Akara·Kiyo·Flex·Syndion 등)와 얇은 막을 입히는 증착 장비(ALTUS·SABRE·Striker·VECTOR 등)를 만들며, 첨단 로직과 메모리 양쪽 공정에 들어갑니다. 장비를 새로 파는 것 외에 재정비와 유지보수도 함께 하므로 투자가 꺾인 해의 완충이 됩니다. 매출은 미국·중국·한국·대만·일본·동남아·유럽에 걸쳐 있습니다.',
+    '식각, 증착, 로직·메모리 공정, 재정비·유지보수, 아시아 매출 비중'],
+  AMAT: ['반도체 전공정 장비를 가장 폭넓게 공급하는 회사',
+    '반도체 장비(Semiconductor Systems)와 서비스(AGS) 두 부문으로 나뉩니다. 장비 부문은 한 공정에 특화하기보다 식각·증착·급속열처리·평탄화(CMP)·계측·검사·이온주입·웨이퍼 패키징을 두루 공급해 투자 사이클 전반을 따라갑니다. 서비스 부문은 부품·업그레이드·유지보수와 공장 자동화 소프트웨어를 팔아 장비 판매보다 기복이 작습니다. 중국을 포함한 아시아 매출 비중이 커서 수출 규제 변화에 민감합니다.',
+    '식각·증착·CMP·이온주입, 계측·검사, AGS 서비스, 공장 자동화 소프트웨어, 중국 비중'],
+  IBM: ['하이브리드 클라우드 소프트웨어와 IT 컨설팅, 메인프레임',
+    '소프트웨어(레드햇 중심의 하이브리드 클라우드·AI 플랫폼), 컨설팅, 인프라(메인프레임 z 시리즈·스토리지), 그리고 고객의 하드웨어·소프트웨어 구매를 돕는 파이낸싱까지 네 부문으로 나뉩니다. 신형 메인프레임 출시 주기와 컨설팅 수주, 왓슨x AI 채택이 실적 변수이며, AWS·마이크로소프트·SAP 등과 제휴해 남의 클라우드 위에서도 도는 전략을 씁니다.',
+    '레드햇, 왓슨x AI, 컨설팅, 메인프레임(z), 파이낸싱'],
+  GOOGL: ['검색 광고와 유튜브, 구글 클라우드',
+    '구글 서비스(검색·유튜브·안드로이드·크롬·플레이), 구글 클라우드, 아더 베츠(교통·인터넷 등 초기 사업) 세 부문으로 나뉩니다. 검색·유튜브 광고가 이익의 큰 축이고 클라우드가 성장을 담당하며, 무료 플랫폼으로 이용자를 모아 광고로 수익화하는 구조입니다. 자체 AI 모델(제미나이)을 검색과 클라우드(버텍스 AI)에 붙이는 것이 지금의 축입니다.',
+    '검색 광고, 유튜브, 구글 클라우드, 안드로이드, 제미나이, 아더 베츠'],
+  TSLA: ['전기차 제조와 태양광·에너지 저장',
+    '자동차와 에너지 생산·저장 두 부문입니다. 모델 3·Y 판매가 자동차 부문의 대부분이라 가격 정책이 마진에 바로 반영되고, 규제 크레딧 판매와 앱 내 소프트웨어 업그레이드(FSD)가 이익에 더해집니다. 에너지 부문은 태양광 발전 제품과 저장장치(메가팩)를 만들어 팔고 설치까지 합니다. 회사가 장기 성장축으로 내세우는 로보택시·휴머노이드 로봇은 아직 별도 매출 부문으로 잡히지 않습니다.',
+    '전기차, 태양광·에너지 저장(메가팩), FSD 소프트웨어, 슈퍼차저, 규제 크레딧'],
+  NEE: ['플로리다 전력 사업과 신재생 발전',
+    '규제 요금으로 안정적 이익을 내는 플로리다 전력(FPL)과, 발전·저장 자산을 개발해 도매시장에 파는 에너지 리소시스(NEER) 두 부문입니다. 발전원은 풍력·태양광뿐 아니라 원자력과 천연가스까지 아우르며, 송배전망과 가스 파이프라인도 함께 보유합니다. 금리와 세액공제 정책, 데이터센터가 끌어가는 전력 수요가 실적 변수입니다.',
+    '플로리다 전력(FPL), 풍력·태양광, 배터리 저장, 원자력·가스, 송전, 데이터센터 전력'],
 };
 
 /* ------------------------------------------------------------
@@ -1223,7 +1245,7 @@ var PROFILE_KO = {
    "처음"의 기준은 판 문자열 + 파일 경로다. 새로 내려받은 파일은 판이 다르거나
    (같은 판이어도) 이름이 "us-top100 (1).html" 처럼 달라지므로 처음 상태로 열린다.
    ------------------------------------------------------------ */
-var BUILD = '2026-09-09.4';
+var BUILD = '2026-09-13.4';
 var STORE_KEYS = ['mas-us100-lang', 'mas-us100-favs', 'mas-us100-sel', 'mas-us100-auto',
   'mas-us100-ind', 'mas-us100-cmp', 'mas-us100-cmp-range', 'mas-us100-cmp-sets',
   'mas-us100-proxy', 'mas-us100-base', 'mas-us100-stream'];
@@ -1392,6 +1414,24 @@ function abroadTag(sym) {
     esc(t('해외', 'non-US')) + '</span>' : '';
 }
 function sectorName(code) { var s = SECTORS[code]; return s ? (lang === 'en' ? s[1] : s[0]) : '—'; }
+
+/* 목록 표에서만 쓰는 짧은 섹터 이름.
+   GICS 정식 이름("Consumer Discretionary")을 표에 그대로 넣으면 이 열이 233px 을 먹어
+   영문 화면에서 표가 칸(1134px)을 60px 넘겼다 — 화면을 아무리 넓혀도 .page 최대 폭이
+   1200px 이라 오른쪽 두 열(Target·Upside)이 잘린 채였다. 필터·요약·상세에서는 정식
+   이름을 그대로 쓰고, 표에서는 줄여 적되 칸에 정식 이름을 title 로 붙여 둔다. */
+var SECTOR_SHORT = {
+  it:   ['정보기술', 'Info tech'],        comm: ['커뮤니케이션', 'Comm services'],
+  cd:   ['임의소비재', 'Cons. disc.'],     cs:   ['필수소비재', 'Cons. staples'],
+  hc:   ['헬스케어', 'Health care'],      fin:  ['금융', 'Financials'],
+  ind:  ['산업재', 'Industrials'],        eng:  ['에너지', 'Energy'],
+  mat:  ['소재', 'Materials'],            util: ['유틸리티', 'Utilities'],
+  re:   ['부동산', 'Real estate']
+};
+function sectorShort(code) {
+  var s = SECTOR_SHORT[code];
+  return s ? (lang === 'en' ? s[1] : s[0]) : sectorName(code);
+}
 
 /* ------------------------------------------------------------
    3. 데이터 레이어 — CORS 프록시 병렬 폴백
@@ -1750,6 +1790,49 @@ function sampleSummary(sym) {
 /* ============================================================
    6. quoteSummary → 화면 모델로 정규화
    ============================================================ */
+/* ── 비율 맞대기 ────────────────────────────────────────────────────
+   **scripts/fetch_us100.py 의 reconcile_ratios 와 같은 규칙이다.** 상수와
+   시험 자료(data/fixtures/ratio_cases.json)를 함께 쓰고, PR 점검의
+   check_us100_ratios.mjs 가 두 쪽이 같은 답을 내는지 맞대어 본다.
+
+   왜 화면에도 두는가 — 수집기가 저장하는 스냅숏만 고치면 절반만 고친 것이다.
+   이 화면은 브라우저에서 **야후에 직접 붙어** 같은 값을 다시 받아 덮어쓴다.
+   거기에도 같은 잣대가 없으면, 실시간으로 볼 때는 여전히 PBR 1,499배가 찍힌다.
+
+   까닭과 문턱을 정한 경위는 파이썬 쪽 주석에 적어 두었다. */
+var RATIO_TOL = 3.0, RATIO_MIN_BASE = 1.0, RATIO_MAX_PER = 200.0, REVENUE_TOL = 5.0;
+
+function reconcileRatios(q) {
+  var dropped = [];
+  [['pbr', 'roe', 'ROE'], ['psr', 'netMargin', '순이익률']].forEach(function (t) {
+    var key = t[0], got = q[key], base = q[t[1]], per = q.per;
+    if (got == null || base == null || per == null) return;
+    if (per <= 0 || base <= 0 || got <= 0) return;
+    if (base < RATIO_MIN_BASE || per > RATIO_MAX_PER) return;   /* 잴 수 없는 자리 */
+    var want = per * base / 100;
+    if (!want) return;
+    var ratio = got / want;
+    if (ratio > RATIO_TOL || ratio < 1 / RATIO_TOL) {
+      dropped.push(key + ' ' + got + ' → 버림 (' + (ratio > 1 ? ratio : 1 / ratio).toFixed(1) + ' 배 어긋남)');
+      q[key] = null;
+    }
+  });
+  var rev = q.revenue, eps = q.eps, sh = q.shares, nm = q.netMargin;
+  if (rev != null && eps != null && sh != null && nm != null
+      && rev > 0 && eps > 0 && sh > 0 && nm >= RATIO_MIN_BASE) {
+    var w = eps * sh / (nm / 100);
+    if (w) {
+      var r2 = rev / w;
+      if (r2 > REVENUE_TOL || r2 < 1 / REVENUE_TOL) {
+        dropped.push('revenue ' + rev + ' → 버림 (' + (r2 > 1 ? r2 : 1 / r2).toFixed(1) + ' 배 어긋남)');
+        q.revenue = null;
+      }
+    }
+  }
+  return dropped;
+}
+if (typeof window !== 'undefined') window.reconcileRatios = reconcileRatios;
+
 function normalizeSummary(m) {
   var o = { profile: {}, quote: {}, target: {}, calendar: {}, surprises: [], epsTrend: [], financials: {}, events: [] };
 
@@ -1806,6 +1889,13 @@ function normalizeSummary(m) {
   q.revenue = raw(fd.totalRevenue); q.revenueGrowth = pctize(raw(fd.revenueGrowth));
   q.earningsGrowth = pctize(raw(fd.earningsGrowth));
   q.debtToEquity = raw(fd.debtToEquity); q.cash = raw(fd.totalCash); q.fcf = raw(fd.freeCashflow);
+
+  /* **단위·통화가 섞여 온 값을 여기서 버린다.** ADR 은 bookValue·totalRevenue 가
+     현지 기준으로 오는데 price·cap 은 ADR 기준이라 그대로 섞인다 — ASML 이
+     PBR 1,499배, TSMC 가 매출 31.8배(=TWD/USD 환율)로 찍히고 있었다.
+     모르는 것으로 두는 편이 틀린 것을 찍는 것보다 낫다. */
+  q.ratioNotes = reconcileRatios(q);
+  if (!q.ratioNotes.length) q.ratioNotes = null;
 
   /* 목표주가 · 투자의견 */
   o.target = { low: raw(fd.targetLowPrice), mean: raw(fd.targetMeanPrice), high: raw(fd.targetHighPrice),
@@ -2182,7 +2272,7 @@ function renderList() {
         '<td class="sym">' + esc(r.sym) + '</td>' +
         '<td class="co">' + esc(lang === 'en' ? r.en : r.ko) + abroadTag(r.sym) +
           (lang === 'en' ? '' : '<span class="sm">' + esc(r.en) + '</span>') + '</td>' +
-        '<td>' + esc(sectorName(r.sector)) + '</td>' +
+        '<td title="' + esc(sectorName(r.sector)) + '">' + esc(sectorShort(r.sector)) + '</td>' +
         '<td class="num' + flashCls(prevSeen, r) + '">' + (r.failed
           ? '<span class="badge none" title="' + esc(t('수집기가 이 종목 시세를 받지 못했습니다: ', 'The collector could not fetch this symbol: ') + r.note) + '">' +
             esc(t('조회 불가', 'no data')) + '</span>'

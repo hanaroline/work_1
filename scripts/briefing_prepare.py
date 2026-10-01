@@ -12,6 +12,29 @@ from briefing_lib import (
     d, DK, DE, DD, DS, n, pct, bp, eok, jo, esc,
     L, TH, THP, perf_cells, perf_line, tbl, sparkline, bar)
 
+# 생성형 AI 고지. 2026-09-30 에 넣었다.
+#
+# **자리를 히어로 바로 밑으로 잡은 이유.** 이 판은 사내 배포를 거쳐 아티팩트
+# 링크로도 나가고, 전체본은 인쇄하면 21쪽이다. 꼬리말에만 두면 끝까지 내려간
+# 사람만 본다 — 첫 쪽만 보고 고객 응대에 쓰는 것이 이 판의 실제 쓰임이므로,
+# 그 자리에서 이미 지나가 있어야 «분명히 고지»가 된다. 히어로 다음이면 첫
+# 화면과 인쇄 1쪽에 반드시 걸리고, 그날의 결론(01절)보다는 앞이다.
+#
+# **판을 가리지 않는다.** 모닝·장마감·해외 판이 모두 같은 방식으로 만들어지므로
+# 모닝에만 달면 나머지 판이 고지 없이 나간다. 그래서 kind 를 보지 않는다.
+#
+# 문구는 **받은 그대로** 싣는다 — 줄이거나 바꾸지 않는다. 영문은 같은 뜻을
+# 옮긴 것이고, 한/영 짝 검사(recheck·sweep)가 1:1 이어야 하므로 반드시 둘 다 둔다.
+AI_NOTICE_KO = ("본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 "
+                "작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.")
+AI_NOTICE_EN = ("This material was prepared with the use of generative AI from sources "
+                "believed to be reliable; we expressly disclose that its accuracy and "
+                "completeness cannot be guaranteed.")
+AI_NOTICE = ('<div class="ai-notice">\n'
+             '  <span class="lbl">' + L("유의", "Notice") + '</span>\n'
+             '  <p>' + L(AI_NOTICE_KO, AI_NOTICE_EN) + '</p>\n'
+             '</div>')
+
 
 def _pos52(close, fw):
     lo, hi = fw.get("low"), fw.get("high")
@@ -22,6 +45,10 @@ def _pos52(close, fw):
 
 _KNUM = {6: "여섯", 8: "여덟", 10: "열", 12: "열둘"}
 
+# 등락 종목 수 추이에 세우는 거래일 수. 캡션의 「최근 N거래일」도 이 값에서
+# 나오므로, 늘리거나 줄일 때 문구를 따로 고칠 일이 없습니다.
+BREADTH_DAYS = 5
+
 
 def _split(dct, k=8):
     """등락률로 정렬해 위 k · 아래 k. **표 하나에 마흔 줄을 싣지 않는다.**"""
@@ -30,13 +57,93 @@ def _split(dct, k=8):
     return items[:k], items[-k:]
 
 
+def _prefer_daily(idx, daily):
+    """국내 지수는 **거래소 일별시세를 우선한다**(지침 0-1절).
+
+    야후 지수 심볼은 마감 뒤에도 한동안 어제 봉을 물고 있습니다 —
+    2026-09-15 장마감 수집(16:13)에서 `indices.kosdaq` 이 9/14 종가
+    806.79(&minus;1.69%)였는데 같은 파일의 `index_daily` 는 9/15 종가
+    812.41(+0.70%)이었습니다. **부호가 반대**였고, 그대로 두면 코스닥이
+    오른 날 판에 「내렸다」가 실립니다.
+
+    일별시세가 더 새것일 때만 종가·등락률·날짜를 덮어씁니다. 장중 고저는
+    `market_internals.*.intraday` 가 따로 들고 있으므로 건드리지 않습니다.
+    """
+    rows = (daily or {}).get("series") or []
+    if not rows or not idx:
+        return idx
+    top = rows[0]
+    if not top.get("date") or top["date"] <= (idx.get("date") or ""):
+        return idx
+    out = dict(idx)
+    out["date"] = top["date"]
+    if top.get("close") is not None:
+        out["close"] = top["close"]
+    if top.get("change_pct") is not None:
+        out["change_pct"] = top["change_pct"]
+    out["daily_basis"] = True          # 검증 노트에서 이 자국을 봅니다
+    return out
+
+
+# 업종 등락률이 이 값을 넘으면 **원천이 잘못 준 것**입니다. 국내 주식의 하루
+# 가격제한폭이 ±30% 이므로, 종목을 시가총액으로 묶은 업종 지수는 어떤 날에도
+# 30% 를 넘을 수 없습니다. 넘으면 산술이 아니라 수집이 틀린 것입니다.
+SECTOR_LIMIT_PCT = 30.0
+
+
+def _sectors(sec):
+    """업종 등락률에서 **불가능한 값을 걸러낸다.**
+
+    네이버 업종 API 가 이따금 한 업종에 터무니없는 값을 실어 보냅니다.
+    2026-09-23 수집에서 「가정용품」이 **+162.93%** 였고(12종목 중 오른 것 5
+    내린 것 5), 이틀 전인 9/21 에도 같은 업종이 **+145.12%** 였습니다. 그
+    사이 9/22 는 &minus;0.15% 로 멀쩡했습니다 — 계속 틀린 것이 아니라
+    **하루씩 튀는 고장**입니다. 9/21 판이 「소프트웨어 +19.54%」를 같은 이유로
+    실었는데, 그 값도 나중에 +1.93% 로 고쳐졌습니다.
+
+    그대로 두면 「오른 업종」 표 맨 윗줄에 +162.93% 가 찍힙니다. 표가 한 줄
+    때문에 통째로 못 믿을 것이 되므로, **가격제한폭을 넘는 줄만 빼고** 남은
+    것에서 위아래 다섯을 다시 셉니다. 자료 파일은 건드리지 않습니다 — 뺀
+    개수를 돌려주므로 검증 노트에 몇 줄을 왜 뺐는지 적으십시오.
+    """
+    rows = [r for r in (sec.get("all") or []) if r.get("change_pct") is not None]
+    if not rows:                       # `all` 이 없으면 종전대로 원천의 top5/bottom5
+        return (sec.get("top5") or []), (sec.get("bottom5") or []), []
+    ok = [r for r in rows if abs(r["change_pct"]) <= SECTOR_LIMIT_PCT]
+    dropped = [r for r in rows if abs(r["change_pct"]) > SECTOR_LIMIT_PCT]
+    ok.sort(key=lambda r: -r["change_pct"])
+    # 원천의 `bottom5` 와 같은 차례로 돌려줍니다 — 덜 내린 것이 위, 가장 크게
+    # 내린 것이 아래입니다. 뒤집으면 지난 판들과 표가 거꾸로 섭니다.
+    return ok[:5], ok[-5:], dropped
+
+
 def prepare(D, H, N, today, now, kind):
     I = D["indices"]
+    _dly = D.get("index_daily") or {}
+    I["kospi"] = _prefer_daily(I.get("kospi"), _dly.get("kospi"))
+    I["kosdaq"] = _prefer_daily(I.get("kosdaq"), _dly.get("kosdaq"))
     KS, KQ = I["kospi"], I["kosdaq"]
-    MI = D["market_internals"]
-    KSI, KQI = MI["kospi"], MI["kosdaq"]
+    # 네이버가 페이지 구조를 바꾸면 `market_internals` 가 통째로 빠진다
+    # (2026-09-11 아침에 실제로 그랬다 — 업종·증시자금·기사까지 함께 실패했다).
+    # 그때 판을 못 짓는 것이 아니라, **없는 칸을 「—」로 두고 나머지를 낸다.**
+    # 값을 지어내지 않는 것이 규칙이므로 0 으로 채우지 않고 None 으로 둔다.
+    _EMPTY_B = {"advancing": None, "declining": None, "unchanged": None,
+                "limit_up": None, "limit_down": None}
+    MI = D.get("market_internals") or {}
+    KSI = MI.get("kospi") or {}
+    KQI = MI.get("kosdaq") or {}
+    KSI.setdefault("breadth", dict(_EMPTY_B))
+    KQI.setdefault("breadth", dict(_EMPTY_B))
+    KSI.setdefault("fifty_two_week", {})
+    KQI.setdefault("fifty_two_week", {})
     ksb, kqb = KSI["breadth"], KQI["breadth"]
-    kf, qf = KSI["investor_flows"], KQI["investor_flows"]
+    # 투자자별은 `investors_kospi`(다른 원천)에 남아 있는 일이 있다 — 있으면 살려 쓴다.
+    _iv = (D.get("investors_kospi") or [])
+    kf = KSI.get("investor_flows") or (
+        {k: _iv[0].get(k) for k in ("retail", "foreign", "institution")} if _iv else {})
+    qf = KQI.get("investor_flows") or {}
+    KSI.setdefault("investor_flows", kf)
+    KQI.setdefault("investor_flows", qf)
     ru, ec, rk = D["rates_us"], D.get("rates_ecos", {}), D.get("rates_kr", {})
     S = D["stocks"]
     US = D["us_stocks"]
@@ -47,24 +154,40 @@ def prepare(D, H, N, today, now, kind):
     prev_kr = d(KS["date"])
     prev_us = d(I["sp500"]["date"])
 
-    # 거래대금 — 며칠째 줄고 있는지 **세어서** 말한다
-    ser = D["index_daily"]["kospi"]["series"]
-    tv = [(r["date"], r["value_mn_krw"] / 1e6) for r in ser[:5]]
-    down = 0
-    for i in range(len(tv) - 1):
-        if tv[i][1] < tv[i + 1][1]:
-            down += 1
-        else:
-            break
-    word = {0: "", 1: "이틀 연속 감소", 2: "사흘 연속 감소", 3: "나흘 연속 감소",
-            4: "닷새 연속 감소"}.get(down, "감소")
-    if down == 0:
-        word = "전일 대비 증가" if len(tv) > 1 and tv[0][1] > tv[1][1] else "보합"
+    # 거래대금 — 며칠째 줄고 있는지 **세어서** 말한다.
+    #
+    # **원천이 빠져도 판은 나와야 합니다.** 2026-09-18 아침에 네이버 일별시세가
+    # HTTP 410(Gone) 으로 끊기자 이 줄이 KeyError 를 내며 빌더가 통째로
+    # 멈췄습니다 — 거래대금 한 항목 때문에 그날 브리핑이 아예 안 나오는
+    # 상태였습니다. 없으면 `—` 로 두고 나머지를 냅니다(지침의 graceful
+    # degradation). **0 으로 채우지 않습니다** — 0 은 「거래가 없었다」는
+    # 뜻이 되어 버립니다.
+    ser = ((D.get("index_daily") or {}).get("kospi") or {}).get("series") or []
+    tv = [(r["date"], r["value_mn_krw"] / 1e6) for r in ser[:5]
+          if r.get("value_mn_krw") is not None]
+    if not tv:
+        word = None                      # 표·문장에서 `—` 로 나갑니다
+    else:
+        down = 0
+        for i in range(len(tv) - 1):
+            if tv[i][1] < tv[i + 1][1]:
+                down += 1
+            else:
+                break
+        word = {0: "", 1: "이틀 연속 감소", 2: "사흘 연속 감소", 3: "나흘 연속 감소",
+                4: "닷새 연속 감소"}.get(down, "감소")
+        if down == 0:
+            word = "전일 대비 증가" if len(tv) > 1 and tv[0][1] > tv[1][1] else "보합"
 
-    ksum = ksb["advancing"] + ksb["declining"] + ksb.get("unchanged", 0)
-    qsum = kqb["advancing"] + kqb["declining"] + kqb.get("unchanged", 0)
-    adv10 = round(ksb["advancing"] / max(1, ksum) * 10)
-    adv10q = round(kqb["advancing"] / max(1, qsum) * 10)
+    def _ten(b):
+        """열에 몇이 올랐나. 등락 종목 수가 없으면 **지어내지 않고 None 을 낸다.**"""
+        adv, dec = b.get("advancing"), b.get("declining")
+        if adv is None or dec is None:
+            return None
+        tot = adv + dec + (b.get("unchanged") or 0)
+        return round(adv / max(1, tot) * 10)
+
+    adv10, adv10q = _ten(ksb), _ten(kqb)
 
     IV = D.get("investors_kospi") or []
     fgn1 = IV[1]["foreign"] if len(IV) > 1 else None
@@ -72,8 +195,7 @@ def prepare(D, H, N, today, now, kind):
 
     kr_top, kr_bot = _split(S, 8)
     us_top, us_bot = _split(US, 6)
-    sec_top = (D.get("sectors") or {}).get("top5") or []
-    sec_bot = (D.get("sectors") or {}).get("bottom5") or []
+    sec_top, sec_bot, sec_dropped = _sectors(D.get("sectors") or {})
 
     ktb10 = (ec.get("ktb10y") or {}).get("value")
     gap = (ktb10 - ru["curve"]["ust10y"]) * 100 if ktb10 else None
@@ -87,10 +209,17 @@ def prepare(D, H, N, today, now, kind):
         "FX": FX, "byk": byk, "usdkrw": usdkrw,
         "today": today, "now": now, "kind": kind,
         "prev_kr": prev_kr, "prev_us": prev_us,
-        "turnover": tv, "turnover_word": ('<span class="down">' + word + '</span>' if down
-                                          else '<span class="flat">' + word + '</span>'),
-        "turnover_trail": " &rarr; ".join(n(x[1]) for x in reversed(tv[:4])),
-        "turnover_trail_en": "KRW " + n(tv[0][1]) + "tn",
+        # 거래대금 원천이 끊긴 날에는 네 자리 모두 `—` 로 나갑니다(위 주석 참고).
+        # **`turnover_now` 를 쓰십시오** — `turnover[0][1]` 을 직접 집으면
+        # 계열이 빈 날 IndexError 로 빌더가 멈춥니다(2026-09-18 에 그랬습니다).
+        "turnover": tv,
+        "turnover_now": (n(tv[0][1]) + "조") if tv else "&mdash;",
+        "turnover_word": ('<span class="na">&mdash;</span>' if word is None else
+                          '<span class="down">' + word + '</span>' if down
+                          else '<span class="flat">' + word + '</span>'),
+        "turnover_trail": (" &rarr; ".join(n(x[1]) for x in reversed(tv[:4]))
+                           if tv else "&mdash;"),
+        "turnover_trail_en": ("KRW " + n(tv[0][1]) + "tn") if tv else "&mdash;",
         "adv_per_ten": adv10, "adv_per_ten_q": adv10q,
         "fgn1": fgn1, "fgn2": fgn2,
         "kr_top": kr_top, "kr_bot": kr_bot, "us_top": us_top, "us_bot": us_bot,
@@ -142,10 +271,25 @@ def _tables(C):
           TH("하락", "Dec", "n"), TH("코스닥 %", "KOSDAQ %", "n"), TH("상승", "Adv", "n"),
           TH("하락", "Dec", "n"), TH("검증", "Verified", "n opt")]
     brows = []
-    for r in (C["H"].get("rows") or []):
-        b = r["breadth"]
-        ks_, kq_ = b["kospi"], b["kosdaq"]
-        miss = (ks_["advancing"] + ks_["declining"]) == 0
+    # **아직 안 끝난 장은 줄로 세우지 않는다.** 아침 판을 장중에 만들면
+    # history 에 오늘 줄이 이미 들어 있어(개편 뒤 수집은 장중에도 값을 준다)
+    # 「오늘 마감」인 양 읽힌다. 마지막 마감일까지만 싣는다.
+    last_kr = (C["KS"] or {}).get("date") or ""
+    # **한 주치만 싣는다(2026-09-14).** 넉 달치 history 를 그대로 세우니 서른
+    # 줄 가까이가 나왔고, 「지수 방향과 폭이 어긋난 날을 찾아 보십시오」라는
+    # 꼬리말이 가리키기에는 너무 길어 아무도 읽지 않는 표가 됐습니다. 최근
+    # 다섯 거래일이면 이번 주 안에서 어긋난 날이 곧바로 보입니다.
+    hist = [r for r in (C["H"].get("rows") or [])
+            if not (last_kr and r.get("date", "") > last_kr)]
+    for r in hist[-BREADTH_DAYS:]:
+        # 수집이 네이버를 못 받은 날은 `breadth` 자체가 없는 줄이 남는다
+        # (2026-09-10 저녁 수집 셋이 그랬다). 그런 줄에서 죽지 말고, 값이
+        # 0 으로 들어온 날과 똑같이 «—» 로 비워 둔다 — 지수 등락률은 있으므로
+        # 줄을 통째로 버리면 추이에 구멍이 생긴다.
+        b = r.get("breadth") or {}
+        zero = {"advancing": 0, "declining": 0}
+        ks_, kq_ = b.get("kospi") or zero, b.get("kosdaq") or zero
+        miss = (ks_.get("advancing", 0) + ks_.get("declining", 0)) == 0
         dash = '<span class="mut">&mdash;</span>'
         brows.append('      <tr><th class="wrap">' + r["date"][5:] + '</th>'
                      '<td class="n">' + pct(r["kospi"]["change_pct"]) + '</td>'
@@ -155,7 +299,8 @@ def _tables(C):
                      '<td class="n">' + (dash if miss else n(kq_["advancing"], 0)) + '</td>'
                      '<td class="n">' + (dash if miss else n(kq_["declining"], 0)) + '</td>'
                      '<td class="n opt">' + VF_MD + '</td></tr>')
-    C["breadth_trend"] = tbl("등락 종목 수 추이", "Breadth over recent sessions", bh, brows,
+    C["breadth_trend"] = tbl("등락 종목 수 추이 &mdash; 최근 %d거래일" % BREADTH_DAYS,
+                             "Breadth over the last %d sessions" % BREADTH_DAYS, bh, brows,
                              cls="data compact",
                              foot_ko="<strong>지수 방향과 폭이 어긋난 날</strong>을 찾아 보십시오 &mdash; "
                                      "그런 날은 대형주 몇 개가 지수를 움직인 것입니다.",
@@ -206,23 +351,39 @@ def _tables(C):
                 '<td class="n">' + n(r["close"], dp) + '</td>' + _cell(r.get("change_pct"))
                 + perf_cells(r.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
 
+    # 꼬리말의 「읽는 법」 예시는 **표에 선 값 그대로** 쓴다. 손으로 적으면
+    # 다음 날 어긋난다 — 실제로 1,384 가 박힌 채 1,341 짜리 표 밑에 서 있었다.
+    _uk = (C["byk"].get("usdkrw") or {}).get("close")
+    _usdkrw_ex = n(_uk, 0) if _uk else "1,340"
+    # 핵심본에는 접는 상세가 없다. 「아래 상세에 따로 두었다」고 적으면 있지도
+    # 않은 자리를 가리킨다 — 핵심본은 그 표를 이 표 **바로 아래**에 세운다.
+    _usdfx_where_ko = ("<strong>바로 아래</strong>에 따로 두었습니다" if CORE[0]
+                       else "아래 상세에 따로 두었습니다")
+    _usdfx_where_en = ("sit <strong>just below</strong>" if CORE[0]
+                       else "sit in the detail below")
+
     C["fx_tbl"] = tbl("원화 환율 &mdash; 오늘 아침 " + DK(C["today"]),
                       "The won &mdash; this morning, " + DE(C["today"]), fh,
                       [x for x in (_fxrow("usdkrw"), _fxrow("jpykrw"), _fxrow("cnykrw"),
                                    _fxrow("eurkrw"), _fxrow("audkrw"),
                                    _fxrow("brlkrw")) if x],
                       cls="data compact",
-                      foot_ko="<strong>이 표는 뒤 통화가 1개입니다</strong> &mdash; 원/달러 1,384 는 달러 1개를 "
-                              "사는 데 1,384원이 든다는 뜻이라, <strong>숫자가 내려가면 원화가 세진 것</strong>입니다. "
-                              "원화 크로스 다섯은 받아 온 값이 아니라 <strong>원/달러에서 계산한 재정환율</strong>입니다 "
+                      # 읽는 법을 보이는 예로 드는 자리다. **손으로 적은 1,384 가 박혀 있었다** —
+                      # 표에는 오늘 값이 서는데 꼬리말만 옛 값이라 나란히 어긋났다(지침 7절).
+                      # 표와 같은 자리에서 뽑아 쓴다.
+                      foot_ko="<strong>이 표는 뒤 통화가 1개입니다</strong> &mdash; 원/달러 " + _usdkrw_ex
+                              + " 은 달러 1개를 사는 데 " + _usdkrw_ex + "원이 든다는 뜻이라, "
+                                "<strong>숫자가 내려가면 원화가 세진 것</strong>입니다. "
+                                "원화 크로스 다섯은 받아 온 값이 아니라 <strong>원/달러에서 계산한 재정환율</strong>입니다 "
                               + VF_C + " &mdash; 원화는 달러 말고 직접 거래되는 시장이 사실상 없어 국내 고시 환율도 "
-                                       "전부 그렇게 만듭니다. <strong>달러 상대 통화는 빗금 방향이 반대</strong>이므로 "
-                                       "아래 상세에 따로 두었습니다.",
-                      foot_en="<strong>In this table the second currency is the unit</strong> &mdash; USD/KRW 1,384 "
-                              "means one dollar costs 1,384 won, so <strong>a lower number is a stronger won</strong>. "
-                              "The five crosses are <strong>computed from USD/KRW</strong> " + VF_C + ", as Korean "
-                              "published rates are. <strong>The dollar crosses read the other way round</strong> and "
-                              "sit in the detail below.")
+                                       "전부 그렇게 만듭니다. <strong>달러 상대 통화는 빗금 방향이 반대</strong>라 "
+                              + _usdfx_where_ko + ".",
+                      foot_en="<strong>In this table the second currency is the unit</strong> &mdash; USD/KRW "
+                              + _usdkrw_ex + " means one dollar costs " + _usdkrw_ex + " won, so "
+                                "<strong>a lower number is a stronger won</strong>. "
+                                "The five crosses are <strong>computed from USD/KRW</strong> " + VF_C + ", as Korean "
+                                "published rates are. <strong>The dollar crosses read the other way round</strong> and "
+                              + _usdfx_where_en + ".")
 
     uh = [TH("통화쌍 &middot; 지수", "Pair or index", "wrap"), TH("읽는 법", "How to read it", "note wrap"),
           TH("현재", "Level", "n"), TH("등락률", "Change %", "n"), THP(), TH("검증", "Verified", "n opt")]
@@ -382,24 +543,28 @@ def _tables(C):
 def _fallbacks(C):
     I, KS, KQ, ksb, kqb, kf = C["I"], C["KS"], C["KQ"], C["ksb"], C["kqb"], C["kf"]
     ru, S = C["ru"], C["S"]
-    agree = (KS["change_pct"] > 0) == (ksb["advancing"] > ksb["declining"])
+    # 등락 종목 수가 없으면 「지수와 폭이 같은 쪽인가」를 판정할 수 없다 — None 으로 둔다.
+    agree = (None if ksb.get("advancing") is None or ksb.get("declining") is None
+             else (KS["change_pct"] > 0) == (ksb["advancing"] > ksb["declining"]))
+    agree_ko = "같은" if agree else ("다른" if agree is False else "말할 수 없는")
+    agree_en = "agree" if agree else ("disagree" if agree is False else "cannot be compared")
     lead = C["kr_top"][0] if C["kr_top"] else None
     lag = C["kr_bot"][0] if C["kr_bot"] else None
 
     C["fallback_today"] = [
         ("<strong>국내.</strong> 코스피 " + pct(KS["change_pct"]) + " (" + n(KS["close"]) + "), 코스닥 "
          + pct(KQ["change_pct"]) + " 입니다. 오른 종목 " + n(ksb["advancing"], 0) + " 대 내린 종목 "
-         + n(ksb["declining"], 0) + " 로 <strong>지수와 폭이 " + ("같은" if agree else "다른")
-         + " 쪽</strong>을 봤습니다 " + VF_MD + ". 거래대금은 " + n(C["turnover"][0][1]) + "조입니다.",
+         + n(ksb["declining"], 0) + " 로 <strong>지수와 폭이 " + agree_ko
+         + " 쪽</strong>을 봤습니다 " + VF_MD + ". 거래대금은 " + C["turnover_now"] + "입니다.",
          "<strong>Korea.</strong> The KOSPI was " + pct(KS["change_pct"]) + " and the KOSDAQ "
          + pct(KQ["change_pct"]) + ", with " + n(ksb["advancing"], 0) + " advancers against "
          + n(ksb["declining"], 0) + " &mdash; <strong>index and breadth "
-         + ("agree" if agree else "disagree") + "</strong> " + VF_MD + "."),
-        ("<strong>수급.</strong> 외국인 " + eok(kf["foreign"]) + ", 기관 " + eok(kf["institution"])
-         + ", 개인 " + eok(kf["retail"]) + " 입니다 " + VF_MD
+         + agree_en + "</strong> " + VF_MD + "."),
+        ("<strong>수급.</strong> 외국인 " + eok(kf.get("foreign")) + ", 기관 " + eok(kf.get("institution"))
+         + ", 개인 " + eok(kf.get("retail")) + " 입니다 " + VF_MD
          + (". 그 앞 거래일 외국인은 " + eok(C["fgn1"]) + " 였습니다." if C["fgn1"] is not None else "."),
-         "<strong>Flows.</strong> Foreigners " + eok(kf["foreign"]) + ", institutions "
-         + eok(kf["institution"]) + ", retail " + eok(kf["retail"]) + " " + VF_MD + "."),
+         "<strong>Flows.</strong> Foreigners " + eok(kf.get("foreign")) + ", institutions "
+         + eok(kf.get("institution")) + ", retail " + eok(kf.get("retail")) + " " + VF_MD + "."),
         ("<strong>간밤 해외.</strong> 다우 " + pct(I["dow"]["change_pct"]) + ", S&amp;P "
          + pct(I["sp500"]["change_pct"]) + ", 나스닥 " + pct(I["nasdaq"]["change_pct"]) + ", SOX "
          + pct(I["sox"]["change_pct"]) + " 입니다. 미 10년물은 " + n(ru["curve"]["ust10y"], 3) + "%("
@@ -421,11 +586,11 @@ def _fallbacks(C):
         + n(ksb["declining"], 0) + ".")
 
     C["fb_flows"] = (
-        "외국인 " + eok(kf["foreign"]) + ", 기관 " + eok(kf["institution"]) + ", 개인 "
-        + eok(kf["retail"]) + " 입니다 " + VF_MD + ". <strong>수급은 잔액이 아니라 변화로 읽으십시오</strong> "
+        "외국인 " + eok(kf.get("foreign")) + ", 기관 " + eok(kf.get("institution")) + ", 개인 "
+        + eok(kf.get("retail")) + " 입니다 " + VF_MD + ". <strong>수급은 잔액이 아니라 변화로 읽으십시오</strong> "
         "&mdash; 팔던 손이 멎는 것만으로 지수가 움직입니다.",
-        "Foreigners " + eok(kf["foreign"]) + ", institutions " + eok(kf["institution"]) + ", retail "
-        + eok(kf["retail"]) + " " + VF_MD + ". <strong>Read the change, not the level.</strong>")
+        "Foreigners " + eok(kf.get("foreign")) + ", institutions " + eok(kf.get("institution")) + ", retail "
+        + eok(kf.get("retail")) + " " + VF_MD + ". <strong>Read the change, not the level.</strong>")
 
     C["fb_global"] = (
         "다우 " + pct(I["dow"]["change_pct"]) + ", S&amp;P " + pct(I["sp500"]["change_pct"]) + ", 나스닥 "
@@ -531,8 +696,16 @@ def _hero(C):
         + L(("기준: 국내는 오늘 " + DK(today) + " 마감 &middot; 해외는 " + DK(C["prev_us"], True)
              + " 마감(아직 열지 않았습니다) &middot; 환율은 오늘 마감"
              if C["kind"] == "close" else
-             "기준: 국내&middot;해외 모두 " + DK(C["prev_us"], True) + " 마감 &middot; 환율은 오늘 아침 "
-             + DK(today))
+             # 보통 아침에는 국내 마지막 마감과 미국 마지막 마감이 같은 날이다
+             # (월요일 국내 마감과 월요일 미국 마감은 둘 다 «월요일»이다). 그런데
+             # **연휴 뒤에는 어긋난다** — 2026-09-28 모닝 판이 국내 마지막 거래일
+             # 9/23 을 두고 «국내·해외 모두 9월 25일 마감»이라고 찍었다. 추석에
+             # 국내만 9/24~25 를 쉬었기 때문이다. 두 날짜가 다르면 갈라 적는다.
+             ("기준: 국내&middot;해외 모두 " + DK(C["prev_us"], True) + " 마감"
+              if C["prev_kr"] == C["prev_us"] else
+              "기준: 국내는 " + DK(C["prev_kr"], True) + " 마감(그 뒤 휴장) &middot; "
+              "해외는 " + DK(C["prev_us"], True) + " 마감")
+             + " &middot; 환율은 오늘 아침 " + DK(today))
             + " &middot; 시세 파일 " + C["D"]["generated_at_kst"][5:16] + " 수집 &middot; 작성 "
             + now.strftime("%Y-%m-%d") + "(" + "월화수목금토일"[now.weekday()] + ") "
             + now.strftime("%H:%M") + " KST"
@@ -541,10 +714,14 @@ def _hero(C):
             ("Basis: Korea closed today; overseas closes of " + DE(C["prev_us"], True)
              + " (not yet open); FX at today&rsquo;s close"
              if C["kind"] == "close" else
-             "Basis: closes of " + DE(C["prev_us"], True) + "; FX as of this morning")
+             ("Basis: closes of " + DE(C["prev_us"], True)
+              if C["prev_kr"] == C["prev_us"] else
+              "Basis: Korea's close of " + DE(C["prev_kr"], True) + " (shut since); "
+              "overseas closes of " + DE(C["prev_us"], True))
+             + "; FX as of this morning")
             + "; data collected "
             + C["D"]["generated_at_kst"][5:16] + "; compiled " + now.strftime("%H:%M") + " KST")
-        + '</p>\n</div>')
+        + '</p>\n</div>\n' + AI_NOTICE)
 
 
 def _holidays(C):

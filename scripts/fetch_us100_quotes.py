@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """미국 100대 기업 **가격만** 빠르게 받아 data/us100/quotes.json 에 저장한다.
 
+국내 화면도 이 수집기를 쓴다 — `scripts/fetch_kr100_quotes.py` 가 시장 프로필만
+바꿔 끼워 아래 main() 을 부르고, 결과는 data/kr100/quotes.json 으로 나간다.
+
 `fetch_us100.py` 는 종목별로 5번씩 요청해 5~8분이 걸린다(지표·실적·컨센서스까지 받는다).
 장중에 가격만 자주 갱신하려면 그 무게로는 안 되므로 이 스크립트를 따로 둔다.
 
@@ -36,9 +39,11 @@ from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fetch_us100 import (                       # noqa: E402  환산 규칙을 그대로 공유한다
-    OUT_DIR, PAUSE, _get, companies_from_page, fetch_chart, init_crumb, num, yget,
+    PAUSE, _get, companies_from_page, fetch_chart, init_crumb, num, yget,
 )
-import fetch_us100 as F                          # noqa: E402  CRUMB 는 모듈 속성으로 읽는다
+import fetch_us100 as F                          # noqa: E402  CRUMB·시장 프로필은 모듈 속성으로 읽는다
+# OUT_DIR·stooq_code 는 여기서 import 하지 않는다 — 국내 수집기(fetch_kr100_quotes.py)가
+# 프로필을 갈아 끼운 뒤에 부르므로, import 시점 값을 묶어 두면 미국 폴더에 쓰게 된다.
 
 QUOTE_CHUNK = 50
 STOOQ_CHUNK = 15
@@ -113,8 +118,8 @@ def quote_one_chart(sym):
 
 def stooq_bulk(symbols):
     """야후가 전부 막혔을 때. 전일 종가가 없어 등락률은 당일 시가 대비다."""
-    codes = ",".join(s.lower().replace("-", ".") + ".us" for s in symbols)
-    txt = _get("https://stooq.com/q/l/?s=%s&f=sd2t2ohlcv&h&e=csv" % codes)
+    codes = {F.stooq_code(s): s for s in symbols}
+    txt = _get("https://stooq.com/q/l/?s=%s&f=sd2t2ohlcv&h&e=csv" % ",".join(codes))
     lines = [l for l in txt.strip().splitlines() if l]
     if not lines or not lines[0].lower().startswith("symbol"):
         raise RuntimeError("stooq CSV 아님")
@@ -125,9 +130,9 @@ def stooq_bulk(symbols):
         p = line.split(",")
         if len(p) < len(head):
             continue
-        sym = p[ix["symbol"]].upper().replace(".US", "").replace(".", "-")
+        sym = codes.get(p[ix["symbol"]].strip().lower())
         close, opn = num(p[ix["close"]]), num(p[ix["open"]])
-        if close is None:
+        if sym is None or close is None:
             continue
         rec = {"price": close, "prevClose": None, "intraday": True}
         vol = num(p[ix["volume"]]) if "volume" in ix else None
@@ -176,7 +181,7 @@ def main():
                 out["quotes"][sym] = quote_one_chart(sym)
                 done += 1
             except Exception as e:                          # noqa: BLE001
-                print("    %-6s 실패 — %s" % (sym, e), flush=True)
+                print("    %-10s 실패 — %s" % (sym, e), flush=True)
             time.sleep(PAUSE)
         if done:
             out["routes"]["yahoo-chart"] = done
@@ -214,12 +219,12 @@ def main():
     except Exception as e:                                  # noqa: BLE001
         print("환율 실패 — %s" % e, flush=True)
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    path = os.path.join(OUT_DIR, "quotes.json")
+    os.makedirs(F.OUT_DIR, exist_ok=True)
+    path = os.path.join(F.OUT_DIR, "quotes.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
 
-    sample = out["quotes"].get("AAPL") or next(iter(out["quotes"].values()))
+    sample = out["quotes"].get(syms[0]) or next(iter(out["quotes"].values()))
     print("\n가격 수집 완료: %d/%d 종목 · 경로 %s · %.0fKB\n  예: %s"
           % (len(out["quotes"]), len(syms), out["routes"], os.path.getsize(path) / 1024,
              json.dumps(sample, ensure_ascii=False)), flush=True)

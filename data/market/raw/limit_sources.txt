@@ -1,0 +1,79 @@
+상한가 명단 원천 탐색 2026-09-14 09:19:48 KST
+(수집 결과는 바꾸지 않는다. 무엇이 값을 주는지만 적는다.)
+
+[네이버 앱] https://m.stock.naver.com/api/stocks/upperLimit?page=1&pageSize=100
+    실패 · 30 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 404: 404
+[네이버 앱] https://m.stock.naver.com/api/stocks/lowerLimit?page=1&pageSize=100
+    실패 · 30 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 404: 404
+[네이버 앱] https://m.stock.naver.com/api/stocks/upDownLimit/upper?page=1&pageSize=100
+    실패 · 30 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 404: 404
+[네이버 앱] https://m.stock.naver.com/api/stocks/ranking/upperLimit?page=1&pageSize=100
+    실패 · 30 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 404: 404
+[네이버 앱] https://stock.naver.com/api/domestic/ranking/upperLimit?startIdx=0&pageSize=100
+    실패 · 36 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 404: Not Found
+[네이버 앱] https://stock.naver.com/api/domestic/stock/upperLimit?startIdx=0&pageSize=100
+    실패 · 36 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 404: Not Found
+[네이버 앱] https://stock.naver.com/api/domestic/market/upperLimit?startIdx=0&pageSize=100
+    실패 · 36 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 404: Not Found
+[다음 금융] https://finance.daum.net/api/trend/rises?market=KOSPI&change=UPPER_LIMIT&perPage=30&page=1&pagination=true
+    실패 · 27 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 500: 
+[다음 금융] https://finance.daum.net/api/trend/falls?market=KOSPI&change=LOWER_LIMIT&perPage=30&page=1&pagination=true
+    실패 · 27 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 500: 
+[다음 금융] https://finance.daum.net/api/trend/rises?market=KOSDAQ&change=UPPER_LIMIT&perPage=30&page=1&pagination=true
+    실패 · 27 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 500: 
+
+### KRX 전종목 시세 (등락률로 추려 내기)
+    20260914 · 실패 HTTPError: HTTP Error 400: Bad Request
+    20260913 · 실패 HTTPError: HTTP Error 400: Bad Request
+    20260912 · 실패 HTTPError: HTTP Error 400: Bad Request
+    20260911 · 실패 HTTPError: HTTP Error 400: Bad Request
+    20260910 · 실패 HTTPError: HTTP Error 400: Bad Request
+    20260909 · 실패 HTTPError: HTTP Error 400: Bad Request
+
+### 앱이 들고 있는 경로 목록 읽기 (짐작하지 않는다)
+    buildId: 못 찾음
+    그중 눈에 띄는 것 0 개:
+
+### 야후 스크리너 (한 번도 안 해 본 길)
+    200 · 266529 bytes · 종목 100 개 · ed/saved?scrIds=day_gainers&count=100&region=KR&lang=ko-KR
+      HPE Hewlett Packard Enterprise Comp 12.4411%
+      DELL Dell Technologies Inc. 11.9754%
+      VICR Vicor Corporation 11.15417%
+      BGSI Boyd Group Services Inc. 10.8522%
+      HTFL Heartflow, Inc. 9.650471%
+      FPS Forgent Power Solutions, Inc. 8.9726%
+      HUT Hut 8 Corp. 8.830022%
+      NTAP NetApp, Inc. 8.540301%
+      ON ON Semiconductor Corporation 8.507911%
+      HPQ HP Inc. 8.40208%
+      IESC IES Holdings, Inc. 8.1966715%
+      SYNA Synaptics Incorporated 8.088154%
+    200 · 266029 bytes · 종목 100 개 · er/predefined/saved?scrIds=day_gainers&count=100&region=KR
+      HPE Hewlett Packard Enterprise Comp 12.4411%
+      DELL Dell Technologies Inc. 11.9754%
+      VICR Vicor Corporation 11.15417%
+      BGSI Boyd Group Services Inc. 10.8522%
+      HTFL Heartflow, Inc. 9.650471%
+      FPS Forgent Power Solutions, Inc. 8.9726%
+      HUT Hut 8 Corp. 8.830022%
+      NTAP NetApp, Inc. 8.540301%
+      ON ON Semiconductor Corporation 8.507911%
+      HPQ HP Inc. 8.40208%
+      IESC IES Holdings, Inc. 8.1966715%
+      SYNA Synaptics Incorporated 8.088154%
+    200 · 38 bytes · 종목 0 개 · //query1.finance.yahoo.com/v1/finance/trending/KR?count=50
+
+### 사이트맵
+    https://stock.naver.com/sitemap.xml → HTTP Error 404: Not Found
+    https://m.stock.naver.com/sitemap.xml → HTTP Error 404: 404
+    https://finance.naver.com/sitemap.xml → 2691 bytes · 0 주소

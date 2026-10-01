@@ -15,6 +15,10 @@
 
 원천이 하나 죽어도 나머지는 그대로 저장한다. 종목별 성공/실패는 latest.json 의
 "sources" 에 남으므로, 화면은 무엇이 확보됐고 무엇이 비었는지 그대로 표시할 수 있다.
+
+**국내 화면도 이 수집기를 쓴다.** 시장마다 다른 것은 아래 "시장 프로필" 여덟 가지뿐이고
+받아오는 방법·정규화 규칙은 같으므로, 코드를 두 벌 두지 않는다.
+국내 수집은 `scripts/fetch_kr100.py` 가 프로필만 바꿔 끼워 이 모듈의 main() 을 부른다.
 """
 
 import http.cookiejar
@@ -37,9 +41,44 @@ PAUSE = 0.35            # 요청 사이 간격 — 야후 429 를 피하려는 �
 RETRY = 3
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# ---------------------------------------------------------------- 시장 프로필
+# 기본값은 미국이다. 국내 수집기(scripts/fetch_kr100.py)가 configure() 로 갈아 끼운다.
+MARKET = "us"
 PAGE = os.path.join(ROOT, "us-top100.html")
 OUT_DIR = os.path.join(ROOT, "data", "us100")
 CHART_DIR = os.path.join(OUT_DIR, "chart")
+CURRENCY = "USD"
+STOOQ_SUFFIX = ".us"                 # Stooq 심볼 접미사 — 야후 차트가 막힌 종목의 대체 경로
+# 심볼을 회사명으로 다시 찾을 때 받아들일 거래소 코드(야후 search 의 exchange 값).
+# 이 목록을 두는 이유는 OTC·해외 중복 티커를 엉뚱하게 집어오지 않으려는 것이다.
+EXCHANGES = ("NMS", "NYQ", "NGM", "NCM", "ASE", "PCX", "BTS")
+NOTE = "GitHub Actions 러너가 수집한 스냅샷. us-top100.html 이 읽는다."
+
+
+def configure(market, page, out_dir, currency, stooq_suffix, exchanges, note):
+    """시장 프로필을 바꿔 끼운다. 수집을 시작하기 전에 한 번 부른다."""
+    global MARKET, PAGE, OUT_DIR, CHART_DIR, CURRENCY, STOOQ_SUFFIX, EXCHANGES, NOTE
+    MARKET = market
+    PAGE = page
+    OUT_DIR = out_dir
+    CHART_DIR = os.path.join(out_dir, "chart")
+    CURRENCY = currency
+    STOOQ_SUFFIX = stooq_suffix
+    EXCHANGES = tuple(exchanges)
+    NOTE = note
+
+
+def fmt_price(v):
+    """로그에 찍는 가격 — 통화에 맞춰 적는다(원화는 소수점을 쓰지 않는다)."""
+    if v is None:
+        return "가격 없음"
+    if CURRENCY == "USD":
+        return "$%.2f" % v
+    if CURRENCY == "KRW":
+        return "%s원" % format(int(round(v)), ",")
+    return "%s %.2f" % (CURRENCY, v)
+
 
 QS_MODULES = ",".join([
     "assetProfile", "price", "summaryDetail", "defaultKeyStatistics", "financialData",
@@ -180,11 +219,11 @@ def pctize(v):
 
 
 def companies_from_page():
-    """us-top100.html 의 COMPANIES 배열에서 [심볼, 영문명, 한글명, 섹터] 를 읽는다."""
+    """화면 파일의 COMPANIES 배열에서 [심볼, 영문명, 한글명, 섹터] 를 읽는다."""
     src = open(PAGE, encoding="utf-8").read()
     m = re.search(r"var COMPANIES = \[(.*?)\n\];", src, re.S)
     if not m:
-        raise SystemExit("us-top100.html 에서 COMPANIES 배열을 찾지 못했다")
+        raise SystemExit("%s 에서 COMPANIES 배열을 찾지 못했다" % os.path.basename(PAGE))
     rows = re.findall(r"\[\s*'([^']+)'\s*,\s*(?:'([^']*)'|\"([^\"]*)\")\s*,\s*'([^']*)'\s*,\s*'([^']*)'\s*\]",
                       m.group(1))
     out = []
@@ -233,13 +272,22 @@ def fetch_chart(sym, rng, interval, events=False):
     return out, meta, divs, splits
 
 
+def stooq_code(sym):
+    """우리 심볼 → Stooq 심볼. 시장 접미사를 떼고 Stooq 접미사를 붙인다.
+
+      AAPL → aapl.us · BRK-B → brk.b.us · 005930.KS → 005930.kr
+    """
+    base = sym.replace("-", ".") if MARKET == "us" else sym.split(".")[0]
+    return base.lower() + STOOQ_SUFFIX
+
+
 def fetch_chart_stooq(sym, interval="d", keep_days=800):
     """야후 차트가 막힌 심볼의 대체 경로. Stooq 일별/월별 CSV.
 
     첫 수집에서 FI(Fiserv)·MMC(Marsh & McLennan)만 야후 chart 가 404 였다.
     두 종목은 timeseries 는 정상이라 심볼 문제가 아니라 야후 쪽 사정으로 보인다.
     """
-    code = sym.lower().replace("-", ".") + ".us"
+    code = stooq_code(sym)
     url = "https://stooq.com/q/d/l/?s=%s&i=%s" % (code, interval)
     txt = _get(url)
     lines = [l for l in txt.strip().splitlines() if l]
@@ -266,14 +314,18 @@ def fetch_chart_stooq(sym, interval="d", keep_days=800):
     return out
 
 
-def fetch_news(sym, limit=6):
+def fetch_news(c, sym, limit=6):
     """종목 뉴스 헤드라인. 제목·출처·시각·링크만 담는다(본문은 담지 않는다).
 
     사내망에서 브라우저가 야후·구글에 못 붙으면 화면의 뉴스 섹션이 통째로 비므로,
     수집 시점 헤드라인이라도 남겨 둔다. 화면은 스냅샷 뉴스임을 배지로 밝힌다.
+
+    국내 종목은 '005930.KS' 로 물어보면 야후 검색이 거의 아무것도 주지 않으므로
+    영문 회사명으로 묻는다.
     """
+    q = sym if MARKET == "us" else (c.get("en") or sym)
     j = yget("/v1/finance/search?q=%s&newsCount=%d&quotesCount=0&enableFuzzyQuery=false"
-             % (urllib.parse.quote(sym), limit))
+             % (urllib.parse.quote(q), limit))
     out = []
     for n in (j.get("news") or [])[:limit]:
         if not n.get("title") or not n.get("link"):
@@ -324,7 +376,7 @@ def resolve_symbol(c):
     """야후가 심볼을 404 로 답할 때, 회사명으로 실제 심볼을 찾는다.
 
     티커가 바뀐 종목(예: Fiserv 는 FISV → FI)을 손으로 쫓지 않으려는 장치다.
-    미국 거래소의 보통주만 받아들이고, 회사명이 서로 겹치는지도 확인한다 —
+    해당 시장의 보통주만 받아들이고, 회사명이 서로 겹치는지도 확인한다 —
     검색 결과를 무조건 믿으면 엉뚱한 종목을 그 자리에 앉히게 된다.
     """
     q = urllib.parse.quote(c["en"])
@@ -334,7 +386,7 @@ def resolve_symbol(c):
         sym = r.get("symbol")
         if not sym or r.get("quoteType") != "EQUITY":
             continue
-        if r.get("exchange") not in ("NMS", "NYQ", "NGM", "NCM", "ASE", "PCX", "BTS"):
+        if r.get("exchange") not in EXCHANGES:
             continue
         name = ((r.get("shortname") or "") + " " + (r.get("longname") or "")).lower()
         if words and not any(w in name for w in words):
@@ -358,6 +410,109 @@ def fetch_summary(sym):
     return res[0]
 
 
+# PBR·PSR 이 다른 값들과 아귀가 맞는지 재는 문턱. 이 배수 밖이면 버린다.
+# 성한 종목은 0.70~1.52 배 안에 들었고(89·97 종을 재 봤다) 어긋난 것은 6.9·46.1·31.3 배였다.
+# 그 사이가 훤히 비어 있어 3 배로 둔다.
+RATIO_TOL = 3.0
+
+# **이익이 0 에 가까우면 이 항등식은 뜻을 잃는다.** E/B·E/S 가 거의 0 이라
+# 분모가 조금만 흔들려도 배수가 수십 배로 튀고, 후행 PER 과 마진이 서로 다른
+# 기간의 것이면 그 차이가 그대로 증폭된다.
+#
+# 국내 100 종에 대 보고서야 알았다. 문턱만 두었을 때 삼성SDI(ROE 0.2%)와
+# 포스코퓨처엠(PER 1,175배)의 **멀쩡한 PBR 을 버렸다** — 1.75배·3.86배로
+# 아무 이상이 없는 값이다. 가르지 못하는 자리는 **버리지 말고 건너뛴다.**
+RATIO_MIN_BASE = 1.0        # ROE·순이익률 (%)
+RATIO_MAX_PER = 200.0
+
+# 매출은 **두 단계**를 거쳐 되셈하므로(EPS×주식수 → 순이익, ÷순이익률 → 매출)
+# 기간이 어긋날 여지가 두 배다. 그래서 PBR·PSR 보다 느슨하게 둔다.
+#
+# 실제로 두 우주를 재 보니, 성한 쪽에서 가장 멀리 나간 것이 알테오젠 3.9 배였다
+# (순이익률 75% — 일회성 기술료가 섞인 해라 되셈이 흔들린다). 진짜로 망가진
+# 것은 31.8 배·1,571 배로 그보다 한참 멀다. 그 사이에 둔다.
+REVENUE_TOL = 5.0
+
+
+def reconcile_ratios(q):
+    """PBR·PSR 을 **다른 칸으로 다시 셈해** 맞대어 보고, 어긋나면 버린다.
+
+    ■ 왜 필요한가 — ADR 은 단위가 섞여 들어온다
+
+    야후가 ADR 종목에 주는 `bookValue` 는 **현지 보통주 기준**인데 `price` 는
+    **ADR 기준**이라, 둘을 나눈 `priceToBook` 이 통째로 틀린다. 2026-09-29 에
+    TSMC 를 보다가 걸렸다.
+
+        TSM   PBR  92.2 배   (제대로 셈하면 13.4)
+        ASML  PBR 1499.0 배  (제대로 셈하면 32.5)
+        TSM   PSR   0.53 배  (제대로 셈하면 16.8)
+
+    화면에 「PBR 1,499배」가 찍히면 읽는 사람은 그 종목을 통째로 잘못 본다.
+    **모르는 것으로 두는 편이 틀린 것을 찍는 것보다 낫다.**
+
+    ■ 바깥 자료를 쓰지 않는다 — 대수로 푼다
+
+        PBR = P/B = (P/E) × (E/B) = PER × ROE
+        PSR = P/S = (P/E) × (E/S) = PER × 순이익률
+
+    같은 응답 안의 값끼리 맞대므로 ADR 비율을 알 필요가 없다. 단위가 어긋난
+    쪽만 튄다.
+
+    ROE·순이익률이 음수면 이 항등식이 뜻을 잃으므로(적자 기업) 건너뛴다 —
+    **가르지 못하는 것을 버리지는 않는다.**
+
+    돌려주는 것: 버린 칸을 적은 목록. q 는 그 자리에서 고친다.
+    """
+    dropped = []
+    for key, other, lbl in (('pbr', 'roe', 'ROE'), ('psr', 'netMargin', '순이익률')):
+        got, base, per = q.get(key), q.get(other), q.get('per')
+        if got is None or base is None or per is None:
+            continue
+        if per <= 0 or base <= 0 or got <= 0:
+            continue
+        # 잴 수 없는 자리는 건너뛴다 — 위 RATIO_MIN_BASE 주석 참고.
+        if base < RATIO_MIN_BASE or per > RATIO_MAX_PER:
+            continue
+        want = per * base / 100.0
+        if not want:
+            continue
+        ratio = got / want
+        if ratio > RATIO_TOL or ratio < 1.0 / RATIO_TOL:
+            # 어긋난 정도는 **늘 1 보다 큰 쪽으로** 적는다. 0.032 를 그대로
+            # 「0.0 배 어긋남」이라 쓰면 얼마나 벌어졌는지가 사라진다.
+            dropped.append('%s %s → 버림 (PER %s × %s %s%% = %.2f · %.1f 배 어긋남)'
+                           % (key, got, per, lbl, base, want,
+                              ratio if ratio > 1 else 1.0 / ratio))
+            q[key] = None
+
+    # ■ 매출도 통화가 섞여 들어온다
+    #
+    # ADR 은 bookValue 만 현지 기준인 게 아니었다. TSMC 의 totalRevenue 는
+    # **대만달러**로 오는데 cap·price 는 달러다 — 되셈한 값과 31.8 배 어긋나고,
+    # 그 31.8 이 곧 TWD/USD 환율이다. 국내에서도 두산밥캣의 매출이 63.4 억원으로
+    # 들어와 있었다(실제로는 조 단위). PSR = cap ÷ revenue 이므로 이 값이 틀리면
+    # PSR 도 함께 틀린다.
+    #
+    #     매출 = 순이익 ÷ 순이익률 = (EPS × 주식수) ÷ 순이익률
+    #
+    # 어느 쪽이 틀렸는지 여기서는 **가릴 수 있다.** 되셈은 EPS·주식수·순이익률
+    # 셋을 쓰고 그 셋은 서로 아귀가 맞는데 매출만 혼자 어긋나기 때문이다.
+    rev, eps, sh, nm = (q.get('revenue'), q.get('eps'),
+                        q.get('shares'), q.get('netMargin'))
+    if (rev and eps and sh and nm and rev > 0 and eps > 0 and sh > 0
+            and nm >= RATIO_MIN_BASE):
+        want = eps * sh / (nm / 100.0)
+        if want:
+            ratio = rev / want
+            if ratio > REVENUE_TOL or ratio < 1.0 / REVENUE_TOL:
+                dropped.append('revenue %.4g → 버림 '
+                               '(EPS %s × 주식수 %.4g ÷ 순이익률 %s%% = %.4g · %.1f 배 어긋남)'
+                               % (rev, eps, sh, nm, want,
+                                  ratio if ratio > 1 else 1.0 / ratio))
+                q['revenue'] = None
+    return dropped
+
+
 def shape_summary(m, meta):
     """quoteSummary 응답을 화면 모델과 같은 모양으로 접는다.
 
@@ -376,7 +531,7 @@ def shape_summary(m, meta):
     if q["price"] is not None and q["prevClose"]:
         q["changePct"] = round((q["price"] - q["prevClose"]) / q["prevClose"] * 100, 2)
     q["cap"] = num(p.get("marketCap")) or num(sd.get("marketCap"))
-    q["currency"] = p.get("currency") or sd.get("currency") or meta.get("currency") or "USD"
+    q["currency"] = p.get("currency") or sd.get("currency") or meta.get("currency") or CURRENCY
     q["exchange"] = p.get("fullExchangeName") or p.get("exchangeName") or meta.get("fullExchangeName")
     q["asof"] = num(p.get("regularMarketTime")) or num(meta.get("regularMarketTime"))
     q["open"] = num(p.get("regularMarketOpen")) or num(sd.get("open"))
@@ -410,6 +565,10 @@ def shape_summary(m, meta):
     q["debtToEquity"] = num(fd.get("debtToEquity"), 2)
     q["cash"] = num(fd.get("totalCash"))
     q["fcf"] = num(fd.get("freeCashflow"))
+
+    # **단위가 섞여 들어온 비율을 여기서 버린다.** 뒤쪽(화면·판정)에서 걸러 내면
+    # 이미 파일에 들어간 뒤라, 그 파일을 읽는 다른 것들이 그대로 쓴다.
+    q["ratioNotes"] = reconcile_ratios(q) or None
 
     # 배당수익률: 응답이 비율(0.0044)인지 퍼센트(0.44)인지 섞여 있다.
     dy = num(sd.get("dividendYield"))
@@ -726,13 +885,13 @@ def fetch_one(c, sym=None):
             q["prevClose"] = meta.get("previousClose") or daily["c"][-2]
         if q.get("price") is not None and q.get("prevClose"):
             q["changePct"] = round((q["price"] - q["prevClose"]) / q["prevClose"] * 100, 2)
-        q.setdefault("currency", meta.get("currency") or "USD")
+        q.setdefault("currency", meta.get("currency") or CURRENCY)
         q.setdefault("volume", daily["v"][-1])
     if q.get("cap") is None and q.get("shares") and q.get("price"):
         q["cap"] = q["shares"] * q["price"]
 
     try:
-        payload["news"] = fetch_news(sym)
+        payload["news"] = fetch_news(c, sym)
         status["news"] = True
     except Exception as e:                      # noqa: BLE001
         status["news"] = str(e)
@@ -766,7 +925,7 @@ def main():
     out = {
         "fetchedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "source": "yahoo-finance",
-        "note": "GitHub Actions 러너가 수집한 스냅샷. us-top100.html 이 읽는다.",
+        "note": NOTE,
         "fx": {}, "companies": {}, "sources": {},
     }
 
@@ -782,7 +941,7 @@ def main():
             payload, status, chart = fetch_one(c)
         except Exception as e:                   # noqa: BLE001
             out["sources"][c["sym"]] = {"fatal": str(e)}
-            print("  %3d/%d %-6s 실패 — %s" % (i, len(companies), c["sym"], e), flush=True)
+            print("  %3d/%d %-10s 실패 — %s" % (i, len(companies), c["sym"], e), flush=True)
             continue
         out["companies"][c["sym"]] = payload
         out["sources"][c["sym"]] = status
@@ -794,9 +953,8 @@ def main():
             with open(os.path.join(CHART_DIR, c["sym"] + ".json"), "w", encoding="utf-8") as f:
                 json.dump(chart, f, ensure_ascii=False, separators=(",", ":"))
         price = payload.get("quote", {}).get("price")
-        print("  %3d/%d %-6s %s%s" % (i, len(companies), c["sym"],
-                                      ("$%.2f" % price) if price else "가격 없음",
-                                      "" if status.get("summary") is True else "  (지표 미확보)"), flush=True)
+        print("  %3d/%d %-10s %s%s" % (i, len(companies), c["sym"], fmt_price(price),
+                                       "" if status.get("summary") is True else "  (지표 미확보)"), flush=True)
 
     # 시세를 못 받은 종목만 한 번 더 — 429·일시적 오류가 대부분이라 재시도로 대개 붙는다
     retry = [c for c in companies if not isinstance(out["sources"].get(c["sym"]), dict)
@@ -812,13 +970,13 @@ def main():
                 try:
                     alt = resolve_symbol(c)
                     if alt and alt != c["sym"]:
-                        print("  %-6s → 야후 심볼 %s 로 재시도" % (c["sym"], alt), flush=True)
+                        print("  %-10s → 야후 심볼 %s 로 재시도" % (c["sym"], alt), flush=True)
                 except Exception as e:          # noqa: BLE001
-                    print("  %-6s 심볼 탐색 실패 — %s" % (c["sym"], e), flush=True)
+                    print("  %-10s 심볼 탐색 실패 — %s" % (c["sym"], e), flush=True)
             try:
                 payload, status, chart = fetch_one(c, alt)
             except Exception as e:              # noqa: BLE001
-                print("  %-6s 재시도도 실패 — %s" % (c["sym"], e), flush=True)
+                print("  %-10s 재시도도 실패 — %s" % (c["sym"], e), flush=True)
                 continue
             if status.get("chart") is True:
                 out["companies"][c["sym"]] = payload
@@ -829,7 +987,7 @@ def main():
                 if chart:
                     with open(os.path.join(CHART_DIR, c["sym"] + ".json"), "w", encoding="utf-8") as f:
                         json.dump(chart, f, ensure_ascii=False, separators=(",", ":"))
-                print("  %-6s 재시도 성공" % c["sym"], flush=True)
+                print("  %-10s 재시도 성공" % c["sym"], flush=True)
 
     news_ok = sum(1 for v in out["sources"].values() if isinstance(v, dict) and v.get("news") is True)
     news_ko_ok = sum(1 for v in out["sources"].values() if isinstance(v, dict) and v.get("newsKo") is True)
@@ -846,5 +1004,47 @@ def main():
         raise SystemExit("한 종목도 받지 못했다 — 원천이 전부 막혔거나 응답 형태가 바뀌었다")
 
 
+def selftest():
+    """망 없이 **비율 맞대기**만 시험한다.
+
+    시험 자료는 data/fixtures/ratio_cases.json 에 있고 **화면(us-top100.html)도
+    같은 파일을 읽는다.** 두 곳에 따로 두면 언젠가 갈라지고, 갈라진 뒤에는 어느
+    쪽이 맞는지 알 수 없다 — 화면은 브라우저에서 야후에 직접 붙으므로 여기서
+    막아도 그쪽은 그대로 틀릴 수 있다.
+
+    숫자는 지어내지 않았다. 2026-09-28 판 us100/kr100 latest.json 에서 그대로
+    옮겼다 — 어긋난 것들과, 같은 파일에서 **성한 쪽의 양 끝**을 함께 걸어
+    문턱이 멀쩡한 값을 버리지 않는지도 본다.
+    """
+    path = os.path.join(ROOT, 'data', 'fixtures', 'ratio_cases.json')
+    with open(path, encoding='utf-8') as f:
+        cases = [(c['name'], c['quote'], set(c['drop']))
+                 for c in json.load(f)['cases']]
+    fails = []
+    for nm, q, want in cases:
+        before = dict(q)
+        reconcile_ratios(q)
+        keys = ('pbr', 'psr', 'revenue')
+        got = {k for k in keys if before.get(k) is not None and q.get(k) is None}
+        if got != want:
+            fails.append('%s — 버린 칸 %s, 버려야 할 칸 %s' % (nm, sorted(got), sorted(want)))
+        # **버리지 않은 칸은 손대지 않아야 한다.** 값을 조용히 고치면 어디서
+        # 바뀐 것인지 나중에 아무도 못 찾는다.
+        for k in keys:
+            if k not in got and q.get(k) != before.get(k):
+                fails.append('%s — %s 를 버리지도 않고 값을 바꿨다' % (nm, k))
+
+    print('시험 %d 가지 (비율 맞대기)' % len(cases))
+    if fails:
+        print('\n실패 %d 가지' % len(fails))
+        for f in fails:
+            print('  !! ' + f)
+        return 1
+    print('실패 없음')
+    return 0
+
+
 if __name__ == "__main__":
+    if '--selftest' in sys.argv[1:]:
+        raise SystemExit(selftest())
     main()

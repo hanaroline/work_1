@@ -53,5 +53,16 @@ jobs:
             cp discovery/_summary.json tools/discovery/summary.json
             git add tools/discovery/summary.json
             git commit -m "chore: ELS 사이트 탐색 요약 갱신" || echo "변경 없음"
-            git push || echo "푸시 실패 (무시)"
+            # 탐색 요약은 급한 자료가 아니라 실패해도 잡을 죽이지 않는다 —
+            # 그 뜻은 그대로 둔다. 다만 **한 번 밀어 보고 마는 것**은 다른
+            # 문제였다. 같은 브랜치에 시세·리포트 수집이 수시로 커밋하므로
+            # 밀릴 때가 있고, 그러면 요약이 조용히 사라진 채 로그만 한 줄
+            # 남았다. 되받아 다시 밀고, 끝내 안 되면 로그가 아니라 경고로
+            # 남겨 눈에 띄게 한다.
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push 거절 — 원격을 받아 다시 시도 ($i/3)"
+              git pull --rebase origin "${GITHUB_REF_NAME}" || break
+            done
+            echo "::warning::탐색 요약을 밀어넣지 못했다 — 이번 판은 저장소에 남지 않는다"
           fi

@@ -1,0 +1,183 @@
+{
+ "note": "비율 맞대기 시험 자료. **수집기(scripts/fetch_us100.py)와 화면(us-top100.html)이 같이 읽는다** — 두 곳에 따로 두면 언젠가 갈라지고, 갈라진 뒤에는 어느 쪽이 맞는지 알 수 없다.",
+ "source": "2026-09-28 판 data/us100/latest.json · data/kr100/latest.json 에서 그대로 옮긴 값",
+ "cases": [
+  {
+   "name": "TSM  ADR 단위 어긋남",
+   "quote": {
+    "per": 33.55,
+    "roe": 39.97,
+    "netMargin": 49.92,
+    "pbr": 92.17,
+    "psr": 0.53
+   },
+   "drop": [
+    "pbr",
+    "psr"
+   ]
+  },
+  {
+   "name": "ASML ADR 단위 어긋남",
+   "quote": {
+    "per": 60.24,
+    "roe": 53.94,
+    "netMargin": 30.19,
+    "pbr": 1499.02,
+    "psr": 18.31
+   },
+   "drop": [
+    "pbr"
+   ]
+  },
+  {
+   "name": "NEE  성한 쪽 위 끝",
+   "quote": {
+    "per": 17.1,
+    "roe": 11.68,
+    "netMargin": 22.55,
+    "pbr": 2.78,
+    "psr": 3.86
+   },
+   "drop": []
+  },
+  {
+   "name": "PANW 성한 쪽 아래 끝",
+   "quote": {
+    "per": 914.0,
+    "roe": 1.74,
+    "netMargin": 2.67,
+    "pbr": 11.11,
+    "psr": 26.7
+   },
+   "drop": []
+  },
+  {
+   "name": "NVDA 높은 ROE",
+   "quote": {
+    "per": 28.49,
+    "roe": 117.21,
+    "netMargin": 52.41,
+    "pbr": 23.73,
+    "psr": 14.93
+   },
+   "drop": []
+  },
+  {
+   "name": "적자라 잴 수 없음",
+   "quote": {
+    "per": 12.0,
+    "roe": -8.0,
+    "netMargin": -3.0,
+    "pbr": 2.0,
+    "psr": 1.0
+   },
+   "drop": []
+  },
+  {
+   "name": "PER 이 없음",
+   "quote": {
+    "per": null,
+    "roe": 20.0,
+    "netMargin": 10.0,
+    "pbr": 999.0,
+    "psr": 999.0
+   },
+   "drop": []
+  },
+  {
+   "name": "삼성SDI ROE 가 0 에 가까움",
+   "quote": {
+    "per": 13.79,
+    "roe": 0.2,
+    "netMargin": 0.26,
+    "pbr": 1.75,
+    "psr": 2.99
+   },
+   "drop": []
+  },
+  {
+   "name": "포스코퓨처엠 PER 이 1,175배",
+   "quote": {
+    "per": 1175.48,
+    "roe": 1.36,
+    "netMargin": 1.55,
+    "pbr": 3.86,
+    "psr": 5.7
+   },
+   "drop": []
+  },
+  {
+   "name": "두산밥캣 매출 단위 어긋남",
+   "quote": {
+    "per": 11.61,
+    "roe": 8.5,
+    "netMargin": 5.39,
+    "pbr": 0.8,
+    "psr": 891.72
+   },
+   "drop": [
+    "psr"
+   ]
+  },
+  {
+   "name": "TSM 매출이 대만달러",
+   "quote": {
+    "per": 33.55,
+    "roe": 39.97,
+    "netMargin": 49.92,
+    "pbr": 13.4,
+    "psr": 16.7,
+    "revenue": 4440000000000.0,
+    "eps": 13.43,
+    "shares": 5186000000.0
+   },
+   "drop": [
+    "revenue"
+   ]
+  },
+  {
+   "name": "두산밥캣 매출이 조 단위가 아님",
+   "quote": {
+    "per": 11.61,
+    "roe": 8.5,
+    "netMargin": 5.39,
+    "pbr": 0.8,
+    "psr": 0.57,
+    "revenue": 6335000000.0,
+    "eps": 5601.0,
+    "shares": 95750000.0
+   },
+   "drop": [
+    "revenue"
+   ]
+  },
+  {
+   "name": "알테오젠 순이익률 75%",
+   "quote": {
+    "per": 40.0,
+    "roe": 25.0,
+    "netMargin": 75.47,
+    "pbr": 9.0,
+    "psr": 30.2,
+    "revenue": 254000000000.0,
+    "eps": 706.15,
+    "shares": 69560000.0
+   },
+   "drop": []
+  },
+  {
+   "name": "매출은 있는데 주식수가 없음",
+   "quote": {
+    "per": 20.0,
+    "roe": 10.0,
+    "netMargin": 8.0,
+    "pbr": 2.0,
+    "psr": 1.6,
+    "revenue": 1000000000.0,
+    "eps": 5.0,
+    "shares": null
+   },
+   "drop": []
+  }
+ ]
+}

@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -586,6 +601,10 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
   <p class="hero-lede"><span data-lang-ko><strong>코스피가 장중 7,171.52 까지 올랐다가 상승분을 전부 반납하고 내려 마쳤습니다.</strong> 장중 7,000 선을 넘은 것은 15거래일 만이지만 <strong>종가로는 지키지 못했습니다.</strong> 어제와 정확히 반대 모양입니다 &mdash; 어제는 당일 고가에서 끝났고, 오늘은 당일 저가 부근에서 끝났습니다. 오전을 끌어올린 것은 어제와 같은 재료(오픈AI 아스트라발 반도체 기대)였고, 오후에 세 가지가 한꺼번에 돌아왔습니다: <strong>사우디 아람코 정유시설 피격에 따른 유가 급등</strong>, <strong>미국&middot;캐나다 보복관세</strong>, 그리고 <strong>엔화 급등에 따른 엔 캐리 청산 우려</strong>입니다. 어제 미국이 노동절로 쉬어 대외 변수가 비어 있었다는 점이 하루 만에 드러난 셈입니다.</span><span data-lang-en><strong>The KOSPI rose as far as 7,171.52 intraday, then gave the whole advance back and closed lower.</strong> It was the first intraday move above 7,000 in fifteen sessions, but <strong>the close did not hold it.</strong> The shape is the exact inverse of yesterday: yesterday ended at the session high, today near the session low. The morning was driven by the same catalyst as yesterday &mdash; semiconductor momentum from OpenAI&rsquo;s Astra &mdash; and in the afternoon three things returned at once: <strong>a jump in crude after a strike on a Saudi Aramco refinery</strong>, <strong>US&ndash;Canada retaliatory tariffs</strong>, and <strong>a sharp yen rally that revived carry-unwind worries</strong>. Yesterday&rsquo;s US Labor Day holiday had simply left the external side empty.</span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>고가에서 끝난 어제, <strong>저가에서 끝난 오늘</strong></span><span data-lang-en>Yesterday closed at the high; <strong>today closed at the low</strong></span></span> &nbsp; <span data-lang-ko>기준: 국내는 오늘 9월 8일 마감 &middot; 해외는 9월 4일(금) 마감(아직 열지 않았습니다) &middot; 환율은 오늘 마감 &middot; 시세 파일 09-08 16:14 수집 &middot; 작성 2026-09-08(화) 16:25 KST &middot; <strong>오늘 15:30 국내 증시 마감</strong></span><span data-lang-en>Basis: Korea closed today; overseas closes of Friday 4 September (not yet open); FX at today&rsquo;s close; data collected 09-08 16:14; compiled 16:25 KST</span></p>
 </div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
+</div>
 <div class="shell">
 
 <!-- 목차와 지난 브리핑 목록은 **비워 둔다**.
@@ -618,6 +637,42 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
   </ul>
   <p class="sidenav-label"><span data-lang-ko>브리핑 목록</span><span data-lang-en>All editions</span></p>
   <ul class="sidenav-dates">
+    <li><a href="https://claude.ai/artifact/SmFNL3f47eBTowWmx18ETR" target="_blank" rel="noopener"><span class="d">10-01</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/artifact/7v1FUC1yPmqMuKkKvv2egz" target="_blank" rel="noopener"><span class="d">09-30</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/artifact/Qz5tuLk8MA4QJkx6bnW1n3" target="_blank" rel="noopener"><span class="d">09-30</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/artifact/UT1FQbRw8P9YmWuranEzZN" target="_blank" rel="noopener"><span class="d">09-29</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/artifact/8tCTLGSBK1oN2hCy4cBvrQ" target="_blank" rel="noopener"><span class="d">09-28</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/artifact/H9wqUdgcLAc967sTos5j83" target="_blank" rel="noopener"><span class="d">09-28</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/artifact/9aJygU4YBk4eZqHUoxyG4v" target="_blank" rel="noopener"><span class="d">09-27</span><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><a href="https://claude.ai/artifact/6kHUyVsg7ekrnwH4nPiXdG" target="_blank" rel="noopener"><span class="d">09-26</span><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><a href="https://claude.ai/artifact/FrqMhyjg3Yo1GHfcCq8DEB" target="_blank" rel="noopener"><span class="d">09-25</span><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><a href="https://claude.ai/artifact/WTmdkkEMyQRXiKAzeeBXFp" target="_blank" rel="noopener"><span class="d">09-24</span><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><a href="https://claude.ai/artifact/PooByDDssSZ59pwL15rVLx" target="_blank" rel="noopener"><span class="d">09-23</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/artifact/JUmfDekDRYKERundjhGEhE" target="_blank" rel="noopener"><span class="d">09-23</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/artifact/8Tin48mJ1BuCNCo24CPW1i" target="_blank" rel="noopener"><span class="d">09-22</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/artifact/TQppT4gMTBnZfi7Ke1hSfZ" target="_blank" rel="noopener"><span class="d">09-22</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/artifact/65yhfQXBw4AL4c51pv9QDg" target="_blank" rel="noopener"><span class="d">09-21</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/artifact/CFH9jVr8Lusp7ra9TPSuR2" target="_blank" rel="noopener"><span class="d">09-21</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/artifact/TskX4HZuMUtEdPBr2FqbC4" target="_blank" rel="noopener"><span class="d">09-20</span><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><a href="https://claude.ai/artifact/RWQaCEZwF8fCKDibvDPzvc" target="_blank" rel="noopener"><span class="d">09-19</span><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><a href="https://claude.ai/artifact/JcuUZaRLf1acYSQHMQ2dPf" target="_blank" rel="noopener"><span class="d">09-18</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/artifact/96GcWenhggAG4yh1FaQepV" target="_blank" rel="noopener"><span class="d">09-18</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/artifact/2Z14jnpd7BT3aGaHmCHDaw" target="_blank" rel="noopener"><span class="d">09-17</span><span data-lang-ko>FOMC 브리프</span><span data-lang-en>FOMC brief</span></a></li>
+    <li><a href="https://claude.ai/artifact/AmnpwBH6Hd4qHUn5CZgXa4" target="_blank" rel="noopener"><span class="d">09-17</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/artifact/36Ewvs2JAwWkCG6ozSBWAR" target="_blank" rel="noopener"><span class="d">09-17</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/artifact/8cmXUa4jhyFCGquyPhDG4S" target="_blank" rel="noopener"><span class="d">09-16</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/artifact/DJ7a66ExkSCK91HJwMJh6h" target="_blank" rel="noopener"><span class="d">09-16</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/artifact/5Vsj3ncNtJ6EzB5GZ57b2d" target="_blank" rel="noopener"><span class="d">09-15</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/artifact/JzYv2uDELdbqcdAvssGCgQ" target="_blank" rel="noopener"><span class="d">09-15</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/c0d07f87-a118-4720-84aa-30d7ab0a27b6" target="_blank" rel="noopener"><span class="d">09-14</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/6752182d-093a-4ca1-8278-daba1884df2f" target="_blank" rel="noopener"><span class="d">09-14</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/5f159f71-0e00-45fd-bb1c-ed19cc619da3" target="_blank" rel="noopener"><span class="d">09-13</span><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/323a658c-bc4f-4b2c-b5c4-d53b8f244795" target="_blank" rel="noopener"><span class="d">09-12</span><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/a294a193-d2f6-4cce-90eb-c106ab51194d" target="_blank" rel="noopener"><span class="d">09-11</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/ebb9ba15-22ba-4f79-8354-bcc3a0e0d665" target="_blank" rel="noopener"><span class="d">09-11</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/6eb5c203-e197-4cee-9b4f-69ab3d4ebe42" target="_blank" rel="noopener"><span class="d">09-10</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/3c8d1f6a-c1a7-45b2-9571-3dfa9c5b56bb" target="_blank" rel="noopener"><span class="d">09-10</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/9fb8d0c0-de55-445b-97e3-13f4524f4a61" target="_blank" rel="noopener"><span class="d">09-09</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
     <li><a href="https://claude.ai/code/artifact/3b8dd752-7641-4b28-807c-74210b51e716" target="_blank" rel="noopener"><span class="d">09-09</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
     <li><a href="#" aria-current="page"><span class="d">09-08</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
     <li><a href="https://claude.ai/code/artifact/08768b8a-7c83-40ec-9d3f-bb189afec012" target="_blank" rel="noopener"><span class="d">09-08</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
@@ -1382,6 +1437,42 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
   <p class="h"><span data-lang-ko>브리핑 목록</span><span data-lang-en>All editions</span></p>
   <p class="s"><span data-lang-ko>날짜를 누르면 그 판이 열립니다. 화면 왼쪽 목차 아래에도 같은 목록이 있습니다.</span><span data-lang-en>Each date links to that edition; the same list sits below the contents in the left-hand column on screen.</span></p>
   <ul>
+    <li><span class="d">10-01</span><a href="https://claude.ai/artifact/SmFNL3f47eBTowWmx18ETR"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-30</span><a href="https://claude.ai/artifact/7v1FUC1yPmqMuKkKvv2egz"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-30</span><a href="https://claude.ai/artifact/Qz5tuLk8MA4QJkx6bnW1n3"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-29</span><a href="https://claude.ai/artifact/UT1FQbRw8P9YmWuranEzZN"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-28</span><a href="https://claude.ai/artifact/8tCTLGSBK1oN2hCy4cBvrQ"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-28</span><a href="https://claude.ai/artifact/H9wqUdgcLAc967sTos5j83"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-27</span><a href="https://claude.ai/artifact/9aJygU4YBk4eZqHUoxyG4v"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><span class="d">09-26</span><a href="https://claude.ai/artifact/6kHUyVsg7ekrnwH4nPiXdG"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><span class="d">09-25</span><a href="https://claude.ai/artifact/FrqMhyjg3Yo1GHfcCq8DEB"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><span class="d">09-24</span><a href="https://claude.ai/artifact/WTmdkkEMyQRXiKAzeeBXFp"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><span class="d">09-23</span><a href="https://claude.ai/artifact/PooByDDssSZ59pwL15rVLx"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-23</span><a href="https://claude.ai/artifact/JUmfDekDRYKERundjhGEhE"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-22</span><a href="https://claude.ai/artifact/8Tin48mJ1BuCNCo24CPW1i"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-22</span><a href="https://claude.ai/artifact/TQppT4gMTBnZfi7Ke1hSfZ"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-21</span><a href="https://claude.ai/artifact/65yhfQXBw4AL4c51pv9QDg"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-21</span><a href="https://claude.ai/artifact/CFH9jVr8Lusp7ra9TPSuR2"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-20</span><a href="https://claude.ai/artifact/TskX4HZuMUtEdPBr2FqbC4"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><span class="d">09-19</span><a href="https://claude.ai/artifact/RWQaCEZwF8fCKDibvDPzvc"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><span class="d">09-18</span><a href="https://claude.ai/artifact/JcuUZaRLf1acYSQHMQ2dPf"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-18</span><a href="https://claude.ai/artifact/96GcWenhggAG4yh1FaQepV"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-17</span><a href="https://claude.ai/artifact/2Z14jnpd7BT3aGaHmCHDaw"><span data-lang-ko>FOMC 브리프</span><span data-lang-en>FOMC brief</span></a></li>
+    <li><span class="d">09-17</span><a href="https://claude.ai/artifact/AmnpwBH6Hd4qHUn5CZgXa4"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-17</span><a href="https://claude.ai/artifact/36Ewvs2JAwWkCG6ozSBWAR"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-16</span><a href="https://claude.ai/artifact/8cmXUa4jhyFCGquyPhDG4S"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-16</span><a href="https://claude.ai/artifact/DJ7a66ExkSCK91HJwMJh6h"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-15</span><a href="https://claude.ai/artifact/5Vsj3ncNtJ6EzB5GZ57b2d"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-15</span><a href="https://claude.ai/artifact/JzYv2uDELdbqcdAvssGCgQ"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-14</span><a href="https://claude.ai/code/artifact/c0d07f87-a118-4720-84aa-30d7ab0a27b6"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-14</span><a href="https://claude.ai/code/artifact/6752182d-093a-4ca1-8278-daba1884df2f"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-13</span><a href="https://claude.ai/code/artifact/5f159f71-0e00-45fd-bb1c-ed19cc619da3"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><span class="d">09-12</span><a href="https://claude.ai/code/artifact/323a658c-bc4f-4b2c-b5c4-d53b8f244795"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><span class="d">09-11</span><a href="https://claude.ai/code/artifact/a294a193-d2f6-4cce-90eb-c106ab51194d"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-11</span><a href="https://claude.ai/code/artifact/ebb9ba15-22ba-4f79-8354-bcc3a0e0d665"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-10</span><a href="https://claude.ai/code/artifact/6eb5c203-e197-4cee-9b4f-69ab3d4ebe42"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-10</span><a href="https://claude.ai/code/artifact/3c8d1f6a-c1a7-45b2-9571-3dfa9c5b56bb"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-09</span><a href="https://claude.ai/code/artifact/9fb8d0c0-de55-445b-97e3-13f4524f4a61"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
     <li><span class="d">09-09</span><a href="https://claude.ai/code/artifact/3b8dd752-7641-4b28-807c-74210b51e716"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
     <li><span class="d">09-08</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span> <span class="me"><span data-lang-ko>&mdash; 이 판</span><span data-lang-en>&mdash; this edition</span></span></li>
     <li><span class="d">09-08</span><a href="https://claude.ai/code/artifact/08768b8a-7c83-40ec-9d3f-bb189afec012"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
@@ -1436,8 +1527,9 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
 </div><!-- /shell -->
 
 <footer class="foot">
-  <p><span data-lang-ko>미래에셋증권 마포WM · 송재섭 · 2026년 9월 8일(화) 16:25 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Jaeseop Song · Compiled 16:25 KST, Tuesday 8 September 2026.</span></p>
+  <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 8일(화) 16:25 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 16:25 KST, Tuesday 8 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

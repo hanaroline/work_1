@@ -236,6 +236,41 @@ STOCK_NOTES = {
               "Korea's largest non-life insurer"),
     "HD현대중공업": ("조선. LNG선·특수선 수주 잔고가 실적을 좌우",
                  "Shipbuilding; LNG and naval order backlog drives earnings"),
+    "HD현대": ("HD현대그룹 지주회사. 조선·정유·건설기계·전력기기를 거느린다",
+             "HD Hyundai group holding company: shipbuilding, refining, "
+             "construction equipment and power systems"),
+    # 2026-08-27 에 국내 종목을 42 → 55 로 늘리면서 **설명을 같이 넣지
+    # 않았다.** 그래서 아래 열셋만 「핵심」 칸이 석 주 동안 비어 있었다
+    # (지침 4-1절·7-7절이 경고하는 바로 그 자리다). 2026-09-20 에 채운다.
+    # 사업 내용만 적는다 — 실적·목표주가·전망은 날마다 바뀌므로 넣지 않는다.
+    "HD한국조선해양": ("HD현대 조선 중간지주. 삼호·미포 등 조선 계열을 묶는다",
+                  "HD Hyundai's shipbuilding intermediate holding company"),
+    "한화오션": ("조선·해양플랜트. 특수선(잠수함)과 LNG선",
+             "Shipbuilding and offshore; naval submarines and LNG carriers"),
+    "삼성중공업": ("조선·해양. FLNG 등 해양플랜트 비중이 높다",
+               "Shipbuilding and offshore; a large FLNG and offshore mix"),
+    "현대로템": ("철도차량·방산(K2 전차)·플랜트",
+              "Rolling stock, defence (K2 tanks) and plant engineering"),
+    "한미반도체": ("HBM 본딩 장비(TC본더). 메모리 후공정 장비",
+               "HBM bonding equipment (TC bonders) for memory back-end"),
+    "이수페타시스": ("고다층 인쇄회로기판(MLB). AI 가속기용 기판",
+                "High-layer-count PCBs (MLB) used in AI accelerators"),
+    "HPSP": ("고압 수소 어닐링 장비. 반도체 전공정 틈새 1위",
+             "High-pressure hydrogen annealing tools for chip front-end"),
+    "주성엔지니어링": ("반도체·디스플레이 증착 장비(ALD)",
+                 "Deposition equipment (ALD) for chips and displays"),
+    "현대건설": ("국내 대형 건설사. 원전·플랜트와 주택",
+              "A major Korean builder: nuclear, plant and housing"),
+    "삼성E&A": ("플랜트 설계·조달·시공(EPC). 화공·에너지 인프라",
+              "Plant EPC contractor in chemicals and energy infrastructure"),
+    "카카오뱅크": ("인터넷전문은행. 모바일 기반 여수신",
+               "An internet-only bank; mobile deposits and lending"),
+    "LG디스플레이": ("OLED 패널. 스마트폰·TV·차량용 디스플레이",
+                "OLED panels for handsets, TVs and vehicles"),
+    "엔씨소프트": ("리니지 계열 온라인·모바일 게임 개발사",
+               "Developer of the Lineage online and mobile game series"),
+    "LG이노텍": ("카메라모듈·기판소재. 애플 공급 비중이 큰 전자부품사",
+              "Camera modules and substrates; a major Apple supplier"),
     "두산에너빌리티": ("발전 설비. 원전·가스터빈, SMR 기대주",
                  "Power plant equipment; nuclear, gas turbines and SMRs"),
     "카카오": ("카카오톡 기반 플랫폼·핀테크·콘텐츠",
@@ -449,6 +484,10 @@ YAHOO_STOCKS = {
     # 잔고와 선종을 들고 있어 같은 날 방향이 갈린다.
     "HD한국조선해양": "009540.KS", "한화오션": "042660.KS",
     "삼성중공업": "010140.KS", "현대로템": "064350.KS",
+    # 2026-09-18 에 조선 노사 갈등이 터졌을 때 **지주회사가 사업회사보다 더
+    # 크게 빠졌는데**(HD현대 −6.52% 대 HD현대중공업 −2.02%) 표에 없어서 쓰지
+    # 못했다. 파업이 그룹 전체로 번지는 국면에서는 지주사가 먼저 반응한다.
+    "HD현대": "267250.KS",
     # --- 반도체 소부장 --- HBM 이 이 판의 축인데 장비·기판이 통째로 빠져 있었다.
     "한미반도체": "042700.KS", "이수페타시스": "007660.KS",
     "HPSP": "403870.KQ", "주성엔지니어링": "036930.KQ",
@@ -456,6 +495,8 @@ YAHOO_STOCKS = {
     "현대건설": "000720.KS", "삼성E&A": "028050.KS",
     # --- 인터넷·게임·통신 ---
     "카카오뱅크": "323410.KS", "LG디스플레이": "034220.KS", "엔씨소프트": "036570.KS",
+    # 반도체가 오르는 날 같이 움직이는 전자부품 쪽이 비어 있었다.
+    "LG이노텍": "011070.KS",
     "NAVER": "035420.KS", "카카오": "035720.KS",
     "크래프톤": "259960.KS", "SK텔레콤": "017670.KS",
     # --- 지주·소비재·에너지·운송 ---
@@ -716,7 +757,54 @@ def yahoo_quote(symbol):
 
 
 def naver_sectors():
-    """업종별 등락률 — 네이버 업종 시세 페이지(EUC-KR HTML)를 파싱한다."""
+    """업종별 등락률 — **모바일 JSON API 가 1순위**, 옛 화면이 물러설 자리.
+
+    2026-09-10 에 `sise_group.naver` 도 React 앱으로 바뀌어 표가 사라졌다.
+    `m.stock.naver.com/api/stocks/industry?page=1&pageSize=100` 이 같은 업종
+    79 개를 JSON 으로 준다 — 이름·등락률·상승/하락 종목 수까지 함께 온다
+    (2026-09-11 08:15 탐색에서 응답을 받아 확인했다).
+
+    **개장 전에는 등락률이 전부 "0.00" 으로 온다.** 진행 중인 장을 주기
+    때문이다. 그것을 그대로 실으면 전날 업종이 0 으로 덮이므로, 전부 0 이면
+    받지 않은 것으로 보고 예외를 낸다 — 빈 것과 영은 다르다.
+    """
+    try:
+        return _naver_sectors_api()
+    except Exception as api_err:                                  # noqa: BLE001
+        try:
+            return _naver_sectors_html()
+        except Exception:                                         # noqa: BLE001
+            raise api_err
+
+
+def _naver_sectors_api():
+    url = "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100"
+    j = json.loads(_get(url, referer="https://m.stock.naver.com/"))
+    out = []
+    for g in j.get("groups") or []:
+        name = (g.get("name") or "").strip()
+        try:
+            pct = float(str(g.get("changeRate")).replace(",", ""))
+        except (TypeError, ValueError):
+            continue
+        if not name:
+            continue
+        row = {"name": name, "change_pct": pct, "source_url": url}
+        for a, b in (("riseCount", "advancing"), ("fallCount", "declining"),
+                     ("steadyCount", "unchanged"), ("totalCount", "total")):
+            if isinstance(g.get(a), int):
+                row[b] = g[a]
+        out.append(row)
+    if not out:
+        raise ValueError("업종 행을 찾지 못함 (API)")
+    if not any(r["change_pct"] for r in out):
+        raise ValueError("업종 등락률이 전부 0 — 개장 전 응답이다(%d개)" % len(out))
+    out.sort(key=lambda d: d["change_pct"], reverse=True)
+    return out
+
+
+def _naver_sectors_html():
+    """옛 화면(EUC-KR HTML). 2026-09-10 부터 비어 있지만 되돌아올 수 있다."""
     s = _get("https://finance.naver.com/sise/sise_group.naver?type=upjong",
              referer="https://finance.naver.com/", encoding="cp949")
     out = []
@@ -745,11 +833,99 @@ def _investor_urls(now, back=0):
     return ["%s?bizdate=%s&sosok=" % (base, d) for d in days]
 
 
-def naver_investors(now, dump_dir=None):
-    """투자자별 매매동향 — 개인/외국인/기관 순매수, 단위 억원. 약 한 달치.
+# 투자자 구분값. **짐작하지 않고 수집기가 이미 가진 값과 대조해 확정했다**
+# (2026-09-18, 다섯 거래일 × 세 항목이 원 단위까지 일치).
+#
+#   개인   = 8000
+#   외국인 = 9000 + 9001(기타외국인)   ← 9000 만 쓰면 하루 수십억씩 어긋난다
+#   기관계 = 1000 금융투자 · 2000 보험 · 3000 투신 · 3100 사모
+#            · 4000 은행 · 5000 기타금융 · 6000 연기금
+#
+# **7000·7100 은 기타법인이라 기관계에 넣지 않는다.** 7100 은 2026-09-17 에
+# +1조 7,046억으로 기관계(+2,480억)보다 훨씬 컸다 — 잘못 더하면 수급 해석이
+# 통째로 뒤집힌다.
+INV_RETAIL = ("8000",)
+INV_FOREIGN = ("9000", "9001")
+INV_INST = ("1000", "2000", "3000", "3100", "4000", "5000", "6000")
 
-    화면 한 장에 **열 줄**만 나오므로 bizdate 를 2주씩 뒤로 옮겨 세 번 부르고
-    날짜로 합친다. 「이번 주 내내 외국인이 샀는가」를 말하려면 열 줄로는 모자란다.
+TREND_DAILY = "https://stock.naver.com/api/domestic/market/trend/daily"
+
+
+def naver_investors_api(now, market="KOSPI", days=30, dump_dir=None):
+    """**투자자별 매매동향을 화면이 쓰는 그 API 에서 받는다.** 1순위.
+
+    2026-09-18 아침에 옛 화면(`investorDealTrendDay.naver`)이 **HTTP 410
+    (Gone)** 으로 끊겼다 — 「없어졌다」는 뜻이라 일시적 오류가 아니다.
+    2026-09-10 개편으로 상한가 화면이 끊겼을 때와 같은 일이고, 같은 방법으로
+    찾았다: 브라우저로 화면을 열어 오가는 요청을 그대로 적었다
+    (`scripts/probe_daily_xhr.mjs` → `scripts/probe_daily_api.py`).
+
+    옛 화면은 한 번에 **열 줄**만 줘서 bizdate 를 2주씩 옮겨 세 번 불러야
+    했는데, 이 API 는 **한 번에 서른 줄**을 준다(총 5,357일치). 부르는 횟수가
+    셋에서 하나로 줄었다.
+
+    값은 **원 단위**로 오므로 억원으로 바꾼다 — 판과 지침이 모두 억원이다.
+    """
+    url = ("%s?tradeType=KRX&marketType=%s&bizdate=%s&startIdx=0&pageSize=%d"
+           % (TREND_DAILY, market, now.strftime("%Y%m%d"), days))
+    j = json.loads(_get(url, referer="https://stock.naver.com/",
+                        headers={"Accept": "application/json"}))
+    rows = j.get("content") or []
+    if dump_dir:
+        os.makedirs(dump_dir, exist_ok=True)
+        with open(os.path.join(dump_dir, "investors_api_%s.json" % market.lower()),
+                  "w", encoding="utf-8") as f:
+            json.dump(rows[:3], f, ensure_ascii=False, indent=1)
+    out = []
+    for r in rows:
+        amt = {x.get("investorGubun"): x.get("diffValue")
+               for x in (r.get("netAmounts") or [])}
+
+        def s(codes):
+            """원 → 억원. 한 코드라도 없으면 **0 으로 때우지 않고 None 을 낸다.**"""
+            got = [amt.get(c) for c in codes]
+            if any(v is None for v in got):
+                return None
+            return round(sum(float(v) for v in got) / 1e8)
+
+        b = str(r.get("bizdate") or "")
+        if len(b) != 8:
+            continue
+        out.append({
+            "date": "%s.%s.%s" % (b[2:4], b[4:6], b[6:8]),   # 옛 형식과 맞춘다
+            "retail": s(INV_RETAIL),
+            "foreign": s(INV_FOREIGN),
+            "institution": s(INV_INST),
+            "unit": "억원",
+            "source_url": url,
+        })
+    if not out:
+        raise ValueError("투자자별 API 가 빈 목록을 줬다 (%s)" % url[-60:])
+    out.sort(key=lambda r: r["date"], reverse=True)
+    return out
+
+
+def naver_investors(now, dump_dir=None):
+    """투자자별 매매동향 — 개인/외국인/기관 순매수, 단위 억원.
+
+    **API 가 1순위, 옛 화면 긁기가 2순위**다. 옛 화면은 2026-09-18 부터 410
+    이라 지금은 실패하지만, API 가 또 바뀌는 날 두 실패를 함께 보여 주는
+    쪽이 한 줄짜리 오류보다 낫다.
+    """
+    try:
+        return naver_investors_api(now, "KOSPI", 30, dump_dir)
+    except Exception as e:                                    # noqa: BLE001
+        _api_err = "api -> %s: %s" % (type(e).__name__, str(e)[:80])
+    try:
+        return _naver_investors_legacy(now, dump_dir)
+    except Exception as e:                                    # noqa: BLE001
+        raise ValueError("%s | legacy -> %s: %s"
+                         % (_api_err, type(e).__name__, str(e)[:80]))
+
+
+def _naver_investors_legacy(now, dump_dir=None):
+    """옛 화면 긁기(2026-09-18 부터 410). 화면 한 장에 **열 줄**만 나오므로
+    bizdate 를 2주씩 뒤로 옮겨 세 번 부르고 날짜로 합친다.
     """
     seen, merged = set(), []
     for back in (0, 14, 28):
@@ -851,8 +1027,129 @@ def _rate(text, *label_words):
     return float(m.group(1).replace(",", "")) if m else None
 
 
+def naver_market_api(code, dump_dir=None):
+    """지수 한 장을 **모바일 JSON API** 에서 뽑는다 — 새 1순위.
+
+    2026-09-10 에 `sise_index.naver` 가 React 앱으로 바뀌면서 서버가 그리던
+    표가 사라졌다. 118KB 를 받아도 안에 「상승」 「하락」 같은 말이 한 번도
+    나오지 않고 종가조차 없다 — 숫자를 화면에서 나중에 불러온다. 그래서
+    긁기로는 더 못 얻는다. 같은 날 업종·환율·금리·자금동향·뉴스도 함께
+    깨졌고, 살아남은 것은 표를 그대로 내려 주는 옛 화면들뿐이다.
+
+    선물에서 이미 쓰던 `m.stock.naver.com/api/index/<코드>/integration` 이
+    같은 자료를 JSON 으로 준다. 선물 응답에는 `upDownStockInfo` 와
+    `programTrendInfo` 가 null 로 들어 있는데, 이름 그대로라면 지수 쪽에서는
+    등락 종목 수와 프로그램 매매가 여기 담긴다. `dealTrendInfo` 가 코스피
+    현물에서도 나온다는 것은 `naver_futures` 주석에 이미 대조해 둔 사실이다.
+
+    **응답 모양을 세션에서 확인하지 못했다**(사내 정책상 네이버에 직접 붙지
+    못한다). 그래서 키 이름을 여러 갈래로 받아 보고, 무엇 하나라도 못 읽으면
+    응답 전체를 `dump_dir` 에 남긴다 — 다음 실행 때 그 파일을 보고 고치면
+    된다. 못 읽어도 예외를 내므로 호출 쪽이 옛 긁기로 물러설 수 있다.
+    """
+    url = "https://m.stock.naver.com/api/index/%s/integration" % code
+    j = json.loads(_get(url, referer="https://m.stock.naver.com/"))
+
+    def n(x):
+        if x is None:
+            return None
+        try:
+            return float(re.sub(r"[^\d.\-]", "", str(x).replace("−", "-")))
+        except ValueError:
+            return None
+
+    def pick(d, *names):
+        """이름이 어느 쪽으로 붙었는지 모르므로 여러 갈래로 찾는다."""
+        for nm in names:
+            if isinstance(d, dict) and d.get(nm) is not None:
+                return d[nm]
+        return None
+
+    out = {"source_url": url, "unit": "억원"}
+
+    ud = j.get("upDownStockInfo") or {}
+    breadth = {}
+    # 이름은 **짐작이 아니라 실제 응답으로 확정**했다(2026-09-11 08:15 탐색).
+    #   upDownStockInfo = {upperCount, riseCount, lowerCount, fallCount, steadyCount}
+    # 옛 짐작(risingCount·upCount…)은 하나도 맞지 않아 breadth 가 통째로 비었다.
+    for key, names in (("limit_up", ("upperCount", "upperLimitCount", "limitUpCount")),
+                       ("advancing", ("riseCount", "risingCount", "upCount")),
+                       ("unchanged", ("steadyCount", "unchangedCount", "unchanged")),
+                       ("declining", ("fallCount", "fallingCount", "downCount")),
+                       ("limit_down", ("lowerCount", "lowerLimitCount", "limitDownCount"))):
+        v = n(pick(ud, *names))
+        if v is not None:
+            breadth[key] = int(v)
+    if breadth:
+        out["breadth"] = breadth
+
+    # **개장 전에는 이 API 가 「오늘 장」을 0 으로 준다.** 2026-09-11 08:15 응답이
+    # bizdate=20260911 에 등락·수급·프로그램을 전부 "0" 으로 줬다. 그대로 저장하면
+    # 전날 마감이 0 으로 덮여 판이 「아무도 사지 않은 날」이 된다.
+    # **전부 0 인 묶음은 싣지 않는다** — 비어 있는 것과 영은 다르다.
+    if breadth and not any(breadth.values()):
+        out.pop("breadth", None)
+
+    dt = j.get("dealTrendInfo") or {}
+    if dt.get("bizdate"):
+        out["bizdate"] = str(dt["bizdate"])          # 어느 장의 값인지 밝혀 둔다
+    flows = {}
+    for key, names in (("retail", ("personalValue",)), ("foreign", ("foreignValue",)),
+                       ("institution", ("institutionalValue",))):
+        v = n(pick(dt, *names))
+        if v is not None:
+            flows[key] = v
+    if flows and any(flows.values()):
+        out["investor_flows"] = flows
+
+    pt = j.get("programTrendInfo") or {}
+    program = {}
+    # programTrendInfo = {indexDifferenceReal(차익), indexBiDifferenceReal(비차익),
+    #                     indexTotalReal(전체)} — 같은 탐색에서 확정했다.
+    for key, names in (("arb", ("indexDifferenceReal", "arbitrageValue")),
+                       ("non_arb", ("indexBiDifferenceReal", "nonArbitrageValue")),
+                       ("total", ("indexTotalReal", "totalValue"))):
+        v = n(pick(pt, *names))
+        if v is not None:
+            program[key] = v
+    if program and any(program.values()):
+        out["program_trading"] = program
+
+    info = {t.get("code"): t.get("value") for t in j.get("totalInfos") or []}
+    hi, lo = n(info.get("highPrice")), n(info.get("lowPrice"))
+    if hi and lo:
+        out["intraday"] = {"high": hi, "low": lo}
+    y_hi, y_lo = n(info.get("highPriceOf52Weeks")), n(info.get("lowPriceOf52Weeks"))
+    if y_hi and y_lo:
+        out["fifty_two_week"] = {"high": y_hi, "low": y_lo}
+
+    # 등락 종목 수의 «상승·하락» 이 이 판의 핵심이다. 둘 중 하나라도 못 읽으면
+    # 키 이름을 잘못 짚은 것이므로 **응답을 통째로 남긴다.** 2026-09-11 08:05
+    # 실행이 그랬다 — 호출은 성공(OK)했는데 breadth 가 {'unchanged': 0} 하나뿐이라
+    # 이름을 고칠 단서가 남지 않았다. 그때 조용히 넘어가면 다음 실행도 똑같이
+    # 비어서 나온다.
+    #
+    # 다만 **예외를 내지는 않는다.** 52주 고저처럼 제대로 읽힌 것이 함께 있고,
+    # 옛 긁기(2순위)는 이미 죽어서 물러설 자리가 없기 때문이다. 얻은 만큼 낸다.
+    thin = out.get("breadth", {}).get("advancing") is None or \
+        out.get("breadth", {}).get("declining") is None
+    if thin and dump_dir:
+        os.makedirs(dump_dir, exist_ok=True)
+        with open(os.path.join(dump_dir, "index_api_%s.json" % code), "w",
+                  encoding="utf-8") as f:
+            json.dump(j, f, ensure_ascii=False, indent=1)
+    if len(out) <= 2:
+        raise ValueError("API 응답에서 아무것도 못 찾음 — 키 %s%s"
+                         % (sorted(j.keys()), " (덤프함)" if dump_dir else ""))
+    return out
+
+
 def naver_market_page(code, dump_dir=None):
-    """sise_index.naver 한 장에서 네 가지를 한 번에 뽑는다.
+    """sise_index.naver 한 장에서 네 가지를 한 번에 뽑는다. **옛 방식(2순위).**
+
+    2026-09-10 부터 이 화면이 React 앱으로 바뀌어 아무것도 안 나온다.
+    되돌아올 수도 있으므로 물러설 자리로 남겨 둔다 — `naver_market_api` 를
+    먼저 부르고, 그것이 실패했을 때만 이쪽으로 온다.
 
     등락 종목 수, 투자자별 매매동향, 프로그램 매매동향, 장중 고저.
     code 는 KOSPI 또는 KOSDAQ.
@@ -929,7 +1226,50 @@ KTB10Y_URLS = [
 
 
 def naver_rates(dump_dir=None):
-    """국내 시장금리 — 네이버 시장지표의 국내시장금리 표."""
+    """국내 시장금리 &mdash; **새 API 가 1순위**(2026-09-11 확정).
+
+    네이버 시장지표가 Next.js 로 바뀌어 옛 표가 사라졌다. 묶음의 nlog 이름표가
+    COFIX 를 `DMINTE`(국내금리) 아래 두는 것을 보고 분류명을 짚어,
+    `stock.naver.com/api/securityService/marketindex/majors/domesticInterest`
+    에서 **콜&middot;CD&middot;COFIX 셋(신규취급액&middot;잔액&middot;신잔액)** 을 받는다.
+    국고채는 여기 없고 한국은행 ECOS(`rates_ecos`)가 이미 채운다.
+    """
+    try:
+        api = ("https://stock.naver.com/api/securityService/marketindex/majors"
+               "/domesticInterest")
+        j = json.loads(_get(api, referer="https://stock.naver.com/market/marketindex",
+                            headers={"Accept": "application/json"}))
+        # 이름 → 우리 열쇠. 네이버 표기가 조금 바뀌어도 걸리게 넉넉히 본다.
+        NAMES = (("콜", "call"), ("CD", "cd91"),
+                 ("COFIX 신잔액", "cofix_new_balance"),
+                 ("COFIX 신규", "cofix_new"), ("COFIX 잔액", "cofix_balance"))
+        out, seen = {}, []
+        for it in j if isinstance(j, list) else []:
+            nm = (it.get("name") or "").strip()
+            seen.append(nm)
+            try:
+                v = float(str(it.get("closePrice")).replace(",", ""))
+            except (TypeError, ValueError):
+                continue
+            for word, key in NAMES:
+                if word in nm and key not in out and 0 < v < 20:
+                    out[key] = v
+                    break
+        if out:
+            out["source_url"] = api
+            out["unit"] = "%"
+            out["items"] = seen          # 눈으로 대조할 수 있게 이름을 그대로 남긴다
+            return _rates_add_ktb10y(out, dump_dir)
+        raise ValueError("국내금리 API 에서 이름을 못 맞춤 — %s" % seen)
+    except Exception as api_err:                                  # noqa: BLE001
+        try:
+            return _naver_rates_html(dump_dir)
+        except Exception:                                         # noqa: BLE001
+            raise api_err
+
+
+def _naver_rates_html(dump_dir=None):
+    """옛 시장지표 화면. 2026-09-10 부터 비어 있지만 물러설 자리로 남긴다."""
     url = "https://finance.naver.com/marketindex/"
     s = _get(url, referer="https://finance.naver.com/", encoding="cp949")
     t = re.sub(r"\s+", " ", _text(s))
@@ -947,6 +1287,10 @@ def naver_rates(dump_dir=None):
     out["source_url"] = url
     out["unit"] = "%"
 
+    return _rates_add_ktb10y(out, dump_dir)
+
+
+def _rates_add_ktb10y(out, dump_dir=None):
     # 국고채 10년은 이 표에 없다. 후보를 따로 시도하고 실패해도 넘어간다.
     for n, u10 in enumerate(KTB10Y_URLS):
         try:
@@ -971,15 +1315,182 @@ def naver_rates(dump_dir=None):
     return out
 
 
+def krx_limit_names(kind, trdDd, dump_dir=None):
+    """**상한가·하한가 종목명을 KRX 전종목 시세에서 추려 낸다.** 새 1순위.
+
+    네이버 상한가 화면은 2026-09-10 개편 뒤 React 셸만 준다. 그래서 거래소
+    원본으로 옮겼다 &mdash; KRX 에는 「상한가」 전용 표가 따로 없지만
+    **전종목 시세에 등락률이 있으므로 거기서 골라내면 된다.**
+
+    2026-09-14 탐색에서 이 경로가 **403 이 아니라 400** 을 돌려준 것이
+    실마리였다. 러너 IP 가 막힌 것이 아니라 **`trdDd` 에 오늘(개장 전)을
+    넣어서** 자료가 없었던 것이다. 직전 거래일을 넣어야 한다.
+    (`krx:futures_investors` 의 403 은 OTP 경로라 사정이 다르다.)
+
+    국내 가격제한폭은 ±30% 이고 호가 단위 때문에 정확히 30.00 이 되지는
+    않는다. **29% 를 문턱으로 잡고, 찾은 개수를 등락 종목 수와 대조할 수
+    있도록 함께 돌려준다** &mdash; 두 값이 어긋나면 판에 그 사실을 적는다.
+    """
+    want_up = kind == "upper"
+    rows = krx_json("dbms/MDC/STAT/standard/MDCSTAT01501",
+                    mktId="ALL", trdDd=trdDd, share="1", money="1")
+    if dump_dir:
+        os.makedirs(dump_dir, exist_ok=True)
+        with open(os.path.join(dump_dir, "krx_allstocks_%s.json" % trdDd),
+                  "w", encoding="utf-8") as f:
+            json.dump(rows[:40], f, ensure_ascii=False, indent=1)
+    names = []
+    for r in rows:
+        rt = _num(r.get("FLUC_RT"))
+        if rt is None:
+            continue
+        if (rt >= 29.0) if want_up else (rt <= -29.0):
+            code = (r.get("ISU_SRT_CD") or "").strip()
+            name = _text(r.get("ISU_ABBRV") or "")
+            if code and name:
+                names.append({"code": code, "name": name,
+                              "change_pct": rt,
+                              "market": _text(r.get("MKT_NM") or "")})
+    if not rows:
+        raise ValueError("KRX 전종목 시세가 비었다 (trdDd=%s)" % trdDd)
+    names.sort(key=lambda x: -abs(x["change_pct"]))
+    return {"names": names[:40], "count": len(names), "date": trdDd,
+            "source_url": "https://data.krx.co.kr (전종목 시세 MDCSTAT01501)",
+            "basis": "전종목 등락률에서 %s29% 문턱으로 골라냈다 — 상한가 전용 표가 "
+                     "따로 없다. 개수는 등락 종목 수와 대조하십시오"
+                     % ("+" if want_up else "&minus;"),
+            "note": None if names else "해당 종목 없음"}
+
+
+def _is_next_shell(body):
+    """받아 온 것이 값이 아니라 **React 셸**인지 가린다.
+
+    개편된 네이버 화면은 표 대신 빈 껍데기를 내려보내고 값은 브라우저가
+    나중에 API 로 채운다. 껍데기도 100KB 를 넘으므로 **크기로는 가릴 수
+    없다** — 안에 `_next/static` 이나 `self.__next_f` 가 있는지로 본다.
+    """
+    return "_next/static" in body or "self.__next_f" in body
+
+
 LIMIT_URLS = {
     "upper": ["https://finance.naver.com/sise/sise_upper.naver"],
     "lower": ["https://finance.naver.com/sise/sise_lower.naver"],
 }
 
+# 개편된 화면이 **실제로 부르는** 주소. 짐작이 아니라 브라우저로 보고 적었다
+# (scripts/probe_limit_xhr.mjs · 2026-09-14 10:09 KST 관찰).
+LIMIT_API = "https://stock.naver.com/api/domestic/market/stock/default"
+
+# 네이버가 쓰는 등락 구분. 1 상한 · 2 상승 · 3 보합 · 4 하한 · 5 하락.
+LIMIT_GB = {"upper": "1", "lower": "4"}
+LIMIT_SOSOK = {"0": "코스피", "1": "코스닥"}
+
+
+def _limit_num(x):
+    """이 API 는 값을 **문자열로** 준다("30.0", "11310"). 숫자로 돌린다.
+
+    `_num` 은 float 만 다듬고 문자열은 그대로 흘려보내므로, 그것에 맡기면
+    등락률이 판까지 `"30.0"` 인 채로 실려 가 셈이 어긋난다.
+    """
+    try:
+        return round(float(str(x).replace(",", "")), 4)
+    except (TypeError, ValueError):
+        return None
+
+
+def naver_limit_api(kind, dump_dir=None):
+    """**상한가·하한가 종목명을 화면이 쓰는 그 API 에서 받는다.** 1순위.
+
+    2026-09-10 개편 뒤 옛 화면(`sise_upper.naver`)은 React 셸만 준다. 주소를
+    다섯 바퀴 찍어 맞히려다 전부 빗나간 끝에 브라우저로 열어 오가는 요청을
+    관찰했고, 화면이 부르는 것이 이 주소임을 **눈으로 확인했다**.
+
+        .../market/stock/default?tradeType=KRX&marketType=ALL
+            &orderType=up|down&startIdx=0&pageSize=100
+
+    주의할 점 둘.
+
+    **① 이 API 는 상한가만 주지 않는다.** 등락률로 정렬한 전체 목록이다
+    (관찰 당시 100건 중 상한가는 여섯). 그래서 `upDownGb` 로 걸러야 한다 —
+    등락률에 문턱을 두고 재는 것보다 낫다. 가격제한폭은 호가 단위 때문에
+    정확히 30.00 이 되지 않아(29.81, 29.9 …) 문턱은 늘 어림이지만, 이 값은
+    거래소가 매긴 구분이라 어림이 아니다.
+
+    **② 정렬이 내림차순이라 상한가는 맨 앞에 몰린다.** 한 쪽(100건) 끝까지
+    상한가면 다음 쪽이 더 있다는 뜻이므로 이어서 받는다. 상한가가 100개를
+    넘는 날은 드물지만, 드물다고 빠뜨리면 그날의 판이 틀린다.
+    """
+    gb = LIMIT_GB[kind]
+    order = "up" if kind == "upper" else "down"
+    ref = ("https://stock.naver.com/market/stock/kr/stocklist/"
+           + ("upper" if kind == "upper" else "lower"))
+    names, seen, scanned, pages, status = [], set(), 0, [], None
+    for page in range(4):                       # 400건이면 어느 날이든 넉넉하다
+        url = ("%s?tradeType=KRX&marketType=ALL&orderType=%s"
+               "&startIdx=%d&pageSize=100" % (LIMIT_API, order, page * 100))
+        rows = json.loads(_get(url, referer=ref,
+                               headers={"Accept": "application/json"}))
+        if dump_dir and page == 0:
+            os.makedirs(dump_dir, exist_ok=True)
+            with open(os.path.join(dump_dir, "limit_api_%s.json" % kind),
+                      "w", encoding="utf-8") as f:
+                json.dump(rows[:20], f, ensure_ascii=False, indent=1)
+        if not isinstance(rows, list):
+            raise ValueError("%s -> 목록이 아니다(%s)" % (url[-40:], type(rows)))
+        pages.append(url)
+        if not rows:
+            break
+        scanned += len(rows)
+        # **이 명단이 장중 실시간인지 전 거래일 마감인지 적어 둔다.**
+        # 수집은 개장 전(07:30)에도 돌고 장중에도 돈다. 같은 API 가 두 때에
+        # 다른 것을 주므로, 판에 「오늘 상한가」라고 쓸지 「어제 상한가」라고
+        # 쓸지는 이 표시를 보고 갈라야 한다.
+        if status is None and rows:
+            status = {"market_status": str(rows[0].get("marketStatus") or ""),
+                      "session": str(rows[0].get("tradingSessionType") or "")}
+        hit = 0
+        for r in rows:
+            if str(r.get("upDownGb") or "") != gb:
+                continue
+            code = str(r.get("itemcode") or "").strip()
+            name = _text(str(r.get("itemname") or ""))
+            if not (code and name) or code in seen:
+                continue
+            seen.add(code)
+            hit += 1
+            names.append({
+                "code": code, "name": name,
+                "change_pct": _limit_num(r.get("prevChangeRate")),
+                "price": _limit_num(r.get("nowPrice")),
+                "market": LIMIT_SOSOK.get(str(r.get("sosok") or ""), ""),
+                # 며칠째 연달아 붙었는지. 판에서 「사흘째 상한가」를 쓸 수 있다.
+                "continual": _limit_num(r.get("continualUpperLimit")),
+            })
+        # 이 쪽이 끝까지 상한가가 아니면 다음 쪽에는 더 없다(내림차순이므로).
+        if hit < len(rows):
+            break
+    return {"names": names[:40], "count": len(names), "scanned": scanned,
+            "source_url": pages[0] if pages else LIMIT_API,
+            "market_status": (status or {}).get("market_status"),
+            "session": (status or {}).get("session"),
+            "basis": "화면이 부르는 API 에서 upDownGb=%s(%s) 로 골라냈다 — "
+                     "등락률 문턱이 아니라 거래소가 매긴 구분이다"
+                     % (gb, "상한" if kind == "upper" else "하한"),
+            "note": None if names else "해당 종목 없음"}
+
 
 def naver_limit_names(kind, dump_dir=None):
-    """상한가·하한가 종목명. kind 는 'upper' 또는 'lower'."""
+    """상한가·하한가 종목명. kind 는 'upper' 또는 'lower'.
+
+    **API 가 1순위, 옛 화면 긁기가 2순위**다. 옛 화면은 개편 뒤 셸만 주므로
+    지금은 거의 실패하지만, API 가 또 바뀌는 날 두 실패를 함께 보여 주는 쪽이
+    한 줄짜리 오류보다 낫다.
+    """
     errors = []
+    try:
+        return naver_limit_api(kind, dump_dir)
+    except Exception as e:                                    # noqa: BLE001
+        errors.append("api -> %s: %s" % (type(e).__name__, e))
     for n, url in enumerate(LIMIT_URLS[kind]):
         try:
             s = _get(url, referer="https://finance.naver.com/sise/", encoding="cp949")
@@ -994,12 +1505,20 @@ def naver_limit_names(kind, dump_dir=None):
                 names.append({"code": code, "name": name})
         if names:
             return {"names": names[:40], "count": len(names), "source_url": url}
-        # 해당 종목이 하나도 없는 날은 링크가 없는 것이 정상이다.
-        # 페이지가 온전히 내려왔으면 0건으로 처리하고, 껍데기만 왔으면 실패로 본다.
-        if len(s) > 20000:
+        # **크기로 「빈 날」과 「깨진 페이지」를 가르면 안 된다.** 2026-09-10
+        # 개편 뒤 이 화면은 React 셸만 118KB 로 내려온다. 20,000 바이트를
+        # 넘으므로 옛 규칙은 그것을 「해당 종목 없음」으로 읽었고, 등락 종목
+        # 수가 상한가 열둘을 말하는 날에도 `ok: True · count: 0` 이 나갔다.
+        # **실패를 없음으로 보고하는 것이 못 받는 것보다 나쁘다.**
+        if _is_next_shell(s):
+            errors.append("%s -> Next.js 셸만 옴(%d bytes) — 표가 없다"
+                          % (url[-24:], len(s)))
+        elif "코스피" in s and "코스닥" in s and len(s) > 20000:
+            # 옛 화면이 온전히 내려왔는데 링크가 없으면 그날은 정말로 없다.
             return {"names": [], "count": 0, "source_url": url,
                     "note": "해당 종목 없음"}
-        errors.append("%s -> 종목 링크 없음(%d bytes)" % (url[-24:], len(s)))
+        else:
+            errors.append("%s -> 종목 링크 없음(%d bytes)" % (url[-24:], len(s)))
         if dump_dir:
             os.makedirs(dump_dir, exist_ok=True)
             with open(os.path.join(dump_dir, "limit_%s_try%d.html" % (kind, n)), "w",
@@ -1034,6 +1553,21 @@ def yahoo_intraday_at(symbol, target_date, hhmm="15:30"):
 
 
 def naver_usdkrw():
+    """원/달러 **매매기준율**. 2026-09-11 부터 새 API 가 1순위."""
+    try:
+        url = "https://stock.naver.com/api/securityService/marketindex/majors/exchange"
+        j = json.loads(_get(url, referer="https://stock.naver.com/market/marketindex",
+                            headers={"Accept": "application/json"}))
+        for it in j if isinstance(j, list) else []:
+            if it.get("reutersCode") == "FX_USDKRW" or "USD" in (it.get("name") or ""):
+                v = float(str(it.get("closePrice")).replace(",", ""))
+                return {"rate": v, "source_url": url, "note": "매매기준율"}
+        raise ValueError("환율 목록에 USD 가 없음")
+    except Exception:                                             # noqa: BLE001
+        return _naver_usdkrw_html()
+
+
+def _naver_usdkrw_html():
     """네이버 시장지표의 미국 USD 매매기준율 — 원/달러 두 번째 출처."""
     s = _get("https://finance.naver.com/marketindex/",
              referer="https://finance.naver.com/", encoding="cp949")
@@ -1326,6 +1860,69 @@ def naver_money_flow(dump_dir=None):
     반대매매 금액은 이 표에 없다(금투협 통계 소관). 신용잔고는 결제일 기준이라
     당일 종가 대비 하루이틀 늦게 실린다. 그래서 날짜를 값과 같이 돌려준다.
     """
+    try:
+        return _money_flow_api()
+    except Exception as api_err:                                  # noqa: BLE001
+        try:
+            return _money_flow_html(dump_dir)
+        except Exception:                                         # noqa: BLE001
+            raise api_err
+
+
+def _money_flow_api():
+    """증시자금동향 — **새 API**(2026-09-11 확정).
+
+    stock.naver.com/api/domestic/market/trendDeposit 가 20영업일치를 준다.
+    `*Diff` 는 **부호가 살아 있는 증감**이라 그대로 `*_delta` 로 쓴다 —
+    옛 화면이 주던 `*_chg` 는 부호 없는 절대값이라 감소를 증가로 읽었다.
+    단위는 억원으로 옛 표와 같다.
+    """
+    url = ("https://stock.naver.com/api/domestic/market/trendDeposit"
+           "?startIdx=0&pageSize=20")
+    j = json.loads(_get(url, referer="https://stock.naver.com/market/stock/kr/deposit",
+                        headers={"Accept": "application/json"}))
+    rows = j.get("content") or []
+    if not rows:
+        raise ValueError("증시자금동향 API 가 행을 주지 않음")
+
+    def f(x):
+        try:
+            return float(str(x).replace(",", ""))
+        except (TypeError, ValueError):
+            return None
+
+    series = []
+    for r in rows:
+        bd = str(r.get("bizdate") or "")
+        if len(bd) != 8:
+            continue
+        series.append({
+            "date": "%s-%s-%s" % (bd[:4], bd[4:6], bd[6:]),
+            "deposit": f(r.get("customerDeposit")),
+            "deposit_chg": f(r.get("customerDepositDiffAbs")),
+            "deposit_delta": f(r.get("customerDepositDiff")),
+            "credit_balance": f(r.get("creditLoan")),
+            "credit_chg": f(r.get("creditLoanDiffAbs")),
+            "credit_balance_delta": f(r.get("creditLoanDiff")),
+            "fund_equity": f(r.get("beneficiaryCertificateStock")),
+            "fund_equity_delta": f(r.get("beneficiaryCertificateStockDiff")),
+            "fund_mixed": f(r.get("beneficiaryCertificateMixing")),
+            "fund_mixed_delta": f(r.get("beneficiaryCertificateMixingDiff")),
+            "fund_bond": f(r.get("beneficiaryCertificateBond")),
+            "fund_bond_delta": f(r.get("beneficiaryCertificateBondDiff")),
+        })
+    if not series:
+        raise ValueError("증시자금동향 API 응답에 쓸 행이 없음")
+    return {"latest": dict(series[0]), "series": series, "unit": "억원",
+            "source_url": url,
+            "columns": ["고객예탁금", "신용잔고", "주식형펀드", "채권형펀드"],
+            "note": "증감은 원천이 주는 **부호 있는 값**(*Diff)을 그대로 쓴다.",
+            "delta_note": "*_delta 는 부호 있는 증감, *_chg 는 절대값이다.",
+            "missing": "반대매매·미수금은 이 원천에 없다(금투협 소관)"}
+
+
+def _money_flow_html(dump_dir=None):
+    """옛 화면(EUC-KR). 2026-09-10 부터 비어 있지만 물러설 자리로 남긴다."""
     html = _get("https://finance.naver.com/sise/sise_deposit.naver", encoding="cp949")
     tbl = re.search(r"(?is)<table[^>]*>(?:(?!</table>).)*?증시자금동향.*?</table>", html)
     if not tbl:
@@ -1513,16 +2110,37 @@ def naver_news(now, limit=24):
     검색 요약 대신 원문을 인용할 수 있도록 본문과 URL을 같이 저장한다.
     선물 수급·신용융자처럼 시세 화면에 없는 수치도 여기서 건진다.
     """
-    lst = _get("https://finance.naver.com/news/mainnews.naver?date="
-               + now.strftime("%Y-%m-%d"), encoding="cp949")
+    # **목록은 새 API 에서 받는다**(2026-09-11). 옛 화면은 Next.js 앱으로 바뀌어
+    # 링크가 서버 HTML 에 없다. 앱이 쓰는 주소는 리다이렉트로 확인했다 —
+    # finance.naver.com/news/mainnews.naver → stock.naver.com/news/mainnews 이고,
+    # 목록은 같은 오리진의 /api/domestic/news/list 다.
+    # **본문은 종전대로** n.news.naver.com 에서 받는다(그쪽은 안 바뀌었다).
     links = []
-    for aid, oid, title in re.findall(
-            r'article_id=(\d+)[^"]*?office_id=(\d+)[^"]*"[^>]*>\s*([^<]{4,90})', lst):
-        url = "https://n.news.naver.com/mnews/article/%s/%s" % (oid, aid)
-        if url not in [u for _, u in links]:
-            links.append((_text(title).strip(), url))
+    try:
+        j = json.loads(_get("https://stock.naver.com/api/domestic/news/list"
+                            "?startIdx=0&pageSize=%d" % max(limit, 20),
+                            referer="https://stock.naver.com/news/mainnews",
+                            headers={"Accept": "application/json"}))
+        for a in j.get("articles") or []:
+            oid, aid = a.get("officeId"), a.get("articleId")
+            if not (oid and aid):
+                continue
+            url = "https://n.news.naver.com/mnews/article/%s/%s" % (oid, aid)
+            if url not in [u for _, u in links]:
+                links.append(((a.get("title") or "").strip(), url))
+    except Exception as api_err:                                  # noqa: BLE001
+        lst = _get("https://finance.naver.com/news/mainnews.naver?date="
+                   + now.strftime("%Y-%m-%d"), encoding="cp949")
+        for aid, oid, title in re.findall(
+                r'article_id=(\d+)[^"]*?office_id=(\d+)[^"]*"[^>]*>\s*([^<]{4,90})', lst):
+            url = "https://n.news.naver.com/mnews/article/%s/%s" % (oid, aid)
+            if url not in [u for _, u in links]:
+                links.append((_text(title).strip(), url))
+        if not links:
+            raise ValueError("기사 목록 없음 — API %s, 옛 화면 %d bytes"
+                             % (api_err, len(lst)))
     if not links:
-        raise ValueError("기사 목록 없음 (%d bytes)" % len(lst))
+        raise ValueError("기사 목록 없음 (API 가 기사를 주지 않음)")
 
     arts, fut, credit = [], [], []
     for title, url in links[:limit]:
@@ -2264,8 +2882,94 @@ def nyfed_effr():
     return out
 
 
+DAUM_INDEX_DAYS = "https://finance.daum.net/api/market_index/days"
+# 다음이 쓰는 시장 이름. 셋 다 **화면이 부르는 것을 보고** 적었다 —
+# 코스피200 이 `KOSPI_200` 인 것도 짐작이 아니라 관찰에서 읽었다
+# (data/market/raw/turnover_xhr.txt, 2026-09-18).
+DAUM_MARKET = {"KOSPI": "KOSPI", "KOSDAQ": "KOSDAQ", "KPI200": "KOSPI_200"}
+
+
+def index_daily(code, pages=2):
+    """지수 일별시세 — 다음 금융을 먼저, 네이버 옛 화면을 뒤로.
+
+    2026-09-18 아침에 네이버 옛 일별시세가 410(Gone)으로 끊겼다. 그러나
+    옛 화면을 되살릴 수 없다는 것까지가 관찰의 답이었다.
+
+      · 새 지수 상세 화면에는 **거래대금 표 자체가 없다**(화면 글자로 확인).
+      · 값이 남은 두 자리(`integration` 의 「대금」·실시간 폴링)는 **오늘
+        한 점**이고 장전에는 비어 있다. 브리핑은 아침 7시 30분에 돈다.
+      · 손전화 화면도 마찬가지였다. KRX 통계는 로그인 벽이고, 수집기가
+        쓰던 KRX 길 셋도 지금 다 닫혀 있다(403·401·400).
+
+    계열을 주는 곳은 **다음 금융**뿐이었다. 붙이기 전에 저장소에 남은 옛
+    값과 맞춰 봤고 세 날이 원 단위까지 같았다 — 2026-09-16 16,685,829 ·
+    09-15 17,125,579 · 09-14 21,584,368(백만원). 종가와 거래량(천주)도
+    같다. 단위를 짐작하지 않고 대조로 확정한 것이다.
+
+    옛 길을 지우지 않고 뒤에 둔다. 네이버가 되살아나면 그쪽이 다시 받고,
+    다음이 끊기면 이쪽이 받는다 — 한 집에 매이지 않으려는 것이다.
+    """
+    try:
+        return daum_index_daily(code, pages)
+    except Exception as daum_err:                                 # noqa: BLE001
+        try:
+            return naver_index_daily(code, pages)
+        except Exception:                                         # noqa: BLE001
+            raise daum_err
+
+
+def daum_index_daily(code, pages=2):
+    """지수 일별시세 — 다음 금융. 날짜별 종가·거래량·거래대금.
+
+    `accTradePrice` 가 거래대금(백만원), `accTradeVolume` 이 거래량(천주)
+    이다. 네이버는 같은 것을 `accumulatedTradingValue` 로 적는데, 이름이
+    달라 앞선 관찰 두 번이 이 자리를 지나쳤다.
+
+    등락률은 이 응답에 없다. `changePrice` 가 부호를 달고 오므로 전일
+    종가를 되짚어 셈한다 — 2026-09-16 은 90.71/6,627.26 = 1.37% 로 우리가
+    옛 원천에서 받아 두었던 값과 같다.
+    """
+    market = DAUM_MARKET.get(code.upper())
+    if not market:
+        raise ValueError("다음 금융에서 %s 의 시장 이름을 모른다" % code)
+    per = min(60, max(10, pages * 10))
+    url = ("%s?page=1&perPage=%d&market=%s&pagination=true"
+           % (DAUM_INDEX_DAYS, per, market))
+    # 화면 주소에는 밑줄이 없다 — `KOSPI_200` 을 부르는 화면이
+    # `/domestic/kospi200` 이다.
+    page = market.lower().replace("_", "")
+    j = json.loads(_get(url,
+                        referer="https://finance.daum.net/domestic/%s" % page,
+                        headers={"Accept": "application/json"}))
+    series = []
+    for r in j.get("data") or []:
+        day = str(r.get("date") or "")[:10]
+        close, chg = r.get("tradePrice"), r.get("changePrice")
+        if not day or close is None:
+            continue
+        prev = (close - chg) if chg is not None else None
+        series.append({
+            "date": day,
+            "close": close,
+            "change_pct": (round(chg / prev * 100, 2) if prev else None),
+            "volume_k_shares": r.get("accTradeVolume"),     # 천주
+            "value_mn_krw": r.get("accTradePrice"),         # 백만원
+        })
+    if not series:
+        raise ValueError("다음 일별시세 행 없음")
+    # **부른 만큼 담는다.** 옛 원천은 쪽을 더 불러도 20행에서 끊었고, 그
+    # 탓에 코스피200 의 1개월·3개월 수익률이 통째로 비어 있었다(8/22 에
+    # 확인해 적어 둔 그 구멍이다). 다음은 부른 만큼 주므로 20 으로 잘라
+    # 버릴 까닭이 없다 — 코스피·코스닥은 예전과 같이 20행이고, 되짚을
+    # 기간이 필요한 코스피200 만 길어진다.
+    return {"code": code, "unit": {"volume": "천주", "value": "백만원"},
+            "series": series[:per], "source_url": url}
+
+
 def naver_index_daily(code, pages=2):
-    """지수 일별시세 — 날짜별 종가·거래량·거래대금.
+    """지수 일별시세 — 네이버 옛 화면. **2026-09-18 부터 410(Gone).**
+
+    되살아날 때를 대비해 남겨 둔 뒤받이다. 첫 자리는 `daum_index_daily`.
 
     야후는 거래대금을 주지 않는다. 주간 기준선을 잡거나 지난 거래일 수치를
     되짚을 때(모닝 브리핑은 전 거래일을 다룬다) 이 이력이 필요하다.
@@ -2474,6 +3178,78 @@ def run(label, fn, *a, **k):
         return None, {"ok": False, "error": "HTTP %s" % e.code}
     except Exception as e:                                    # noqa: BLE001
         return None, {"ok": False, "error": "%s: %s" % (type(e).__name__, e)}
+
+
+def carry_kr_session(out, now, path="data/market/kr_carry.json"):
+    """**직전 마감분을 따로 보관했다가, 개장 전 판에 이어 붙인다.**
+
+    2026-09-10 개편 전에는 개장 전에 화면을 긁어도 전날 마감값이 그대로
+    적혀 있었다. 지금 `integration`·`industry` API 는 장이 열리기 전이면
+    오늘 장을 전부 0 으로 준다. 0 은 싣지 않으므로(윗쪽 가드) 등락 종목
+    수·업종·수급·프로그램이 아침 판에서 통째로 빈다 — 어제까지 있던 칸이
+    오늘 사라진 이유가 이것이다.
+
+    그래서 **마감 뒤 수집분을 여기 남겨 두고**, 값이 비어 있는 아침 수집
+    때 그 묶음을 그대로 쓴다. 어느 장의 값인지 헷갈리지 않도록 `bizdate`
+    와 `carried_from` 을 함께 싣는다.
+
+    보관은 **15:35 KST 이후 수집에서만** 한다. 장중 수집분을 남기면 다음
+    날 아침 판이 「장중 어느 한때」를 마감값인 양 말하게 된다.
+    """
+    try:
+        carry = json.load(open(path, encoding="utf-8"))
+    except (OSError, ValueError):
+        carry = {}
+
+    mi = out.get("market_internals") or {}
+    live_internals = {c: v for c, v in mi.items() if v.get("breadth")}
+    live_sectors = (out.get("sectors") or {}).get("all") or []
+    after_close = (now.hour, now.minute) >= (15, 35)
+
+    if after_close and (live_internals or live_sectors):
+        if live_internals:
+            carry["internals"] = live_internals
+            bd = next((v.get("bizdate") for v in live_internals.values() if v.get("bizdate")), None)
+            carry["internals_bizdate"] = bd or now.strftime("%Y%m%d")
+        if live_sectors:
+            carry["sectors"] = live_sectors
+            carry["sectors_bizdate"] = now.strftime("%Y%m%d")
+        carry["saved_at_kst"] = now.strftime("%Y-%m-%d %H:%M:%S")
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(carry, f, ensure_ascii=False, indent=1)
+        except OSError as e:                                      # noqa: BLE001
+            out["sources"]["carry:save"] = {"ok": False, "error": str(e)}
+
+    used = []
+    today = now.strftime("%Y%m%d")
+    for code, saved in (carry.get("internals") or {}).items():
+        cur = mi.get(code) or {}
+        if cur.get("breadth"):
+            continue                                     # 살아 있는 값이 먼저다
+        bd = carry.get("internals_bizdate")
+        if bd == today:
+            continue                                     # 오늘 값을 되쓰지 않는다
+        merged = dict(saved)
+        merged.update({k: v for k, v in cur.items() if v})   # 장중 고저 등은 유지
+        merged["carried_from"] = bd
+        merged["carried_note"] = "개장 전이라 %s 마감분을 이어 붙였다" % bd
+        out.setdefault("market_internals", {})[code] = merged
+        used.append(code)
+
+    if not live_sectors and carry.get("sectors") and carry.get("sectors_bizdate") != today:
+        v = carry["sectors"]
+        out["sectors"] = {"all": v, "top5": v[:5], "bottom5": v[-5:],
+                          "carried_from": carry.get("sectors_bizdate"),
+                          "carried_note": "개장 전이라 %s 마감분을 이어 붙였다"
+                                          % carry.get("sectors_bizdate")}
+        used.append("sectors")
+
+    if used:
+        out["sources"]["carry:used"] = {"ok": True, "note": "직전 마감분 이어 붙임: "
+                                        + ", ".join(used)}
+    return out
 
 
 def attach_history_perf(out, path="data/market/history.json"):
@@ -2881,6 +3657,486 @@ def earnings_from_news(articles, names):
     return sorted(best.values(), key=lambda e: (not e["has_call"], e["company"]))
 
 
+# ══════════════════════════════════════════════════════════════════
+# 원천이 통째로 죽었을 때 — **무엇이 살아 있는지 러너에서 찾아 둔다**
+# ══════════════════════════════════════════════════════════════════
+# 2026-09-10 09:04 수집분을 마지막으로 네이버 원천이 한꺼번에 실패했다.
+# 페이지는 11~12만 바이트로 멀쩡히 받아지는데 항목이 하나도 안 잡힌다.
+# 저장된 원본을 열어 보니 `_next/static` 과 `self.__next_f` 만 있는 React
+# 셸이었다 — 표 HTML 이 사라지고 값은 클라이언트가 API 로 받아 그린다.
+#
+# 브리핑 세션은 이그레스 정책 때문에 네이버에 직접 못 붙으므로 **어느 API 가
+# 살아 있는지는 러너만 알 수 있다.** 그래서 실패한 날에는 후보를 훑어 응답을
+# 그대로 저장소에 남긴다. 다음 세션이 그 응답을 읽고 파서를 고친다.
+#
+# 이 함수는 **아무것도 채우지 않는다.** 수집 결과를 바꾸지 않고 진단만 남긴다.
+_API_CANDIDATES = [
+    ("internals", "https://m.stock.naver.com/api/index/KOSPI/basic"),
+    ("internals", "https://m.stock.naver.com/api/index/KOSDAQ/basic"),
+    ("internals", "https://api.stock.naver.com/index/KOSPI/basic"),
+    ("internals", "https://m.stock.naver.com/api/index/KOSPI/integration"),
+    ("internals", "https://m.stock.naver.com/api/index/KOSPI/price?pageSize=5&page=1"),
+    ("sectors", "https://m.stock.naver.com/api/stocks/industry"),
+    ("sectors", "https://api.stock.naver.com/industry"),
+    ("sectors", "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100"),
+    # **묶음 탐색으로 실제 경로를 읽어 냈다**(2026-09-11 08:27).
+    #   증시자금 /api/domestic/market/trendDeposit(+/chart)
+    #   기사     /api/domestic/news/list
+    #   시장지표 /api/securityService/marketindex/{exchange,majors,metals,energy}
+    # 상대 경로라 호스트를 붙여 본다 — finance 와 m.stock 둘 다 시도한다.
+    # 묶음이 만드는 질의 인자를 **그대로** 붙인다. 인자 없이 부르면 404 다
+    #   trendDeposit?startIdx=&pageSize=   (모듈 20412 이 그렇게 만든다)
+    # 감싸개(모듈 65164)는 `fetch(상대경로)` 뿐이다 — **페이지와 같은 오리진**으로
+    # 간다. 묶음에 나오는 호스트는 m.stock.naver.com 이므로 거기에 붙인다.
+    ("money_flow", "https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20"),
+    ("money_flow", "https://m.stock.naver.com/api/domestic/market/trendDeposit/chart?startDate=20260801&endDate=20260911"),
+    ("news", "https://m.stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20"),
+    ("news", "https://m.stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20"),
+    ("marketindex", "https://m.stock.naver.com/api/securityService/marketindex/exchange?startIdx=0&pageSize=20"),
+    ("marketindex", "https://m.stock.naver.com/api/securityService/marketindex/majors?startIdx=0&pageSize=20"),
+    ("money_flow", "https://finance.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20"),
+    ("news", "https://finance.naver.com/api/domestic/news/list?startIdx=0&pageSize=20"),
+    ("marketindex", "https://finance.naver.com/api/securityService/marketindex/exchange"),
+    ("marketindex", "https://finance.naver.com/api/securityService/marketindex/majors"),
+
+    ("money_flow", "https://m.stock.naver.com/api/stock/market/deposit"),
+    ("money_flow", "https://m.stock.naver.com/api/marketindex/deposit"),
+    ("money_flow", "https://m.stock.naver.com/api/index/KOSPI/deposit"),
+    ("money_flow", "https://finance.naver.com/sise/sise_deposit.naver"),
+    ("news", "https://m.stock.naver.com/api/news/mainNews?page=1&pageSize=20"),
+    ("news", "https://m.stock.naver.com/api/news/worldNews?page=1&pageSize=20"),
+    ("news", "https://m.stock.naver.com/api/html/news/mainnews"),
+    ("news", "https://m.stock.naver.com/api/index/KOSPI/news?pageSize=20&page=1"),
+    ("news", "https://m.stock.naver.com/api/stock/005930/news?pageSize=5&page=1"),
+    ("marketindex", "https://m.stock.naver.com/api/marketindex/exchangeList?page=1&pageSize=20"),
+    ("marketindex", "https://m.stock.naver.com/api/marketindex/interestList?page=1&pageSize=20"),
+    ("marketindex", "https://m.stock.naver.com/api/marketindex/exchange/FX_USDKRW"),
+    ("marketindex", "https://m.stock.naver.com/api/marketindex/interest/IRR_CD91"),
+    ("marketindex", "https://m.stock.naver.com/api/marketindex/home"),
+]
+
+# **길이만 보면 속는다** — 셸 HTML 도 12만 바이트다. 낱말이 걸리는지를 본다.
+_API_WANT = {
+    "internals": ["riseCount", "fallCount", "상승", "highPrice52", "upperLimit"],
+    "sectors": ["industryName", "업종", "반도체", "changeRate"],
+    "money_flow": ["예탁금", "deposit", "credit"],
+    "news": ["articleId", "officeId", "title", "코스피"],
+    "marketindex": ["USDKRW", "closePrice", "매매기준율", "국고채"],
+}
+
+
+_CHUNK = re.compile(r'https://ssl\.pstatic\.net/imgstock/fn/real/pc/_next/static/chunks/[^"\']+\.js')
+# JS 묶음 안에서 API 경로처럼 보이는 조각. 따옴표 안의 "/api/..." 를 노린다.
+_APIPATH = re.compile(r'["\'`](/api/[A-Za-z0-9_\-/{}$.:?=&]{4,120})["\'`]')
+_HOSTPATH = re.compile(r'["\'`](https?://[a-z.]*stock\.naver\.com/api/[^"\'`]{4,120})["\'`]')
+
+
+def probe_next_chunks(pages, dump_dir="data/market/raw"):
+    """**셸 페이지의 JS 묶음을 열어 API 주소를 직접 읽는다.**
+
+    네이버 금융이 Next.js 로 바뀐 뒤, 값은 브라우저가 API 로 받아 채운다.
+    어느 주소인지는 짐작으로 맞히기 어렵다 — 2026-09-11 탐색에서 증시자금·
+    기사·금리/환율 후보 열넷이 전부 404 였다. 그런데 **셸 안에 그 페이지가
+    쓰는 JS 묶음 주소가 그대로 적혀 있고**, 묶음 안에는 호출하는 경로가
+    문자열로 들어 있다. 그것을 긁어 오면 추측할 필요가 없다.
+
+    묶음은 크므로 페이지마다 `app/...` 경로가 든 것만 골라 몇 개만 연다.
+    """
+    os.makedirs(dump_dir, exist_ok=True)
+    lines = ["Next.js 묶음에서 API 주소 찾기 %s KST"
+             % datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"), ""]
+    for label, page_url in pages:
+        lines.append("### %s\n    %s" % (label, page_url))
+        try:
+            shell = _get(page_url, referer="https://finance.naver.com/")
+        except Exception as e:                                    # noqa: BLE001
+            lines.append("    셸 실패: %s: %s\n" % (type(e).__name__, e))
+            continue
+        allc = list(dict.fromkeys(_CHUNK.findall(shell)))
+        # **공용 묶음까지 본다.** 경로를 만드는 곳은 app 묶음이지만, 그 앞에
+        # 붙는 기준 주소를 쥔 fetch 감싸개는 공용 묶음에 있다. app 만 뒤져서
+        # 호스트가 하나도 안 나왔다(2026-09-11 08:31).
+        chunks = [u for u in allc if "/app/" in u] + [u for u in allc if "/app/" not in u]
+        chunks = chunks[:26]
+        lines.append("    묶음 %d 개 중 %d 개를 연다 (app %d)"
+                     % (len(allc), len(chunks), sum(1 for u in chunks if "/app/" in u)))
+        found = set()
+        for cu in chunks[:8]:
+            try:
+                js = _get(cu)
+            except Exception as e:                                # noqa: BLE001
+                lines.append("    묶음 실패 %s — %s" % (cu.rsplit("/", 1)[-1], e))
+                continue
+            found |= set(_APIPATH.findall(js)) | set(_HOSTPATH.findall(js))
+        keep = sorted(x for x in found
+                      if not any(b in x for b in ("/api/nlog", "/api/log", "sentry")))
+        for x in keep[:60]:
+            lines.append("      %s" % x)
+        if not keep:
+            lines.append("      (경로를 못 찾음)")
+
+        # **경로만으로는 못 부른다** — finance.naver.com 에 붙였더니 네이버
+        # 공통 오류 페이지(2,691 bytes)가 왔다. 그래서 ① 묶음에 등장하는
+        # 네이버 호스트를 전부 모으고 ② 관심 경로가 나오는 자리의 앞뒤를
+        # 그대로 떠서, 기준 주소가 어떻게 조립되는지 눈으로 볼 수 있게 한다.
+        hosts, ctx = set(), []
+        for cu in chunks:
+            try:
+                js = _get(cu)
+            except Exception:                                     # noqa: BLE001
+                continue
+            hosts |= set(re.findall(r'https://[a-z0-9.\-]*naver\.com[a-z0-9/_\-]*', js))
+            # fetch 감싸개(모듈 65164)가 기준 주소를 쥐고 있다. 그 정의와,
+            # baseURL·API_HOST 처럼 기준 주소를 담을 만한 이름의 앞뒤를 뜬다.
+            for m in re.finditer(r'65164:\(', js):
+                ctx.append("[65164] " + js[m.start():m.start() + 420])
+            for m in re.finditer(r'(?:baseURL|baseUrl|API_HOST|apiHost|NEXT_PUBLIC[A-Z_]*)', js):
+                ctx.append("[base] " + js[max(0, m.start() - 140):m.start() + 200])
+            for kw in ("domestic/market/trendDeposit", "domestic/news/list",
+                       "securityService/marketindex", "DMINTE"):
+                for m in re.finditer(re.escape(kw), js):
+                    ctx.append(js[max(0, m.start() - 900):m.start() + 500])
+        lines.append("    -- 묶음에 나오는 네이버 호스트 --")
+        for h in sorted(hosts)[:40]:
+            lines.append("      %s" % h)
+        lines.append("    -- 관심 경로가 조립되는 자리 --")
+        for c in ctx[:14]:
+            lines.append("      …%s…" % re.sub(r"\s+", " ", c))
+        lines.append("")
+    with open(os.path.join(dump_dir, "probe_chunks.txt"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines[:40]))
+    print("... 전체는 %s/probe_chunks.txt" % dump_dir)
+
+
+def probe_with_session(dump_dir="data/market/raw"):
+    """**앱 페이지를 먼저 열어 쿠키를 받은 뒤** API 를 부른다.
+
+    경로는 묶음에서 읽어 확정했고(`/api/domestic/market/trendDeposit` 등),
+    감싸개는 `fetch(상대경로)` 뿐이라 요청은 **페이지와 같은 오리진**으로 간다.
+    셸이 가리키는 오리진은 finance.naver.com 이다. 그런데 그대로 부르면 네이버
+    공통 404 가 온다 — 호스트도 경로도 맞는데 404 라면 남는 설명은 **세션**이다.
+    그래서 사람이 하는 순서 그대로 한다: 페이지를 열고, 받은 쿠키를 지닌 채
+    같은 오리진의 API 를 부른다. 최종 주소(리다이렉트 후)도 함께 적는다.
+    """
+    import http.cookiejar
+    jar = http.cookiejar.CookieJar()
+    op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+    hdr = [("User-Agent", UA),
+           ("Accept-Language", "ko-KR,ko;q=0.9,en;q=0.8")]
+
+    def go(url, accept="*/*", referer=None):
+        op.addheaders = hdr + [("Accept", accept)] + ([("Referer", referer)] if referer else [])
+        try:
+            with op.open(url, timeout=20) as r:
+                return r.getcode(), r.geturl(), r.read().decode("utf-8", "replace")
+        except urllib.error.HTTPError as e:
+            return e.code, url, (e.read() or b"").decode("utf-8", "replace")[:400]
+        except Exception as e:                                    # noqa: BLE001
+            return None, url, "%s: %s" % (type(e).__name__, e)
+
+    # **오리진을 리다이렉트가 알려 줬다**(2026-09-11 08:53).
+    #   finance.naver.com/news/mainnews.naver → stock.naver.com/news/mainnews
+    #   finance.naver.com/marketindex/        → stock.naver.com/market/marketindex
+    # 앱은 finance 도 m.stock 도 아닌 **stock.naver.com** 에서 돈다. 감싸개가
+    # 상대 경로로 부르므로 API 도 그 오리진이다.
+    PAGES = [("증시자금동향", "https://stock.naver.com/market/stock/kr/deposit",
+              ["https://stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20",
+               "https://stock.naver.com/api/domestic/market/trendDeposit/chart?startDate=20260801&endDate=20260911"]),
+             ("증시 기사", "https://stock.naver.com/news/mainnews",
+              ["https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20",
+               "https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20"]),
+             # metals·energy 는 200 이고 exchange·majors 는 404 였다. 라우터가
+             # "Route GET:… not found" 라고 또렷이 답하므로 **이름만 맞히면 된다.**
+             ("시장지표", "https://stock.naver.com/market/marketindex",
+              ["https://stock.naver.com/api/securityService/marketindex/metals",
+               # 묶음을 읽으니 exchange 는 **뒤에 코드가 붙는 경로**이고
+               # (모듈 83359: r+"/"+e), majors 는 인자를 받는다(모듈 8929).
+               "https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW",
+               # **목록은 majors/<분류>** 다 — majors/exchange 가 200 이었다.
+               "https://stock.naver.com/api/securityService/marketindex/majors/exchange",
+               "https://stock.naver.com/api/securityService/marketindex/majors/bond",
+               # nlog 이름표가 COFIX 를 **DMINTE**(국내금리) 아래 둔다 —
+               # 분류명이 그 계열일 것이다.
+               "https://stock.naver.com/api/securityService/marketindex/majors/dminte",
+               "https://stock.naver.com/api/securityService/marketindex/majors/dmInte",
+               "https://stock.naver.com/api/securityService/marketindex/majors/domesticInte",
+               "https://stock.naver.com/api/securityService/marketindex/majors/domesticInterestRate",
+               "https://stock.naver.com/api/securityService/marketindex/majors/krRate",
+               "https://stock.naver.com/api/securityService/marketindex/majors/marketRate"])]
+
+    lines = ["세션을 지닌 채 API 부르기 %s KST"
+             % datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"), ""]
+    for label, page, apis in PAGES:
+        code, final, body = go(page, accept="text/html,*/*")
+        lines.append("### %s" % label)
+        lines.append("    페이지 %s → HTTP %s · 최종주소 %s · %d bytes"
+                     % (page, code, final, len(body)))
+        lines.append("    받은 쿠키: %s" % ([c.name for c in jar] or "없음"))
+        for api in apis:
+            c2, f2, b2 = go(api, accept="application/json, text/plain, */*", referer=final)
+            looks_json = b2.lstrip()[:1] in ("{", "[")
+            lines.append("    API %s" % api)
+            lines.append("        HTTP %s · %d bytes · %s"
+                         % (c2, len(b2), "JSON!" if looks_json else "JSON 아님"))
+            lines.append("        앞머리: %s" % re.sub(r"\s+", " ", b2[:200]))
+            if looks_json:
+                fn = os.path.join(dump_dir, "session_%s.json"
+                                  % api.rstrip("/").rsplit("/", 1)[-1].split("?")[0])
+                os.makedirs(dump_dir, exist_ok=True)
+                with open(fn, "w", encoding="utf-8") as f:
+                    f.write(api + "\n\n" + b2[:200000])
+                lines.append("        남김: %s" % fn)
+        lines.append("")
+    os.makedirs(dump_dir, exist_ok=True)
+    with open(os.path.join(dump_dir, "probe_session.txt"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines))
+
+
+def probe_limit_sources(dump_dir="data/market/raw"):
+    """**상한가·하한가 종목명을 줄 다른 원천을 찾는다.** 진단 전용.
+
+    옛 화면(`sise_upper.naver`)은 2026-09-10 개편 뒤 React 셸만 준다.
+    등락 종목 수는 지수 API 에서 오므로 「상한가 열둘」이라고 말하는데
+    명단은 0 건인 상태가 이어졌다. 네 갈래를 한 번에 두드려 본다.
+
+      ① 새 네이버 앱 API   — 업종·수급을 되찾은 것과 같은 계열
+      ② 다음 금융 API      — 같은 값을 다른 회사가 준다
+      ③ KRX 정보데이터     — 전종목 시세에서 등락률로 추려 낸다
+      ④ 앱 페이지의 JS 묶음 — 위가 다 안 되면 주소를 직접 읽는다
+
+    셋 다 값을 주지 않으면 ④ 가 다음 시도의 실마리를 남긴다.
+    """
+    os.makedirs(dump_dir, exist_ok=True)
+    lines = ["상한가 명단 원천 탐색 %s KST"
+             % datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"),
+             "(수집 결과는 바꾸지 않는다. 무엇이 값을 주는지만 적는다.)", ""]
+
+    # ① 새 네이버 앱 계열 — 되찾은 API 들과 같은 오리진·모양으로 짐작한다.
+    naver = [
+        "https://m.stock.naver.com/api/stocks/upperLimit?page=1&pageSize=100",
+        "https://m.stock.naver.com/api/stocks/lowerLimit?page=1&pageSize=100",
+        "https://m.stock.naver.com/api/stocks/upDownLimit/upper?page=1&pageSize=100",
+        "https://m.stock.naver.com/api/stocks/ranking/upperLimit?page=1&pageSize=100",
+        "https://stock.naver.com/api/domestic/ranking/upperLimit?startIdx=0&pageSize=100",
+        "https://stock.naver.com/api/domestic/stock/upperLimit?startIdx=0&pageSize=100",
+        "https://stock.naver.com/api/domestic/market/upperLimit?startIdx=0&pageSize=100",
+    ]
+    # ② 다음 금융 — 오리진이 달라 네이버 개편과 무관하다. 1차 후보 셋이
+    #    **404 가 아니라 500** 을 돌려줬다(경로는 있는데 인자가 틀렸다는 뜻).
+    #    다음의 실제 모양은 `/api/trend/rises` 에 `change=UPPER_LIMIT` 이다.
+    daum = [
+        "https://finance.daum.net/api/trend/rises?market=KOSPI&change=UPPER_LIMIT"
+        "&perPage=30&page=1&pagination=true",
+        "https://finance.daum.net/api/trend/falls?market=KOSPI&change=LOWER_LIMIT"
+        "&perPage=30&page=1&pagination=true",
+        "https://finance.daum.net/api/trend/rises?market=KOSDAQ&change=UPPER_LIMIT"
+        "&perPage=30&page=1&pagination=true",
+    ]
+    for group, urls in (("네이버 앱", naver), ("다음 금융", daum)):
+        for url in urls:
+            if "daum" in url:
+                # 다음은 Referer 를 보지만 `X-Requested-With` 를 달면 오히려
+                # 500 을 준다(2026-09-14 1차 탐색). 떼고 다시 두드린다.
+                ref, extra = ("https://finance.daum.net/domestic/rises",
+                              {"Accept": "application/json, text/plain, */*"})
+            else:
+                ref, extra = ("https://m.stock.naver.com/",
+                              {"Accept": "application/json, text/plain, */*"})
+            try:
+                body, ok = _get(url, referer=ref, headers=extra), True
+            except Exception as e:                                # noqa: BLE001
+                body, ok = "%s: %s" % (type(e).__name__, e), False
+            # 종목코드 여섯 자리가 여럿 보이면 명단일 가능성이 크다.
+            codes = len(set(re.findall(r'"(\d{6})"', body))) if ok else 0
+            verdict = ("쓸모" if codes >= 3 else
+                       ("셸" if ok and _is_next_shell(body) else
+                        ("빈손" if ok else "실패")))
+            lines.append("[%s] %s" % (group, url))
+            lines.append("    %s · %d bytes · 종목코드 %d 개"
+                         % (verdict, len(body), codes))
+            if verdict != "쓸모":
+                lines.append("    앞머리: %s" % re.sub(r"\s+", " ", body[:150]))
+            else:
+                with open(os.path.join(dump_dir, "limitsrc_%d.json" % len(lines)),
+                          "w", encoding="utf-8") as f:
+                    f.write(body[:300000])
+    lines.append("")
+
+    # ③ KRX 전종목 시세 — 상한가 표가 따로 없어도 **등락률로 추려 낼 수 있다.**
+    #    수집 서버 IP 가 막혀 상시 실패해 왔지만(krx:allstocks), 이 경로는
+    #    따로 확인한 적이 없으므로 한 번 두드려 본다.
+    # **날짜를 여러 개 넣어 본다.** 1차 탐색에서 오늘(개장 전)로 물었더니
+    # 403 이 아니라 400 이 왔다 — 막힌 것이 아니라 자료가 없는 날이었다.
+    lines.append("### KRX 전종목 시세 (등락률로 추려 내기)")
+    days = []
+    d0 = datetime.now(KST)
+    for back in range(0, 6):
+        days.append((d0 - timedelta(days=back)).strftime("%Y%m%d"))
+    for trd in days:
+        try:
+            rows = krx_json("dbms/MDC/STAT/standard/MDCSTAT01501",
+                            mktId="ALL", trdDd=trd, share="1", money="1")
+        except Exception as e:                                    # noqa: BLE001
+            lines.append("    %s · 실패 %s: %s" % (trd, type(e).__name__, str(e)[:90]))
+            continue
+        if not rows:
+            lines.append("    %s · 빈 응답" % trd)
+            continue
+        up = [r for r in rows if (_num(r.get("FLUC_RT")) or 0) >= 29.0]
+        dn = [r for r in rows if (_num(r.get("FLUC_RT")) or 0) <= -29.0]
+        lines.append("    %s · **%d 종목** · 상한가 후보 %d · 하한가 후보 %d"
+                     % (trd, len(rows), len(up), len(dn)))
+        lines.append("    들어 있는 칸: %s" % ", ".join(sorted(rows[0].keys())))
+        for r in up[:12]:
+            lines.append("      %s %s %s %s%%" % (r.get("ISU_SRT_CD"), r.get("ISU_ABBRV"),
+                                                  r.get("MKT_NM"), r.get("FLUC_RT")))
+        break                                   # 값을 준 첫 날짜에서 멈춘다
+    lines.append("")
+
+    # ④ **새 앱의 랭킹 화면을 먼저 찾는다.** 2차까지는 옛 `finance.naver.com`
+    #    화면의 묶음을 뒤졌는데, 거기에는 값 경로가 들어 있지 않았다(커뮤니티·
+    #    마이자산 경로만 나왔다). 금리·환율을 되찾을 때 통한 방법은 **그 값을
+    #    실제로 그리는 앱 페이지**를 열고 그 묶음을 보는 것이었다. 그러니
+    #    먼저 어떤 랭킹 주소가 살아 있는지부터 확인한다.
+    # **짐작을 그만두고 앱이 들고 있는 경로 목록을 읽는다.** 3차까지 주소를
+    # 여섯씩 찍어 보았지만 전부 404 였다. Next.js 앱은 `_buildManifest.js` 에
+    # **모든 페이지 경로**를 적어 두고, 사이트맵에도 같은 것이 들어 있다.
+    # 거기서 랭킹 화면의 진짜 주소를 읽어 오면 찍을 필요가 없다.
+    lines.append("### 앱이 들고 있는 경로 목록 읽기 (짐작하지 않는다)")
+    routes = []
+    try:
+        shell = _get("https://finance.naver.com/sise/sise_upper.naver",
+                     referer="https://finance.naver.com/")
+        bid = re.search(r'"buildId"\s*:\s*"([^"]+)"', shell)
+        if not bid:
+            m = re.search(r'_next/static/([^/"]+)/_buildManifest\.js', shell)
+            bid = m
+        lines.append("    buildId: %s" % (bid.group(1) if bid else "못 찾음"))
+        if bid:
+            for base in ("https://ssl.pstatic.net/imgstock/fn/real/pc",
+                         "https://finance.naver.com"):
+                man = "%s/_next/static/%s/_buildManifest.js" % (base, bid.group(1))
+                try:
+                    js = _get(man, referer="https://finance.naver.com/")
+                except Exception as e:                            # noqa: BLE001
+                    lines.append("    %s → %s" % (man[-46:], str(e)[:40]))
+                    continue
+                routes = sorted(set(re.findall(r'"(/[^"]{2,80})"', js)))
+                lines.append("    %s → 경로 %d 개" % (man[-46:], len(routes)))
+                break
+    except Exception as e:                                        # noqa: BLE001
+        lines.append("    셸/매니페스트 실패 %s: %s" % (type(e).__name__, str(e)[:90]))
+    want = [r for r in routes
+            if any(w in r.lower() for w in ("upper", "lower", "rank", "sise", "updown"))]
+    lines.append("    그중 눈에 띄는 것 %d 개:" % len(want))
+    for r in want[:40]:
+        lines.append("      %s" % r)
+    if not want and routes:
+        lines.append("    (걸린 것이 없어 앞 40 개를 그대로 적는다)")
+        for r in routes[:40]:
+            lines.append("      %s" % r)
+    lines.append("")
+
+    # ⑤ **야후 스크리너.** 여태 네이버·다음·KRX 만 두드렸는데, 이 수집기가
+    #    날마다 멀쩡히 붙고 있는 곳이 하나 더 있다 — 야후다. 예약 스크리너
+    #    `day_gainers` 를 한국 지역으로 부르면 그날 많이 오른 종목이 등락률
+    #    순으로 온다. **가격제한폭이 ±30% 이므로 맨 위가 곧 상한가다.**
+    lines.append("### 야후 스크리너 (한 번도 안 해 본 길)")
+    for url in (
+        "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved"
+        "?scrIds=day_gainers&count=100&region=KR&lang=ko-KR",
+        "https://query2.finance.yahoo.com/v1/finance/screener/predefined/saved"
+        "?scrIds=day_gainers&count=100&region=KR",
+        "https://query1.finance.yahoo.com/v1/finance/trending/KR?count=50",
+    ):
+        try:
+            body = _get(url)
+            j = json.loads(body)
+            quotes = (((j.get("finance") or {}).get("result") or [{}])[0]
+                      .get("quotes") or [])
+            lines.append("    200 · %d bytes · 종목 %d 개 · %s"
+                         % (len(body), len(quotes), url[-58:]))
+            for q in quotes[:12]:
+                lines.append("      %s %s %s%%"
+                             % (q.get("symbol"), q.get("shortName"),
+                                q.get("regularMarketChangePercent")))
+            if quotes:
+                with open(os.path.join(dump_dir, "yahoo_gainers_kr.json"),
+                          "w", encoding="utf-8") as f:
+                    json.dump(quotes[:60], f, ensure_ascii=False, indent=1)
+        except Exception as e:                                    # noqa: BLE001
+            lines.append("    실패 · %s · %s" % (str(e)[:44], url[-58:]))
+    lines.append("")
+
+    # 사이트맵도 같은 목록을 준다 — 매니페스트가 막히면 이쪽이 답이 된다.
+    lines.append("### 사이트맵")
+    for sm in ("https://stock.naver.com/sitemap.xml",
+               "https://m.stock.naver.com/sitemap.xml",
+               "https://finance.naver.com/sitemap.xml"):
+        try:
+            body = _get(sm, referer="https://finance.naver.com/")
+            locs = re.findall(r"<loc>([^<]+)</loc>", body)[:12]
+            lines.append("    %s → %d bytes · %d 주소" % (sm, len(body), len(locs)))
+            for u in locs:
+                lines.append("      %s" % u)
+        except Exception as e:                                    # noqa: BLE001
+            lines.append("    %s → %s" % (sm, str(e)[:40]))
+
+    path = os.path.join(dump_dir, "limit_sources.txt")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+    print("\n".join(lines))
+    return path
+
+
+def probe_naver_api(dump_dir="data/market/raw"):
+    """네이버 API 후보를 훑어 응답을 그대로 남긴다. 진단 전용."""
+    os.makedirs(dump_dir, exist_ok=True)
+    lines = ["네이버 API 탐색 %s KST" % datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"),
+             "(원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)", ""]
+    for i, (group, url) in enumerate(_API_CANDIDATES):
+        try:
+            # **Referer 를 그 API 를 부르는 앱 페이지로 맞춘다.** 네이버는 오리진이
+            # 어긋난 요청에 404 를 준다. finance 쪽 경로에 m.stock Referer 를
+            # 달아 보내던 것이 계속 404 로 돌아온 까닭일 수 있다.
+            if "finance.naver.com/api/domestic/market" in url:
+                ref = "https://finance.naver.com/market/stock/kr/deposit"
+            elif "finance.naver.com/api/domestic/news" in url:
+                ref = "https://finance.naver.com/news/mainnews.naver"
+            elif "finance.naver.com/api/securityService" in url:
+                ref = "https://finance.naver.com/marketindex/"
+            elif "finance.naver.com" in url:
+                ref = "https://finance.naver.com/"
+            else:
+                ref = "https://m.stock.naver.com/"
+            body = _get(url, referer=ref,
+                        headers={"Accept": "application/json, text/plain, */*"})
+            ok = True
+        except Exception as e:                                    # noqa: BLE001
+            body, ok = "%s: %s" % (type(e).__name__, e), False
+        shell = "_next/static" in body or "self.__next_f" in body
+        hits = [w for w in _API_WANT.get(group, []) if w in body]
+        verdict = "쓸모" if (ok and hits and not shell) else ("셸" if shell else
+                                                            ("빈손" if ok else "실패"))
+        lines.append("[%s] %s" % (group, url))
+        lines.append("    %s · %d bytes · 걸린 낱말 %s" % (verdict, len(body), hits or "없음"))
+        if not ok or verdict == "빈손":
+            lines.append("    응답 앞머리: %s" % re.sub(r"\s+", " ", body[:160]))
+        if ok:
+            fn = os.path.join(dump_dir, "probe_%02d_%s.txt" % (i, group))
+            with open(fn, "w", encoding="utf-8") as f:
+                f.write(url + "\n\n" + body[:200000])
+            lines.append("    남김: %s" % fn)
+            lines.append("    앞머리: %s" % re.sub(r"\s+", " ", body[:240]))
+        lines.append("")
+    with open(os.path.join(dump_dir, "probe.txt"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines[:6]))
+    print("... 전체는 %s/probe.txt" % dump_dir)
+
+
 def main():
     now = datetime.now(KST)
     out = {
@@ -2994,9 +4250,15 @@ def main():
     # KPI200 은 쪽을 더 불러도 네이버가 20행 남짓에서 끊는다(14쪽 -> 20행,
     # 8/22 확인). 그래서 1주까지만 닿고 1개월부터는 비는데, 그 사유를 자료에
     # 적어 둔다. 지어내지 않고 「왜 없는지」를 남기는 쪽이다.
+    #
+    # 2026-09-18 부터 첫 자리는 **다음 금융**이다 — 네이버가 지수 거래대금을
+    # 걷어냈기 때문이다(`index_daily` 머리말에 내력을 적어 두었다). KPI200 은
+    # 다음에서의 시장 이름을 모르므로 옛 길로 떨어지고, 그 길이 410 이라
+    # 지금은 빈다. 모르는 이름을 그럴듯하게 적어 넣지 않는다 — 비는 것은
+    # 자료에 그대로 남는다.
     for code, pages in (("KOSPI", 2), ("KOSDAQ", 2), ("KPI200", 6)):
-        v, st = run("daily", naver_index_daily, code, pages)
-        out["sources"]["naver:daily:" + code] = st
+        v, st = run("daily", index_daily, code, pages)
+        out["sources"]["daily:" + code] = st
         if v:
             out.setdefault("index_daily", {})[code.lower()] = v
 
@@ -3017,16 +4279,21 @@ def main():
                       if _iso(r.get("date")) and r.get("close"))
         p = _perf(bars, ks2["close"]) if len(bars) > 2 else None
         if p:
-            p["basis"] = "네이버 KPI200 일별시세 (야후 ^KS200 은 일봉 이력이 짧다)"
+            # 출처를 이름으로 적는다 — 2026-09-18 부터 이 계열은 다음
+            # 금융에서 온다(네이버가 끊겨 갈아 끼웠다). 자료에 실려 나가는
+            # 문구라 바뀐 자리를 그대로 두면 읽는 사람을 속이게 된다.
+            p["basis"] = ("%s 일별시세 (야후 ^KS200 은 일봉 이력이 짧다)"
+                          % ("다음 금융 KPI200"
+                             if "daum.net" in (kd2.get("source_url") or "")
+                             else "네이버 KPI200"))
             ks2["perf"] = p
             missing = [h for h in ("m1", "m3", "m6", "y1", "ytd") if h not in p]
             if missing:
                 ks2["perf_note"] = (
-                    "네이버 KPI200 일별시세가 %d행(%s부터)뿐이라 %s 는 되짚지 못했다. "
-                    "쪽을 더 불러도 네이버가 그쯤에서 끊는다"
+                    "KPI200 일별시세가 %d행(%s부터)뿐이라 %s 는 되짚지 못했다"
                     % (len(bars), bars[0][0].isoformat(), "·".join(missing)))
         else:
-            ks2["perf_note"] = ("야후 ^KS200 일봉이 짧고 네이버 계열도 %d행뿐이라 "
+            ks2["perf_note"] = ("야후 ^KS200 일봉이 짧고 일별시세 계열도 %d행뿐이라 "
                                 "기간 수익률을 낼 수 없다" % len(bars))
 
     # VKOSPI — 야후에 없다
@@ -3079,12 +4346,19 @@ def main():
     if v:
         out["investors_kospi"] = v
 
-    # 지수 페이지 한 장에서 등락 종목 수·투자자별·프로그램 매매·장중 고저
+    # 지수 한 장에서 등락 종목 수·투자자별·프로그램 매매·장중 고저.
+    # **API 를 먼저 부르고, 안 되면 옛 긁기로 물러선다**(2026-09-10 개편).
     for code in ("KOSPI", "KOSDAQ"):
-        v, st = run("market", naver_market_page, code, "data/market/raw")
-        out["sources"]["naver:market:" + code] = st
+        v, st = run("market_api", naver_market_api, code, "data/market/raw")
+        out["sources"]["naver:market_api:" + code] = st
+        if not v:
+            v, st2 = run("market", naver_market_page, code, "data/market/raw")
+            out["sources"]["naver:market:" + code] = st2
         if v:
             out.setdefault("market_internals", {})[code.lower()] = v
+
+    # 개장 전이면 등락 종목 수·업종이 0 으로 오므로 직전 마감분을 이어 붙인다
+    carry_kr_session(out, now)
 
     # 국내 시장금리
     v, st = run("rates", naver_rates, "data/market/raw")
@@ -3186,6 +4460,16 @@ def main():
         out["krx_futures"] = v
 
     # 상한가·하한가 종목명 (개수는 market_internals.breadth 에 있다)
+    # **되찾았다**(2026-09-14). 2026-09-10 개편 뒤 나흘 동안 못 받던 것을
+    # 브라우저로 화면을 열어 오가는 요청을 보고 주소를 찾았다 —
+    # `stock.naver.com/api/domestic/market/stock/default` (naver_limit_api).
+    # 그전 다섯 바퀴는 모두 주소를 찍어서 맞히려던 것이었고 전부 빗나갔다.
+    # **짐작이 다섯 번 빗나가면 방법을 바꾸는 것이 여섯 번째 짐작보다 낫다.**
+    #
+    # KRX 전종목 시세를 1순위로 두었다가 물린 자리이기도 하다. `getJsonData`
+    # 의 400 이 날짜 탓인 줄 알고 직전 거래일을 넣어 봤지만 여섯 날짜 모두
+    # 400 이었고, 전종목을 상한·하한으로 두 번 받느라 수집 한 판이 9분을
+    # 넘겼다. 지금은 탐색(`probe_limit_sources`)에만 남겨 두었다.
     for kind in ("upper", "lower"):
         v, st = run("limit", naver_limit_names, kind, "data/market/raw")
         out["sources"]["naver:limit:" + kind] = st
@@ -3278,6 +4562,54 @@ def main():
             i = out["indices"][k]
             print("  %s %s  close=%s  chg=%s (%s%%)  vol=%s"
                   % (k, i["date"], i["close"], i["change"], i["change_pct"], i["volume"]))
+
+    # 네이버 덩어리가 죽은 날에는 **살아 있는 API 를 찾아 응답을 남긴다.**
+    # 수집 결과를 바꾸지 않는 진단이며, 다음 세션이 이것을 읽고 파서를 고친다.
+    dead = [k for k, v in out["sources"].items()
+            if not v["ok"] and k.startswith("naver:")]
+    if dead:
+        print("\n=== 네이버 원천 %d 개가 죽었다 — API 후보를 훑는다 ===" % len(dead))
+        try:
+            probe_naver_api()
+        except Exception as e:                                    # noqa: BLE001
+            print("!! API 탐색 실패: %s" % e)
+        try:
+            probe_with_session()
+        except Exception as e:                                    # noqa: BLE001
+            print("!! 세션 탐색 실패: %s" % e)
+        try:
+            probe_next_chunks([
+                ("증시자금동향", "https://finance.naver.com/sise/sise_deposit.naver"),
+                ("증시 기사", "https://finance.naver.com/news/mainnews.naver"),
+                ("시장지표(금리·환율)", "https://finance.naver.com/marketindex/"),
+            ])
+        except Exception as e:                                    # noqa: BLE001
+            print("!! 묶음 탐색 실패: %s" % e)
+
+    # **상한가 명단 원천이 실패하면 다른 길을 찾아본다.**
+    #
+    # 처음에는 「등락 종목 수는 있는데 명단이 0 건일 때만」으로 걸어 두었다가
+    # **탐색이 한 번도 돌지 않았다**(2026-09-14 09:02). 개장 직후에는 상한가가
+    # 아직 0 개라 그 조건이 성립하지 않는다. 원천을 찾는 일은 그날 상한가가
+    # 몇 개였는지와 아무 상관이 없다 — **못 받았으면 찾는다.**
+    failed = [k for k, v in out["sources"].items()
+              if k.startswith("naver:limit:") and not v["ok"]]
+    # **하루에 한 번만 돈다.** 이 탐색은 HTTP 를 스무 번 가까이 두드리고
+    # 야후 응답만 260KB 다. 수집은 하루에도 여러 번 도므로 그때마다 돌면
+    # 얻는 것 없이 느려진다 — 오늘 이미 적었으면 건너뛴다.
+    _probe_log = "data/market/raw/limit_sources.txt"
+    _today = datetime.now(KST).strftime("%Y-%m-%d")
+    try:
+        _done = _today in open(_probe_log, encoding="utf-8").readline()
+    except OSError:
+        _done = False
+    if failed and not _done:
+        print("\n=== 상한가 명단 원천이 실패했다(%s) — 다른 길을 찾는다 ==="
+              % ", ".join(failed))
+        try:
+            probe_limit_sources()
+        except Exception as e:                                    # noqa: BLE001
+            print("!! 상한가 원천 탐색 실패: %s" % e)
 
     # 아무것도 못 받으면 실패로 끝내 워크플로가 빨갛게 뜨도록 한다
     return 0 if ok else 1

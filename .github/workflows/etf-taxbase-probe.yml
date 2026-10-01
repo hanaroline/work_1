@@ -1,0 +1,66 @@
+name: 과세표준기준가 실측 (일회성)
+
+# 제안서가 분배금 **전액이 과세된다**고 보고 15.4% 를 곱하고 있다. 그런데 ETF
+# 분배금의 과세 대상은 과표기준가 증가분을 한도로 하므로, 국내주식 매매차익·
+# 장내파생 손익으로 분배하는 상품은 상당 부분이 비과세다. 지금 문서는 세후
+# 수령액을 실제보다 적게 적고 있을 수 있다.
+#
+# 고칠 재료(getEtpItemTaxBaseHist)는 있는데 값의 뜻을 모른다 — 음수가 나오고,
+# 기본 36일치만 오고, 중간에 2.00 같은 수가 섞인다. 뜻을 모르는 채로 세금을
+# 계산해 고객 문서에 넣을 수는 없으므로 먼저 잰다.
+#
+# 여덟 종목만 묻는다. 아무것도 만들지 않고 아무것도 덮어쓰지 않는다 —
+# tools/etfcheck-discovery/taxbase.json 에 잰 것을 적기만 한다.
+# 다 재고 나면 이 잡은 지운다.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/intelligent-**'
+    paths:
+      - 'scripts/probe_taxbase.mjs'
+      - '.github/workflows/etf-taxbase-probe.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: etf-taxbase-probe-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Playwright 설치
+        run: npm i -D playwright@1.56.1 && npx playwright install --with-deps chromium
+
+      - name: 과세표준기준가 실측
+        run: node scripts/probe_taxbase.mjs
+
+      - name: 결과 커밋
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/etfcheck-discovery/taxbase.json || true
+          if git diff --cached --quiet; then
+            echo "남길 결과가 없습니다"
+            exit 0
+          fi
+          git commit -m "chore(etf): 과세표준기준가 실측 결과"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+          done
+          exit 1

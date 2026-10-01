@@ -1,0 +1,27 @@
+[
+ {
+  "url": "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd",
+  "data": "mktId=STK&bld=dbms%2FMDC%2FMAIN%2FMDCMAIN00103",
+  "cols": [
+   "TRD_DD",
+   "DD_TP",
+   "INVST_TP",
+   "ACC_BID_TRDVAL",
+   "ACC_ASK_TRDVAL",
+   "NETBID_TRDVAL"
+  ],
+  "file": "data/market/raw/krx_hit_0.json"
+ },
+ {
+  "url": "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd",
+  "data": "mktTp=STK&bld=dbms%2FMDC%2FMAIN%2FMDCMAIN00105",
+  "cols": [
+   "BZ_DD",
+   "ACC_TRDVOL",
+   "ACC_TRDVAL",
+   "MAX_ACC_TRDVOL",
+   "MAX_ACC_TRDVAL"
+  ],
+  "file": "data/market/raw/krx_hit_1.json"
+ }
+]
