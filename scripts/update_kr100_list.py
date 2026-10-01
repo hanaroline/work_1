@@ -52,9 +52,19 @@ import fetch_us100 as F                                     # noqa: E402  수집
 ADD_RANK = 90            # 이 안에 들어와야 자리를 얻는다
 DROP_RANK = 110          # 이 밖으로 밀려야 자리를 잃는다
 MAX_SWAP = 5             # 한 번에 바꾸는 최대 종목 수
-LIST_SIZE = 100
+LIST_SIZE = 100          # **시총으로 뽑는 몫**이다 — 관심종목은 이 수에 들지 않는다
 
 SYM_RE = re.compile(r"^(\d{6})\.(KS|KQ)$")
+
+
+def pinned(src):
+    """kr-top100.html 의 WATCHLIST — 이 교체기가 **건드려서는 안 되는** 종목.
+
+    관심종목은 시총 100위 밖이라서, 적어 두지 않으면 교체기가 「순위 밖으로 밀린
+    종목」으로 보고 **가장 먼저 빼낸다.** 넣자마자 다음 주에 사라진다.
+    """
+    m = re.search(r"var WATCHLIST = \[(.*?)\];", src, re.S)
+    return set(re.findall(r"'([^']+)'", m.group(1))) if m else set()
 
 
 # ---------------------------------------------------------------- 표기
@@ -517,8 +527,16 @@ def verify(src):
     bad = []
     (_, _), _, rows = companies_block(src)
     syms = [s for s, _ in rows]
-    if len(syms) != LIST_SIZE:
-        bad.append("COMPANIES 가 %d개다(%d개여야 한다)" % (len(syms), LIST_SIZE))
+    keep = pinned(src)
+    # 세는 것은 **시총으로 뽑은 몫**이다. 관심종목을 함께 세면 목록을 넓힐 때마다
+    # 이 점검이 걸리고, 그것을 피하려고 LIST_SIZE 를 올리면 「100위」라는 규칙이
+    # 소리 없이 101위·102위로 늘어난다.
+    ranked_syms = [s for s in syms if s not in keep]
+    if len(ranked_syms) != LIST_SIZE:
+        bad.append("COMPANIES 의 시총 상위 몫이 %d개다(%d개여야 한다 · 관심종목 %d개는 따로 센다)"
+                   % (len(ranked_syms), LIST_SIZE, len(keep)))
+    for s in sorted(keep - set(syms)):
+        bad.append("WATCHLIST 의 %s 가 COMPANIES 에 없다 — 관심종목도 목록에 줄이 있어야 한다" % s)
     if len(set(syms)) != len(syms):
         dup = sorted({s for s in syms if syms.count(s) > 1})
         bad.append("COMPANIES 에 같은 종목이 두 번 있다 — " + ", ".join(dup))
@@ -552,17 +570,20 @@ def verify(src):
 
 # ---------------------------------------------------------------- 교체 결정
 
-def plan(rows, ranking):
+def plan(rows, ranking, keep=()):
     """무엇을 빼고 무엇을 넣을지 정한다. (나갈 것, 들어올 것, 사람이 읽을 설명)"""
     have = [s for s, _ in rows]
+    keep = set(keep)
     our_rank = ranking.get("ourRanks") or {}
     cand = [a for a in (ranking.get("add") or [])
             if a.get("rank") and a["rank"] <= ADD_RANK and a["sym"] not in have]
     cand.sort(key=lambda a: a["rank"])
 
-    # 나갈 후보 — 순위를 모르는 종목(상장폐지·합병·코드 변경)이 가장 먼저다
-    unknown = [s for s in have if our_rank.get(s) is None]
-    fallen = sorted([s for s in have if (our_rank.get(s) or 0) > DROP_RANK],
+    # 나갈 후보 — 순위를 모르는 종목(상장폐지·합병·코드 변경)이 가장 먼저다.
+    # **관심종목은 어느 쪽에도 넣지 않는다.** 시총 100위 밖이라서 그냥 두면 늘
+    # 「밀린 종목」으로 잡혀 맨 먼저 빠진다.
+    unknown = [s for s in have if our_rank.get(s) is None and s not in keep]
+    fallen = sorted([s for s in have if s not in keep and (our_rank.get(s) or 0) > DROP_RANK],
                     key=lambda s: -(our_rank.get(s) or 0))
     droppable = unknown + fallen
 
@@ -649,6 +670,56 @@ def resolve(v):
     return v + ".KS"
 
 
+# ---------------------------------------------------------------- 자체시험
+
+def selftest():
+    """관심종목이 교체기에 **빠지지 않는지** 본다.
+
+    이 한 가지를 굳이 시험으로 묶어 두는 까닭이 있다. 관심종목은 정의상 시총
+    100위 밖이므로, 교체기가 보기에는 「순위 밖으로 밀린 종목」과 생김새가 똑같다.
+    pinned() 를 거치지 않은 길이 하나라도 남으면 **넣은 다음 주에 조용히 사라진다**
+    — 아무 오류도 나지 않고, 100개라는 수도 맞으므로 어느 점검에도 걸리지 않는다.
+    """
+    rows = [("%06d.KS" % i, "") for i in range(1, 101)] + [("036540.KQ", "")]
+    ranking = {
+        # 관심종목은 250위, 보통 종목 하나(000099)는 180위로 밀려 있다
+        "ourRanks": dict({"%06d.KS" % i: i for i in range(1, 100)},
+                         **{"000099.KS": 180, "036540.KQ": 250, "000100.KS": None}),
+        "add": [{"sym": "111111.KS", "rank": 7, "en": "New", "ko": "새내기", "sector": "semi"},
+                {"sym": "222222.KS", "rank": 9, "en": "New2", "ko": "새내기둘", "sector": "semi"}],
+    }
+    fails = []
+
+    drops, adds, _ = plan(rows, ranking, keep={"036540.KQ"})
+    if "036540.KQ" in drops:
+        fails.append("관심종목이 나갈 후보에 들었다")
+    if "000100.KS" not in drops:             # 순위 미확인 — 가장 먼저 빠져야 한다
+        fails.append("순위를 모르는 종목이 나갈 후보에 없다")
+    if "000099.KS" not in drops:             # 180위 — DROP_RANK(110) 밖이다
+        fails.append("밀린 종목이 나갈 후보에 없다")
+    if len(adds) != 2:
+        fails.append("들어올 종목이 %d개다(2개여야 한다)" % len(adds))
+
+    # 적어 두지 않으면 **맨 먼저** 빠진다는 것도 함께 박아 둔다. 이 줄이 통과한다는
+    # 것은 위의 통과가 우연이 아니라 keep 때문이라는 뜻이다.
+    bare, _, _ = plan(rows, ranking, keep=())
+    if "036540.KQ" not in bare:
+        fails.append("keep 을 비웠는데도 관심종목이 남았다 — 시험이 아무것도 재지 못한다")
+
+    # 화면 파일이 실제로 앞뒤가 맞는가
+    src = open(os.path.join(F.ROOT, "kr-top100.html"), encoding="utf-8").read()
+    for b in verify(src):
+        fails.append("kr-top100.html — " + b)
+
+    print("시험 %d 가지 (관심종목이 교체기에 버티는가)" % 6)
+    if fails:
+        for f in fails:
+            print("  !! " + f)
+        raise SystemExit("실패 %d 가지" % len(fails))
+    print("실패 없음")
+    return 0
+
+
 # ---------------------------------------------------------------- 본체
 
 def main(argv=None):
@@ -657,12 +728,17 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description="국내 100대 기업 대상 목록 주간 자동 갱신")
     ap.add_argument("--dry-run", action="store_true", help="무엇을 바꿀지만 적고 파일은 그대로 둔다")
     ap.add_argument("--check", action="store_true", help="지금 파일의 앞뒤가 맞는지만 본다")
+    ap.add_argument("--selftest", action="store_true",
+                    help="관심종목이 교체기에 빠지지 않는지 시험한다(망에 나가지 않는다)")
     ap.add_argument("--probe", metavar="심볼[,심볼…]",
                     help="그 종목이 들어온다면 어떤 한글명·업종·키워드·개요가 될지 지어만 본다")
     ap.add_argument("--max-swap", type=int, default=MAX_SWAP, help="한 번에 바꿀 최대 종목 수")
     ap.add_argument("--add-rank", type=int, default=ADD_RANK, help="이 안에 들어와야 자리를 얻는다")
     ap.add_argument("--drop-rank", type=int, default=DROP_RANK, help="이 밖으로 밀려야 자리를 잃는다")
     args = ap.parse_args(argv)
+
+    if args.selftest:
+        return selftest()
 
     fetch_kr100.configure()
     src = open(F.PAGE, encoding="utf-8").read()
@@ -672,7 +748,11 @@ def main(argv=None):
         for b in bad:
             print("::error::" + b)
         raise SystemExit("지금 화면 파일부터 앞뒤가 맞지 않는다 — 목록을 고치지 않는다")
-    print("점검 통과: 목록 100종목 · 키워드·개요·기본 조합이 모두 맞는다", flush=True)
+    keep0 = pinned(src)
+    print("점검 통과: 시총 상위 %d종목%s · 키워드·개요·기본 조합이 모두 맞는다"
+          % (LIST_SIZE,
+             (" + 관심종목 %d종목(%s)" % (len(keep0), ", ".join(sorted(keep0)))) if keep0 else ""),
+          flush=True)
     if args.check:
         return 0
     if args.probe:
@@ -694,7 +774,11 @@ def main(argv=None):
     print("목록 점검 %s · 유니버스 %s종목" % (ranking.get("builtAt"), ranking.get("universe")), flush=True)
 
     (ci, cj), head, rows = companies_block(src)
-    drops, adds, notes = plan(rows, ranking)
+    keep = pinned(src)
+    if keep:
+        print("  관심종목 %d개는 순위와 무관하게 둔다 — %s"
+              % (len(keep), ", ".join(sorted(keep))), flush=True)
+    drops, adds, notes = plan(rows, ranking, keep)
     for n in notes:
         print("  " + n, flush=True)
     if not adds:
@@ -761,7 +845,10 @@ def apply_changes(src, drops, accepted, ranking):
     rank = dict(ranking.get("ourRanks") or {})
     for a in accepted:
         rank[a["sym"]] = a.get("rank")
-    rows.sort(key=lambda r: (rank.get(r[0]) is None, rank.get(r[0]) or 9999, r[0]))
+    # 관심종목은 시총 순위가 무엇이든 **맨 뒤**다. 순위대로 섞어 두면 목록을 읽는
+    # 사람이 「여기까지가 상위 100」인 자리를 잃는다.
+    keep = pinned(src)
+    rows.sort(key=lambda r: (r[0] in keep, rank.get(r[0]) is None, rank.get(r[0]) or 9999, r[0]))
     block = "[\n" + head + "\n" + ",\n".join(ln for _, ln in rows) + "\n]"
     src = src[:ci] + block + src[cj + 1:]
 

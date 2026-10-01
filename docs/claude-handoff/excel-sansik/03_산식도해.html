@@ -1,0 +1,691 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+<title>엑셀 산식 도해</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --paper:#F5F7F3;
+  --surface:#FFFFFF;
+  --band:#EDF2EB;
+  --ink:#1A1F1B;
+  --ink-2:#4C574F;
+  --ink-3:#7E8A80;
+  --rule:#DCE3DA;
+  --rule-2:#C4CFC2;
+  --accent:#14614A;
+  --accent-2:#0E4735;
+  --accent-soft:#E3EEE8;
+  --on-accent:#F3F8F4;
+  --amber:#87590F;
+  --amber-soft:#F7F0DD;
+  --alert:#98311F;
+  --shadow:0 1px 2px rgba(26,31,27,.04), 0 8px 24px -18px rgba(26,31,27,.35);
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:"IBM Plex Sans KR","IBM Plex Sans",system-ui,-apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+  --serif:"Noto Serif KR",Georgia,"Batang",serif;
+  --sp:clamp(1rem,2.4vw,2rem);
+  --bar:52px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1210; --surface:#161A15; --band:#1B201A;
+    --ink:#E7EBE3; --ink-2:#A8B2A6; --ink-3:#7B857A;
+    --rule:#2A312A; --rule-2:#3B443A;
+    --accent:#6FC9A0; --accent-2:#9EDCBF; --accent-soft:#152A1F; --on-accent:#0F1210;
+    --amber:#D4A45D; --amber-soft:#2A2314; --alert:#E38D79;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1210; --surface:#161A15; --band:#1B201A;
+  --ink:#E7EBE3; --ink-2:#A8B2A6; --ink-3:#7B857A;
+  --rule:#2A312A; --rule-2:#3B443A;
+  --accent:#6FC9A0; --accent-2:#9EDCBF; --accent-soft:#152A1F; --on-accent:#0F1210;
+  --amber:#D4A45D; --amber-soft:#2A2314; --alert:#E38D79;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+p{margin:0}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:15.5px;line-height:1.64;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:var(--serif);text-wrap:balance;margin:0;font-weight:600;letter-spacing:-.015em}
+code,kbd{font-family:var(--mono);font-variant-ligatures:none}
+a{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}
+a:hover{color:var(--accent-2)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* ── 표제 ─────────────────────────────────────────── */
+.masthead{position:relative;overflow:hidden;background:var(--surface);border-bottom:1px solid var(--rule-2)}
+.masthead::before{
+  content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(to bottom, transparent 0 28px, var(--band) 28px 56px);
+  -webkit-mask-image:linear-gradient(to right, transparent 42%, #000 100%);
+  mask-image:linear-gradient(to right, transparent 42%, #000 100%);
+  pointer-events:none;
+}
+.masthead-in{
+  position:relative;max-width:1280px;margin:0 auto;
+  padding:clamp(2rem,5vw,3.6rem) var(--sp) 1.5rem;
+  display:grid;grid-template-columns:minmax(0,1fr) auto;
+  gap:0 clamp(1.5rem,4vw,4rem);align-items:start;
+}
+.eyebrow{
+  margin:0 0 .9rem;font-family:var(--mono);font-size:.7rem;font-weight:500;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--accent);
+  display:flex;align-items:center;gap:.7rem;
+}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--accent)}
+h1{font-size:clamp(2.1rem,5.2vw,3.5rem);line-height:1.1}
+.dek{margin:.85rem 0 0;max-width:56ch;color:var(--ink-2);font-size:1.03rem}
+.meta{
+  grid-column:1/-1;display:flex;flex-wrap:wrap;gap:.45rem 1.6rem;
+  font-family:var(--mono);font-size:.735rem;color:var(--ink-3);
+  border-top:1px solid var(--rule);margin:1.6rem 0 0;padding-top:.9rem;
+}
+.meta b{color:var(--ink-2);font-weight:500}
+.plate{display:grid;gap:.75rem;justify-items:end;text-align:right;padding-top:.2rem}
+.vol{
+  font-family:var(--serif);font-weight:700;line-height:.86;
+  font-size:clamp(2.6rem,6vw,4.2rem);color:var(--accent);
+  letter-spacing:-.04em;
+}
+.vol small{display:block;font-family:var(--mono);font-size:.62rem;font-weight:500;
+  letter-spacing:.28em;color:var(--ink-3);margin-top:.5rem}
+.stats{display:flex;gap:0;border:1px solid var(--rule-2);background:var(--surface)}
+.stats div{padding:.45rem .85rem;border-right:1px solid var(--rule);text-align:right}
+.stats div:last-child{border-right:0}
+.stats b{display:block;font-family:var(--mono);font-size:1.05rem;font-weight:600;
+  color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.3}
+.stats span{font-size:.66rem;letter-spacing:.06em;color:var(--ink-3)}
+
+/* ── 검색 바 ──────────────────────────────────────── */
+.toolbar{
+  position:sticky;top:0;z-index:30;background:var(--surface);
+  background:color-mix(in srgb,var(--surface) 90%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--rule-2);
+}
+.toolbar-in{max-width:1280px;margin:0 auto;padding:.6rem var(--sp);display:flex;gap:.8rem;align-items:center}
+.search{
+  flex:1;max-width:560px;display:flex;align-items:center;gap:.6rem;
+  background:var(--paper);border:1px solid var(--rule-2);padding:.45rem .75rem;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search svg{width:15px;height:15px;flex:none;stroke:var(--ink-3);fill:none;stroke-width:1.8}
+.search input{flex:1;min-width:0;border:0;background:none;color:var(--ink);
+  font-family:var(--sans);font-size:.92rem;outline:none}
+.search input::placeholder{color:var(--ink-3)}
+.search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.hits{font-family:var(--mono);font-size:.74rem;color:var(--ink-3);white-space:nowrap}
+.hits[hidden]{display:none}
+
+/* ── 골격 ─────────────────────────────────────────── */
+.shell{
+  max-width:1280px;margin:0 auto;padding:0 var(--sp) 6rem;
+  display:grid;grid-template-columns:230px minmax(0,1fr);gap:clamp(1.6rem,3.4vw,3.4rem);
+  align-items:start;
+}
+nav.index{position:sticky;top:calc(var(--bar) + 14px);padding:2rem 0;max-height:calc(100vh - 80px);overflow-y:auto}
+.index-title{font-family:var(--mono);font-size:.67rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 1rem;padding-bottom:.6rem;border-bottom:1px solid var(--rule-2)}
+.index-group{margin-bottom:1.35rem}
+.index-group > span{display:block;font-size:.71rem;font-weight:600;letter-spacing:.08em;
+  color:var(--accent);margin-bottom:.45rem}
+nav.index a{
+  display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink-2);
+  font-size:.87rem;line-height:1.45;padding:.26rem .5rem .26rem .7rem;
+  border-left:2px solid var(--rule);transition:background .14s,color .14s,border-color .14s;
+}
+nav.index a i{font-family:var(--mono);font-style:normal;font-size:.7rem;color:var(--ink-3)}
+nav.index a:hover{color:var(--ink);background:var(--band)}
+nav.index a.on{color:var(--accent-2);border-left-color:var(--accent);background:var(--accent-soft);font-weight:500}
+nav.index a.on i{color:var(--accent)}
+
+main{padding-top:2rem;min-width:0}
+
+/* ── 머리말 상자 ──────────────────────────────────── */
+.callout{
+  margin:0 0 2.4rem;padding:1.15rem 1.3rem;background:var(--surface);
+  border:1px solid var(--rule-2);border-top:3px solid var(--accent);box-shadow:var(--shadow);
+}
+.callout h3{font-size:1.02rem;margin-bottom:.5rem}
+.callout ul{margin:0;padding-left:1.1rem;font-size:.9rem;color:var(--ink-2)}
+.callout li{margin:.32rem 0}
+.callout li::marker{color:var(--accent)}
+
+/* ── 분류 ─────────────────────────────────────────── */
+.sec{
+  margin:0 0 2.4rem;background:var(--surface);border:1px solid var(--rule);
+  box-shadow:var(--shadow);scroll-margin-top:calc(var(--bar) + 8px);
+  animation:rise .45s ease-out both;
+}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec:nth-of-type(2){animation-delay:.05s}
+.sec:nth-of-type(3){animation-delay:.1s}
+.sec:nth-of-type(n+4){animation-delay:.14s}
+.sec[hidden]{display:none}
+.sec-head{
+  padding:1.1rem clamp(1rem,2.2vw,1.6rem) .95rem;border-bottom:1px solid var(--rule-2);
+  background:var(--surface);
+}
+.sec-head .n{
+  display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:600;
+  letter-spacing:.08em;color:var(--on-accent);background:var(--accent);
+  padding:.12rem .45rem;margin-bottom:.55rem;
+}
+.sec-head h2{font-size:1.3rem}
+.lede{margin:.5rem 0 0;color:var(--ink-2);font-size:.9rem;max-width:72ch}
+@media (min-width:901px){
+  .sec-head{position:sticky;top:var(--bar);z-index:5;
+    background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(6px)}
+}
+
+/* ── 항목 ─────────────────────────────────────────── */
+.fn{
+  display:grid;grid-template-columns:minmax(0,32%) minmax(0,1fr);
+  gap:0 clamp(1rem,2.2vw,1.8rem);
+  padding:.9rem clamp(1rem,2.2vw,1.6rem);
+  border-bottom:1px solid var(--rule);transition:background .13s;
+}
+.fn:last-child{border-bottom:0}
+.fn:nth-child(even){background:var(--band)}
+.fn:hover{background:var(--accent-soft)}
+.fn[hidden]{display:none}
+.fn > div:last-child{border-left:1px solid var(--rule);padding-left:clamp(1rem,2.2vw,1.8rem)}
+.fn.stack{grid-template-columns:1fr;gap:.45rem}
+.fn.stack > div:last-child{border-left:0;padding-left:0}
+.fn.stack .sig code{color:var(--accent);font-size:.92rem}
+.sig{min-width:0}
+.sig code{display:block;font-size:.85rem;font-weight:500;color:var(--accent-2);
+  word-break:break-word;line-height:1.55}
+.ver{
+  display:inline-block;margin-top:.4rem;font-family:var(--mono);font-size:.63rem;
+  letter-spacing:.04em;padding:.1rem .42rem;border:1px solid var(--rule-2);
+  background:var(--paper);color:var(--ink-3);
+}
+.ver.new{color:var(--amber);border-color:var(--amber);background:var(--amber-soft)}
+.desc{margin:0;font-size:.915rem}
+
+/* ── 수식·코드 ────────────────────────────────────── */
+.ex{
+  position:relative;margin:.6rem 0 0;background:var(--paper);
+  border:1px solid var(--rule);border-left:2px solid var(--accent);
+  padding:.5rem 2.4rem .5rem .7rem;overflow-x:auto;
+}
+.fn:nth-child(even) .ex,.fn:hover .ex{background:var(--surface)}
+.ex code{font-size:.815rem;white-space:pre;color:var(--ink);line-height:1.72}
+.ex.big{padding:2rem .7rem .7rem}
+.ex.big code{font-size:.78rem;line-height:1.78}
+.ex[data-lang]::before{
+  content:attr(data-lang);position:absolute;top:0;left:0;
+  font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.14em;
+  color:var(--on-accent);background:var(--accent);padding:.1rem .5rem;
+}
+.copy{
+  position:absolute;top:.3rem;right:.3rem;border:1px solid var(--rule-2);
+  background:var(--surface);color:var(--ink-3);cursor:pointer;
+  font-family:var(--mono);font-size:.62rem;padding:.12rem .35rem;line-height:1.5;
+  opacity:0;transition:opacity .13s,color .13s,border-color .13s;
+}
+.ex:hover .copy,.copy:focus-visible{opacity:1}
+.copy:hover{color:var(--accent);border-color:var(--accent)}
+.copy.done{opacity:1;color:var(--accent);border-color:var(--accent)}
+
+.note{margin:.55rem 0 0;font-size:.835rem;color:var(--ink-2);
+  padding:.35rem .7rem;border-left:2px solid var(--rule-2);background:var(--paper)}
+.fn:nth-child(even) .note,.fn:hover .note{background:var(--surface)}
+.note b{color:var(--amber);font-weight:600}
+.note.warn{border-left-color:var(--amber);background:var(--amber-soft)}
+.fn:nth-child(even) .note.warn,.fn:hover .note.warn{background:var(--amber-soft)}
+
+/* ── 표 ───────────────────────────────────────────── */
+.tw{overflow-x:auto;padding:0 clamp(1rem,2.2vw,1.6rem) 1.2rem}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.86rem}
+caption{text-align:left;font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);padding:1rem 0 .55rem}
+th,td{text-align:left;padding:.45rem .65rem;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{font-family:var(--mono);font-size:.68rem;font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--rule-2);white-space:nowrap}
+tbody tr:nth-child(even){background:var(--band)}
+tbody tr:hover{background:var(--accent-soft)}
+tbody tr[hidden]{display:none}
+td code{font-size:.8rem;color:var(--accent-2)}
+td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.err{font-family:var(--mono);font-weight:600;color:var(--alert);white-space:nowrap}
+kbd{display:inline-block;border:1px solid var(--rule-2);border-bottom-width:2px;
+  background:var(--surface);padding:.04rem .32rem;font-size:.78rem;white-space:nowrap;color:var(--ink)}
+
+.empty{display:none;padding:3.5rem 1rem;text-align:center;color:var(--ink-3);
+  font-size:.93rem;border:1px dashed var(--rule-2);background:var(--surface)}
+.empty.show{display:block}
+
+/* ── 꼬리말 ───────────────────────────────────────── */
+footer{border-top:1px solid var(--rule-2);background:var(--surface)}
+.foot-in{max-width:1280px;margin:0 auto;padding:1.8rem var(--sp) 3rem;
+  font-size:.83rem;color:var(--ink-3);display:grid;gap:.55rem;max-width:80ch}
+.foot-in a{font-weight:500}
+
+/* ── 맨 위로 ──────────────────────────────────────── */
+#top{
+  position:fixed;right:1.1rem;bottom:1.1rem;z-index:40;
+  width:38px;height:38px;display:grid;place-items:center;cursor:pointer;
+  background:var(--surface);border:1px solid var(--rule-2);color:var(--ink-2);
+  box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s,color .15s,border-color .15s;
+}
+#top.show{opacity:1;pointer-events:auto}
+#top:hover{color:var(--accent);border-color:var(--accent)}
+#top svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+
+@media (max-width:900px){
+  .masthead-in{grid-template-columns:1fr;align-items:start;gap:1.4rem}
+  .masthead::before{-webkit-mask-image:linear-gradient(to bottom, transparent 55%, #000 100%);
+    mask-image:linear-gradient(to bottom, transparent 55%, #000 100%)}
+  .plate{justify-items:start;text-align:left}
+  .vol{font-size:2.6rem}
+  .shell{grid-template-columns:1fr;gap:0}
+  nav.index{position:static;max-height:none;overflow:visible;padding:1.3rem 0 .5rem;border-bottom:1px solid var(--rule)}
+  .index-inner{display:flex;gap:1.5rem;overflow-x:auto;padding-bottom:.5rem}
+  .index-group{margin:0;min-width:max-content}
+  .fn{grid-template-columns:1fr;gap:.35rem}
+  .fn > div:last-child{border-left:0;padding-left:0}
+  .sig code{color:var(--accent)}
+}
+@media print{
+  .toolbar,nav.index,#top,.copy{display:none}
+  .shell{display:block;max-width:none}
+  .sec{break-inside:avoid;box-shadow:none;animation:none}
+  .sec-head{position:static}
+  body{background:#fff;color:#000;font-size:10pt}
+}
+
+/* ── 도해 ─────────────────────────────────────────── */
+.figs{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:1.1rem;padding:1.1rem clamp(1rem,2.2vw,1.6rem) 1.3rem}
+.fig{margin:0;background:var(--paper);border:1px solid var(--rule);padding:.95rem 1rem 1rem;display:flex;flex-direction:column;gap:.5rem}
+.fig-tag{font-family:var(--mono);font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.fig h3{font-size:1.02rem;line-height:1.35}
+.fig svg{width:100%;height:auto;display:block;color:var(--ink);background:var(--surface);border:1px solid var(--rule);padding:.4rem 0}
+.fig figcaption{font-size:.85rem;color:var(--ink-2)}
+.fig .ex{margin:0;overflow-x:visible}
+.fig .ex code{white-space:pre-wrap;word-break:break-word}
+.dg .cell{fill:var(--surface);stroke:var(--rule-2);stroke-width:1}
+.dg .head{fill:var(--band);stroke:var(--rule-2);stroke-width:1}
+.dg .dim{fill:var(--band);stroke:var(--rule);stroke-width:1}
+.dg .hit{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.3}
+.dg .out{fill:var(--accent);stroke:var(--accent);stroke-width:1}
+.dg .warn{fill:var(--amber-soft);stroke:var(--amber);stroke-width:1}
+.dg .spill{fill:none;stroke:var(--accent);stroke-width:1.4;stroke-dasharray:4 3}
+.dg .win{fill:var(--accent-soft);stroke:none}
+.dg .track{fill:var(--band);stroke:var(--rule-2)}
+.dg text{font-family:var(--mono);font-size:11px;fill:currentColor}
+.dg .t-s{font-size:10px;fill:var(--ink-3)}
+.dg .t-a{fill:var(--accent);font-weight:600}
+.dg .t-r{fill:var(--alert);font-weight:600}
+.dg .t-o{fill:var(--on-accent);font-weight:600}
+.dg .ln{stroke:var(--rule-2);fill:none;stroke-width:1}
+.dg .ln.acc{stroke:var(--accent);stroke-width:1.4}
+.dg .ln.warn{stroke:var(--amber);stroke-dasharray:5 4}
+.dg .arw{stroke:currentColor;fill:none;stroke-width:1.3}
+.dg .arw.acc{stroke:var(--accent);stroke-width:1.5}
+.dg .arw.dash{stroke-dasharray:4 3}
+.dg .mk-a{fill:var(--accent)}
+.dg .plot{stroke:var(--accent);fill:none;stroke-width:2}
+.dg .plot2{stroke:var(--ink-3);fill:none;stroke-width:1.3;stroke-dasharray:4 3}
+.dg .bar{fill:var(--accent)}
+.dg .bar2{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1}
+.dg .barA{fill:var(--alert)}
+.dg .dot{fill:var(--ink-3)}
+.dg .dot-a{fill:var(--accent)}
+@media (max-width:900px){.figs{grid-template-columns:1fr;padding-left:1rem;padding-right:1rem}}
+</style>
+
+<header class="masthead">
+  <div class="masthead-in">
+    <div>
+      <p class="eyebrow">엑셀 산식 원장 · 도해편</p>
+      <h1>산식이 하는 일</h1>
+      <p class="dek">수식을 외우기 전에 무슨 일이 벌어지는지 먼저 봅니다. 조회·집계가 어느 칸을 집는지, 현금흐름이 어떻게 한 숫자가 되는지, 스텝다운이 어느 계단에서 끝나는지를 18장의 그림으로 정리했습니다. 수식 전문은 <a href="https://claude.ai/code/artifact/94e6f911-801c-40f6-8099-196a8c7d0c9c" target="_blank" rel="noopener">합본</a>에 있습니다.</p>
+    </div>
+    <div class="plate">
+      <p class="vol">도해<small>18장</small></p>
+      <div class="stats">
+        <div><b>5</b><span>분류</span></div>
+        <div><b>18</b><span>도해</span></div>
+      </div>
+    </div>
+    <p class="meta">
+      <span><b>읽는 법</b> 초록 = 수식이 실제로 건드리는 곳</span>
+      <span><b>회색</b> 조건에서 빠진 부분</span>
+      <span><b>수치</b> 설명용 예시값</span>
+    </p>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="index" aria-label="분류 목록">
+    <p class="index-title">분류</p>
+    <div class="index-inner">
+      <div class="index-group">
+        <span>도해</span>
+        <a href="#g1"><i>01</i>조회·집계</a>
+        <a href="#g2"><i>02</i>날짜·기한</a>
+        <a href="#g3"><i>03</i>금융 계산</a>
+        <a href="#g4"><i>04</i>실무·영업</a>
+        <a href="#g5"><i>05</i>자동화</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+
+    <section class="sec" id="g1">
+      <div class="sec-head">
+        <span class="n">01</span>
+        <h2>조회·집계</h2>
+        <p class="lede">5개 도해 · XLOOKUP · INDEX + MATCH · SUMIFS · FILTER · 열 피벗 해제</p>
+      </div>
+      <div class="figs">
+        <figure class="fig">
+          <span class="fig-tag">XLOOKUP</span>
+          <h3>코드로 이름을 끌어온다</h3>
+          <svg class="dg" viewBox="0 0 460 220" role="img" aria-label="찾을값을 조회 범위에서 만난 뒤, 그 값과 같은 행에 있는 반환 범위의 값을 가져옵니다.">
+            <defs><marker id="m00" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m00a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs>
+            <text x="20" y="16" text-anchor="start" class="t-s">내 시트</text>
+            <rect x="20" y="24" width="70" height="26" class="head"/><text x="55" y="41" text-anchor="middle" class="t-s">코드</text><rect x="90" y="24" width="90" height="26" class="head"/><text x="135" y="41" text-anchor="middle" class="t-s">종목명</text><rect x="20" y="50" width="70" height="26" class="hit"/><text x="55" y="67" text-anchor="middle">005930</text><rect x="90" y="50" width="90" height="26" class="out"/><text x="135" y="67" text-anchor="middle" class="t-o">?</text><rect x="20" y="76" width="70" height="26" class="cell"/><text x="55" y="93" text-anchor="middle">000660</text><rect x="90" y="76" width="90" height="26" class="cell"/><text x="135" y="93" text-anchor="middle"></text><rect x="20" y="102" width="70" height="26" class="cell"/><text x="55" y="119" text-anchor="middle">035420</text><rect x="90" y="102" width="90" height="26" class="cell"/><text x="135" y="119" text-anchor="middle"></text>
+            <text x="270" y="16" text-anchor="start" class="t-s">종목 마스터</text>
+            <rect x="270" y="24" width="70" height="26" class="head"/><text x="305" y="41" text-anchor="middle" class="t-s">코드</text><rect x="340" y="24" width="90" height="26" class="head"/><text x="385" y="41" text-anchor="middle" class="t-s">종목명</text><rect x="270" y="50" width="70" height="26" class="cell"/><text x="305" y="67" text-anchor="middle">000660</text><rect x="340" y="50" width="90" height="26" class="cell"/><text x="385" y="67" text-anchor="middle">SK하이닉스</text><rect x="270" y="76" width="70" height="26" class="hit"/><text x="305" y="93" text-anchor="middle">005930</text><rect x="340" y="76" width="90" height="26" class="hit"/><text x="385" y="93" text-anchor="middle">삼성전자</text><rect x="270" y="102" width="70" height="26" class="cell"/><text x="305" y="119" text-anchor="middle">035420</text><rect x="340" y="102" width="90" height="26" class="cell"/><text x="385" y="119" text-anchor="middle">NAVER</text>
+            <path d="M 92 63 C 150 63 175 115 266 115" class="arw acc" marker-end="url(#m00a)"/>
+            <text x="170" y="108" text-anchor="middle" class="t-a">① 코드를 찾고</text>
+            <path d="M 424 128 L 424 152 L 135 152 L 135 78" class="arw acc" marker-end="url(#m00a)"/>
+            <text x="300" y="168" text-anchor="middle" class="t-a">② 같은 행의 값을 가져온다</text>
+            <text x="20" y="200" text-anchor="start" class="t-s">못 찾으면 네 번째 인자("미등록")가 대신 들어간다</text>
+          </svg>
+          <figcaption>찾을값을 조회 범위에서 만난 뒤, 그 값과 같은 행에 있는 반환 범위의 값을 가져옵니다.</figcaption>
+          <div class="ex"><code>=XLOOKUP($A2, 종목[코드], 종목[종목명], "미등록")</code></div>
+        </figure>
+        <figure class="fig">
+          <span class="fig-tag">INDEX + MATCH</span>
+          <h3>위치를 찾고, 그 위치를 꺼낸다</h3>
+          <svg class="dg" viewBox="0 0 460 200" role="img" aria-label="MATCH가 “몇 번째 행인가”라는 숫자를 만들고, INDEX가 그 번호로 반환 열에서 값을 집어냅니다.">
+            <defs><marker id="m01" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m01a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs>
+            <text x="20" y="16" text-anchor="start" class="t-s">조회 열</text>
+            <rect x="20" y="24" width="80" height="24" class="head"/><text x="60" y="40" text-anchor="middle" class="t-s">코드</text><rect x="20" y="48" width="80" height="24" class="cell"/><text x="60" y="64" text-anchor="middle">000660</text><rect x="20" y="72" width="80" height="24" class="hit"/><text x="60" y="88" text-anchor="middle">005930</text><rect x="20" y="96" width="80" height="24" class="cell"/><text x="60" y="112" text-anchor="middle">035420</text>
+            <text x="200" y="16" text-anchor="start" class="t-s">반환 열</text>
+            <rect x="200" y="24" width="100" height="24" class="head"/><text x="250" y="40" text-anchor="middle" class="t-s">종목명</text><rect x="200" y="48" width="100" height="24" class="cell"/><text x="250" y="64" text-anchor="middle">SK하이닉스</text><rect x="200" y="72" width="100" height="24" class="hit"/><text x="250" y="88" text-anchor="middle">삼성전자</text><rect x="200" y="96" width="100" height="24" class="cell"/><text x="250" y="112" text-anchor="middle">NAVER</text>
+            <line x1="102" y1="96" x2="150" y2="96" class="arw acc" marker-end="url(#m01a)"/>
+            <rect x="152" y="84" width="44" height="24" class="out"/><text x="174" y="100" text-anchor="middle" class="t-o">3</text>
+            <line x1="198" y1="96" x2="198" y2="96" class="arw" marker-end="url(#m01)"/>
+            <text x="174" y="78" text-anchor="middle" class="t-a">MATCH</text>
+            <text x="174" y="124" text-anchor="middle" class="t-s">= 3번째</text>
+            <line x1="304" y1="96" x2="350" y2="96" class="arw acc" marker-end="url(#m01a)"/>
+            <rect x="352" y="84" width="88" height="24" class="out"/><text x="396" y="100" text-anchor="middle" class="t-o">삼성전자</text>
+            <text x="396" y="78" text-anchor="middle" class="t-a">INDEX</text>
+            <text x="20" y="160" text-anchor="start" class="t-s">MATCH 마지막 인자 0 = 정확히 일치. 1이나 생략은 정렬된 범위에서만 맞다</text>
+            <text x="20" y="178" text-anchor="start" class="t-s">열을 새로 끼워 넣어도 조회 열·반환 열이 따로라 깨지지 않는다</text>
+          </svg>
+          <figcaption>MATCH가 “몇 번째 행인가”라는 숫자를 만들고, INDEX가 그 번호로 반환 열에서 값을 집어냅니다.</figcaption>
+          <div class="ex"><code>=INDEX(종목[종목명], MATCH($A2, 종목[코드], 0))</code></div>
+        </figure>
+        <figure class="fig">
+          <span class="fig-tag">SUMIFS</span>
+          <h3>조건에 맞는 행만 더한다</h3>
+          <svg class="dg" viewBox="0 0 460 220" role="img" aria-label="조건 범위를 행 단위로 훑어 모든 조건을 통과한 행만 남기고, 그 행들의 합계 범위 값만 더합니다.">
+            <defs><marker id="m02" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m02a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs><text x="20" y="16" text-anchor="start" class="t-s">매매내역</text><rect x="20" y="24" width="66" height="28" class="head"/><text x="53" y="42" text-anchor="middle" class="t-s">일자</text><rect x="86" y="24" width="60" height="28" class="head"/><text x="116" y="42" text-anchor="middle" class="t-s">구분</text><rect x="146" y="24" width="70" height="28" class="head"/><text x="181" y="42" text-anchor="middle" class="t-s">금액</text><rect x="20" y="52" width="66" height="28" class="hit"/><text x="53" y="70" text-anchor="middle">08-20</text><rect x="86" y="52" width="60" height="28" class="hit"/><text x="116" y="70" text-anchor="middle">매수</text><rect x="146" y="52" width="70" height="28" class="hit"/><text x="181" y="70" text-anchor="middle">1,200</text><text x="228" y="70" text-anchor="start" class="t-a">통과</text><rect x="20" y="80" width="66" height="28" class="dim"/><text x="53" y="98" text-anchor="middle" class="t-s">08-21</text><rect x="86" y="80" width="60" height="28" class="dim"/><text x="116" y="98" text-anchor="middle" class="t-s">매도</text><rect x="146" y="80" width="70" height="28" class="dim"/><text x="181" y="98" text-anchor="middle" class="t-s">800</text><text x="228" y="98" text-anchor="start" class="t-s">제외</text><rect x="20" y="108" width="66" height="28" class="hit"/><text x="53" y="126" text-anchor="middle">08-22</text><rect x="86" y="108" width="60" height="28" class="hit"/><text x="116" y="126" text-anchor="middle">매수</text><rect x="146" y="108" width="70" height="28" class="hit"/><text x="181" y="126" text-anchor="middle">2,400</text><text x="228" y="126" text-anchor="start" class="t-a">통과</text><rect x="20" y="136" width="66" height="28" class="hit"/><text x="53" y="154" text-anchor="middle">08-23</text><rect x="86" y="136" width="60" height="28" class="hit"/><text x="116" y="154" text-anchor="middle">매수</text><rect x="146" y="136" width="70" height="28" class="hit"/><text x="181" y="154" text-anchor="middle">600</text><text x="228" y="154" text-anchor="start" class="t-a">통과</text><line x1="290" y1="52" x2="330" y2="52" class="arw acc" marker-end="url(#m02a)"/><line x1="290" y1="108" x2="330" y2="108" class="arw acc" marker-end="url(#m02a)"/><line x1="290" y1="136" x2="330" y2="136" class="arw acc" marker-end="url(#m02a)"/><rect x="334" y="90" width="106" height="32" class="out"/><text x="387" y="110" text-anchor="middle" class="t-o">4,200</text><text x="387" y="78" text-anchor="middle" class="t-a">합계</text><text x="20" y="176" text-anchor="start" class="t-s">조건 범위와 합계 범위는 행 수가 같아야 한다</text><text x="20" y="194" text-anchor="start" class="t-s">합계 범위가 맨 앞 — SUMIF와 인자 순서가 반대다</text>
+          </svg>
+          <figcaption>조건 범위를 행 단위로 훑어 모든 조건을 통과한 행만 남기고, 그 행들의 합계 범위 값만 더합니다.</figcaption>
+          <div class="ex"><code>=SUMIFS(매매[금액], 매매[구분],"매수", 매매[일자],"&gt;="&amp;$B$1)</code></div>
+        </figure>
+        <figure class="fig">
+          <span class="fig-tag">FILTER</span>
+          <h3>한 셀에 넣으면 표가 쏟아진다</h3>
+          <svg class="dg" viewBox="0 0 460 210" role="img" aria-label="수식은 한 칸에 있지만 결과는 조건을 통과한 행 수만큼 아래로 자동 확장(스필)됩니다.">
+            <defs><marker id="m03" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m03a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs>
+            <text x="20" y="16" text-anchor="start" class="t-s">원본</text>
+            <rect x="20" y="24" width="66" height="26" class="head"/><text x="53" y="41" text-anchor="middle" class="t-s">종목</text><rect x="86" y="24" width="66" height="26" class="head"/><text x="119" y="41" text-anchor="middle" class="t-s">금액</text><rect x="20" y="50" width="66" height="26" class="hit"/><text x="53" y="67" text-anchor="middle">삼성</text><rect x="86" y="50" width="66" height="26" class="hit"/><text x="119" y="67" text-anchor="middle">1,200</text><rect x="20" y="76" width="66" height="26" class="cell"/><text x="53" y="93" text-anchor="middle">하이닉스</text><rect x="86" y="76" width="66" height="26" class="cell"/><text x="119" y="93" text-anchor="middle">800</text><rect x="20" y="102" width="66" height="26" class="hit"/><text x="53" y="119" text-anchor="middle">NAVER</text><rect x="86" y="102" width="66" height="26" class="hit"/><text x="119" y="119" text-anchor="middle">2,400</text><rect x="20" y="128" width="66" height="26" class="cell"/><text x="53" y="145" text-anchor="middle">카카오</text><rect x="86" y="128" width="66" height="26" class="cell"/><text x="119" y="145" text-anchor="middle">400</text>
+            <line x1="158" y1="84" x2="216" y2="84" class="arw acc" marker-end="url(#m03a)"/>
+            <text x="187" y="74" text-anchor="middle" class="t-a">조건</text>
+            <rect x="244" y="24" width="66" height="26" class="out"/><text x="277" y="41" text-anchor="middle" class="t-o">수식</text><rect x="310" y="24" width="66" height="26" class="out"/><text x="343" y="41" text-anchor="middle" class="t-o">한 칸</text>
+            <rect x="244" y="50" width="132" height="78" class="spill"/>
+            <rect x="244" y="50" width="66" height="26" class="cell"/><text x="277" y="67" text-anchor="middle">삼성</text><rect x="310" y="50" width="66" height="26" class="cell"/><text x="343" y="67" text-anchor="middle">1,200</text><rect x="244" y="76" width="66" height="26" class="cell"/><text x="277" y="93" text-anchor="middle">NAVER</text><rect x="310" y="76" width="66" height="26" class="cell"/><text x="343" y="93" text-anchor="middle">2,400</text>
+            <line x1="390" y1="40" x2="390" y2="118" class="arw acc" marker-end="url(#m03a)"/>
+            <text x="424" y="84" text-anchor="middle" class="t-a">자동 확장</text>
+            <text x="244" y="150" text-anchor="start" class="t-s">아래 칸에 다른 값이 있으면 #SPILL!</text>
+            <text x="20" y="178" text-anchor="start" class="t-s">스필 결과 전체를 다시 쓸 때는 A2# 처럼 # 를 붙인다</text>
+            <text x="20" y="196" text-anchor="start" class="t-s">=COUNTA(D2#) → 결과 건수</text>
+          </svg>
+          <figcaption>수식은 한 칸에 있지만 결과는 조건을 통과한 행 수만큼 아래로 자동 확장(스필)됩니다.</figcaption>
+          <div class="ex"><code>=FILTER(매매, 매매[금액]&gt;=1000, "해당 없음")</code></div>
+        </figure>
+        <figure class="fig">
+          <span class="fig-tag">파워 쿼리 · 열 피벗 해제</span>
+          <h3>가로 표를 세로로 눕힌다</h3>
+          <svg class="dg" viewBox="0 0 460 215" role="img" aria-label="월이 열로 늘어선 표를 “항목·월·값” 세 열로 바꿉니다. 피벗테이블과 수식이 먹는 형태가 이것입니다.">
+            <defs><marker id="m04" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m04a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs>
+            <text x="20" y="16" text-anchor="start" class="t-s">받은 표</text>
+            <rect x="20" y="24" width="56" height="26" class="head"/><text x="48" y="41" text-anchor="middle" class="t-s">지점</text><rect x="76" y="24" width="44" height="26" class="head"/><text x="98" y="41" text-anchor="middle" class="t-s">1월</text><rect x="120" y="24" width="44" height="26" class="head"/><text x="142" y="41" text-anchor="middle" class="t-s">2월</text><rect x="164" y="24" width="44" height="26" class="head"/><text x="186" y="41" text-anchor="middle" class="t-s">3월</text><rect x="20" y="50" width="56" height="26" class="cell"/><text x="48" y="67" text-anchor="middle">강남</text><rect x="76" y="50" width="44" height="26" class="cell"/><text x="98" y="67" text-anchor="middle">120</text><rect x="120" y="50" width="44" height="26" class="cell"/><text x="142" y="67" text-anchor="middle">140</text><rect x="164" y="50" width="44" height="26" class="cell"/><text x="186" y="67" text-anchor="middle">90</text><rect x="20" y="76" width="56" height="26" class="cell"/><text x="48" y="93" text-anchor="middle">분당</text><rect x="76" y="76" width="44" height="26" class="cell"/><text x="98" y="93" text-anchor="middle">80</text><rect x="120" y="76" width="44" height="26" class="cell"/><text x="142" y="93" text-anchor="middle">60</text><rect x="164" y="76" width="44" height="26" class="cell"/><text x="186" y="93" text-anchor="middle">110</text>
+            <line x1="212" y1="76" x2="252" y2="76" class="arw acc" marker-end="url(#m04a)"/>
+            <text x="232" y="66" text-anchor="middle" class="t-a">해제</text>
+            <text x="266" y="16" text-anchor="start" class="t-s">분석 가능한 형태</text>
+            <rect x="266" y="24" width="50" height="22" class="head"/><text x="291" y="39" text-anchor="middle" class="t-s">지점</text><rect x="316" y="24" width="40" height="22" class="head"/><text x="336" y="39" text-anchor="middle" class="t-s">월</text><rect x="356" y="24" width="46" height="22" class="head"/><text x="379" y="39" text-anchor="middle" class="t-s">값</text><rect x="266" y="46" width="50" height="22" class="cell"/><text x="291" y="61" text-anchor="middle">강남</text><rect x="316" y="46" width="40" height="22" class="cell"/><text x="336" y="61" text-anchor="middle">1월</text><rect x="356" y="46" width="46" height="22" class="cell"/><text x="379" y="61" text-anchor="middle">120</text><rect x="266" y="68" width="50" height="22" class="cell"/><text x="291" y="83" text-anchor="middle">강남</text><rect x="316" y="68" width="40" height="22" class="cell"/><text x="336" y="83" text-anchor="middle">2월</text><rect x="356" y="68" width="46" height="22" class="cell"/><text x="379" y="83" text-anchor="middle">140</text><rect x="266" y="90" width="50" height="22" class="cell"/><text x="291" y="105" text-anchor="middle">강남</text><rect x="316" y="90" width="40" height="22" class="cell"/><text x="336" y="105" text-anchor="middle">3월</text><rect x="356" y="90" width="46" height="22" class="cell"/><text x="379" y="105" text-anchor="middle">90</text><rect x="266" y="112" width="50" height="22" class="cell"/><text x="291" y="127" text-anchor="middle">분당</text><rect x="316" y="112" width="40" height="22" class="cell"/><text x="336" y="127" text-anchor="middle">1월</text><rect x="356" y="112" width="46" height="22" class="cell"/><text x="379" y="127" text-anchor="middle">80</text><rect x="266" y="134" width="50" height="22" class="cell"/><text x="291" y="149" text-anchor="middle">분당</text><rect x="316" y="134" width="40" height="22" class="cell"/><text x="336" y="149" text-anchor="middle">2월</text><rect x="356" y="134" width="46" height="22" class="cell"/><text x="379" y="149" text-anchor="middle">60</text><rect x="266" y="156" width="50" height="22" class="cell"/><text x="291" y="171" text-anchor="middle">분당</text><rect x="316" y="156" width="40" height="22" class="cell"/><text x="336" y="171" text-anchor="middle">3월</text><rect x="356" y="156" width="46" height="22" class="cell"/><text x="379" y="171" text-anchor="middle">110</text>
+            <text x="20" y="130" text-anchor="start" class="t-a">이 형태여야 되는 것들</text>
+            <text x="20" y="150" text-anchor="start" class="t-s">· 피벗테이블 · SUMIFS 조건 집계</text>
+            <text x="20" y="168" text-anchor="start" class="t-s">· 기간 필터 · 차트 계열 자동 인식</text>
+            <text x="20" y="196" text-anchor="start" class="t-s">4월이 추가돼도 수식을 고칠 필요가 없다</text>
+          </svg>
+          <figcaption>월이 열로 늘어선 표를 “항목·월·값” 세 열로 바꿉니다. 피벗테이블과 수식이 먹는 형태가 이것입니다.</figcaption>
+          <div class="ex"><code>변환 → 열 피벗 해제  (Table.UnpivotOtherColumns)</code></div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="sec" id="g2">
+      <div class="sec-head">
+        <span class="n">02</span>
+        <h2>날짜·기한</h2>
+        <p class="lede">2개 도해 · WORKDAY · FILTER + TODAY</p>
+      </div>
+      <div class="figs">
+        <figure class="fig">
+          <span class="fig-tag">WORKDAY</span>
+          <h3>주말·휴장일을 건너뛰고 센다</h3>
+          <svg class="dg" viewBox="0 0 460 200" role="img" aria-label="달력 날짜가 아니라 영업일로 셉니다. 휴장일 목록을 인자로 주면 그 날짜도 함께 건너뜁니다.">
+            <defs><marker id="m10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m10a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs><text x="20" y="16" text-anchor="start" class="t-s">8월 · 거래일 25일, 26일은 휴장</text><rect x="20" y="24" width="50" height="24" class="head"/><text x="45" y="40" text-anchor="middle" class="t-s">월</text><rect x="20" y="48" width="50" height="32" class="cell"/><text x="45" y="68" text-anchor="middle">25</text><rect x="74" y="24" width="50" height="24" class="head"/><text x="99" y="40" text-anchor="middle" class="t-s">화</text><rect x="74" y="48" width="50" height="32" class="warn"/><text x="99" y="68" text-anchor="middle">26</text><rect x="128" y="24" width="50" height="24" class="head"/><text x="153" y="40" text-anchor="middle" class="t-s">수</text><rect x="128" y="48" width="50" height="32" class="cell"/><text x="153" y="68" text-anchor="middle">27</text><rect x="182" y="24" width="50" height="24" class="head"/><text x="207" y="40" text-anchor="middle" class="t-s">목</text><rect x="182" y="48" width="50" height="32" class="cell"/><text x="207" y="68" text-anchor="middle">28</text><rect x="236" y="24" width="50" height="24" class="head"/><text x="261" y="40" text-anchor="middle" class="t-s">금</text><rect x="236" y="48" width="50" height="32" class="cell"/><text x="261" y="68" text-anchor="middle">29</text><rect x="290" y="24" width="50" height="24" class="head"/><text x="315" y="40" text-anchor="middle" class="t-s">토</text><rect x="290" y="48" width="50" height="32" class="dim"/><text x="315" y="68" text-anchor="middle">30</text><rect x="344" y="24" width="50" height="24" class="head"/><text x="369" y="40" text-anchor="middle" class="t-s">일</text><rect x="344" y="48" width="50" height="32" class="dim"/><text x="369" y="68" text-anchor="middle">31</text><rect x="398" y="24" width="50" height="24" class="head"/><text x="423" y="40" text-anchor="middle" class="t-s">월</text><rect x="398" y="48" width="50" height="32" class="cell"/><text x="423" y="68" text-anchor="middle">1</text><text x="74" y="96" text-anchor="middle" class="t-a">T</text><text x="128" y="96" text-anchor="middle" class="t-s">휴장</text><text x="344" y="96" text-anchor="middle" class="t-s">토·일</text><text x="398" y="96" text-anchor="middle" class="t-s">토·일</text><path d="M 45 116 C 90 150 140 150 185 118" class="arw acc" marker-end="url(#m10a)"/><text x="115" y="160" text-anchor="middle" class="t-a">1영업일</text><path d="M 199 116 C 230 150 270 150 293 118" class="arw acc" marker-end="url(#m10a)"/><text x="246" y="160" text-anchor="middle" class="t-a">2영업일</text><rect x="272" y="48" width="50" height="32" class="out"/><text x="297" y="68" text-anchor="middle" class="t-o">28</text><text x="20" y="190" text-anchor="start" class="t-s">NETWORKDAYS 는 반대로 두 날짜 사이의 영업일수를 센다</text>
+          </svg>
+          <figcaption>달력 날짜가 아니라 영업일로 셉니다. 휴장일 목록을 인자로 주면 그 날짜도 함께 건너뜁니다.</figcaption>
+          <div class="ex"><code>=WORKDAY(거래일, 2, 휴장일)   ← 주식 결제일(T+2)</code></div>
+        </figure>
+        <figure class="fig">
+          <span class="fig-tag">FILTER + TODAY</span>
+          <h3>30일 안에 만기가 오는 건만 뽑는다</h3>
+          <svg class="dg" viewBox="0 0 460 200" role="img" aria-label="오늘을 기준으로 창(window)을 잡고, 그 안에 만기일이 들어오는 계약만 남깁니다.">
+            <defs><marker id="m11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m11a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs><rect x="96" y="40" width="150" height="66" class="win"/><line x1="20" y1="106" x2="440" y2="106" class="ln"/><line x1="430" y1="106" x2="440" y2="106" class="arw" marker-end="url(#m11)"/><text x="96" y="128" text-anchor="middle" class="t-a">오늘</text><text x="246" y="128" text-anchor="middle" class="t-a">+30일</text><line x1="96" y1="40" x2="96" y2="112" class="ln acc"/><line x1="246" y1="40" x2="246" y2="112" class="ln acc"/><circle cx="108" cy="52" r="4" class="dot-a"/><circle cx="176" cy="70" r="4" class="dot-a"/><circle cx="232" cy="88" r="4" class="dot-a"/><circle cx="330" cy="80" r="4" class="dot"/><circle cx="400" cy="60" r="4" class="dot"/><text x="171" y="34" text-anchor="middle" class="t-a">이 구간만 콜 대상</text><rect x="20" y="146" width="96" height="22" class="head"/><text x="68" y="161" text-anchor="middle" class="t-s">상품</text><rect x="116" y="146" width="56" height="22" class="head"/><text x="144" y="161" text-anchor="middle" class="t-s">만기</text><rect x="172" y="146" width="52" height="22" class="head"/><text x="198" y="161" text-anchor="middle" class="t-s">D-day</text><rect x="20" y="168" width="96" height="22" class="cell"/><text x="68" y="183" text-anchor="middle">ELS 12345</text><rect x="116" y="168" width="56" height="22" class="cell"/><text x="144" y="183" text-anchor="middle">08-26</text><rect x="172" y="168" width="52" height="22" class="cell"/><text x="198" y="183" text-anchor="middle">D-1</text><rect x="20" y="190" width="96" height="22" class="cell"/><text x="68" y="205" text-anchor="middle">국고 24-3</text><rect x="116" y="190" width="56" height="22" class="cell"/><text x="144" y="205" text-anchor="middle">09-08</text><rect x="172" y="190" width="52" height="22" class="cell"/><text x="198" y="205" text-anchor="middle">D-14</text><text x="300" y="162" text-anchor="start" class="t-s">=만기일-TODAY()</text><text x="300" y="180" text-anchor="start" class="t-s">결과를 SORT 로 정렬하면</text><text x="300" y="196" text-anchor="start" class="t-s">그대로 주간 관리표가 된다</text>
+          </svg>
+          <figcaption>오늘을 기준으로 창(window)을 잡고, 그 안에 만기일이 들어오는 계약만 남깁니다.</figcaption>
+          <div class="ex"><code>=FILTER(보유, (보유[만기일]-TODAY()&gt;=0)*(보유[만기일]-TODAY()&lt;=30), "도래 없음")</code></div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="sec" id="g3">
+      <div class="sec-head">
+        <span class="n">03</span>
+        <h2>금융 계산</h2>
+        <p class="lede">6개 도해 · XIRR · PPMT · MDD · PERCENTILE.INC · ELS 조기상환 판정 · SLOPE</p>
+      </div>
+      <div class="figs">
+        <figure class="fig">
+          <span class="fig-tag">XIRR</span>
+          <h3>들쭉날쭉한 입출금의 수익률</h3>
+          <svg class="dg" viewBox="0 0 460 215" role="img" aria-label="입출금 날짜가 불규칙해도 각 현금흐름을 날짜로 할인해 연 환산 수익률 하나를 구합니다.">
+            <defs><marker id="m20" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m20a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs><line x1="20" y1="110" x2="445" y2="110" class="ln"/><rect x="27" y="110" width="26" height="60" class="barA"/><text x="40" y="184" text-anchor="middle" class="t-r">−1,000만</text><text x="40" y="126" text-anchor="middle" class="t-s">01-02</text><rect x="117" y="110" width="26" height="30" class="barA"/><text x="130" y="154" text-anchor="middle" class="t-r">−500만</text><text x="130" y="126" text-anchor="middle" class="t-s">03-14</text><rect x="217" y="88" width="26" height="22" class="bar"/><text x="230" y="82" text-anchor="middle" class="t-a">+300만</text><text x="230" y="126" text-anchor="middle" class="t-s">07-01</text><rect x="317" y="92" width="26" height="18" class="bar"/><text x="330" y="86" text-anchor="middle" class="t-a">+200만</text><text x="330" y="126" text-anchor="middle" class="t-s">09-20</text><rect x="407" y="40" width="26" height="70" class="bar"/><text x="420" y="34" text-anchor="middle" class="t-a">+1,250만</text><text x="420" y="126" text-anchor="middle" class="t-s">12-30</text><text x="40" y="152" text-anchor="middle" class="t-r">투자(유출)</text><text x="420" y="96" text-anchor="middle" class="t-a">평가액</text><rect x="150" y="156" width="160" height="30" class="out"/><text x="230" y="175" text-anchor="middle" class="t-o">XIRR = 12.4%</text><text x="330" y="176" text-anchor="start" class="t-s">연 환산 수익률</text><text x="20" y="205" text-anchor="start" class="t-s">부호가 한 종류뿐이면 #NUM! · 기간이 일정하면 IRR 도 가능</text>
+          </svg>
+          <figcaption>입출금 날짜가 불규칙해도 각 현금흐름을 날짜로 할인해 연 환산 수익률 하나를 구합니다.</figcaption>
+          <div class="ex"><code>=XIRR(현금흐름, 일자)   유출 −, 유입 +</code></div>
+        </figure>
+        <figure class="fig">
+          <span class="fig-tag">PMT · IPMT · PPMT</span>
+          <h3>매달 같은 돈, 달라지는 속</h3>
+          <svg class="dg" viewBox="0 0 460 200" role="img" aria-label="총 상환액은 매달 같지만 그 안의 이자와 원금 비중이 계속 뒤바뀝니다. IPMT·PPMT가 그 두 조각입니다.">
+            <defs><marker id="m21" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m21a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs><line x1="30" y1="140" x2="445" y2="140" class="ln"/><rect x="36" y="44" width="24" height="36" class="bar2"/><rect x="36" y="80" width="24" height="60" class="bar"/><rect x="70" y="44" width="24" height="41" class="bar2"/><rect x="70" y="85" width="24" height="55" class="bar"/><rect x="104" y="44" width="24" height="45" class="bar2"/><rect x="104" y="89" width="24" height="51" class="bar"/><rect x="138" y="44" width="24" height="49" class="bar2"/><rect x="138" y="93" width="24" height="47" class="bar"/><rect x="172" y="44" width="24" height="54" class="bar2"/><rect x="172" y="98" width="24" height="42" class="bar"/><rect x="206" y="44" width="24" height="58" class="bar2"/><rect x="206" y="102" width="24" height="38" class="bar"/><rect x="240" y="44" width="24" height="62" class="bar2"/><rect x="240" y="106" width="24" height="34" class="bar"/><rect x="274" y="44" width="24" height="67" class="bar2"/><rect x="274" y="111" width="24" height="29" class="bar"/><rect x="308" y="44" width="24" height="71" class="bar2"/><rect x="308" y="115" width="24" height="25" class="bar"/><rect x="342" y="44" width="24" height="75" class="bar2"/><rect x="342" y="119" width="24" height="21" class="bar"/><rect x="376" y="44" width="24" height="80" class="bar2"/><rect x="376" y="124" width="24" height="16" class="bar"/><rect x="410" y="44" width="24" height="84" class="bar2"/><rect x="410" y="128" width="24" height="12" class="bar"/><text x="48" y="158" text-anchor="middle" class="t-s">1회차</text><text x="422" y="158" text-anchor="middle" class="t-s">12회차</text><text x="70" y="32" text-anchor="middle" class="t-s">원금</text><text x="70" y="122" text-anchor="middle" class="t-a">이자</text><line x1="96" y1="28" x2="340" y2="28" class="arw dash" marker-end="url(#m21)"/><text x="220" y="20" text-anchor="middle" class="t-s">원금 비중 증가</text><line x1="340" y1="128" x2="96" y2="128" class="arw dash" marker-end="url(#m21)"/><text x="220" y="118" text-anchor="middle" class="t-a">이자 비중 감소</text><text x="30" y="182" text-anchor="start" class="t-s">월 단위면 이율은 ÷12, 기간은 ×12. 원금을 음수로 넣어야 상환액이 양수로 나온다</text>
+          </svg>
+          <figcaption>총 상환액은 매달 같지만 그 안의 이자와 원금 비중이 계속 뒤바뀝니다. IPMT·PPMT가 그 두 조각입니다.</figcaption>
+          <div class="ex"><code>=PMT(연이율/12, 년수*12, -원금)   회차별 이자 =IPMT(…), 원금 =PPMT(…)</code></div>
+        </figure>
+        <figure class="fig">
+          <span class="fig-tag">MDD</span>
+          <h3>고점 대비 얼마나 파였나</h3>
+          <svg class="dg" viewBox="0 0 460 210" role="img" aria-label="지나온 최고가를 계단처럼 기억해 두고, 현재가가 그 선에서 가장 크게 벌어진 순간을 찾습니다.">
+            <defs><marker id="m22" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m22a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs><line x1="30" y1="170" x2="445" y2="170" class="ln"/><line x1="30" y1="20" x2="30" y2="170" class="ln"/><polyline points="40,129.2 72,115.6 104,115.6 136,102 168,88.4 200,88.4 232,88.4 264,88.4 296,88.4 328,88.4 360,88.4 392,88.4 424,88.4" class="plot2"/><polyline points="40,129.2 72,115.6 104,122.4 136,102 168,88.4 200,98.60000000000001 232,122.4 264,142.8 296,156.4 328,146.2 360,132.6 392,108.80000000000001 424,95.2" class="plot"/><line x1="296" y1="88.4" x2="296" y2="156.4" class="ln acc"/><line x1="296" y1="90.4" x2="296" y2="154.4" class="arw acc" marker-end="url(#m22a)"/><circle cx="168" cy="88.4" r="3.5" class="dot-a"/><circle cx="296" cy="156.4" r="3.5" class="dot-a"/><text x="168" y="76.4" text-anchor="middle" class="t-a">고점 124</text><text x="342" y="172.4" text-anchor="middle" class="t-a">저점 84</text><rect x="300" y="40" width="132" height="30" class="out"/><text x="366" y="59" text-anchor="middle" class="t-o">MDD −32.3%</text><text x="280" y="96" text-anchor="start" class="t-s">점선 = 지나온 최고가</text><text x="280" y="112" text-anchor="start" class="t-s">실선 = 실제 가격</text><text x="30" y="196" text-anchor="start" class="t-s">회복까지 걸린 기간도 같이 보면 상품 설명이 쉬워진다</text>
+          </svg>
+          <figcaption>지나온 최고가를 계단처럼 기억해 두고, 현재가가 그 선에서 가장 크게 벌어진 순간을 찾습니다.</figcaption>
+          <div class="ex"><code>=MIN(종가/SCAN(0, 종가, LAMBDA(a,v, MAX(a,v))) - 1)</code></div>
+        </figure>
+        <figure class="fig">
+          <span class="fig-tag">PERCENTILE.INC</span>
+          <h3>나쁜 5%가 어디서 시작되나</h3>
+          <svg class="dg" viewBox="0 0 460 205" role="img" aria-label="일간 수익률을 줄 세워 하위 5% 경계를 찾습니다. 그 지점이 VaR, 그 왼쪽 평균이 CVaR입니다.">
+            <defs><marker id="m23" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m23a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs><line x1="30" y1="150" x2="445" y2="150" class="ln"/><rect x="36" y="145.6" width="22" height="4.4" class="barA"/><rect x="63" y="141.2" width="22" height="8.8" class="barA"/><rect x="90" y="134.6" width="22" height="15.400000000000002" class="bar2"/><rect x="117" y="123.6" width="22" height="26.400000000000002" class="bar2"/><rect x="144" y="106" width="22" height="44" class="bar2"/><rect x="171" y="84" width="22" height="66" class="bar2"/><rect x="198" y="57.599999999999994" width="22" height="92.4" class="bar2"/><rect x="225" y="39.999999999999986" width="22" height="110.00000000000001" class="bar2"/><rect x="252" y="53.19999999999999" width="22" height="96.80000000000001" class="bar2"/><rect x="279" y="79.6" width="22" height="70.4" class="bar2"/><rect x="306" y="106" width="22" height="44" class="bar2"/><rect x="333" y="123.6" width="22" height="26.400000000000002" class="bar2"/><rect x="360" y="134.6" width="22" height="15.400000000000002" class="bar2"/><rect x="387" y="141.2" width="22" height="8.8" class="bar2"/><rect x="414" y="145.6" width="22" height="4.4" class="bar2"/><line x1="90" y1="36" x2="90" y2="162" class="ln acc"/><text x="90" y="178" text-anchor="middle" class="t-a">VaR 경계</text><text x="52" y="178" text-anchor="middle" class="t-r">하위 5%</text><text x="250" y="172" text-anchor="middle" class="t-s">수익률 →</text><rect x="286" y="30" width="150" height="28" class="out"/><text x="361" y="48" text-anchor="middle" class="t-o">VaR 95% = −2.1%</text><text x="286" y="76" text-anchor="start" class="t-s">“정상적인 하루라면</text><text x="286" y="92" text-anchor="start" class="t-s">−2.1%보다 더 잃는 날은</text><text x="286" y="108" text-anchor="start" class="t-s">20일에 하루꼴”</text><text x="30" y="198" text-anchor="start" class="t-s">보유기간 환산은 √기간을 곱한다 (10일 VaR = 일간 VaR × √10)</text>
+          </svg>
+          <figcaption>일간 수익률을 줄 세워 하위 5% 경계를 찾습니다. 그 지점이 VaR, 그 왼쪽 평균이 CVaR입니다.</figcaption>
+          <div class="ex"><code>=-PERCENTILE.INC(수익률, 0.05)   CVaR =-AVERAGEIF(수익률,"&lt;="&amp;PERCENTILE.INC(수익률,0.05))</code></div>
+        </figure>
+        <figure class="fig">
+          <span class="fig-tag">ELS 조기상환 판정</span>
+          <h3>계단을 넘으면 그날로 끝난다</h3>
+          <svg class="dg" viewBox="0 0 460 225" role="img" aria-label="6개월마다 기초자산이 그 회차의 배리어 위에 있는지만 봅니다. 한 번 넘으면 조기상환, 못 넘으면 다음 계단으로.">
+            <defs><marker id="m24" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m24a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs><line x1="40" y1="168" x2="448" y2="168" class="ln"/><line x1="40" y1="22" x2="40" y2="168" class="ln"/><line x1="34" y1="90.5" x2="86" y2="90.5" class="ln acc"/><text x="60" y="84.5" text-anchor="middle" class="t-a">95%</text><text x="60" y="184" text-anchor="middle" class="t-s">1차</text><line x1="96" y1="90.5" x2="148" y2="90.5" class="ln acc"/><text x="122" y="84.5" text-anchor="middle" class="t-a">95%</text><text x="122" y="184" text-anchor="middle" class="t-s">2차</text><line x1="158" y1="98.25" x2="210" y2="98.25" class="ln acc"/><text x="184" y="92.25" text-anchor="middle" class="t-a">90%</text><text x="184" y="184" text-anchor="middle" class="t-s">3차</text><line x1="220" y1="98.25" x2="272" y2="98.25" class="ln acc"/><text x="246" y="92.25" text-anchor="middle" class="t-a">90%</text><text x="246" y="184" text-anchor="middle" class="t-s">4차</text><line x1="282" y1="106" x2="334" y2="106" class="ln acc"/><text x="308" y="100" text-anchor="middle" class="t-a">85%</text><text x="308" y="184" text-anchor="middle" class="t-s">5차</text><line x1="344" y1="106" x2="396" y2="106" class="ln acc"/><text x="370" y="100" text-anchor="middle" class="t-a">85%</text><text x="370" y="184" text-anchor="middle" class="t-s">6차</text><line x1="40" y1="160.25" x2="448" y2="160.25" class="ln warn"/><text x="410" y="154.25" text-anchor="middle" class="t-r">KI 50%</text><polyline points="60,82.75 122,101.35 184,95.14999999999999 246,87.39999999999999" class="plot"/><circle cx="246" cy="87.39999999999999" r="4.5" class="dot-a"/><rect x="276" y="28" width="168" height="28" class="out"/><text x="360" y="46" text-anchor="middle" class="t-o">4차 평가일 · 조기상환</text><text x="254" y="73.39999999999999" text-anchor="start" class="t-a">97% ≥ 90%</text><text x="40" y="206" text-anchor="start" class="t-s">기초자산이 둘 이상이면 그중 가장 낮은 것(worst)으로 판정 · 만기까지 못 넘었을 때만 KI 여부를 본다</text>
+          </svg>
+          <figcaption>6개월마다 기초자산이 그 회차의 배리어 위에 있는지만 봅니다. 한 번 넘으면 조기상환, 못 넘으면 다음 계단으로.</figcaption>
+          <div class="ex"><code>=IF(MIN(관찰일종가/최초기준가) &gt;= 행사비율, "조기상환", "이월")</code></div>
+        </figure>
+        <figure class="fig">
+          <span class="fig-tag">SLOPE</span>
+          <h3>지수가 1% 움직일 때 이 종목은</h3>
+          <svg class="dg" viewBox="0 0 460 200" role="img" aria-label="지수 수익률(가로)과 종목 수익률(세로)의 점들에 직선을 맞춘 기울기가 베타입니다.">
+            <defs><marker id="m25" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m25a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs><line x1="40" y1="100" x2="430" y2="100" class="ln"/><line x1="230" y1="12" x2="230" y2="176" class="ln"/><text x="420" y="116" text-anchor="middle" class="t-s">지수</text><text x="248" y="20" text-anchor="start" class="t-s">종목</text><line x1="50.60000000000002" y1="183.2" x2="417.2" y2="12.64" class="plot"/><circle cx="66.19999999999999" cy="178" r="3" class="dot"/><circle cx="113" cy="167.60000000000002" r="3" class="dot"/><circle cx="152" cy="128.6" r="3" class="dot"/><circle cx="183.2" cy="136.4" r="3" class="dot"/><circle cx="214.4" cy="94.8" r="3" class="dot"/><circle cx="237.8" cy="107.8" r="3" class="dot"/><circle cx="269" cy="74" r="3" class="dot"/><circle cx="300.2" cy="68.8" r="3" class="dot"/><circle cx="331.4" cy="42.8" r="3" class="dot"/><circle cx="370.4" cy="37.6" r="3" class="dot"/><circle cx="401.6" cy="11.600000000000009" r="3" class="dot"/><circle cx="89.6" cy="152" r="3" class="dot"/><circle cx="284.6" cy="84.4" r="3" class="dot"/><circle cx="354.8" cy="53.199999999999996" r="3" class="dot"/><line x1="308" y1="63.6" x2="386" y2="63.6" class="ln acc"/><line x1="386" y1="63.6" x2="386" y2="27.200000000000003" class="ln acc"/><text x="347" y="77.6" text-anchor="middle" class="t-a">지수 +1%</text><text x="420" y="45.4" text-anchor="middle" class="t-a">+1.4%</text><rect x="40" y="24" width="118" height="28" class="out"/><text x="99" y="42" text-anchor="middle" class="t-o">베타 1.4</text><text x="40" y="70" text-anchor="start" class="t-s">지수보다 크게 움직인다</text><text x="40" y="190" text-anchor="start" class="t-s">같은 값을 =COVARIANCE.P(a,b)/VAR.P(b) 로도 구할 수 있다</text>
+          </svg>
+          <figcaption>지수 수익률(가로)과 종목 수익률(세로)의 점들에 직선을 맞춘 기울기가 베타입니다.</figcaption>
+          <div class="ex"><code>=SLOPE(주식수익률, 지수수익률)   =INTERCEPT(…) 는 알파</code></div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="sec" id="g4">
+      <div class="sec-head">
+        <span class="n">04</span>
+        <h2>실무·영업</h2>
+        <p class="lede">3개 도해 · LOOKUP + FLOOR.MATH · 목표비중 − 현재비중 · NETWORKDAYS</p>
+      </div>
+      <div class="figs">
+        <figure class="fig">
+          <span class="fig-tag">LOOKUP + FLOOR.MATH</span>
+          <h3>가격대마다 눈금이 달라진다</h3>
+          <svg class="dg" viewBox="0 0 460 215" role="img" aria-label="구간표에서 그 가격의 호가단위를 찾아온 뒤, 그 배수로 내려 맞춰 주문 가능한 가격을 만듭니다.">
+            <defs><marker id="m30" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m30a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs><rect x="20" y="24" width="104" height="24" class="head"/><text x="72" y="40" text-anchor="middle" class="t-s">가격대</text><rect x="124" y="24" width="74" height="24" class="head"/><text x="161" y="40" text-anchor="middle" class="t-s">호가단위</text><rect x="20" y="48" width="104" height="24" class="cell"/><text x="72" y="64" text-anchor="middle">2,000 미만</text><rect x="124" y="48" width="74" height="24" class="cell"/><text x="161" y="64" text-anchor="middle">1원</text><rect x="20" y="72" width="104" height="24" class="cell"/><text x="72" y="88" text-anchor="middle">~ 5,000</text><rect x="124" y="72" width="74" height="24" class="cell"/><text x="161" y="88" text-anchor="middle">5원</text><rect x="20" y="96" width="104" height="24" class="cell"/><text x="72" y="112" text-anchor="middle">~ 20,000</text><rect x="124" y="96" width="74" height="24" class="cell"/><text x="161" y="112" text-anchor="middle">10원</text><rect x="20" y="120" width="104" height="24" class="hit"/><text x="72" y="136" text-anchor="middle">~ 50,000</text><rect x="124" y="120" width="74" height="24" class="hit"/><text x="161" y="136" text-anchor="middle">50원</text><rect x="20" y="144" width="104" height="24" class="cell"/><text x="72" y="160" text-anchor="middle">~ 200,000</text><rect x="124" y="144" width="74" height="24" class="cell"/><text x="161" y="160" text-anchor="middle">100원</text><text x="20" y="16" text-anchor="start" class="t-s">구간표 (셀로 관리)</text><line x1="300" y1="40" x2="300" y2="176" class="ln"/><line x1="294" y1="60" x2="306" y2="60" class="ln acc"/><text x="316" y="64" text-anchor="start" class="t-s">47,850</text><line x1="294" y1="104" x2="306" y2="104" class="ln acc"/><text x="316" y="108" text-anchor="start" class="t-s">47,800</text><line x1="294" y1="148" x2="306" y2="148" class="ln acc"/><text x="316" y="152" text-anchor="start" class="t-s">47,750</text><text x="300" y="30" text-anchor="middle" class="t-a">50원 눈금</text><circle cx="300" cy="78" r="4" class="dot"/><text x="374" y="82" text-anchor="middle" class="t-s">입력 47,832</text><line x1="310" y1="78" x2="310" y2="100" class="arw acc" marker-end="url(#m30a)"/><rect x="330" y="92" width="108" height="26" class="out"/><text x="384" y="109" text-anchor="middle" class="t-o">47,800</text><text x="384" y="134" text-anchor="middle" class="t-a">주문 가능 가격</text><text x="20" y="196" text-anchor="start" class="t-s">구간은 거래소 규정으로 바뀐다 — 수식에 박지 말고 표로 두고 참조할 것</text>
+          </svg>
+          <figcaption>구간표에서 그 가격의 호가단위를 찾아온 뒤, 그 배수로 내려 맞춰 주문 가능한 가격을 만듭니다.</figcaption>
+          <div class="ex"><code>=LET(p, A2, u, LOOKUP(p, {0;2000;5000;20000;50000}, {1;5;10;50;100}), FLOOR.MATH(p, u))</code></div>
+        </figure>
+        <figure class="fig">
+          <span class="fig-tag">목표비중 − 현재비중</span>
+          <h3>얼마를 사고 얼마를 팔지</h3>
+          <svg class="dg" viewBox="0 0 460 210" role="img" aria-label="현재 비중과 목표 비중의 차이를 금액으로 바꾸면, 그대로 매수·매도 제안 금액이 됩니다.">
+            <defs><marker id="m31" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m31a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs><text x="20" y="18" text-anchor="start" class="t-s">현재</text><text x="150" y="18" text-anchor="start" class="t-s">목표</text><text x="300" y="18" text-anchor="start" class="t-s">조정 금액(만원)</text><text x="20" y="49" text-anchor="start" class="t-s">국내주식</text><rect x="78" y="34" width="69" height="18" class="bar2"/><text x="163" y="48" text-anchor="middle" class="t-s">46%</text><rect x="78" y="54" width="52.5" height="8" class="bar"/><text x="146.5" y="62" text-anchor="middle" class="t-a">35%</text><rect x="300" y="32" width="96" height="26" class="dim"/><text x="348" y="49" text-anchor="middle" class="t-s">-1,100</text><text x="404" y="49" text-anchor="start" class="t-s">매도</text><text x="20" y="89" text-anchor="start" class="t-s">해외주식</text><rect x="78" y="74" width="27" height="18" class="bar2"/><text x="121" y="88" text-anchor="middle" class="t-s">18%</text><rect x="78" y="94" width="37.5" height="8" class="bar"/><text x="131.5" y="102" text-anchor="middle" class="t-a">25%</text><rect x="300" y="72" width="96" height="26" class="hit"/><text x="348" y="89" text-anchor="middle" class="t-a">+700</text><text x="404" y="89" text-anchor="start" class="t-a">매수</text><text x="20" y="129" text-anchor="start" class="t-s">채권</text><rect x="78" y="114" width="33" height="18" class="bar2"/><text x="127" y="128" text-anchor="middle" class="t-s">22%</text><rect x="78" y="134" width="45" height="8" class="bar"/><text x="139" y="142" text-anchor="middle" class="t-a">30%</text><rect x="300" y="112" width="96" height="26" class="hit"/><text x="348" y="129" text-anchor="middle" class="t-a">+800</text><text x="404" y="129" text-anchor="start" class="t-a">매수</text><text x="20" y="169" text-anchor="start" class="t-s">현금</text><rect x="78" y="154" width="21" height="18" class="bar2"/><text x="115" y="168" text-anchor="middle" class="t-s">14%</text><rect x="78" y="174" width="15" height="8" class="bar"/><text x="109" y="182" text-anchor="middle" class="t-a">10%</text><rect x="300" y="152" width="96" height="26" class="dim"/><text x="348" y="169" text-anchor="middle" class="t-s">-400</text><text x="404" y="169" text-anchor="start" class="t-s">매도</text><text x="20" y="200" text-anchor="start" class="t-s">두꺼운 막대 = 현재, 얇은 막대 = 목표. 차이가 곧 제안서 한 줄이 된다</text>
+          </svg>
+          <figcaption>현재 비중과 목표 비중의 차이를 금액으로 바꾸면, 그대로 매수·매도 제안 금액이 됩니다.</figcaption>
+          <div class="ex"><code>=목표비중*총자산 - 현재금액   → 양수면 매수, 음수면 매도</code></div>
+        </figure>
+        <figure class="fig">
+          <span class="fig-tag">NETWORKDAYS</span>
+          <h3>남은 영업일로 나눠야 실감난다</h3>
+          <svg class="dg" viewBox="0 0 460 200" role="img" aria-label="달성률만 보면 늦게 깨닫습니다. 남은 영업일로 나눈 하루치 필요 실적이 실제 관리 지표입니다.">
+            <defs><marker id="m32" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m32a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs><text x="20" y="22" text-anchor="start" class="t-s">당월 목표 대비</text><rect x="20" y="32" width="420" height="34" class="track"/><rect x="20" y="32" width="243.6" height="34" class="bar"/><text x="140" y="54" text-anchor="middle" class="t-o">58% 달성</text><line x1="322.4" y1="22" x2="322.4" y2="76" class="ln acc"/><text x="322.4" y="90" text-anchor="middle" class="t-a">경과 영업일 72%</text><text x="376" y="54" text-anchor="middle" class="t-s">목표</text><text x="20" y="126" text-anchor="start" class="t-r">지금 페이스라면 목표에 못 미친다</text><rect x="20" y="138" width="110" height="24" class="head"/><text x="75" y="154" text-anchor="middle" class="t-s">남은 영업일</text><rect x="130" y="138" width="90" height="24" class="head"/><text x="175" y="154" text-anchor="middle" class="t-s">6일</text><rect x="20" y="162" width="110" height="24" class="cell"/><text x="75" y="178" text-anchor="middle">남은 금액</text><rect x="130" y="162" width="90" height="24" class="cell"/><text x="175" y="178" text-anchor="middle">4,200만</text><rect x="20" y="186" width="110" height="24" class="cell"/><text x="75" y="202" text-anchor="middle">하루 필요</text><rect x="130" y="186" width="90" height="24" class="cell"/><text x="175" y="202" text-anchor="middle">700만</text><text x="240" y="156" text-anchor="start" class="t-s">=NETWORKDAYS(오늘, 말일, 휴장일)</text><text x="240" y="176" text-anchor="start" class="t-s">경과 대비 진척 = 실적 ÷ (목표 × 경과/전체)</text><text x="240" y="194" text-anchor="start" class="t-s">1보다 작으면 페이스 미달</text>
+          </svg>
+          <figcaption>달성률만 보면 늦게 깨닫습니다. 남은 영업일로 나눈 하루치 필요 실적이 실제 관리 지표입니다.</figcaption>
+          <div class="ex"><code>=(목표-실적)/MAX(NETWORKDAYS(TODAY(), EOMONTH(TODAY(),0), 휴장일), 1)</code></div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="sec" id="g5">
+      <div class="sec-head">
+        <span class="n">05</span>
+        <h2>자동화</h2>
+        <p class="lede">2개 도해 · 폴더에서 가져오기 · VBA 속도·안전 템플릿</p>
+      </div>
+      <div class="figs">
+        <figure class="fig">
+          <span class="fig-tag">파워 쿼리 · 폴더에서 가져오기</span>
+          <h3>파일을 떨어뜨리면 표가 자란다</h3>
+          <svg class="dg" viewBox="0 0 460 205" role="img" aria-label="폴더를 원본으로 연결해 두면, 새 파일을 넣고 새로 고침만 눌러도 같은 가공 단계가 그대로 다시 돕니다.">
+            <defs><marker id="m40" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m40a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs><text x="20" y="18" text-anchor="start" class="t-s">폴더</text><rect x="20" y="28" width="104" height="26" class="cell"/><text x="72" y="45" text-anchor="middle">0824.xlsx</text><rect x="20" y="60" width="104" height="26" class="cell"/><text x="72" y="77" text-anchor="middle">0825.xlsx</text><rect x="20" y="92" width="104" height="26" class="hit"/><text x="72" y="109" text-anchor="middle" class="t-a">0826.xlsx</text><text x="72" y="142" text-anchor="middle" class="t-a">새 파일만 넣으면 끝</text><line x1="128" y1="74" x2="168" y2="74" class="arw acc" marker-end="url(#m40a)"/><rect x="170" y="28" width="116" height="90" class="cell"/><text x="228" y="46" text-anchor="middle" class="t-a">쿼리 단계</text><text x="228" y="68" text-anchor="middle" class="t-s">· 형식 지정</text><text x="228" y="86" text-anchor="middle" class="t-s">· 열 정리</text><text x="228" y="104" text-anchor="middle" class="t-s">· 병합</text><line x1="290" y1="74" x2="330" y2="74" class="arw acc" marker-end="url(#m40a)"/><rect x="332" y="28" width="64" height="22" class="head"/><text x="364" y="43" text-anchor="middle" class="t-s">일자</text><rect x="396" y="28" width="44" height="22" class="head"/><text x="418" y="43" text-anchor="middle" class="t-s">금액</text><rect x="332" y="50" width="64" height="22" class="cell"/><text x="364" y="65" text-anchor="middle">08-24</text><rect x="396" y="50" width="44" height="22" class="cell"/><text x="418" y="65" text-anchor="middle">1,200</text><rect x="332" y="72" width="64" height="22" class="cell"/><text x="364" y="87" text-anchor="middle">08-25</text><rect x="396" y="72" width="44" height="22" class="cell"/><text x="418" y="87" text-anchor="middle">900</text><rect x="332" y="94" width="64" height="22" class="hit"/><text x="364" y="109" text-anchor="middle">08-26</text><rect x="396" y="94" width="44" height="22" class="hit"/><text x="418" y="109" text-anchor="middle">1,450</text><path d="M 396 122 C 396 154 200 160 176 128" class="arw acc dash" marker-end="url(#m40a)"/><text x="290" y="158" text-anchor="middle" class="t-a">새로 고침 한 번</text><text x="20" y="194" text-anchor="start" class="t-s">수식도 매크로도 없이 단계가 기록된다 — 담당자가 바뀌어도 열어보면 안다</text>
+          </svg>
+          <figcaption>폴더를 원본으로 연결해 두면, 새 파일을 넣고 새로 고침만 눌러도 같은 가공 단계가 그대로 다시 돕니다.</figcaption>
+          <div class="ex"><code>데이터 → 데이터 가져오기 → 파일 → 폴더에서   ·   새로 고침 Ctrl+Alt+F5</code></div>
+        </figure>
+        <figure class="fig">
+          <span class="fig-tag">VBA 속도·안전 템플릿</span>
+          <h3>끄고 · 하고 · 반드시 되돌린다</h3>
+          <svg class="dg" viewBox="0 0 460 200" role="img" aria-label="화면 갱신과 자동 계산을 끄면 수십 배 빨라집니다. 오류가 나도 정리 구문으로 뛰어 설정을 원복시켜야 합니다.">
+            <defs><marker id="m41" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="m41a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="mk-a"/></marker></defs><rect x="20" y="40" width="116" height="44" class="cell"/><text x="78" y="66" text-anchor="middle">설정 끄기</text><text x="78" y="100" text-anchor="middle" class="t-s">ScreenUpdating False</text><rect x="172" y="40" width="116" height="44" class="out"/><text x="230" y="66" text-anchor="middle" class="t-o">실제 작업</text><text x="230" y="100" text-anchor="middle" class="t-s">수천 행 처리</text><rect x="324" y="40" width="116" height="44" class="cell"/><text x="382" y="66" text-anchor="middle">정리 · 원복</text><text x="382" y="100" text-anchor="middle" class="t-s">True 로 되돌리기</text><line x1="138" y1="62" x2="170" y2="62" class="arw acc" marker-end="url(#m41a)"/><line x1="290" y1="62" x2="322" y2="62" class="arw acc" marker-end="url(#m41a)"/><path d="M 230 88 C 230 140 330 142 366 92" class="arw dash" marker-end="url(#m41)"/><text x="298" y="152" text-anchor="middle" class="t-r">오류가 나면 여기로 (On Error GoTo)</text><text x="20" y="178" text-anchor="start" class="t-s">정리 구문을 빼먹으면 화면이 멈춘 채로 남는다 — 실행 취소는 되지 않는다</text><text x="20" y="194" text-anchor="start" class="t-s">처음 돌리는 매크로는 반드시 사본에서</text>
+          </svg>
+          <figcaption>화면 갱신과 자동 계산을 끄면 수십 배 빨라집니다. 오류가 나도 정리 구문으로 뛰어 설정을 원복시켜야 합니다.</figcaption>
+          <div class="ex"><code>On Error GoTo 정리  …  정리: Application.ScreenUpdating = True</code></div>
+        </figure>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="foot-in">
+    <p>그림의 숫자는 구조를 보여주기 위한 예시입니다. 실제 계산은 <a href="https://claude.ai/code/artifact/94e6f911-801c-40f6-8099-196a8c7d0c9c" target="_blank" rel="noopener">엑셀 산식 원장 합본</a>의 수식을 그대로 쓰시고, 세율·호가단위·상품 약관처럼 규정으로 바뀌는 값은 최신 기준을 셀에 입력해 참조하세요.</p>
+  </div>
+</footer>
+
+<button id="top" type="button" aria-label="맨 위로">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V6M5 12l7-7 7 7"/></svg>
+</button>
+
+<script>
+(function(){
+  var btn = document.getElementById('top');
+  if (!btn) return;
+  btn.addEventListener('click', function(){ window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  var tick = false;
+  window.addEventListener('scroll', function(){
+    if (tick) return;
+    tick = true;
+    window.requestAnimationFrame(function(){
+      btn.classList.toggle('show', window.scrollY > 700);
+      tick = false;
+    });
+  }, { passive: true });
+
+  var links = {}, secs = [].slice.call(document.querySelectorAll('.sec'));
+  [].forEach.call(document.querySelectorAll('nav.index a'), function(a){
+    links[a.getAttribute('href').slice(1)] = a;
+  });
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        var a = links[e.target.id];
+        if (a && e.isIntersecting) {
+          Object.keys(links).forEach(function(k){ links[k].classList.remove('on'); });
+          a.classList.add('on');
+        }
+      });
+    }, { rootMargin: '-64px 0px -70% 0px', threshold: 0 });
+    secs.forEach(function(s){ io.observe(s); });
+  }
+})();
+</script>
+
+</body></html>

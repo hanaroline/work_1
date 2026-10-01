@@ -110,40 +110,45 @@ jobs:
           python3 - <<'PY'
           import datetime, json, os, urllib.request
 
+          # 이번 주에 **실제로 일한 판**이 있었는지 묻는다.
+          #
+          # 예전에는 실행 기록(Actions runs)을 셌는데 그것이 스스로를 막았다 —
+          # 가드에 걸려 몇 초 만에 끝난 «빈 판»도 결론은 success 이고 event 는
+          # workflow_run 이라, 다음 판이 그것을 "이번 주에 돌았다"로 읽는다.
+          # 상류(가격 갱신)가 월요일 00:00 UTC 부터 끝나므로 10시 문이 열리기도 전에
+          # 빈 판이 쌓이고, 문이 열리자마자 스스로 막힌다. 캘린더 쪽에서 2026-09-28 에
+          # 실제로 그렇게 한 주가 통째로 비었다(HANDOFF.md 5절 «함정 2»).
+          #
+          # 그래서 **산출물**을 묻는다. data/kr100/list-change.json 은 일한 판만 올린다
+          # (빈 판은 체크아웃조차 하지 않는다). 이 잣대는 속일 수 없다.
+          MARK = ("https://api.github.com/repos/%s/contents/"
+                  "data/kr100/list-change.json?ref=kr100-data")
+
           def decide():
-              repo = os.environ['GITHUB_REPOSITORY']
-              me = int(os.environ['GITHUB_RUN_ID'])
-              url = ("https://api.github.com/repos/%s/actions/workflows/kr100-weekly.yml/runs"
-                     "?status=success&per_page=30" % repo)
-              req = urllib.request.Request(url, headers={
-                  "Authorization": "Bearer " + os.environ['GH_TOKEN'],
-                  "Accept": "application/vnd.github+json", "User-Agent": "kr100-weekly"})
               now = datetime.datetime.now(datetime.timezone.utc)
               monday = (now - datetime.timedelta(days=now.weekday())).replace(
                   hour=0, minute=0, second=0, microsecond=0)
-              try:
-                  with urllib.request.urlopen(req, timeout=30) as r:
-                      runs = json.load(r).get('workflow_runs') or []
-              except Exception as e:                      # noqa: BLE001
-                  # 기록을 못 읽었다고 그 주를 건너뛰면 안 된다 — 모르면 돈다.
-                  print('::warning::실행 기록을 읽지 못했다 — 그대로 돈다 (%s)' % e)
-                  return True
-              # 저절로 불린 판만 센다 — 사람이 손으로 돌린 판이 그 주의 자동 갱신을
-              # 대신했다고 보지 않는다.
-              done = [x for x in runs
-                      if x['id'] != me
-                      and x['event'] in ('schedule', 'workflow_run')
-                      and datetime.datetime.fromisoformat(
-                          x['run_started_at'].replace('Z', '+00:00')) >= monday]
-              if done:
-                  print('::notice::이번 주 예약 판이 이미 돌았다 (%s) — 건너뛴다 %s'
-                        % (done[0]['run_started_at'], done[0]['html_url']))
-                  return False
-              if now < monday + datetime.timedelta(hours=1):
+              gate = monday + datetime.timedelta(hours=1)      # 월요일 10:00 KST
+              if now < gate:
                   print('아직 월요일 10:00 KST 전이다 — 이번 주 갱신은 그때부터다')
                   return False
-              print('이번 주 첫 자동 판이다 — 월요일 %s 이후 저절로 돈 판이 없다'
-                    % monday.strftime('%m-%d %H:%M UTC'))
+              req = urllib.request.Request(
+                  MARK % os.environ['GITHUB_REPOSITORY'],
+                  headers={"Authorization": "Bearer " + os.environ['GH_TOKEN'],
+                           "Accept": "application/vnd.github.raw",
+                           "User-Agent": "kr100-weekly"})
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as r:
+                      built = json.load(r).get('builtAt')
+                  when = datetime.datetime.fromisoformat(built.replace('Z', '+00:00'))
+              except Exception as e:                      # noqa: BLE001
+                  # 모르면 돈다 — 기록을 못 읽었다고 그 주를 거르지 않는다.
+                  print('::warning::지난 갱신 기록을 읽지 못했다 — 그대로 돈다 (%s)' % e)
+                  return True
+              if when >= gate:
+                  print('::notice::이번 주 갱신이 이미 끝났다 (%s) — 건너뛴다' % built)
+                  return False
+              print('이번 주 첫 판이다 — 마지막 갱신은 %s' % built)
               return True
 
           # 사람이 읽을 문장은 로그로, 판정만 GITHUB_OUTPUT 으로 보낸다.
@@ -288,6 +293,19 @@ jobs:
             git pull --rebase origin "${GITHUB_REF_NAME}" || true
           done
           [ "$ok" = 1 ] || { echo "::error::목록 변경을 푸시하지 못했다"; exit 1; }
+
+      - name: 주간 갱신 기록을 남긴다
+        # **가드가 읽는 산출물이다.** 바뀐 것이 없는 주에도 올린다 — 일한 판과 빈 판을
+        # 가르는 유일한 자국이기 때문이다. 앞 단계가 실패하면 여기까지 오지 않으므로
+        # 다음 기회에 다시 돈다(실패한 주를 «끝난 주»로 적지 않는다).
+        # 미리보기(probe)·가늠(dry-run)은 목록을 건드리지 않았으므로 기록도 남기지
+        # 않는다 — 남기면 그 주가 «끝난 주»가 되어 진짜 갱신이 막힌다.
+        if: steps.once.outputs.run == 'true' && github.event.inputs.probe == ''
+             && github.event.inputs.dry_run != 'true'
+        env:
+          COMMIT_LABEL: 주간갱신기록
+          PUBLISH_FILES: list-change.json
+        run: bash scripts/publish_kr100_data.sh
 
       - name: 요약
         if: always()
