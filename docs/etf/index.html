@@ -447,6 +447,11 @@
       h += '<div class="muted">잰 일봉 — ' + esc(sp.from) + ' ~ ' + esc(sp.to) +
         (sp.years_requested ? ' (' + sp.years_requested + '해치 요청)' : '') + '</div>';
     }
+    // **언제 잰 성적인가.** 빗장 셋은 「무엇으로 쟀는가」만 막는다. 몇 달 묵은
+    // 성적표인지는 사람이 눈으로 보아야 한다 — 적혀 있지 않으면 그렇다고 적는다.
+    h += '<div class="muted">잰 때 — ' +
+      (bt.measured_at_kst ? esc(bt.measured_at_kst) + ' KST'
+                          : '<b>적혀 있지 않습니다</b>') + '</div>';
     h += '<div class="sec">' + esc(bt.summary_ko || '') + '</div>';
 
     var cov = bt.coverage || {};

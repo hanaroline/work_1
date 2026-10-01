@@ -192,6 +192,10 @@ def attach_backtest(result, path, prices=None):
         'horizons': bt.get('horizons'),
         'engine_hash': bh,
         'prices_generated_at_kst': bt.get('etf_prices_generated_at_kst'),
+        # **언제 잰 성적인가.** 위의 빗장 셋(모델·출처·이력 길이)은 「무엇으로
+        # 쟀는가」를 막지, 「언제 쟀는가」는 못 막는다. 화면이 이것을 적어야
+        # 사람이 성적표가 몇 달 묵은 것인지 눈으로 안다.
+        'measured_at_kst': bt.get('measured_at_kst'),
     }
     result['backtest_summary_ko'] = bt.get('summary_ko')
 
