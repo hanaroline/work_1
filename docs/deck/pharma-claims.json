@@ -1,0 +1,716 @@
+{
+  "_설명": "제약바이오 업종 교육자료(30p) 에 인쇄되는 수치의 주장 대장. 2026-08-03 1차 검증본을 2026-10-01 기준으로 갱신한 것. 대장에 없는 숫자는 슬라이드에 쓰지 않는다.",
+  "deliverable": "제약바이오 업종의 이해 — 고객·FA 교육용 (30p PPT)",
+  "as_of": "2026-10-01",
+  "_series_policy": "한 지표는 한 계열로 통일. 다른 계열 값은 각주로만 병기.",
+  "series_policy": {
+    "기술수출": "언론 집계(계약 총액, 금액 공개분 한정)",
+    "KRX헬스케어": "한국거래소 지수 종가",
+    "KOSPI": "한국거래소 종가",
+    "원/달러": "자료 전체 1,500원 고정 환산",
+    "KRX헬스케어 시총": "한국거래소 지수 종가",
+    "계약금": "언론 집계(계약 총액, 금액 공개분 한정)",
+    "기업 누적 기술수출": "언론 집계(계약 총액, 금액 공개분 한정)",
+    "바이오시밀러 시장": "Frost & Sullivan (기준연도 상이 — 미확정)",
+    "삼성바이오로직스 누적수주": "분기보고서 공시",
+    "삼성바이오로직스 매출": "분기보고서 공시",
+    "삼성바이오로직스 영업이익": "분기보고서 공시",
+    "삼천당제약 주가": "한국거래소 종가",
+    "섹터 낙폭": "신한투자증권 인용",
+    "셀트리온 매출원가율": "분기보고서 공시",
+    "의약품 생산액": "식품의약품안전처 생산실적",
+    "의약품 수출": "식품의약품안전처 생산실적",
+    "키트루다 매출": "머크 연차보고서",
+    "한미약품 계약금": "언론 집계(계약 총액, 금액 공개분 한정)",
+    "한미약품 계약총액": "언론 집계(계약 총액, 금액 공개분 한정)",
+    "비만치료제 시장": "기관 전망(원 보고서 미확인)"
+  },
+  "claims": [
+    {
+      "id": "TECHX_9M26",
+      "kind": "market_level",
+      "metric": "기술수출",
+      "text": "2026년 1~9월 기술수출 계약 총액 (13건 중 금액 공개 11건)",
+      "value": 216637,
+      "unit": "억원",
+      "series": "언론 집계(계약 총액, 금액 공개분 한정)",
+      "as_of": "2026-09-23",
+      "tier": 2,
+      "source_url": "https://biz.newdaily.co.kr/site/data/html/2026/09/23/2026092300222.html",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "상반기 13.2조 → 8월 15조 → 9월 21.7조. 8/3 판의 '13조원'은 상반기 수치이므로 전량 교체 대상",
+      "printed_on": [
+        "p3-tile2",
+        "p13-tile1",
+        "p20-tile4",
+        "p23-right",
+        "p30-rule2"
+      ]
+    },
+    {
+      "id": "TECHX_1H26",
+      "kind": "market_level",
+      "metric": "기술수출",
+      "text": "2026년 상반기 기술수출 계약 총액 (85.67억달러)",
+      "value": 132253,
+      "unit": "억원",
+      "series": "언론 집계(계약 총액, 금액 공개분 한정)",
+      "as_of": "2026-06-28",
+      "tier": 2,
+      "source_url": "https://www.mt.co.kr/thebio/2026/06/28/2026062513272830848",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "반기 기준 역대 최대. 9월 누적치로 갱신되면 '상반기 기준'이라고 명시해야 함",
+      "printed_on": [
+        "p13-context"
+      ]
+    },
+    {
+      "id": "TECHX_2025",
+      "kind": "market_level",
+      "metric": "기술수출",
+      "text": "2025년 연간 기술수출 계약 총액",
+      "value": 268898,
+      "unit": "억원",
+      "series": "언론 집계(계약 총액, 금액 공개분 한정)",
+      "as_of": "2026-09-23",
+      "tier": 2,
+      "source_url": "https://biz.newdaily.co.kr/site/data/html/2026/09/23/2026092300222.html",
+      "corroborating_urls": [
+        "https://www.bizwnews.com/news/articleView.html?idxno=119009",
+        "https://www.dailymedi.com/news/news_view.php?ca_id=22&wr_id=932258"
+      ],
+      "verdict": "unverified",
+      "render": "marked",
+      "note": "출처 충돌. 2026-09 집계는 20건 26조 8,898억, 2025-12 결산 집계는 20조 8,350억 — 29% 차이. 연말 미공개 계약이 뒤에 공개되며 상향된 것으로 보이나 확정 못 함. 슬라이드에는 단일값 대신 '20조원대 후반(집계 기준에 따라 20.8조~26.9조)'로 범위 표기할 것",
+      "printed_on": [
+        "p20-tile3"
+      ]
+    },
+    {
+      "id": "UPFRONT_1H26",
+      "kind": "market_level",
+      "metric": "계약금",
+      "text": "2026년 상반기 실제 수령 계약금 합계 (6건)",
+      "value": 3115,
+      "unit": "억원",
+      "series": "언론 집계(계약 총액, 금액 공개분 한정)",
+      "as_of": "2026-06-29",
+      "tier": 2,
+      "source_url": "https://www.mt.co.kr/thebio/2026/06/29/2026062821553849278",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "상반기 총액 13.2조 대비 2.4%. 9월 누적 총액(21.7조)과 짝지으면 비율이 틀어지므로 반드시 '상반기' 총액과 함께 쓸 것",
+      "printed_on": [
+        "p13-tile2",
+        "p30-rule2"
+      ]
+    },
+    {
+      "id": "ALTEOGEN_CUM",
+      "kind": "market_level",
+      "metric": "기업 누적 기술수출",
+      "text": "알테오젠 누적 기술수출 계약 총액 (2026년에만 4건)",
+      "value": 160000,
+      "unit": "억원",
+      "series": "언론 집계(계약 총액, 금액 공개분 한정)",
+      "as_of": "2026-09-03",
+      "tier": 2,
+      "source_url": "https://view.asiae.co.kr/article/2026090308004318403",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p22-alteogen"
+      ]
+    },
+    {
+      "id": "TOP3_SHARE_AMT",
+      "kind": "market_level",
+      "metric": "기술수출",
+      "text": "아리바이오·알테오젠·한미약품 3사 합계 계약 총액",
+      "value": 186232,
+      "unit": "억원",
+      "series": "언론 집계(계약 총액, 금액 공개분 한정)",
+      "as_of": "2026-09-23",
+      "tier": 2,
+      "source_url": "https://biz.newdaily.co.kr/site/data/html/2026/09/23/2026092300222.html",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "쏠림 구조를 보여주는 수치. 교육자료에서 '저변이 넓어졌다'는 8/3 판 서술과 상충하므로 서술 교체 필요",
+      "printed_on": [
+        "p13-table"
+      ]
+    },
+    {
+      "id": "KRXH_LOW",
+      "kind": "market_level",
+      "metric": "KRX헬스케어",
+      "text": "KRX헬스케어지수 7월 말 저점",
+      "value": 3672.04,
+      "unit": "pt",
+      "series": "한국거래소 지수 종가",
+      "as_of": "2026-07-31",
+      "tier": 2,
+      "source_url": "https://news.nate.com/view/20260920n01966",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p23-tile2"
+      ]
+    },
+    {
+      "id": "KRXH_SEP",
+      "kind": "market_level",
+      "metric": "KRX헬스케어",
+      "text": "KRX헬스케어지수 (9월 18일)",
+      "value": 4356.81,
+      "unit": "pt",
+      "series": "한국거래소 지수 종가",
+      "as_of": "2026-09-18",
+      "tier": 2,
+      "source_url": "https://news.nate.com/view/20260920n01966",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p23-tile2"
+      ]
+    },
+    {
+      "id": "KRXH_MCAP_JUL",
+      "kind": "market_level",
+      "metric": "KRX헬스케어 시총",
+      "text": "KRX헬스케어 구성종목 시가총액 (7월 말)",
+      "value": 141,
+      "unit": "조원",
+      "series": "한국거래소 지수 종가",
+      "as_of": "2026-07-31",
+      "tier": 2,
+      "source_url": "https://news.nate.com/view/20260920n01966",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p23-tile2"
+      ]
+    },
+    {
+      "id": "KRXH_MCAP_SEP",
+      "kind": "market_level",
+      "metric": "KRX헬스케어 시총",
+      "text": "KRX헬스케어 구성종목 시가총액 (9월)",
+      "value": 167,
+      "unit": "조원",
+      "series": "한국거래소 지수 종가",
+      "as_of": "2026-09-18",
+      "tier": 2,
+      "source_url": "https://news.nate.com/view/20260920n01966",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p23-tile2"
+      ]
+    },
+    {
+      "id": "KOSPI_NOW",
+      "kind": "market_level",
+      "metric": "KOSPI",
+      "text": "코스피 종가 (10월 1일)",
+      "value": 6971.35,
+      "unit": "pt",
+      "series": "한국거래소 종가",
+      "as_of": "2026-10-01",
+      "tier": 2,
+      "source_url": "https://view.asiae.co.kr/article/2026100115353993483",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "8/3 판의 '9,000선 돌파'는 6월 18일 장중 고점이며 현재 수준이 아님 — 현재값으로 교체하거나 '상반기 고점'이라고 명시할 것",
+      "printed_on": [
+        "p23-tile1"
+      ]
+    },
+    {
+      "id": "SECTOR_DRAWDOWN",
+      "kind": "market_level",
+      "metric": "섹터 낙폭",
+      "text": "제약바이오 섹터 지수 고점 대비 낙폭 (상반기 시점)",
+      "value": -37.5,
+      "unit": "%",
+      "series": "신한투자증권 인용",
+      "as_of": "2026-06-30",
+      "tier": 2,
+      "source_url": "https://www.hankyung.com/article/202606172412i",
+      "verdict": "confirmed",
+      "render": "marked",
+      "note": "상반기 시점의 과거 수치. 7월 말 저점 이후 +18.65% 반등했으므로 현재 상태로 제시하면 거짓이 됨. '상반기에는' 이라는 시점 한정어 필수",
+      "printed_on": [
+        "p23-tile2",
+        "p30-rule4"
+      ]
+    },
+    {
+      "id": "SCD_PEAK",
+      "kind": "market_level",
+      "metric": "삼천당제약 주가",
+      "text": "삼천당제약 장중 최고가",
+      "value": 1233000,
+      "unit": "원",
+      "series": "한국거래소 종가",
+      "as_of": "2026-03-30",
+      "tier": 2,
+      "source_url": "https://biz.heraldcorp.com/article/10815369",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p14-timeline"
+      ]
+    },
+    {
+      "id": "SCD_SEP",
+      "kind": "market_level",
+      "metric": "삼천당제약 주가",
+      "text": "삼천당제약 주가 (9월 11일)",
+      "value": 160700,
+      "unit": "원",
+      "series": "한국거래소 종가",
+      "as_of": "2026-09-11",
+      "tier": 3,
+      "corroborating_urls": [
+        "https://biz.heraldcorp.com/article/10815369"
+      ],
+      "source_url": "https://comp.wisereport.co.kr/company/c1010001.aspx?cmp_cd=000250",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "tier3 집계사이트 단독이므로 슬라이드 인쇄 시 '9월 중순 16만원대'로 반올림 표기 권장",
+      "printed_on": [
+        "p14-timeline",
+        "p23-left"
+      ]
+    },
+    {
+      "id": "TARIFF_KR",
+      "kind": "policy_rate",
+      "metric": "미국 의약품 관세",
+      "text": "한국산 일반 특허의약품 관세율 (2026-08-29 발효)",
+      "value": 15,
+      "unit": "%",
+      "series": "무역확장법 232조",
+      "as_of": "2026-08-29",
+      "tier": 2,
+      "source_url": "https://www.etoday.co.kr/news/view/2630324",
+      "announced_on": "2026-04-02",
+      "attributed_to": "미국 백악관 (무역확장법 232조)",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p19-table"
+      ]
+    },
+    {
+      "id": "TARIFF_ZERO",
+      "kind": "policy_rate",
+      "metric": "미국 의약품 관세",
+      "text": "한국산 ADC·희귀의약품·세포유전자치료·혈장분획제제 관세율",
+      "value": 0,
+      "unit": "%",
+      "series": "무역확장법 232조",
+      "as_of": "2026-08-29",
+      "tier": 2,
+      "source_url": "https://www.etoday.co.kr/news/view/2630324",
+      "announced_on": "2026-04-02",
+      "attributed_to": "미국 백악관 (무역확장법 232조)",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "8/3 판에 없던 내용. 한국 주력 수출품 상당수가 0% 적용이라 '15% 적용'만 적으면 영향을 과대평가하게 됨",
+      "printed_on": [
+        "p19-table"
+      ]
+    },
+    {
+      "id": "TARIFF_GENERIC",
+      "kind": "policy_rate",
+      "metric": "미국 의약품 관세",
+      "text": "제네릭·바이오시밀러 관세율 (1년 유예 후 재평가)",
+      "value": 0,
+      "unit": "%",
+      "series": "무역확장법 232조",
+      "as_of": "2026-08-29",
+      "tier": 2,
+      "source_url": "https://www.etoday.co.kr/news/view/2630324",
+      "announced_on": "2026-04-02",
+      "attributed_to": "미국 백악관 (무역확장법 232조)",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p19-table"
+      ]
+    },
+    {
+      "id": "GENERIC_PRICE",
+      "kind": "policy_rate",
+      "metric": "제네릭 약가 산정률",
+      "text": "제네릭 최고 약가 산정률 (2026-08-01 시행)",
+      "value": 45,
+      "unit": "%",
+      "series": "보건복지부 고시",
+      "as_of": "2026-08-01",
+      "tier": 1,
+      "source_url": "https://www.kpanews.co.kr/news/articleView.html?idxno=531747",
+      "announced_on": "2026-07-13",
+      "attributed_to": "보건복지부",
+      "revision": "down",
+      "revision_from": 53.55,
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "기준요건 미충족 시 80% 적용 → 36%, 29%. 계단식 인하는 20번째→13번째 제네릭부터. 혁신형 제약기업 60% 가산",
+      "printed_on": [
+        "p19-bottom"
+      ]
+    },
+    {
+      "id": "DRUG_PROD_2025",
+      "kind": "market_level",
+      "metric": "의약품 생산액",
+      "text": "국내 의약품 생산실적 (2025년)",
+      "value": 338466,
+      "unit": "억원",
+      "series": "식품의약품안전처 생산실적",
+      "as_of": "2025-12-31",
+      "tier": 1,
+      "source_url": "https://www.medipharmhealth.co.kr/news/article.html?no=117543",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "8/3 이전 판의 30.6조는 2023년 수치였음 — 되돌아가지 말 것",
+      "printed_on": [
+        "p3-tile3",
+        "p20-tile1"
+      ]
+    },
+    {
+      "id": "DRUG_EXPORT_2025",
+      "kind": "market_level",
+      "metric": "의약품 수출",
+      "text": "국내 의약품 수출 (2025년, 첫 100억달러 돌파)",
+      "value": 104.38,
+      "unit": "억달러",
+      "series": "식품의약품안전처 생산실적",
+      "as_of": "2025-12-31",
+      "tier": 1,
+      "source_url": "https://www.medipharmhealth.co.kr/news/article.html?no=117543",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p3-tile3",
+        "p20-tile2"
+      ]
+    },
+    {
+      "id": "SBL_REV_2Q26",
+      "kind": "market_level",
+      "metric": "삼성바이오로직스 매출",
+      "text": "삼성바이오로직스 2026년 2분기 매출",
+      "value": 13209,
+      "unit": "억원",
+      "series": "분기보고서 공시",
+      "as_of": "2026-06-30",
+      "tier": 1,
+      "source_url": "https://www.hankyung.com/article/202607230687i",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "3분기 실적은 10월 하순 공시 예정 — 자료 사용 시점이 그 이후면 갱신 필요",
+      "printed_on": [
+        "p12-tile1"
+      ]
+    },
+    {
+      "id": "SBL_OP_2Q26",
+      "kind": "market_level",
+      "metric": "삼성바이오로직스 영업이익",
+      "text": "삼성바이오로직스 2026년 2분기 영업이익",
+      "value": 5864,
+      "unit": "억원",
+      "series": "분기보고서 공시",
+      "as_of": "2026-06-30",
+      "tier": 1,
+      "source_url": "https://www.hankyung.com/article/202607230687i",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p12-tile2"
+      ]
+    },
+    {
+      "id": "SBL_BACKLOG",
+      "kind": "market_level",
+      "metric": "삼성바이오로직스 누적수주",
+      "text": "삼성바이오로직스 창립 이후 누적 수주 (CMO 115 + CDO 176건)",
+      "value": 217,
+      "unit": "억달러",
+      "series": "분기보고서 공시",
+      "as_of": "2026-06-30",
+      "tier": 1,
+      "source_url": "https://www.hankyung.com/article/202607230687i",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p12-tile3",
+        "p22-sbl"
+      ]
+    },
+    {
+      "id": "CELLTRION_COGS",
+      "kind": "market_level",
+      "metric": "셀트리온 매출원가율",
+      "text": "셀트리온 2026년 2분기 매출원가율 (전년비 -5.4%p)",
+      "value": 38,
+      "unit": "%",
+      "series": "분기보고서 공시",
+      "as_of": "2026-06-30",
+      "tier": 2,
+      "source_url": "https://zdnet.co.kr/view/?no=20260727142528",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p11-celltrion",
+        "p22-celltrion"
+      ]
+    },
+    {
+      "id": "KEYTRUDA_2024",
+      "kind": "market_level",
+      "metric": "키트루다 매출",
+      "text": "키트루다 연매출 (2024년)",
+      "value": 295,
+      "unit": "억달러",
+      "series": "머크 연차보고서",
+      "as_of": "2024-12-31",
+      "tier": 1,
+      "source_url": "https://www.merck.com/news/merck-announces-fourth-quarter-and-full-year-2024-financial-results/",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "2023년은 250억달러. 8/3 이전 판이 295억을 2023년으로 적었던 오류 — 되돌아가지 말 것",
+      "printed_on": [
+        "p9-chart"
+      ]
+    },
+    {
+      "id": "OBESITY_2030",
+      "kind": "access_blocked",
+      "metric": "비만치료제 시장",
+      "text": "글로벌 비만·대사질환 치료제 시장 전망",
+      "value": 2000,
+      "unit": "억달러",
+      "series": "기관 전망(원 보고서 미확인)",
+      "as_of": "2026-10-01",
+      "tier": 2,
+      "source_url": "https://www.jpmorgan.com/insights/global-research/current-events/obesity-drugs",
+      "verdict": "unverified",
+      "render": "marked",
+      "printed_on": [
+        "p15-tile1"
+      ],
+      "corroborating_urls": [
+        "https://www.newstong.co.kr/view3.aspx?seq=14103175"
+      ],
+      "note": "값 자체는 국내 2차 보도 다수에서 일관되게 $2,000억/2030년으로 인용되나, J.P. Morgan 원 보고서 발표일을 확인하지 못함(jpmorgan.com 이 egress 프록시에서 차단). 보도일을 발표일로 승격시키지 않기 위해 미확인 처리. 슬라이드에는 'JP모건 글로벌리서치 추정(원 보고서 발표 시점 미확인)'으로 각주를 달 것. 정식 인용이 필요하면 jpmorgan.com 해당 페이지를 사내망에서 직접 확인 권장"
+    },
+    {
+      "id": "BIOSIM_2022",
+      "kind": "access_blocked",
+      "metric": "바이오시밀러 시장",
+      "text": "글로벌 바이오시밀러 시장 (2022년)",
+      "value": 286,
+      "unit": "억달러",
+      "series": "Frost & Sullivan (기준연도 상이 — 미확정)",
+      "as_of": "2022-12-31",
+      "tier": 2,
+      "source_url": "https://www.khidi.or.kr/board/view?linkId=48904390&menuId=MENU01866",
+      "verdict": "unverified",
+      "render": "marked",
+      "printed_on": [
+        "p11-chart"
+      ],
+      "note": "Frost & Sullivan 계열이 둘로 갈림. (가) 국내 2차 보도: 2022년 286.2억달러 → 2028년 765.1억달러, (나) Frost & Sullivan 자사 발표로 소개된 수치: 2023년 294억달러 → 2028년 669억달러. 둘 다 CAGR 17.8% 로 내부 정합하지만 기준연도와 종점이 달라 동일 보고서일 수 없음. store.frost.com 이 egress 프록시에서 차단되어 원문 대조 실패. 차트를 쓰려면 각주에 기준연도와 조사기관을 명시하고 '조사기관별 편차 있음'을 남길 것"
+    },
+    {
+      "id": "BIOSIM_2028",
+      "kind": "access_blocked",
+      "metric": "바이오시밀러 시장",
+      "text": "글로벌 바이오시밀러 시장 전망 (CAGR 17.8%)",
+      "value": 765,
+      "unit": "억달러",
+      "series": "Frost & Sullivan (기준연도 상이 — 미확정)",
+      "as_of": "2026-10-01",
+      "tier": 2,
+      "source_url": "https://www.khidi.or.kr/board/view?linkId=48904390&menuId=MENU01866",
+      "verdict": "unverified",
+      "render": "marked",
+      "note": "위 BIOSIM_2022 와 같은 사유. 원 보고서 발표일·판본 미확인으로 announced_on 을 적지 않음. 8/3 판에서 2024/2027E/2030E 라벨을 2022/2025/2028E 로 고친 것은 (가) 계열 기준으로는 맞으나, (나) 계열이 맞다면 다시 틀어짐 — 원문 확인 전까지 단정 금지",
+      "printed_on": [
+        "p11-chart"
+      ]
+    },
+    {
+      "id": "HANMI_UPFRONT",
+      "kind": "market_level",
+      "metric": "한미약품 계약금",
+      "text": "한미약품 릴리 L/O 확정 계약금",
+      "value": 7500,
+      "unit": "만달러",
+      "series": "언론 집계(계약 총액, 금액 공개분 한정)",
+      "as_of": "2026-06-01",
+      "tier": 1,
+      "source_url": "https://www.businesspost.co.kr/BP?command=article_view&num=438963",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p7-case",
+        "p13-table"
+      ]
+    },
+    {
+      "id": "HANMI_TOTAL",
+      "kind": "market_level",
+      "metric": "한미약품 계약총액",
+      "text": "한미약품 릴리 L/O 계약 총액",
+      "value": 19000,
+      "unit": "억원",
+      "series": "언론 집계(계약 총액, 금액 공개분 한정)",
+      "as_of": "2026-06-01",
+      "tier": 1,
+      "source_url": "https://www.businesspost.co.kr/BP?command=article_view&num=438963",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p7-case",
+        "p13-table",
+        "p22-hanmi"
+      ]
+    },
+    {
+      "id": "FX_POLICY",
+      "kind": "market_level",
+      "metric": "원/달러",
+      "text": "자료 전체 달러 환산에 쓰는 고정 환율",
+      "value": 1500,
+      "unit": "KRW/USD",
+      "series": "자료 전체 1,500원 고정 환산",
+      "as_of": "2026-10-01",
+      "tier": 2,
+      "source_url": "https://kr.investing.com/currencies/usd-krw",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "8/3 이전 판은 슬라이드마다 1,382~1,544원이 섞여 있었음. 각주에 환율을 명시하고 전 슬라이드 통일할 것",
+      "printed_on": [
+        "p9-footnote",
+        "p12-footnote"
+      ]
+    },
+    {
+      "id": "NAT_FUND_BIO",
+      "kind": "access_blocked",
+      "metric": "국민성장펀드 바이오·백신 배정액",
+      "text": "국민성장펀드 바이오·백신 분야 배정 규모",
+      "value": 0,
+      "unit": "n/a",
+      "series": "기획재정부 운용방안",
+      "as_of": "2026-10-01",
+      "tier": 1,
+      "source_url": "https://mofe.go.kr/com/cmm/fms/FileDown.do?atchFileId=ATCH_000000000030583&fileSn=6",
+      "verdict": "unverified",
+      "render": "omit",
+      "note": "원문 PDF 403 차단. 2차 출처가 2조 3,000억 / 4조 1,000억 / 11.6조로 제각각이라 단일값 확정 불가. 슬라이드에서 금액을 빼고 '바이오·백신이 12개 첨단전략산업에 포함'까지만 적는다",
+      "printed_on": []
+    }
+  ],
+  "derived": [
+    {
+      "id": "D_KRXH_REBOUND",
+      "kind": "pct_change",
+      "from": "KRXH_LOW",
+      "to": "KRXH_SEP",
+      "printed": 18.65,
+      "tolerance": 0.05,
+      "_설명": "7월 말 저점 대비 9월 18일 반등률. 23쪽의 핵심 수치"
+    },
+    {
+      "id": "D_SCD_DRAWDOWN",
+      "kind": "pct_change",
+      "from": "SCD_PEAK",
+      "to": "SCD_SEP",
+      "printed": -87.0,
+      "tolerance": 0.1,
+      "_설명": "삼천당제약 고점 대비 낙폭. 14쪽 타임라인"
+    },
+    {
+      "id": "D_TOP3_SHARE",
+      "kind": "ratio",
+      "numerator": 186232,
+      "denominator": 216637,
+      "printed": 0.86,
+      "tolerance": 0.005,
+      "_설명": "상위 3사가 차지한 기술수출 비중. 쏠림 구조"
+    },
+    {
+      "id": "D_UPFRONT_RATIO",
+      "kind": "ratio",
+      "numerator": 3115,
+      "denominator": 132253,
+      "printed": 0.0236,
+      "tolerance": 0.0005,
+      "_설명": "상반기 계약금 비중 2.4%. 분모는 반드시 상반기 총액"
+    },
+    {
+      "id": "D_HANMI_UPFRONT_RATIO",
+      "kind": "ratio",
+      "numerator": 1125,
+      "denominator": 19000,
+      "printed": 0.059,
+      "tolerance": 0.002,
+      "_설명": "한미 계약금 비중 5.9%. 7,500만달러 × 1,500원 = 1,125억원"
+    },
+    {
+      "id": "D_GENERIC_TIER2",
+      "kind": "ratio",
+      "numerator": 36,
+      "denominator": 45,
+      "printed": 0.8,
+      "tolerance": 0.001,
+      "_설명": "기준요건 1개 미충족 시 45% × 80% = 36%"
+    },
+    {
+      "id": "D_BIOSIM_CAGR",
+      "kind": "pct_change",
+      "from": "BIOSIM_2022",
+      "to": "BIOSIM_2028",
+      "printed": 167.5,
+      "tolerance": 0.5,
+      "_설명": "2022→2028 누적 성장률. CAGR 17.8% 6년치와 정합해야 함"
+    }
+  ],
+  "_unit_policy": "metric 별 기대 단위.",
+  "unit_policy": {
+    "기술수출": "억원",
+    "계약금": "억원",
+    "기업 누적 기술수출": "억원",
+    "KRX헬스케어": "pt",
+    "KRX헬스케어 시총": "조원",
+    "KOSPI": "pt",
+    "섹터 낙폭": "%",
+    "삼천당제약 주가": "원",
+    "미국 의약품 관세": "%",
+    "제네릭 약가 산정률": "%",
+    "의약품 생산액": "억원",
+    "의약품 수출": "억달러",
+    "삼성바이오로직스 매출": "억원",
+    "삼성바이오로직스 영업이익": "억원",
+    "삼성바이오로직스 누적수주": "억달러",
+    "셀트리온 매출원가율": "%",
+    "키트루다 매출": "억달러",
+    "비만치료제 시장": "억달러",
+    "바이오시밀러 시장": "억달러",
+    "한미약품 계약금": "만달러",
+    "한미약품 계약총액": "억원",
+    "원/달러": "KRW/USD",
+    "국민성장펀드 바이오·백신 배정액": "n/a"
+  }
+}

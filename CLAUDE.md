@@ -3,11 +3,19 @@
 새 세션이 가장 먼저 읽는 파일입니다. 자세한 맥락은 **[HANDOFF.md](HANDOFF.md)**, 자주 쓰는
 프롬프트와 설정은 **[PROMPTS.txt](PROMPTS.txt)** 에 있습니다.
 
-**일거리가 둘입니다.** 위 두 문서는 **증시 일정 캘린더** 쪽이고, **시황 브리핑**
+**일거리가 셋입니다.** 위 두 문서는 **증시 일정 캘린더** 쪽이고, **시황 브리핑**
 파이프라인은 문서가 따로 있습니다 — 맥락은 **[docs/HANDOVER.md](docs/HANDOVER.md)**,
 예약 프롬프트와 설정은 **[docs/routine-prompts.md](docs/routine-prompts.md)**,
 작업 규칙 전체는 **[docs/briefing-playbook.md](docs/briefing-playbook.md)**(1,992줄)
 입니다. 브리핑 일을 맡았다면 playbook 을 **처음부터 끝까지** 읽고 시작하십시오.
+
+셋째는 **제약바이오 업종 교육자료 검증**입니다. 예약으로 도는 것이 없고 요청이
+올 때만 움직입니다 — 맥락은 **[docs/handover/제약바이오-교육자료-인계.md](docs/handover/제약바이오-교육자료-인계.md)**,
+프롬프트와 설정은 **[docs/handover/제약바이오-자주쓰는-프롬프트.txt](docs/handover/제약바이오-자주쓰는-프롬프트.txt)**,
+수치 대장은 `docs/deck/pharma-claims.json` 입니다.
+
+갈래 전체 지도는 **[docs/handover/00-저장소-전체-인계.md](docs/handover/00-저장소-전체-인계.md)**,
+저장소 밖으로 들고 갈 사본은 루트의 **`인계-보관본.txt`** 하나면 됩니다.
 
 ## 무엇을 하는 저장소인가
 
@@ -26,6 +34,11 @@
 
 **비밀은 저장소 파일에 넣지 않습니다.** API 키는 GitHub 저장소 시크릿에만 둡니다
 (`Settings → Secrets and variables → Actions`).
+
+**산출물은 받는 즉시 저장소에 커밋합니다.** 대화로만 주고받은 파일은 컨테이너가
+바뀌면 사라집니다 — 올린 원본도, 고쳐 돌려드린 파일도 함께 사라집니다. 2026-08-03
+에 59건을 고친 제약바이오 PPT 를 그렇게 잃었습니다. 계정을 옮겨도 남는 것은
+**저장소에 커밋된 것뿐**입니다.
 
 **회사 망이 `*.translate.goog` 를 비업무용으로 막습니다.** 번역 프록시를 쓰지 마십시오.
 
