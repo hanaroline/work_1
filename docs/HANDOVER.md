@@ -27,6 +27,11 @@
 | **시세 이력** | `data/market/` — `latest.json` 은 하루 여러 번 커밋되므로 **과거 어느 시각의 스냅샷도 git 이력에서 꺼낼 수 있습니다** |
 | 세션 시작 준비 | `.claude/settings.json`, `.claude/hooks/session-start.sh` |
 | **예약 프롬프트 원문** | `docs/routine-prompts.md`(모닝·ELS·시스템 설정) 와 **`docs/routine-prompt-close.md`**(장마감 원문 통째로) |
+| **자주 쓰는 프롬프트·일하는 결** | `docs/handover/자주쓰는-프롬프트.md` |
+| **시스템 설정 사본** | `docs/handover/시스템설정-백업.md` |
+| **증권사 리포트 운영 인계** | `docs/handover/증권사리포트-운영인계.md` |
+| **받는 PC 의 제약** | `docs/handover/사용자PC환경.md` — 오피스 인증·OneDrive. 엑셀 산출물을 건널 때 봅니다 |
+| **이 문서들을 한 파일로 묶은 것** | `docs/handover/전체-인수인계-통합본.md` (`python3 scripts/build_handover_bundle.py` 로 다시 만듭니다) |
 
 ### 넘어가지 않는 것 — 옛 계정에 묶여 있습니다
 
@@ -355,6 +360,24 @@ python3 scripts/audit_numbers.py docs/briefings/<판>.html <그때 스냅샷>.js
 `git reset --hard origin/main` 으로 맞춥니다. 확인 없이 되돌리면
 커밋이 날아갑니다.
 
+### 6-4. **받는 쪽 PC 에도 제약이 있습니다** — 엑셀 산출물을 낼 때
+
+이 저장소는 엑셀 파일을 만들어 사람에게 건넵니다(`고객제안서_*.xlsx` · `.xlsm`).
+그 PC 의 **Office 2016 Professional Plus 가 인증되지 않은 상태**이고(개인 PC 라
+인증할 방법이 없습니다), **바탕 화면이 OneDrive 로 리디렉션**돼 있습니다.
+
+- 인증이 끝내 막히면 Office 가 **읽기 전용**으로 바뀝니다 → 받는 쪽은
+  LibreOffice Calc 로 열게 됩니다 → **VBA 매크로가 돌지 않습니다.**
+  **매크로 없는 `.xlsx` 판을 항상 함께 유지하십시오.**
+- HTML 판(`docs/etf-proposal.html`)은 브라우저만 있으면 열립니다. 엑셀이 막히는
+  날에도 고객 전달이 되는 길입니다 — **HTML 판을 없애지 마십시오.**
+- 파일을 건넬 때 저장 위치는 **`C:\Users\theli\Documents`** 로 안내합니다.
+  바탕 화면은 OneDrive 라 저장할 때마다 업로드를 기다립니다.
+
+자세한 것과 **증상 판정 순서**는 `docs/handover/사용자PC환경.md` 에 있습니다.
+2026-09-18~19 에 이것 때문에 두 번 잘못 짚었습니다 — 거기에 그 과정도 적어
+두었으니 같은 길로 들어가지 마십시오.
+
 ---
 
 ## 7. 지금 열려 있는 일 (넘겨 드립니다)
@@ -420,6 +443,8 @@ python3 scripts/audit_numbers.py docs/briefings/<판>.html <그때 스냅샷>.js
 | 2026-09-23 | 사유 줄에 **그 종목의 값이 아닌 숫자를 쓰지 않음**(5-15) |
 | 2026-10-01 | 유의문구를 **한 줄**로(`max-width` 제거). 옛 판 3건의 340px 넘침 수정 |
 | 2026-10-01 | 장마감 예약 프롬프트를 **원문 그대로** `docs/routine-prompt-close.md` 에 보관. 「모닝판에서 이렇게 고치라」는 설명만으로는 새 계정에서 재현되지 않음 |
+| 2026-10-01 | 받는 PC 의 제약(오피스 인증 실패·OneDrive)을 `docs/handover/사용자PC환경.md` 로 남김. **매크로 없는 `.xlsx` 판과 HTML 판을 반드시 함께 유지**한다는 결론 포함 |
+| 2026-10-01 | 인계 문서 다섯을 한 파일로 묶는 `scripts/build_handover_bundle.py` 추가. 계정 밖(사람의 PC)에 텍스트로 보관하기 위한 것 — **원본은 각 파일이고 묶음은 사본**이다 |
 
 ---
 
