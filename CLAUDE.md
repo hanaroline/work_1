@@ -1,12 +1,21 @@
 # 이 저장소에서 일할 때
 
-새 세션이 가장 먼저 읽는 파일입니다. 자세한 맥락은 **[HANDOFF.md](HANDOFF.md)**, 자주 쓰는
+새 세션이 가장 먼저 읽는 파일입니다.
+
+> **대화 기록이 없는 상태로 시작했다면**(계정을 옮겼거나 새 대화라면) 먼저
+> **[docs/handover/00-저장소-전체-인계.md](docs/handover/00-저장소-전체-인계.md)**
+> 를 읽으십시오 — 갈래 열셋의 전체 지도입니다. 저장소 밖에서도 읽을 수 있는
+> 한 장짜리 사본은 **[인계-보관본.txt](인계-보관본.txt)** 이고, 예약 지시문
+> 원문은 **[docs/claude-handoff/ROUTINES.md](docs/claude-handoff/ROUTINES.md)**
+> 에 있습니다.
+
+자세한 맥락은 **[HANDOFF.md](HANDOFF.md)**, 자주 쓰는
 프롬프트와 설정은 **[PROMPTS.txt](PROMPTS.txt)** 에 있습니다.
 
 **일거리가 둘입니다.** 위 두 문서는 **증시 일정 캘린더** 쪽이고, **시황 브리핑**
 파이프라인은 문서가 따로 있습니다 — 맥락은 **[docs/HANDOVER.md](docs/HANDOVER.md)**,
 예약 프롬프트와 설정은 **[docs/routine-prompts.md](docs/routine-prompts.md)**,
-작업 규칙 전체는 **[docs/briefing-playbook.md](docs/briefing-playbook.md)**(1,992줄)
+작업 규칙 전체는 **[docs/briefing-playbook.md](docs/briefing-playbook.md)**(2,024줄)
 입니다. 브리핑 일을 맡았다면 playbook 을 **처음부터 끝까지** 읽고 시작하십시오.
 
 ## 무엇을 하는 저장소인가

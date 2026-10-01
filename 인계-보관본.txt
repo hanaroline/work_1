@@ -2,10 +2,14 @@
  미래에셋증권 마포WM — Claude 작업 보관본
  프롬프트 · 프로젝트 지침 · 시스템 설정
 ================================================================================
- 작성 2026-10-01
+ 작성 2026-10-01 · 갱신 2026-10-01 23:00 KST (main 2e9d545 기준)
  저장소 hanaroline/work_1
  용도 : Claude 유료 계정을 옮길 때, 저장소 밖에서도 그대로 쓸 수 있는 사본.
-        이 파일 하나만 있으면 새 계정에서 처음부터 다시 세울 수 있습니다.
+        이 파일과 예약 지시문 원문(docs/claude-handoff/ROUTINES.md) 둘이면
+        새 계정에서 처음부터 다시 세울 수 있습니다.
+        둘을 하나로 묶은 것이 「인계-보관본_전체.txt」입니다 —
+        저장소 밖에 한 파일만 들고 가신다면 그쪽을 가져가십시오.
+        (만드는 법 : python3 scripts/build_handoff_archive.py)
 ================================================================================
 
 
@@ -17,45 +21,75 @@
 
 [ 넘어오는 것 ] — GitHub 저장소 hanaroline/work_1 을 새 계정에 연동하면 그대로
   - 완성 화면·산출물 전부 (루트 *.html, docs/, 고객제안서_*.xlsx)
-  - 작업 규칙·지침 (docs/briefing-playbook.md 1,992줄, README.md 252KB)
-  - 스크립트 152개 (scripts/)
+  - 작업 규칙·지침 (docs/briefing-playbook.md 2,024줄, README.md 252KB)
+  - 스크립트 153개 (scripts/)
   - 자동 수집 워크플로 44개 (.github/workflows/)
   - 수집된 자료와 그 이력 (data/) — 과거 어느 시각 스냅샷도 git 이력에서 꺼냄
   - 세션 시작 준비 (.claude/settings.json, .claude/hooks/session-start.sh)
   - 지난 대화에서 쓰던 프롬프트 원문 (docs/handover/, docs/routine-prompts.md)
+  - **가지 82개 전부** — main 에 합치지 않은 세미나 자료·제안서 PPT 까지
+    그대로 남습니다. 어디에 무엇이 있는지는 1-3절에 적어 두었습니다.
 
-[ 안 넘어오는 것 ] — 옛 계정 소유
+  ※ GitHub 쪽에 있는 것은 Claude 계정과 아무 상관이 없습니다 —
+    저장소 시크릿(API 키), Actions 실행 이력, Pages 배포, 가지, 커밋 이력,
+    PR·이슈 모두 GitHub 계정 소유라 그대로 남습니다.
+
+[ 안 넘어오는 것 ] — 옛 Claude 계정 소유
   - 대화 기록 자체          → 이 파일과 docs/handover/ 가 그 자리를 대신합니다
   - 예약(Routine) 전부      → 저장소에 없습니다. 3절 프롬프트로 다시 만드십시오
   - 발행한 아티팩트 주소    → HTML 은 저장소에 멀쩡. 잃는 것은 링크 주소뿐
   - 커넥터·스킬·계정 설정   → 새 계정에서 다시 붙이십시오
+  - Claude 메모리·프로젝트  → 새 계정에서 다시 심으십시오 (5절 첫 말을 쓰십시오)
+  - 대화에 올렸던 첨부 파일 → 저장소에 커밋하지 않은 것은 사라집니다
 
- ※ 가장 헷갈리기 쉬운 것
-   "GitHub 에 연동하면 과거 프롬프트까지 계승되는가" → 자동으로는 안 됩니다.
-   프롬프트가 넘어오는 것은 지난 세션들이 그것을 문서로 적어 저장소에
-   커밋해 두었기 때문입니다. 적어 두지 않은 대화는 사라집니다.
-   앞으로도 중요한 결정은 반드시 저장소에 적어 두십시오.
+ ※ 가장 헷갈리기 쉬운 것 — 반드시 읽으십시오
+   "새 계정을 만들어 같은 GitHub 저장소에 연동하면 과거 프롬프트·작업내용·
+    완성파일이 계승되는가"
+
+   → **파일과 작업 결과는 계승됩니다. 대화와 예약은 계승되지 않습니다.**
+
+     계승되는 까닭은 연동 때문이 아니라, 지난 세션들이 그것을 **문서로 적어
+     저장소에 커밋해 두었기 때문**입니다. 연동은 저장소를 읽게 해 줄 뿐입니다.
+     적어 두지 않은 대화는 계정과 함께 사라집니다.
+
+     그래서 새 계정의 Claude 는 "기억하는" 것이 아니라 "읽고 아는" 것입니다.
+     2절 순서대로 문서를 읽혀야 비로소 맥락이 섭니다. 읽히지 않으면
+     아무것도 모르는 상태에서 시작합니다.
+
+   앞으로도 중요한 결정은 그때그때 저장소에 적어 두십시오.
+   이 저장소에서 가장 값진 자산은 코드가 아니라 이 문서들입니다.
 
 
 ################################################################################
 # 1. 저장소 지도
 ################################################################################
 
-[ ★ 구조상 가장 먼저 알아야 할 것 — 가지가 둘이고 서로 조상이 없습니다 ]
+[ ★ 구조상 가장 먼저 알아야 할 것 — 산출물이 main 에만 있지 않습니다 ]
 
-  main                                        851 파일  운영 전부
+  원격 가지가 82개입니다. 운영은 main 한 곳에서 하지만, **완성된 산출물 중
+  적지 않은 수가 main 에 합쳐지지 않은 채 제 가지에만 있습니다.**
+  main 만 보고 "없어졌다"고 판단하지 마십시오 — 1-3절 목록을 보십시오.
+
+  main                                        883 파일  운영 전부
   claude/mirae-asset-product-dashboard-cgyqu7  23 파일  금융상품 통합조회
 
   $ git merge origin/main
   fatal: refusing to merge unrelated histories
 
-  두 가지는 공통 조상이 없습니다. 기능 가지는 별도로 초기화된 작은 저장소가
-  같은 원격에 올라간 모양입니다.
+  이 둘은 공통 조상이 없습니다. 기능 가지는 별도로 초기화된 작은 저장소가
+  같은 원격에 올라간 모양입니다. (조상이 다른 것은 이 하나뿐이고, 나머지
+  80개는 main 에서 갈라져 나온 보통 가지입니다.)
 
   지켜야 할 것
    - 기능 가지에 main 을 덮어쓰지 마십시오.
      git checkout -B <기능가지> origin/main 뒤 그대로 푸시하면
-     금융상품 조회 작업 33커밋이 사라집니다.
+     그 가지의 작업이 통째로 사라집니다.
+     ※ 이 사고는 실제로 날 뻔했습니다. 2026-08-03 에 반도체 자료를 만든
+       가지(claude/semiconductor-review-ui-fix-i5wfu9)를 2026-10-01 세션이
+       main 기준으로 다시 잡았는데, 다행히 원격은 그대로였고 로컬 참조만
+       낡은 것이었습니다. **가지를 만지기 전에 git ls-remote 로 원격의
+       실제 끝을 확인하십시오.** 로컬의 origin/… 는 fetch 하지 않으면
+       며칠 전 값입니다.
    - 기능 가지에서 겹치는 README.md / index.html / standalone.html /
      data/sample.js / data/tickers.js / vendor/chart.umd.js 는 main 의 옛 판입니다.
      참고하지 말고 main 것을 보십시오.
@@ -63,7 +97,7 @@
 [ main 에 든 일 ]
 
    #  갈래                              산출물
-   1  시황 브리핑 (하루 두 판, 예약)     docs/briefings/ 131판          ★운영
+   1  시황 브리핑 (하루 두 판, 예약)     docs/briefings/ 133판          ★운영
    2  증권사 리포트 다이제스트 (예약)     docs/reports/                  ★운영
    3  종목 통합 리포트 대시보드          index.html, standalone.html
    4  ELS 상품 조회                      els.html, els-product-search.html
@@ -80,6 +114,59 @@
 
   13  금융상품 통합조회                  products.html, serve-products.py
                                          dist/mirae-product-finder.zip
+                                         가지 claude/mirae-asset-product-dashboard-cgyqu7
+
+[ 1-3. ★ main 에 없는 완성 산출물 — 가지에만 있습니다 ]
+
+  2026-10-01 기준으로 전수 조사한 것입니다. 모두 살아 있습니다.
+  계정을 옮겨도 가지는 저장소에 그대로 남으므로 전부 따라옵니다.
+
+   산출물                                              있는 가지
+   ──────────────────────────────────────────────────────────────────────────
+   [세미나·발표 자료]
+   반도체_고객세미나_2026.7.14.pptx                    claude/data-update-july-2026-k1k3se
+   반도체_투자_세미나_20260728.pptx                    claude/semiconductor-seminar-ppt-elk4i4
+   semiconductor_primer_2026_1_reviewed.pptx           claude/semiconductor-review-ui-fix-jnxc84
+   semiconductor_primer_2026/…_revised.pptx            claude/semiconductor-review-ui-fix-i5wfu9
+     └ 같은 자리에 VERIFICATION.md (검증 리포트) 가 함께 있습니다.
+
+   [세무·제도 세미나]
+   docs/tax-seminar-2026/files/ *.pptx 6건             claude/real-estate-tax-validation-a39v6m
+     (건강보험료 · 아파트 세제대출거래규제 · 자산관리 세무전략 ·
+      금융소득종합과세/퇴직소득세 · 세무조사 선정과대응 · 아파트취득과 자금출처조사)
+   docs/tax/국내상장주식_양도소득세_*.pptx 2건         claude/law-info-center-query-issue-4ob6uz
+
+   [제안서]
+   docs/retirement/은퇴자산_운용제안서_*.pptx 2건      claude/retirement-asset-proposal-m08jfr
+   퇴직연금DC_제안서_위험자산비중별_202607.pptx        claude/irp-product-proposal-ppt-owsbmc
+
+   [ELS]
+   els-analysis-deck.pptx · els-sales-deck.pptx        claude/els-product-structure-page-ljsucw
+   els-analysis.pdf · els-sales-deck.pdf (같은 가지)
+
+   [그 밖]
+   docs/work-report/2026-10-01-업무자동화-구축결과보고.pptx
+                                                       claude/work-report-presentation-wfnh58
+   docs/etf-howto.pdf                                  claude/etf-holdings-lookup-tool-wwtz57
+   tools/discovery/fund_help.pdf                       claude/fund-search-tool
+   docs/journal/2026-09-2*.pdf                         claude/elegant-ritchie-7p11xf
+   dist/mirae-product-finder.zip                       claude/mirae-asset-product-dashboard-cgyqu7
+
+  꺼내 쓰는 법
+     git fetch origin <가지이름>
+     git checkout -b 내가볼가지 origin/<가지이름>
+   또는 파일 하나만:
+     git fetch origin <가지이름> && git show origin/<가지이름>:<파일경로> > <받을이름>
+
+  같은 조사를 다시 하는 법 (가지가 늘어났을 때)
+     git fetch --filter=blob:none origin '+refs/heads/*:refs/remotes/origin/*'
+     git -c core.quotepath=false ls-tree -r --name-only origin/main > /tmp/main.txt
+     git for-each-ref --format='%(refname:short)' refs/remotes/origin \
+       | grep -v '^origin/main$' | while read b; do
+         git -c core.quotepath=false ls-tree -r --name-only "$b" \
+           | grep -iE '\.(pptx|xlsx|xlsm|docx|pdf|zip)$' \
+           | grep -vxF -f /tmp/main.txt | sed "s|^|${b#origin/}\t|"
+       done | sort -u -t$'\t' -k2
 
 [ 저장소 안의 인계 문서 ]
 
@@ -88,7 +175,7 @@
   [시황 브리핑]
   docs/HANDOVER.md                           상세
   docs/routine-prompts.md                    예약 프롬프트
-  docs/briefing-playbook.md                  ★ 작업 규칙 전문 1,992줄
+  docs/briefing-playbook.md                  ★ 작업 규칙 전문 2,024줄
 
   [증권사 리포트]
   docs/handover/증권사리포트-운영인계.md     상세
@@ -133,6 +220,36 @@
 ################################################################################
 
  ※ 예약은 계정에 묶여 있어 넘어오지 않습니다. 새 계정에서 다시 만드십시오.
+
+[ 3-0. 지금 켜져 있는 예약 12건 — 다시 만들어야 할 전부 ]
+
+  2026-10-01 23:00 KST 기준. 저장소 기록(docs/claude-handoff/routines.json)과
+  라이브 19건이 한 건도 어긋나지 않는 것을 확인했습니다(꺼진 7건 포함).
+
+  ** 지시문 원문은 docs/claude-handoff/ROUTINES.md 에 19건 전부 있습니다. **
+  아래 3-1~3-4 는 그중 손이 많이 가는 넷을 이 파일에도 옮겨 둔 것입니다.
+  나머지는 ROUTINES.md 에서 글자 그대로 복사해 쓰십시오.
+
+   cron (UTC)      한국 시각            예약 이름
+   ──────────────────────────────────────────────────────────────────────────
+   30 22 * * *     매일 07:30          마포WM 모닝 브리핑 — 전용 창      ★3-1
+   10 7 * * 1-5    평일 16:10          마포WM 장마감 브리핑 — 전용 창    ★3-2
+   0 2 * * 1-5     평일 11:00          증권사 리포트 자동 배포           ★3-3
+   0 23 * * 0      월 08:00            ELS 상품 구조 페이지 주간 갱신    ★3-4
+   30 7 * * 1-5    평일 16:30          ELS 신규 회차 점검·검증 (월·수·금)
+   30 5 * * 1-5    평일 14:30          ELS 신규 회차 오후 점검
+   40 23 * * 1-4   화~금 08:40         상품설명의무 스크립트 갱신
+   40 23 * * 0     월 08:40            상품설명의무 스크립트 자동 갱신
+   0 23 * * 0      일 08:00            미국 100대 기업 주간 목록 교체
+   0 23 * * 0,3    월·목 08:00         세션 산출물 자료실 자동 갱신
+   30 6 * * 1      월 15:30            펀드 원천 반영 재갱신
+   (1회성)         2026-10-05 11:30    주간 수집이 몇 시에 닿았나 — 점검용
+
+   ※ cron 은 UTC 입니다. 새로 만들 때는 CRON_TZ=Asia/Seoul 을 붙여
+     한국 시각 그대로 적는 편이 헷갈리지 않습니다.
+   ※ 꺼져 있는 7건은 되살리지 마십시오 — 이름에 [폐기] 가 붙어 있고,
+     어느 것으로 대체됐는지 이름에 적혀 있습니다. 09:25 증권사 리포트
+     아침 배포도 일부러 끈 것입니다(3-5절).
 
  [ 예약을 만들 때 공통 주의 ]
   - "쓰고 있는 대화로 전달"(persistent session)을 고르십시오.
@@ -666,18 +783,39 @@ docs/briefing-playbook.md 를 처음부터 끝까지 읽고 그대로 따라줘.
 # 9. 지금 열려 있는 일
 ################################################################################
 
-  - 표 넘침 9판 — 문서 넘침은 0, 표가 가로 스크롤 그릇을 넘는 것.
-    docs/briefing-chrome/head.html 의 좁은 화면 표 규칙을 해당 판에 넣으면
-    됩니다. (docs/HANDOVER.md 7-1절에 방법이 적혀 있습니다.)
+  [ 사용자가 해 주셔야 넘어가는 것 ]
+
+  - 마포 WM 링크 페이지 — 저장소 분리가 아직 안 끝났습니다.  ★가장 급함
+    hanaroline/mapo-wm 공개 저장소를 사용자가 만들어 주셔야 진행됩니다.
+    (2026-10-01 확인 — 아직 없습니다. 세션에는 저장소 생성 권한이 없습니다.)
+    그 뒤 work_1 을 Private 으로 돌립니다. 자세한 것은 10절.
+  - GitHub 2FA · main 가지 보호 — 아직 확인하지 못했습니다.
+    공개 저장소에 고객용 링크가 올라가 있으므로 2FA 는 반드시 켜십시오.
+
+  [ 결정이 필요한 것 ]
+
   - 아티팩트 재발행 — 어디까지 할지 결정 필요.
     (docs/HANDOVER.md 3절에 선택지 셋)
-  - "가정용품" 업종 자료 오류의 원천 — 미확인.
+    ※ 계정을 옮기면 **옛 아티팩트 주소는 전부 죽습니다.** 고객이나 동료에게
+      이미 보낸 링크가 있으면 새 계정에서 다시 발행해 주소를 바꿔 알려야
+      합니다. 어느 주소를 내보냈는지는 docs/briefings/index.json 의 url 에
+      남아 있습니다.
   - 금융상품 조회를 main 에 합칠지 — 미결정.
+  - 가지에만 있는 산출물(1-3절 19건)을 main 으로 옮길지 — 미결정.
+    옮기지 않아도 사라지지는 않습니다. 다만 main 만 보는 사람은 못 찾습니다.
+
+  [ 원인을 못 찾은 것 ]
+
+  - "가정용품" 업종 자료 오류의 원천 — 미확인. (8-4절)
   - 금융상품 조회의 RP·랩/신탁·연금은 예시 데이터.
     사내 API 나 CSV 로만 채울 수 있습니다.
-  - 마포 WM 링크 페이지 — 저장소 분리가 아직 안 끝났습니다.
-    사용자가 hanaroline/mapo-wm 공개 저장소를 만들어 주셔야 진행됩니다.
-    그 뒤 work_1 을 Private 으로 돌립니다. 자세한 것은 10절.
+
+  [ 2026-10-01 에 끝난 것 — 기록으로만 ]
+
+  - 표 넘침 9판 → 전부 고쳤습니다. 131판 전 구간 넘침 0.
+    (docs/HANDOVER.md 7-1절. 같은 증상이 또 나오면 그 절을 보십시오.)
+  - 예약 18개 지시문 원문을 저장소에 떠 두었습니다.
+    (docs/claude-handoff/ROUTINES.md · routines.json)
 
 
 
