@@ -6,7 +6,7 @@
 **일거리가 둘입니다.** 위 두 문서는 **증시 일정 캘린더** 쪽이고, **시황 브리핑**
 파이프라인은 문서가 따로 있습니다 — 맥락은 **[docs/HANDOVER.md](docs/HANDOVER.md)**,
 예약 프롬프트와 설정은 **[docs/routine-prompts.md](docs/routine-prompts.md)**,
-작업 규칙 전체는 **[docs/briefing-playbook.md](docs/briefing-playbook.md)**(1,992줄)
+작업 규칙 전체는 **[docs/briefing-playbook.md](docs/briefing-playbook.md)**(2,024줄)
 입니다. 브리핑 일을 맡았다면 playbook 을 **처음부터 끝까지** 읽고 시작하십시오.
 
 ## 무엇을 하는 저장소인가
