@@ -184,7 +184,24 @@ cron 은 UTC 로만 읽힙니다. KST = UTC+9, 서머타임 없음.
 본문에는 관측한 사실(시각·건수·로그)을 그대로 넣습니다. 기존 커밋들이 본보기입니다.
 
 
-[9] 주요 주소
+[9] 다른 일감의 프롬프트는 어디에 있나
+-------------------------------------------------------------------------------
+이 파일은 「증시 일정 캘린더」 쪽 프롬프트가 중심입니다. 매매 신호·ETF·백테스트·리포트
+수집 쪽 프롬프트와 일하는 방식은 아래에 따로 있습니다. 둘을 같이 읽으십시오.
+
+  docs/handover/자주쓰는-프롬프트.md     신호·ETF·리포트 쪽 프롬프트 + 작업 방식
+  docs/handover/시스템설정-백업.md       훅·스킬·워크플로·권한 설정 백업
+  CLAUDE.md                              일감별 인계 문서 지도 (맨 위 표)
+
+자주 쓰는 한 줄 (신호·ETF 쪽):
+  python3 scripts/build_etf_signals.py                  ETF 신호판 다시 만들기
+  python3 scripts/verify_etf_signals.py                 독립 재계산으로 검증 (흠 심기 포함)
+  python3 scripts/signal_backtest.py --etf --h 5,10,20,60 --out data/etf/backtest.json
+  python3 scripts/signal_backtest.py --market KR,US --h 5,10,20,60 --out data/signals/backtest.json
+  python3 scripts/make_boards_html.py                   네 판 요약 화면 다시 만들기
+
+
+[10] 주요 주소
 -------------------------------------------------------------------------------
 저장소        https://github.com/hanaroline/work_1
 Actions       https://github.com/hanaroline/work_1/actions

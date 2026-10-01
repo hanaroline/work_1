@@ -3,6 +3,24 @@
 새 세션이 가장 먼저 읽는 파일입니다. 자세한 맥락은 **[HANDOFF.md](HANDOFF.md)**, 자주 쓰는
 프롬프트와 설정은 **[PROMPTS.txt](PROMPTS.txt)** 에 있습니다.
 
+## 인계 문서 지도 — 일감마다 따로 있습니다
+
+루트의 `HANDOFF.md` 는 **증시 일정 캘린더** 한 가지를 다룹니다. 나머지는 `docs/handover/`
+아래에 일감별로 있습니다. 이어받을 일감의 문서를 **손대기 전에 먼저 읽으십시오.**
+
+| 일감 | 문서 | 주요 산출물 |
+| --- | --- | --- |
+| 증시 일정 캘린더 | [HANDOFF.md](HANDOFF.md) | `calendar.html`, `calendar-data` 가지 |
+| 매매 신호 · ETF · 백테스트 | [docs/handover/매매신호-ETF-운영인계.md](docs/handover/매매신호-ETF-운영인계.md) | `docs/signal/`, `docs/etf/`, `docs/boards/` |
+| 미국 100대 기업 대시보드 | [docs/handover/미국100대기업-대시보드-인계.md](docs/handover/미국100대기업-대시보드-인계.md) | `us-top100.html`, `us100-data` 가지 |
+| 증권사 리포트 수집 | [docs/handover/증권사리포트-운영인계.md](docs/handover/증권사리포트-운영인계.md) | `docs/reports/` |
+| 아침·마감 브리핑 | [docs/HANDOVER.md](docs/HANDOVER.md) | `docs/briefings/` |
+| 자주 쓰는 프롬프트 (전 일감) | [docs/handover/자주쓰는-프롬프트.md](docs/handover/자주쓰는-프롬프트.md) | — |
+| 시스템 설정 백업 | [docs/handover/시스템설정-백업.md](docs/handover/시스템설정-백업.md) | — |
+
+계정을 옮긴 뒤 처음 여는 대화라면 `HANDOFF.md` 의 「1. 계정을 옮기면 무엇이 따라오고
+무엇이 사라지나」부터 읽으십시오. **대화 기록·Routine·커넥터는 따라오지 않습니다.**
+
 ## 무엇을 하는 저장소인가
 
 미래에셋증권 WM 업무용 화면과 그 데이터를 만드는 곳입니다. 화면은 대부분 **단일 HTML 파일**
