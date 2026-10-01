@@ -70,3 +70,10 @@ etf-offline.html
 # 매크로판은 산출물 — 원본 .xlsx 만 추적한다
 backtest-4boards.html
 kis-timing-report*.html
+
+# 근거(사내 연금 업무 Q&A 18건)까지 담긴 시뮬레이터 내부용 판.
+# 배포본(retire-payout.html)에는 이 18건을 심지 않는다 - 파일 하나가
+# 사람 손을 타고 도는 형태라, 실려 나가면 받은 누구나 읽는다.
+# 이 판은 손에 두고 보는 용도라 저장소에 들어가면 안 된다.
+#   node scripts/build-retire-payout.js --근거
+retire-payout-internal.html
