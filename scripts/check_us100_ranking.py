@@ -39,9 +39,12 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fetch_us100 as F                                    # noqa: E402
 from fetch_us100 import OUT_DIR, companies_from_page, init_crumb, num, yget   # noqa: E402
 
-TOP = 100
-DROP_RANK = 150          # 이 순위 밖으로 밀리면 교체 후보로 본다(경계에서 오가는 잡음을 걸러낸다)
-UNIVERSE = 260           # 스크리너에서 받아 볼 상위 개수(보조 경로)
+# 2026-09-29 에 목록을 100 → 200 종으로 넓혔다. 세 수가 함께 움직여야 한다 —
+# TOP 만 올리고 DROP_RANK 를 그대로 두면 101~200 위 종목이 들어오자마자 전부
+# 「밀린 종목」으로 잡힌다.
+TOP = 200
+DROP_RANK = 260          # 이 순위 밖으로 밀리면 교체 후보로 본다(경계에서 오가는 잡음을 걸러낸다)
+UNIVERSE = 400           # 스크리너에서 받아 볼 상위 개수(보조 경로)
 EXTRA_LOOKUPS = 30       # 스크리너 후보의 본사 소재지를 확인할 최대 개수(요청을 묶어 둔다)
 REPORT_MAX = 12          # 사람이 읽는 보고에 적는 최대 줄 수(파일에는 전부 남는다)
 VERIFY_MAX = 12          # 편입 후보 중 "시세가 실제로 나오는지" 확인할 최대 개수

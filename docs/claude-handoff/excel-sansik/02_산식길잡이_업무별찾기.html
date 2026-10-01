@@ -1,0 +1,1206 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+<title>산식 길잡이</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --paper:#F5F7F3;
+  --surface:#FFFFFF;
+  --band:#EDF2EB;
+  --ink:#1A1F1B;
+  --ink-2:#4C574F;
+  --ink-3:#7E8A80;
+  --rule:#DCE3DA;
+  --rule-2:#C4CFC2;
+  --accent:#14614A;
+  --accent-2:#0E4735;
+  --accent-soft:#E3EEE8;
+  --on-accent:#F3F8F4;
+  --amber:#87590F;
+  --amber-soft:#F7F0DD;
+  --alert:#98311F;
+  --shadow:0 1px 2px rgba(26,31,27,.04), 0 8px 24px -18px rgba(26,31,27,.35);
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:"IBM Plex Sans KR","IBM Plex Sans",system-ui,-apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+  --serif:"Noto Serif KR",Georgia,"Batang",serif;
+  --sp:clamp(1rem,2.4vw,2rem);
+  --bar:52px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1210; --surface:#161A15; --band:#1B201A;
+    --ink:#E7EBE3; --ink-2:#A8B2A6; --ink-3:#7B857A;
+    --rule:#2A312A; --rule-2:#3B443A;
+    --accent:#6FC9A0; --accent-2:#9EDCBF; --accent-soft:#152A1F; --on-accent:#0F1210;
+    --amber:#D4A45D; --amber-soft:#2A2314; --alert:#E38D79;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1210; --surface:#161A15; --band:#1B201A;
+  --ink:#E7EBE3; --ink-2:#A8B2A6; --ink-3:#7B857A;
+  --rule:#2A312A; --rule-2:#3B443A;
+  --accent:#6FC9A0; --accent-2:#9EDCBF; --accent-soft:#152A1F; --on-accent:#0F1210;
+  --amber:#D4A45D; --amber-soft:#2A2314; --alert:#E38D79;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+p{margin:0}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:15.5px;line-height:1.64;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:var(--serif);text-wrap:balance;margin:0;font-weight:600;letter-spacing:-.015em}
+code,kbd{font-family:var(--mono);font-variant-ligatures:none}
+a{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}
+a:hover{color:var(--accent-2)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* ── 표제 ─────────────────────────────────────────── */
+.masthead{position:relative;overflow:hidden;background:var(--surface);border-bottom:1px solid var(--rule-2)}
+.masthead::before{
+  content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(to bottom, transparent 0 28px, var(--band) 28px 56px);
+  -webkit-mask-image:linear-gradient(to right, transparent 42%, #000 100%);
+  mask-image:linear-gradient(to right, transparent 42%, #000 100%);
+  pointer-events:none;
+}
+.masthead-in{
+  position:relative;max-width:1280px;margin:0 auto;
+  padding:clamp(2rem,5vw,3.6rem) var(--sp) 1.5rem;
+  display:grid;grid-template-columns:minmax(0,1fr) auto;
+  gap:0 clamp(1.5rem,4vw,4rem);align-items:start;
+}
+.eyebrow{
+  margin:0 0 .9rem;font-family:var(--mono);font-size:.7rem;font-weight:500;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--accent);
+  display:flex;align-items:center;gap:.7rem;
+}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--accent)}
+h1{font-size:clamp(2.1rem,5.2vw,3.5rem);line-height:1.1}
+.dek{margin:.85rem 0 0;max-width:56ch;color:var(--ink-2);font-size:1.03rem}
+.meta{
+  grid-column:1/-1;display:flex;flex-wrap:wrap;gap:.45rem 1.6rem;
+  font-family:var(--mono);font-size:.735rem;color:var(--ink-3);
+  border-top:1px solid var(--rule);margin:1.6rem 0 0;padding-top:.9rem;
+}
+.meta b{color:var(--ink-2);font-weight:500}
+.plate{display:grid;gap:.75rem;justify-items:end;text-align:right;padding-top:.2rem}
+.vol{
+  font-family:var(--serif);font-weight:700;line-height:.86;
+  font-size:clamp(2.6rem,6vw,4.2rem);color:var(--accent);
+  letter-spacing:-.04em;
+}
+.vol small{display:block;font-family:var(--mono);font-size:.62rem;font-weight:500;
+  letter-spacing:.28em;color:var(--ink-3);margin-top:.5rem}
+.stats{display:flex;gap:0;border:1px solid var(--rule-2);background:var(--surface)}
+.stats div{padding:.45rem .85rem;border-right:1px solid var(--rule);text-align:right}
+.stats div:last-child{border-right:0}
+.stats b{display:block;font-family:var(--mono);font-size:1.05rem;font-weight:600;
+  color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.3}
+.stats span{font-size:.66rem;letter-spacing:.06em;color:var(--ink-3)}
+
+/* ── 검색 바 ──────────────────────────────────────── */
+.toolbar{
+  position:sticky;top:0;z-index:30;background:var(--surface);
+  background:color-mix(in srgb,var(--surface) 90%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--rule-2);
+}
+.toolbar-in{max-width:1280px;margin:0 auto;padding:.6rem var(--sp);display:flex;gap:.8rem;align-items:center}
+.search{
+  flex:1;max-width:560px;display:flex;align-items:center;gap:.6rem;
+  background:var(--paper);border:1px solid var(--rule-2);padding:.45rem .75rem;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search svg{width:15px;height:15px;flex:none;stroke:var(--ink-3);fill:none;stroke-width:1.8}
+.search input{flex:1;min-width:0;border:0;background:none;color:var(--ink);
+  font-family:var(--sans);font-size:.92rem;outline:none}
+.search input::placeholder{color:var(--ink-3)}
+.search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.hits{font-family:var(--mono);font-size:.74rem;color:var(--ink-3);white-space:nowrap}
+.hits[hidden]{display:none}
+
+/* ── 골격 ─────────────────────────────────────────── */
+.shell{
+  max-width:1280px;margin:0 auto;padding:0 var(--sp) 6rem;
+  display:grid;grid-template-columns:230px minmax(0,1fr);gap:clamp(1.6rem,3.4vw,3.4rem);
+  align-items:start;
+}
+nav.index{position:sticky;top:calc(var(--bar) + 14px);padding:2rem 0;max-height:calc(100vh - 80px);overflow-y:auto}
+.index-title{font-family:var(--mono);font-size:.67rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 1rem;padding-bottom:.6rem;border-bottom:1px solid var(--rule-2)}
+.index-group{margin-bottom:1.35rem}
+.index-group > span{display:block;font-size:.71rem;font-weight:600;letter-spacing:.08em;
+  color:var(--accent);margin-bottom:.45rem}
+nav.index a{
+  display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink-2);
+  font-size:.87rem;line-height:1.45;padding:.26rem .5rem .26rem .7rem;
+  border-left:2px solid var(--rule);transition:background .14s,color .14s,border-color .14s;
+}
+nav.index a i{font-family:var(--mono);font-style:normal;font-size:.7rem;color:var(--ink-3)}
+nav.index a:hover{color:var(--ink);background:var(--band)}
+nav.index a.on{color:var(--accent-2);border-left-color:var(--accent);background:var(--accent-soft);font-weight:500}
+nav.index a.on i{color:var(--accent)}
+
+main{padding-top:2rem;min-width:0}
+
+/* ── 머리말 상자 ──────────────────────────────────── */
+.callout{
+  margin:0 0 2.4rem;padding:1.15rem 1.3rem;background:var(--surface);
+  border:1px solid var(--rule-2);border-top:3px solid var(--accent);box-shadow:var(--shadow);
+}
+.callout h3{font-size:1.02rem;margin-bottom:.5rem}
+.callout ul{margin:0;padding-left:1.1rem;font-size:.9rem;color:var(--ink-2)}
+.callout li{margin:.32rem 0}
+.callout li::marker{color:var(--accent)}
+
+/* ── 분류 ─────────────────────────────────────────── */
+.sec{
+  margin:0 0 2.4rem;background:var(--surface);border:1px solid var(--rule);
+  box-shadow:var(--shadow);scroll-margin-top:calc(var(--bar) + 8px);
+  animation:rise .45s ease-out both;
+}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec:nth-of-type(2){animation-delay:.05s}
+.sec:nth-of-type(3){animation-delay:.1s}
+.sec:nth-of-type(n+4){animation-delay:.14s}
+.sec[hidden]{display:none}
+.sec-head{
+  padding:1.1rem clamp(1rem,2.2vw,1.6rem) .95rem;border-bottom:1px solid var(--rule-2);
+  background:var(--surface);
+}
+.sec-head .n{
+  display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:600;
+  letter-spacing:.08em;color:var(--on-accent);background:var(--accent);
+  padding:.12rem .45rem;margin-bottom:.55rem;
+}
+.sec-head h2{font-size:1.3rem}
+.lede{margin:.5rem 0 0;color:var(--ink-2);font-size:.9rem;max-width:72ch}
+@media (min-width:901px){
+  .sec-head{position:sticky;top:var(--bar);z-index:5;
+    background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(6px)}
+}
+
+/* ── 항목 ─────────────────────────────────────────── */
+.fn{
+  display:grid;grid-template-columns:minmax(0,32%) minmax(0,1fr);
+  gap:0 clamp(1rem,2.2vw,1.8rem);
+  padding:.9rem clamp(1rem,2.2vw,1.6rem);
+  border-bottom:1px solid var(--rule);transition:background .13s;
+}
+.fn:last-child{border-bottom:0}
+.fn:nth-child(even){background:var(--band)}
+.fn:hover{background:var(--accent-soft)}
+.fn[hidden]{display:none}
+.fn > div:last-child{border-left:1px solid var(--rule);padding-left:clamp(1rem,2.2vw,1.8rem)}
+.fn.stack{grid-template-columns:1fr;gap:.45rem}
+.fn.stack > div:last-child{border-left:0;padding-left:0}
+.fn.stack .sig code{color:var(--accent);font-size:.92rem}
+.sig{min-width:0}
+.sig code{display:block;font-size:.85rem;font-weight:500;color:var(--accent-2);
+  word-break:break-word;line-height:1.55}
+.ver{
+  display:inline-block;margin-top:.4rem;font-family:var(--mono);font-size:.63rem;
+  letter-spacing:.04em;padding:.1rem .42rem;border:1px solid var(--rule-2);
+  background:var(--paper);color:var(--ink-3);
+}
+.ver.new{color:var(--amber);border-color:var(--amber);background:var(--amber-soft)}
+.desc{margin:0;font-size:.915rem}
+
+/* ── 수식·코드 ────────────────────────────────────── */
+.ex{
+  position:relative;margin:.6rem 0 0;background:var(--paper);
+  border:1px solid var(--rule);border-left:2px solid var(--accent);
+  padding:.5rem 2.4rem .5rem .7rem;overflow-x:auto;
+}
+.fn:nth-child(even) .ex,.fn:hover .ex{background:var(--surface)}
+.ex code{font-size:.815rem;white-space:pre;color:var(--ink);line-height:1.72}
+.ex.big{padding:2rem .7rem .7rem}
+.ex.big code{font-size:.78rem;line-height:1.78}
+.ex[data-lang]::before{
+  content:attr(data-lang);position:absolute;top:0;left:0;
+  font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.14em;
+  color:var(--on-accent);background:var(--accent);padding:.1rem .5rem;
+}
+.copy{
+  position:absolute;top:.3rem;right:.3rem;border:1px solid var(--rule-2);
+  background:var(--surface);color:var(--ink-3);cursor:pointer;
+  font-family:var(--mono);font-size:.62rem;padding:.12rem .35rem;line-height:1.5;
+  opacity:0;transition:opacity .13s,color .13s,border-color .13s;
+}
+.ex:hover .copy,.copy:focus-visible{opacity:1}
+.copy:hover{color:var(--accent);border-color:var(--accent)}
+.copy.done{opacity:1;color:var(--accent);border-color:var(--accent)}
+
+.note{margin:.55rem 0 0;font-size:.835rem;color:var(--ink-2);
+  padding:.35rem .7rem;border-left:2px solid var(--rule-2);background:var(--paper)}
+.fn:nth-child(even) .note,.fn:hover .note{background:var(--surface)}
+.note b{color:var(--amber);font-weight:600}
+.note.warn{border-left-color:var(--amber);background:var(--amber-soft)}
+.fn:nth-child(even) .note.warn,.fn:hover .note.warn{background:var(--amber-soft)}
+
+/* ── 표 ───────────────────────────────────────────── */
+.tw{overflow-x:auto;padding:0 clamp(1rem,2.2vw,1.6rem) 1.2rem}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.86rem}
+caption{text-align:left;font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);padding:1rem 0 .55rem}
+th,td{text-align:left;padding:.45rem .65rem;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{font-family:var(--mono);font-size:.68rem;font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--rule-2);white-space:nowrap}
+tbody tr:nth-child(even){background:var(--band)}
+tbody tr:hover{background:var(--accent-soft)}
+tbody tr[hidden]{display:none}
+td code{font-size:.8rem;color:var(--accent-2)}
+td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.err{font-family:var(--mono);font-weight:600;color:var(--alert);white-space:nowrap}
+kbd{display:inline-block;border:1px solid var(--rule-2);border-bottom-width:2px;
+  background:var(--surface);padding:.04rem .32rem;font-size:.78rem;white-space:nowrap;color:var(--ink)}
+
+.empty{display:none;padding:3.5rem 1rem;text-align:center;color:var(--ink-3);
+  font-size:.93rem;border:1px dashed var(--rule-2);background:var(--surface)}
+.empty.show{display:block}
+
+/* ── 꼬리말 ───────────────────────────────────────── */
+footer{border-top:1px solid var(--rule-2);background:var(--surface)}
+.foot-in{max-width:1280px;margin:0 auto;padding:1.8rem var(--sp) 3rem;
+  font-size:.83rem;color:var(--ink-3);display:grid;gap:.55rem;max-width:80ch}
+.foot-in a{font-weight:500}
+
+/* ── 맨 위로 ──────────────────────────────────────── */
+#top{
+  position:fixed;right:1.1rem;bottom:1.1rem;z-index:40;
+  width:38px;height:38px;display:grid;place-items:center;cursor:pointer;
+  background:var(--surface);border:1px solid var(--rule-2);color:var(--ink-2);
+  box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s,color .15s,border-color .15s;
+}
+#top.show{opacity:1;pointer-events:auto}
+#top:hover{color:var(--accent);border-color:var(--accent)}
+#top svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+
+@media (max-width:900px){
+  .masthead-in{grid-template-columns:1fr;align-items:start;gap:1.4rem}
+  .masthead::before{-webkit-mask-image:linear-gradient(to bottom, transparent 55%, #000 100%);
+    mask-image:linear-gradient(to bottom, transparent 55%, #000 100%)}
+  .plate{justify-items:start;text-align:left}
+  .vol{font-size:2.6rem}
+  .shell{grid-template-columns:1fr;gap:0}
+  nav.index{position:static;max-height:none;overflow:visible;padding:1.3rem 0 .5rem;border-bottom:1px solid var(--rule)}
+  .index-inner{display:flex;gap:1.5rem;overflow-x:auto;padding-bottom:.5rem}
+  .index-group{margin:0;min-width:max-content}
+  .fn{grid-template-columns:1fr;gap:.35rem}
+  .fn > div:last-child{border-left:0;padding-left:0}
+  .sig code{color:var(--accent)}
+}
+@media print{
+  .toolbar,nav.index,#top,.copy{display:none}
+  .shell{display:block;max-width:none}
+  .sec{break-inside:avoid;box-shadow:none;animation:none}
+  .sec-head{position:static}
+  body{background:#fff;color:#000;font-size:10pt}
+}
+
+/* ── 길잡이 ───────────────────────────────────────── */
+.ask{background:var(--surface);border-bottom:1px solid var(--rule-2);position:sticky;top:0;z-index:30}
+.ask-in{max-width:1280px;margin:0 auto;padding:1.1rem var(--sp) 1rem;display:grid;gap:.7rem}
+.ask-box{display:flex;align-items:center;gap:.7rem;background:var(--paper);border:1px solid var(--rule-2);
+  border-left:3px solid var(--accent);padding:.7rem .9rem}
+.ask-box svg{width:18px;height:18px;flex:none;stroke:var(--accent);fill:none;stroke-width:1.8}
+.ask-box input{flex:1;min-width:0;border:0;background:none;color:var(--ink);font-family:var(--sans);
+  font-size:1.02rem;outline:none}
+.ask-box input::placeholder{color:var(--ink-3)}
+.ask-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.chips b{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--ink-3);font-weight:500;margin-right:.2rem}
+.chip{font-size:.79rem;color:var(--ink-2);background:var(--band);border:1px solid var(--rule);
+  padding:.16rem .55rem;cursor:pointer;font-family:var(--sans)}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.res-head{display:flex;align-items:baseline;gap:.6rem;padding:1.6rem 0 .2rem;flex-wrap:wrap}
+.res-head h2{font-size:1.15rem}
+.res-head span{font-family:var(--mono);font-size:.73rem;color:var(--ink-3)}
+.recs{display:grid;gap:1rem;padding-bottom:.5rem}
+.rec{background:var(--surface);border:1px solid var(--rule);border-top:2px solid var(--accent);
+  box-shadow:var(--shadow);padding:1rem 1.15rem 1.1rem}
+.rec.top{border-top-width:3px}
+.rec-h{display:grid;gap:.3rem;margin-bottom:.7rem}
+.rec-cat{font-family:var(--mono);font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.rec h3{font-size:1.08rem}
+.rec-why{margin:0;font-size:.88rem;color:var(--ink-2)}
+.steps{margin:0;padding:0;list-style:none;counter-reset:st;display:grid;gap:.55rem}
+.steps li{counter-increment:st;padding-left:1.9rem;position:relative}
+.steps li::before{content:counter(st);position:absolute;left:0;top:.05rem;width:1.35rem;height:1.35rem;
+  display:grid;place-items:center;font-family:var(--mono);font-size:.7rem;font-weight:600;
+  color:var(--on-accent);background:var(--accent)}
+.st{font-size:.9rem}
+.rec .ex{margin:.35rem 0 0}
+.rec .ex code{white-space:pre-wrap;word-break:break-word}
+.rec-f{margin:.8rem 0 0;display:flex;flex-wrap:wrap;gap:.3rem}
+.pill{font-family:var(--mono);font-size:.68rem;color:var(--accent);background:var(--accent-soft);
+  border:1px solid var(--rule-2);padding:.1rem .45rem;cursor:pointer}
+.pill:hover{border-color:var(--accent)}
+.score{font-family:var(--mono);font-size:.66rem;color:var(--ink-3);white-space:nowrap}
+.miss{background:var(--surface);border:1px dashed var(--rule-2);padding:2rem 1.2rem;text-align:center;color:var(--ink-2)}
+.miss b{color:var(--ink);display:block;margin-bottom:.4rem}
+.browse{padding-top:1.4rem}
+.browse-h{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;padding:1.8rem 0 .2rem;
+  border-top:1px solid var(--rule);margin-top:1.4rem}
+.browse-h h2{font-size:1.1rem}
+.browse-h span{font-family:var(--mono);font-size:.72rem;color:var(--ink-3)}
+.ghost{font-family:var(--sans);font-size:.8rem;color:var(--accent);background:var(--accent-soft);
+  border:1px solid var(--rule-2);padding:.22rem .6rem;cursor:pointer;margin-left:auto}
+.ghost:hover{border-color:var(--accent)}
+.task.on{border-color:var(--accent);border-left:3px solid var(--accent);color:var(--accent);
+  background:var(--accent-soft);font-weight:500}
+.cat-h{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+  padding:1.2rem 0 .5rem;border-bottom:1px solid var(--rule);margin-bottom:.7rem}
+.tasks{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.4rem}
+.task{text-align:left;font-family:var(--sans);font-size:.87rem;color:var(--ink-2);background:var(--surface);
+  border:1px solid var(--rule);padding:.5rem .7rem;cursor:pointer;line-height:1.4}
+.task:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.wrap{max-width:1280px;margin:0 auto;padding:0 var(--sp) 5rem}
+.note-priv{font-size:.78rem;color:var(--ink-3);padding-top:.3rem}
+@media (max-width:900px){.ask-in{padding:.8rem var(--sp)}}
+</style>
+
+<header class="masthead">
+  <div class="masthead-in">
+    <div>
+      <p class="eyebrow">엑셀 산식 원장 · 길잡이</p>
+      <h1>무슨 일을 하시려고요?</h1>
+      <p class="dek">함수 이름을 몰라도 됩니다. 하려는 일을 그대로 문장으로 적으면 그 업무에 맞는 산식을 순서대로 꺼내 줍니다. 수식 전문은 <a href="https://claude.ai/code/artifact/94e6f911-801c-40f6-8099-196a8c7d0c9c" target="_blank" rel="noopener">합본</a>에 있습니다.</p>
+    </div>
+    <div class="plate">
+      <p class="vol">길잡이<small>업무 → 산식</small></p>
+      <div class="stats">
+        <div><b>41</b><span>업무</span></div>
+        <div><b>8</b><span>분류</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="ask">
+  <div class="ask-in">
+    <label class="ask-box">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 4.5 16.8L21 21l-1.2-4.5A9 9 0 0 0 12 3z"/><path d="M9.2 9.4a2.9 2.9 0 0 1 5.6 1c0 1.9-2.8 2.4-2.8 2.4"/><path d="M12 16.2h.01"/></svg>
+      <input id="q" type="text" placeholder="예: 고객별 수익률을 계산하고 싶어요 / 만기 다가오는 고객 뽑기 / 매달 받는 파일 합치기" autocomplete="off" aria-label="하려는 일을 문장으로 입력">
+    </label>
+    <div class="chips">
+      <b>이런 것들</b>
+      <button class="chip" type="button">고객별 수익률 계산</button>
+      <button class="chip" type="button">만기 다가오는 고객 뽑기</button>
+      <button class="chip" type="button">매달 받는 파일 자동 취합</button>
+      <button class="chip" type="button">이 펀드 위험한지 보고 싶다</button>
+      <button class="chip" type="button">목표 달성률 관리</button>
+      <button class="chip" type="button">고객 안내 문자 만들기</button>
+      <button class="chip" type="button">종목코드 앞의 0이 사라졌다</button>
+      <button class="chip" type="button">ELS 조기상환 판정</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="res"></div>
+
+  <section class="browse" id="browse">
+    <div class="browse-h">
+      <h2>전체 업무 목록</h2>
+      <span>41개 · 결과를 보다가도 여기서 다시 고를 수 있습니다</span>
+    </div>
+    <p class="cat-h">데이터 합치기·뽑기</p>
+    <div class="tasks">
+      <button class="task" type="button" data-i="0">두 표를 코드로 붙이고 싶다</button>
+      <button class="task" type="button" data-i="1">조건에 맞는 것만 합계·건수를 내고 싶다</button>
+      <button class="task" type="button" data-i="2">조건에 맞는 행만 목록으로 뽑고 싶다</button>
+      <button class="task" type="button" data-i="3">중복을 찾거나 없애고 싶다</button>
+      <button class="task" type="button" data-i="4">두 목록을 대조해 빠진 것을 찾고 싶다</button>
+      <button class="task" type="button" data-i="5">순위를 매기거나 상위 N개를 뽑고 싶다</button>
+      <button class="task" type="button" data-i="6">월별로 가로로 퍼진 표를 정리하고 싶다</button>
+      <button class="task" type="button" data-i="7">여러 시트나 파일을 하나로 합치고 싶다</button>
+    </div>
+    <p class="cat-h">데이터 손질</p>
+    <div class="tasks">
+      <button class="task" type="button" data-i="8">종목코드 앞의 0이 사라졌다</button>
+      <button class="task" type="button" data-i="9">숫자인데 계산이 안 된다</button>
+      <button class="task" type="button" data-i="10">고객 이름·계좌번호를 가리고 싶다</button>
+      <button class="task" type="button" data-i="11">데이터가 제대로 들어왔는지 점검하고 싶다</button>
+    </div>
+    <p class="cat-h">날짜·기한</p>
+    <div class="tasks">
+      <button class="task" type="button" data-i="12">영업일 기준으로 날짜를 계산하고 싶다</button>
+      <button class="task" type="button" data-i="13">만기가 다가오는 건을 챙기고 싶다</button>
+      <button class="task" type="button" data-i="14">월말·분기·주차를 자동으로 만들고 싶다</button>
+    </div>
+    <p class="cat-h">수익률·투자 계산</p>
+    <div class="tasks">
+      <button class="task" type="button" data-i="15">수익률을 제대로 계산하고 싶다</button>
+      <button class="task" type="button" data-i="16">입출금이 있는 고객 계좌의 수익률을 내고 싶다</button>
+      <button class="task" type="button" data-i="17">대출 상환액이나 적립 결과를 계산하고 싶다</button>
+      <button class="task" type="button" data-i="18">채권 가격이나 수익률을 구하고 싶다</button>
+    </div>
+    <p class="cat-h">리스크 관리</p>
+    <div class="tasks">
+      <button class="task" type="button" data-i="19">이 종목·펀드가 얼마나 위험한지 보고 싶다</button>
+      <button class="task" type="button" data-i="20">최대 얼마나 빠졌었는지 보여주고 싶다</button>
+      <button class="task" type="button" data-i="21">손실 가능 금액을 숫자로 제시하고 싶다</button>
+      <button class="task" type="button" data-i="22">포트폴리오 전체의 위험을 계산하고 싶다</button>
+      <button class="task" type="button" data-i="23">ELS 조기상환·낙인 여부를 판정하고 싶다</button>
+      <button class="task" type="button" data-i="24">옵션 가격이나 그릭을 계산하고 싶다</button>
+    </div>
+    <p class="cat-h">고객 관리</p>
+    <div class="tasks">
+      <button class="task" type="button" data-i="25">고객별 자산과 손익을 한 줄로 보고 싶다</button>
+      <button class="task" type="button" data-i="26">오늘 누구에게 연락할지 뽑고 싶다</button>
+      <button class="task" type="button" data-i="27">고객 등급을 자동으로 매기고 싶다</button>
+      <button class="task" type="button" data-i="28">자산 비중을 조정할 금액을 뽑고 싶다</button>
+      <button class="task" type="button" data-i="29">이탈 조짐이나 유휴자금을 잡아내고 싶다</button>
+      <button class="task" type="button" data-i="30">고객에게 보낼 문구를 자동으로 만들고 싶다</button>
+      <button class="task" type="button" data-i="31">투자성향에 맞는 상품인지 확인하고 싶다</button>
+    </div>
+    <p class="cat-h">실적 관리</p>
+    <div class="tasks">
+      <button class="task" type="button" data-i="32">실적과 목표 달성률을 관리하고 싶다</button>
+      <button class="task" type="button" data-i="33">수수료를 요율표로 계산하고 싶다</button>
+      <button class="task" type="button" data-i="34">전월·전년 대비 증감을 보고 싶다</button>
+    </div>
+    <p class="cat-h">자동화·마감</p>
+    <div class="tasks">
+      <button class="task" type="button" data-i="35">매달 하는 반복 작업을 자동화하고 싶다</button>
+      <button class="task" type="button" data-i="36">고객별 보고서를 한 번에 만들고 싶다</button>
+      <button class="task" type="button" data-i="37">중요한 값을 색으로 튀게 하고 싶다</button>
+      <button class="task" type="button" data-i="38">주문 가격을 호가단위에 맞추고 싶다</button>
+      <button class="task" type="button" data-i="39">출력물이 깨지지 않게 인쇄하고 싶다</button>
+      <button class="task" type="button" data-i="40">파일이 너무 무거워졌다</button>
+    </div>
+  </section>
+
+  <div id="all" hidden>
+        <article class="rec" id="r0" data-i="0">
+          <header class="rec-h">
+            <span class="rec-cat">데이터 합치기·뽑기</span>
+            <h3>두 표를 코드로 붙이고 싶다</h3>
+            <p class="rec-why">조회 열과 반환 열이 따로 있어 열을 끼워 넣어도 깨지지 않습니다. 건수가 수만 행이면 파워 쿼리 병합이 더 빠릅니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">기준 표와 참조 표를 각각 표(Ctrl+T)로 만든다</span></li>
+            <li><span class="st">코드로 값을 가져온다</span><div class="ex"><code>=XLOOKUP($A2, 종목[코드], 종목[종목명], "미등록")</code></div></li>
+            <li><span class="st">구버전이면 이 조합</span><div class="ex"><code>=INDEX(종목[종목명], MATCH($A2, 종목[코드], 0))</code></div></li>
+            <li><span class="st">수만 행이면 수식 대신</span><div class="ex"><code>파워 쿼리 → 쿼리 병합(왼쪽 외부 조인)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">XLOOKUP</span><span class="pill">INDEX</span><span class="pill">MATCH</span><span class="pill">파워 쿼리 병합</span></p>
+        </article>
+        <article class="rec" id="r1" data-i="1">
+          <header class="rec-h">
+            <span class="rec-cat">데이터 합치기·뽑기</span>
+            <h3>조건에 맞는 것만 합계·건수를 내고 싶다</h3>
+            <p class="rec-why">조건이 여러 개면 SUMIFS, 조건 안에 계산이 들어가면 SUMPRODUCT입니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">기간·구분 조건으로 합계</span><div class="ex"><code>=SUMIFS(매매[금액], 매매[일자],"&gt;="&amp;$B$1, 매매[일자],"&lt;="&amp;$B$2, 매매[구분],"매수")</code></div></li>
+            <li><span class="st">건수는 같은 문법으로</span><div class="ex"><code>=COUNTIFS(매매[구분],"매수", 매매[금액],"&gt;=1000000")</code></div></li>
+            <li><span class="st">조건에 계산이 들어가면</span><div class="ex"><code>=SUMPRODUCT((YEAR(일자)=2026)*(구분="매수")*금액)</code></div></li>
+            <li><span class="st">필터 결과만 합산</span><div class="ex"><code>=SUBTOTAL(109, 매매[금액])</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">SUMIFS</span><span class="pill">COUNTIFS</span><span class="pill">SUMPRODUCT</span><span class="pill">SUBTOTAL</span></p>
+        </article>
+        <article class="rec" id="r2" data-i="2">
+          <header class="rec-h">
+            <span class="rec-cat">데이터 합치기·뽑기</span>
+            <h3>조건에 맞는 행만 목록으로 뽑고 싶다</h3>
+            <p class="rec-why">FILTER는 결과 건수만큼 자동으로 늘어나므로, 원본이 바뀌어도 목록이 따라옵니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">조건에 맞는 행 추출</span><div class="ex"><code>=FILTER(매매, (매매[구분]="매수")*(매매[금액]&gt;=1000000), "해당 없음")</code></div></li>
+            <li><span class="st">필요한 열만 골라서</span><div class="ex"><code>=CHOOSECOLS(FILTER(...), 1, 2, 5)</code></div></li>
+            <li><span class="st">정렬까지 한 번에</span><div class="ex"><code>=SORT(FILTER(...), 3, -1)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">FILTER</span><span class="pill">SORT</span><span class="pill">CHOOSECOLS</span></p>
+        </article>
+        <article class="rec" id="r3" data-i="3">
+          <header class="rec-h">
+            <span class="rec-cat">데이터 합치기·뽑기</span>
+            <h3>중복을 찾거나 없애고 싶다</h3>
+            <p class="rec-why">표시는 COUNTIF, 목록 생성은 UNIQUE. 원본을 지우기 전에 무엇이 중복인지 먼저 보세요.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">중복 행 표시(조건부 서식 수식)</span><div class="ex"><code>=COUNTIF($A:$A, $A2)&gt;1</code></div></li>
+            <li><span class="st">중복 건수 세기</span><div class="ex"><code>=SUMPRODUCT(--(COUNTIF(고객[코드], 고객[코드])&gt;1))</code></div></li>
+            <li><span class="st">고유 목록 만들기</span><div class="ex"><code>=SORT(UNIQUE(매매[종목]))</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">COUNTIF</span><span class="pill">UNIQUE</span><span class="pill">조건부 서식</span></p>
+        </article>
+        <article class="rec" id="r4" data-i="4">
+          <header class="rec-h">
+            <span class="rec-cat">데이터 합치기·뽑기</span>
+            <h3>두 목록을 대조해 빠진 것을 찾고 싶다</h3>
+            <p class="rec-why">한쪽 기준으로 상대 목록에 몇 개 있는지 세면, 0인 것이 누락입니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">누락 표시</span><div class="ex"><code>=IF(COUNTIF(대조표[코드], A2)=0, "누락", "")</code></div></li>
+            <li><span class="st">누락 목록 한 번에</span><div class="ex"><code>=TEXTJOIN(", ", TRUE, FILTER(A:A, COUNTIF(B:B, A:A)=0))</code></div></li>
+            <li><span class="st">숫자 대조는 반올림 후 비교</span><div class="ex"><code>=ROUND(SUM(상세)-총계, 2)=0</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">COUNTIF</span><span class="pill">FILTER</span><span class="pill">TEXTJOIN</span></p>
+        </article>
+        <article class="rec" id="r5" data-i="5">
+          <header class="rec-h">
+            <span class="rec-cat">데이터 합치기·뽑기</span>
+            <h3>순위를 매기거나 상위 N개를 뽑고 싶다</h3>
+            <p class="rec-why">순위 표시는 RANK.EQ, 목록 추출은 SORTBY + TAKE가 깔끔합니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">순위 매기기</span><div class="ex"><code>=RANK.EQ(B2, $B$2:$B$200, 0)</code></div></li>
+            <li><span class="st">상위 5명 목록</span><div class="ex"><code>=TAKE(SORTBY(고객[이름], 고객[수수료], -1), 5)</code></div></li>
+            <li><span class="st">상위 10명 비중</span><div class="ex"><code>=SUMIF(수수료,"&gt;="&amp;LARGE(수수료,10))/SUM(수수료)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">RANK.EQ</span><span class="pill">SORTBY</span><span class="pill">TAKE</span><span class="pill">LARGE</span></p>
+        </article>
+        <article class="rec" id="r6" data-i="6">
+          <header class="rec-h">
+            <span class="rec-cat">데이터 합치기·뽑기</span>
+            <h3>월별로 가로로 퍼진 표를 정리하고 싶다</h3>
+            <p class="rec-why">피벗테이블·SUMIFS·차트가 먹는 형태는 "항목·기간·값" 세 열짜리 세로 표입니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">파워 쿼리로 불러온다</span><div class="ex"><code>데이터 → 데이터 가져오기</code></div></li>
+            <li><span class="st">월 열들을 선택하고</span><div class="ex"><code>변환 → 열 피벗 해제</code></div></li>
+            <li><span class="st">수식으로 요약하려면</span><div class="ex"><code>=PIVOTBY(매매[종목], 매매[월], 매매[금액], SUM)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">파워 쿼리</span><span class="pill">PIVOTBY</span><span class="pill">GROUPBY</span></p>
+        </article>
+        <article class="rec" id="r7" data-i="7">
+          <header class="rec-h">
+            <span class="rec-cat">데이터 합치기·뽑기</span>
+            <h3>여러 시트나 파일을 하나로 합치고 싶다</h3>
+            <p class="rec-why">한 번만 하면 VSTACK, 매번 반복된다면 파워 쿼리 폴더 연결이 맞습니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">시트 몇 개면 수식으로</span><div class="ex"><code>=VSTACK('1월'!A2:E200, '2월'!A2:E200)</code></div></li>
+            <li><span class="st">매달 반복이면 폴더 연결</span><div class="ex"><code>데이터 → 가져오기 → 파일 → 폴더에서</code></div></li>
+            <li><span class="st">이후로는</span><div class="ex"><code>데이터 → 모두 새로 고침 (Ctrl+Alt+F5)</code></div></li>
+            <li><span class="st">구조가 제각각이면 매크로</span><div class="ex"><code>Dir() 반복문으로 파일별 복사</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">VSTACK</span><span class="pill">파워 쿼리</span><span class="pill">VBA</span></p>
+        </article>
+        <article class="rec" id="r8" data-i="8">
+          <header class="rec-h">
+            <span class="rec-cat">데이터 손질</span>
+            <h3>종목코드 앞의 0이 사라졌다</h3>
+            <p class="rec-why">숫자로 저장되어 앞 0이 날아간 경우입니다. 표시형식이 아니라 값 자체를 문자로 만들어야 조회가 됩니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">6자리 문자로 복원</span><div class="ex"><code>=TEXT(A2, "000000")</code></div></li>
+            <li><span class="st">파워 쿼리에서는</span><div class="ex"><code>= Text.PadStart(Text.From([코드]), 6, "0")</code></div></li>
+            <li><span class="st">조회가 안 되면 형식 불일치 확인</span><div class="ex"><code>=ISTEXT(A2)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">TEXT</span><span class="pill">ISTEXT</span></p>
+        </article>
+        <article class="rec" id="r9" data-i="9">
+          <header class="rec-h">
+            <span class="rec-cat">데이터 손질</span>
+            <h3>숫자인데 계산이 안 된다</h3>
+            <p class="rec-why">웹·시스템에서 내려받은 값에는 눈에 안 보이는 공백(CHAR 160)이 섞여 있는 경우가 많습니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">공백·기호 제거 후 숫자로</span><div class="ex"><code>=VALUE(SUBSTITUTE(SUBSTITUTE(TRIM(CLEAN(A2)), ",", ""), CHAR(160), ""))</code></div></li>
+            <li><span class="st">간단히는</span><div class="ex"><code>=A2*1  또는  =--A2</code></div></li>
+            <li><span class="st">대량이면</span><div class="ex"><code>데이터 → 텍스트 나누기 → 마침</code></div></li>
+            <li><span class="st">몇 개가 문자인지 점검</span><div class="ex"><code>=COUNTA(E:E)-COUNT(E:E)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">VALUE</span><span class="pill">TRIM</span><span class="pill">CLEAN</span><span class="pill">SUBSTITUTE</span></p>
+        </article>
+        <article class="rec" id="r10" data-i="10">
+          <header class="rec-h">
+            <span class="rec-cat">데이터 손질</span>
+            <h3>고객 이름·계좌번호를 가리고 싶다</h3>
+            <p class="rec-why">마스킹 열은 표시용일 뿐 원본 열이 파일에 남습니다. 내보내기 전에 값으로 붙여넣고 원본 열을 지우세요.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">이름 가운데 가리기</span><div class="ex"><code>=REPLACE(A2, 2, 1, "*")</code></div></li>
+            <li><span class="st">계좌·연락처</span><div class="ex"><code>=LEFT(B2,3)&amp;"-****-"&amp;RIGHT(B2,4)</code></div></li>
+            <li><span class="st">내보내기 전 처리</span><div class="ex"><code>마스킹 열 복사 → 값으로 붙여넣기 → 원본 열 삭제</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">REPLACE</span><span class="pill">LEFT</span><span class="pill">RIGHT</span></p>
+        </article>
+        <article class="rec" id="r11" data-i="11">
+          <header class="rec-h">
+            <span class="rec-cat">데이터 손질</span>
+            <h3>데이터가 제대로 들어왔는지 점검하고 싶다</h3>
+            <p class="rec-why">보고서 상단에 점검 줄을 고정해 두면 틀린 채로 제출하는 일이 사라집니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">오류 셀 개수</span><div class="ex"><code>=SUMPRODUCT(--ISERROR($E$2:$E$999))</code></div></li>
+            <li><span class="st">연락처 누락</span><div class="ex"><code>=COUNTBLANK(고객[연락처])</code></div></li>
+            <li><span class="st">계좌 자릿수 이상</span><div class="ex"><code>=SUMPRODUCT(--(LEN(고객[계좌번호])&lt;&gt;10))</code></div></li>
+            <li><span class="st">합계 대조</span><div class="ex"><code>=IF(ROUND(SUM(상세[금액])-총계,2)=0, "일치", "불일치")</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">SUMPRODUCT</span><span class="pill">ISERROR</span><span class="pill">COUNTBLANK</span></p>
+        </article>
+        <article class="rec" id="r12" data-i="12">
+          <header class="rec-h">
+            <span class="rec-cat">날짜·기한</span>
+            <h3>영업일 기준으로 날짜를 계산하고 싶다</h3>
+            <p class="rec-why">휴장일 목록을 시트에 두고 인자로 넘기면 국내 결제일이 정확히 맞습니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">휴장일 목록을 시트에 만든다</span></li>
+            <li><span class="st">결제일(T+2)</span><div class="ex"><code>=WORKDAY(거래일, 2, 휴장일)</code></div></li>
+            <li><span class="st">영업일수 세기</span><div class="ex"><code>=NETWORKDAYS(시작, 종료, 휴장일)</code></div></li>
+            <li><span class="st">그 달 마지막 영업일</span><div class="ex"><code>=WORKDAY(EOMONTH(A2,0)+1, -1, 휴장일)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">WORKDAY</span><span class="pill">NETWORKDAYS</span><span class="pill">EOMONTH</span></p>
+        </article>
+        <article class="rec" id="r13" data-i="13">
+          <header class="rec-h">
+            <span class="rec-cat">날짜·기한</span>
+            <h3>만기가 다가오는 건을 챙기고 싶다</h3>
+            <p class="rec-why">오늘 기준 창(window)을 잡아 자동으로 목록이 갱신되게 하면 놓치지 않습니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">D-day 열 만들기</span><div class="ex"><code>=만기일-TODAY()</code></div></li>
+            <li><span class="st">30일 이내 도래 건만</span><div class="ex"><code>=SORT(FILTER(보유, (보유[만기일]-TODAY()&gt;=0)*(보유[만기일]-TODAY()&lt;=30), "도래 없음"), 4)</code></div></li>
+            <li><span class="st">임박 표시(조건부 서식)</span><div class="ex"><code>=AND($D2&lt;&gt;"", $D2-TODAY()&lt;=7)</code></div></li>
+            <li><span class="st">월별 유입 예정액</span><div class="ex"><code>=SUMIFS(보유[금액], 보유[만기일],"&gt;="&amp;EOMONTH(TODAY(),n-1)+1, 보유[만기일],"&lt;="&amp;EOMONTH(TODAY(),n))</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">FILTER</span><span class="pill">TODAY</span><span class="pill">SUMIFS</span><span class="pill">조건부 서식</span></p>
+        </article>
+        <article class="rec" id="r14" data-i="14">
+          <header class="rec-h">
+            <span class="rec-cat">날짜·기한</span>
+            <h3>월말·분기·주차를 자동으로 만들고 싶다</h3>
+            <p class="rec-why">기간 열을 수식으로 만들어 두면 피벗과 SUMIFS가 그대로 붙습니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">당월 말일 / 1일</span><div class="ex"><code>=EOMONTH(A2,0)   /   =EOMONTH(A2,-1)+1</code></div></li>
+            <li><span class="st">분기</span><div class="ex"><code>=ROUNDUP(MONTH(A2)/3, 0)</code></div></li>
+            <li><span class="st">월 라벨</span><div class="ex"><code>=TEXT(A2, "yyyy-mm")</code></div></li>
+            <li><span class="st">ISO 주차</span><div class="ex"><code>=ISOWEEKNUM(A2)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">EOMONTH</span><span class="pill">TEXT</span><span class="pill">ISOWEEKNUM</span></p>
+        </article>
+        <article class="rec" id="r15" data-i="15">
+          <header class="rec-h">
+            <span class="rec-cat">수익률·투자 계산</span>
+            <h3>수익률을 제대로 계산하고 싶다</h3>
+            <p class="rec-why">단순 합산은 틀립니다. 기간 연결은 곱셈, 연환산은 복리로 환산해야 합니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">기간 수익률</span><div class="ex"><code>=B3/B2-1</code></div></li>
+            <li><span class="st">누적(기하 연결)</span><div class="ex"><code>=PRODUCT(1+수익률범위)-1</code></div></li>
+            <li><span class="st">연평균(CAGR)</span><div class="ex"><code>=(기말/기초)^(1/연수)-1   또는   =RRI(연수, 기초, 기말)</code></div></li>
+            <li><span class="st">월 → 연 환산</span><div class="ex"><code>=(1+월수익률)^12-1</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">RRI</span><span class="pill">PRODUCT</span><span class="pill">LN</span></p>
+        </article>
+        <article class="rec" id="r16" data-i="16">
+          <header class="rec-h">
+            <span class="rec-cat">수익률·투자 계산</span>
+            <h3>입출금이 있는 고객 계좌의 수익률을 내고 싶다</h3>
+            <p class="rec-why">중간에 입출금이 있으면 평가손익률은 왜곡됩니다. 날짜별 현금흐름으로 계산해야 합니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">현금흐름 표를 만든다 (유출 −, 유입 +)</span><div class="ex"><code>기초평가액 −, 입금 −, 출금 +, 기말평가액 +</code></div></li>
+            <li><span class="st">수익률</span><div class="ex"><code>=XIRR(현금흐름, 일자)</code></div></li>
+            <li><span class="st">현재가치가 필요하면</span><div class="ex"><code>=XNPV(할인율, 현금흐름, 일자)</code></div></li>
+            <li><span class="st">안 되면 부호 확인</span><div class="ex"><code>유출·유입이 모두 같은 부호면 #NUM!</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">XIRR</span><span class="pill">XNPV</span><span class="pill">IRR</span></p>
+        </article>
+        <article class="rec" id="r17" data-i="17">
+          <header class="rec-h">
+            <span class="rec-cat">수익률·투자 계산</span>
+            <h3>대출 상환액이나 적립 결과를 계산하고 싶다</h3>
+            <p class="rec-why">금리·기간·금액 중 넷을 알면 나머지 하나가 나옵니다. 월 단위면 이율 ÷12, 기간 ×12.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">월 상환액</span><div class="ex"><code>=PMT(연이율/12, 년수*12, -원금)</code></div></li>
+            <li><span class="st">회차별 이자/원금</span><div class="ex"><code>=IPMT(...)   /   =PPMT(...)</code></div></li>
+            <li><span class="st">적립식 만기금액</span><div class="ex"><code>=FV(연이율/12, 개월수, -월납입액)</code></div></li>
+            <li><span class="st">실효금리 비교</span><div class="ex"><code>=EFFECT(명목금리, 12)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">PMT</span><span class="pill">IPMT</span><span class="pill">FV</span><span class="pill">RATE</span><span class="pill">EFFECT</span></p>
+        </article>
+        <article class="rec" id="r18" data-i="18">
+          <header class="rec-h">
+            <span class="rec-cat">수익률·투자 계산</span>
+            <h3>채권 가격이나 수익률을 구하고 싶다</h3>
+            <p class="rec-why">인자가 길어 실수가 잦습니다. 인자마다 입력 셀을 만들고 참조하세요.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">가격(액면 100 기준)</span><div class="ex"><code>=PRICE(정산일, 만기일, 표면금리, 수익률, 100, 2, 1)</code></div></li>
+            <li><span class="st">수익률(YTM)</span><div class="ex"><code>=YIELD(정산일, 만기일, 표면금리, 가격, 100, 2, 1)</code></div></li>
+            <li><span class="st">금리 민감도</span><div class="ex"><code>=MDURATION(정산일, 만기일, 표면금리, 수익률, 2, 1)</code></div></li>
+            <li><span class="st">경과이자 더해 더티 프라이스</span><div class="ex"><code>=PRICE(...) + ACCRINT(...)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">PRICE</span><span class="pill">YIELD</span><span class="pill">MDURATION</span><span class="pill">ACCRINT</span></p>
+        </article>
+        <article class="rec" id="r19" data-i="19">
+          <header class="rec-h">
+            <span class="rec-cat">리스크 관리</span>
+            <h3>이 종목·펀드가 얼마나 위험한지 보고 싶다</h3>
+            <p class="rec-why">일간 수익률 한 열만 있으면 아래 지표가 전부 나옵니다. 연율화 계수(252)를 셀로 고정해 두세요.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">연변동성</span><div class="ex"><code>=STDEV.S(수익률)*SQRT(252)</code></div></li>
+            <li><span class="st">샤프지수</span><div class="ex"><code>=(AVERAGE(수익률)*252-무위험금리)/(STDEV.S(수익률)*SQRT(252))</code></div></li>
+            <li><span class="st">지수 대비 민감도(베타)</span><div class="ex"><code>=SLOPE(주식수익률, 지수수익률)</code></div></li>
+            <li><span class="st">추적오차</span><div class="ex"><code>=STDEV.S(초과수익)*SQRT(252)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">STDEV.S</span><span class="pill">SLOPE</span><span class="pill">CORREL</span></p>
+        </article>
+        <article class="rec" id="r20" data-i="20">
+          <header class="rec-h">
+            <span class="rec-cat">리스크 관리</span>
+            <h3>최대 얼마나 빠졌었는지 보여주고 싶다</h3>
+            <p class="rec-why">지나온 최고가를 계단처럼 기억한 뒤, 현재가와 가장 크게 벌어진 지점을 찾습니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">한 셀로(365)</span><div class="ex"><code>=MIN(종가/SCAN(0, 종가, LAMBDA(a,v, MAX(a,v))) - 1)</code></div></li>
+            <li><span class="st">구버전은 보조열로</span><div class="ex"><code>D열 =MAX($C$2:C2)  ·  E열 =C2/D2-1  ·  =MIN(E:E)</code></div></li>
+            <li><span class="st">회복 기간도 함께 보면 설명이 쉬워진다</span></li>
+          </ol>
+          <p class="rec-f"><span class="pill">SCAN</span><span class="pill">LAMBDA</span><span class="pill">MIN</span></p>
+        </article>
+        <article class="rec" id="r21" data-i="21">
+          <header class="rec-h">
+            <span class="rec-cat">리스크 관리</span>
+            <h3>손실 가능 금액을 숫자로 제시하고 싶다</h3>
+            <p class="rec-why">역사적 방식은 실제 분포를, 모수적 방식은 정규분포를 가정합니다. 둘 다 보여주면 설득력이 올라갑니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">역사적 VaR 95%</span><div class="ex"><code>=-PERCENTILE.INC(수익률, 0.05)</code></div></li>
+            <li><span class="st">모수적 VaR 95%</span><div class="ex"><code>=-(AVERAGE(수익률)+NORM.S.INV(0.05)*STDEV.S(수익률))</code></div></li>
+            <li><span class="st">꼬리 평균(CVaR)</span><div class="ex"><code>=-AVERAGEIF(수익률,"&lt;="&amp;PERCENTILE.INC(수익률,0.05))</code></div></li>
+            <li><span class="st">기간 환산</span><div class="ex"><code>=일간VaR*SQRT(보유일수)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">PERCENTILE.INC</span><span class="pill">NORM.S.INV</span><span class="pill">AVERAGEIF</span></p>
+        </article>
+        <article class="rec" id="r22" data-i="22">
+          <header class="rec-h">
+            <span class="rec-cat">리스크 관리</span>
+            <h3>포트폴리오 전체의 위험을 계산하고 싶다</h3>
+            <p class="rec-why">개별 변동성의 단순 평균이 아닙니다. 상관까지 반영하려면 행렬 계산이 필요합니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">자산 간 상관</span><div class="ex"><code>=CORREL(수익률A, 수익률B)</code></div></li>
+            <li><span class="st">공분산 행렬을 만든다</span><div class="ex"><code>=COVARIANCE.P(범위i, 범위j)</code></div></li>
+            <li><span class="st">포트폴리오 변동성</span><div class="ex"><code>=SQRT(MMULT(MMULT(TRANSPOSE(비중), 공분산행렬), 비중))*SQRT(252)</code></div></li>
+            <li><span class="st">자산별 위험기여도</span><div class="ex"><code>=비중*MMULT(공분산행렬, 비중)/포트분산</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">MMULT</span><span class="pill">TRANSPOSE</span><span class="pill">COVARIANCE.P</span><span class="pill">CORREL</span></p>
+        </article>
+        <article class="rec" id="r23" data-i="23">
+          <header class="rec-h">
+            <span class="rec-cat">리스크 관리</span>
+            <h3>ELS 조기상환·낙인 여부를 판정하고 싶다</h3>
+            <p class="rec-why">표준형 스텝다운 기준입니다. 리자드·월지급 등 변형은 반드시 약관과 대조하세요.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">평가일 만들기</span><div class="ex"><code>=EDATE($B$1, 6*SEQUENCE(6))  → =WORKDAY(평가일+1, -1, 휴장일)</code></div></li>
+            <li><span class="st">배리어 스케줄</span><div class="ex"><code>=SEQUENCE(6,1,0.95,-0.05)</code></div></li>
+            <li><span class="st">조기상환 판정(worst-of)</span><div class="ex"><code>=IF(MIN(관찰일종가/최초기준가) &gt;= 행사비율, "조기상환", "이월")</code></div></li>
+            <li><span class="st">낙인 여부</span><div class="ex"><code>=IF(MIN(전기간최저가/최초기준가) &lt; KI비율, "낙인 발생", "미발생")</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">MIN</span><span class="pill">EDATE</span><span class="pill">SEQUENCE</span><span class="pill">IF</span></p>
+        </article>
+        <article class="rec" id="r24" data-i="24">
+          <header class="rec-h">
+            <span class="rec-cat">리스크 관리</span>
+            <h3>옵션 가격이나 그릭을 계산하고 싶다</h3>
+            <p class="rec-why">한 셀에 LET으로 담으면 검산이 쉽습니다. 풋-콜 패리티로 반드시 확인하세요.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">콜 가격</span><div class="ex"><code>=LET(S,$B$1,K,$B$2,r,$B$3,q,$B$4,v,$B$5,T,$B$6, d1,(LN(S/K)+(r-q+v^2/2)*T)/(v*SQRT(T)), d2,d1-v*SQRT(T), S*EXP(-q*T)*NORM.S.DIST(d1,TRUE)-K*EXP(-r*T)*NORM.S.DIST(d2,TRUE))</code></div></li>
+            <li><span class="st">검산(풋-콜 패리티)</span><div class="ex"><code>콜 - 풋 = S*EXP(-q*T) - K*EXP(-r*T)</code></div></li>
+            <li><span class="st">내재변동성은 역산</span><div class="ex"><code>데이터 → 가상 분석 → 목표값 찾기</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">LET</span><span class="pill">NORM.S.DIST</span><span class="pill">EXP</span><span class="pill">LN</span></p>
+        </article>
+        <article class="rec" id="r25" data-i="25">
+          <header class="rec-h">
+            <span class="rec-cat">고객 관리</span>
+            <h3>고객별 자산과 손익을 한 줄로 보고 싶다</h3>
+            <p class="rec-why">잔고 원장을 표로 만들어 두면 고객 목록에서 SUMIFS로 전부 끌어옵니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">고객별 평가금액</span><div class="ex"><code>=SUMIFS(잔고[평가금액], 잔고[고객코드], $A2)</code></div></li>
+            <li><span class="st">상품군별로 쪼개기</span><div class="ex"><code>=SUMIFS(잔고[평가금액], 잔고[고객코드], $A2, 잔고[상품군], B$1)</code></div></li>
+            <li><span class="st">평가손익률</span><div class="ex"><code>=SUMIFS(잔고[평가금액],잔고[고객코드],$A2)/SUMIFS(잔고[매입금액],잔고[고객코드],$A2)-1</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">SUMIFS</span></p>
+        </article>
+        <article class="rec" id="r26" data-i="26">
+          <header class="rec-h">
+            <span class="rec-cat">고객 관리</span>
+            <h3>오늘 누구에게 연락할지 뽑고 싶다</h3>
+            <p class="rec-why">"자산이 크고 오래 연락 못 한 고객"을 점수로 만들면 매일 자동으로 리스트가 나옵니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">미접촉 경과일</span><div class="ex"><code>=TODAY()-최근접촉일</code></div></li>
+            <li><span class="st">대상 추출</span><div class="ex"><code>=FILTER(CHOOSECOLS(고객,1,2,5), (TODAY()-고객[최근접촉일]&gt;30)*(고객[총자산]&gt;=100000000), "대상 없음")</code></div></li>
+            <li><span class="st">우선순위 점수</span><div class="ex"><code>=고객[총자산]/100000000*3 + (TODAY()-고객[최근접촉일])/30</code></div></li>
+            <li><span class="st">점수 순 정렬</span><div class="ex"><code>=SORTBY(콜대상, 우선순위점수, -1)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">FILTER</span><span class="pill">SORTBY</span><span class="pill">TODAY</span></p>
+        </article>
+        <article class="rec" id="r27" data-i="27">
+          <header class="rec-h">
+            <span class="rec-cat">고객 관리</span>
+            <h3>고객 등급을 자동으로 매기고 싶다</h3>
+            <p class="rec-why">구간표를 셀로 두고 조회하면 기준이 바뀌어도 표만 고치면 됩니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">자산 구간으로 등급</span><div class="ex"><code>=LOOKUP(총자산, {0;30000000;100000000;500000000}, {"일반";"우대";"골드";"프리미엄"})</code></div></li>
+            <li><span class="st">수수료 누적 기여도</span><div class="ex"><code>=SCAN(0, SORT(수수료,,-1), LAMBDA(a,v, a+v))/SUM(수수료)</code></div></li>
+            <li><span class="st">상위 80% 기여 고객</span><div class="ex"><code>=FILTER(고객명, 누적기여도&lt;=0.8)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">LOOKUP</span><span class="pill">SCAN</span><span class="pill">FILTER</span></p>
+        </article>
+        <article class="rec" id="r28" data-i="28">
+          <header class="rec-h">
+            <span class="rec-cat">고객 관리</span>
+            <h3>자산 비중을 조정할 금액을 뽑고 싶다</h3>
+            <p class="rec-why">목표 비중과 현재 금액의 차이를 그대로 제안 금액으로 씁니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">현재 비중</span><div class="ex"><code>=현재금액/총자산</code></div></li>
+            <li><span class="st">조정 금액(+매수 / −매도)</span><div class="ex"><code>=목표비중*총자산 - 현재금액</code></div></li>
+            <li><span class="st">문장으로 만들기</span><div class="ex"><code>=TEXT(ABS(조정금액),"#,##0")&amp;"원 "&amp;IF(조정금액&gt;0,"매수","매도")</code></div></li>
+            <li><span class="st">포트폴리오 위험도</span><div class="ex"><code>=SUMPRODUCT(비중, 상품위험등급)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">SUMPRODUCT</span><span class="pill">TEXT</span><span class="pill">IF</span></p>
+        </article>
+        <article class="rec" id="r29" data-i="29">
+          <header class="rec-h">
+            <span class="rec-cat">고객 관리</span>
+            <h3>이탈 조짐이나 유휴자금을 잡아내고 싶다</h3>
+            <p class="rec-why">기회와 위험을 같은 방식으로 잡습니다 — 조건 한 줄이면 됩니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">유휴자금 제안 대상</span><div class="ex"><code>=IF(예수금/총자산&gt;0.3, "유휴자금 제안 대상", "")</code></div></li>
+            <li><span class="st">잔고 급감 감지</span><div class="ex"><code>=IF(당월총자산/전월총자산-1 &lt; -0.3, "확인 필요", "")</code></div></li>
+            <li><span class="st">휴면 주의</span><div class="ex"><code>=IF(AND(총자산&gt;0, 최근거래일&lt;TODAY()-180), "휴면 전환 주의", "")</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">IF</span><span class="pill">AND</span><span class="pill">TODAY</span></p>
+        </article>
+        <article class="rec" id="r30" data-i="30">
+          <header class="rec-h">
+            <span class="rec-cat">고객 관리</span>
+            <h3>고객에게 보낼 문구를 자동으로 만들고 싶다</h3>
+            <p class="rec-why">조건에 따라 문장이 갈리게 해두면 그대로 발송 목록이 됩니다. 준법감시 승인 문안을 벗어나지 않게 하세요.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">만기 안내 문구</span><div class="ex"><code>=고객명&amp;" 고객님, 보유하신 "&amp;상품명&amp;"의 "&amp;TEXT(만기일,"m월 d일")&amp;" 만기가 예정되어 있습니다."</code></div></li>
+            <li><span class="st">수익률에 따라 문장 분기</span><div class="ex"><code>=IFS(수익률&gt;=0.05, 고객명&amp;"님 계좌가 "&amp;TEXT(수익률,"0.0%")&amp;" 수익 구간입니다.", 수익률&gt;=0, "안정적으로 유지 중입니다.", TRUE, "계좌 점검이 필요합니다.")</code></div></li>
+            <li><span class="st">줄바꿈 포함해 합치기</span><div class="ex"><code>=TEXTJOIN(CHAR(10), TRUE, 문구범위)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">TEXT</span><span class="pill">IFS</span><span class="pill">TEXTJOIN</span></p>
+        </article>
+        <article class="rec" id="r31" data-i="31">
+          <header class="rec-h">
+            <span class="rec-cat">고객 관리</span>
+            <h3>투자성향에 맞는 상품인지 확인하고 싶다</h3>
+            <p class="rec-why">사전 점검용입니다. 정식 적합성 판단은 사내 시스템 결과를 따르세요.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">고객 성향과 상품 등급 대조</span><div class="ex"><code>=IF(XLOOKUP(고객코드, 고객[코드], 고객[성향등급]) &lt;= XLOOKUP(상품코드, 상품[코드], 상품[위험등급]), "적합", "부적합 · 확인 필요")</code></div></li>
+            <li><span class="st">등급 체계에 따라 부등호 방향을 반드시 확인</span></li>
+          </ol>
+          <p class="rec-f"><span class="pill">XLOOKUP</span><span class="pill">IF</span></p>
+        </article>
+        <article class="rec" id="r32" data-i="32">
+          <header class="rec-h">
+            <span class="rec-cat">실적 관리</span>
+            <h3>실적과 목표 달성률을 관리하고 싶다</h3>
+            <p class="rec-why">달성률만 보면 늦게 깨닫습니다. 남은 영업일로 나눈 하루 필요 실적이 실제 관리 지표입니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">당월 누계 실적</span><div class="ex"><code>=SUMIFS(실적[수수료], 실적[일자],"&gt;="&amp;EOMONTH(TODAY(),-1)+1)</code></div></li>
+            <li><span class="st">남은 영업일</span><div class="ex"><code>=NETWORKDAYS(TODAY(), EOMONTH(TODAY(),0), 휴장일)</code></div></li>
+            <li><span class="st">하루 필요 실적</span><div class="ex"><code>=(목표-실적)/MAX(NETWORKDAYS(TODAY(), EOMONTH(TODAY(),0), 휴장일),1)</code></div></li>
+            <li><span class="st">셀 안에 진행 게이지</span><div class="ex"><code>=REPT("■",ROUND(달성률*10,0))&amp;REPT("□",10-ROUND(달성률*10,0))</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">SUMIFS</span><span class="pill">NETWORKDAYS</span><span class="pill">REPT</span></p>
+        </article>
+        <article class="rec" id="r33" data-i="33">
+          <header class="rec-h">
+            <span class="rec-cat">실적 관리</span>
+            <h3>수수료를 요율표로 계산하고 싶다</h3>
+            <p class="rec-why">요율을 수식에 박으면 개정 때 전수 수정해야 합니다. 표로 두고 조회하세요.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">요율표를 시트로 분리</span></li>
+            <li><span class="st">상품군별 수수료</span><div class="ex"><code>=약정금액 * XLOOKUP(상품군, 요율표[상품군], 요율표[요율])</code></div></li>
+            <li><span class="st">최저 수수료 적용</span><div class="ex"><code>=MAX(계산수수료, 최소수수료)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">XLOOKUP</span><span class="pill">MAX</span></p>
+        </article>
+        <article class="rec" id="r34" data-i="34">
+          <header class="rec-h">
+            <span class="rec-cat">실적 관리</span>
+            <h3>전월·전년 대비 증감을 보고 싶다</h3>
+            <p class="rec-why">0으로 나누는 경우를 반드시 막고, 부호는 색으로 구분해 표시하세요.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">전월 대비</span><div class="ex"><code>=IF(전월=0, "", 당월/전월-1)</code></div></li>
+            <li><span class="st">전년 동월 대비</span><div class="ex"><code>=IFERROR(당월/SUMIFS(실적[금액], 실적[연월], EDATE(기준월,-12))-1, "")</code></div></li>
+            <li><span class="st">등락 표기(표시형식)</span><div class="ex"><code>[빨강]+0.0%;[파랑]-0.0%;0.0%</code></div></li>
+            <li><span class="st">추이는 셀 안 미니차트로</span><div class="ex"><code>삽입 → 스파크라인</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">IFERROR</span><span class="pill">EDATE</span><span class="pill">TEXT</span></p>
+        </article>
+        <article class="rec" id="r35" data-i="35">
+          <header class="rec-h">
+            <span class="rec-cat">자동화·마감</span>
+            <h3>매달 하는 반복 작업을 자동화하고 싶다</h3>
+            <p class="rec-why">데이터를 불러오고 정리하는 일은 파워 쿼리, 엑셀을 조작하는 일(서식·저장·발송)은 VBA입니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">취합·정리라면</span><div class="ex"><code>파워 쿼리 → 폴더에서 가져오기 → 새로 고침</code></div></li>
+            <li><span class="st">엑셀 조작이라면 매크로</span><div class="ex"><code>Alt+F11 · 파일은 .xlsm으로 저장</code></div></li>
+            <li><span class="st">모든 매크로의 겉껍질</span><div class="ex"><code>Application.ScreenUpdating = False … On Error GoTo 정리</code></div></li>
+            <li><span class="st">모든 파일에서 쓰려면</span><div class="ex"><code>개인용 매크로 통합 문서(PERSONAL.XLSB)에 저장</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">파워 쿼리</span><span class="pill">VBA</span></p>
+        </article>
+        <article class="rec" id="r36" data-i="36">
+          <header class="rec-h">
+            <span class="rec-cat">자동화·마감</span>
+            <h3>고객별 보고서를 한 번에 만들고 싶다</h3>
+            <p class="rec-why">양식 시트 하나에 고객코드만 바꿔 넣으며 PDF로 떨구는 구조가 가장 단순합니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">양식 시트 + 고객목록 시트를 만든다</span></li>
+            <li><span class="st">반복하며 PDF 저장</span><div class="ex"><code>Sheets("양식").ExportAsFixedFormat Type:=xlTypePDF, Filename:=경로 &amp; 고객명 &amp; ".pdf"</code></div></li>
+            <li><span class="st">메일은 초안으로 띄우기</span><div class="ex"><code>mi.Display   ' .Send 는 회수 불가</code></div></li>
+            <li><span class="st">개인정보·발송 규정 확인 필수</span></li>
+          </ol>
+          <p class="rec-f"><span class="pill">VBA</span><span class="pill">Outlook</span></p>
+        </article>
+        <article class="rec" id="r37" data-i="37">
+          <header class="rec-h">
+            <span class="rec-cat">자동화·마감</span>
+            <h3>중요한 값을 색으로 튀게 하고 싶다</h3>
+            <p class="rec-why">행 전체를 칠하려면 열만 고정($A2)하고 범위를 행 전체로 잡습니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">손실 행 강조</span><div class="ex"><code>=AND($E2&lt;&gt;"", $E2&lt;0)</code></div></li>
+            <li><span class="st">만기 임박 경고</span><div class="ex"><code>=AND($D2&lt;&gt;"", $D2-TODAY()&lt;=7)</code></div></li>
+            <li><span class="st">상위 10위 강조</span><div class="ex"><code>=$H2&gt;=LARGE($H$2:$H$200, 10)</code></div></li>
+            <li><span class="st">등락 색 표기(표시형식)</span><div class="ex"><code>[빨강]▲#,##0;[파랑]▼#,##0;-</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">조건부 서식</span><span class="pill">AND</span><span class="pill">LARGE</span></p>
+        </article>
+        <article class="rec" id="r38" data-i="38">
+          <header class="rec-h">
+            <span class="rec-cat">자동화·마감</span>
+            <h3>주문 가격을 호가단위에 맞추고 싶다</h3>
+            <p class="rec-why">가격대마다 호가단위가 다릅니다. 구간표를 셀로 두고 조회한 뒤 그 배수로 맞춥니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">구간표를 시트에 둔다(거래소 최신 기준)</span></li>
+            <li><span class="st">호가단위 적용</span><div class="ex"><code>=LET(p, A2, u, LOOKUP(p, {0;2000;5000;20000;50000}, {1;5;10;50;100}), FLOOR.MATH(p, u))</code></div></li>
+            <li><span class="st">배수로 반올림/올림</span><div class="ex"><code>=MROUND(A2, 5)   /   =CEILING.MATH(A2, 100)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">LOOKUP</span><span class="pill">FLOOR.MATH</span><span class="pill">MROUND</span></p>
+        </article>
+        <article class="rec" id="r39" data-i="39">
+          <header class="rec-h">
+            <span class="rec-cat">자동화·마감</span>
+            <h3>출력물이 깨지지 않게 인쇄하고 싶다</h3>
+            <p class="rec-why">고객 제출용은 인쇄 미리보기까지 확인하는 것이 마지막 절차입니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">반복할 행 지정</span><div class="ex"><code>페이지 레이아웃 → 인쇄 제목 → $1:$1</code></div></li>
+            <li><span class="st">가로 한 장에 맞추기</span><div class="ex"><code>한 페이지에 모든 열 맞추기</code></div></li>
+            <li><span class="st">쪽 번호</span><div class="ex"><code>머리글/바닥글 → &amp;[페이지] / &amp;[전체 페이지 수]</code></div></li>
+            <li><span class="st">배포 양식은 잠그기</span><div class="ex"><code>입력 셀만 잠금 해제 후 검토 → 시트 보호</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">인쇄</span><span class="pill">시트 보호</span></p>
+        </article>
+        <article class="rec" id="r40" data-i="40">
+          <header class="rec-h">
+            <span class="rec-cat">자동화·마감</span>
+            <h3>파일이 너무 무거워졌다</h3>
+            <p class="rec-why">대부분 전체 열 참조와 휘발성 함수가 원인입니다.</p>
+          </header>
+          <ol class="steps">
+            <li><span class="st">전체 열 참조를 표/구조적 참조로 교체</span><div class="ex"><code>A:A → 매매[금액]</code></div></li>
+            <li><span class="st">휘발성 함수 줄이기</span><div class="ex"><code>OFFSET→INDEX/TAKE · INDIRECT→XLOOKUP · TODAY()는 기준일 셀 하나만</code></div></li>
+            <li><span class="st">중복 계산은 한 번만</span><div class="ex"><code>=LET(r, 무거운계산, r*2 + r/3)</code></div></li>
+            <li><span class="st">임시로 수동 계산</span><div class="ex"><code>수식 → 계산 옵션 → 수동 (F9로 계산)</code></div></li>
+          </ol>
+          <p class="rec-f"><span class="pill">LET</span><span class="pill">INDEX</span><span class="pill">성능</span></p>
+        </article>
+  </div>
+</div>
+
+<footer>
+  <div class="foot-in">
+    <p>입력한 문장은 이 페이지 안에서만 처리됩니다 — 서버로 전송되지 않습니다. 업무 사전과 유사어·글자 단위 유사도로 연결하는 방식이라, 사전에 없는 표현은 아래 목록에서 직접 골라 주세요.</p>
+    <p>세율·수수료율·호가단위·상품 약관처럼 규정으로 바뀌는 값은 최신 기준을 셀에 입력해 참조하시고, 고객 정보 파일과 안내 문구는 사내 개인정보·준법감시 기준을 따르세요. 수식 전문은 <a href="https://claude.ai/code/artifact/94e6f911-801c-40f6-8099-196a8c7d0c9c" target="_blank" rel="noopener">엑셀 산식 원장 합본</a>에 있습니다.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var DATA = [{"i":0,"c":"데이터 합치기·뽑기","t":"두 표를 코드로 붙이고 싶다","k":["다른 시트에서 이름 가져오기","종목코드로 종목명 채우기","표 두 개 합치기","vlookup 대신","매칭","조인","대사"],"b":"기준 표와 참조 표를 각각 표(ctrl+t)로 만든다 코드로 값을 가져온다 구버전이면 이 조합 수만 행이면 수식 대신 xlookup index match 파워 쿼리 병합 조회 열과 반환 열이 따로 있어 열을 끼워 넣어도 깨지지 않습니다. 건수가 수만 행이면 파워 쿼리 병합이 더 빠릅니다."},{"i":1,"c":"데이터 합치기·뽑기","t":"조건에 맞는 것만 합계·건수를 내고 싶다","k":["기간별 합계","매수만 더하기","담당자별 실적 집계","조건부 합계","몇 건인지","카운트"],"b":"기간·구분 조건으로 합계 건수는 같은 문법으로 조건에 계산이 들어가면 필터 결과만 합산 sumifs countifs sumproduct subtotal 조건이 여러 개면 sumifs, 조건 안에 계산이 들어가면 sumproduct입니다."},{"i":2,"c":"데이터 합치기·뽑기","t":"조건에 맞는 행만 목록으로 뽑고 싶다","k":["필터해서 따로 보기","해당하는 행만","추출","리스트 만들기","자동 필터 대신"],"b":"조건에 맞는 행 추출 필요한 열만 골라서 정렬까지 한 번에 filter sort choosecols filter는 결과 건수만큼 자동으로 늘어나므로, 원본이 바뀌어도 목록이 따라옵니다."},{"i":3,"c":"데이터 합치기·뽑기","t":"중복을 찾거나 없애고 싶다","k":["중복 제거","겹치는 값","고유값만","두 번 들어간 고객"],"b":"중복 행 표시(조건부 서식 수식) 중복 건수 세기 고유 목록 만들기 countif unique 조건부 서식 표시는 countif, 목록 생성은 unique. 원본을 지우기 전에 무엇이 중복인지 먼저 보세요."},{"i":4,"c":"데이터 합치기·뽑기","t":"두 목록을 대조해 빠진 것을 찾고 싶다","k":["누락 확인","없는 값 찾기","차집합","대사","맞춰보기"],"b":"누락 표시 누락 목록 한 번에 숫자 대조는 반올림 후 비교 countif filter textjoin 한쪽 기준으로 상대 목록에 몇 개 있는지 세면, 0인 것이 누락입니다."},{"i":5,"c":"데이터 합치기·뽑기","t":"순위를 매기거나 상위 N개를 뽑고 싶다","k":["랭킹","탑5","상위 고객","베스트","정렬해서 위에서부터"],"b":"순위 매기기 상위 5명 목록 상위 10명 비중 rank.eq sortby take large 순위 표시는 rank.eq, 목록 추출은 sortby + take가 깔끔합니다."},{"i":6,"c":"데이터 합치기·뽑기","t":"월별로 가로로 퍼진 표를 정리하고 싶다","k":["피벗 해제","언피벗","가로를 세로로","표 구조 바꾸기","피벗테이블이 안 먹는 표"],"b":"파워 쿼리로 불러온다 월 열들을 선택하고 수식으로 요약하려면 파워 쿼리 pivotby groupby 피벗테이블·sumifs·차트가 먹는 형태는 \"항목·기간·값\" 세 열짜리 세로 표입니다."},{"i":7,"c":"데이터 합치기·뽑기","t":"여러 시트나 파일을 하나로 합치고 싶다","k":["시트 통합","파일 합치기","취합","월별 파일 모으기","매일 받는 파일"],"b":"시트 몇 개면 수식으로 매달 반복이면 폴더 연결 이후로는 구조가 제각각이면 매크로 vstack 파워 쿼리 vba 한 번만 하면 vstack, 매번 반복된다면 파워 쿼리 폴더 연결이 맞습니다."},{"i":8,"c":"데이터 손질","t":"종목코드 앞의 0이 사라졌다","k":["005930이 5930으로","앞자리 0","자릿수 맞추기","코드 형식"],"b":"6자리 문자로 복원 파워 쿼리에서는 조회가 안 되면 형식 불일치 확인 text istext 숫자로 저장되어 앞 0이 날아간 경우입니다. 표시형식이 아니라 값 자체를 문자로 만들어야 조회가 됩니다."},{"i":9,"c":"데이터 손질","t":"숫자인데 계산이 안 된다","k":["문자형 숫자","합계가 0","왼쪽 정렬된 숫자","초록 삼각형","공백 때문에"],"b":"공백·기호 제거 후 숫자로 간단히는 대량이면 몇 개가 문자인지 점검 value trim clean substitute 웹·시스템에서 내려받은 값에는 눈에 안 보이는 공백(char 160)이 섞여 있는 경우가 많습니다."},{"i":10,"c":"데이터 손질","t":"고객 이름·계좌번호를 가리고 싶다","k":["마스킹","개인정보 가리기","별표 처리","외부 제출 자료"],"b":"이름 가운데 가리기 계좌·연락처 내보내기 전 처리 replace left right 마스킹 열은 표시용일 뿐 원본 열이 파일에 남습니다. 내보내기 전에 값으로 붙여넣고 원본 열을 지우세요."},{"i":11,"c":"데이터 손질","t":"데이터가 제대로 들어왔는지 점검하고 싶다","k":["정합성","검증","오류 셀 찾기","빈 칸 확인","자릿수 이상"],"b":"오류 셀 개수 연락처 누락 계좌 자릿수 이상 합계 대조 sumproduct iserror countblank 보고서 상단에 점검 줄을 고정해 두면 틀린 채로 제출하는 일이 사라집니다."},{"i":12,"c":"날짜·기한","t":"영업일 기준으로 날짜를 계산하고 싶다","k":["결제일","t+2","영업일 며칠 후","주말 빼고","휴장일 제외","며칠 걸리는지"],"b":"휴장일 목록을 시트에 만든다 결제일(t+2) 영업일수 세기 그 달 마지막 영업일 workday networkdays eomonth 휴장일 목록을 시트에 두고 인자로 넘기면 국내 결제일이 정확히 맞습니다."},{"i":13,"c":"날짜·기한","t":"만기가 다가오는 건을 챙기고 싶다","k":["만기 도래","d-day","디데이","재투자 안내","만기 관리표","알림"],"b":"d-day 열 만들기 30일 이내 도래 건만 임박 표시(조건부 서식) 월별 유입 예정액 filter today sumifs 조건부 서식 오늘 기준 창(window)을 잡아 자동으로 목록이 갱신되게 하면 놓치지 않습니다."},{"i":14,"c":"날짜·기한","t":"월말·분기·주차를 자동으로 만들고 싶다","k":["기간 축","분기 계산","월 구분","주차","집계 기준일"],"b":"당월 말일 / 1일 분기 월 라벨 iso 주차 eomonth text isoweeknum 기간 열을 수식으로 만들어 두면 피벗과 sumifs가 그대로 붙습니다."},{"i":15,"c":"수익률·투자 계산","t":"수익률을 제대로 계산하고 싶다","k":["수익률","누적 수익률","cagr","연평균","연환산","성과"],"b":"기간 수익률 누적(기하 연결) 연평균(cagr) 월 → 연 환산 rri product ln 단순 합산은 틀립니다. 기간 연결은 곱셈, 연환산은 복리로 환산해야 합니다."},{"i":16,"c":"수익률·투자 계산","t":"입출금이 있는 고객 계좌의 수익률을 내고 싶다","k":["고객별 수익률","고객 수익률","계좌 수익률","계좌 성과","입금 반영","추가 납입","xirr","금액가중"],"b":"현금흐름 표를 만든다 (유출 −, 유입 +) 수익률 현재가치가 필요하면 안 되면 부호 확인 xirr xnpv irr 중간에 입출금이 있으면 평가손익률은 왜곡됩니다. 날짜별 현금흐름으로 계산해야 합니다."},{"i":17,"c":"수익률·투자 계산","t":"대출 상환액이나 적립 결과를 계산하고 싶다","k":["월 상환액","원리금균등","적금 만기","연금","이자 얼마","대출"],"b":"월 상환액 회차별 이자/원금 적립식 만기금액 실효금리 비교 pmt ipmt fv rate effect 금리·기간·금액 중 넷을 알면 나머지 하나가 나옵니다. 월 단위면 이율 ÷12, 기간 ×12."},{"i":18,"c":"수익률·투자 계산","t":"채권 가격이나 수익률을 구하고 싶다","k":["채권","ytm","듀레이션","표면금리","경과이자","단가"],"b":"가격(액면 100 기준) 수익률(ytm) 금리 민감도 경과이자 더해 더티 프라이스 price yield mduration accrint 인자가 길어 실수가 잦습니다. 인자마다 입력 셀을 만들고 참조하세요."},{"i":19,"c":"리스크 관리","t":"이 종목·펀드가 얼마나 위험한지 보고 싶다","k":["변동성","리스크 측정","샤프","위험도","표준편차","베타"],"b":"연변동성 샤프지수 지수 대비 민감도(베타) 추적오차 stdev.s slope correl 일간 수익률 한 열만 있으면 아래 지표가 전부 나옵니다. 연율화 계수(252)를 셀로 고정해 두세요."},{"i":20,"c":"리스크 관리","t":"최대 얼마나 빠졌었는지 보여주고 싶다","k":["mdd","최대낙폭","드로다운","고점 대비","손실 폭"],"b":"한 셀로(365) 구버전은 보조열로 회복 기간도 함께 보면 설명이 쉬워진다 scan lambda min 지나온 최고가를 계단처럼 기억한 뒤, 현재가와 가장 크게 벌어진 지점을 찾습니다."},{"i":21,"c":"리스크 관리","t":"손실 가능 금액을 숫자로 제시하고 싶다","k":["var","cvar","손실 한도","최악의 경우","하위 5%"],"b":"역사적 var 95% 모수적 var 95% 꼬리 평균(cvar) 기간 환산 percentile.inc norm.s.inv averageif 역사적 방식은 실제 분포를, 모수적 방식은 정규분포를 가정합니다. 둘 다 보여주면 설득력이 올라갑니다."},{"i":22,"c":"리스크 관리","t":"포트폴리오 전체의 위험을 계산하고 싶다","k":["분산투자 효과","포트폴리오 변동성","상관계수","위험 기여도"],"b":"자산 간 상관 공분산 행렬을 만든다 포트폴리오 변동성 자산별 위험기여도 mmult transpose covariance.p correl 개별 변동성의 단순 평균이 아닙니다. 상관까지 반영하려면 행렬 계산이 필요합니다."},{"i":23,"c":"리스크 관리","t":"ELS 조기상환·낙인 여부를 판정하고 싶다","k":["els","스텝다운","낙인","ki","조기상환","배리어","기초자산"],"b":"평가일 만들기 배리어 스케줄 조기상환 판정(worst-of) 낙인 여부 min edate sequence if 표준형 스텝다운 기준입니다. 리자드·월지급 등 변형은 반드시 약관과 대조하세요."},{"i":24,"c":"리스크 관리","t":"옵션 가격이나 그릭을 계산하고 싶다","k":["블랙숄즈","옵션 가격","델타","내재변동성","프리미엄"],"b":"콜 가격 검산(풋-콜 패리티) 내재변동성은 역산 let norm.s.dist exp ln 한 셀에 let으로 담으면 검산이 쉽습니다. 풋-콜 패리티로 반드시 확인하세요."},{"i":25,"c":"고객 관리","t":"고객별 자산과 손익을 한 줄로 보고 싶다","k":["고객별 잔고","평가손익","보유 현황","계좌 요약"],"b":"고객별 평가금액 상품군별로 쪼개기 평가손익률 sumifs 잔고 원장을 표로 만들어 두면 고객 목록에서 sumifs로 전부 끌어옵니다."},{"i":26,"c":"고객 관리","t":"오늘 누구에게 연락할지 뽑고 싶다","k":["콜 리스트","전화 돌릴 고객","미접촉","관리 대상","우선순위"],"b":"미접촉 경과일 대상 추출 우선순위 점수 점수 순 정렬 filter sortby today \"자산이 크고 오래 연락 못 한 고객\"을 점수로 만들면 매일 자동으로 리스트가 나옵니다."},{"i":27,"c":"고객 관리","t":"고객 등급을 자동으로 매기고 싶다","k":["등급 산정","vip 분류","핵심고객","파레토","기여도"],"b":"자산 구간으로 등급 수수료 누적 기여도 상위 80% 기여 고객 lookup scan filter 구간표를 셀로 두고 조회하면 기준이 바뀌어도 표만 고치면 됩니다."},{"i":28,"c":"고객 관리","t":"자산 비중을 조정할 금액을 뽑고 싶다","k":["리밸런싱","비중 조정","자산배분","얼마 사고 얼마 팔지","제안서"],"b":"현재 비중 조정 금액(+매수 / −매도) 문장으로 만들기 포트폴리오 위험도 sumproduct text if 목표 비중과 현재 금액의 차이를 그대로 제안 금액으로 씁니다."},{"i":29,"c":"고객 관리","t":"이탈 조짐이나 유휴자금을 잡아내고 싶다","k":["잔고 급감","휴면","예수금 많은 고객","제안 기회","이탈"],"b":"유휴자금 제안 대상 잔고 급감 감지 휴면 주의 if and today 기회와 위험을 같은 방식으로 잡습니다 — 조건 한 줄이면 됩니다."},{"i":30,"c":"고객 관리","t":"고객에게 보낼 문구를 자동으로 만들고 싶다","k":["문자 발송","안내 문구","알림톡","메일 본문","멘트","만기 안내"],"b":"만기 안내 문구 수익률에 따라 문장 분기 줄바꿈 포함해 합치기 text ifs textjoin 조건에 따라 문장이 갈리게 해두면 그대로 발송 목록이 됩니다. 준법감시 승인 문안을 벗어나지 않게 하세요."},{"i":31,"c":"고객 관리","t":"투자성향에 맞는 상품인지 확인하고 싶다","k":["적합성","위험등급","성향 확인","판매 가능 여부"],"b":"고객 성향과 상품 등급 대조 등급 체계에 따라 부등호 방향을 반드시 확인 xlookup if 사전 점검용입니다. 정식 적합성 판단은 사내 시스템 결과를 따르세요."},{"i":32,"c":"실적 관리","t":"실적과 목표 달성률을 관리하고 싶다","k":["달성률","목표 관리","실적 집계","kpi","페이스","진도"],"b":"당월 누계 실적 남은 영업일 하루 필요 실적 셀 안에 진행 게이지 sumifs networkdays rept 달성률만 보면 늦게 깨닫습니다. 남은 영업일로 나눈 하루 필요 실적이 실제 관리 지표입니다."},{"i":33,"c":"실적 관리","t":"수수료를 요율표로 계산하고 싶다","k":["수수료 계산","요율","약정","보수"],"b":"요율표를 시트로 분리 상품군별 수수료 최저 수수료 적용 xlookup max 요율을 수식에 박으면 개정 때 전수 수정해야 합니다. 표로 두고 조회하세요."},{"i":34,"c":"실적 관리","t":"전월·전년 대비 증감을 보고 싶다","k":["전월비","전년동월","yoy","mom","증감률","추이"],"b":"전월 대비 전년 동월 대비 등락 표기(표시형식) 추이는 셀 안 미니차트로 iferror edate text 0으로 나누는 경우를 반드시 막고, 부호는 색으로 구분해 표시하세요."},{"i":35,"c":"자동화·마감","t":"매달 하는 반복 작업을 자동화하고 싶다","k":["자동화","매크로","반복 작업","파워쿼리","버튼 하나로","vba"],"b":"취합·정리라면 엑셀 조작이라면 매크로 모든 매크로의 겉껍질 모든 파일에서 쓰려면 파워 쿼리 vba 데이터를 불러오고 정리하는 일은 파워 쿼리, 엑셀을 조작하는 일(서식·저장·발송)은 vba입니다."},{"i":36,"c":"자동화·마감","t":"고객별 보고서를 한 번에 만들고 싶다","k":["pdf 일괄","리포트 자동 생성","보고서 출력","개인화 자료"],"b":"양식 시트 + 고객목록 시트를 만든다 반복하며 pdf 저장 메일은 초안으로 띄우기 개인정보·발송 규정 확인 필수 vba outlook 양식 시트 하나에 고객코드만 바꿔 넣으며 pdf로 떨구는 구조가 가장 단순합니다."},{"i":37,"c":"자동화·마감","t":"중요한 값을 색으로 튀게 하고 싶다","k":["조건부 서식","색칠","강조","빨간색","경고 표시"],"b":"손실 행 강조 만기 임박 경고 상위 10위 강조 등락 색 표기(표시형식) 조건부 서식 and large 행 전체를 칠하려면 열만 고정($a2)하고 범위를 행 전체로 잡습니다."},{"i":38,"c":"자동화·마감","t":"주문 가격을 호가단위에 맞추고 싶다","k":["호가","틱","주문 가격","목표가 반올림","단위 절사"],"b":"구간표를 시트에 둔다(거래소 최신 기준) 호가단위 적용 배수로 반올림/올림 lookup floor.math mround 가격대마다 호가단위가 다릅니다. 구간표를 셀로 두고 조회한 뒤 그 배수로 맞춥니다."},{"i":39,"c":"자동화·마감","t":"출력물이 깨지지 않게 인쇄하고 싶다","k":["인쇄","한 장에","페이지 나눔","머리글","제출용 출력"],"b":"반복할 행 지정 가로 한 장에 맞추기 쪽 번호 배포 양식은 잠그기 인쇄 시트 보호 고객 제출용은 인쇄 미리보기까지 확인하는 것이 마지막 절차입니다."},{"i":40,"c":"자동화·마감","t":"파일이 너무 무거워졌다","k":["느림","버벅","계산이 오래","용량","최적화"],"b":"전체 열 참조를 표/구조적 참조로 교체 휘발성 함수 줄이기 중복 계산은 한 번만 임시로 수동 계산 let index 성능 대부분 전체 열 참조와 휘발성 함수가 원인입니다."}];
+  var SYN = [["수익률","수익","손익","성과","리턴","평가손익","xirr","cagr","연평균","연환산"],["고객","거래처","손님","계좌","잔고","자산","보유","예수금","vip","등급"],["만기","도래","기일","상환","디데이","dday","재투자","재예치","캘린더","일정"],["위험","리스크","변동성","표준편차","샤프","베타","var","mdd","낙폭","드로다운"],["자동화","매크로","vba","반복","파워쿼리","파워","쿼리","취합","합치기","자동"],["문자","sms","알림","안내","문구","메시지","메일","발송","멘트","알림톡"],["실적","목표","달성","수수료","약정","kpi","페이스","진도","집계"],["조회","찾기","가져오기","끌어오기","매칭","룩업","vlookup","xlookup","브이룩업","연결"],["필터","추출","뽑기","골라내기","거르기","리스트","목록"],["정렬","순위","랭킹","상위","탑","베스트"],["중복","고유","유니크","겹치","중복제거"],["영업일","결제일","휴장","주말","근무일","t+2"],["채권","금리","이자","듀레이션","ytm","표면금리","쿠폰"],["els","스텝다운","낙인","ki","배리어","조기상환","구조화"],["옵션","블랙숄즈","델타","그릭","내재변동성","프리미엄"],["인쇄","출력","pdf","보고서","리포트","제출"],["서식","색","강조","조건부서식","표시","경고"],["마스킹","개인정보","가리기","보안"],["호가","틱","주문","목표가","단위"],["비중","배분","리밸런싱","포트폴리오","조정"],["대출","상환","적립","연금","원리금","pmt","이자"],["텍스트","문자열","자르기","나누기","합치기","코드","자릿수"],["점검","검증","오류","정합성","대사","확인"],["느림","무거","성능","최적화","속도"]];
+  var STOP = '오늘 지금 요즘 내일 하고 싶어 싶다 싶은데 하려면 하려고 하는 방법 어떻게 알려줘 해줘 주세요 좀 것 거 수식 함수 엑셀 만들기 만들 하기 에서 으로 에게 인가 인지 위해 때 중 및 그리고 관련 하나 정도 진짜 매우 자꾸 자동 으로'.split(' ');
+
+  function norm(s){ return String(s).toLowerCase().replace(/[^0-9a-z가-힣]+/g, ' ').replace(/\s+/g, ' ').trim(); }
+  function toks(s){
+    return norm(s).split(' ').filter(function(t){
+      return t.length > 1 && STOP.indexOf(t) < 0;
+    });
+  }
+  function bi(s){
+    var t = norm(s).replace(/ /g, ''), o = [];
+    for (var i = 0; i < t.length - 1; i++) o.push(t.substr(i, 2));
+    return o;
+  }
+  function expand(ts){
+    var out = ts.slice();
+    ts.forEach(function(t){
+      SYN.forEach(function(cl){
+        var hit = cl.some(function(w){
+          return w === t || (t.length > 2 && (w.indexOf(t) === 0 || t.indexOf(w) === 0));
+        });
+        if (hit) cl.forEach(function(w){ if (out.indexOf(w) < 0) out.push(w); });
+      });
+    });
+    return out;
+  }
+  function overlap(list, hay){
+    var n = 0;
+    list.forEach(function(t){ if (hay.indexOf(t) > -1) n++; });
+    return n;
+  }
+  function jac(a, b){
+    if (!a.length || !b.length) return 0;
+    var set = {}, hit = 0;
+    b.forEach(function(x){ set[x] = 1; });
+    a.forEach(function(x){ if (set[x]) hit++; });
+    return hit / a.length;
+  }
+
+  var IDX = DATA.map(function(d){
+    return { d: d, tt: norm(d.t), tk: norm(d.t + ' ' + d.k.join(' ')), bg: bi(d.t + ' ' + d.k.join(' ')), body: d.b + ' ' + norm(d.c) };
+  });
+
+  function rank(q){
+    var raw = toks(q), ex = expand(raw), qb = bi(q);
+    if (!raw.length) return [];
+    return IDX.map(function(it){
+      var s = 0;
+      s += overlap(raw, it.tt) * 4.5;
+      s += overlap(raw, it.tk) * 2.5;
+      s += overlap(ex, it.tk) * 1.1;
+      s += overlap(raw, it.body) * 1.2;
+      s += overlap(ex, it.body) * 0.45;
+      s += jac(qb, it.bg) * 7;
+      return { i: it.d.i, s: s };
+    }).filter(function(x){ return x.s > 1.6; })
+      .sort(function(a, b){ return b.s - a.s; });
+  }
+
+  var res = document.getElementById('res'),
+      all = document.getElementById('all'),
+      browse = document.getElementById('browse'),
+      input = document.getElementById('q');
+
+  function cardOf(i){ return document.getElementById('r' + i); }
+
+  /* 전체 목록은 늘 아래에 남겨 둔다 — 결과를 보다가도 바로 다른 업무로 갈 수 있게 */
+  function mark(i){
+    [].forEach.call(document.querySelectorAll('#browse .task'), function(b){
+      b.classList.toggle('on', +b.getAttribute('data-i') === i);
+    });
+  }
+  function reset(){
+    input.value = '';
+    res.innerHTML = '';
+    mark(-1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function show(list, q){
+    res.innerHTML = '';
+    if (!list.length) {
+      res.innerHTML = '<div class="res-head"><h2>딱 맞는 항목을 찾지 못했습니다</h2></div>' +
+        '<div class="miss"><b>다르게 적어보시겠어요?</b>' +
+        '하려는 일을 동사로 적으면 잘 걸립니다 — “고객별로 합계를 내고 싶다”, “만기 다가오는 것만 뽑고 싶다”.<br>' +
+        '아래 <b style="display:inline">전체 업무 목록</b>에서 직접 고르셔도 됩니다.</div>';
+      return;
+    }
+    var top = list.slice(0, 3);
+    var head = document.createElement('div');
+    head.className = 'res-head';
+    head.innerHTML = '<h2>' + (q ? '이 일에는 이렇게' : '선택한 업무') + '</h2>' +
+      '<span>' + top.length + '개 추천' + (list.length > top.length ? ' · 관련 ' + (list.length - top.length) + '개 더' : '') + '</span>' +
+      '<button class="ghost" type="button" data-act="reset">전체 목록으로</button>';
+    res.appendChild(head);
+
+    var box = document.createElement('div');
+    box.className = 'recs';
+    top.forEach(function(x, n){
+      var c = cardOf(x.i).cloneNode(true);
+      c.removeAttribute('id');
+      if (n === 0) c.classList.add('top');
+      box.appendChild(c);
+    });
+    res.appendChild(box);
+
+    if (list.length > top.length) {
+      var more = document.createElement('div');
+      more.innerHTML = '<p class="cat-h">이것도 함께 보면 좋습니다</p>';
+      var t = document.createElement('div');
+      t.className = 'tasks';
+      list.slice(3, 9).forEach(function(x){
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'task'; b.setAttribute('data-i', x.i);
+        b.textContent = DATA[x.i].t;
+        t.appendChild(b);
+      });
+      more.appendChild(t);
+      res.appendChild(more);
+    }
+    res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  var timer;
+  input.addEventListener('input', function(){
+    clearTimeout(timer);
+    timer = setTimeout(function(){
+      var q = input.value.trim();
+      if (!q) { res.innerHTML = ''; mark(-1); return; }
+      mark(-1);
+      show(rank(q), true);
+    }, 160);
+  });
+  input.addEventListener('keydown', function(e){ if (e.key === 'Escape') reset(); });
+
+  document.addEventListener('click', function(e){
+    if (e.target.closest('[data-act="reset"]')) { reset(); return; }
+    var chip = e.target.closest('.chip');
+    if (chip) { input.value = chip.textContent; mark(-1); show(rank(chip.textContent), true); return; }
+    var task = e.target.closest('.task');
+    if (task) {
+      var i = +task.getAttribute('data-i');
+      input.value = DATA[i].t;
+      mark(i);
+      show([{ i: i, s: 99 }].concat(rank(DATA[i].t).filter(function(x){ return x.i !== i; })), false);
+      return;
+    }
+    var pill = e.target.closest('.pill');
+    if (pill) { input.value = pill.textContent; mark(-1); show(rank(pill.textContent), true); }
+  });
+})();
+</script>
+
+</body></html>

@@ -52,11 +52,19 @@ import re
 # 거기 말고는 이 저장소에 한글명을 온전히 담은 자리가 없다 — kr100-data 가지의
 # latest.json·quotes.json 에는 시세만 있고 이름이 없다. 같은 표를 여기 또 적어 두면
 # 목록이 바뀔 때 한쪽만 고쳐져 어긋나므로, **있는 것을 읽어 쓴다.**
-_COMPANY_ROW = re.compile(r"\['([^']+)','([^']*)','([^']*)'")
+# 영문명은 **큰따옴표로도** 온다 — 이름에 아포스트로피가 있으면 그렇게 적기
+# 때문이다(Lowe's · McDonald's · Moody's · O'Reilly). 홑따옴표만 받던 때에는
+# 그 네 줄이 **말없이 빠져** 화면에 티커가 한글명 대신 찍혔다. 오류도 나지
+# 않았다 — 이름을 못 찾으면 코드를 쓰는 것이 원래 규칙이라서다.
+_COMPANY_ROW = re.compile(r"\['([^']+)',(?:'([^']*)'|\"([^\"]*)\"),'([^']*)'")
 
 
-def load_names(market):
-    """종목코드 → 이름. 못 찾으면 코드를 그대로 쓴다(빈 이름을 지어내지 않는다)."""
+def load_names(market, strict=False):
+    """종목코드 → 이름. 못 찾으면 코드를 그대로 쓴다(빈 이름을 지어내지 않는다).
+
+    strict 면 적어 둔 줄 수와 읽어 낸 수가 다를 때 멈춘다. 평소에는 멈추지 않는다
+    — 이름표가 없어도 신호는 나와야 하기 때문이다. 대신 자체시험이 strict 로 본다.
+    """
     out = {}
     page = 'kr-top100.html' if market == 'KR' else 'us-top100.html'
     p = os.path.join(ROOT, page)
@@ -66,11 +74,21 @@ def load_names(market):
     m = re.search(r'var COMPANIES = \[(.*?)\n\];', txt, re.S)
     if not m:
         return out
-    for sym, en, ko in _COMPANY_ROW.findall(m.group(1)):
-        nm = (ko or en).strip()
+    rows = _COMPANY_ROW.findall(m.group(1))
+    for sym, en1, en2, ko in rows:
+        nm = (ko or en1 or en2).strip()
         if sym and nm:
             out[sym] = nm
             out[sym.split('.')[0]] = nm
+    # 세는 쪽은 정규식이 아니라 **줄머리**다 — 같은 정규식으로 세면 같이 틀린다.
+    declared = len(re.findall(r"^\s*\[\s*['\"]", m.group(1), re.M))
+    if declared != len(rows):
+        msg = ('%s 의 COMPANIES 에 %d 줄이 적혀 있는데 %d 개만 읽혔다 — %d 줄의 '
+               '이름표가 빠진다(화면에 티커가 그대로 찍힌다).'
+               % (page, declared, len(rows), declared - len(rows)))
+        if strict:
+            raise SystemExit(msg)
+        print('::warning::' + msg)
     return out
 
 
@@ -353,7 +371,44 @@ def _p(x):
     return round(x) if abs(x) >= 1000 else round(x, 2)
 
 
+def selftest():
+    """두 화면의 COMPANIES 를 **한 줄도 빠뜨리지 않고** 읽는지 본다.
+
+    이름표가 빠져도 신호는 그대로 나오므로 아무 데서도 터지지 않는다 — 화면에
+    티커가 한글명 대신 찍힐 뿐이다. 실제로 영문명을 큰따옴표로 적은 네 줄
+    (Lowe's · McDonald's · Moody's · O'Reilly)이 그렇게 조용히 빠져 있었다.
+    """
+    fails = []
+    for mk, page in (('KR', 'kr-top100.html'), ('US', 'us-top100.html')):
+        p = os.path.join(ROOT, page)
+        if not os.path.exists(p):
+            continue
+        try:
+            names = load_names(mk, strict=True)
+        except SystemExit as e:                           # noqa: PERF203
+            fails.append(str(e))
+            continue
+        body = re.search(r'var COMPANIES = \[(.*?)\n\];',
+                         open(p, encoding='utf-8').read(), re.S).group(1)
+        declared = len(re.findall(r"^\s*\[\s*['\"]", body, re.M))
+        syms = {s for s in re.findall(r"^\s*\[\s*'([^']+)'", body, re.M)}
+        missing = sorted(s for s in syms if s not in names)
+        print('  %s %s — 줄 %d · 이름표를 얻은 종목 %d' % (mk, page, declared, len(syms) - len(missing)))
+        if missing:
+            fails.append('%s 의 %d 종목이 이름표를 못 얻었다 — %s'
+                         % (page, len(missing), ', '.join(missing[:8])))
+    print('시험 %d 가지 (종목 이름표를 빠짐없이 읽는가)' % 2)
+    if fails:
+        for f in fails:
+            print('  !! ' + f)
+        raise SystemExit('실패 %d 가지' % len(fails))
+    print('실패 없음')
+    return 0
+
+
 def main(argv):
+    if '--selftest' in argv:
+        return selftest()
     limit = int(argv[argv.index('--limit') + 1]) if '--limit' in argv else 0
     markets = (argv[argv.index('--market') + 1].split(',')
                if '--market' in argv else ['KR', 'US'])

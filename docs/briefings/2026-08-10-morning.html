@@ -277,8 +277,10 @@ table.data tr.sum > td,table.data tr.sum > th{background:var(--surface-subtle);
   border-top:2px solid var(--hairline);font-weight:600}
 table.data tr.sum > *:first-child{box-shadow:inset 3px 0 0 var(--primary)}
 table.data.compact{min-width:420px;font-size:15px}
+/* 2026-10-01: 700px 에서 표가 스크롤 그릇을 넘었다. 이 판은 현행 판보다
+   열이 많아 680px 중단점으로는 모자란다 — 800px 로 올린다. */
 /* 좁은 화면: 표를 화면 안에 넣는다. min-width 를 두면 등락률 열이 잘린다 */
-@media (max-width:680px){
+@media (max-width:800px){
   table.data,table.data.compact{min-width:0;font-size:14px}
   table.data th,table.data td,
   table.data.compact th,table.data.compact td{padding:7px 8px}
@@ -476,6 +478,41 @@ html[lang="en"] [data-lang-en]{display:revert}
   .table-wrap{overflow:visible}
   .stat,.view{box-shadow:none!important;border:1px solid #CDCECB}
 }
+
+/* 2026-10-01: 넓은 화면에서도 표가 스크롤 그릇을 넘었다. 이 시기 판에는
+   오른쪽 상세 패널이 있어(2026-08-27 에 없앴다) 1,080px 이상에서 본문 칸이
+   200px + 340px 만큼 깎인다. 그런데 table.data 는 min-width:560px, .prov 는
+   760px 를 고집한다 — 좁아진 칸에 들어갈 수 없다. 바닥값을 풀고 여백만
+   한 단계 줄인다. 열이 잘리지 않게 글자 크기는 그대로 둔다. */
+@media (min-width:1080px){
+  table.data,table.data.compact,table.data.prov{min-width:0}
+  table.data th,table.data td{padding:9px 10px}
+}
+/* 가장 좁은 구간 — .prov 도 함께 푼다(앞 블록이 .prov 를 빠뜨리고 있었다) */
+@media (max-width:800px){
+  table.data.prov{min-width:0}
+}
+@media (max-width:400px){
+  table.data,table.data.compact,table.data.prov{font-size:12px}
+  table.data th,table.data td{padding:4px 4px}
+  table.data thead th{font-size:11px}
+}
+
+/* 2026-10-01: 중단점 사이 구간(800~1080px)에서 다시 넘쳤다. 바닥값을 구간마다
+   풀었다 잠갔다 하니 틈이 생긴다 — 이 판들의 표는 어느 폭에서도 바닥값을
+   채울 만큼 넓지 않으므로 **폭을 가리지 않고** 푼다. 표는 .table-wrap 안에서
+   스크롤되고 칸은 overflow-wrap 으로 접히므로 바닥값이 없어도 읽을 수 있다. */
+table.data,table.data.compact,table.data.prov{min-width:0}
+
+/* 2026-10-01: 남은 넘침은 바닥값이 아니라 **내용 폭** 때문이었다. 이름 칸과
+   검증 배지에 white-space:nowrap 이 걸려 있어, 좁아진 칸에서도 한 줄을
+   고집하며 표를 밀어냈다(8/8 「Dow Jones」 칸이 211px). 그 둘만 접게 한다.
+   **숫자 칸(.n)은 그대로 둔다** — 값 한가운데가 끊기면 읽을 수 없다. */
+table.data th,table.data td{white-space:normal;overflow-wrap:anywhere;word-break:keep-all}
+/* 숫자는 **공백에서만** 접는다. nowrap 으로 잠그면 칸이 넓어지고,
+   anywhere 로 풀면 값 한가운데가 끊긴다 — 현행 chrome 과 같은 방식이다. */
+table.data td.n,table.data th.n{white-space:normal;overflow-wrap:normal;word-break:keep-all}
+table.data .vf{white-space:normal}
 </style>
 
 <div class="page wide">
@@ -529,6 +566,7 @@ html[lang="en"] [data-lang-en]{display:revert}
   </ul>
   <p class="sidenav-label"><span data-lang-ko>브리핑 목록</span><span data-lang-en>All editions</span></p>
   <ul class="sidenav-dates">
+    <li><a href="https://claude.ai/artifact/WAt4Z2JUGd9cDU8UKmuLo5" target="_blank" rel="noopener"><span class="d">10-01</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
     <li><a href="https://claude.ai/artifact/SmFNL3f47eBTowWmx18ETR" target="_blank" rel="noopener"><span class="d">10-01</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
     <li><a href="https://claude.ai/artifact/7v1FUC1yPmqMuKkKvv2egz" target="_blank" rel="noopener"><span class="d">09-30</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
     <li><a href="https://claude.ai/artifact/Qz5tuLk8MA4QJkx6bnW1n3" target="_blank" rel="noopener"><span class="d">09-30</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
@@ -1612,6 +1650,7 @@ html[lang="en"] [data-lang-en]{display:revert}
   <p class="h"><span data-lang-ko>브리핑 목록</span><span data-lang-en>All editions</span></p>
   <p class="s"><span data-lang-ko>날짜를 누르면 그 판이 열립니다. 화면 왼쪽 목차 아래에도 같은 목록이 있습니다.</span><span data-lang-en>Each date links to that edition; the same list sits below the contents in the left-hand column on screen.</span></p>
   <ul>
+    <li><span class="d">10-01</span><a href="https://claude.ai/artifact/WAt4Z2JUGd9cDU8UKmuLo5"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
     <li><span class="d">10-01</span><a href="https://claude.ai/artifact/SmFNL3f47eBTowWmx18ETR"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
     <li><span class="d">09-30</span><a href="https://claude.ai/artifact/7v1FUC1yPmqMuKkKvv2egz"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
     <li><span class="d">09-30</span><a href="https://claude.ai/artifact/Qz5tuLk8MA4QJkx6bnW1n3"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>

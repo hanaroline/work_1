@@ -576,6 +576,17 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
 @media (max-width:360px){
   table.data.compact th,table.data.compact td{padding-left:3px;padding-right:3px;font-size:11px}
 }
+
+/* 2026-10-01: 핵심본은 표를 2단으로 벌려 놓아 그릇이 430px 안팎이다. 그런데
+   table.data 는 min-width:560px(.compact 는 420px)를 고집하고, 이름 칸과
+   검증 배지에 white-space:nowrap 이 걸려 있어 어느 폭에서도 들어가지 못했다.
+   바닥값을 풀고, 이름·배지만 접게 하고, 보조 열을 뺀다.
+   **숫자 칸은 공백에서만 접는다** — 값 한가운데가 끊기면 읽을 수 없다. */
+table.data,table.data.compact,table.data.prov{min-width:0}
+table.data th,table.data td{white-space:normal;overflow-wrap:anywhere;word-break:keep-all}
+table.data td.n,table.data th.n{white-space:normal;overflow-wrap:normal;word-break:keep-all}
+table.data .vf{white-space:normal}
+table.data .opt{display:none}
 </style>
 
 <style id="core-density">
@@ -1329,6 +1340,22 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
   .archive-print a{color:#043B72;text-decoration:none}
   .archive-print .me{color:#777}
 }
+
+/* 2026-10-01: .wh 는 설명 열이다(「수입 물가와 외국인 수급을 동시에 흔드는
+   단일 변수」 같은 문장). 거기에 white-space:nowrap 이 걸려 있어 340px 짜리
+   한 줄을 고집했고, 2단으로 벌린 430px 그릇을 112px 밀어냈다.
+   앞서 넣은 일반 규칙(table.data td)보다 .wh 쪽이 구체성이 높아 이겼으므로,
+   같은 구체성으로 되돌린다. 문장이니 접혀도 읽는 데 지장이 없다. */
+table.data td.wh,table.data th.wh{white-space:normal}
+
+/* 2026-10-01: 「읽는 법」 칸은 설명 문장인데 클래스가 «n note» 로 함께 달려
+   있어 숫자 칸 취급을 받는다. 2단·3단 배치 규칙
+   (.duo/.trio table.data .n{white-space:nowrap})이 거기까지 걸려,
+   「수입 물가와 외국인 수급을 동시에 흔드는 단일 변수」가 340px 한 줄을
+   고집했다. **설명 칸만** 푼다 — 진짜 숫자 칸(.n 단독)은 그대로 nowrap 이다. */
+table.data .n.note,
+.duo table.data .n.note,
+.trio table.data .n.note{white-space:normal;overflow-wrap:anywhere;word-break:keep-all;min-width:0;text-align:left}
 </style>
 <div class="archive-print">
   <p class="h"><span data-lang-ko>브리핑 목록</span><span data-lang-en>All editions</span></p>
