@@ -17,7 +17,11 @@ on:
   schedule:
     - cron: '10 7 * * 1-5'          # 16:10 KST — 국내 장 마감·전체 수집 다음
 
+  # **main 에서만 돈다** — 까닭은 .github/workflows/README.md 「가지 제한」.
+  # 기능 가지에서 시험하려면 그 가지 이름을 아래 branches 에 한 줄 더 적는다
+  # (els-weekly.yml 의 `claude/els-**` 가 그 예다).
   push:
+    branches: [main]
     paths:
       - 'scripts/check_kr100_ranking.py'
       - '.github/workflows/kr100-ranking.yml'
