@@ -17,6 +17,7 @@
 | 무엇이 필요한가 | 읽을 것 |
 |---|---|
 | 저장소 전체 지도 · 갈래 안내 | **[docs/handover/00-저장소-전체-인계.md](docs/handover/00-저장소-전체-인계.md)** |
+| 옛 계정 마지막 날(10/2) 정리 · 새 계정 첫 프롬프트 · 깨지는 주소 | **[docs/handover/계정이전-마무리.md](docs/handover/계정이전-마무리.md)** |
 | 계정 설정(커넥터·스킬) 복원 절차 | [docs/claude-handoff/ACCOUNT-SETUP.md](docs/claude-handoff/ACCOUNT-SETUP.md) |
 | 예약 프롬프트 원문 (활성 12건) | [docs/handover/예약-전체목록.md](docs/handover/예약-전체목록.md) · [docs/claude-handoff/ROUTINES.md](docs/claude-handoff/ROUTINES.md) · 기계 판독용 [routines.json](docs/claude-handoff/routines.json) |
 | 저장소 **밖에서** 볼 한 파일 사본 | [인계-보관본.txt](인계-보관본.txt) |
