@@ -1,9 +1,9 @@
 {
- "builtAt": "2026-09-29 14:35 KST",
- "builtAtUtc": "2026-09-29T05:35:02Z",
+ "builtAt": "2026-10-01 19:56 KST",
+ "builtAtUtc": "2026-10-01T10:56:25Z",
  "window": {
-  "from": "2026-08-15",
-  "to": "2028-02-11"
+  "from": "2026-08-17",
+  "to": "2028-02-13"
  },
  "note": "증시 일정 캘린더. confirmed 는 official(공식 확인) · websearch(검색 교차 확인) · tentative(기관이 잠정으로 공표) · estimate(제공사 추정 구간) · rule(규칙으로 만든 날짜) 다. 확정이 아닌 것은 화면에서 배지로 구분한다.",
  "confirmed_legend": {
@@ -22,19 +22,19 @@
  },
  "counts": {
   "policy": 52,
-  "indicator": 167,
+  "indicator": 169,
   "earnings": 166,
   "conference": 9,
   "supply": 36,
   "holiday": 103,
   "other": 3,
-  "total": 536,
+  "total": 538,
   "confirmed": {
    "official": 294,
    "websearch": 22,
    "tentative": 0,
    "estimate": 0,
-   "rule": 220
+   "rule": 222
   }
  },
  "sources": {
@@ -78,10 +78,10 @@
  "context": {
   "policy_rate_us": {
    "effr_pct": 3.88,
-   "date": "2026-09-25",
-   "percentile_1": 3.85,
+   "date": "2026-09-29",
+   "percentile_1": 3.86,
    "percentile_99": 3.9,
-   "volume_bn_usd": 112,
+   "volume_bn_usd": 111,
    "note": "실효 연방기금금리. 하루 지연 공표라 시세일보다 하루 이르다",
    "source_url": "https://markets.newyorkfed.org/api/rates/unsecured/effr",
    "perf": {
@@ -92,32 +92,32 @@
     "y1": -21.0,
     "ytd": 24.0,
     "unit": "bp",
-    "from": "2025-02-25"
+    "from": "2025-02-27"
    },
    "series_days": 400
   },
   "fed_implied": {
-   "contract_price": 95.95,
-   "implied_rate_pct": 4.05,
-   "quote_date": "2026-09-29",
+   "contract_price": 96.035,
+   "implied_rate_pct": 3.965,
+   "quote_date": "2026-10-01",
    "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 — 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
    "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
    "effr_pct": 3.88,
-   "vs_effr_bp": 17,
+   "vs_effr_bp": 8,
    "perf": {
-    "w1": 29.8,
-    "m1": 42.4,
-    "m3": 42.4,
-    "m6": 41.4,
-    "y1": -18.2,
-    "ytd": 32.7,
+    "w1": 22.1,
+    "m1": 33.7,
+    "m3": 33.7,
+    "m6": 32.8,
+    "y1": -25.9,
+    "ytd": 24.1,
     "unit": "bp",
     "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
    }
   },
   "rates_kr": {
-   "call": 3.048,
-   "cd91": 3.21,
+   "call": 3.068,
+   "cd91": 3.22,
    "cofix_new": 3.18,
    "cofix_balance": 3.05,
    "cofix_new_balance": 2.71,
@@ -134,41 +134,41 @@
     "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(135785 bytes)",
     "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
    ],
-   "ktb1y": 3.726,
-   "ktb5y": 4.345,
-   "ktb10y": 4.539,
+   "ktb1y": 3.733,
+   "ktb5y": 4.203,
+   "ktb10y": 4.407,
    "perf": {
     "ktb1y": {
-     "w1": 5.2,
-     "m1": 30.3,
+     "w1": 6.6,
+     "m1": 25.8,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb5y": {
-     "w1": 7.8,
-     "m1": 32.4,
+     "w1": -1.7,
+     "m1": 3.6,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb10y": {
-     "w1": 7.8,
-     "m1": 25.5,
+     "w1": 1.5,
+     "m1": -1.1,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "cd91": {
      "w1": 1.0,
-     "m1": 8.0,
+     "m1": 10.0,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "call": {
-     "w1": -3.0,
-     "m1": 4.8,
+     "w1": -0.6,
+     "m1": 1.8,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
@@ -189,7 +189,7 @@
     }
    }
   },
-  "asof_kst": "2026-09-29 10:46:44"
+  "asof_kst": "2026-10-01 10:12:49"
  },
  "holidays": [
   {
@@ -2471,7 +2471,7 @@
    "source_en": "Federal Reserve — FOMC meeting calendars",
    "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local",
    "meetings_per_year": 8,
-   "fetched_at": "2026-09-29"
+   "fetched_at": "2026-10-01"
   },
   {
    "key": "bok",
@@ -2544,7 +2544,7 @@
    "source_en": "Bank of England — Upcoming MPC dates",
    "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-09-29"
+   "fetched_at": "2026-10-01"
   },
   {
    "key": "pboc",
@@ -5178,32 +5178,6 @@
    ]
   },
   {
-   "id": "earnings-ABT-2026-10-14",
-   "date": "2026-10-14",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "애보트 실적발표",
-   "title_en": "Abbott Laboratories earnings",
-   "org": "ABT",
-   "org_en": "ABT",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "http://www.abbottinvestor.com/phoenix.zhtml?c=94004&p=irol-irhome",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "ABT"
-   ]
-  },
-  {
    "id": "indicator-beige-book-2026-10-14",
    "date": "2026-10-14",
    "end_date": null,
@@ -5664,32 +5638,6 @@
    ]
   },
   {
-   "id": "earnings-VZ-2026-10-20",
-   "date": "2026-10-20",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "버라이즌 실적발표",
-   "title_en": "Verizon Communications earnings",
-   "org": "VZ",
-   "org_en": "VZ",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "http://www22.verizon.com/investor/",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "VZ"
-   ]
-  },
-  {
    "id": "earnings-ISRG-2026-10-20",
    "date": "2026-10-20",
    "end_date": null,
@@ -5716,29 +5664,29 @@
    ]
   },
   {
-   "id": "earnings-KO-2026-10-20",
+   "id": "earnings-CB-2026-10-20",
    "date": "2026-10-20",
    "end_date": null,
    "country": "us",
    "category": "earnings",
    "importance": 1,
-   "title_ko": "코카콜라 실적발표",
-   "title_en": "Coca-Cola earnings",
-   "org": "KO",
-   "org_en": "KO",
+   "title_ko": "처브 실적발표",
+   "title_en": "Chubb earnings",
+   "org": "CB",
+   "org_en": "CB",
    "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
    "detail_en": "No conference-call time in this source — see the company's IR notice",
    "time_local": null,
    "tz": "America/New_York",
    "time_kst": null,
-   "url": "http://www.coca-colacompany.com/investors/",
+   "url": "http://www.acegroup.com/Investor-Information/Investor-Information.html",
    "source": "US 스냅샷 (data/us100/latest.json)",
    "source_en": "US100 snapshot (data/us100/latest.json)",
    "confirmed": "official",
    "tags": [
     "earnings",
     "us",
-    "KO"
+    "CB"
    ]
   },
   {
@@ -5869,6 +5817,32 @@
     "earnings",
     "us",
     "TMO"
+   ]
+  },
+  {
+   "id": "earnings-ABT-2026-10-21",
+   "date": "2026-10-21",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "애보트 실적발표",
+   "title_en": "Abbott Laboratories earnings",
+   "org": "ABT",
+   "org_en": "ABT",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "http://www.abbottinvestor.com/phoenix.zhtml?c=94004&p=irol-irhome",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "ABT"
    ]
   },
   {
@@ -6364,6 +6338,32 @@
    ]
   },
   {
+   "id": "earnings-VZ-2026-10-26",
+   "date": "2026-10-26",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "버라이즌 실적발표",
+   "title_en": "Verizon Communications earnings",
+   "org": "VZ",
+   "org_en": "VZ",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "http://www22.verizon.com/investor/",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "VZ"
+   ]
+  },
+  {
    "id": "indicator-eu-pmi-2026-10-26",
    "date": "2026-10-26",
    "end_date": null,
@@ -6519,6 +6519,32 @@
    ]
   },
   {
+   "id": "earnings-SPGI-2026-10-27",
+   "date": "2026-10-27",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "S&P글로벌 실적발표",
+   "title_en": "S&P Global earnings",
+   "org": "SPGI",
+   "org_en": "SPGI",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "http://investor.mhfi.com/phoenix.zhtml?c=96562&p=irol-irhome",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "SPGI"
+   ]
+  },
+  {
    "id": "earnings-UPS-2026-10-27",
    "date": "2026-10-27",
    "end_date": null,
@@ -6648,29 +6674,29 @@
    ]
   },
   {
-   "id": "earnings-CB-2026-10-27",
+   "id": "earnings-KO-2026-10-27",
    "date": "2026-10-27",
    "end_date": null,
    "country": "us",
    "category": "earnings",
    "importance": 1,
-   "title_ko": "처브 실적발표",
-   "title_en": "Chubb earnings",
-   "org": "CB",
-   "org_en": "CB",
+   "title_ko": "코카콜라 실적발표",
+   "title_en": "Coca-Cola earnings",
+   "org": "KO",
+   "org_en": "KO",
    "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
    "detail_en": "No conference-call time in this source — see the company's IR notice",
    "time_local": null,
    "tz": "America/New_York",
    "time_kst": null,
-   "url": "http://www.acegroup.com/Investor-Information/Investor-Information.html",
+   "url": "http://www.coca-colacompany.com/investors/",
    "source": "US 스냅샷 (data/us100/latest.json)",
    "source_en": "US100 snapshot (data/us100/latest.json)",
    "confirmed": "official",
    "tags": [
     "earnings",
     "us",
-    "CB"
+    "KO"
    ]
   },
   {
@@ -7397,32 +7423,6 @@
     "earnings",
     "kr",
     "005380.KS"
-   ]
-  },
-  {
-   "id": "earnings-SPGI-2026-10-29",
-   "date": "2026-10-29",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "S&P글로벌 실적발표",
-   "title_en": "S&P Global earnings",
-   "org": "SPGI",
-   "org_en": "SPGI",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "http://investor.mhfi.com/phoenix.zhtml?c=96562&p=irol-irhome",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "SPGI"
    ]
   },
   {
@@ -8924,32 +8924,6 @@
    ]
   },
   {
-   "id": "earnings-KKR-2026-11-05",
-   "date": "2026-11-05",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "KKR 실적발표",
-   "title_en": "KKR & Co. earnings",
-   "org": "KKR",
-   "org_en": "KKR",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/KKR",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "KKR"
-   ]
-  },
-  {
    "id": "earnings-MCD-2026-11-05",
    "date": "2026-11-05",
    "end_date": null,
@@ -9281,6 +9255,32 @@
    "tags": [
     "indicator",
     "cn-trade"
+   ]
+  },
+  {
+   "id": "earnings-KKR-2026-11-09",
+   "date": "2026-11-09",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "KKR 실적발표",
+   "title_en": "KKR & Co. earnings",
+   "org": "KKR",
+   "org_en": "KKR",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/KKR",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "KKR"
    ]
   },
   {
@@ -14309,6 +14309,56 @@
     "holiday",
     "hk",
     "full"
+   ]
+  },
+  {
+   "id": "indicator-us-pce-2027-03-30",
+   "date": "2027-03-30",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 3,
+   "title_ko": "미국 개인소득·지출 (PCE 물가)",
+   "title_en": "US Personal Income and Outlays (PCE)",
+   "org": "美 경제분석국 (BEA)",
+   "org_en": "Bureau of Economic Analysis",
+   "detail_ko": "통상 매월 말 08:30 ET",
+   "detail_en": "Usually at the end of the month, 08:30 ET",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2027-03-30 21:30",
+   "url": "https://www.bea.gov/news/schedule",
+   "source": "美 경제분석국 (BEA)",
+   "source_en": "Bureau of Economic Analysis",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "us-pce"
+   ]
+  },
+  {
+   "id": "indicator-kr-ip-2027-03-30",
+   "date": "2027-03-30",
+   "end_date": null,
+   "country": "kr",
+   "category": "indicator",
+   "importance": 2,
+   "title_ko": "한국 산업활동동향",
+   "title_en": "Korea Industrial Activity",
+   "org": "통계청",
+   "org_en": "Statistics Korea",
+   "detail_ko": "통상 매월 말 08:00",
+   "detail_en": "Usually at the end of the month, 08:00",
+   "time_local": "08:00",
+   "tz": "Asia/Seoul",
+   "time_kst": "2027-03-30 08:00",
+   "url": "https://kostat.go.kr/board.es?mid=a10501010000&bid=11570",
+   "source": "통계청",
+   "source_en": "Statistics Korea",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "kr-ip"
    ]
   },
   {
