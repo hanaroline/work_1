@@ -1,13 +1,13 @@
-네이버 API 탐색 2026-10-01 10:13:56 KST
+네이버 API 탐색 2026-10-01 19:53:04 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
-    쓸모 · 3159 bytes · 걸린 낱말 ['상승']
+    쓸모 · 3162 bytes · 걸린 낱말 ['상승']
     남김: data/market/raw/probe_00_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","symbolCode":"KOSPI","stockName":"코스피","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/logo/index/IndexKOSPI.svg","itemLogoPngUrl":"https://ssl.pstatic.net/imgstock/fn
 
 [internals] https://m.stock.naver.com/api/index/KOSDAQ/basic
-    쓸모 · 3191 bytes · 걸린 낱말 ['상승']
+    쓸모 · 3192 bytes · 걸린 낱말 ['상승']
     남김: data/market/raw/probe_01_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSDAQ","reutersCode":"KOSDAQ","symbolCode":"KOSDAQ","stockName":"코스닥","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/logo/index/IndexKOSDAQ.svg","itemLogoPngUrl":"https://ssl.pstatic.net/imgstoc
 
@@ -16,28 +16,28 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 16278 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
+    쓸모 · 16294 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
     남김: data/market/raw/probe_03_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"6,838.04"},{"code":"openPrice","key":"시가","value":"6,814.49","compareToPreviousPrice":{"code":"5",
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/price?pageSize=5&page=1
-    쓸모 · 1280 bytes · 걸린 낱말 ['상승']
+    쓸모 · 1282 bytes · 걸린 낱말 ['상승']
     남김: data/market/raw/probe_04_internals.txt
-    앞머리: [{"localTradedAt":"2026-10-01","closePrice":"6,846.53","compareToPreviousClosePrice":"8.49","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"0.12","openPrice":"6,814.49","highPrice":"6,854.21","lowPrice
+    앞머리: [{"localTradedAt":"2026-10-01","closePrice":"6,971.35","compareToPreviousClosePrice":"133.31","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"1.95","openPrice":"6,814.49","highPrice":"6,971.36","lowPri
 
 [sectors] https://m.stock.naver.com/api/stocks/industry
-    쓸모 · 2300 bytes · 걸린 낱말 ['changeRate']
+    쓸모 · 2311 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_05_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":263,"name":"게임엔터테인먼트","totalCount":34,"changeRate":"3.49","riseCount":22,"fallCount":9,"steadyCount":3},{"no":270,"name":"자동차부품","totalCount":154,"changeRate":"2.69","riseCount":88,"fallCount"
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":286,"name":"생물공학","totalCount":59,"changeRate":"5.81","riseCount":46,"fallCount":9,"steadyCount":4},{"no":262,"name":"생명과학도구및서비스","totalCount":41,"changeRate":"5.42","riseCount":26,"fallCount"
 
 [sectors] https://api.stock.naver.com/industry
     실패 · 36 bytes · 걸린 낱말 없음
     응답 앞머리: HTTPError: HTTP Error 404: Not Found
 
 [sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
-    쓸모 · 8656 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 8621 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_07_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":263,"name":"게임엔터테인먼트","totalCount":34,"changeRate":"3.34","riseCount":21,"fallCount":10,"steadyCount":3},{"no":270,"name":"자동차부품","totalCount":154,"changeRate":"2.59","riseCount":88,"fallCount
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":286,"name":"생물공학","totalCount":59,"changeRate":"5.83","riseCount":46,"fallCount":9,"steadyCount":4},{"no":262,"name":"생명과학도구및서비스","totalCount":41,"changeRate":"5.40","riseCount":25,"fallCount"
 
 [money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
     실패 · 30 bytes · 걸린 낱말 없음
@@ -99,7 +99,7 @@
     응답 앞머리: HTTPError: HTTP Error 404: 404
 
 [money_flow] https://finance.naver.com/sise/sise_deposit.naver
-    셸 · 137405 bytes · 걸린 낱말 ['예탁금', 'deposit']
+    셸 · 133478 bytes · 걸린 낱말 ['예탁금', 'deposit']
     남김: data/market/raw/probe_21_money_flow.txt
     앞머리: <!DOCTYPE html><html lang="ko" class="" data-theme="light"><head><meta charSet="utf-8"/><meta name="viewport" content="width=1366, initial-scale=1.0, user-scalable=yes"/><meta name="viewport" content="width=device-width, initial-scale=1"/><
 
