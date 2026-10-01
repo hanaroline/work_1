@@ -213,6 +213,15 @@ tr.top td,tr.top th{border-left:3px solid var(--clay)}
   a{color:#000;border:0}
   .tw{overflow:visible}
 }
+
+/* 2026-10-01: 340px 넘침 수정. 「뉴스핌·한국경제·…·TheStreet」처럼 가운뎃점으로
+   이어 붙인 긴 묶음과 도메인 나열(consensus.hankyung.com, comp.fnguide.com …)은
+   줄바꿈할 자리가 없어 한 덩어리로 삐져나간다. 좁은 화면에서만 끊어 준다 —
+   넓은 화면의 줄바꿈은 건드리지 않는다. */
+@media (max-width:620px){
+  p, li, dd, dt, .small, .sub, .q, .a, .note, figcaption{
+    overflow-wrap:anywhere; word-break:break-word}
+}
 </style>
 <div class="page">
 
