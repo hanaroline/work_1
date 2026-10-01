@@ -31,7 +31,7 @@
 | 예약해 둔 Routine | 2026-10-05 11:30 KST 점검을 걸어 두었는데, 옛 계정과 함께 사라집니다 |
 | 메모리·개인화 설정 | 계정에 묶입니다 |
 | 커넥터 연결(GitHub 권한 포함) | 새 계정에서 **다시 연결**해야 합니다 |
-| 사용자 스킬 `mas-design`·`fin-data-integrity` | 계정에 묶이지만 **본문을 `docs/claude-handoff/skills/` 에 백업해 두었습니다** — 새 계정에서 그 파일로 다시 만드십시오 |
+| 사용자 스킬 `mas-design`·`fin-data-integrity` | 계정에 묶이지만 **본문을 `docs/claude-handoff/skills/` 에 백업해 두었습니다** — 새 계정에서 그 파일로 다시 만드십시오. `morning` 은 Anthropic 기본 제공이라 소실 대상이 아닙니다 |
 
 ### 시황 브리핑 쪽은 **하나가 더 사라집니다 — 아티팩트**
 
@@ -40,10 +40,10 @@
 
 | | |
 |---|---|
-| 판 **132개**(HTML) | `docs/briefings/` — **따라옵니다** (목록 한 장 `archive.html` 을 더하면 파일 133개) |
+| 판 **133개**(HTML) | `docs/briefings/` — **따라옵니다** |
 | 판마다의 서술 원고 | `data/briefing/narrative-*.json` — 따라옵니다 |
 | 작업 규칙 2,024줄 | `docs/briefing-playbook.md` — 따라옵니다 |
-| **발행한 아티팩트 82건** | `claude.ai/artifact/…` 주소는 **Claude 계정 소유**라 새 계정에서 열리지 않을 수 있습니다 (`docs/briefings/index.json` 82건 전부에 `url` 이 박혀 있습니다) |
+| **발행한 아티팩트 82건** | `claude.ai/artifact/…` 주소는 **Claude 계정 소유**라 새 계정에서 열리지 않을 수 있습니다 |
 | 「브리핑 목록」 한 장 | 같은 이유 |
 | 예약 **3개**(07:30 모닝 · 16:10 장마감 · 월 08:00 ELS) | 계정 소유 — 다시 만들어야 합니다 |
 
@@ -227,26 +227,36 @@ README.md  1241행~                화면·데이터·수집 설명
 
 ---
 
-## 6. 지금 상태 (2026-10-01 20:57 KST)
+## 6. 지금 상태 (2026-10-01 23:10 KST)
 
 | | |
 |---|---|
 | 일정 | **638건** — 정책 52 · 지표 169 · 실적 266 · 학회 9 · 수급 36 · 휴장 103 · 기타 3 |
 | 확정도 | official 394 · websearch 22 · rule 222 |
 | 범위 | 2026-08-17 ~ 2028-02-13 |
-| 인터넷판 | `main` 의 `latest.json` — **2026-10-01 20:57 KST** · 638건 |
-| 오프라인판 | 고정 주소 · 524,458바이트 · **2026-10-01 13:45 KST 판 (538건)** ← 한 판 뒤 |
-| 수집 경로 | 10곳 중 **3곳 성공** (fomc 13 · boe 13 · treasury 5) · 실패 7 (ecb · boj · bok · bls 3종 · fred) · 마지막 수집 2026-10-01 11:57 UTC |
+| 인터넷판 | `main` 의 `latest.json` — **2026-10-01 20:57 KST** |
+| 오프라인판 | 고정 주소 · 598,938바이트 · **2026-10-01 20:57 KST** — 인터넷판과 같음 |
+| 수집 경로 | 10곳 중 **3곳 성공** (fomc 13 · boe 13 · treasury 5) · 마지막 수집 2026-10-01 11:57 UTC |
+| 검산 | `python3 scripts/check_calendar.py --only data` — 모두 통과 |
 
-> **오프라인판이 인터넷판보다 뒤처져 있습니다.** 13:45 판 뒤로 실적 100건이 더
-> 들어왔는데(538 → 638) 오프라인판은 그 전에 찍혔습니다. 오프라인판 배포가 주 1회
-> 흐름에 묶여 있어 평일 수집마다 따라가지 않기 때문입니다.
+> **오프라인판은 23:10 KST 에 맞췄습니다.** 그 전까지는 13:45 판이 걸려 있어
+> 인터넷판(20:57)보다 한 판 뒤였습니다. `scripts/inline_calendar.py` 로 다시
+> 찍고 `scripts/publish_calendar_data.sh` 로 올렸습니다
+> (`calendar-data` 커밋 `c6fdbc31`). 크로미움으로 열어 기준시각과
+> **바깥으로 나가는 요청이 구글 폰트 하나뿐인 것**까지 확인했습니다.
 >
-> **화면에 보이는 차이는 없습니다** — 늘어난 100건은 전부 실적발표일이고, 실적은
-> 어차피 오프라인판에 넣지 않습니다(파일이 수 MB 로 붇습니다). 어긋나 있는 것은
-> 기준시각 표기뿐입니다. 다음 주 월요일 갱신이 맞춰 줍니다.
-> 당장 맞추려면 `main` 에서 `python scripts/inline_calendar.py` 뒤
-> `bash scripts/publish_calendar_data.sh` 를 돌리십시오.
+> 앞으로도 **수집이 돌면 오프라인판이 따라 올라갔는지 같이 보십시오.**
+> 이번처럼 인터넷판만 새로워져 있는 일이 있습니다. 어긋났을 때 맞추는 법:
+>
+> ```bash
+> python3 scripts/inline_calendar.py
+> cp market-calendar-offline.html data/calendar/
+> bash scripts/publish_calendar_data.sh
+> ```
+>
+> `publish_calendar_data.sh` 가 끝에 「내용이 그대로다 — 올릴 것이 없다」를
+> 찍어도 **올라간 뒤일 수 있습니다.** 메시지를 믿지 말고
+> `git log -1 origin/calendar-data` 로 확인하십시오.
 
 ### 남은 일 — 셋
 
