@@ -14,6 +14,18 @@
 하나면 됩니다 — 예약 프롬프트 원문, 작업 규칙, 시스템 설정, 겪은 함정을
 한 파일에 모았습니다.
 
+| 무엇이 필요한가 | 읽을 것 |
+|---|---|
+| 저장소 전체 지도 · 갈래 안내 | **[docs/handover/00-저장소-전체-인계.md](docs/handover/00-저장소-전체-인계.md)** |
+| 계정 설정(커넥터·스킬) 복원 절차 | [docs/claude-handoff/ACCOUNT-SETUP.md](docs/claude-handoff/ACCOUNT-SETUP.md) |
+| 예약 프롬프트 원문 (활성 12건) | [docs/handover/예약-전체목록.md](docs/handover/예약-전체목록.md) · [docs/claude-handoff/ROUTINES.md](docs/claude-handoff/ROUTINES.md) · 기계 판독용 [routines.json](docs/claude-handoff/routines.json) |
+| 저장소 **밖에서** 볼 한 파일 사본 | [인계-보관본.txt](인계-보관본.txt) |
+
+`인계-보관본.txt` 의 3절(예약)은 **손으로 고치지 마십시오.**
+`python3 scripts/build_handoff_archive.py` 가 `routines.json` 에서 만듭니다.
+예약을 고쳤으면 스냅샷을 새로 뜬 뒤 이 스크립트를 다시 돌리십시오
+(`--check` 로 어긋남만 볼 수 있습니다).
+
 ## 갈래별 문서
 
 **증시 일정 캘린더** — 맥락은 **[HANDOFF.md](HANDOFF.md)**, 자주 쓰는
