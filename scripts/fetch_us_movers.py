@@ -366,6 +366,23 @@ def main():
     session_date = max(dates, key=dates.get) if dates else None
     log("기준 거래일 %s %s" % (session_date, dict(sorted(dates.items()))))
 
+    # **장중인지 마감인지 적어 둔다 — 국내 수집기와 같은 이유다.**
+    # 야후 `marketState` 가 REGULAR 이면 `regularMarketPrice` 는 **진행 중인
+    # 호가**이고 `regularMarketTime` 은 오늘이다. 그대로 두면 「오늘 마감」인
+    # 것처럼 보이지만 종가가 아니다. 2026-10-01 22:54 KST 수집분이 그랬다 —
+    # 뉴욕 정규장이 열린 지 25분 뒤라 30종목이 전부 REGULAR 였고, 기준일은
+    # 10-01 로 찍혔다. 모닝시황에 실었으면 장중값을 종가로 낸 판이 됐다.
+    states = {}
+    for q in quotes.values():
+        s = (q.get("marketState") or "").upper()
+        if s:
+            states[s] = states.get(s, 0) + 1
+    market_state = max(states, key=states.get) if states else None
+    # 정규장이 끝난 뒤의 상태들. PRE 는 다음 장 전이라 직전 종가를 들고 있다.
+    settled = market_state in ("CLOSED", "POST", "POSTPOST", "PRE", "PREPRE")
+    log("시장 상태 %s %s → %s" % (market_state, dict(sorted(states.items())),
+                                 "마감분" if settled else "장중분(종가 아님)"))
+
     # --- 거르기 ---------------------------------------------------
     rows, after_cap = [], 0
     for c in cands:
@@ -408,6 +425,10 @@ def main():
         "generated_at_utc": now_utc.isoformat(timespec="seconds"),
         "generated_at_kst": now_utc.astimezone(KST).strftime("%Y-%m-%d %H:%M:%S"),
         "session_date": session_date,
+        # **이것을 보고 종가인지 장중인지 가른다.** 빌더가 확인한다.
+        "market_state": market_state,
+        "settled": settled,
+        "market_state_counts": dict(sorted(states.items())),
         "session_date_counts": dict(sorted(dates.items())),
         "universe_source": uni_src,
         # 인쇄되는 숫자가 어디서 왔는지 — 사양의 '한 출처로 통일' 은 이걸 말한다.
@@ -434,8 +455,11 @@ def main():
     }
 
     os.makedirs(OUT_DIR, exist_ok=True)
+    # 장중분이 같은 날 마감분을 덮어쓰지 않도록 이름을 가른다(국내 수집기와 같다).
+    suffix = "" if settled else "-intraday"
     for path in (os.path.join(OUT_DIR, "latest.json"),
-                 os.path.join(OUT_DIR, "%s.json" % (session_date or now_utc.date().isoformat()))):
+                 os.path.join(OUT_DIR, "%s%s.json"
+                              % (session_date or now_utc.date().isoformat(), suffix))):
         with open(path, "w", encoding="utf-8") as f:
             json.dump(out, f, ensure_ascii=False, indent=1, sort_keys=False)
         log("씀: %s" % os.path.relpath(path, ROOT))

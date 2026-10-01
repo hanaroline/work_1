@@ -9,6 +9,13 @@
 이고, 데이터는 `scripts/*.py` 가 만들어 `data/` 에 두며, 갱신은 `.github/workflows/*.yml`
 이 저절로 돌립니다. 화면 목록과 각각의 설명은 `README.md` 에 있습니다.
 
+지금 돌아가고 있는 일은 둘입니다.
+
+| 갈래 | 산출물 | 읽을 곳 |
+|---|---|---|
+| 증시 일정 캘린더 | `market-calendar.html` | `HANDOFF.md` §2~§7 |
+| MARKET DAILY 시황 | `docs/market-daily/<날짜>-<판>.html` | `HANDOFF.md` §8~§13, `docs/market-daily/README.md` |
+
 ## 반드시 지키는 것
 
 **날짜와 숫자를 지어내지 않습니다.** 확인하지 못한 것은 비워 두고 `gaps`·`undated`·`links`

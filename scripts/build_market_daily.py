@@ -104,6 +104,10 @@ KR_NAME_EN = {
     "KB금융": "KB Financial", "NAVER": "NAVER",
     "한화에어로스페이스": "Hanwha Aerospace", "SK스퀘어": "SK Square",
     "리노공업": "Leeno Industrial", "삼성전기": "Samsung Electro-Mechanics",
+    "에스앤에스텍": "S&S Tech", "디아이": "DI Corporation",
+    "삼천당제약": "Samchundang Pharm", "S-Oil": "S-Oil", "GS": "GS Holdings",
+    "제주반도체": "EMLSI", "올릭스": "OliX Pharmaceuticals",
+    "엔씨소프트": "NCSOFT", "HPSP": "HPSP", "이수페타시스": "ISU Petasys",
     "LG이노텍": "LG Innotek", "한미반도체": "Hanmi Semiconductor",
     "POSCO홀딩스": "POSCO Holdings", "LG화학": "LG Chem", "삼성SDI": "Samsung SDI",
     "신한지주": "Shinhan Financial", "하나금융지주": "Hana Financial",
@@ -192,6 +196,17 @@ def money_krw(v):
     return "%.0f억원" % (v / 1e8)
 
 
+def money_krw_en(v):
+    """영문판 원화 단위. 조·억을 그대로 두면 영문 모드에 한글이 남는다."""
+    if not v:
+        return "—"
+    if v >= 1e12:
+        return "KRW %.1ftn" % (v / 1e12)
+    if v >= 1e8:
+        return "KRW %.0fbn" % (v / 1e9)
+    return "KRW %.0fm" % (v / 1e6)
+
+
 # ---------------------------------------------------------------- 자료 읽기
 
 def load_json(path):
@@ -225,6 +240,30 @@ def pick_snapshot(keys, target_date):
         % (os.path.relpath(path, ROOT), target_date, hit, len(keys),
            d.get("generated_at_kst")))
     return d, os.path.relpath(path, ROOT), hit
+
+
+def movers_settled(mv):
+    """무빙 수집분이 **마감 뒤**에 받힌 것인가.
+
+    장중 수집분을 그대로 실으면 진행 중인 호가가 종가로 인쇄된다. 두 수집기가
+    상태를 적는 이름이 다르므로 둘 다 본다.
+
+      미국 — `settled`(불리언) 또는 `market_state`(야후 marketState).
+             REGULAR 이면 정규장 진행 중이다.
+      국내 — `market_status`. `CLOSE` 가 아니면 장중이다.
+
+    **상태를 적지 않은 옛 파일은 쓰지 않는다.** 모르는 것을 마감으로 치는 쪽이
+    장중값을 종가로 내는 사고로 이어진다.
+    """
+    if "settled" in mv:
+        return bool(mv["settled"])
+    us = (mv.get("market_state") or "").upper()
+    if us:
+        return us in ("CLOSED", "POST", "POSTPOST", "PRE", "PREPRE")
+    kr = (mv.get("market_status") or "").upper()
+    if kr:
+        return kr == "CLOSE"
+    return False
 
 
 def prev_trading_day(edition, latest):
@@ -426,9 +465,9 @@ def movers_rows(mv, led, edition):
                             r.get("market"), r.get("market")),
                         "price": r["price"], "pct": r["change_pct"],
                         "cap_ko": money_krw(r.get("cap")),
-                        "cap_en": money_krw(r.get("cap")),
+                        "cap_en": money_krw_en(r.get("cap")),
                         "liq_ko": money_krw(r.get("trade_amount")),
-                        "liq_en": money_krw(r.get("trade_amount")),
+                        "liq_en": money_krw_en(r.get("trade_amount")),
                         "date": mv.get("trade_date_kst"), "ccy": "KRW"})
     return out
 
@@ -866,14 +905,19 @@ def build(edition, date_arg):
     mv_rel = os.path.relpath(mv_path, ROOT) if mv else None
 
     # 무빙 자료의 기준일이 어긋나면 쓰지 않는다 — 하루 어긋난 표가 가장 나쁘다.
+    #
+    # **장중 수집분도 쓰지 않는다. 양쪽 다 본다.** 한동안 국내만 보고 있었는데,
+    # 미국 수집기도 뉴욕 정규장이 열린 동안 돌면 진행 중인 호가를 그 날짜의
+    # 값으로 내놓는다(2026-10-01 22:54 KST 수집분이 전 종목 REGULAR 였다).
+    # 그대로 실으면 장중값이 종가로 인쇄된다.
     if mv:
         mv_date = mv.get("session_date") or mv.get("trade_date_kst")
         if mv_date != target:
             log("무빙 자료 기준일(%s)이 대상(%s)과 달라 쓰지 않는다" % (mv_date, target))
             mv = None
-        elif edition == "close" and mv.get("market_status") != "CLOSE":
-            log("무빙 자료가 장중(%s) 수집분이라 마감시황에 쓰지 않는다"
-                % mv.get("market_status"))
+        elif not movers_settled(mv):
+            log("무빙 자료가 장중 수집분이라 쓰지 않는다 (%s)"
+                % (mv.get("market_state") or mv.get("market_status") or "상태 불명"))
             mv = None
 
     narr_path = os.path.join(NARR_DIR, "narrative-%s-%s.json" % (target, edition))
@@ -909,14 +953,17 @@ def build(edition, date_arg):
     # narrative 의 코멘트를 붙인다. 없으면 빈 칸으로 두고 경고한다.
     mc = narr.get("mover_comments") or {}
     for m in movers:
-        c = mc.get(m["key"]) or {}
+        # 원고는 종목 **이름**으로 쓰는 쪽이 자연스럽고, 전 종목 스크리너 경로의
+        # key 는 종목코드다. 둘 다 받는다 — 코드로만 받으면 이름으로 적은 원고가
+        # 조용히 빈 코멘트가 된다.
+        c = mc.get(m["key"]) or mc.get(m.get("name")) or {}
         m["comment_ko"] = c.get("ko", "")
         m["comment_en"] = c.get("en", c.get("ko", ""))
         if not m["comment_ko"]:
             log("  ! 무빙 코멘트 없음: %s" % m["key"])
     bc = narr.get("board_comments") or {}
     for r in board:
-        c = bc.get(r["key"]) or {}
+        c = bc.get(r["key"]) or bc.get(r.get("name_ko")) or {}
         r["comment_ko"] = c.get("ko") or (r.get("note") or "")
         r["comment_en"] = (c.get("en") or r.get("note_en") or c.get("ko")
                            or (r.get("note") or ""))

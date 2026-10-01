@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MARKET DAILY 2026-10-01 · 마감시황</title>
+<meta name="description" content="미래에셋증권 내부 참고용 마감시황 카드뉴스 (2026-10-01)">
+<style>
+:root{
+  --primary:#F58220; --second:#043B72; --up:#C62828;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C;
+  --hair:#CDCECB; --hair-soft:#E5E4E1; --soft:#F7F8FA; --tint:#ECEFF4;
+  --thead:#FAB072;
+  --font-ko:'Spoqa Han Sans Neo','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --font-en:'Inter','Aptos','Segoe UI',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:#fff;color:var(--body);font-family:var(--font-ko);
+     font-size:19px;line-height:1.65;-webkit-text-size-adjust:100%;
+     font-variant-numeric:tabular-nums}
+html[lang="en"] body{font-family:var(--font-en)}
+html[lang="ko"] .en{display:none}
+html[lang="en"] .ko{display:none}
+.wrap{max-width:900px;margin:0 auto;padding:0 24px}
+@media (max-width:768px){ .wrap{padding:0 16px} body{font-size:19px} }
+
+/* ---- 한/영 토글 : 우상단, 스크롤 따라 흐름 ---- */
+.topbar{display:flex;justify-content:flex-end;padding:14px 0 0}
+.lang{display:inline-flex;border:1px solid var(--hair);border-radius:2px;
+      overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);background:#fff}
+.lang button{font-family:var(--font-en);font-size:14px;font-weight:500;
+      letter-spacing:.5px;padding:10px 17px;border:0;background:#fff;
+      color:var(--muted);cursor:pointer}
+.lang button+button{border-left:1px solid var(--hair)}
+.lang button[aria-checked="true"]{background:var(--primary);color:#fff}
+.lang button:hover[aria-checked="false"]{background:var(--soft);color:var(--ink)}
+
+/* ---- 표지 ---- */
+.cover{background:var(--primary);color:#fff;padding:44px 0 48px;margin-top:14px}
+.cover .tag{font-size:14px;letter-spacing:1.4px;opacity:.92;margin:0 0 10px}
+.cover h1{font-family:var(--font-en);font-size:58px;line-height:1.02;
+      letter-spacing:-1px;font-weight:700;margin:0}
+@media (max-width:768px){ .cover h1{font-size:40px} }
+.cover .sub{font-size:21px;margin:12px 0 0;font-weight:500}
+.cover .meta{font-size:15px;opacity:.94;margin:4px 0 0}
+.heads{list-style:none;margin:26px 0 0;padding:0;counter-reset:h}
+.heads li{counter-increment:h;position:relative;padding:11px 0 11px 44px;
+      border-top:1px solid rgba(255,255,255,.34);font-size:19px;line-height:1.45}
+.heads li:last-child{border-bottom:1px solid rgba(255,255,255,.34)}
+.heads li::before{content:counter(h,decimal-leading-zero);position:absolute;
+      left:0;top:11px;font-family:var(--font-en);font-weight:700;font-size:15px;
+      opacity:.95;letter-spacing:.5px}
+
+/* ---- 카드 ---- */
+.card{padding:44px 0 0}
+.rule{height:1px;background:var(--primary);margin:0 0 16px}
+.card h2{font-size:26px;font-weight:700;color:var(--ink);margin:0 0 4px;letter-spacing:-.2px}
+@media (max-width:768px){ .card h2{font-size:22px} }
+.card h3{font-size:21px;font-weight:600;color:var(--ink);margin:30px 0 8px}
+.kicker{font-family:var(--font-en);font-size:13px;letter-spacing:1.3px;
+      color:var(--primary);font-weight:700;margin:0 0 6px}
+.asof{font-size:14px;color:var(--muted);margin:2px 0 14px;line-height:1.45}
+.lede{font-size:19px;margin:0 0 14px}
+
+/* ---- 표 ---- */
+table{width:100%;border-collapse:collapse;border:1px solid var(--hair);
+      font-size:17px;margin:0 0 10px}
+caption{caption-side:bottom;text-align:left;font-size:14px;color:var(--muted);
+      padding:8px 2px 0;line-height:1.5}
+th,td{padding:10px 12px;border-bottom:1px solid var(--hair-soft);text-align:left}
+thead th{background:var(--thead);color:#1A1A1A;font-weight:700;font-size:16px;
+      white-space:nowrap}
+tbody tr:hover{background:var(--soft)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.up{color:var(--up);font-weight:600}
+.down{color:var(--second);font-weight:600}
+.flat{color:var(--muted)}
+.nm{font-weight:600;color:var(--ink)}
+.nm .sub{display:block;font-weight:400;font-size:14px;color:var(--muted);
+      line-height:1.35;margin-top:2px}
+.note{font-size:15px;color:var(--body);line-height:1.5}
+@media (max-width:640px){
+  table{font-size:16px} th,td{padding:9px 8px}
+  .hide-sm{display:none}
+}
+
+/* ---- 무빙 카드 ---- */
+.movers{display:grid;gap:12px;grid-template-columns:repeat(3,1fr);margin:0 0 12px}
+@media (max-width:768px){ .movers{grid-template-columns:1fr} }
+.mv{border:1px solid var(--hair);border-radius:4px;padding:16px}
+.mv .rank{font-family:var(--font-en);font-size:12px;letter-spacing:1.2px;
+      color:var(--primary);font-weight:700}
+.mv .sym{font-size:22px;font-weight:700;color:var(--ink);margin:2px 0 0}
+.mv .co{font-size:14px;color:var(--muted);line-height:1.35;margin:1px 0 8px}
+.mv .pc{font-size:30px;font-weight:700;line-height:1.1;
+      font-variant-numeric:tabular-nums}
+.mv .px{font-size:15px;color:var(--muted);margin:2px 0 8px;
+      font-variant-numeric:tabular-nums}
+.mv .cm{font-size:15px;line-height:1.5;border-top:1px solid var(--hair-soft);
+      padding-top:8px}
+.mv dl{margin:8px 0 0;font-size:13px;color:var(--muted);display:flex;gap:14px}
+.mv dl{flex-wrap:wrap;row-gap:4px}
+.mv dl div{display:flex;gap:5px;white-space:nowrap}
+.mv dt{font-weight:500;white-space:nowrap}
+.mv dd{margin:0;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* ---- 콜아웃 ---- */
+.common{background:var(--tint);border-left:3px solid var(--primary);
+      padding:14px 18px;font-size:18px;line-height:1.6;margin:0 0 6px}
+.points{background:var(--soft);border:1px solid var(--hair-soft);border-radius:4px;
+      padding:16px 20px;margin:12px 0 0}
+.points p{margin:0 0 8px;font-size:18px;line-height:1.6;padding-left:18px;
+      position:relative}
+.points p:last-child{margin-bottom:0}
+.points p::before{content:"";position:absolute;left:0;top:11px;width:7px;height:7px;
+      background:var(--primary);border-radius:50%}
+
+/* ---- 뉴스카드 ---- */
+.news{border:1px solid var(--hair);border-radius:4px;padding:22px 24px;margin:0 0 14px}
+.news .cat{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.6px;
+      color:#fff;background:var(--second);padding:3px 10px;border-radius:2px;
+      margin:0 0 10px}
+.news h3{margin:0 0 8px;font-size:21px}
+.news ul{margin:10px 0 0;padding:0;list-style:none}
+.news li{position:relative;padding:0 0 0 18px;margin:0 0 9px;font-size:18px;
+      line-height:1.6}
+.news li::before{content:"";position:absolute;left:0;top:11px;width:6px;height:6px;
+      background:var(--primary);border-radius:50%}
+.news li:last-child{margin-bottom:0}
+@media (max-width:640px){ .news{padding:18px 16px} }
+
+/* ---- 배지 ---- */
+.vf{display:inline-block;font-family:var(--font-en);font-size:11px;font-weight:700;
+    letter-spacing:.6px;padding:1px 6px;border-radius:2px;vertical-align:2px;
+    margin-left:6px;white-space:nowrap}
+.vf.ok{background:#E8F1E9;color:#2E8540;border:1px solid #BFD9C4}
+.vf.solo{background:#FBF2E0;color:#8A6400;border:1px solid #E6D3A3}
+.vf.none{background:#EFEFEF;color:#6C6C6C;border:1px solid #DDD}
+
+/* ---- 검증·고지 ---- */
+.verify{font-size:16px;line-height:1.6}
+.verify li{margin:0 0 8px}
+.foot{margin:44px 0 0;border-top:1px solid var(--hair);padding:18px 0 40px;
+      font-size:14px;color:var(--muted);line-height:1.6}
+.disc{border:1px solid var(--second);border-left-width:3px;border-radius:2px;
+      padding:14px 18px;margin:0 0 14px;font-size:15px;color:var(--ink);
+      line-height:1.6}
+
+@media print{
+  .lang,.topbar{display:none!important}
+  body{font-size:12pt;line-height:1.4}
+  .wrap{max-width:100%;padding:0}
+  .card,.news,table,.mv{page-break-inside:avoid}
+  h2,h3{page-break-after:avoid}
+  .cover{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head><body>
+<div class="wrap"><div class="topbar">
+<div class="lang" role="radiogroup" aria-label="Language">
+<button id="b-ko" role="radio" aria-checked="true">KO</button>
+<button id="b-en" role="radio" aria-checked="false">EN</button>
+</div></div></div>
+<header class="cover"><div class="wrap">
+<p class="tag"><span class="ko">미래에셋증권 · 내부 참고용</span><span class="en">Mirae Asset Securities · Internal reference</span></p>
+<h1>MARKET DAILY</h1>
+<p class="sub"><span class="ko">2026년 10월 1일(목) · 마감시황</span><span class="en">October 01, 2026 (Thu) · Closing Brief</span></p>
+<p class="meta"><span class="ko">국내 마감 · 2026년 10월 1일(목) 15:30 기준 · 다음 거래일 10월 2일(금), 10월 5일(월) 대체공휴일 휴장</span><span class="en">Korea close · as of 15:30 KST, Thursday 1 Oct 2026 · next session Fri 2 Oct; KRX closed Mon 5 Oct</span></p>
+<ol class="heads">
+<li><span class="ko">코스피 +1.95% 6,971.35 — 마이크론 호실적과 9월 반도체 수출이 장을 돌려세웠습니다</span><span class="en">KOSPI +1.95% to 6,971.35 as Micron&#x27;s results and September chip exports turned the tape</span></li>
+<li><span class="ko">코스닥 +4.48% 894.29 — 38.38포인트 급등, 바이오가 앞장섰습니다</span><span class="en">KOSDAQ +4.48% to 894.29, up 38.38 points, led by biotech</span></li>
+<li><span class="ko">9월 반도체 수출 603억 달러로 사상 첫 600억 돌파, 총수출도 1,209억 달러 최대</span><span class="en">September chip exports hit $60.3bn, the first time above $60bn; total exports a record $120.9bn</span></li>
+<li><span class="ko">외국인은 5,550억원 순매도했는데 지수는 올랐습니다 — 기관이 3,232억원 받았습니다</span><span class="en">Foreigners sold a net KRW 555bn yet the index rose; institutions bought KRW 323bn</span></li>
+<li><span class="ko">간밤 미 장기금리 급등(10년 5.29%)을 딛고 올랐고, 중화권은 국경절로 쉽니다</span><span class="en">Gains came despite the overnight jump in long US yields (10y 5.29%); Greater China is shut for National Day</span></li>
+</ol>
+</div></header>
+<main class="wrap">
+<section class="card">
+<div class="rule"></div>
+<p class="kicker">MARKET BOARD</p>
+<h2><span class="ko">1단 · 기준선</span><span class="en">Part 1 · Benchmarks</span></h2>
+<p class="asof"><span class="ko">기준 시점 — 2026년 10월 1일(목) 마감</span><span class="en">As of — close, October 01, 2026 (Thu)</span></p>
+<table><thead><tr>
+<th><span class="ko">지표</span><span class="en">Index</span></th>
+<th class="num"><span class="ko">종가</span><span class="en">Close</span></th>
+<th class="num"><span class="ko">등락률</span><span class="en">Change</span></th>
+</tr></thead><tbody>
+<tr>
+<td class="nm"><span class="ko">코스피</span><span class="en">KOSPI</span></td>
+<td class="num">6,971.35</td>
+<td class="num up">+1.95%</td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">코스닥</span><span class="en">KOSDAQ</span></td>
+<td class="num">894.29</td>
+<td class="num up">+4.48%</td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">코스피 200</span><span class="en">KOSPI 200</span></td>
+<td class="num">1,104.48</td>
+<td class="num up">+2.09%</td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">니케이 225</span><span class="en">Nikkei 225</span></td>
+<td class="num">68,956.72</td>
+<td class="num up">+3.30%</td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">항셍</span><span class="en">Hang Seng</span></td>
+<td class="num">—</td>
+<td class="num flat">—</td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">상하이종합</span><span class="en">Shanghai Composite</span></td>
+<td class="num">—</td>
+<td class="num flat">—</td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">대만 가권</span><span class="en">TAIEX</span></td>
+<td class="num">48,353.49</td>
+<td class="num up">+0.86%</td>
+</tr>
+</tbody>
+<caption><span class="ko">출처: 야후 파이낸스 · 수집 스냅샷 data/market/2026-10-01.json (2026-10-01 19:51:52 수집). 표 안의 모든 값은 이 파일 하나에서 읽었습니다.</span><span class="en">Source: Yahoo Finance · snapshot data/market/2026-10-01.json (collected 2026-10-01 19:51:52). Every value in this table comes from that single file.</span></caption>
+</table>
+</section>
+<section class="card">
+<div class="rule"></div>
+<p class="kicker">TOP MOVERS</p>
+<h2><span class="ko">2단 · 오늘의 무빙</span><span class="en">Part 2 · Today&#x27;s movers</span></h2>
+<p class="asof"><span class="ko">기준 시점 — 국내 2026년 10월 1일(목) 정규장 마감 기준</span><span class="en">As of — Korea regular session close, October 01, 2026 (Thu)</span></p>
+<div class="movers">
+<div class="mv">
+<p class="rank">NO.1</p>
+<p class="sym"><span class="ko">에스앤에스텍</span><span class="en">S&amp;S Tech</span></p>
+<p class="co"><span class="ko">코스닥</span><span class="en">KOSDAQ</span></p>
+<p class="pc up">+17.83%</p>
+<p class="px"><span class="ko">53,200원</span><span class="en">KRW 53,200</span></p>
+<p class="cm"><span class="ko">반도체·디스플레이 노광 공정에 쓰는 블랭크마스크를 만듭니다. 이날 급등의 개별 사유는 공개 자료에서 확인하지 못했습니다.</span><span class="en">Makes blankmasks for semiconductor and display lithography. We could not confirm a company-specific driver for the move in public sources.</span></p>
+<dl>
+<div><dt><span class="ko">시총</span><span class="en">Cap</span></dt><dd><span class="ko">1.1조원</span><span class="en">KRW 1.1tn</span></dd></div>
+<div><dt><span class="ko">거래대금(당일)</span><span class="en">Turnover (day)</span></dt><dd><span class="ko">327억원</span><span class="en">KRW 33bn</span></dd></div>
+</dl>
+</div>
+<div class="mv">
+<p class="rank">NO.2</p>
+<p class="sym"><span class="ko">디아이</span><span class="en">DI Corporation</span></p>
+<p class="co"><span class="ko">코스피</span><span class="en">KOSPI</span></p>
+<p class="pc up">+15.80%</p>
+<p class="px"><span class="ko">42,500원</span><span class="en">KRW 42,500</span></p>
+<p class="cm"><span class="ko">반도체 검사장비(번인 테스터)를 만듭니다. 삼성전자와 153억원 규모 공급계약을 맺었다는 소식이 전해졌습니다.</span><span class="en">Makes semiconductor burn-in test equipment; reported a KRW 15.3bn supply contract with Samsung Electronics.</span></p>
+<dl>
+<div><dt><span class="ko">시총</span><span class="en">Cap</span></dt><dd><span class="ko">1.2조원</span><span class="en">KRW 1.2tn</span></dd></div>
+<div><dt><span class="ko">거래대금(당일)</span><span class="en">Turnover (day)</span></dt><dd><span class="ko">1141억원</span><span class="en">KRW 114bn</span></dd></div>
+</dl>
+</div>
+<div class="mv">
+<p class="rank">NO.3</p>
+<p class="sym"><span class="ko">삼천당제약</span><span class="en">Samchundang Pharm</span></p>
+<p class="co"><span class="ko">코스닥</span><span class="en">KOSDAQ</span></p>
+<p class="pc up">+15.39%</p>
+<p class="px"><span class="ko">199,400원</span><span class="en">KRW 199,400</span></p>
+<p class="cm"><span class="ko">안과용 바이오시밀러가 다시 주목받았습니다. 황반변성 치료제 복제약의 해외 수출 기대가 재료였습니다.</span><span class="en">Its ophthalmic biosimilars came back into focus, with export expectations for its macular-degeneration copy.</span></p>
+<dl>
+<div><dt><span class="ko">시총</span><span class="en">Cap</span></dt><dd><span class="ko">4.7조원</span><span class="en">KRW 4.7tn</span></dd></div>
+<div><dt><span class="ko">거래대금(당일)</span><span class="en">Turnover (day)</span></dt><dd><span class="ko">913억원</span><span class="en">KRW 91bn</span></dd></div>
+</dl>
+</div>
+</div>
+<p class="common"><strong><span class="ko">공통 배경</span><span class="en">Common thread</span></strong> <span class="ko">둘은 반도체 장비·소재이고 하나는 바이오입니다. 오늘 지수를 만든 두 축이 그대로 무빙 상위에 올라온 셈입니다 — 마이크론 호실적과 반도체 수출이 장비·소재를 끌어올렸고, 바이오는 코스닥을 4%대로 밀어 올린 업종이었습니다. 다만 세 종목 모두 시가총액 1~5조원대 중소형주라, 지수를 끌어올린 대형주와는 다른 자리에 있습니다.</span><span class="en">Two are semiconductor equipment and materials, one is biotech — the same two engines that made the index today. Micron&#x27;s results and the export print lifted the chip supply chain, while biotech drove the KOSDAQ&#x27;s 4% move. All three are mid-caps of KRW 1-5tn, a different place from the large caps that moved the index.</span></p>
+<p class="asof"><span class="ko">대상: 국내 상장 보통주 중 시가총액 1조원 이상 · 당일 거래대금 300억원 이상. 평균이 아니라 당일 거래대금입니다.</span><span class="en">Universe: KRX-listed common stocks with market cap ≥ KRW 1tn and same-day turnover ≥ KRW 30bn. This is same-day turnover, not an average.</span></p>
+</section>
+<section class="card">
+<div class="rule"></div>
+<p class="kicker">LARGE CAP BOARD</p>
+<h2><span class="ko">대형주 보드</span><span class="en">Large cap board</span></h2>
+<p class="asof"><span class="ko">기준 시점 — 국내 2026년 10월 1일(목) 정규장 마감 기준</span><span class="en">As of — Korea regular session close, October 01, 2026 (Thu)</span></p>
+<table><thead><tr>
+<th><span class="ko">종목</span><span class="en">Name</span></th>
+<th class="num"><span class="ko">종가</span><span class="en">Close</span></th>
+<th class="num"><span class="ko">등락률</span><span class="en">Change</span></th>
+<th class="hide-sm"><span class="ko">코멘트</span><span class="en">Comment</span></th>
+</tr></thead><tbody>
+<tr>
+<td class="nm"><span class="ko">삼성전자</span><span class="en">Samsung Electronics</span></td>
+<td class="num">276,000</td>
+<td class="num up">+2.79%</td>
+<td class="note hide-sm"><span class="ko">메모리·파운드리·스마트폰. 9월 반도체 수출 호조의 한가운데 있습니다.</span><span class="en">Memory, foundry and handsets; at the centre of the September export beat.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">SK하이닉스</span><span class="en">SK Hynix</span></td>
+<td class="num">1,833,000</td>
+<td class="num up">+3.21%</td>
+<td class="note hide-sm"><span class="ko">D램·낸드. 마이크론 호실적이 HBM 수요 기대로 그대로 옮겨왔습니다.</span><span class="en">DRAM and NAND; Micron&#x27;s beat transferred straight into HBM demand expectations.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">LG에너지솔루션</span><span class="en">LG Energy Solution</span></td>
+<td class="num">360,500</td>
+<td class="num up">+0.98%</td>
+<td class="note hide-sm"><span class="ko">전기차 배터리. 반도체 장세에서 상대적으로 조용했습니다.</span><span class="en">EV batteries; relatively quiet in a semiconductor-led session.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">삼성바이오로직스</span><span class="en">Samsung Biologics</span></td>
+<td class="num">1,429,000</td>
+<td class="num up">+2.73%</td>
+<td class="note hide-sm"><span class="ko">바이오의약품 위탁생산. 바이오 강세에 함께 올랐습니다.</span><span class="en">Biologics CDMO; rose with the biotech bid.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">현대차</span><span class="en">Hyundai Motor</span></td>
+<td class="num">349,000</td>
+<td class="num up">+1.16%</td>
+<td class="note hide-sm"><span class="ko">완성차. 원화가 강해지면 수출 채산성에 부담입니다.</span><span class="en">Autos; a stronger won weighs on export margins.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">기아</span><span class="en">Kia</span></td>
+<td class="num">113,300</td>
+<td class="num up">+0.44%</td>
+<td class="note hide-sm"><span class="ko">완성차. 현대차와 같은 환율 민감도를 가집니다.</span><span class="en">Autos; shares Hyundai&#x27;s currency sensitivity.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">셀트리온</span><span class="en">Celltrion</span></td>
+<td class="num">183,600</td>
+<td class="num up">+3.32%</td>
+<td class="note hide-sm"><span class="ko">바이오시밀러. 이날 바이오 업종 강세의 대형주 쪽 얼굴입니다.</span><span class="en">Biosimilars; the large-cap face of today&#x27;s biotech strength.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">KB금융</span><span class="en">KB Financial</span></td>
+<td class="num">166,000</td>
+<td class="num down">-1.66%</td>
+<td class="note hide-sm"><span class="ko">은행지주. 보드에서 가장 크게 밀렸습니다.</span><span class="en">Bank holding company; the weakest name on the board.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">NAVER</span><span class="en">NAVER</span></td>
+<td class="num">191,200</td>
+<td class="num down">-1.29%</td>
+<td class="note hide-sm"><span class="ko">검색·커머스·클라우드. 성장주 가운데 금리 부담을 받는 쪽입니다.</span><span class="en">Search, commerce and cloud; the growth name most exposed to rates.</span></td>
+</tr>
+<tr>
+<td class="nm"><span class="ko">한화에어로스페이스</span><span class="en">Hanwha Aerospace</span></td>
+<td class="num">1,034,000</td>
+<td class="num up">+2.68%</td>
+<td class="note hide-sm"><span class="ko">항공엔진·방산. 지수 상승에 올라탔습니다.</span><span class="en">Aero engines and defence; joined the index move.</span></td>
+</tr>
+</tbody>
+<caption><span class="ko">출처: 네이버 증시 · 수집 스냅샷 data/market/2026-10-01.json. 표 안의 종가·등락률은 한 곳에서만 읽었습니다.</span><span class="en">Source: Naver · snapshot data/market/2026-10-01.json. Closes and changes in this table were read from one place.</span></caption>
+</table>
+<div class="points">
+<p><span class="ko">반도체 둘이 또 앞섰습니다 — SK하이닉스 +3.21%, 삼성전자 +2.79%. 마이크론 실적과 수출 지표가 같은 방향을 가리킨 날입니다.</span><span class="en">The two chipmakers led again — SK Hynix +3.21%, Samsung Electronics +2.79% — on a day when Micron&#x27;s results and the export data pointed the same way.</span></p>
+<p><span class="ko">바이오도 함께 올랐습니다. 셀트리온 +3.32%, 삼성바이오로직스 +2.73%로, 코스닥을 밀어 올린 업종이 대형주에서도 확인됩니다.</span><span class="en">Biotech rose alongside: Celltrion +3.32% and Samsung Biologics +2.73% confirm in large caps what drove the KOSDAQ.</span></p>
+<p><span class="ko">내린 것은 둘뿐입니다 — KB금융 −1.66%, NAVER −1.29%. 간밤 미 장기금리가 올랐는데도 금융이 밀린 점은 눈여겨볼 대목입니다.</span><span class="en">Only two fell — KB Financial −1.66% and NAVER −1.29%. Financials lagging despite higher long US yields is worth noting.</span></p>
+<p><span class="ko">이 보드는 시황을 읽는 고정 10종목입니다. 편입·제외를 하지 않으므로 날짜별 비교가 그대로 됩니다.</span><span class="en">This board is a fixed ten names — no additions or deletions, so day-to-day comparison holds.</span></p>
+</div>
+</section>
+<section class="card">
+<div class="rule"></div>
+<p class="kicker">NEWS CARDS</p>
+<h2><span class="ko">뉴스카드 5장</span><span class="en">Five news cards</span></h2>
+<p class="asof"><span class="ko">기준 시점 — 2026년 10월 1일(목) 국내 정규장 마감(15:30 KST). 시세는 수집 파일(거래소 원천), 배경은 표기된 매체입니다.</span><span class="en">As of — Korean regular session close, 15:30 KST on Thursday 1 October 2026. Prices from the collected exchange data; context from the outlets cited.</span></p>
+<article class="news">
+<span class="cat"><span class="ko">코스피·코스닥</span><span class="en">KOSPI &amp; KOSDAQ</span></span>
+<h3><span class="ko">중소형주가 더 크게 올랐습니다</span><span class="en">The smaller end rose more</span></h3>
+<p class="lede"><span class="ko">코스닥이 38.38포인트 올라 894.29로 마쳤습니다. 코스피 +1.95%의 두 배가 넘는 폭입니다. 9월 18일에는 정반대였습니다 — 그날은 코스피가 +2.66%인데 코스닥이 +0.60%에 그쳤습니다. 2주 만에 온도가 뒤집혔습니다.</span><span class="en">The KOSDAQ closed 38.38 points higher at 894.29, more than double the KOSPI&#x27;s 1.95%. On 18 September it was the other way round — KOSPI +2.66% against KOSDAQ +0.60%. The temperature flipped in a fortnight.</span></p>
+<ul>
+<li><span class="ko">코스피200은 +2.09%로 코스피보다 조금 더 올랐습니다. 대형주도 함께 갔다는 뜻이며, 오늘은 대형·중소형이 같은 방향이었습니다.</span><span class="en">The KOSPI 200 added 2.09%, slightly ahead of the broad index — large caps moved too, so both ends ran the same way today.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">장 초반에는 약세였습니다. 간밤 미 장기국채 금리가 올라 부담이 됐는데, 마이크론 실적과 9월 수출 지표가 전해지며 방향이 바뀌었습니다.</span><span class="en">The session opened weak under the overnight rise in long US yields, then turned on Micron&#x27;s results and the September export print.</span><span class="vf ok">2 SOURCES</span></li>
+<li><span class="ko">간밤 미국은 갈렸습니다 — 나스닥만 +0.24%였고 다우 −0.86%, S&amp;P 500 −0.25%, 러셀 2000 −0.39%였습니다.</span><span class="en">The overnight US session was split: only the Nasdaq rose (+0.24%), with the Dow −0.86%, S&amp;P 500 −0.25% and Russell 2000 −0.39%.</span><span class="vf ok">MARKET DATA</span></li>
+</ul>
+</article>
+<article class="news">
+<span class="cat"><span class="ko">수급</span><span class="en">Flows</span></span>
+<h3><span class="ko">외국인이 파는데 지수가 올랐습니다</span><span class="en">The index rose while foreigners sold</span></h3>
+<p class="lede"><span class="ko">코스피에서 외국인이 5,550억원, 개인이 1조 4,105억원을 순매도했습니다. 기관만 3,232억원을 순매수했습니다. 세 주체의 합이 음수인데도 지수가 오른 날은, 남은 매수 주체(기타법인·국가 등)와 종목별 쏠림을 함께 봐야 합니다.</span><span class="en">On the KOSPI, foreigners sold a net KRW 555bn and retail KRW 1,410.5bn, while only institutions bought (KRW 323.2bn). When those three net negative and the index still rises, the remaining buyers and stock-level concentration are doing the work.</span></p>
+<ul>
+<li><span class="ko">외국인은 사흘째 파는 중입니다 — 9월 29일 2조 9,922억원, 9월 30일 2조 646억원 순매도에 이어 오늘 5,550억원입니다. 다만 매도 규모는 줄었습니다.</span><span class="en">Foreigners have sold for three sessions — KRW 2,992.2bn on 29 Sep, KRW 2,064.6bn on 30 Sep, and KRW 555bn today — though the size is shrinking.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">같은 기간 개인은 사다가 오늘 돌아섰습니다. 9월 29일 1조 2,447억원, 9월 30일 1조 2,109억원을 순매수한 뒤 오늘 1조 4,105억원을 팔았습니다.</span><span class="en">Retail flipped today after buying: KRW 1,244.7bn on 29 Sep and KRW 1,210.9bn on 30 Sep, then selling KRW 1,410.5bn today.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">수급 수치는 마감 확정치입니다. 장중 집계와 섞어 읽지 마십시오.</span><span class="en">These are final settlement figures; do not mix them with intraday tallies.</span><span class="vf ok">MARKET DATA</span></li>
+</ul>
+</article>
+<article class="news">
+<span class="cat"><span class="ko">업종·종목</span><span class="en">Sectors &amp; stocks</span></span>
+<h3><span class="ko">바이오가 앞서고 정유·내수가 뒤졌습니다</span><span class="en">Biotech led; refiners and domestic names lagged</span></h3>
+<p class="lede"><span class="ko">업종 상위는 바이오가 채웠고, 하위는 정유와 내수가 채웠습니다. 지수가 크게 오른 날에도 업종 간 격차는 10%포인트에 가까웠습니다.</span><span class="en">Biotech filled the top of the sector table and refiners and domestic names the bottom. Even on a strong day the spread between sectors ran close to ten points.</span></p>
+<ul>
+<li><span class="ko">상위: 생물공학 +5.83%, 생명과학도구및서비스 +5.40%, 판매업체 +4.05%.</span><span class="en">Leaders: biotechnology +5.83%, life-science tools and services +5.40%, distributors +4.05%.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">하위: 가정용품 −4.41%, 석유와가스 −3.20%, 무역회사와판매업체 −1.87%. 정유는 S-Oil −6.43%, SK이노베이션 −5.17%로 개별 종목에서도 확인됩니다.</span><span class="en">Laggards: household products −4.41%, oil and gas −3.20%, trading companies −1.87%. Refiners confirm it at stock level: S-Oil −6.43%, SK Innovation −5.17%.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">매체는 같은 날 바이오 업종을 +6%대로 보도했습니다. 업종 분류와 집계 시점이 달라 생기는 차이이며, 이 표는 수집 스냅샷 기준입니다.</span><span class="en">Some outlets reported the biotech sector above +6% for the same day. Sector definitions and timing differ; this page uses the collected snapshot.</span><span class="vf solo">1 SOURCE</span></li>
+</ul>
+</article>
+<article class="news">
+<span class="cat"><span class="ko">금리·환율</span><span class="en">Rates &amp; FX</span></span>
+<h3><span class="ko">미 장기금리가 올랐고 원화는 강해졌습니다</span><span class="en">Long US yields rose; the won strengthened</span></h3>
+<p class="lede"><span class="ko">미 국채 10년물이 5.29%로 3bp 올랐고 30년물은 5.64%로 5bp 올랐습니다. 2년물은 1bp 내려 장단기 차이가 벌어졌습니다 — 정책금리 기대보다 기간 프리미엄이 움직인 모습입니다. 원/달러 매매기준율은 1,363.0원으로, 9월 18일 1,388.0원에서 25원 내렸습니다.</span><span class="en">The US 10-year rose 3bp to 5.29% and the 30-year 5bp to 5.64%, while the 2-year slipped 1bp — the curve steepened on term premium rather than policy expectations. The USD/KRW reference rate is 1,363.0, down 25 won from 1,388.0 on 18 September.</span></p>
+<ul>
+<li><span class="ko">미 국채 2년–10년 차이는 41bp입니다. 곡선이 뒤집혀 있지 않습니다.</span><span class="en">The US 2s-10s spread is 41bp; the curve is not inverted.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">국고채는 3년 4.010%, 10년 4.436%로 42.6bp 벌어져 있습니다. 미국(41bp)과 비슷한 기울기입니다.</span><span class="en">Korean government bonds yield 4.010% (3y) and 4.436% (10y), a 42.6bp spread — a slope close to the US 41bp.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">원화 강세는 수출주의 채산성에는 부담입니다. 오늘 반도체가 오른 것은 환율이 아니라 업황 지표가 끌었기 때문입니다.</span><span class="en">A stronger won pressures exporter margins; today&#x27;s chip rally came from the demand data, not the currency.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">한국 기준금리는 수집 자료에 없어 적지 않았습니다. 콜금리로 대신하지 않았습니다.</span><span class="en">The Bank of Korea policy rate is absent from the collected data and was not printed; the call rate was not substituted.</span><span class="vf none">NOT FOUND</span></li>
+</ul>
+</article>
+<article class="news">
+<span class="cat"><span class="ko">해외·다음 일정</span><span class="en">Overseas &amp; what&#x27;s next</span></span>
+<h3><span class="ko">일본이 3.30% 올랐고 중화권은 쉽니다</span><span class="en">Japan rose 3.30%; Greater China is closed</span></h3>
+<p class="lede"><span class="ko">니케이 225가 +3.30%로 아시아에서 가장 크게 올랐습니다. 대만 가권은 +0.86%였습니다. 홍콩과 중국 본토는 국경절로 휴장이라 이 표에서 빠져 있습니다.</span><span class="en">The Nikkei 225 rose 3.30%, the biggest move in Asia, with the TAIEX up 0.86%. Hong Kong and mainland China are shut for National Day and are absent from the table.</span></p>
+<ul>
+<li><span class="ko">중국 본토는 10월 1일부터 7일까지 닫고 10월 8일(목) 재개장합니다 — 다섯 거래일을 쉽니다. 그동안 아시아 시간대 거래는 얇아질 수 있습니다.</span><span class="en">Mainland China is closed 1-7 October and reopens on Thursday 8 October — five sessions out. Asian-hours liquidity may thin meanwhile.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">국내는 10월 2일(금) 거래한 뒤, 10월 5일(월) 개천절 대체공휴일로 쉽니다. 10월 9일(금) 한글날도 휴장입니다.</span><span class="en">Korea trades Friday 2 October, then closes Monday 5 October for the National Foundation Day substitute holiday; Friday 9 October (Hangul Day) is also closed.</span><span class="vf ok">MARKET DATA</span></li>
+<li><span class="ko">마이크론은 다음 분기 매출을 615억 달러로 제시했습니다. 시장 추정치 568억 달러를 웃도는 수치이며, 오늘 국내 반도체 강세의 근거입니다.</span><span class="en">Micron guided next-quarter revenue to $61.5bn against a $56.8bn consensus — the basis for today&#x27;s strength in Korean chip names.</span><span class="vf ok">2 SOURCES</span></li>
+</ul>
+</article>
+</section>
+<section class="card">
+<div class="rule"></div>
+<p class="kicker">VERIFICATION</p>
+<h2><span class="ko">검증 노트</span><span class="en">Verification notes</span></h2>
+<ul class="verify">
+<li><span class="ko">기준선 7종 가운데 항셍과 상하이종합은 국경절 휴장이라 10월 1일 값이 없습니다. 다른 날 값을 끌어오지 않고 비워 두었습니다.</span><span class="en">Two of the seven benchmarks — Hang Seng and Shanghai Composite — have no 1 October value because of the National Day holiday. They were left blank rather than filled from another date.</span></li>
+<li><span class="ko">무빙 자료는 장 마감 뒤(market_status=CLOSE) 수집분만 썼습니다. 같은 API 가 장중에는 실시간을 주므로 장중 수집분은 쓰지 않습니다.</span><span class="en">Movers come only from a post-close collection (market_status=CLOSE); the same API returns live prices during the session, and intraday collections are not used.</span></li>
+<li><span class="ko">이번 최신화에서 미국 수집기의 마감 확인 가드가 빠져 있던 것을 고쳤습니다. 10월 1일 22:54 KST 수집분은 뉴욕 정규장이 열린 뒤라 30종목이 전부 장중값이었고, 그대로 실었으면 장중 호가가 종가로 인쇄될 뻔했습니다.</span><span class="en">This refresh added the missing post-close guard to the US collector. The 22:54 KST collection on 1 October ran after the New York open and every name was an intraday quote; printing it would have passed live prices off as closes.</span></li>
+<li><span class="ko">인쇄된 등락률은 모두 종가와 전일 종가로 되짚어 검산했습니다.</span><span class="en">Every printed percentage change was recomputed from close and previous close.</span></li>
+<li><span class="ko">업종·환율처럼 날짜 필드가 없는 블록은 장 마감 뒤 수집분(19:51 KST)에서 읽었습니다.</span><span class="en">Blocks without a date field (sectors, FX reference rate) were read from the post-close collection at 19:51 KST.</span></li>
+<li><span class="ko">코스닥 등락 종목 수는 날짜가 붙지 않아 싣지 않았습니다. 매체가 보도한 수치는 있으나 수집 자료로 대조하지 못했습니다.</span><span class="en">KOSDAQ advance/decline counts carry no date field and were left out; outlets reported figures we could not corroborate against the collected data.</span></li>
+<li><span class="ko">에스앤에스텍의 급등 사유는 공개 자료에서 확인하지 못해 비워 두었습니다. &#x27;사유가 없다&#x27;가 아니라 &#x27;확인되지 않았다&#x27;입니다.</span><span class="en">The driver for the S&amp;S Tech move was not confirmed in public sources and is left blank — unverified, not non-existent.</span></li>
+<li><span class="ko">업종 등락률은 매체 보도와 1%포인트 가까이 차이가 납니다. 업종 분류 체계와 집계 시점이 달라서이며, 이 표는 수집 스냅샷을 채택했습니다.</span><span class="en">Sector moves differ from press reports by close to a percentage point, reflecting different sector taxonomies and timing; this page uses the collected snapshot.</span></li>
+<li><span class="ko">미 국채 수익률은 미 재무부 고시 확정치(2026-09-30)입니다. 기사에서 추정하지 않았습니다.</span><span class="en">US Treasury yields are the official published series for 30 September, not estimated from articles.</span></li>
+<li><span class="ko">한국 기준금리는 수집 자료에 없어 적지 않았습니다.</span><span class="en">The Bank of Korea policy rate is absent from the collected data and was not printed.</span></li>
+<li><span class="ko">항셍 은(는) 기준 스냅샷에 2026-10-01 값이 없어 비워 두었습니다 (파일의 날짜: 2026-09-30).</span><span class="en">Hang Seng left blank: the reference snapshot has no 2026-10-01 value (file date: 2026-09-30).</span></li>
+<li><span class="ko">상하이종합 은(는) 기준 스냅샷에 2026-10-01 값이 없어 비워 두었습니다 (파일의 날짜: 2026-09-30).</span><span class="en">Shanghai Composite left blank: the reference snapshot has no 2026-10-01 value (file date: 2026-09-30).</span></li>
+</ul>
+</section>
+<footer class="foot">
+<p class="disc"><strong><span class="ko">고지</span><span class="en">Disclaimer</span></strong> <span class="ko">본 자료는 내부 참고용으로 작성되었으며, 특정 종목의 매매를 권유하는 자료가 아닙니다. 수록된 시세와 정보는 작성 시점 기준이며 오류가 있을 수 있습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다.</span><span class="en">This material is prepared for internal reference only and is not a recommendation to buy or sell any security. Prices and information are as of the stated time and may contain errors. Investment decisions remain the sole responsibility of the investor.</span></p>
+<p><span class="ko">MARKET DAILY · 미래에셋증권 · 작성 2026-10-01 23:31 KST · 자료 data/market/2026-10-01.json / data/kr_movers/latest.json</span><span class="en">MARKET DAILY · Mirae Asset Securities · compiled 2026-10-01 23:31 KST · data data/market/2026-10-01.json / data/kr_movers/latest.json</span></p>
+</footer>
+</main>
+<script>
+(function(){
+  var K=document.getElementById('b-ko'), E=document.getElementById('b-en');
+  function set(l){
+    document.documentElement.lang=l;
+    K.setAttribute('aria-checked', String(l==='ko'));
+    E.setAttribute('aria-checked', String(l==='en'));
+    try{ localStorage.setItem('md-lang', l); }catch(e){}
+  }
+  K.addEventListener('click', function(){ set('ko'); });
+  E.addEventListener('click', function(){ set('en'); });
+  var saved=null; try{ saved=localStorage.getItem('md-lang'); }catch(e){}
+  set(saved==='en' ? 'en' : 'ko');
+})();
+</script>
+</body></html>
