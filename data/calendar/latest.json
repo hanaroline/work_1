@@ -1,6 +1,6 @@
 {
- "builtAt": "2026-10-01 13:45 KST",
- "builtAtUtc": "2026-10-01T04:45:22Z",
+ "builtAt": "2026-10-01 22:55 KST",
+ "builtAtUtc": "2026-10-01T13:55:16Z",
  "window": {
   "from": "2026-08-17",
   "to": "2028-02-13"
@@ -97,26 +97,26 @@
    "series_days": 400
   },
   "fed_implied": {
-   "contract_price": 96.035,
-   "implied_rate_pct": 3.965,
+   "contract_price": 96.025,
+   "implied_rate_pct": 3.975,
    "quote_date": "2026-10-01",
    "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 — 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
    "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
    "effr_pct": 3.88,
-   "vs_effr_bp": 8,
+   "vs_effr_bp": 10,
    "perf": {
-    "w1": 22.1,
-    "m1": 33.7,
-    "m3": 33.7,
-    "m6": 32.8,
-    "y1": -25.9,
-    "ytd": 24.1,
+    "w1": 23.1,
+    "m1": 27.0,
+    "m3": 34.7,
+    "m6": 33.7,
+    "y1": -10.6,
+    "ytd": 25.0,
     "unit": "bp",
     "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
    }
   },
   "rates_kr": {
-   "call": 3.068,
+   "call": 3.105,
    "cd91": 3.22,
    "cofix_new": 3.18,
    "cofix_balance": 3.05,
@@ -131,30 +131,30 @@
     "COFIX 신잔액"
    ],
    "ktb10y_errors": [
-    "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(135785 bytes)",
+    "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(131148 bytes)",
     "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
    ],
-   "ktb1y": 3.733,
-   "ktb5y": 4.203,
-   "ktb10y": 4.407,
+   "ktb1y": 3.744,
+   "ktb5y": 4.2,
+   "ktb10y": 4.436,
    "perf": {
     "ktb1y": {
-     "w1": 6.6,
-     "m1": 25.8,
+     "w1": 7.7,
+     "m1": 26.9,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb5y": {
-     "w1": -1.7,
-     "m1": 3.6,
+     "w1": -2.0,
+     "m1": 3.3,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb10y": {
-     "w1": 1.5,
-     "m1": -1.1,
+     "w1": 4.4,
+     "m1": 1.8,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
@@ -167,8 +167,8 @@
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "call": {
-     "w1": -0.6,
-     "m1": 1.8,
+     "w1": 3.1,
+     "m1": 5.5,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
@@ -189,7 +189,7 @@
     }
    }
   },
-  "asof_kst": "2026-10-01 10:12:49"
+  "asof_kst": "2026-10-01 19:51:52"
  },
  "holidays": [
   {
@@ -1916,12 +1916,6 @@
    "market": "us",
    "sector": "it"
   },
-  "CMCSA": {
-   "ko": "컴캐스트",
-   "en": "Comcast",
-   "market": "us",
-   "sector": "comm"
-  },
   "BX": {
    "ko": "블랙스톤",
    "en": "Blackstone",
@@ -1988,12 +1982,6 @@
    "market": "us",
    "sector": "it"
   },
-  "INTU": {
-   "ko": "인튜이트",
-   "en": "Intuit",
-   "market": "us",
-   "sector": "it"
-  },
   "MO": {
    "ko": "알트리아",
    "en": "Altria Group",
@@ -2005,12 +1993,6 @@
    "en": "Southern Company",
    "market": "us",
    "sector": "util"
-  },
-  "UPS": {
-   "ko": "UPS",
-   "en": "United Parcel Service",
-   "market": "us",
-   "sector": "ind"
   },
   "ELV": {
    "ko": "엘리번스헬스",
@@ -2065,6 +2047,24 @@
    "en": "NextEra Energy",
    "market": "us",
    "sector": "util"
+  },
+  "DELL": {
+   "ko": "델 테크놀로지스",
+   "en": "Dell Technologies",
+   "market": "us",
+   "sector": "it"
+  },
+  "CRWD": {
+   "ko": "크라우드스트라이크",
+   "en": "CrowdStrike",
+   "market": "us",
+   "sector": "it"
+  },
+  "SNDK": {
+   "ko": "샌디스크",
+   "en": "Sandisk",
+   "market": "us",
+   "sector": "it"
   }
  },
  "earnings_snapshot_bases": {
@@ -4334,32 +4334,6 @@
    ]
   },
   {
-   "id": "earnings-MU-2026-09-30",
-   "date": "2026-09-30",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "마이크론 실적발표",
-   "title_en": "Micron Technology earnings",
-   "org": "MU",
-   "org_en": "MU",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "http://investors.micron.com/",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "MU"
-   ]
-  },
-  {
    "id": "indicator-kr-trade-2026-10-01",
    "date": "2026-10-01",
    "end_date": null,
@@ -6027,6 +6001,32 @@
    ]
   },
   {
+   "id": "earnings-CMCSA-2026-10-22",
+   "date": "2026-10-22",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "CMCSA 실적발표",
+   "title_en": "CMCSA earnings",
+   "org": "CMCSA",
+   "org_en": "CMCSA",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "http://cmcsk.com/",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "CMCSA"
+   ]
+  },
+  {
    "id": "indicator-us-claims-2026-10-22",
    "date": "2026-10-22",
    "end_date": null,
@@ -6127,32 +6127,6 @@
     "earnings",
     "us",
     "INTC"
-   ]
-  },
-  {
-   "id": "earnings-CMCSA-2026-10-22",
-   "date": "2026-10-22",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "컴캐스트 실적발표",
-   "title_en": "Comcast earnings",
-   "org": "CMCSA",
-   "org_en": "CMCSA",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "http://cmcsk.com/",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "CMCSA"
    ]
   },
   {
@@ -6552,7 +6526,7 @@
    "category": "earnings",
    "importance": 1,
    "title_ko": "UPS 실적발표",
-   "title_en": "United Parcel Service earnings",
+   "title_en": "UPS earnings",
    "org": "UPS",
    "org_en": "UPS",
    "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
@@ -9978,6 +9952,32 @@
    ]
   },
   {
+   "id": "earnings-INTU-2026-11-19",
+   "date": "2026-11-19",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "INTU 실적발표",
+   "title_en": "INTU earnings",
+   "org": "INTU",
+   "org_en": "INTU",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "http://investors.intuit.com/",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "INTU"
+   ]
+  },
+  {
    "id": "indicator-us-claims-2026-11-19",
    "date": "2026-11-19",
    "end_date": null,
@@ -10026,32 +10026,6 @@
     "earnings",
     "us",
     "WMT"
-   ]
-  },
-  {
-   "id": "earnings-INTU-2026-11-19",
-   "date": "2026-11-19",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "인튜이트 실적발표",
-   "title_en": "Intuit earnings",
-   "org": "INTU",
-   "org_en": "INTU",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "http://investors.intuit.com/",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "INTU"
    ]
   },
   {
@@ -11267,6 +11241,32 @@
    "tags": [
     "indicator",
     "cn-activity"
+   ]
+  },
+  {
+   "id": "earnings-MU-2026-12-23",
+   "date": "2026-12-23",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "마이크론 실적발표",
+   "title_en": "Micron Technology earnings",
+   "org": "MU",
+   "org_en": "MU",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "http://investors.micron.com/",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "MU"
    ]
   },
   {
