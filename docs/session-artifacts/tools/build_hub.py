@@ -220,14 +220,28 @@ GROUPS = [
              '데이터센터 밸류체인 맵', 'Data center value chain map',
              '2026-08-05', 'b563f426-4248-467e-af3f-bc6c750de2b5', True),
             ('증권사 리포트 다이제스트', 'Broker Report Digest',
-             '조회수·목표주가 변경·복수 커버리지로 그날 리포트를 고릅니다. 9/4 자 90건, '
-             '수집 전체 316건을 파일에 담았습니다. 수집에 실패한 출처가 있으면 '
-             '「이 판에는 OO가 빠졌습니다」를 머리에 띄웁니다.',
+             '조회수·목표주가 변경·복수 커버리지로 그날 리포트를 고릅니다. 9/30 자 111건, '
+             '수집 전체 440건을 파일에 담았습니다. 수집에 실패한 출처가 있으면 '
+             '「이 판에는 OO가 빠졌습니다」를 머리에 띄웁니다. 9/24·9/25 처럼 수집이 '
+             '그날 리포트를 거의 못 받은 날은 건너뛰고 당일분이 온전한 판을 싣습니다.',
              'Picks the day\'s reports by views, target-price changes and shared coverage. '
-             'Carries the Sep 4 edition (90 reports, 316 collected) in the file, and now '
-             'names any source that failed to collect at the top of the page.',
+             'Carries the Sep 30 edition (111 reports, 440 collected) in the file, and names '
+             'any source that failed to collect at the top of the page. Days where the crawl '
+             'caught almost none of that day\'s reports (Sep 24-25) are skipped in favour of '
+             'a complete edition.',
              '증권사 리포트 자동 요약', 'Report auto-summary',
-             '2026-09-04', 'e0d4d73a-22db-4d93-a0c5-6ab177711daa', True),
+             '2026-09-30', 'e0d4d73a-22db-4d93-a0c5-6ab177711daa', True),
+            ('ETF 속보기', 'ETF Quick Finder',
+             '국내·미국·홍콩·일본·중국 상장 ETF 9,285개를 나라·기초지수·운용사·테마로 '
+             '좁혀 보고, 겹침 비교·종목 역조회·순위까지 한 화면에서 봅니다. 위의 '
+             '「ETF 편입종목 조회」가 편입종목을 깊게 본다면 이쪽은 범위가 넓습니다. '
+             '자료 2026-09-29.',
+             'Narrow 9,285 ETFs listed in Korea, the US, Hong Kong, Japan and China by '
+             'country, index, manager and theme, with overlap comparison, reverse lookup '
+             'and rankings on one screen. Where the ETF Holdings Lookup above goes deep on '
+             'constituents, this one goes wide. Data as of Sep 29, 2026.',
+             'ETF 속보기', 'ETF quick finder',
+             '2026-09-29', 'https://claude.ai/artifact/Ma9mtaRuWF8HWrXUpz7QYk', True),
             ('ETF 편입종목 조회', 'ETF Holdings Lookup',
              '국내·미국·홍콩·일본·중국 상장 ETF 1,353종목의 상위 10개 편입종목과 비중. '
              '9/13 수집분, 총수익률 단일 기준. 목록에서 체크로 최대 8개를 담아 겹침을 '
@@ -860,13 +874,13 @@ h.append('<div class="lang" role="radiogroup" aria-label="언어 선택 / Langua
 h.append('</div>')
 
 h.append(bi('세션 산출물 자료실', 'Session Work Library', 'h1'))
-h.append(bi('클로드 코드 세션 59개가 남긴 최종 작업본을 주제별로 모았습니다. '
+h.append(bi('클로드 코드 세션 64개가 남긴 최종 작업본을 주제별로 모았습니다. '
             '제목을 누르면 해당 아티팩트가 열립니다.',
-            'The final deliverable of every one of 59 Claude Code sessions, grouped by '
+            'The final deliverable of every one of 64 Claude Code sessions, grouped by '
             'subject. Each title opens its artifact.', 'p', 'sub'))
 
 h.append('<div class="stats">')
-for kolab, enlab, val in [('세션', 'Sessions', '59'),
+for kolab, enlab, val in [('세션', 'Sessions', '64'),
                           ('주제', 'Subjects', str(len(GROUPS))),
                           ('새로 올린 아티팩트', 'Newly published', str(new_count)),
                           ('색인에 실은 항목', 'Indexed items', str(rows_total))]:
@@ -952,10 +966,10 @@ for (tko, ten, dko, den) in NOARTIFACT:
 h.append('</div></section>')
 
 h.append('<footer>')
-h.append(bi('기준 2026-09-24 · 저장소 <code>hanaroline/work_1</code> · '
+h.append(bi('기준 2026-10-01 · 저장소 <code>hanaroline/work_1</code> · '
             '세션별 브랜치의 마지막 커밋에서 산출물을 뽑았습니다. 이 색인은 월·목 아침에 '
             '스스로 갱신됩니다.',
-            'As of 2026-09-24 · repository <code>hanaroline/work_1</code> · deliverables taken '
+            'As of 2026-10-01 · repository <code>hanaroline/work_1</code> · deliverables taken '
             'from the last commit on each session branch. This index refreshes itself on '
             'Monday and Thursday mornings.', 'p'))
 h.append(bi('세션 목록에는 최근 35개가 잡힙니다. 그보다 앞선 브랜치 두 개'
@@ -969,15 +983,15 @@ h.append(bi('세션 목록에는 최근 35개가 잡힙니다. 그보다 앞선 
             'artifacts are the original; the two factsheets were found in the artifact list '
             'but the session that produced them could not be identified from the session '
             'listing.', 'p'))
-h.append(bi('<b>9/24 기준 밀린 것 —</b> <code>국내·미국 100대 기업</code>·'
-            '<code>증시 일정 캘린더</code>·<code>증권사 리포트 다이제스트</code>·'
+h.append(bi('<b>10/1 기준 밀린 것 —</b> <code>국내·미국 100대 기업</code>·'
+            '<code>증시 일정 캘린더</code>·'
             '<code>완전판매 스크립트</code>(전체판) 는 저장소에 더 새 판이 있지만 이번 '
             '회차에 갈아 끼우지 못했습니다. 아티팩트를 덮어쓰려면 지금 올라가 있는 판을 '
             '먼저 통째로 다시 읽어야 하는데, 이 화면들은 데이터를 파일에 담고 있어 그 '
             '과정이 한 건에 수천 줄입니다. 각 화면은 자기가 안고 있는 자료의 시점을 '
             '스스로 밝히므로 틀린 값을 보여 주지는 않습니다.',
-            '<b>Behind as of Sep 24 —</b> newer builds of <code>Korea / US Top-100</code>, '
-            '<code>Market Calendar</code>, <code>Broker Report Digest</code> and the full '
+            '<b>Behind as of Oct 1 —</b> newer builds of <code>Korea / US Top-100</code>, '
+            '<code>Market Calendar</code> and the full '
             '<code>Compliance Script</code> exist in the repository but were not swapped in '
             'this round: overwriting an artifact requires re-reading the published build in '
             'full, and these pages carry their data inline, which runs to thousands of lines '
