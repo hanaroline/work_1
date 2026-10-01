@@ -297,8 +297,20 @@ for (const f of FUNDS) {
       flag('error', '보유비중-합초과', f, `${hs.length}종목 비중 합 ${sum.toFixed(2)}% (한도 ${cap}%)`,
            { sumWeight: +sum.toFixed(2) });
     }
-    if (!known.length) flag('info', '보유비중-미공시', f, `${hs.length}종목 모두 비중 없음`);
-    else if (known.length < hs.length) {
+    // 수집기가 합이 한도를 넘어 통째로 비운 펀드. 비운 까닭을 남긴다 —
+    // 아래 '보유비중-미공시' 로 적으면 "원천이 안 줬다" 는 거짓이 된다.
+    if (f.weightsDropped) {
+      flag('info', '보유비중-싣지않음', f,
+           `${f.weightsDropped.known}종목 비중 합 ${f.weightsDropped.sum}% 가 한도 ` +
+           `${f.weightsDropped.cap}% 를 넘어 이 펀드의 비중을 통째로 비웠다`,
+           { sumWeight: f.weightsDropped.sum });
+      if (known.length) {
+        flag('error', '보유비중-비운다고해놓고남았다', f,
+             `weightsDropped 를 적어 놓고 비중이 ${known.length}종목에 남아 있다`);
+      }
+    } else if (!known.length) {
+      flag('info', '보유비중-미공시', f, `${hs.length}종목 모두 비중 없음`);
+    } else if (known.length < hs.length) {
       flag('warn', '보유비중-일부없음', f, `${hs.length}종목 중 ${hs.length - known.length}개 비중 없음`);
     }
     for (const h of hs) {

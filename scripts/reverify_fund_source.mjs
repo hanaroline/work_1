@@ -418,6 +418,30 @@ for (const r of rows) {
       flag('error', 'holdings-개수불일치', code, nm,
            `원천 ${srcH ? srcH.length : 0} vs 저장 ${gotH ? gotH.length : 0}`);
     } else if (srcH && gotH) {
+      // ── 통째로 비운 펀드인가 ────────────────────────────────────────────
+      //
+      // 수집기는 비중의 **합**이 한도를 넘으면 그 펀드의 비중을 통째로
+      // 비운다(scripts/collect_fund_kr.mjs 참고). 그런 펀드는 저장본이
+      // 원천과 다를 수밖에 없으므로 그대로 견주면 전부 불일치로 잡힌다.
+      //
+      // 그렇다고 저장본이 "비웠다" 고 적은 것을 믿고 넘기지 않는다. 그러면
+      // 재검증이 수집기의 판단을 그대로 베끼는 것이 된다. **원천에서 합을
+      // 다시 셈해 비울 자리였는지를 따로 판정하고**, 그 판정과 저장본의
+      // 표시가 어긋나면 오류로 잡는다.
+      const capR = /레버리지|인버스|선물|파생/.test(nm || '') ? 310 : 101;
+      const srcKnown = srcH
+        .map((h) => toNum(h.weight))
+        .filter((w) => w != null && w >= -1.5 && w <= 1.5);
+      const srcSum = srcKnown.reduce((s, w) => s + pctOf(w), 0);
+      const shouldDrop = srcKnown.length > 0 && srcSum > capR;
+      const didDrop = !!stored.weightsDropped;
+      score('weightsDropped표시', shouldDrop === didDrop);
+      if (shouldDrop !== didDrop) {
+        flag('error', 'weightsDropped-표시어긋남', code, nm,
+             `원천 비중 합 ${srcSum.toFixed(2)}% (한도 ${capR}%) → 비울 자리 ` +
+             `${shouldDrop} vs 저장본 표시 ${didDrop}`);
+      }
+
       // 순서까지 같아야 한다. 순서가 바뀌면 "상위 종목" 이 달라진다.
       let okRows = true;
       for (let i = 0; i < srcH.length; i += 1) {
@@ -430,7 +454,9 @@ for (const r of rows) {
         }
         const w = toNum(a.weight);
         const usable = w != null && w >= -1.5 && w <= 1.5;
-        const want = usable ? pctOf(w) : null;
+        // 통째로 비운 펀드는 모든 줄이 빈칸이어야 한다 — 한 줄이라도 남아
+        // 있으면 "비웠다" 는 말이 거짓이므로 여기서 불일치로 잡힌다.
+        const want = didDrop ? null : (usable ? pctOf(w) : null);
         if (!near(want, b.weight ?? null, 1e-9)) {
           okRows = false;
           flag('error', 'holdings-비중불일치', code, nm,

@@ -617,6 +617,41 @@ async function fetchDetail(code) {
     };
   }).filter((h) => h.name || h.code) : null;
 
+  // ── 줄마다 멀쩡해도 합이 안 맞을 수 있다 ──────────────────────────────────
+  //
+  // 바로 위의 검사는 **한 줄이 비중일 수 있는가**만 본다. 줄이 다 1.5(=150%)
+  // 안에 들어 있어도 **합이 100% 를 넘으면 그 묶음은 안에서 앞뒤가 안 맞는다.**
+  //
+  // 2026-09-28 수집에서 실제로 한 건 나왔다 —
+  //   KB그린성장포커스증권자투자신탁(주식)(운용) 65종목 합 104.26%
+  // 직전 주(09-21)에는 같은 펀드가 50종목 합 92.10% 였다. 3,200개 중 이것
+  // 하나만 넘었으므로 **분모가 바뀐 것이 아니라 이 펀드의 레코드가 이상한
+  // 것**이다. 다른 3,199개가 같은 잣대 안에 있다.
+  //
+  // 어느 줄이 틀렸는지는 모른다. 65줄이 전부 한 줄짜리 검사를 지나가므로
+  // 줄 단위로는 가려낼 수가 없다. 모르면서 하나를 고르면 지어내는 것이 된다.
+  // 그래서 **그 펀드의 비중만 통째로 비우고 종목 이름과 순서는 남긴다.**
+  // 틀린 숫자를 내보내느니 빈칸이 낫다.
+  //
+  // 0 으로 바꾸지 않는다 — 없는 것을 0 이라고 하면 "안 담았다" 는 거짓이 된다.
+  //
+  // 한도는 감사(scripts/audit_fund_data.mjs 의 보유비중-합초과)와 같은 자리에
+  // 둔다. 파생형은 담보와 노출을 각각 적는 것이 있어 310% 까지 본다.
+  //
+  // 이 한 건 때문에 3,199개가 멈추게 두지 않는다. 09-28 자동 수집이 바로 그
+  // 모양으로 멈췄고, 저장소의 자료가 열흘을 묵었다.
+  let weightsDropped = null;
+  if (holdings && holdings.length) {
+    const cap = /레버리지|인버스|선물|파생/.test(d.fundName || '') ? 310 : 101;
+    const known = holdings.filter((h) => h.weight != null && Number.isFinite(h.weight));
+    const sum = known.reduce((s, h) => s + h.weight, 0);
+    if (known.length && sum > cap) {
+      weightsDropped = { rows: holdings.length, known: known.length,
+                         sum: +sum.toFixed(2), cap };
+      for (const h of holdings) h.weight = null;
+    }
+  }
+
   const m = cp?.metricsDetail?.fundMetric || null;
   // 유형평균 위험지표. **인수인계 문서가 "표본에서 null" 이라고 적어 둔 자리다.**
   // 그 말은 맞았지만(그 표본에서는 비어 있었다) 그것을 "이 원천에는 없다" 로
@@ -813,6 +848,8 @@ async function fetchDetail(code) {
     holdings,
     // 비중일 수 없는 값이 와서 싣지 않은 레코드. 왜 빈칸인지 남긴다.
     badWeights: badWeights.length ? badWeights : null,
+    // 합이 한도를 넘어 그 펀드의 비중을 통째로 비운 경우. 위 설명 참고.
+    weightsDropped,
     holdingsAvailable: !!cp?.availability?.portfolio,
     // 자산구성. **분모가 순자산이 아니다** — 위 shapeAssets 주석 참고.
     // 받아만 두고 화면에는 아직 안 싣는다.
