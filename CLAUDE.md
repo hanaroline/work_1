@@ -21,7 +21,7 @@
 
 **시황 브리핑** — 맥락은 **[docs/HANDOVER.md](docs/HANDOVER.md)**,
 예약 프롬프트와 설정은 **[docs/routine-prompts.md](docs/routine-prompts.md)**,
-작업 규칙 전체는 **[docs/briefing-playbook.md](docs/briefing-playbook.md)**(1,992줄)
+작업 규칙 전체는 **[docs/briefing-playbook.md](docs/briefing-playbook.md)**(2,024줄)
 입니다. 브리핑 일을 맡았다면 playbook 을 **처음부터 끝까지** 읽고 시작하십시오.
 
 그 밖의 갈래(증권사 리포트 · 매매 타이밍 · 100대 기업 대시보드 · 마포 WM ·
