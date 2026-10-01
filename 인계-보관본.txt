@@ -2,10 +2,20 @@
  미래에셋증권 마포WM — Claude 작업 보관본
  프롬프트 · 프로젝트 지침 · 시스템 설정
 ================================================================================
- 작성 2026-10-01
+ 작성 2026-10-01 · 최종 갱신 2026-10-01 21:30 KST
  저장소 hanaroline/work_1
  용도 : Claude 유료 계정을 옮길 때, 저장소 밖에서도 그대로 쓸 수 있는 사본.
         이 파일 하나만 있으면 새 계정에서 처음부터 다시 세울 수 있습니다.
+
+ [ 21:30 갱신에서 달라진 것 ]
+  - 사용자 스킬 2종(mas-design · fin-data-integrity)의 본문을 저장소에
+    백업했습니다 → docs/claude-handoff/skills/. 그동안 "계정 종료 전에 꼭
+    해야 할 일"로만 적혀 있고 실제로는 안 되어 있던 항목입니다. (7-6절)
+  - morning 스킬은 소실 대상이 아니었습니다 — Anthropic 기본 제공입니다.
+    옛 분류가 틀렸던 것을 바로잡았습니다. (7-6절)
+  - 증시 일정 건수를 20:57 판으로 맞췄습니다 (538 → 638).
+  - 고아 가지가 하나가 아니라 둘 이상입니다 (1절).
+  - 보유자산 통합 브리핑(단일 파일)이 새로 생겼습니다 (1절 14번).
 ================================================================================
 
 
@@ -26,9 +36,15 @@
 
 [ 안 넘어오는 것 ] — 옛 계정 소유
   - 대화 기록 자체          → 이 파일과 docs/handover/ 가 그 자리를 대신합니다
-  - 예약(Routine) 전부      → 저장소에 없습니다. 3절 프롬프트로 다시 만드십시오
-  - 발행한 아티팩트 주소    → HTML 은 저장소에 멀쩡. 잃는 것은 링크 주소뿐
-  - 커넥터·스킬·계정 설정   → 새 계정에서 다시 붙이십시오
+  - 예약(Routine) 19건      → 저장소에 없습니다. 3절 프롬프트로 다시 만드십시오
+                               (활성 13 · 중지 6. 원문은 모두 떠 두었습니다:
+                                docs/claude-handoff/ROUTINES.md · routines.json)
+  - 발행한 아티팩트 82건    → HTML 은 저장소에 멀쩡. 잃는 것은 링크 주소뿐
+                               (docs/briefings/index.json 의 82건 전부 url 보유)
+  - 커넥터(Gmail·Gamma)     → 새 계정에서 다시 붙이십시오
+  - 계정 설정·메모리        → 새 계정에서 다시 세우십시오
+  - 사용자 스킬 2종          → 본문은 저장소에 백업해 두었습니다(7-6절).
+                               새 계정에서 그 파일로 다시 만들면 됩니다.
 
  ※ 가장 헷갈리기 쉬운 것
    "GitHub 에 연동하면 과거 프롬프트까지 계승되는가" → 자동으로는 안 됩니다.
@@ -41,29 +57,44 @@
 # 1. 저장소 지도
 ################################################################################
 
-[ ★ 구조상 가장 먼저 알아야 할 것 — 가지가 둘이고 서로 조상이 없습니다 ]
+[ ★ 구조상 가장 먼저 알아야 할 것 — 고아 가지가 여럿입니다 ]
 
-  main                                        851 파일  운영 전부
-  claude/mirae-asset-product-dashboard-cgyqu7  23 파일  금융상품 통합조회
+  원격 가지는 모두 82개입니다. 운영은 main 하나뿐(883 파일)이고,
+  나머지 상당수는 **main 과 공통 조상이 없는** 별개 히스토리입니다.
+  웹 세션마다 저장소가 새로 초기화되어 같은 원격에 올라간 탓입니다.
 
   $ git merge origin/main
   fatal: refusing to merge unrelated histories
 
-  두 가지는 공통 조상이 없습니다. 기능 가지는 별도로 초기화된 작은 저장소가
-  같은 원격에 올라간 모양입니다.
+  지금까지 확인된, 자기만의 산출물을 든 고아 가지
+
+    claude/mirae-asset-product-dashboard-cgyqu7   23 파일  금융상품 통합조회
+    claude/mirae-asset-quote-integration-rrrwfm   12 파일  보유자산 통합 브리핑
 
   지켜야 할 것
-   - 기능 가지에 main 을 덮어쓰지 마십시오.
-     git checkout -B <기능가지> origin/main 뒤 그대로 푸시하면
-     금융상품 조회 작업 33커밋이 사라집니다.
-   - 기능 가지에서 겹치는 README.md / index.html / standalone.html /
+   - 고아 가지에 main 을 덮어쓰지 마십시오.
+     git checkout -B <그 가지> origin/main 뒤 그대로 푸시하면
+     그 가지의 작업이 통째로 사라집니다.
+   - 고아 가지에서 겹치는 README.md / index.html / standalone.html /
      data/sample.js / data/tickers.js / vendor/chart.umd.js 는 main 의 옛 판입니다.
      참고하지 말고 main 것을 보십시오.
+
+  ※ 아직 다 세어 보지 않았습니다.
+    82개 중 main 에 병합되지 않은 가지가 많고, 그중 어디에 "진짜 산출물"이
+    있고 어디가 단순 복제본인지는 전수 확인하지 않았습니다. 위 둘은 확실합니다.
+    확인하려면 — main 의 파일 목록과 각 가지의 파일 목록을 비교합니다:
+
+      git ls-tree -r origin/main --name-only | sort > /tmp/main.txt
+      git ls-tree -r origin/<가지> --name-only | sort > /tmp/b.txt
+      comm -13 /tmp/main.txt /tmp/b.txt      # 그 가지에만 있는 파일
+
+    커밋 수(git rev-list --count)로 재면 안 됩니다. 복제본은 히스토리가
+    달라 수천 커밋이 "앞선 것"처럼 보이지만 파일은 main 의 옛 판입니다.
 
 [ main 에 든 일 ]
 
    #  갈래                              산출물
-   1  시황 브리핑 (하루 두 판, 예약)     docs/briefings/ 131판          ★운영
+   1  시황 브리핑 (하루 두 판, 예약)     docs/briefings/ 132판          ★운영
    2  증권사 리포트 다이제스트 (예약)     docs/reports/                  ★운영
    3  종목 통합 리포트 대시보드          index.html, standalone.html
    4  ELS 상품 조회                      els.html, els-product-search.html
@@ -76,10 +107,35 @@
   11  타이밍 신호 / 전략빌더 / 종목판정  docs/signal/, kis-timing/, kis-verdict/
   12  자산배분 제안서 · 퇴직급여 설계    proposal.html, retire-payout.html
 
-[ 기능 가지에만 있는 일 ]
+[ 고아 가지에만 있는 일 — main 에 없습니다 ]
 
   13  금융상품 통합조회                  products.html, serve-products.py
-                                         dist/mirae-product-finder.zip
+      (…product-dashboard-cgyqu7)        dist/mirae-product-finder.zip
+
+  14  보유자산 통합 브리핑               customer_briefing/
+      (…quote-integration-rrrwfm)        보유자산_통합브리핑.bat (단일 파일)
+
+      상담 지원 도구입니다. 고객 보유종목(주식·ETF·펀드·채권·해외)을 넣으면
+      시세·기간수익률·목표주가·리포트·뉴스를 한 화면에 모읍니다.
+      브라우저 CORS 때문에 로컬 프록시가 필요해서, 원래는 세 파일
+      (briefing.html + server.ps1 + 실행.bat)을 같은 폴더에 두는 구조였습니다.
+
+      2026-10-01 에 배포용 단일 파일로 합쳤습니다. .bat 하나 안에
+      배치 런처 + PowerShell 서버 + HTML 이 모두 들어 있고, 더블클릭하면
+      PowerShell 이 자기 자신을 읽어 %TEMP% 에 풀어 실행합니다.
+      만드는 법은 customer_briefing/build_single_file.py,
+      설명은 customer_briefing/README.md 에 있습니다.
+
+      알아 둘 것 셋
+       - HTML 안에 서버를 넣을 수는 없습니다. .html 은 포트를 못 열고
+         file:// 에서는 외부 API 호출이 CORS 로 전부 막힙니다.
+         그래서 반대로 실행 파일 안에 HTML 을 심었습니다.
+       - .bat 이 백신·EDR·메일 필터에 걸릴 수 있습니다. 형태가
+         "배치 안에 스크립트를 숨겨 %TEMP% 에 풀어 실행"이라 악성코드와
+         구분이 안 됩니다. 기존 3파일 방식도 같은 폴더에 남겨 두었습니다.
+       - 시세는 네이버·야후에서 받습니다. 미래에셋 Open API
+         (openapi.securities.miraeasset.com) 로 바꾸는 건은 검토만 했고
+         착수하지 않았습니다 — 9절.
 
 [ 저장소 안의 인계 문서 ]
 
@@ -585,6 +641,49 @@ docs/briefing-playbook.md 를 처음부터 끝까지 읽고 그대로 따라줘.
   - 커밋 작성자는 Claude <noreply@anthropic.com>, 러너는 github-actions[bot].
     사람 이름은 커밋에 들어가지 않습니다.
 
+[ 7-6. 사용자 스킬 — 백업해 두었습니다 ]  ★ 2026-10-01 21:30 추가
+
+  스킬은 계정에 묶입니다. 그런데 어떤 스킬이 사라지고 어떤 스킬이
+  새 계정에도 있는지가 그동안 잘못 적혀 있었습니다. 실제로 확인한 결과:
+
+    스킬                 출처                  계정 종료 후
+    ------------------   -------------------   --------------------------
+    mas-design           plugin (사용자 설치)  ✗ 사라짐 → 백업함
+    fin-data-integrity   plugin (사용자 설치)  ✗ 사라짐 → 백업함
+    morning              anthropic-example     ○ 새 계정에도 기본 제공
+    docs·docx·pptx·xlsx  anthropic             ○ 기본 제공
+    pdf·google-workspace anthropic             ○ 기본 제공
+    skill-creator        anthropic-example     ○ 기본 제공
+    import-memory        anthropic-example     ○ 기본 제공
+
+  확인한 방법 : 세션 컨테이너의
+    ~/.claude/skills/synced/<id>/manifest.json 에 스킬마다 source 가 적혀
+    있습니다. source 가 plugin 인 것만 사용자/조직이 설치한 것이고,
+    anthropic·anthropic-example 은 어느 계정에서나 제공됩니다.
+
+  백업한 자리 — docs/claude-handoff/skills/
+
+    mas-design/SKILL.md                         24.5KB
+      미래에셋 브랜드 디자인 기준. 오렌지/블루 색, 승인 폰트, 한/영 UI 규칙,
+      표·차트 스타일, AI Slop 블랙리스트(§10)까지. 브리핑·제안서의 겉모양이
+      한결같았던 것이 이 문서 덕입니다.
+
+    fin-data-integrity/SKILL.md                  8.1KB
+    fin-data-integrity/references/source-tiers.md    4.9KB
+    fin-data-integrity/references/failure-modes.md   6.9KB
+    fin-data-integrity/scripts/check_claims.py      15.2KB
+    fin-data-integrity/scripts/ledger_template.json  9.6KB
+      숫자가 들어가는 자료를 만들 때의 절차. 인쇄될 값을 먼저 "주장 대장"에
+      등록하고 산술·단위·계열을 스크립트로 검산한 뒤에 빌드합니다.
+      6-1·6-2절의 규칙이 실제로 돌아가게 하는 도구입니다.
+
+  새 계정에서 되살리는 법
+    claude.ai 설정 → 스킬(Capabilities) → 스킬 만들기 에서 위 SKILL.md 의
+    내용을 그대로 넣습니다. fin-data-integrity 는 references/ 와 scripts/ 의
+    딸린 파일까지 같이 올려야 검산 스크립트가 돕니다.
+    그때까지는 "docs/claude-handoff/skills/mas-design/SKILL.md 를 읽고
+    그 기준대로 만들어 줘" 라고 일러 주면 같은 결과를 얻습니다.
+
 
 ################################################################################
 # 8. 겪은 함정 — 같은 실수를 되풀이하지 않기 위해
@@ -678,6 +777,32 @@ docs/briefing-playbook.md 를 처음부터 끝까지 읽고 그대로 따라줘.
   - 마포 WM 링크 페이지 — 저장소 분리가 아직 안 끝났습니다.
     사용자가 hanaroline/mapo-wm 공개 저장소를 만들어 주셔야 진행됩니다.
     그 뒤 work_1 을 Private 으로 돌립니다. 자세한 것은 10절.
+
+  [ 2026-10-01 21:30 에 더한 것 ]
+
+  - FRED_API_KEY 가 아직 없습니다. 미국 CPI·고용상황·PCE·GDP·소매판매의
+    확정 발표일이 지금은 rule 추정으로만 들어옵니다. 무료 키 하나면
+    official 로 올라갑니다. 넣는 법은 PROMPTS.txt 와 README.md.
+
+  - 10/5(월) 수집 시각 점검이 옛 계정과 함께 사라집니다.
+    고친 가드가 실제 월요일에 통하는지 아직 확인되지 않았습니다.
+    새 계정에서 월요일 11:30 KST 쯤 다시 걸어 확인하십시오.
+    확인할 것은 HANDOFF.md 5절 "함정 2"의 재발 여부입니다.
+
+  - kr100-weekly.yml 에 같은 가드 흠이 남아 있습니다 (HANDOFF.md 5절).
+    거기는 상류가 10시 뒤에 끝나 아직 터지지 않았을 뿐입니다.
+
+  - 고아 가지 전수 확인 — 82개 중 어디에 진짜 산출물이 있는지
+    다 세어 보지 않았습니다. 세는 방법은 1절에 적어 두었습니다.
+
+  - 보유자산 통합 브리핑을 미래에셋 Open API 로 바꿀지 — 미결정.
+    openapi.securities.miraeasset.com 이 실재하는 것은 확인했지만
+    (DNS 조회) 규격서는 세션 망에서 막혀 보지 못했습니다.
+    바꾸게 되면 반드시 함께 고쳐야 하는 것: 지금 서버가 0.0.0.0 에
+    바인딩되어 같은 Wi-Fi 에서 접근됩니다. 앱키를 넣는 순간 같은 망의
+    누구나 그 키로 조회할 수 있게 되므로, Loopback 바인딩으로 바꾸거나
+    인증을 붙여야 합니다. 키는 절대 HTML(브라우저)에 두지 마십시오.
+    시세 재배포 범위는 사내 데이터 담당 부서 확인이 먼저입니다.
 
 
 
