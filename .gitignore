@@ -1,2 +1,7 @@
 # 배포용 번들(빌드 산출물) — 저장소에 포함하지 않음
 *.zip
+
+# agent tooling (playwright/node) - not project deliverables
+node_modules/
+package.json
+package-lock.json
