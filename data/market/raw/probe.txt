@@ -1,4 +1,4 @@
-네이버 API 탐색 2026-10-01 19:53:04 KST
+네이버 API 탐색 2026-10-01 20:38:22 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
@@ -16,7 +16,7 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 16294 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
+    쓸모 · 16301 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
     남김: data/market/raw/probe_03_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"6,838.04"},{"code":"openPrice","key":"시가","value":"6,814.49","compareToPreviousPrice":{"code":"5",
 
@@ -26,18 +26,18 @@
     앞머리: [{"localTradedAt":"2026-10-01","closePrice":"6,971.35","compareToPreviousClosePrice":"133.31","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"1.95","openPrice":"6,814.49","highPrice":"6,971.36","lowPri
 
 [sectors] https://m.stock.naver.com/api/stocks/industry
-    쓸모 · 2311 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 2310 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_05_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":286,"name":"생물공학","totalCount":59,"changeRate":"5.81","riseCount":46,"fallCount":9,"steadyCount":4},{"no":262,"name":"생명과학도구및서비스","totalCount":41,"changeRate":"5.42","riseCount":26,"fallCount"
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":286,"name":"생물공학","totalCount":59,"changeRate":"5.87","riseCount":47,"fallCount":8,"steadyCount":4},{"no":262,"name":"생명과학도구및서비스","totalCount":41,"changeRate":"5.38","riseCount":25,"fallCount"
 
 [sectors] https://api.stock.naver.com/industry
     실패 · 36 bytes · 걸린 낱말 없음
     응답 앞머리: HTTPError: HTTP Error 404: Not Found
 
 [sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
-    쓸모 · 8621 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 8620 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_07_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":286,"name":"생물공학","totalCount":59,"changeRate":"5.83","riseCount":46,"fallCount":9,"steadyCount":4},{"no":262,"name":"생명과학도구및서비스","totalCount":41,"changeRate":"5.40","riseCount":25,"fallCount"
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":286,"name":"생물공학","totalCount":59,"changeRate":"5.87","riseCount":47,"fallCount":8,"steadyCount":4},{"no":262,"name":"생명과학도구및서비스","totalCount":41,"changeRate":"5.38","riseCount":25,"fallCount"
 
 [money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
     실패 · 30 bytes · 걸린 낱말 없음
