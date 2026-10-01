@@ -6,8 +6,18 @@
 **일거리가 둘입니다.** 위 두 문서는 **증시 일정 캘린더** 쪽이고, **시황 브리핑**
 파이프라인은 문서가 따로 있습니다 — 맥락은 **[docs/HANDOVER.md](docs/HANDOVER.md)**,
 예약 프롬프트와 설정은 **[docs/routine-prompts.md](docs/routine-prompts.md)**,
-작업 규칙 전체는 **[docs/briefing-playbook.md](docs/briefing-playbook.md)**(1,992줄)
+작업 규칙 전체는 **[docs/briefing-playbook.md](docs/briefing-playbook.md)**(2,024줄)
 입니다. 브리핑 일을 맡았다면 playbook 을 **처음부터 끝까지** 읽고 시작하십시오.
+
+**사실은 갈래가 열셋입니다.** 갈래마다 인계 문서가 따로 있고, 어느 것을 읽어야
+하는지는 **[인계-보관본.txt](인계-보관본.txt)** 2-1절의 문서 지도가 짚어 줍니다.
+그 파일은 저장소 밖에서도 읽히는 휴대용 한 벌이라, 계정을 옮길 때 이것만 따로
+챙겨도 됩니다. 저장소 안의 전체 지도는
+**[docs/handover/00-저장소-전체-인계.md](docs/handover/00-저장소-전체-인계.md)** 입니다.
+
+**예약(Routine)은 Claude 계정에 묶여 있어 저장소를 옮겨도 따라오지 않습니다.**
+그래서 지시문 전문 19건을 **[docs/claude-handoff/ROUTINES.md](docs/claude-handoff/ROUTINES.md)**
+에 떠 두었습니다. 다시 만들 때는 요약하지 말고 **글자 그대로** 쓰십시오.
 
 ## 무엇을 하는 저장소인가
 

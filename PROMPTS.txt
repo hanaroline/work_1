@@ -39,6 +39,22 @@ GitHub 연결:
   모닝과 장마감은 **서로 다른 고정 창**에 붙입니다. 한 창에 몰면 맥락이 뒤섞이고,
   실행이 실패해도 보이지 않습니다(8/20 에 그래서 산출물이 조용히 사라졌습니다).
 
+
+[0-2] 예약 전체 목록 — 2026-10-01 에 열아홉 건을 전부 떠 두었습니다
+
+  위 셋은 브리핑 쪽만입니다. 계정에 실제로 걸려 있는 예약은 **19건**
+  (켜짐 12 · 꺼짐 7)이고, 지시문 전문이 저장소에 있습니다.
+
+    docs/claude-handoff/ROUTINES.md     복붙할 것은 여기
+    docs/claude-handoff/routines.json   같은 내용, 기계 판독용
+    docs/handover/예약-전체목록.md      크론·전달 방식까지 포함한 판
+    docs/handover/예약-점검메모.md      되살리는 차례 · 지금 어긋난 것 셋
+
+  ※ 전용 창에 붙는 예약이 여덟 개입니다. 빈 대화를 먼저 열어 두십시오.
+  ※ 꺼진 7건은 왜 껐는지가 적혀 있습니다. 되살리지 마십시오.
+  ※ update_trigger 로는 창을 바꿀 수 없습니다(조용히 무시됩니다).
+    창을 옮기려면 새로 만들고 옛 것을 끄십시오.
+
 [1] 증시 일정 캘린더 — 자주 쓰는 말
 -------------------------------------------------------------------------------
 지금 바로 다시 수집해 줘.
@@ -51,6 +67,17 @@ GitHub 연결:
      https://raw.githubusercontent.com/hanaroline/work_1/calendar-data/data/calendar/market-calendar-offline.html
      브라우저로 열면 소스가 보입니다(text/plain). Ctrl+S 로 저장하거나
      curl -o market-calendar-offline.html <주소> 로 받으십시오.
+
+     ※ 건네기 전에 **고정 주소가 묵지 않았는지 반드시 확인하십시오.**
+       작업 가지에서 수집이 돌면 main 의 latest.json 만 갱신되고 고정 주소는
+       그대로 남습니다 (HANDOFF.md 5절 「함정 3」). 두 시각이 같아야 합니다.
+
+         python3 -c "import json;print(json.load(open('data/calendar/latest.json'))['builtAt'])"
+         git fetch -q origin calendar-data && git show \
+           FETCH_HEAD:data/calendar/market-calendar-offline.html \
+           | grep -o 'builtAt":"[^"]*' | head -1
+
+       어긋나 있으면 [2] 의 네 줄로 맞춘 뒤 건넵니다.
 
 이번 주 수집이 몇 시에 닿았는지 확인해 줘.
   -> calendar-data.yml 의 이번 주 "일한" 판(12단계가 다 돈 판)을 찾아
@@ -80,12 +107,17 @@ FRED_API_KEY=... python3 scripts/fetch_calendar.py
 # seed + 규칙 + 휴장일 -> latest.json  (네트워크 불필요)
 python3 scripts/build_calendar.py
 
-# 오프라인 단일 파일 만들기
+# 오프라인 단일 파일 만들기 (루트에 market-calendar-offline.html 이 생깁니다)
 python3 scripts/inline_calendar.py
-python3 scripts/inline_calendar.py --out /tmp/market-calendar-offline.html
+python3 scripts/inline_calendar.py --out <경로>
 
-# 오프라인판을 고정 주소에 올리기 (워크플로가 main 에서만 부릅니다)
+# 오프라인판을 고정 주소에 올리기 — 네 줄을 통째로
+#   워크플로는 main 에서만 부릅니다. 가지 수집 뒤에는 손으로 맞춰야 합니다.
+#   마지막 줄을 빠뜨리지 마십시오 — 이 파일은 main 에 커밋하지 않습니다(500KB).
+python3 scripts/inline_calendar.py
+cp market-calendar-offline.html data/calendar/
 bash scripts/publish_calendar_data.sh
+rm -f market-calendar-offline.html data/calendar/market-calendar-offline.html
 
 
 [3] FRED API 키 넣기  (미국 CPI·고용상황 확정 발표일)
