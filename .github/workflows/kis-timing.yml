@@ -1,0 +1,290 @@
+name: 매매 타이밍 갱신 (전략빌더 10종)
+
+# 한국투자증권 전략빌더 기본 전략 10종으로 오늘의 매수·청산·관찰 자리를 다시
+# 내어 data/kis_timing/latest.json 에 커밋한다.
+#
+# **시세 수집 뒤에 돌아야 한다.** 먹는 것은 네 갈래다.
+#   국내주식 ← data/prices_naver/kr100.json  (「국내 일봉 네이버 판 수집」이 채운다)
+#   미국주식 ← us100-data 가지               (「미국 100대 기업 시세 수집」이 채운다)
+#   국내ETF  ← data/etf/prices.json          (「자산배분 ETF 신호」가 채운다)
+#   해외ETF  ← 같은 파일
+#
+# **ETF 봉은 예약으로 자라지 않는다.** 「자산배분 ETF 신호」에는 예약이 없고 단추로만
+# 돈다(그 파일 주석의 결정이다). 그래서 ETF 쪽 신호는 마지막으로 그 단추를 누른
+# 날의 봉으로 난다. 그것이 흠으로 보이지 않도록 산출물이 종목마다 asof 를 적고,
+# 시장 거래일보다 사흘 넘게 뒤처지면 stale 로 표시한다 — 화면이 그대로 보여 준다.
+#
+# **백테스트는 여기서 돌리지 않는다.** signals-backtest.yml 이 세워 둔 규율을 그대로
+# 따른다 — 성적이 날마다 조용히 바뀌면, 어제 「+3.85%p」를 보고 판단한 사람과 오늘
+# 「+3.11%p」를 보는 사람이 서로 다른 자료를 쓰게 된다. 게다가 합의에 넣을 전략을
+# 고르는 것도 그 성적이라, 성적이 흔들리면 **멤버가 날마다 바뀐다.** 전략을 고치거나
+# 비용 가정을 바꿨을 때만 손으로 돌린다(kis-timing-backtest.yml).
+
+on:
+  schedule:
+    # 22:00 KST = 13:00 UTC 평일 — 국내 일봉의 마지막 수집(21:40 KST)보다 뒤.
+    - cron: '0 13 * * 1-5'
+    # 08:00 KST = 23:00 UTC — 미국 장 마감 수집(21:30·22:30 UTC)보다 뒤.
+    #   화~토(UTC)로 두는 것은 미국 장이 월~금에 서기 때문이다.
+    - cron: '0 23 * * 2-6'
+
+  # **시세가 들어오면 곧바로 따라 돈다.**
+  #
+  # 아래 push 방아쇠에 자료 파일을 적어 두어도 연결되지 않는다 — GITHUB_TOKEN 이
+  # 만든 커밋은 다른 워크플로를 부르지 않기 때문이다(재귀 실행을 막으려는 깃허브
+  # 규칙. signals.yml·fund-weekly.yml 주석에도 같은 말이 있다). workflow_run 은
+  # 앞 워크플로가 **끝났다는 사실**에 걸리는 것이라 그 규칙에 걸리지 않는다.
+  workflow_run:
+    workflows:
+      - 국내 일봉 네이버 판 수집
+      # **미국주식이 읽는 것은 이쪽이다.** 「미국 100대 기업 시세 수집」이 받는
+      # data/us100/chart 는 2해치이고, 매매 타이밍은 bars8y 가 있으면 그것을
+      # 먼저 본다(kis_timing_data.US_PREFIX_LONG). 긴 판을 세우면서 이 줄을
+      # 빠뜨려, 미국 일봉이 새로 들어와도 세팅이 따라 돌지 않았다.
+      - 미국 일봉 긴 판 수집 (백테스트용)
+      - 미국 100대 기업 시세 수집
+      - 자산배분 ETF 신호
+      - 해외 ETF 곁 목록 수집 (매매 타이밍)
+      - 국내 상장 곁 목록 수집 (매매 타이밍)
+    types: [completed]
+    branches: [main]
+
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/kis_strategy_lib.py'
+      - 'scripts/kis_timing_data.py'
+      - 'scripts/build_kis_timing.py'
+      - 'data/kis_timing/backtest.json'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kis-timing
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # workflow_run 은 앞 워크플로가 **실패했을 때도** 발동한다(types: [completed]).
+    # 시세 수집이 넘어졌는데 세팅을 새로 내면 낡은 봉으로 셈한 판을 「방금 갱신함」
+    # 으로 덮어쓰게 된다. 성공했을 때만 잇는다. 예약·수동 실행은 그대로 돈다.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # 미국 주식 일봉은 기본 가지에 없다. actions/checkout 이 만드는 작업본은
+      # 원격 refspec 이 main 하나뿐이라, refspec 을 손으로 적지 않으면
+      # origin/us100-data 원격추적이 서지 않는다 — 수집 대본이
+      # `git show origin/us100-data:...` 로 읽으므로 거기서 죽는다.
+      - name: 미국 주식 일봉 가지 받기
+        run: |
+          for i in 1 2 3 4; do
+            if git fetch --depth 1 origin \
+                 '+refs/heads/us100-data:refs/remotes/origin/us100-data'; then
+              git rev-parse --verify origin/us100-data >/dev/null
+              echo "받음 (시도 $i)"; exit 0
+            fi
+            echo "실패 — 다시 시도한다 ($i/4)"; sleep $((i * i * 2))
+          done
+          echo "::error::us100-data 가지를 받지 못했습니다"
+          exit 1
+
+      # 성적표가 없으면 합의 멤버를 고를 수 없다. 조용히 빈 판을 내는 대신 멈춘다.
+      - name: 성적표가 있는가
+        run: |
+          if [ ! -f data/kis_timing/backtest.json ]; then
+            echo "::error::data/kis_timing/backtest.json 이 없습니다 — 먼저 「매매 타이밍 백테스트」를 돌리십시오"
+            exit 1
+          fi
+
+      - name: 오늘의 세팅 셈하기
+        run: python3 scripts/build_kis_timing.py
+
+      # 종목 판정은 세팅 위에 실적·이벤트·수급·리포트·시황을 겹친 것이다.
+      # 국내 기업 자료가 kr100-data 가지에 있어 그것도 받아 둔다 — 없으면
+      # 실적 겹이 통째로 비고, 화면은 「자료가 없습니다」를 종목마다 띄운다.
+      - name: 국내 기업 자료 가지 받기
+        run: |
+          for i in 1 2 3 4; do
+            if git fetch --depth 1 origin \
+                 '+refs/heads/kr100-data:refs/remotes/origin/kr100-data'; then
+              git rev-parse --verify origin/kr100-data >/dev/null
+              echo "받음 (시도 $i)"; exit 0
+            fi
+            echo "실패 — 다시 시도한다 ($i/4)"; sleep $((i * i * 2))
+          done
+          echo "::error::kr100-data 가지를 받지 못했습니다"
+          exit 1
+
+      - name: 종목 판정 셈하기
+        run: python3 scripts/build_verdict.py
+
+      # **검산이 산출물을 막는다.** 어긋난 수가 실린 판을 커밋하지 않는다.
+      #
+      # 성적표 대조만은 SKIP 이 날 수 있다 — 성적표는 단추로만 다시 나는데(위
+      # 머리말) 봉은 날마다 자라므로, 「성적표를 낸 그 우주」가 아닌 자리에서는
+      # 댈 것이 없다. 그것은 흠이 아니라 이 워크플로가 일부러 고른 규율의 그림자다.
+      # 막지는 않되 **조용히 지나가지도 않게** 경고로 띄운다.
+      - name: 재검산
+        run: |
+          python3 scripts/verify_kis_timing.py | tee /tmp/verify-kis.txt
+          code=${PIPESTATUS[0]}
+          grep '^SKIP' /tmp/verify-kis.txt | while IFS= read -r l; do
+            echo "::warning::건너뛴 검사 — ${l#SKIP  }"
+          done
+          {
+            echo '### 전략빌더 10종 재검산'
+            echo '```'
+            cat /tmp/verify-kis.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $code
+
+      # 판정 검산의 핵심은 **두 화면이 같은 말을 하는가**이다. 같은 종목이
+      # 매매 타이밍에서는 매수, 판정에서는 청산이 되는 날이 오면 그건 둘 중
+      # 하나가 틀린 것보다 나쁘다 — 어느 쪽을 믿어야 할지 알 수 없게 된다.
+      - name: 판정 재검산
+        run: |
+          python3 scripts/verify_verdict.py | tee /tmp/verify-verdict.txt
+          code=${PIPESTATUS[0]}
+          {
+            echo '### 종목 판정 재검산'
+            echo '```'
+            cat /tmp/verify-verdict.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $code
+
+      # **거절당하면 되받지 않는다. 남의 판을 받아 그 위에서 다시 셈한다.**
+      #
+      # 예전에는 `git pull --rebase` 로 기웠다. 그런데 이 산출물은 한 줄짜리 JSON
+      # 이라 두 갱신이 겹치면 **되받기가 반드시 충돌한다** — 같은 줄이 양쪽에서
+      # 통째로 달라지므로 기울 자리가 없다. 2026-09-20 에 실제로 그랬다(run 17:
+      # 검산 여덟 가지가 모두 PASS 인 채로 밀어 넣기에서 죽었다). 수집기 여럿을
+      # 잇따라 돌리면 늘 겹치므로, 드문 일도 아니다.
+      #
+      # 기우는 것은 애초에 뜻이 없다. 이 파일들은 **입력의 함수**다. 진 쪽의 판은
+      # 정의상 더 낡은 봉으로 낸 것이므로, 반쯤 섞는 것보다 새 입력 위에서 통째로
+      # 다시 내는 것이 옳다. 그래서 origin/main 으로 되돌린 뒤 **한 벌을 셋 다**
+      # (세팅·판정·검산 둘) 다시 돌린다 — 하나라도 빠뜨리면 화면끼리 어긋난다.
+      - name: 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # **&& 로 잇는 것에 까닭이 있다.** 이 함수는 아래에서 `if ! 한벌` 로
+          # 불리는데, 그 자리에서는 bash 의 -e 가 꺼진다(함수 안까지 꺼진다).
+          # 줄바꿈으로만 늘어놓으면 앞의 것이 죽어도 계속 가서 **맨 끝의 셈만**
+          # 성패를 정한다 — 세팅을 못 냈는데 통과로 읽히는 길이다.
+          한벌() {
+            python3 scripts/build_kis_timing.py  >/dev/null &&
+            python3 scripts/build_verdict.py     >/dev/null &&
+            python3 scripts/verify_kis_timing.py >/tmp/verify-kis.txt &&
+            python3 scripts/verify_verdict.py    >/tmp/verify-verdict.txt
+          }
+
+          for i in 1 2 3 4 5; do
+            git add data/kis_timing
+            if git diff --staged --quiet; then
+              echo "변경 없음 — 봉이 그대로라 세팅도 그대로입니다"
+              exit 0
+            fi
+            git commit -q -m "매매 타이밍 갱신 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+            if git push; then
+              echo "밀어 넣음 (시도 $i)"; exit 0
+            fi
+
+            echo "거절됨 — 남의 판을 받아 그 위에서 다시 셈한다 ($i/5)"
+            if ! git fetch origin '+refs/heads/main:refs/remotes/origin/main'; then
+              echo "::error::main 을 받지 못했습니다"; exit 1
+            fi
+            git reset --hard origin/main
+            # **검산이 여기서도 막는다.** 다시 센 판이 어긋나면 밀어 넣지 않는다.
+            if ! 한벌; then
+              echo "::error::다시 셈한 판을 검산이 막았습니다 — 손으로 확인하십시오"
+              exit 1
+            fi
+            # **요약에 적힌 수는 다시 셈하기 전의 것이다.** 위 단계들이 이미
+            # $GITHUB_STEP_SUMMARY 에 써 버렸으므로 되물릴 수 없다. 그러니
+            # 실린 것이 무엇인지 아래에 덧붙인다 — 읽는 사람이 두 벌을 보고
+            # 어느 것이 실렸는지 알 수 있어야 한다.
+            {
+              echo "### 다시 셈했습니다 (밀어 넣기 $i 번째)"
+              echo
+              echo "위의 재검산은 **다시 셈하기 전**의 것입니다. 실제로 실린 것은 아래입니다."
+              echo '```'
+              cat /tmp/verify-kis.txt /tmp/verify-verdict.txt 2>/dev/null || echo '(없음)'
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            sleep $((i * 5))
+          done
+          echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"
+          exit 1
+
+      # **건네는 판을 손으로 내지 않는다.**
+      #
+      # 화면 둘(docs/kis-timing · docs/kis-verdict)은 자료가 커밋되면 저절로
+      # 새로워진다. 그런데 **인쇄하고 메신저로 건네는 한 장**만은 사람이 대본을
+      # 돌려야 났다. 그래서 그것을 돌릴 사람이 없는 날에는 아무도 오늘 판을 얻지
+      # 못했다. 화면과 건네는 판이 서로 다른 날짜를 말하게 되는 길이기도 하다.
+      #
+      # **커밋 뒤에 둔다.** 리포트가 못 나오는 날에도 검산을 통과한 자료 자체는
+      # 들어가야 한다. 여기서 넘어지면 판은 빨개지지만 자료는 이미 실려 있다.
+      #
+      # 저장소에 커밋하지는 않는다 — 110 KB 짜리 생성물을 날마다 커밋하면 이력이
+      # 그것으로 덮인다. 산출물로 올려 두면 그 판을 낸 실행에 매여 남는다.
+      - name: 건네는 한 장을 만든다
+        id: report
+        run: |
+          python3 scripts/build_kr_etf_report.py --all --out /tmp/kis-timing-report.html
+          asof=$(python3 -c "import json;print(json.load(open('data/kis_timing/latest.json',encoding='utf-8'))['markets']['KR_ETF']['asof'])")
+          echo "asof=$asof" >> "$GITHUB_OUTPUT"
+          {
+            echo "### 건네는 한 장"
+            echo
+            echo "네 상품군이 탭 하나에 들어간 판입니다 ($asof 기준). 위의"
+            echo "**Artifacts** 에서 내려받으십시오 — 한 파일이고 바깥으로 나가지"
+            echo "않으므로 사내 PC 에서 그대로 열립니다."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kis-timing-report-${{ steps.report.outputs.asof }}
+          path: /tmp/kis-timing-report.html
+          # 한 달이면 「지난번에 뭘 건넸더라」를 되짚기에 넉넉하고, 날마다 쌓이는
+          # 것을 그대로 안고 가지도 않는다.
+          retention-days: 30
+
+      - name: 요약
+        if: always()
+        run: |
+          if [ -f data/kis_timing/latest.json ]; then
+            python3 - <<'PY'
+          import json
+          d = json.load(open('data/kis_timing/latest.json', encoding='utf-8'))
+          k = d['rule']['k']
+          for mk, m in d['markets'].items():
+              buy, sell = len(m['buy']), len(m['sell'])
+              names = ', '.join(p['name'] for p in m['buy'][:4]) or '없음'
+              print("::notice::%s (%s 기준) — 합의 매수 %d [%s] · 합의 청산 %d · 관찰 %d"
+                    % (m['label'], m['asof'], buy, names, sell, len(m['watch_buy'])))
+              if not m['members']:
+                  print("::warning::%s — 검증을 통과한 전략이 없어 합의를 내지 못합니다"
+                        % m['label'])
+              if m['stale']:
+                  print("::warning::%s — 일봉이 뒤처진 종목 %d 종 (%s)"
+                        % (m['label'], len(m['stale']),
+                           ', '.join('%s %s' % (s['name'], s['asof']) for s in m['stale'][:4])))
+          print("::notice::합의 문턱 K=%d · 손절 %s%%" % (k, d['rule']['stop_loss_pct']))
+          PY
+          fi

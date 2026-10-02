@@ -1,0 +1,215 @@
+===============================================================================
+ 자주 쓰는 프롬프트 · 프로젝트 지침 · 시스템 설정
+ 저장소: hanaroline/work_1   |  작성 2026-10-01
+ 새 Claude 계정으로 옮길 때 이 파일만 있으면 설정을 되살릴 수 있습니다.
+===============================================================================
+
+[0] 새 계정에서 맨 처음 할 일
+-------------------------------------------------------------------------------
+GitHub 연결:
+  Settings -> Connectors -> GitHub 연결 -> hanaroline/work_1 접근 허용
+  (저장소는 GitHub 계정의 것입니다. Claude 계정을 바꿔도 저장소는 그대로입니다.)
+
+첫 대화에서 붙여 넣을 말:
+
+  저장소의 CLAUDE.md 와 HANDOFF.md 를 읽고 시작해 줘.
+  증시 일정 캘린더(market-calendar.html) 작업을 이어서 할 거야.
+
+주의 — 과거 대화 기록과 프롬프트는 GitHub 에 저장되지 않으므로 승계되지 않습니다.
+옛 계정을 닫기 전에, 남기고 싶은 대화는 따로 내려받아 두십시오.
+
+
+[0-1] 시황 브리핑 쪽 — 문서가 따로 있습니다
+
+  이 파일은 증시 일정 캘린더 쪽입니다. 같은 저장소의 시황 브리핑 파이프라인은
+  예약 프롬프트와 설정을 따로 적어 두었습니다.
+
+    docs/routine-prompts.md     예약 3개의 프롬프트 원문 · .claude 설정 · 수집 워크플로
+    docs/HANDOVER.md            맥락 · 사고가 났던 규칙 13가지 · 결정 이력
+    docs/briefing-playbook.md   작업 규칙 전체 (2,024줄) — 끝까지 읽히십시오
+
+  예약은 계정에 묶여 따라오지 않습니다. 새 계정에서 위 프롬프트를 **글자 그대로**
+  넣어 다시 만드십시오. 요약하면 그만큼 품질이 떨어집니다 — 그 프롬프트들은
+  사고가 날 때마다 한 줄씩 덧붙여 다듬어 온 것입니다.
+
+    모닝   매일 07:30 KST   거래일이면 모닝 판, 주말·휴장일이면 해외 판
+    장마감 평일 16:10 KST   장마감 판 (국내 장이 안 열렸으면 그 사실만 보고)
+    ELS    월 08:00 KST     data/els.js 재수집
+
+  모닝과 장마감은 **서로 다른 고정 창**에 붙입니다. 한 창에 몰면 맥락이 뒤섞이고,
+  실행이 실패해도 보이지 않습니다(8/20 에 그래서 산출물이 조용히 사라졌습니다).
+
+[1] 증시 일정 캘린더 — 자주 쓰는 말
+-------------------------------------------------------------------------------
+지금 바로 다시 수집해 줘.
+  -> data/calendar/REFRESH 를 한 줄 고쳐 main 에 push 합니다.
+     워크플로의 push 트리거가 그 경로를 보고 있어 1분 안에 돕니다.
+     사람이 부른 판은 가드를 거치지 않고 언제나 돕니다.
+
+최신 오프라인판 파일 올려줘.
+  -> 아래 고정 주소에서 받아 확인한 뒤 전달합니다.
+     https://raw.githubusercontent.com/hanaroline/work_1/calendar-data/data/calendar/market-calendar-offline.html
+     브라우저로 열면 소스가 보입니다(text/plain). Ctrl+S 로 저장하거나
+     curl -o market-calendar-offline.html <주소> 로 받으십시오.
+
+이번 주 수집이 몇 시에 닿았는지 확인해 줘.
+  -> calendar-data.yml 의 이번 주 "일한" 판(12단계가 다 돈 판)을 찾아
+     run_started_at 을 KST 로 환산하고, 건너뛴 빈 판들의 가드 로그도 함께 봅니다.
+     빈 판은 몇 초 만에 끝나고 11단계가 skipped 입니다 — 그것을 "돌았다"로 세지 마십시오.
+
+오늘 자로 업데이트해서 파일 줘.
+  -> 수집을 돌린 뒤 고정 주소에서 받아, 크로미움으로 열어 확인하고 전달합니다.
+     확인할 것: 기준시각 · 일정 건수 · JS 오류 없음 · 바깥으로 나가는 요청이
+     구글 폰트 하나뿐인가(데이터가 파일 안에 다 있는가).
+
+FRED API 키 넣는 방법 알려줘.
+  -> [3] 을 보십시오.
+
+
+[2] 캘린더를 손으로 돌리는 명령
+-------------------------------------------------------------------------------
+# 파서 검증 (모의 응답으로 — 수집 전에 먼저)
+python3 scripts/check_calendar.py --only parsers
+
+# 산출물 검사 (건수 · 날짜 범위 · 연간 회의 횟수)
+python3 scripts/check_calendar.py --only data
+
+# 원문에서 확정 날짜 받기 (세션에서는 막힌 경로가 많습니다 — 러너가 제대로 합니다)
+FRED_API_KEY=... python3 scripts/fetch_calendar.py
+
+# seed + 규칙 + 휴장일 -> latest.json  (네트워크 불필요)
+python3 scripts/build_calendar.py
+
+# 오프라인 단일 파일 만들기
+python3 scripts/inline_calendar.py
+python3 scripts/inline_calendar.py --out /tmp/market-calendar-offline.html
+
+# 오프라인판을 고정 주소에 올리기 (워크플로가 main 에서만 부릅니다)
+bash scripts/publish_calendar_data.sh
+
+
+[3] FRED API 키 넣기  (미국 CPI·고용상황 확정 발표일)
+-------------------------------------------------------------------------------
+왜 필요한가:
+  BLS 가 러너 IP 에 403 을 줍니다. 그래서 미국 CPI·고용상황·PCE·GDP·소매판매의
+  "확정" 발표일은 지금 FRED 경로로만 들어옵니다. 키가 없으면 rule 추정으로만 남습니다.
+
+1) https://fredaccount.stlouisfed.org/apikey 에서 계정을 만들고 API key 발급
+   (무료, 승인 대기 없음, 32자리 문자열)
+   페이지가 안 열리면 FRED 로그인 후 My Account -> API Keys
+
+2) https://github.com/hanaroline/work_1/settings/secrets/actions
+   New repository secret
+     Name   : FRED_API_KEY      (철자 그대로. 오타가 있으면 조용히 건너뜁니다)
+     Secret : 발급받은 32자리 키
+   ※ 그 화면의 Actions / Codespaces / Dependabot 탭 중 반드시 "Actions" 탭.
+     Repository secrets 쪽이면 됩니다. Environment secrets 는 필요 없습니다.
+
+3) data/calendar/REFRESH 를 한 줄 고쳐 push -> 바로 수집이 돕니다.
+
+4) 확인: Actions 실행 요약의 fred:* 줄
+     키 없음 -> fred 한 줄에 "FRED_API_KEY 가 없어 건너뛰었다"
+     키 있음 -> fred:us-cpi / us-empsit / us-pce / us-gdp / us-retail 다섯 줄에 건수
+
+   FRED release id: us-cpi 10 · us-empsit 50 · us-pce 54 · us-gdp 53 · us-retail 8
+
+!! 키는 시크릿에만 두십시오. 저장소 파일에 넣지 마십시오. !!
+
+
+[4] 꼭 지켜야 하는 지침  (저장소 전체)
+-------------------------------------------------------------------------------
+- 날짜와 숫자를 지어내지 않는다. 확인 못 한 것은 비워 두고 gaps/undated/links 에
+  출처 주소와 함께 남긴다. 캘린더는 확정도를 다섯 단계로 표시한다:
+  official / websearch / tentative / estimate / rule
+- 수집이 실패해도 seed 를 덮어쓰지 않는다. 의심스러우면 그대로 둔다.
+- 시세·ELS·브리핑 자료는 웹사이트(GitHub Pages)로 노출하지 않는다. (pages.yml)
+- 비밀(API 키)은 GitHub 저장소 시크릿에만 둔다. 저장소 파일에 넣지 않는다.
+- 회사 망이 *.translate.goog 를 비업무용으로 막는다. 번역 프록시를 쓰지 않는다.
+- scripts/*.py 는 표준 라이브러리만 쓴다.
+- 요청하지 않은 Pull Request 는 만들지 않는다.
+- 작업은 claude/... 가지에서, main 에는 병합(--no-ff)으로 넣는다.
+  예약(schedule)·workflow_run 은 기본 가지(main)에서만 발동한다.
+- 매번 통째로 바뀌는 큰 산출물은 전용 데이터 브랜치에 부모 없는 커밋 하나로 올린다.
+  calendar-data / kr100-data / us100-data
+- 고친 뒤에는 실제로 돌려 보고 결과를 그대로 보고한다. 깨지면 깨졌다고 적는다.
+
+
+[5] 시스템 설정 — .claude/settings.json
+-------------------------------------------------------------------------------
+저장소에 들어 있으므로 계정을 바꿔도 그대로 따라옵니다. 내용은 이렇습니다:
+
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+.claude/hooks/session-start.sh 가 하는 일:
+  - 웹 세션(CLAUDE_CODE_REMOTE=true)에서만 돈다. 사람의 기계는 건드리지 않는다.
+  - playwright 1.56.1 을 깐다 (워크플로가 박아 쓰는 판과 같게 맞춘 것).
+    이미 같은 판이 있으면 건너뛴다.
+  - 크로미움은 내려받지 않는다. /opt/pw-browsers 에 이미 있다.
+    (PLAYWRIGHT_BROWSERS_PATH. 다시 받으면 수백 MB 를 세션 디스크에 또 쌓는다.)
+  - package.json / package-lock.json / node_modules 는 .gitignore 에 있어
+    새 세션의 작업본에는 없다. 그래서 이 준비가 필요하다.
+
+크로미움 실행 경로 (화면을 열어 확인할 때):
+  /opt/pw-browsers/chromium-1194/chrome-linux/chrome
+
+playwright 로 오프라인판을 확인할 때 주의:
+  바깥 요청만 막아야 합니다. page.route('**://**', abort) 로 하면 file:// 도 막혀
+  net::ERR_FAILED 가 납니다. page.route('http*://**', ...) 로 좁히십시오.
+
+
+[6] 세션에서 막히는 주소 (러너는 됩니다)
+-------------------------------------------------------------------------------
+세션 이그레스 정책이 CONNECT 403 으로 막는 곳:
+  stlouisfed.org · federalreserve.gov · bok.or.kr · bls.gov · ecb.europa.eu
+
+그래서 원문 수집은 GitHub Actions 러너가 합니다. 세션에서 "못 받았다"가 나와도
+러너에서는 될 수 있으니, 수집은 REFRESH 를 push 해서 돌리십시오.
+
+
+[7] 주 1회 자동 갱신 요약
+-------------------------------------------------------------------------------
+목표: 매주 월요일 오전 10시 전후 (KST)
+
+  예약          cron: '0 1-8 * * 1'   월요일 10~17시 KST 한 시간 간격 여덟 번 (밑받침)
+  workflow_run  증권사 리포트 수집 · 국내 100대 기업 가격 갱신 · 시세 수집 이
+                끝날 때마다 불린다 (10시에 실제로 닿는 길)
+
+가드: main 의 data/calendar/latest.json 이 이번 주 월요일 01:00 UTC(10:00 KST)
+      이후에 들어왔으면 건너뛴다. 실행 기록이 아니라 산출물로 판단한다.
+      (실행 기록을 세면 가드에 걸린 빈 판까지 "돌았다"로 세어 스스로 막힌다 —
+       2026-09-28 에 실제로 그렇게 되어 그 주 수집이 통째로 비었다. HANDOFF.md §5)
+
+cron 은 UTC 로만 읽힙니다. KST = UTC+9, 서머타임 없음.
+  월요일 10:00 KST - 9h = 같은 월요일 01:00 UTC
+
+
+[8] 커밋 메시지 쓰는 법 (이 저장소의 방식)
+-------------------------------------------------------------------------------
+한국어로, 무엇을 왜 고쳤는지와 어떻게 확인했는지를 적습니다.
+제목은 한 줄로 동사를 끝에 둡니다 — "가드가 자기가 만든 빈 판을 «돌았다»로 세던 것을 고친다"
+본문에는 관측한 사실(시각·건수·로그)을 그대로 넣습니다. 기존 커밋들이 본보기입니다.
+
+
+[9] 주요 주소
+-------------------------------------------------------------------------------
+저장소        https://github.com/hanaroline/work_1
+Actions       https://github.com/hanaroline/work_1/actions
+시크릿 등록    https://github.com/hanaroline/work_1/settings/secrets/actions
+오프라인판     https://raw.githubusercontent.com/hanaroline/work_1/calendar-data/data/calendar/market-calendar-offline.html
+FRED 키 발급   https://fredaccount.stlouisfed.org/apikey
+
+===============================================================================

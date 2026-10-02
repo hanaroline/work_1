@@ -95,7 +95,10 @@ table.data .perfrow i{font-style:normal;opacity:.35;padding:0 3px}
 /* 격자 칸 안에서는 표가 min-width 를 고집하면 안 된다 — 칸보다 넓어져
    700~1080px 구간에서 62 곳이 넘쳤다. 폭을 풀고 글자를 한 치수 줄인다. */
 .duo table.data,.trio table.data{min-width:0!important;width:100%}
-.duo .table-wrap,.trio .table-wrap{overflow-x:visible}
+/* 칸보다 넓은 표는 **제 상자 안에서 밀어 보게** 둔다. `visible` 로 두면
+   칸 밖으로 삐져나와 쪽 전체가 가로로 밀린다 — 증시 주변자금 표(여섯 칸)가
+   되살아나자 핵심본 940~1100px 구간에서 27 곳이 넘쳤다.             */
+.duo .table-wrap,.trio .table-wrap{overflow-x:auto}
 .trio table.data th,.trio table.data td{padding:3px 5px;font-size:12px}
 .trio table.data caption{font-size:12.5px}
 /* 반 칸에 들어가려면 표가 350px 안쪽이어야 한다. 글자와 여백을 한 치수 줄이고,
@@ -289,20 +292,20 @@ def sec_today(C):
              n(KS["close"]), pct(KS["change_pct"]),
              # 배수를 함께 싣는다. 핵심본에는 「시장의 폭」 표가 없어서
              # 여기가 상승/하락 배수가 실리는 유일한 자리다.
-             "상승 " + n(ksb["advancing"], 0) + " 대 하락 " + n(ksb["declining"], 0)
+             "상승 " + n(ksb.get("advancing"), 0) + " 대 하락 " + n(ksb.get("declining"), 0)
              + " (" + _adr(ksb) + "배) &mdash; 열에 " + n(ten, 0),
-             n(ksb["advancing"], 0) + " up, " + n(ksb["declining"], 0) + " down ("
+             n(ksb.get("advancing"), 0) + " up, " + n(ksb.get("declining"), 0) + " down ("
              + _adr(ksb) + "x)"),
         stat("코스닥", "KOSDAQ", n(KQ["close"]), pct(KQ["change_pct"]),
-             "상승 " + n(kqb["advancing"], 0) + " 대 하락 " + n(kqb["declining"], 0)
+             "상승 " + n(kqb.get("advancing"), 0) + " 대 하락 " + n(kqb.get("declining"), 0)
              + " (" + _adr(kqb) + "배)",
-             n(kqb["advancing"], 0) + " up, " + n(kqb["declining"], 0) + " down ("
+             n(kqb.get("advancing"), 0) + " up, " + n(kqb.get("declining"), 0) + " down ("
              + _adr(kqb) + "x)"),
-        stat("거래대금", "Turnover", n(C["turnover"][0][1]) + "조", C["turnover_word"],
+        stat("거래대금", "Turnover", C["turnover_now"], C["turnover_word"],
              C["turnover_trail"], C["turnover_trail_en"]),
-        stat("외국인 순매수", "Foreign net", eok(kf["foreign"]), "",
-             "기관 " + eok(kf["institution"]) + " &middot; 개인 " + eok(kf["retail"]),
-             "Institutions " + eok(kf["institution"]) + ", retail " + eok(kf["retail"])),
+        stat("외국인 순매수", "Foreign net", eok(kf.get("foreign")), "",
+             "기관 " + eok(kf.get("institution")) + " &middot; 개인 " + eok(kf.get("retail")),
+             "Institutions " + eok(kf.get("institution")) + ", retail " + eok(kf.get("retail"))),
         stat("미 10년물", "US 10-year", n(ru["curve"]["ust10y"], 3) + "%",
              bp(ru["change_bp"]["ust10y"]),
              "2년 " + bp(ru["change_bp"]["ust2y"]) + " &middot; 30년 " + bp(ru["change_bp"]["ust30y"]),
@@ -322,11 +325,15 @@ def sec_today(C):
 
     grid = "stat-grid six"
     return ('<div class="' + grid + '">\n' + "\n".join(cards) + '\n</div>\n'
-            # 장마감 판에 「09시 개장에 들고 갈 것」은 맞지 않는다.
-            + callout("오늘 마감에서 들고 갈 것" if C["kind"] == "close"
-                      else "오늘 09시 개장에 들고 갈 것",
-                      "What to carry from today&rsquo;s close" if C["kind"] == "close"
-                      else "What to carry into the 09:00 open",
+            # 장마감 판에 「09시 개장에 들고 갈 것」은 맞지 않는다. **주말·휴장일
+            # 판도 마찬가지다** — 오늘 09시에는 열리지 않는다(2026-09-13 에
+            # 일요일 판이 그대로 「오늘 09시 개장」을 달고 나갈 뻔했다).
+            + callout({"close": "오늘 마감에서 들고 갈 것",
+                       "global": "다음 개장에 들고 갈 것"}.get(C["kind"],
+                                                       "오늘 09시 개장에 들고 갈 것"),
+                      {"close": "What to carry from today&rsquo;s close",
+                       "global": "What to carry into the next open"}.get(
+                          C["kind"], "What to carry into the 09:00 open"),
                       paras))
 
 
@@ -360,8 +367,8 @@ def sec_korea(C):
         _brow("상승 / 하락 종목", "Advancing / declining",
               "지수 방향과 어긋나면 대형주 몇 개가 지수를 움직인 것입니다",
               "If it disagrees with the index, a few heavyweights moved it",
-              n(ksb["advancing"], 0) + " / " + n(ksb["declining"], 0),
-              n(kqb["advancing"], 0) + " / " + n(kqb["declining"], 0), True),
+              n(ksb.get("advancing"), 0) + " / " + n(ksb.get("declining"), 0),
+              n(kqb.get("advancing"), 0) + " / " + n(kqb.get("declining"), 0), True),
         _brow("오른 종목 비율", "Share advancing",
               "열 종목 가운데 몇 개가 올랐는지",
               "How many in ten rose",
@@ -407,7 +414,12 @@ def sec_korea(C):
                 + _stock_core("국내 종목 &mdash; " + DK(C["prev_kr"]) + " 마감, 원",
                               "Korean stocks &mdash; " + DE(C["prev_kr"]) + ", in won",
                               *_wide(C["S"], 10), why=C["why"],
-                              foot_ko=C["kr_stk_foot_ko"], foot_en=C["kr_stk_foot_en"], dp=0))
+                              foot_ko=C["kr_stk_foot_ko"], foot_en=C["kr_stk_foot_en"], dp=0)
+                # 등락 종목 수 추이도 핵심본에 싣는다(2026-09-12). 하루치 폭은
+                # 위 표가 말하지만 **「며칠째 그런가」는 추이만 말한다** — 지수와
+                # 폭이 어긋난 날을 찾는 것이 이 표의 쓸모다. 접는 자리가 없으므로
+                # 표를 그대로 세운다.
+                + ("\n" + C["breadth_trend"] if C.get("breadth_trend") else ""))
     return (lede(a, b) + "\n" + kr_idx + "\n" + breadth + "\n" + kr_stk + "\n"
             + exp("업종 상위·하위와 등락 종목 수 추이",
                   "Sector leaders and laggards, and breadth over time",
@@ -423,16 +435,16 @@ def sec_flows(C):
         _brow("외국인 순매수", "Foreign net buying",
               "방향보다 <strong>전날 대비 변화</strong>가 큽니다 &mdash; 팔던 손이 멎는 것만으로 지수가 움직입니다",
               "The change matters more than the level",
-              eok(kf["foreign"]), eok(qf["foreign"]), True),
+              eok(kf.get("foreign")), eok(qf.get("foreign")), True),
         _brow("기관 순매수", "Institutions", "연기금·투신·보험", "Pensions, funds, insurers",
-              eok(kf["institution"]), eok(qf["institution"])),
+              eok(kf.get("institution")), eok(qf.get("institution"))),
         _brow("개인 순매수", "Retail", "외국인·기관이 판 것을 누가 받았는지",
-              "Who absorbed what the others sold", eok(kf["retail"]), eok(qf["retail"])),
+              "Who absorbed what the others sold", eok(kf.get("retail")), eok(qf.get("retail"))),
         _brow("프로그램 비차익", "Non-arb programme",
               "크게 마이너스면 <strong>바스켓 매도</strong>가 지수를 눌렀다는 신호입니다",
               "Deeply negative means basket selling weighed on the index",
-              eok(KSI["program_trading"]["non_arb"]),
-              eok(C["KQI"]["program_trading"]["non_arb"])),
+              eok((KSI.get("program_trading") or {}).get("non_arb")),
+              eok((C["KQI"].get("program_trading") or {}).get("non_arb"))),
     ]
     flow_tbl = tbl("투자자별 순매수 &mdash; " + DK(C["prev_kr"]) + ", 단위 원",
                    "Net buying by investor type &mdash; " + DE(C["prev_kr"]),
@@ -467,6 +479,17 @@ def sec_flows(C):
               jo(mfl.get("fund_bond")) + "원", eok(mfl.get("fund_bond_delta")),
               _sp("fund_bond")),
     ]
+    # 원천이 통째로 실패하면 **표를 빼고** 그 사실을 판에 적는다 — 빈 「비고」 칸을
+    # 남기거나 잔액을 「—」로 채워 넣는 것이 가장 나쁘다(지침 3절 2번).
+    if not mfl.get("date"):
+        money_tbl = ('<p class="tbl-foot">' + L(
+            "<strong>증시 주변자금(예탁금&middot;신용융자&middot;펀드)은 오늘 확보하지 못했습니다</strong> "
+            "&mdash; 수집기가 원천에서 항목을 찾지 못했습니다. 값을 지어내지 않고 표를 뺐습니다 "
+            "<span class=\"vf none\">NOT FOUND</span>.",
+            "<strong>Deposits, margin loans and fund flows are unavailable today</strong> &mdash; the collector "
+            "could not find the items at the source. The table is omitted rather than filled with invented "
+            "values <span class=\"vf none\">NOT FOUND</span>.") + '</p>')
+        return _flows_body(C, N, flow_tbl, money_tbl)
     money_tbl = tbl("증시 주변자금 &mdash; " + DK(d(mfl["date"])) + " 기준",
                     "Money around the market &mdash; as of " + DE(d(mfl["date"])),
                     mh, mrows, cls="data compact",
@@ -479,15 +502,31 @@ def sec_flows(C):
                             "taken from the unsigned figure Naver publishes " + VF_C + ". "
                             "<strong>Each sparkline is scaled to its own row</strong> &mdash; do not compare heights.")
 
+    return _flows_body(C, N, flow_tbl, money_tbl)
+
+
+def _flows_body(C, N, flow_tbl, money_tbl):
+    """03절 본문 조립 — 증시 주변자금 표가 빠진 날에도 같은 순서로 낸다."""
     body = lede(*N.get("flows_lede", C["fb_flows"][0], C["fb_flows"][1]))
     if CORE[0]:
-        body += '\n<div class="duo">\n' + flow_tbl + "\n" + money_tbl + '\n</div>'
-    else:
-        body += "\n" + flow_tbl + "\n" + money_tbl
-    if not CORE[0]:
-        # 매물대만 전체 판에 둔다 — 근사이고, 그날의 결정보다 추이로 읽는 값이다.
-        if C["supply_tbl"]:
-            body += "\n" + C["supply_tbl"]
+        # 핵심본에도 **투자자별 추이와 매물대**를 싣는다(2026-09-12). 하루치
+        # 수급은 위 표가 말하지만 「팔던 손이 멎었는가」는 추이라야 보이고,
+        # 매물대는 「올라갈 때 어디서 물량을 만나는가」에 답한다.
+        #
+        # **짝은 재서 짓는다.** [당일|주변자금] [추이|매물대] 로 두었더니
+        # 인쇄 폭 718px 에서 105px 이 한쪽에서만 비었다. 「수급 둘」과
+        # 「자금·매물대 둘」로 갈라 놓으면 높이가 맞고, 읽는 순서도
+        # 「오늘 → 열흘」 「있는 돈 → 쌓인 물량」으로 이어진다.
+        rows = [[flow_tbl, C.get("inv_trend")], [money_tbl, C.get("supply_tbl")]]
+        for pair in rows:
+            cells = [t for t in pair if t]
+            if cells:
+                body += '\n<div class="duo">\n' + "\n".join(cells) + '\n</div>'
+        return body
+    body += "\n" + flow_tbl + "\n" + money_tbl
+    # 매물대는 근사이고, 그날의 결정보다 추이로 읽는 값이다.
+    if C["supply_tbl"]:
+        body += "\n" + C["supply_tbl"]
     body += "\n" + exp("투자자별 순매수 추이 &mdash; 최근 10거래일",
                        "Net buying by investor type &mdash; last 10 sessions", C["inv_trend"])
     return body
@@ -694,9 +733,19 @@ def sec_macro(C):
         # 「금리+원자재」 쪽이 648px 이 됐다 — 283px 이 한쪽에서만 비었고 그것이
         # 여섯 쪽을 일곱 쪽으로 넘겼다. 짝을 **금리+곡선 / 환율+원자재** 로 바꾸면
         # 806 대 773 으로 맞고, 덤으로 금리 이야기가 한 칸에 모인다.
+        # 달러 상대 통화도 핵심본에 싣는다(2026-09-12). 원화 표의 꼬리말이
+        # 「빗금 방향이 반대」라고 말해 놓고 정작 그 표가 없으면, 읽는 사람이
+        # 규칙만 듣고 대조할 자리를 못 찾는다.
+        #
+        # **다만 그것을 오른 칸에 얹자 균형이 깨졌다.** 인쇄 폭 718px 에서
+        # 왼 칸 693px · 오른 칸 1301px 이 되어 **왼쪽 아래가 611px 비었다.**
+        # 격자 한 줄의 높이는 큰 쪽을 따르므로 그 빈자리가 그대로 종이에
+        # 남는다. 원자재를 왼 칸으로 옮겨 둘을 맞춘다 — 덤으로 금리 이야기와
+        # 값 이야기가 한 칸씩 모인다.
         return (lede(a, b) + '\n<div class="duo">\n'
-                + '<div>\n' + rates + "\n" + (_curve_core(C) or "") + '\n</div>\n'
-                + '<div>\n' + C["fx_tbl"] + "\n" + (_cm_core(C) or "") + '\n</div>\n</div>')
+                + '<div>\n' + rates + "\n" + (_curve_core(C) or "") + "\n"
+                + (_cm_core(C) or "") + '\n</div>\n'
+                + '<div>\n' + C["fx_tbl"] + "\n" + C["usdfx_tbl"] + '\n</div>\n</div>')
     return (lede(a, b) + "\n" + rates + "\n" + C["fx_tbl"] + "\n" + C["cm_tbl"] + "\n"
             + exp("미 재무부 곡선 만기 11개 &middot; 달러 상대 통화",
                   "The full US curve and the dollar crosses",
@@ -818,10 +867,12 @@ def sec_verify_core(C):
     more_ko = (" 외 %d건" % (len(notes) - 4)) if len(notes) > 4 else ""
     more_en = (" and %d more" % (len(notes) - 4)) if len(notes) > 4 else ""
     return "\n".join((
-        lede("<strong>이것은 핵심본입니다 &mdash; 다섯 쪽 안에 그날의 결론만 담았습니다.</strong> "
+        # 쪽수를 문장에 박지 않는다(지침 7-0). 「다섯 쪽」이라고 적어 두었는데 실제로는
+        # 여섯~일곱 쪽으로 나가고 있었다 — 빌드 시점에 셀 수 없는 수는 아예 말하지 않는다.
+        lede("<strong>이것은 핵심본입니다 &mdash; 그날의 결론만 한 장에 담았습니다.</strong> "
              "표의 근거, 만기별 곡선, 지역별 종목표, 검증 노트 전체는 <strong>같은 날짜의 전체 판</strong>에 "
              "그대로 있습니다.",
-             "<strong>This is the core edition &mdash; the day's conclusions in five pages.</strong> "
+             "<strong>This is the core edition &mdash; the day's conclusions on a single sheet.</strong> "
              "Supporting tables, the full maturity curve, regional stock tables and the complete "
              "verification notes remain in <strong>the full edition of the same date</strong>."),
         P("<strong>어디서 왔나.</strong> 시세는 야후&middot;네이버&middot;한국은행 ECOS, 미 국채는 "
@@ -850,10 +901,16 @@ def sec_verify(C):
         N.used.add("verify")
     fixed = [
         ("(a) 묶음마다 기준일이 다릅니다", "(a) The basis date differs by group",
-         "<strong>오늘 09시 개장 전이라 「오늘 시세」는 아직 없습니다.</strong> 국내&middot;해외 지수와 종목, "
+         # 주말·휴장일 판에 「오늘 09시 개장 전」은 틀린 말이다 — 오늘은 열리지 않는다.
+         ("<strong>국내 장이 열리지 않는 날이라 「오늘 시세」가 없습니다.</strong> "
+          if C["kind"] == "global" else
+          "<strong>오늘 09시 개장 전이라 「오늘 시세」는 아직 없습니다.</strong> ") +
+         "국내&middot;해외 지수와 종목, "
          "업종 ETF, 미 국채 곡선, 원자재는 모두 <strong>" + DK(C["prev_us"], True) + " 마감</strong>이고, "
          "<strong>환율만 24시간 시장이라 오늘 아침(" + DK(C["today"]) + ") 값</strong>입니다 " + VF_MD + ". "
-         "예탁금&middot;신용융자는 결제일 기준이라 <strong>" + DK(d(C["mfl"]["date"])) + "</strong>입니다. "
+         + (("예탁금&middot;신용융자는 결제일 기준이라 <strong>" + DK(d(C["mfl"]["date"])) + "</strong>입니다. ")
+          if C["mfl"].get("date") else
+          "<strong>예탁금&middot;신용융자는 오늘 확보하지 못했습니다</strong> &mdash; 표를 뺐습니다. ") +
          "<strong>기준일이 다른 값을 섞어 읽지 마십시오</strong> &mdash; 표마다 날짜를 달아 두었습니다.",
          "<strong>Korea has not opened, so there is no &lsquo;today&rsquo; price.</strong> Indices, single stocks, "
          "sector ETFs, the Treasury curve and commodities are all at the <strong>" + DE(C["prev_us"], True)
@@ -923,10 +980,15 @@ def _adr(b):
 
 
 def _brow(ko, en, nk, ne, a, b, hl=False):
+    # 두 칸이 다 비었으면 **배지도 MARKET DATA 가 아니라 NOT FOUND** 여야 한다.
+    # 값이 없는 줄에 「거래소 자료」 배지를 달면, 못 받은 것을 받은 것처럼 보이게 한다.
+    def _empty(x):
+        return not re.sub(r'<[^>]+>|&mdash;|&nbsp;|[%\s/]', '', x or '')
+    vf = VF_N if (_empty(a) and _empty(b)) else VF_MD
     return ('      <tr' + (' class="hl"' if hl else '') + '><th class="wrap">' + L(ko, en) + '</th>'
             '<td class="n note">' + L(nk, ne) + '</td>'
             '<td class="n">' + a + '</td><td class="n">' + b + '</td>'
-            '<td class="n opt">' + VF_MD + '</td></tr>')
+            '<td class="n opt">' + vf + '</td></tr>')
 
 
 def _mrow(ko, en, nk, ne, lvl, chg, spark, hl=False):
@@ -1120,8 +1182,8 @@ def _kr_snapshot_core(C, kr_idx, breadth):
         _brow("상승 / 하락 종목", "Advancing / declining",
               "지수 방향과 어긋나면 대형주 몇 개가 지수를 움직인 것입니다",
               "If it disagrees with the index, a few heavyweights moved it",
-              n(ksb["advancing"], 0) + " / " + n(ksb["declining"], 0),
-              n(kqb["advancing"], 0) + " / " + n(kqb["declining"], 0)),
+              n(ksb.get("advancing"), 0) + " / " + n(ksb.get("declining"), 0),
+              n(kqb.get("advancing"), 0) + " / " + n(kqb.get("declining"), 0)),
         _brow("오른 종목 비율", "Share advancing", "열 종목 가운데 몇 개가 올랐는지",
               "How many in ten rose",
               "열에 " + n(C["adv_per_ten"], 0), "열에 " + n(C["adv_per_ten_q"], 0)),
@@ -1383,23 +1445,24 @@ def main():
     if not CORE[0]:
         doc.sec("earnings", "실적 &middot; 컨퍼런스콜", "Results and Calls", sec_earnings(C))
     else:
-        # 핵심본은 절을 따로 세우지 않고 **실적 표를 심층 분석 절로 옮긴다**
-        # (아래). 머리말만 04 뒤에 한 문단으로 남긴다.
+        # **핵심본도 이 절을 따로 세운다**(2026-09-12). 예전에는 머리말만 04 뒤에
+        # 붙이고 표는 심층 분석 절로 옮겼는데, 그러면 「오늘 실적이 있었나」에
+        # 답하는 자리가 판에서 사라진 것처럼 읽힌다. 표는 핵심본용 한 줄짜리를
+        # 쓰고(인용 원문은 전체 판에 그대로 있다), 없는 날은 없다고 적는다.
         el = C["N"].get("earnings_lede", "", "")
-        if el[0]:
-            sid, tko, ten, body = doc.secs[-1]
-            doc.secs[-1] = (sid, tko, ten, body + "\n" + P(el[0], el[1]))
-    doc.sec("macro", "금리 &middot; 환율 &middot; 원자재", "Rates, FX and Commodities", sec_macro(C))
-    deep = sec_deep(C)
-    if CORE[0]:
-        # 「주요 이슈·실적을 심층 분석해 달라」 — 핵심본에도 이 절을 둔다. 그날의
-        # 심층 분석이 없으면 실적 표만으로 절을 세우고, 둘 다 없으면 절이 없다.
         et = _earn_core(C)
-        if deep or et:
-            tko, ten, body = (deep if deep else
-                              ("주요 이슈 &middot; 실적", "Issues and Results", ""))
-            doc.sec("deep", tko, ten, (body + ("\n" + et if et else "")).strip())
-    elif deep:
+        if el[0] or et:
+            body = (lede(el[0], el[1]) if el[0] else "")
+            body += ("\n" + et) if et else ("\n" + P(
+                "<strong>오늘 수집분에 실적&middot;컨퍼런스콜 대목이 없습니다</strong> " + VF_N
+                + " &mdash; 지어내지 않고 비워 둡니다.",
+                "<strong>No results or call excerpts in today's collection</strong> " + VF_N + "."))
+            doc.sec("earnings", "실적 &middot; 컨퍼런스콜", "Results and Calls", body.strip())
+    doc.sec("macro", "금리 &middot; 환율 &middot; 원자재", "Rates, FX and Commodities", sec_macro(C))
+    # 실적 표는 이제 **05절이 들고 있다** — 예전처럼 여기 한 번 더 붙이면
+    # 같은 표가 판에 두 번 나온다(2026-09-12 에 실제로 그랬다).
+    deep = sec_deep(C)
+    if deep:
         doc.sec("deep", deep[0], deep[1], deep[2])
     doc.sec("calendar", "일정 &middot; 체크포인트", "Calendar", sec_calendar(C))
     doc.sec("talking", "고객 응대", "Talking Points", sec_talking(C))
@@ -1414,6 +1477,15 @@ def main():
                 % (kinden, suffix_en, DE(today, True), today.year))
     html = assemble(ROOT + "/docs/briefing-chrome", doc, title, C["hero"], now,
                     title_en=title_en)
+    # 껍데기의 머리 칩은 「국내 개장일」로 굳어 있다. **주말·휴장일 판에는 틀린
+    # 말이다** — 그날은 국내가 쉰다. 판에 맞춰 갈아 끼우고 1개를 찾았는지 본다.
+    if a.kind == "global":
+        chip_old = ("<span data-lang-ko>고객 브리핑용 · 국내 개장일</span>"
+                    "<span data-lang-en>For client briefing · Korea trading</span>")
+        chip_new = ("<span data-lang-ko>고객 브리핑용 &middot; 국내 휴장일</span>"
+                    "<span data-lang-en>For client briefing &middot; Korea closed</span>")
+        assert html.count(chip_old) == 1, "머리 칩을 한 개 찾지 못했다"
+        html = html.replace(chip_old, chip_new, 1)
     if CORE[0]:
         # 이 판은 <head> 없는 아티팩트 본문이다. 껍데기 CSS 가 끝나는 자리
         # 바로 뒤에 붙여야 같은 우선순위에서 이긴다(지침 6절).

@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -739,6 +754,10 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
   <h1 class="hero-title"><span data-lang-ko>모닝 마켓 브리핑</span><span data-lang-en>Morning Market Briefing</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>금요일 밤 뉴욕은 지수와 반도체가 갈라섰습니다.</strong> 미국 8월 고용이 예상을 크게 웃돌아 CME 페드워치의 <strong>9월 인상 확률이 하루 만에 49.4%에서 58.4%로</strong> 오르자 3대 지수가 함께 내렸는데, <strong>반도체만 반대로 급등</strong>했습니다. 불씨는 오픈AI가 3일 공개한 <strong>「GPT-6 아스트라」</strong>였습니다 &mdash; 검색과 프로그램 활용을 묶어 스스로 일을 처리하는 에이전트 기능을 크게 키운 모델입니다. <strong>SK하이닉스 ADR 이 8.14%, 샌디스크가 11.90% 뛰었습니다.</strong> 오늘 서울이 그 답을 이어받을 차례입니다.</span><span data-lang-en><strong>New York split in two on Friday night.</strong> August payrolls came in far above forecast, CME FedWatch odds of a September hike jumped <strong>from 49.4% to 58.4%</strong> in a single day, and all three indices fell &mdash; yet <strong>semiconductors ran the other way.</strong> The spark was <strong>&ldquo;GPT-6 Astra,&rdquo;</strong> released by OpenAI on the 3rd, a model built around agentic work that combines search and tool use. <strong>SK Hynix's ADR rose 8.14% and SanDisk 11.90%.</strong> Seoul now has to answer that on its own.</span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>수요 이야기와 금리 이야기가 같은 종목 위에서 부딪칩니다</span><span data-lang-en>The demand story and the rate story collide inside the same stock</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 4일(금) 마감 &middot; 환율은 오늘 아침 9월 7일 &middot; 시세 파일 09-07 07:40 수집 &middot; 작성 2026-09-07(월) 07:51 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: closes of Friday 4 September; FX as of this morning; data collected 09-07 07:40; compiled 07:51 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1373,8 +1392,9 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 </div><!-- /shell -->
 
 <footer class="foot">
-  <p><span data-lang-ko>미래에셋증권 마포WM · 송재섭 · 2026년 9월 7일(월) 07:51 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Jaeseop Song · Compiled 07:51 KST, Monday 7 September 2026.</span></p>
+  <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 7일(월) 07:51 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 07:51 KST, Monday 7 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

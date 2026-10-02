@@ -11,9 +11,79 @@ collect-debug/
 __pycache__/
 *.pyc
 
+# 한국투자증권 오픈API 앱키와 접근토큰. **저장소에 들어가면 안 된다.**
+# 접근토큰은 24시간 유효한데 발급이 1분 1회로 막혀 있어 파일에 캐싱해 쓴다
+# (scripts/kis_lib.py). 그 캐시가 여기 걸린다.
+.kis-token.json
+.kis-token.json.tmp
+.env
+.env.*
+
 # 빈칸 검증에서 나오는 임시물 — 쪽 그림과 집계표. 저장소에 남기지 않는다.
 # 8/19 판을 만들 때 실제로 2.2MB 가 저장소 뿌리에 쌓였다.
 pg/
 g.txt
 out-beta/
 out-prod/
+out-test/
+
+# 오프라인 판(데이터를 심은 판)은 만들 때마다 300KB 가 통째로 바뀐다. 필요하면
+# `python scripts/inline_calendar.py` 로 다시 만들면 되므로 저장소에 남기지 않는다.
+market-calendar-offline.html
+
+# 목록 점검 결과는 데이터 브랜치(us100-data)가 원본이다. 여기 받아 두는 것은 사본일 뿐.
+data/us100/ranking.json
+
+# 변동성 경보 한 파일 판(자료를 심은 판) — 만들 때마다 0.3MB 가 통째로 바뀐다.
+# `python3 scripts/make_volatility_offline.py` 로 다시 만들면 되므로 남기지 않는다.
+volatility-offline.html
+
+# 매매 신호 한 파일 판 — 201종목을 심어 4.4MB 다. 날마다 통째로 바뀌므로 저장소에
+# 쌓으면 안 된다. `python3 scripts/make_signal_offline.py` 로 다시 만든다.
+signal-offline.html
+
+# 매매 타이밍 한 파일 판 — 305KB(--slim 은 166KB). 세팅이 날마다 바뀌므로 같은
+# 까닭으로 쌓지 않는다. `python3 scripts/make_kis_timing_offline.py` 로 다시 만든다.
+#
+# **별표를 붙이는 까닭.** --out 으로 이름을 달리 지을 수 있어서, 고정된 이름
+# 하나만 적어 두면 `kis-timing-offline-slim.html` 같은 판이 조용히 저장소에
+# 쌓인다. 실제로 한 번 그럴 뻔했다.
+kis-timing-offline*.html
+
+# 국내ETF·국내상장 해외ETF 한 장 리포트 — 세팅이 날마다 바뀌므로 같은 까닭으로
+# 쌓지 않는다. `python3 scripts/build_kr_etf_report.py [--market KR_OV_ETF]` 로
+# 다시 만든다. **두 이름을 다 적는 까닭** — kr-etf-report* 는 kr-ov-etf-report.html
+# 을 잡지 못한다. 해외ETF 곁 목록 때 별표 하나로는 모자랐던 것과 같은 자리다.
+kr-etf-report*.html
+kr-ov-etf-report*.html
+kr-stock-report*.html
+us-stock-report*.html
+
+# 고객용 한 장(자료를 심은 판) — `python3 scripts/build_client_page.py` 로 다시 만든다.
+volatility-client.html
+etf-offline.html
+
+# PPT 를 만들 때 파이썬이 노드에 넘기는 중간 파일. 만들자마자 지우지만
+# 중간에 죽으면 남는다.
+.proposal-smoke.mjs
+
+# 매크로판은 산출물 — 원본 .xlsx 만 추적한다
+backtest-4boards.html
+kis-timing-report*.html
+
+# 근거(사내 연금 업무 Q&A 18건)까지 담긴 시뮬레이터 내부용 판.
+# 배포본(retire-payout.html)에는 이 18건을 심지 않는다 - 파일 하나가
+# 사람 손을 타고 도는 형태라, 실려 나가면 받은 누구나 읽는다.
+# 이 판은 손에 두고 보는 용도라 저장소에 들어가면 안 된다.
+#   node scripts/build-retire-payout.js --근거
+retire-payout-internal.html
+
+# 인계 문서를 내려받기 좋게 묶은 파생물. 안에 든 것은 전부 이미 저장소에
+# 추적되고 있다(인계-보관본.txt · HANDOFF.md · docs/claude-handoff/ ·
+# docs/handover/ · docs/briefing-playbook.md). 커밋하면 500KB 가 중복되고,
+# 인계 문서를 고칠 때마다 통째로 다시 쌓인다.
+#   다시 만들려면:
+#   zip -qr 인계-보관본_묶음.zip 인계-보관본.txt HANDOFF.md CLAUDE.md \
+#       PROMPTS.txt docs/claude-handoff docs/handover docs/HANDOVER.md \
+#       docs/routine-prompts.md docs/briefing-playbook.md
+인계-보관본_묶음.zip

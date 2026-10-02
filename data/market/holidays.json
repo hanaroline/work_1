@@ -1,12 +1,16 @@
 {
   "note": "국내·해외 거래소 휴장일. **빌더에 문자열로 박아 두지 않고 여기에 둔다** — 예전에는 날마다 복사되는 빌더 안의 목록이라 틀린 채로 굴러다녔다(중국 국경절을 10/1~10/8 로, 일본 9월 연휴를 이틀로 적고 있었고, 국내 10/5 대체공휴일은 아예 없었다).",
-  "verified_at": "2026-09-08",
-  "verified_note": "2026-09-08 국내 추석 휴장(9/24 목·9/25 금)을 넣었다. 9/26 은 토요일이라 원래 휴장이고, 설·추석 연휴는 일요일과 겹칠 때만 대체공휴일이 붙으므로 9/28(월)은 대체공휴일이 아니다 — 정상 개장한다. 2026년 남은 국내 대체공휴일은 10/5(월) 개천절 하나뿐이다.",
+  "verified_at": "2026-09-10",
+  "verified_note": "2026-09-10 에 2027년치를 채웠다. 요일까지 계산해 교차 확인했다 — 2027년은 설날(2/7)·현충일(6/6)·광복절(8/15)·개천절(10/3)이 모두 일요일이고, 현충일만 대체공휴일 대상이 아니라 그날은 그냥 넘어간다. 미국은 NYSE 가 공표한 2027년 휴장 10일과 조기마감 1일(11/26)이 그대로 들어갔다. 일본은 공휴일 16일과 춘분 대체휴일 1일(3/22)이 국립천문대 역요항과 맞는다. 앞선 판(2026-09-08)의 교훈 그대로, 날짜를 빌더 코드에 박지 않고 이 파일에만 둔다.",
   "sources": [
     "https://english.sse.com.cn/start/trading/schedule/",
     "https://www.jpx.co.jp/english/corporate/about-jpx/calendar/",
     "https://www.hkex.com.hk/Services/Trading/Derivatives/Overview/Trading-Calendar-and-Holiday-Schedule",
-    "https://www.nyse.com/markets/hours-calendars"
+    "https://www.nyse.com/markets/hours-calendars",
+    "https://www.nyse.com/markets/hours-calendars",
+    "https://www.jpx.co.jp/english/corporate/about-jpx/calendar/",
+    "https://www.gov.hk/en/about/abouthk/holiday/2027.htm",
+    "https://www.gov.uk/bank-holidays"
   ],
   "kinds": {
     "full": "종일 휴장",
@@ -72,6 +76,132 @@
           "ko": "신정",
           "en": "New Year's Day",
           "kind": "full"
+        },
+        {
+          "date": "2027-02-06",
+          "ko": "설 연휴 (토)",
+          "en": "Lunar New Year holiday (Sat)",
+          "kind": "weekend"
+        },
+        {
+          "date": "2027-02-07",
+          "ko": "설날 (일)",
+          "en": "Lunar New Year (Sun)",
+          "kind": "weekend"
+        },
+        {
+          "date": "2027-02-08",
+          "ko": "설 연휴",
+          "en": "Lunar New Year holiday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-02-09",
+          "ko": "설날 대체공휴일",
+          "en": "Lunar New Year substitute holiday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-03-01",
+          "ko": "삼일절",
+          "en": "Independence Movement Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-05-01",
+          "ko": "근로자의 날 (토)",
+          "en": "Labour Day (Sat)",
+          "kind": "weekend"
+        },
+        {
+          "date": "2027-05-05",
+          "ko": "어린이날",
+          "en": "Children's Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-05-13",
+          "ko": "부처님오신날",
+          "en": "Buddha's Birthday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-06-06",
+          "ko": "현충일 (일)",
+          "en": "Memorial Day (Sun)",
+          "kind": "weekend"
+        },
+        {
+          "date": "2027-08-15",
+          "ko": "광복절 (일)",
+          "en": "Liberation Day (Sun)",
+          "kind": "weekend"
+        },
+        {
+          "date": "2027-08-16",
+          "ko": "광복절 대체공휴일",
+          "en": "Liberation Day substitute holiday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-09-14",
+          "ko": "추석 연휴",
+          "en": "Chuseok holiday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-09-15",
+          "ko": "추석",
+          "en": "Chuseok",
+          "kind": "full"
+        },
+        {
+          "date": "2027-09-16",
+          "ko": "추석 연휴",
+          "en": "Chuseok holiday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-10-03",
+          "ko": "개천절 (일)",
+          "en": "National Foundation Day (Sun)",
+          "kind": "weekend"
+        },
+        {
+          "date": "2027-10-04",
+          "ko": "개천절 대체공휴일",
+          "en": "Substitute holiday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-10-09",
+          "ko": "한글날 (토)",
+          "en": "Hangul Day (Sat)",
+          "kind": "weekend"
+        },
+        {
+          "date": "2027-10-11",
+          "ko": "한글날 대체공휴일",
+          "en": "Substitute holiday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-12-25",
+          "ko": "성탄절 (토)",
+          "en": "Christmas Day (Sat)",
+          "kind": "weekend"
+        },
+        {
+          "date": "2027-12-27",
+          "ko": "성탄절 대체공휴일",
+          "en": "Christmas substitute holiday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-12-31",
+          "ko": "연말 휴장",
+          "en": "Year-end market holiday",
+          "kind": "full"
         }
       ]
     },
@@ -116,6 +246,66 @@
           "date": "2027-01-01",
           "ko": "신정",
           "en": "New Year's Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-01-18",
+          "ko": "마틴 루터 킹 데이",
+          "en": "Martin Luther King, Jr. Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-02-15",
+          "ko": "워싱턴 탄생일",
+          "en": "Washington's Birthday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-03-26",
+          "ko": "성금요일",
+          "en": "Good Friday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-05-31",
+          "ko": "메모리얼 데이",
+          "en": "Memorial Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-06-18",
+          "ko": "준틴스 대체휴일",
+          "en": "Juneteenth (observed)",
+          "kind": "full"
+        },
+        {
+          "date": "2027-07-05",
+          "ko": "독립기념일 대체휴일",
+          "en": "Independence Day (observed)",
+          "kind": "full"
+        },
+        {
+          "date": "2027-09-06",
+          "ko": "노동절",
+          "en": "Labor Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-11-25",
+          "ko": "추수감사절",
+          "en": "Thanksgiving Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-11-26",
+          "ko": "추수감사절 다음날 (13:00 조기마감)",
+          "en": "Day after Thanksgiving (1:00 pm close)",
+          "kind": "early"
+        },
+        {
+          "date": "2027-12-24",
+          "ko": "성탄절 대체휴일",
+          "en": "Christmas Day (observed)",
           "kind": "full"
         }
       ]
@@ -172,6 +362,108 @@
           "ko": "연시 휴장 (~1/3)",
           "en": "New Year closure (to 3 Jan)",
           "kind": "full"
+        },
+        {
+          "date": "2027-01-11",
+          "ko": "성인의 날",
+          "en": "Coming of Age Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-02-11",
+          "ko": "건국기념일",
+          "en": "National Foundation Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-02-23",
+          "ko": "일왕 탄생일",
+          "en": "The Emperor's Birthday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-03-21",
+          "ko": "춘분 (일)",
+          "en": "Vernal Equinox Day (Sun)",
+          "kind": "weekend"
+        },
+        {
+          "date": "2027-03-22",
+          "ko": "춘분 대체휴일",
+          "en": "Vernal Equinox substitute holiday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-04-29",
+          "ko": "쇼와의 날",
+          "en": "Showa Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-05-03",
+          "ko": "헌법기념일",
+          "en": "Constitution Memorial Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-05-04",
+          "ko": "녹색의 날",
+          "en": "Greenery Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-05-05",
+          "ko": "어린이날",
+          "en": "Children's Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-07-19",
+          "ko": "바다의 날",
+          "en": "Marine Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-08-11",
+          "ko": "산의 날",
+          "en": "Mountain Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-09-20",
+          "ko": "경로의 날",
+          "en": "Respect for the Aged Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-09-23",
+          "ko": "추분",
+          "en": "Autumnal Equinox Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-10-11",
+          "ko": "스포츠의 날",
+          "en": "Sports Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-11-03",
+          "ko": "문화의 날",
+          "en": "Culture Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-11-23",
+          "ko": "근로감사의 날",
+          "en": "Labour Thanksgiving Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-12-31",
+          "ko": "연말 휴장",
+          "en": "Year-end market holiday",
+          "kind": "full"
         }
       ]
     },
@@ -217,6 +509,78 @@
           "ko": "신정",
           "en": "New Year's Day",
           "kind": "full"
+        },
+        {
+          "date": "2027-02-06",
+          "ko": "음력설 (토)",
+          "en": "Lunar New Year's Day (Sat)",
+          "kind": "weekend"
+        },
+        {
+          "date": "2027-02-07",
+          "ko": "음력설 연휴 (일)",
+          "en": "Lunar New Year holiday (Sun)",
+          "kind": "weekend"
+        },
+        {
+          "date": "2027-02-08",
+          "ko": "음력설 연휴",
+          "en": "Lunar New Year holiday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-02-09",
+          "ko": "음력설 대체휴일",
+          "en": "Lunar New Year substitute holiday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-03-26",
+          "ko": "성금요일",
+          "en": "Good Friday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-03-27",
+          "ko": "부활절 토요일 (토)",
+          "en": "Easter Saturday (Sat)",
+          "kind": "weekend"
+        },
+        {
+          "date": "2027-03-29",
+          "ko": "부활절 월요일",
+          "en": "Easter Monday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-04-05",
+          "ko": "청명절",
+          "en": "Ching Ming Festival",
+          "kind": "full"
+        },
+        {
+          "date": "2027-05-01",
+          "ko": "노동절 (토)",
+          "en": "Labour Day (Sat)",
+          "kind": "weekend"
+        },
+        {
+          "date": "2027-07-01",
+          "ko": "홍콩특별행정구 성립기념일",
+          "en": "HKSAR Establishment Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-10-01",
+          "ko": "국경절",
+          "en": "National Day",
+          "kind": "full"
+        },
+        {
+          "date": "2027-12-25",
+          "ko": "성탄절 (토)",
+          "en": "Christmas Day (Sat)",
+          "kind": "weekend"
         }
       ]
     },
@@ -270,8 +634,62 @@
           "ko": "신정",
           "en": "New Year's Day",
           "kind": "full"
+        },
+        {
+          "date": "2027-03-26",
+          "ko": "성금요일",
+          "en": "Good Friday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-03-29",
+          "ko": "부활절 월요일",
+          "en": "Easter Monday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-05-03",
+          "ko": "5월 초 뱅크홀리데이",
+          "en": "Early May bank holiday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-05-31",
+          "ko": "봄 뱅크홀리데이",
+          "en": "Spring bank holiday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-08-30",
+          "ko": "여름 뱅크홀리데이",
+          "en": "Summer bank holiday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-12-25",
+          "ko": "성탄절 (토)",
+          "en": "Christmas Day (Sat)",
+          "kind": "weekend"
+        },
+        {
+          "date": "2027-12-27",
+          "ko": "성탄절 대체휴일",
+          "en": "Christmas substitute bank holiday",
+          "kind": "full"
+        },
+        {
+          "date": "2027-12-28",
+          "ko": "박싱데이 대체휴일",
+          "en": "Boxing Day substitute bank holiday",
+          "kind": "full"
         }
       ]
     }
-  ]
+  ],
+  "gaps_2027": {
+    "cn": "중국은 국무원이 2027년 휴일 배치를 아직 공표하지 않았다(2026년 말 공표 예정). 춘절·국경절 연휴의 정확한 날짜와 대체근무일이 정해지면 채운다. 지금은 1/1 만 담겨 있다.",
+    "hk": "고정일 공휴일과 부활절·음력설까지만 담았다. 부처님오신날·단오·중추절 다음날·중양절처럼 음력으로 정해지는 날은 확인하지 못해 넣지 않았다 — 지어내지 않는다.",
+    "kr": "제헌절(7/17)을 공휴일로 되돌리는 법 개정 논의가 있어 2027년 적용 여부를 확인하지 못했다. 확정되면 추가해야 한다.",
+    "eu": "영국 잉글랜드·웨일스 기준이다. 스코틀랜드(1/4·8/2·11/30)와 유로넥스트 각국 휴장일은 다르다."
+  }
 }

@@ -39,14 +39,27 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fetch_us100 as F                                    # noqa: E402
 from fetch_us100 import OUT_DIR, companies_from_page, init_crumb, num, yget   # noqa: E402
 
-TOP = 100
-DROP_RANK = 150          # 이 순위 밖으로 밀리면 교체 후보로 본다(경계에서 오가는 잡음을 걸러낸다)
-UNIVERSE = 260           # 스크리너에서 받아 볼 상위 개수(보조 경로)
+# 2026-09-29 에 목록을 100 → 200 종으로 넓혔다. 세 수가 함께 움직여야 한다 —
+# TOP 만 올리고 DROP_RANK 를 그대로 두면 101~200 위 종목이 들어오자마자 전부
+# 「밀린 종목」으로 잡힌다.
+TOP = 200
+DROP_RANK = 260          # 이 순위 밖으로 밀리면 교체 후보로 본다(경계에서 오가는 잡음을 걸러낸다)
+UNIVERSE = 400           # 스크리너에서 받아 볼 상위 개수(보조 경로)
 EXTRA_LOOKUPS = 30       # 스크리너 후보의 본사 소재지를 확인할 최대 개수(요청을 묶어 둔다)
 REPORT_MAX = 12          # 사람이 읽는 보고에 적는 최대 줄 수(파일에는 전부 남는다)
+VERIFY_MAX = 12          # 편입 후보 중 "시세가 실제로 나오는지" 확인할 최대 개수
 OK_EXCHANGES = ("NMS", "NYQ", "NGM", "ASE", "NCM", "NYS")   # 정규 거래소 — OTC(PNK 등)는 제외
 SP500_CSV = "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
 OUT = os.path.join(OUT_DIR, "ranking.json")
+
+# GICS 섹터 → 화면(us-top100.html)이 쓰는 코드. 목록을 넓힐 때 새 종목의 섹터를
+# 손으로 찍지 않으려고 둔다 — 화면의 SECTORS 와 같은 열한 가지다.
+GICS_TO_CODE = {
+    "Information Technology": "it", "Financials": "fin", "Health Care": "hc",
+    "Industrials": "ind", "Consumer Discretionary": "cd", "Consumer Staples": "cs",
+    "Communication Services": "comm", "Energy": "eng", "Utilities": "util",
+    "Materials": "mat", "Real Estate": "re",
+}
 
 
 def _post_json(url, payload):
@@ -101,11 +114,14 @@ def sp500_ranking():
     with urllib.request.urlopen(
             urllib.request.Request(SP500_CSV, headers={"User-Agent": F.UA}), timeout=F.TIMEOUT) as r:
         txt = r.read().decode("utf-8", "replace")
-    syms = []
+    syms, sec = [], {}
     for row in csv.DictReader(io.StringIO(txt)):
         s = (row.get("Symbol") or row.get("symbol") or "").strip()
         if s:
-            syms.append(s.replace(".", "-"))          # BRK.B → BRK-B (야후 표기)
+            s = s.replace(".", "-")                   # BRK.B → BRK-B (야후 표기)
+            syms.append(s)
+            # 목록을 넓힐 때 한글명과 함께 채워야 하는 칸이라 여기서 들고 간다.
+            sec[s] = GICS_TO_CODE.get((row.get("GICS Sector") or "").strip())
     if len(syms) < 400:
         raise RuntimeError("구성종목이 %d개다" % len(syms))
     out = {}
@@ -121,7 +137,8 @@ def sp500_ranking():
         for q in ((j.get("quoteResponse") or {}).get("result") or []):
             sym, cap = q.get("symbol"), num(q.get("marketCap"))
             if sym and cap:
-                out[sym] = {"cap": cap, "name": q.get("shortName") or q.get("longName") or sym}
+                out[sym] = {"cap": cap, "name": q.get("shortName") or q.get("longName") or sym,
+                            "sector": sec.get(sym)}
     if len(out) < 300:
         raise RuntimeError("시총을 받은 종목이 %d개다" % len(out))
     return out, "sp500"
@@ -184,6 +201,36 @@ def country_of(sym):
         return None
 
 
+def verify_tradable(sym):
+    """이 심볼이 실제로 일봉을 주는지 확인한다.
+
+    순위에는 상장 형태가 다른 것이 섞여 들어온다 — 비상장 평가액이 스크리너에 잡히거나
+    (SPCX 가 7위로 올라온다), 막 상장해 시세가 얇거나. 그대로 목록에 넣으면 그 종목만
+    "미조회"로 남아 화면에 구멍이 생긴다.
+
+    확인을 **여기서** 하는 이유: 목록을 갈아 끼우는 주간 작업은 야후로 나갈 수 없는
+    자리에서 돈다(사내망·에이전트 환경). 러너는 나갈 수 있으므로, 나갈 수 있는 쪽이
+    확인해 결과를 ranking.json 에 적어 둔다.
+    반환: {"ok": bool, "why": str, "bars": int, "longName": str|None, "exch": str|None}
+    """
+    try:
+        j = yget("/v8/finance/chart/" + urllib.parse.quote(sym) + "?range=1mo&interval=1d")
+    except Exception as e:                            # noqa: BLE001
+        return {"ok": False, "why": str(e)[:80]}
+    res = ((j.get("chart") or {}).get("result") or [None])[0]
+    if not res:
+        return {"ok": False, "why": "시세 없음"}
+    meta = res.get("meta") or {}
+    closes = (((res.get("indicators") or {}).get("quote") or [{}])[0] or {}).get("close") or []
+    bars = len([c for c in closes if c is not None])
+    out = {"bars": bars, "longName": meta.get("longName"), "exch": meta.get("fullExchangeName")}
+    if bars < 5:
+        out.update({"ok": False, "why": "일봉이 %d개뿐" % bars})
+    else:
+        out.update({"ok": True, "why": "일봉 %d개 · %s" % (bars, out["exch"] or "?")})
+    return out
+
+
 def usd(v):
     if v is None:
         return "—"
@@ -242,7 +289,15 @@ def norm_name(v):
     return " ".join(parts)[:18]
 
 
-def main():
+def main(argv=None):
+    argv = list(sys.argv[1:] if argv is None else argv)
+    emit_top, emit_path = 0, os.path.join(OUT_DIR, "ranking-top.json")
+    if "--emit-top" in argv:
+        i = argv.index("--emit-top")
+        emit_top = int(argv[i + 1])
+    if "--emit-out" in argv:
+        emit_path = argv[argv.index("--emit-out") + 1]
+
     ours = companies_from_page()
     have = [c["sym"] for c in ours]
     ko = {c["sym"]: c["ko"] for c in ours}
@@ -329,6 +384,27 @@ def main():
     rank = {sym: i + 1 for i, (sym, _) in enumerate(ranked)}
     top = [sym for sym, _ in ranked[:TOP]]
 
+    # **줄 세운 것을 그대로 내어 준다.** 목록을 넓힐 때(100 → 200) 어느 종목이
+    # 어느 자리인지 손으로 옮겨 적을 일이 아니다. 여기서 낸 파일을 보고 한글명을
+    # 채운 뒤 us-top100.html 의 COMPANIES 를 고친다 — 자동으로 갈아치우지 않는
+    # 까닭은 이 대본 머리말에 적어 두었다(한글이 빈 종목이 조용히 섞인다).
+    if emit_top:
+        emit = [{"rank": i + 1, "sym": sym, "name": rec.get("name") or sym,
+                 "cap": rec.get("cap"), "sector": rec.get("sector"),
+                 "country": rec.get("country"), "exch": rec.get("exch"),
+                 "ours": sym in have, "ko": ko.get(sym)}
+                for i, (sym, rec) in enumerate(ranked[:emit_top])]
+        with open(emit_path, "w", encoding="utf-8") as f:
+            json.dump({"builtAt": datetime.datetime.now(datetime.timezone.utc)
+                                  .strftime("%Y-%m-%dT%H:%M:%SZ"),
+                       "source": src, "universe": len(universe),
+                       "asked": emit_top, "got": len(emit),
+                       "note": ("시총 내림차순. ours=true 는 지금 화면 목록에 있는 종목. "
+                                "한글명(ko)이 비어 있는 줄이 새로 채워야 할 자리다."),
+                       "rows": emit}, f, ensure_ascii=False, indent=1)
+        print("줄 세운 %d 종을 %s 에 적었다 (우리 목록에 없는 것 %d 종)"
+              % (len(emit), emit_path, sum(1 for r in emit if not r["ours"])), flush=True)
+
     add = []
     for s in top:
         if s in have:
@@ -336,6 +412,19 @@ def main():
         rec = universe[s]
         add.append({"sym": s, "name": rec["name"], "cap": rec["cap"], "rank": rank[s],
                     "country": rec.get("country"), "exch": rec.get("exch")})
+    # 편입 후보는 "넣어도 되는지"까지 여기서 확인해 둔다(위 verify_tradable 주석 참고)
+    for rec in add[:VERIFY_MAX]:
+        v = verify_tradable(rec["sym"])
+        rec["tradable"] = bool(v.get("ok"))
+        rec["tradableWhy"] = v.get("why")
+        if v.get("longName"):
+            rec["longName"] = v["longName"]
+        if v.get("exch"):
+            rec["exchName"] = v["exch"]
+    bad = [r["sym"] for r in add[:VERIFY_MAX] if not r.get("tradable")]
+    if bad:
+        print("시세가 나오지 않아 편입에서 거를 후보: %s" % ", ".join(bad), flush=True)
+
     drop = [{"sym": s, "ko": ko.get(s, s), "cap": universe[s]["cap"], "rank": rank[s]}
             for s in have if s in rank and rank[s] > DROP_RANK]
     drop.sort(key=lambda r: r["rank"])

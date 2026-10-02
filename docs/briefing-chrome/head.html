@@ -157,6 +157,27 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 넣었다 — 이 판은 사내 배포를 거쳐 아티팩트
+   링크로도 나가므로, 꼬리말에만 두면 21쪽을 끝까지 내려간 사람만 본다.
+   **첫 화면과 인쇄 1쪽에 반드시 걸리도록** 히어로 바로 밑에 둔다. 같은 문구가
+   꼬리말에도 한 번 더 실린다(docs/briefing-chrome/tail.html). */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+/* **한 줄로 유지한다.** max-width 를 두면(62em=930px) 본문 칸(약 1,100px)보다
+   좁아 두 줄로 접히면서 첫 화면을 그만큼 잡아먹는다 — 2026-09-30 에 그랬다.
+   좁은 화면에서는 접혀야 하므로 nowrap 은 쓰지 않는다(넘침 검사에 걸린다). */
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -427,6 +448,15 @@ html[lang="en"] [data-lang-en]{display:revert}
   .detail-label{margin-bottom:6px}
   .detail-links{display:none}
   .exp > summary{padding-right:0}
+  /* 접힌 채로 인쇄되면 **제목만 찍히고 본문이 없다.** 요약본에서 근거 블록
+     일곱이 그렇게 나가 「빠진 자리」로 읽혔다 — 약속만 하고 내용이 없는
+     제목은 없느니만 못하다. 종이에서는 어디에 있는지를 제목 옆에 적는다.
+     전체본은 모두 펼친 채 인쇄하므로 이 줄이 붙지 않는다. */
+  html[lang="ko"] .exp:not([open]) > summary::after{
+    content:" \2014 전체본에 펼쳐져 있습니다"}
+  html[lang="en"] .exp:not([open]) > summary::after{
+    content:" \2014 expanded in the full edition"}
+  .exp:not([open]) > summary::after{font-size:8.5pt;font-weight:400;color:#777}
   .exp-mark,table.data tr.clickable > *:first-child::before{display:none!important}
   table.data tr.clickable > *:first-child{padding-left:13px}
   body{font-size:11pt;line-height:1.4;color:#000;background:#FFF}
@@ -568,8 +598,11 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
 <div class="topbar">
   <span class="chip"><span data-lang-ko>고객 브리핑용 · 국내 개장일</span><span data-lang-en>For client briefing · Korea trading</span></span>
   <div class="topbar-actions">
-    <button type="button" class="print-btn" data-print="brief" title="상세를 접은 요약본으로 인쇄 / PDF 저장 — 고객 전달용"><span data-lang-ko>요약 PDF</span><span data-lang-en>Summary PDF</span></button>
-    <button type="button" class="print-btn alt" data-print="full" title="모든 상세를 펼친 전체본으로 인쇄 / PDF 저장 — 브리핑 준비용"><span data-lang-ko>전체 PDF</span><span data-lang-en>Full PDF</span></button>
+    <!-- 「요약 PDF」 단추를 걷어냈다(2026-09-12). 상세를 접은 채 인쇄하면
+         종이에는 펼칠 단추가 없어 **제목만 찍히고 본문이 사라진다** — 근거
+         블록 일곱이 그렇게 나가 「빠진 자리」로 읽혔다. 짧은 판이 필요하면
+         접어서 감추는 것이 아니라 같은 날짜의 **핵심본**을 쓴다. -->
+    <button type="button" class="print-btn" data-print="full" title="모든 상세를 펼쳐 인쇄 / PDF 저장 — 짧은 판이 필요하면 같은 날짜의 핵심본을 쓰십시오"><span data-lang-ko>PDF 저장</span><span data-lang-en>Save as PDF</span></button>
     <button type="button" class="expand-all" aria-pressed="false"><span class="lbl-expand"><span data-lang-ko>전체 펼치기</span><span data-lang-en>Expand all</span></span><span class="lbl-collapse"><span data-lang-ko>전체 접기</span><span data-lang-en>Collapse all</span></span></button>
     <div class="lang-toggle" role="radiogroup" aria-label="Language">
       <button type="button" data-lang="ko" role="radio" aria-checked="true">KO</button>

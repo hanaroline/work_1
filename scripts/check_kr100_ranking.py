@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""지금 시가총액 상위 100 과 국내 화면의 대상 목록을 견주어 **갱신 후보만 알려 준다**.
+"""지금 시가총액 상위 100 과 국내 화면의 대상 목록을 견주어 **차이를 적어 둔다**.
 
-목록을 자동으로 갈아치우지 않는 이유
-  화면의 한글 자산(검색 키워드·"기업 한눈에" 개요)은 종목마다 사람이 쓴 것이다.
-  자동 교체는 개요가 빈 종목이 조용히 섞여 들어오는 방식이 된다. 그래서 이 스크립트는
-  차이만 보고하고, 실제 교체는 개요를 채우는 커밋으로 한다.
+이 스크립트는 목록을 고치지 않는다
+  평일마다 돌면서 ranking.json 만 남긴다. 실제 교체는 주 1회
+  scripts/update_kr100_list.py 가 이 파일을 읽어서 한다 — 새 종목의 검색 키워드와
+  기업 개요를 함께 지어 넣어야 화면이 비지 않기 때문에, 교체는 그쪽 한 곳에 모아 두었다.
 
 순위를 어떻게 만드나
   야후 스크리너(region=kr, 시가총액 내림차순)로 상위 종목을 받는다. 우리 목록 종목의
@@ -176,6 +176,10 @@ def main():
     companies = F.companies_from_page()
     have = [c["sym"] for c in companies]
     ko = {c["sym"]: c["ko"] for c in companies}
+    # 관심종목은 시총 순위로 들어온 것이 아니므로 순위 판정에서 뺀다. 그냥 두면
+    # 100위 밖이라 늘 「밀린 종목」으로 잡히고, 그 결과를 읽는 교체기가 빼낸다.
+    keep = F.watchlist_from_page()
+    ranked_have = [s for s in have if s not in keep]
 
     F.init_crumb(rounds=2)
     try:
@@ -204,9 +208,11 @@ def main():
            for s in top if s not in have]
     drop = sorted(
         [{"sym": s, "ko": ko.get(s, s), "cap": universe[s]["cap"], "rank": rank[s]}
-         for s in have if s in rank and rank[s] > DROP_RANK],
+         for s in ranked_have if s in rank and rank[s] > DROP_RANK],
         key=lambda r: r["rank"])
-    unknown = [s for s in have if s not in rank]
+    unknown = [s for s in ranked_have if s not in rank]
+    watch = [{"sym": s, "ko": ko.get(s, s), "cap": (universe.get(s) or {}).get("cap"),
+              "rank": rank.get(s)} for s in have if s in keep]
 
     out = {
         "builtAt": datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
@@ -214,10 +220,12 @@ def main():
         "source": "screener", "universe": len(universe), "krTotal": total,
         "top": TOP, "dropRank": DROP_RANK,
         "add": add, "drop": drop, "unknown": unknown, "deduped": [],
+        "watchlist": watch,
         "ourRanks": {s: rank.get(s) for s in have},
         "top100": top,
         "note": ("유니버스 = 야후 스크리너(region=kr) 시총 상위 + 이 화면의 목록. "
-                 "우선주·스팩·리츠는 제외한다. 목록은 사람이 관리하며 이 파일은 갱신 후보만 알려 준다."),
+                 "우선주·스팩·리츠는 제외한다. 이 파일을 읽어 주 1회 "
+                 "scripts/update_kr100_list.py 가 목록을 갈아 끼운다."),
     }
     os.makedirs(F.OUT_DIR, exist_ok=True)
     with open(os.path.join(F.OUT_DIR, "ranking.json"), "w", encoding="utf-8") as f:
@@ -245,6 +253,13 @@ def main():
         lines.append("")
         lines.append("시총을 확인하지 못한 종목(상장폐지·합병·코드 변경일 수 있습니다): "
                      + ", ".join("`%s`" % s.split(".")[0] for s in unknown))
+    if watch:
+        lines.append("")
+        lines.append("**관심종목 %d개 — 순위와 무관하게 자리를 지킵니다**" % len(watch))
+        for r in watch:
+            lines.append("- `%s` %s — %s · 현재 %s"
+                         % (r["sym"].split(".")[0], r["ko"], won(r["cap"]) or "시총 미확인",
+                            ("%d위" % r["rank"]) if r["rank"] else "순위 미확인"))
 
     if not add and not drop and not unknown:
         msg = "대상 목록이 지금 시가총액 상위 %d 과 일치한다(유니버스 %d)." % (TOP, len(universe))
@@ -257,9 +272,11 @@ def main():
         body = ("유니버스는 **야후 스크리너(region=kr) 시총 상위 + 이 화면의 목록**입니다"
                 "(우선주·스팩·리츠 제외).\n\n"
                 + "\n".join(lines)
-                + "\n\n교체는 자동으로 하지 않습니다 — 새 종목의 **검색 키워드·기업 개요**를 함께 "
-                  "채워야 화면이 비지 않기 때문입니다. 바꾸려면 `kr-top100.html` 의 "
-                  "`COMPANIES`·`KEYWORDS`·`PROFILE_KO` 를 함께 고치면 됩니다.\n\n"
+                + "\n\n교체는 **주 1회(월요일 10:00 KST) 자동으로** 이뤄집니다 — "
+                  "`scripts/update_kr100_list.py` 가 이 결과를 읽어 `kr-top100.html` 의 "
+                  "`COMPANIES`·`KEYWORDS`·`PROFILE_KO` 를 함께 고칩니다. 들어오려면 90위 안, "
+                  "나가려면 110위 밖이어야 하고 한 번에 최대 5종목까지만 바뀌므로, 위 후보가 "
+                  "모두 이번 주에 반영되지는 않습니다.\n\n"
                   "이 글은 목록 점검이 돌 때마다 자동으로 갱신됩니다.")
 
     summary = os.environ.get("GITHUB_STEP_SUMMARY")

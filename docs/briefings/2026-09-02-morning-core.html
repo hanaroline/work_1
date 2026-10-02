@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -720,6 +735,10 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
   <h1 class="hero-title"><span data-lang-ko>지수 위에 백조 원어치 물량이 기다립니다</span><span data-lang-en>A hundred trillion won of supply waits above</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>어제도 코스피를 떠받친 것은 자사주였습니다.</strong> 미&middot;이란 충돌 재개로 장 초반 6,700선 초반까지 밀렸다가 상승 마감했는데, 개인&middot;외국인&middot;기관이 <strong>이틀 연속</strong> 모두 순매도인 채 기타법인만 <strong>1조 6천억원 넘게</strong> 받아냈습니다. 여기에 8월 반도체 수출이 <strong>466억 5천만달러로 사상 최대</strong>를 찍은 것이 심리를 받쳤습니다. <strong>그런데 어제 나온 자료 하나가 이 장의 천장을 설명합니다</strong> &mdash; 코스피 7,000 위 구간에 개인이 쌓아 둔 순매수가 <strong>백조 원 단위</strong>로 걸려 있습니다. 지수가 올라갈 때마다 「본전이라도」 하는 물량을 만난다는 뜻이고, 어제 코스닥이 <strong>&minus;1.56%</strong> 로 홀로 밀린 것도 같은 자리에서 읽힙니다. <strong>그리고 오늘 아침 우리가 받는 것은 그것과 다른 종류의 짐입니다</strong> &mdash; 간밤 뉴욕에서 유가가 하루에 크게 뛰고 변동성이 튀면서 <strong>반도체가 지수보다 훨씬 크게 밀렸습니다.</strong></span><span data-lang-en><strong>Buybacks held the Korean index up again yesterday.</strong> Renewed US&ndash;Iran fighting pushed it into the low 6,700s early before it closed higher &mdash; with retail, foreign and institutional investors <strong>all net sellers for a second day</strong> and only the &lsquo;other corporates&rsquo; line, at <strong>more than 1.6tn won</strong>, absorbing the stock. August semiconductor exports at <strong>a record $46.65bn</strong> supported sentiment. <strong>But one figure published yesterday explains this market's ceiling</strong>: above 7,000 on KOSPI sits <strong>a hundred trillion won and more</strong> of retail buying done at higher levels. Every rally meets people trying to get back to cost &mdash; and KOSDAQ's lone <strong>&minus;1.56%</strong> yesterday reads from the same place. <strong>What this morning brings is a different kind of weight</strong>: crude jumped sharply in New York overnight, volatility spiked, and <strong>semiconductors fell far more than the index.</strong></span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>천장은 심리가 아니라 물량입니다</span><span data-lang-en>The ceiling is inventory, not sentiment</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 1일(화) 마감 &middot; 환율은 오늘 아침 9월 2일 &middot; 시세 파일 09-02 07:41 수집 &middot; 작성 2026-09-02(수) 08:01 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: closes of Tuesday 1 September; FX as of this morning; data collected 09-02 07:41; compiled 08:01 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1346,8 +1365,9 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 </div><!-- /shell -->
 
 <footer class="foot">
-  <p><span data-lang-ko>미래에셋증권 마포WM · 송재섭 · 2026년 9월 2일(수) 08:01 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Jaeseop Song · Compiled 08:01 KST, Wednesday 2 September 2026.</span></p>
+  <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 2일(수) 08:01 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 08:01 KST, Wednesday 2 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

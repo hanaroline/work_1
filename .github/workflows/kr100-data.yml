@@ -34,7 +34,11 @@ concurrency:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # 야후가 느린 날을 견디게 넉넉히 둔다. 평소 100종목에 5~6분이면 끝나지만,
+    # 2026-09-13·14 두 판이 **종목당 30초**(평소 3.5초)로 늘어져 30분 제한에 걸려
+    # 통째로 취소됐다 — 59/100 에서 잘려 그날 수집이 아예 없었다. 제한을 늘려도
+    # 끝나는 즉시 잡이 끝나므로 평소 비용은 그대로다.
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
 
@@ -59,13 +63,13 @@ jobs:
         continue-on-error: true
         run: |
           if git fetch --quiet origin "+refs/heads/kr100-data:refs/remotes/origin/kr100-data" 2>/dev/null; then
-            for f in quotes.json ranking.json; do
-              git show "origin/kr100-data:data/kr100/$f" > "data/kr100/$f" || true
+            for f in quotes.json ranking.json list-change.json; do
+              git show "origin/kr100-data:data/kr100/$f" > "data/kr100/$f" 2>/dev/null || true
             done
           fi
           python - <<'PY'
           import json, os
-          for f in ('quotes.json', 'ranking.json'):
+          for f in ('quotes.json', 'ranking.json', 'list-change.json'):
               p = os.path.join('data/kr100', f)
               try:
                   d = json.load(open(p, encoding='utf-8'))

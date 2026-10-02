@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>환율 변환기 · 미래에셋증권 마포 WM</title>
+  <meta name="theme-color" content="#F58220">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <p class="eyebrow">미래에셋증권 마포 WM · 모바일 창구</p>
+      <h1>환율 변환기</h1>
+      <p>금액과 통화를 고르고 변환을 누르세요.</p>
+    </header>
+
+    <main class="section">
+      <div class="section-rule"></div>
+
+      <div class="field">
+        <label for="amount">금액</label>
+        <input type="number" id="amount" min="0" step="any" inputmode="decimal" placeholder="금액을 입력하세요">
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="from">From</label>
+          <select id="from">
+            <option value="USD" selected>USD</option>
+            <option value="EUR">EUR</option>
+            <option value="KRW">KRW</option>
+            <option value="JPY">JPY</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="to">To</label>
+          <select id="to">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="KRW" selected>KRW</option>
+            <option value="JPY">JPY</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="button" id="convert">변환</button>
+
+      <div id="result" class="result" aria-live="polite"></div>
+    </main>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

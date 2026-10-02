@@ -1,0 +1,115 @@
+name: 네 판 요약 화면
+
+# docs/boards/index.html — 국내 주식·미국 주식·국내상장 ETF·해외상장 ETF 의 성적을
+# 한 장으로 묶은 판. 성적표 둘(data/signals/backtest.json, data/etf/backtest.json)을
+# 읽어 표·그림·문장을 만든다.
+#
+# **날마다 돌지만 날마다 바뀌지는 않는다.**
+#
+# 이 화면이 읽는 성적표는 예약으로 돌리지 않는다 — 성적이 날마다 조용히 바뀌면
+# 어제 숫자를 보고 판단한 사람과 오늘 숫자를 보는 사람이 서로 다른 자료를 쓰게 되기
+# 때문이다(signals-backtest.yml 의 머리 주석). 그러니 성적표가 그대로인 날에는 이
+# 화면도 그대로여야 맞다.
+#
+# 그래서 두 가지를 해 두었다.
+#   · 생성기가 **시각 말고 달라진 것이 없으면 파일을 건드리지 않는다**(알맹이 지문 대조).
+#     날마다 40KB 를 새로 쌓지도 않고, 「갱신됨」이라는 거짓 신호도 남지 않는다.
+#   · 화면 머리말이 **「성적을 잰 때」와 「이 화면을 만든 때」를 갈라 적는다.**
+#     날마다 새 날짜가 붙는다고 숫자까지 새것인 줄로 읽히면 안 된다.
+#
+# 예약만 두지 않고 `workflow_run` 도 건다. 성적표를 손으로 다시 돌린 날에는 다음
+# 예약까지 기다리지 않고 바로 따라간다 — 화면이 하루라도 낡아 있을 자리를 없앤다.
+
+on:
+  schedule:
+    # 22:40 KST. 그날의 일봉·수급·신호가 모두 들어온 뒤다.
+    - cron: '40 13 * * 1-5'
+
+  # 성적표를 다시 잰 날에는 곧바로 따라간다
+  workflow_run:
+    workflows: ['매매 신호 백테스트']
+    types: [completed]
+    branches: [main]
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: boards-summary
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # 백테스트가 실패한 판을 따라가지 않는다 — 실패한 성적으로 화면을 만들면
+    # 그게 더 나쁘다. 예약·단추로 돌 때는 이 조건이 걸리지 않는다.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 요약 화면 만들기
+        id: build
+        run: |
+          python3 scripts/make_boards_html.py 2>&1 | tee /tmp/boards.txt
+          echo "line=$(tail -1 /tmp/boards.txt)" >> "$GITHUB_OUTPUT"
+
+      # **만든 판이 말이 되는지 본다.** 성적표가 비었거나 칸이 모자라면 화면은
+      # 멀쩡해 보이는 채로 아무것도 안 담고 나온다 — 그 판을 커밋하면 안 된다.
+      - name: 점검
+        run: |
+          python3 - <<'PY'
+          import os, re, sys
+          p = 'docs/boards/index.html'
+          if not os.path.exists(p):
+              sys.exit('::error::%s 가 만들어지지 않았습니다' % p)
+          s = open(p, encoding='utf-8').read()
+          bad = []
+          if len(s) < 20000:
+              bad.append('파일이 %d 바이트뿐입니다' % len(s))
+          if 'content-hash:' not in s:
+              bad.append('알맹이 지문이 없습니다')
+          rows = len(re.findall(r'class="hit"', s))
+          if rows < 24:          # 그림 둘 × 열여섯 줄이면 32. 넉넉히 잡아도 24 아래면 빈 판.
+              bad.append('그림에 줄이 %d 개뿐입니다' % rows)
+          for word in ('낙폭 절감', '95% 구간', '보정'):
+              if word not in s:
+                  bad.append('「%s」 칸이 없습니다' % word)
+          if bad:
+              sys.exit('::error::요약 화면이 말이 되지 않습니다 — ' + ' / '.join(bad))
+          print('점검 통과 — %d 바이트, 그림 줄 %d' % (len(s), rows))
+          PY
+
+      - name: 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/boards/index.html
+          if git diff --staged --quiet; then
+            echo '바뀐 것 없음 — 성적표가 그대로다'
+            exit 0
+          fi
+          git commit -m "네 판 요약 화면 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+          for i in 1 2 3 4 5; do
+            git push origin HEAD:main && exit 0
+            git pull --rebase --no-edit origin main || { git rebase --abort || true; exit 1; }
+            sleep $((i * 5))
+          done
+          echo '::error::밀어 넣지 못했습니다'; exit 1
+
+      - name: 요약
+        run: |
+          {
+            echo '## 네 판 요약 화면'
+            echo
+            echo '```'
+            cat /tmp/boards.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

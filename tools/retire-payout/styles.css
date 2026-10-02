@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ================================================================
+   미래에셋 디자인 토큰 + 인쇄(A4 단면 1장) 스타일
+   ================================================================ */
+:root {
+  --mas-orange: #F58220;
+  --mas-blue: #043B72;
+  --hair: #CDCECB;
+}
+
+html, body { height: auto; }
+
+body {
+  font-family: 'Spoqa Han Sans Neo', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  color: #1A1A1A;
+  background: #F7F8FA;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 숫자는 Inter 의 고정폭 숫자, 섞여 있는 한글은 Spoqa 로 떨어지게 한다 */
+.num {
+  font-variant-numeric: tabular-nums;
+  font-family: 'Inter', 'Spoqa Han Sans Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+}
+
+/* 시그니처 1px 오렌지 섹션 룰 */
+.rule { height: 1px; background: var(--mas-orange); }
+
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: #E5E4E1;
+  border-radius: 2px;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px; height: 18px;
+  background: var(--mas-orange);
+  border-radius: 2px;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .25);
+}
+input[type=range]::-moz-range-thumb {
+  width: 18px; height: 18px;
+  background: var(--mas-orange);
+  border-radius: 2px;
+  cursor: pointer;
+  border: 2px solid #fff;
+}
+
+.print-only { display: none; }
+
+/* ===== A4 단면 1장 강제 출력 ===== */
+@page { size: A4 portrait; margin: 8mm 9mm; }
+
+@media print {
+  html, body {
+    height: auto !important;
+    min-height: 0 !important;
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .screen-only { display: none !important; }
+  .print-only  { display: block !important; }
+
+  .sheet {
+    width: 100%;
+    min-height: 0 !important;
+    max-height: none;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    font-size: 7.2pt;
+    line-height: 1.32;
+    color: #1A1A1A;
+  }
+  /* 빈 페이지가 따라붙지 않도록 마지막 요소의 하단 여백 제거 */
+  .sheet > :last-child { margin-bottom: 0 !important; padding-bottom: 0 !important; }
+
+  .sheet table { width: 100%; border-collapse: collapse; page-break-inside: auto; }
+  .sheet thead { display: table-header-group; }
+  .sheet tr { page-break-inside: avoid; }
+  .sheet h1 { font-size: 13pt; }
+  .sheet h2 { font-size: 8.4pt; }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
