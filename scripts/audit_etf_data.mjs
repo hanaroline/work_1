@@ -24,6 +24,7 @@
  */
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { flowCeiling } from './etf_lib.mjs';
 
 const OUT_JSON = 'tools/discovery/etf_audit.json';
 const OUT_MD = 'tools/discovery/etf_audit.md';
@@ -337,15 +338,17 @@ for (const e of ETFS) {
   }
 
   // ── 7. 자금 유입 ────────────────────────────────────────────────────────
-  // 유입액은 누적이므로 순자산을 넘을 수 있다(들어왔다 나가면). 다만
-  // 순자산의 20배를 넘는 3개월 유입은 단위가 어긋난 것으로 본다.
+  // 유입액은 누적이므로 순자산을 넘을 수 있다(들어왔다 나가면). 한도는
+  // 기간마다 다르다 — 왜 그런지는 flowCeiling 의 주석에 적어 두었다.
   if (e.flow && Number.isFinite(aum) && aum > 0) {
     for (const [k, v] of Object.entries(e.flow)) {
       if (v == null) continue;
       if (!Number.isFinite(v)) { flag('error', '유입-비수치', e, `flow.${k}=${v}`); continue; }
-      if (Math.abs(v) > aum * 20) {
-        flag('error', '유입-과대', e, `flow.${k}=${v} 가 설정액 ${aum} 의 ${(Math.abs(v) / aum).toFixed(0)}배`,
-             { period: k, flow: v, aum });
+      const cap = flowCeiling(k);
+      if (Math.abs(v) > aum * cap) {
+        flag('error', '유입-과대', e,
+             `flow.${k}=${v} 가 설정액 ${aum} 의 ${(Math.abs(v) / aum).toFixed(0)}배 (${k} 한도 ${cap}배)`,
+             { period: k, flow: v, aum, cap });
       }
     }
     // 기간이 길수록 |누적| 이 항상 커지진 않지만, 1일 유입이 1년 유입보다
