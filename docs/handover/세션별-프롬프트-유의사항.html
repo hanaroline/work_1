@@ -24,7 +24,7 @@ table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--card
 <label class="it top"><input type="checkbox" id="c2"><div><b>2. 프롬프트 50건이 main 이 아닌 작업 가지의 파일을 씁니다.</b><p>대부분은 프롬프트 안에 가지 이름이 적혀 있습니다. 새 세션이 &quot;파일이 없다&quot;고 하면 거의 이 경우입니다 — 부록 A 의 가지를 먼저 받으라고 하십시오.</p>
 <pre><button class="cp" type="button">복사</button><span>이 일은 main 이 아니라 가지 &lt;가지 이름&gt; 에 있어. git fetch origin &lt;가지 이름&gt; 하고 그 가지에서 시작해줘. main 에 합치는 건 내 확인을 받은 다음에.</span></pre>
 </div></label>
-<label class="it top"><input type="checkbox" id="c3"><div><b>3. 저장소 hanaroline/work_1 은 공개(public) 저장소입니다.</b><p>2026-10-02 GitHub 에서 private=false 로 확인했습니다. 프롬프트·인계 문서에 적는 것은 누구나 읽을 수 있습니다. API 키·비밀번호·계좌번호·고객 이름·전화번호·회사 이메일은 프롬프트에 넣지 말고, 대화창에도 붙여 넣지 마십시오. 키는 GitHub 저장소 시크릿에만 둡니다.</p>
+<label class="it top"><input type="checkbox" id="c3"><div><b>3. 저장소 hanaroline/work_1 은 공개(public) 저장소입니다.</b><p>2026-10-02 GitHub 에서 private=false 로 확인했습니다. 프롬프트·인계 문서에 적는 것은 누구나 읽을 수 있습니다. API 키·비밀번호·계좌번호·고객 이름·전화번호·회사 이메일은 프롬프트에 넣지 말고, 대화창에도 붙여 넣지 마십시오. 키는 GitHub 저장소 시크릿에만 둡니다. 「은퇴자산 설계 제안서」는 고객 조건이 자료 자체에 들어 있어 2026-10-02 저장소에서 지웠습니다 — 그 일은 이 대화로 받은 은퇴자산제안서-백업-2026-10-02.zip 을 첨부해 이어 가십시오.</p>
 </div></label>
 <label class="it top"><input type="checkbox" id="c4"><div><b>4. 예약(Routine)은 프롬프트에서 만들지 말고 정본에서 만듭니다.</b><p>프롬프트 22건이 예약을 언급합니다. 예약의 정본은 docs/claude-handoff/routines.json(활성 12건)이고, 만드는 순서·창 배치는 docs/handover/계정이전-마무리.md 4절에 있습니다. 세션 프롬프트마다 예약을 만들게 두면 같은 일이 두 번 돕니다. 옛 계정의 예약이 아직 살아 있으면 먼저 끄십시오 — 옛 것과 새 것이 함께 돕니다.</p>
 <pre><button class="cp" type="button">복사</button><span>예약은 아직 만들지 마. 이 일에 해당하는 예약이 docs/claude-handoff/routines.json 에 있는지 먼저 찾아서, 지시문 원문과 cron(UTC)을 보여 줘. 내가 승인하면 그때 만들어.</span></pre>
@@ -91,7 +91,7 @@ table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--card
 <tr><td>Tetris game</td><td>claude/tetris-game-chiy3o</td></tr>
 <tr><td>자동 증시시황 수집 및 브리핑</td><td>claude/auto-market-briefing-necqk2</td></tr>
 <tr><td>+고객 상품 제안서 생성 도구</td><td>claude/customer-proposal-generator-f53dlm</td></tr>
-<tr><td>+은퇴자산 설계 제안서</td><td>claude/retirement-asset-proposal-m08jfr, claude/etf-holdings-lookup-tool-wwtz57, claude/fund-search-tool</td></tr>
+<tr><td>+은퇴자산 설계 제안서</td><td>claude/etf-holdings-lookup-tool-wwtz57, claude/fund-search-tool</td></tr>
 <tr><td>+(활용)ELS 상품 구조 설명 페이지</td><td>claude/els-product-structure-page-ljsucw</td></tr>
 <tr><td>+(활용)고객제안서 ETF 월배당 엑셀</td><td>claude/intelligent-maxwell-dnreiw</td></tr>
 <tr><td>+(차용)퇴직급여 수령 의사결정 시뮬레이터</td><td>claude/magical-bohr-6nz96j</td></tr>
@@ -183,7 +183,7 @@ table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--card
     붙여 넣을 말 ▶ 이 일은 main 이 아니라 가지 &lt;가지 이름&gt; 에 있어. git fetch origin &lt;가지 이름&gt; 하고 그 가지에서 시작해줘. main 에 합치는 건 내 확인을 받은 다음에.
 
 [ ] 3. 저장소 hanaroline/work_1 은 공개(public) 저장소입니다.
-    2026-10-02 GitHub 에서 private=false 로 확인했습니다. 프롬프트·인계 문서에 적는 것은 누구나 읽을 수 있습니다. API 키·비밀번호·계좌번호·고객 이름·전화번호·회사 이메일은 프롬프트에 넣지 말고, 대화창에도 붙여 넣지 마십시오. 키는 GitHub 저장소 시크릿에만 둡니다.
+    2026-10-02 GitHub 에서 private=false 로 확인했습니다. 프롬프트·인계 문서에 적는 것은 누구나 읽을 수 있습니다. API 키·비밀번호·계좌번호·고객 이름·전화번호·회사 이메일은 프롬프트에 넣지 말고, 대화창에도 붙여 넣지 마십시오. 키는 GitHub 저장소 시크릿에만 둡니다. 「은퇴자산 설계 제안서」는 고객 조건이 자료 자체에 들어 있어 2026-10-02 저장소에서 지웠습니다 — 그 일은 이 대화로 받은 은퇴자산제안서-백업-2026-10-02.zip 을 첨부해 이어 가십시오.
 
 [ ] 4. 예약(Routine)은 프롬프트에서 만들지 말고 정본에서 만듭니다.
     프롬프트 22건이 예약을 언급합니다. 예약의 정본은 docs/claude-handoff/routines.json(활성 12건)이고, 만드는 순서·창 배치는 docs/handover/계정이전-마무리.md 4절에 있습니다. 세션 프롬프트마다 예약을 만들게 두면 같은 일이 두 번 돕니다. 옛 계정의 예약이 아직 살아 있으면 먼저 끄십시오 — 옛 것과 새 것이 함께 돕니다.
@@ -286,7 +286,7 @@ table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--card
 - Tetris game  →  claude/tetris-game-chiy3o
 - 자동 증시시황 수집 및 브리핑  →  claude/auto-market-briefing-necqk2
 - +고객 상품 제안서 생성 도구  →  claude/customer-proposal-generator-f53dlm
-- +은퇴자산 설계 제안서  →  claude/retirement-asset-proposal-m08jfr, claude/etf-holdings-lookup-tool-wwtz57, claude/fund-search-tool
+- +은퇴자산 설계 제안서  →  claude/etf-holdings-lookup-tool-wwtz57, claude/fund-search-tool
 - +(활용)ELS 상품 구조 설명 페이지  →  claude/els-product-structure-page-ljsucw
 - +(활용)고객제안서 ETF 월배당 엑셀  →  claude/intelligent-maxwell-dnreiw
 - +(차용)퇴직급여 수령 의사결정 시뮬레이터  →  claude/magical-bohr-6nz96j
