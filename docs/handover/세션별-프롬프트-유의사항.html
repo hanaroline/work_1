@@ -18,10 +18,10 @@ table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--card
 <div class="sub">점검일 2026-10-02 · 대상 docs/handover/세션별-프롬프트.* (72건) · 체크한 것은 이 브라우저에만 기억됩니다</div>
 <div class="bar"><button id="dl">.txt 받기</button><button id="pr">인쇄 / PDF</button><button id="rs">체크 지우기</button><button id="th">밝게/어둡게</button></div>
 <h2>먼저 — 가장 중요한 다섯 가지</h2>
-<label class="it top"><input type="checkbox" id="c1"><div><b>1. 이 묶음은 아직 main 에 없습니다.</b><p>세션별 프롬프트 파일들은 가지 claude/focused-babbage-mv26jj 에만 있습니다. 새 계정 세션은 보통 main 에서 시작하므로, 옛 계정이 닫히기 전에 main 에 합치거나, 새 계정 첫 메시지에 아래 한 줄을 붙이십시오.</p>
-<pre><button class="cp" type="button">복사</button><span>먼저 git fetch origin claude/focused-babbage-mv26jj 하고, 그 가지의 docs/handover/세션별-프롬프트.md 를 읽어줘.</span></pre>
+<label class="it top"><input type="checkbox" id="c1"><div><b>1. 이 묶음은 main 에 있습니다 (2026-10-02 합침).</b><p>새 계정 세션이 main 에서 시작해도 docs/handover/세션별-프롬프트.md 와 이 유의사항을 바로 읽을 수 있습니다. 첫 메시지로 아래를 쓰면 됩니다.</p>
+<pre><button class="cp" type="button">복사</button><span>저장소 hanaroline/work_1 의 docs/handover/세션별-프롬프트-유의사항.txt 를 먼저 읽고, docs/handover/세션별-프롬프트.md 에서 「&lt;항목 제목&gt;」 을 찾아 그 프롬프트대로 이어서 해줘.</span></pre>
 </div></label>
-<label class="it top"><input type="checkbox" id="c2"><div><b>2. 프롬프트 51건이 main 이 아닌 작업 가지의 파일을 씁니다.</b><p>대부분은 프롬프트 안에 가지 이름이 적혀 있습니다. 새 세션이 &quot;파일이 없다&quot;고 하면 거의 이 경우입니다 — 부록 A 의 가지를 먼저 받으라고 하십시오.</p>
+<label class="it top"><input type="checkbox" id="c2"><div><b>2. 프롬프트 50건이 main 이 아닌 작업 가지의 파일을 씁니다.</b><p>대부분은 프롬프트 안에 가지 이름이 적혀 있습니다. 새 세션이 &quot;파일이 없다&quot;고 하면 거의 이 경우입니다 — 부록 A 의 가지를 먼저 받으라고 하십시오.</p>
 <pre><button class="cp" type="button">복사</button><span>이 일은 main 이 아니라 가지 &lt;가지 이름&gt; 에 있어. git fetch origin &lt;가지 이름&gt; 하고 그 가지에서 시작해줘. main 에 합치는 건 내 확인을 받은 다음에.</span></pre>
 </div></label>
 <label class="it top"><input type="checkbox" id="c3"><div><b>3. 저장소 hanaroline/work_1 은 공개(public) 저장소입니다.</b><p>2026-10-02 GitHub 에서 private=false 로 확인했습니다. 프롬프트·인계 문서에 적는 것은 누구나 읽을 수 있습니다. API 키·비밀번호·계좌번호·고객 이름·전화번호·회사 이메일은 프롬프트에 넣지 말고, 대화창에도 붙여 넣지 마십시오. 키는 GitHub 저장소 시크릿에만 둡니다.</p>
@@ -84,7 +84,7 @@ table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--card
 </div></label>
 <label class="it"><input type="checkbox" id="c28"><div><b>28. 프롬프트 내용을 고치고 싶다</b><p>docs/handover/session-prompts.json 의 그 항목을 고친 뒤 python3 scripts/build_session_prompts.py 를 돌립니다. md·html·txt 를 손으로 고치지 마십시오.</p>
 </div></label>
-<h2>부록 A. main 이 아닌 가지의 파일을 쓰는 항목 (51건)</h2><p class="sub">새 세션에서 "파일이 없다"고 하면 이 가지를 먼저 받게 하십시오. <span class="warn">※</span> 는 프롬프트에 그 가지 이름이 없는 항목입니다.</p>
+<h2>부록 A. main 이 아닌 가지의 파일을 쓰는 항목 (50건)</h2><p class="sub">새 세션에서 "파일이 없다"고 하면 이 가지를 먼저 받게 하십시오. <span class="warn">※</span> 는 프롬프트에 그 가지 이름이 없는 항목입니다.</p>
 <table><tr><th>항목</th><th>받아야 할 가지</th></tr>
 <tr><td>+(활용)ETF 편입종목 조회 도구</td><td>claude/etf-holdings-lookup-tool-wwtz57</td></tr>
 <tr><td>+Claude 제품 사용 시 유의사항</td><td>claude/adoring-cannon-ds28a0</td></tr>
@@ -136,7 +136,6 @@ table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--card
 <tr><td>새로운 프로젝트 추천</td><td>claude/new-project-recommendation-j3hplb</td></tr>
 <tr><td>부동산 세금 계산기</td><td>claude/real-estate-tax-calculator-8dyime</td></tr>
 <tr><td>한국 라디오 방송 사이트 계획</td><td>claude/zen-euler-umuf5o</td></tr>
-<tr><td>Claude 코드 세션 프롬프트 다운로드</td><td>claude/focused-babbage-mv26jj</td></tr>
 </table>
 <h2>부록 B. 가지가 GitHub 에 없는 항목 (3건)</h2><p class="sub">저장소에 남긴 것이 없는 일입니다. 프롬프트로 처음부터 다시 하십시오.</p><table><tr><th>항목</th><th>옛 가지</th></tr>
 <tr><td>SK하이닉스 증권사별 목표가</td><td>claude/brave-ramanujan-1364j9</td></tr>
@@ -175,11 +174,11 @@ table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--card
 
 ■ 먼저 — 가장 중요한 다섯 가지
 ------------------------------------------------------------------------------
-[ ] 1. 이 묶음은 아직 main 에 없습니다.
-    세션별 프롬프트 파일들은 가지 claude/focused-babbage-mv26jj 에만 있습니다. 새 계정 세션은 보통 main 에서 시작하므로, 옛 계정이 닫히기 전에 main 에 합치거나, 새 계정 첫 메시지에 아래 한 줄을 붙이십시오.
-    붙여 넣을 말 ▶ 먼저 git fetch origin claude/focused-babbage-mv26jj 하고, 그 가지의 docs/handover/세션별-프롬프트.md 를 읽어줘.
+[ ] 1. 이 묶음은 main 에 있습니다 (2026-10-02 합침).
+    새 계정 세션이 main 에서 시작해도 docs/handover/세션별-프롬프트.md 와 이 유의사항을 바로 읽을 수 있습니다. 첫 메시지로 아래를 쓰면 됩니다.
+    붙여 넣을 말 ▶ 저장소 hanaroline/work_1 의 docs/handover/세션별-프롬프트-유의사항.txt 를 먼저 읽고, docs/handover/세션별-프롬프트.md 에서 「&lt;항목 제목&gt;」 을 찾아 그 프롬프트대로 이어서 해줘.
 
-[ ] 2. 프롬프트 51건이 main 이 아닌 작업 가지의 파일을 씁니다.
+[ ] 2. 프롬프트 50건이 main 이 아닌 작업 가지의 파일을 씁니다.
     대부분은 프롬프트 안에 가지 이름이 적혀 있습니다. 새 세션이 &quot;파일이 없다&quot;고 하면 거의 이 경우입니다 — 부록 A 의 가지를 먼저 받으라고 하십시오.
     붙여 넣을 말 ▶ 이 일은 main 이 아니라 가지 &lt;가지 이름&gt; 에 있어. git fetch origin &lt;가지 이름&gt; 하고 그 가지에서 시작해줘. main 에 합치는 건 내 확인을 받은 다음에.
 
@@ -332,7 +331,6 @@ table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--card
 - 새로운 프로젝트 추천  →  claude/new-project-recommendation-j3hplb
 - 부동산 세금 계산기  →  claude/real-estate-tax-calculator-8dyime
 - 한국 라디오 방송 사이트 계획  →  claude/zen-euler-umuf5o
-- Claude 코드 세션 프롬프트 다운로드  →  claude/focused-babbage-mv26jj
 
 ■ 부록 B. 가지가 GitHub 에 없는 항목 (저장소에 남긴 것 없음)
 ------------------------------------------------------------------------------
