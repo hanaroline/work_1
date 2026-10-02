@@ -21,6 +21,7 @@
 | 계정 설정(커넥터·스킬) 복원 절차 | [docs/claude-handoff/ACCOUNT-SETUP.md](docs/claude-handoff/ACCOUNT-SETUP.md) |
 | 예약 프롬프트 원문 (활성 12건) | [docs/handover/예약-전체목록.md](docs/handover/예약-전체목록.md) · [docs/claude-handoff/ROUTINES.md](docs/claude-handoff/ROUTINES.md) · 기계 판독용 [routines.json](docs/claude-handoff/routines.json) |
 | 저장소 **밖에서** 볼 한 파일 사본 | [인계-보관본.txt](인계-보관본.txt) |
+| **상품설명의무 완전판매 스크립트** 갈래 | [docs/인수인계/01_작업-인수인계.md](docs/인수인계/01_작업-인수인계.md) · [02_예약-프롬프트-및-설정.txt](docs/인수인계/02_예약-프롬프트-및-설정.txt) |
 | 옛 계정 세션 72건 각각의 새 계정용 첫 프롬프트 | [docs/handover/세션별-프롬프트.md](docs/handover/세션별-프롬프트.md) (·`.html`·`.txt`, 원천 `session-prompts.json` → `python3 scripts/build_session_prompts.py`) |
 | 위 프롬프트를 새 계정에서 쓸 때 유의사항 (가지·예약·공개 저장소, 10/2 점검) | [docs/handover/세션별-프롬프트-유의사항.txt](docs/handover/세션별-프롬프트-유의사항.txt) (·`.html` 체크리스트) |
 
@@ -38,6 +39,20 @@
 예약 프롬프트와 설정은 **[docs/routine-prompts.md](docs/routine-prompts.md)**,
 작업 규칙 전체는 **[docs/briefing-playbook.md](docs/briefing-playbook.md)**(2,024줄)
 입니다. 브리핑 일을 맡았다면 playbook 을 **처음부터 끝까지** 읽고 시작하십시오.
+
+**상품설명의무 완전판매 스크립트** — 창구가 고객 앞에서 그대로 읽는 문장과 **교부문서
+쪽 번호**를 만듭니다. 맥락·결정사항·막힌 것은
+**[docs/인수인계/01_작업-인수인계.md](docs/인수인계/01_작업-인수인계.md)**,
+예약 프롬프트 원문은
+**[docs/인수인계/02_예약-프롬프트-및-설정.txt](docs/인수인계/02_예약-프롬프트-및-설정.txt)**
+에 있습니다(예약 전체 목록은 위 `docs/handover/` 쪽이 기준입니다).
+설치와 계정 이관은 **[docs/인수인계/00_설치와-계정이관-안내.md](docs/인수인계/00_설치와-계정이관-안내.md)**.
+
+이 갈래에서 반드시 지키는 것 — **틀린 값보다 빈칸이 낫습니다.** 빈칸은 직원을 설명서로
+보낼 뿐이지만, 틀린 값은 고객에게 그대로 읽히고 틀린 쪽 번호는 고객 앞에서 엉뚱한
+자리를 짚게 합니다. 판독 규칙을 고칠 때는 **원문부터 보고**(`scripts/probe_*.mjs`),
+전량에 미리 재 보고, **늘어난 것과 줄어든 것을 함께 셉니다**(「그대로 N · 새로 채움 N ·
+잃음 N」). 잃은 것이 하나라도 있으면 올리지 말고 그 사실부터 보고합니다.
 
 **ETF 편입종목 조회** — 맥락·규칙·겪은 사고는
 **[docs/handover/ETF-편입종목조회.md](docs/handover/ETF-편입종목조회.md)**,
