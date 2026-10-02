@@ -9,7 +9,7 @@
  * tools/discovery/etf_audit_verify.md 에 적힌 관측값 그대로다.
  */
 
-import { computeReturns, dropUnsettledBar, pendingBarOf, isStaleHistory } from './etf_lib.mjs';
+import { computeReturns, dropUnsettledBar, pendingBarOf, isStaleHistory, flowCeiling } from './etf_lib.mjs';
 
 let pass = 0, fail = 0;
 function check(name, cond, detail) {
@@ -255,6 +255,29 @@ console.log('\n10. 몇 해 전에 끝난 이력은 받지 않은 것으로 친�
   check('한도 너머 — 200일은 버린다', isStaleHistory('2026-03-13', now) === true);
   check('기준일이 없으면 판단하지 않는다', isStaleHistory(null, now) === false);
   check('날짜가 아니면 판단하지 않는다', isStaleHistory('어제', now) === false);
+}
+
+// 2026-10-01 수집이 여기서 막혔다. 맞는 값 하나가 오류로 잡히면 커밋
+// 단계가 통째로 건너뛰어 그날 자료 전체가 안 올라간다 — 틀린 숫자를
+// 막으려던 규칙이 자료를 막은 셈이다.
+console.log('\n11. 자금 유입 한도는 기간마다 다르다');
+{
+  // 실제로 걸렸던 값. RISE AI플랫폼(427120) — 2022년 상장 뒤 쪼그라들어
+  // 1년 누적 유출이 순자산의 21배가 됐다. 맞는 값이다.
+  const aum = 3_420_000_000, y1 = -72_400_000_000;
+  check('쪼그라든 펀드의 1년 유출 21배는 참으로 본다',
+        Math.abs(y1) <= aum * flowCeiling('y1'),
+        `${(Math.abs(y1) / aum).toFixed(0)}배 vs 한도 ${flowCeiling('y1')}배`);
+  // 짧은 기간은 원래 잣대를 지킨다. 석 달에 순자산의 20배가 드나들었다면
+  // 그쪽이 더 의심스럽다.
+  check('석 달 한도는 20배 그대로', flowCeiling('m3') === 20);
+  check('하루·일주일·한 달도 20배', ['d1', 'w1', 'm1'].every((k) => flowCeiling(k) === 20));
+  check('여섯 달·연초이후·1년은 100배', ['m6', 'ytd', 'y1'].every((k) => flowCeiling(k) === 100));
+  // 늦췄어도 이 규칙이 원래 잡으려던 것은 그대로 잡혀야 한다.
+  // 원/억원 혼동은 10^8 배라 100배 한도에 여섯 자릿수를 남기고 걸린다.
+  check('자릿수 사고(원↔억원)는 긴 기간에서도 걸린다',
+        Math.abs(aum * 1e8) > aum * flowCeiling('y1'));
+  check('모르는 기간 이름은 엄한 쪽으로 둔다', flowCeiling('q7') === 20);
 }
 
 console.log(`\n통과 ${pass} · 실패 ${fail}`);
