@@ -1,0 +1,207 @@
+name: ETF 편입종목 갱신 (부름)
+
+# 왜 이 파일만 main 에 있나
+# ──────────────────────────────────────────────────────────────────────
+# 깃허브는 **기본 가지(main)에 놓인 워크플로우만** schedule 로 부른다.
+# ETF 일은 claude/etf-holdings-lookup-tool-wwtz57 에서 하는데, 그 가지의
+# etf-daily.yml 에 적혀 있던 cron 두 줄은 그래서 **한 번도 돈 적이 없다** —
+# 실행 기록 31건이 전부 push 아니면 workflow_dispatch 였다. 그래서 사람이
+# 밀어 넣는 날만 자료가 갱신되고, 안 밀면 조용히 낡았다. 9월 13일 성공을
+# 끝으로 3주를 그대로 있었다.
+#
+# 그러면 수집 워크플로우를 통째로 main 에 옮기면 되지 않나 — 안 된다.
+# 그쪽 잡은 자료를 **자기가 돌고 있는 가지에 되민다.** main 에서 돌면
+# 25MB 짜리 ETF 자료 커밋이 하루 두 번 main 에 쌓인다. 그래서 etf-daily.yml
+# 머리에 "시각표를 여기에 되살리지 마십시오" 라고 적어 두었다.
+#
+# 남는 길이 이것이다 — **부르는 쪽만** 여기 둔다. 수집·빌드·감사의 내용은
+# 그대로 가지 쪽 etf-daily.yml 에 있다. 여기에 베껴 두면 두 벌이 되어
+# 언젠가 조용히 어긋난다. 이 프로젝트에서 제일 비싼 종류의 고장이다.
+# (같은 방식을 공모펀드 쪽에서 먼저 썼다. fund-weekly.yml 참고.)
+
+on:
+  schedule:
+    # ⚠ 한국장 중(09:00~15:30 KST)에는 절대 부르지 않는다.
+    #
+    # 장중에 받으면 아직 안 끝난 세션의 값이 섞이고, 감사의 자료-장중값섞임
+    # 이 오류를 내어 그날 자료가 통째로 안 올라간다. 2026-10-01 13:47 KST 에
+    # 손으로 부른 실행이 정확히 그렇게 막혔다 — 56종목이 당일 기준일을 달고
+    # 들어왔다.
+    #
+    # 16:34 KST = 07:34 UTC. 국내 마감(15:30) 뒤 한 시간. (KST 는 UTC+9 이고
+    # 서머타임이 없다.) 국내 종가가 확정된 뒤를 노린다.
+    - cron: '34 7 * * 1-5'
+    # 06:43 KST = 전날 21:43 UTC. 미국장이 05:00~06:00 KST 에 끝나므로
+    # 이쪽은 해외분을 받으러 간다. UTC 월~금은 KST 화~토가 된다 — 미국이
+    # 금요일에 거래한 것은 토요일 아침에 받아야 한다.
+    - cron: '43 21 * * 1-5'
+    #
+    # 분을 30·00 에서 비켜 둔 것은 일부러다. 깃허브의 schedule 은 정시에
+    # 딱 뜨지 않고 몇 분에서 길게는 십수 분까지 밀리는데, 다들 쓰는 분에
+    # 몰릴수록 더 밀린다. 어차피 "그 시각쯤" 이라는 뜻이므로 한산한 분을
+    # 고른다.
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: '수집을 돌릴 가지'
+        default: claude/etf-holdings-lookup-tool-wwtz57
+
+permissions:
+  # 다른 워크플로우를 부르는 데 필요하다. 자료는 불려 간 쪽이 자기 가지에
+  # 커밋하므로 여기서는 저장소를 읽기만 한다.
+  actions: write
+  contents: read
+
+concurrency:
+  group: etf-daily-call
+  cancel-in-progress: false
+
+jobs:
+  call:
+    runs-on: ubuntu-latest
+    # 수집은 보통 5~10분이다(1,355종목 × 최대 이력 + 브라우저 시험).
+    # 원천이 느려질 때를 보고 넉넉히 둔다.
+    timeout-minutes: 55
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      BRANCH: ${{ inputs.branch || 'claude/etf-holdings-lookup-tool-wwtz57' }}
+
+    steps:
+      - name: 대상 가지 확인
+        run: |
+          if ! gh api "repos/$REPO/branches/$BRANCH" --jq .name >/dev/null 2>&1; then
+            echo "::error::가지 $BRANCH 가 없습니다. 이름이 바뀌었는지 확인하십시오."
+            exit 1
+          fi
+          echo "대상 가지: $BRANCH"
+
+      - name: 수집 부르기
+        id: daily
+        run: |
+          # 부르기 **전**의 마지막 실행 번호를 적어 둔다. 이게 없으면 새로
+          # 생긴 실행과 어제 실행을 구별할 수 없고, 어제 것을 보며 "끝났다"
+          # 고 말하게 된다.
+          BEFORE=$(gh api "repos/$REPO/actions/workflows/etf-daily.yml/runs?branch=$BRANCH&per_page=1" \
+                     --jq '.workflow_runs[0].id // 0')
+          echo "직전 실행: $BEFORE"
+
+          # 부르기 전 시각. 아래에서 data/etf.js 가 **이번에** 바뀐 것인지
+          # 가르는 데 쓴다. 러너 시계가 조금 앞설 수 있으므로 1분 물려 둔다.
+          echo "since=$(date -u -d '1 minute ago' +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+
+          gh api -X POST "repos/$REPO/actions/workflows/etf-daily.yml/dispatches" -f ref="$BRANCH"
+
+          # 부름이 실제로 실행을 만들었는지 본다. 만들어지지 않았는데 넘어가면
+          # 이 잡은 초록인데 자료는 안 바뀌는, 제일 나쁜 모양이 된다.
+          ID=$BEFORE
+          for _ in $(seq 1 30); do
+            sleep 10
+            ID=$(gh api "repos/$REPO/actions/workflows/etf-daily.yml/runs?branch=$BRANCH&per_page=1" \
+                   --jq '.workflow_runs[0].id // 0')
+            if [ "$ID" != "$BEFORE" ]; then break; fi
+          done
+          if [ "$ID" = "$BEFORE" ]; then
+            echo "::error::수집 워크플로우가 시작되지 않았습니다 (5분 안에 새 실행이 생기지 않음)."
+            exit 1
+          fi
+          echo "id=$ID" >> "$GITHUB_OUTPUT"
+          echo "수집 실행: https://github.com/$REPO/actions/runs/$ID"
+
+      - name: 수집이 끝날 때까지 기다리기
+        id: wait
+        run: |
+          ID='${{ steps.daily.outputs.id }}'
+          STATUS=queued
+          CONCL=
+          # 60초 × 45 = 45분. 잡 자체의 상한(55분) 안에 든다.
+          # 60초로 두는 것은 GITHUB_TOKEN 의 시간당 호출 한도(저장소당 1,000회)를
+          # 이 기다림 하나가 갉아먹지 않게 하려는 것이다.
+          for _ in $(seq 1 45); do
+            sleep 60
+            STATUS=$(gh api "repos/$REPO/actions/runs/$ID" --jq .status)
+            CONCL=$(gh api "repos/$REPO/actions/runs/$ID" --jq '.conclusion // ""')
+            echo "$(date -u +%H:%M:%S) $STATUS $CONCL"
+            if [ "$STATUS" = completed ]; then break; fi
+          done
+          echo "status=$STATUS"     >> "$GITHUB_OUTPUT"
+          echo "conclusion=$CONCL"  >> "$GITHUB_OUTPUT"
+
+      # 불린 쪽이 초록이어도 커밋이 없을 수 있다(원천이 어제 것을 그대로
+      # 주면 "변경 없음" 으로 끝난다). 초록 불만 보고 "갱신됐다" 고 말하지
+      # 않으려고 자료가 실제로 움직였는지를 따로 본다.
+      #
+      # 가지의 **머리**를 보면 안 된다. 이 가지에는 증시 일정도 리포트도
+      # 커밋을 올려서, 머리는 대개 남의 것이다. 머리만 보고 적으면 요약에
+      # "리포트 수집 23:15 KST" 를 띄워 놓고 ETF 가 갱신된 양 말하게 된다.
+      # data/etf.js 를 건드린 마지막 커밋을 집어서, 그것이 이번 부름 **뒤**
+      # 것인지로 가른다.
+      - name: 자료가 실제로 올라왔는지 확인
+        id: landed
+        if: always() && steps.daily.outputs.id != ''
+        run: |
+          C=$(gh api "repos/$REPO/commits?sha=$BRANCH&path=data/etf.js&per_page=1")
+          SHA=$(echo "$C" | jq -r '.[0].sha // ""')
+          MSG=$(echo "$C" | jq -r '.[0].commit.message // "(없음)"' | head -1)
+          WHEN=$(echo "$C" | jq -r '.[0].commit.committer.date // ""')
+          echo "sha=${SHA:0:8}" >> "$GITHUB_OUTPUT"
+          echo "msg=$MSG"       >> "$GITHUB_OUTPUT"
+          echo "when=$WHEN"     >> "$GITHUB_OUTPUT"
+          echo "data/etf.js 마지막 커밋: ${SHA:0:8} ($WHEN) $MSG"
+
+          # 부르기 전에 찍어 둔 시각과 견준다. 그 전 것이면 이번 실행은
+          # 자료를 바꾸지 않은 것이다.
+          FRESH=no
+          if [ -n "$WHEN" ] && [ "$(date -d "$WHEN" +%s)" -ge "$(date -d '${{ steps.daily.outputs.since }}' +%s)" ]; then
+            FRESH=yes
+          fi
+          echo "fresh=$FRESH" >> "$GITHUB_OUTPUT"
+          if [ "$FRESH" = no ]; then
+            echo "::warning::이번 실행으로 data/etf.js 가 바뀌지 않았습니다 (마지막 갱신 $WHEN). 원천이 어제 것을 그대로 준 날일 수 있습니다."
+          fi
+
+      - name: 결과 요약
+        if: always()
+        run: |
+          {
+            echo "### ETF 편입종목 갱신"
+            echo ""
+            echo "- 대상 가지: \`$BRANCH\`"
+            D='${{ steps.daily.outputs.id }}'
+            if [ -n "$D" ]; then
+              echo "- 수집: [$D](https://github.com/$REPO/actions/runs/$D) — ${{ steps.wait.outputs.status }} ${{ steps.wait.outputs.conclusion }}"
+            else
+              echo "- 수집: **부르지 못했습니다**"
+            fi
+            if [ '${{ steps.landed.outputs.fresh }}' = yes ]; then
+              echo "- 자료: **갱신됨** — \`data/etf.js\` \`${{ steps.landed.outputs.sha }}\` (${{ steps.landed.outputs.when }})"
+            else
+              echo "- 자료: **안 바뀜** — \`data/etf.js\` 마지막 갱신은 ${{ steps.landed.outputs.when }} 입니다"
+            fi
+            echo "  - ${{ steps.landed.outputs.msg }}"
+            echo ""
+            echo "자료는 불려 간 쪽이 \`$BRANCH\` 에 커밋합니다. 이 잡은 부르기만 합니다."
+            echo "화면에 반영하려면 그 가지를 \`main\` 에 합치십시오."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # 수집이 제때 안 끝났거나 실패했으면 이 잡도 빨간불로 남긴다.
+      # 부름만 성공하고 자료는 안 바뀐 날이 조용히 지나가면 안 된다 —
+      # 그게 지난 3주 동안 실제로 일어난 일이다.
+      - name: 수집 결과 판정
+        if: always()
+        run: |
+          S='${{ steps.wait.outputs.status }}'
+          C='${{ steps.wait.outputs.conclusion }}'
+          if [ -z '${{ steps.daily.outputs.id }}' ]; then
+            echo "::error::수집을 부르지 못했습니다."
+            exit 1
+          fi
+          if [ "$S" != completed ]; then
+            echo "::error::수집이 45분 안에 끝나지 않았습니다 (상태: $S). 실행 기록을 확인하십시오."
+            exit 1
+          fi
+          if [ "$C" != success ]; then
+            echo "::error::수집이 $C 로 끝났습니다. data/etf.js 는 직전 자료를 유지합니다."
+            exit 1
+          fi
+          echo "수집 성공."
