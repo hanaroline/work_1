@@ -1,9 +1,9 @@
 {
- "builtAt": "2026-10-01 20:57 KST",
- "builtAtUtc": "2026-10-01T11:57:36Z",
+ "builtAt": "2026-10-02 22:56 KST",
+ "builtAtUtc": "2026-10-02T13:56:50Z",
  "window": {
-  "from": "2026-08-17",
-  "to": "2028-02-13"
+  "from": "2026-08-18",
+  "to": "2028-02-14"
  },
  "note": "증시 일정 캘린더. confirmed 는 official(공식 확인) · websearch(검색 교차 확인) · tentative(기관이 잠정으로 공표) · estimate(제공사 추정 구간) · rule(규칙으로 만든 날짜) 다. 확정이 아닌 것은 화면에서 배지로 구분한다.",
  "confirmed_legend": {
@@ -22,19 +22,19 @@
  },
  "counts": {
   "policy": 52,
-  "indicator": 169,
+  "indicator": 170,
   "earnings": 266,
   "conference": 9,
   "supply": 36,
   "holiday": 103,
   "other": 3,
-  "total": 638,
+  "total": 639,
   "confirmed": {
    "official": 394,
    "websearch": 22,
    "tentative": 0,
    "estimate": 0,
-   "rule": 222
+   "rule": 223
   }
  },
  "sources": {
@@ -78,10 +78,10 @@
  "context": {
   "policy_rate_us": {
    "effr_pct": 3.88,
-   "date": "2026-09-29",
-   "percentile_1": 3.86,
-   "percentile_99": 3.9,
-   "volume_bn_usd": 111,
+   "date": "2026-10-01",
+   "percentile_1": 3.85,
+   "percentile_99": 3.89,
+   "volume_bn_usd": 120,
    "note": "실효 연방기금금리. 하루 지연 공표라 시세일보다 하루 이르다",
    "source_url": "https://markets.newyorkfed.org/api/rates/unsecured/effr",
    "perf": {
@@ -92,32 +92,32 @@
     "y1": -21.0,
     "ytd": 24.0,
     "unit": "bp",
-    "from": "2025-02-27"
+    "from": "2025-03-03"
    },
    "series_days": 400
   },
   "fed_implied": {
-   "contract_price": 96.025,
-   "implied_rate_pct": 3.975,
-   "quote_date": "2026-10-01",
+   "contract_price": 96.07,
+   "implied_rate_pct": 3.93,
+   "quote_date": "2026-10-02",
    "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 — 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
    "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
    "effr_pct": 3.88,
-   "vs_effr_bp": 10,
+   "vs_effr_bp": 5,
    "perf": {
-    "w1": 23.1,
-    "m1": 27.0,
-    "m3": 34.7,
-    "m6": 33.7,
-    "y1": -10.6,
-    "ytd": 25.0,
+    "w1": 18.3,
+    "m1": 23.1,
+    "m3": 29.9,
+    "m6": 28.9,
+    "y1": -15.3,
+    "ytd": 21.2,
     "unit": "bp",
     "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
    }
   },
   "rates_kr": {
-   "call": 3.105,
-   "cd91": 3.22,
+   "call": 3.05,
+   "cd91": 3.21,
    "cofix_new": 3.18,
    "cofix_balance": 3.05,
    "cofix_new_balance": 2.71,
@@ -134,41 +134,41 @@
     "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(131148 bytes)",
     "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
    ],
-   "ktb1y": 3.744,
-   "ktb5y": 4.2,
-   "ktb10y": 4.436,
+   "ktb1y": 3.734,
+   "ktb5y": 4.129,
+   "ktb10y": 4.365,
    "perf": {
     "ktb1y": {
-     "w1": 7.7,
-     "m1": 26.9,
+     "w1": 6.7,
+     "m1": 25.9,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb5y": {
-     "w1": -2.0,
-     "m1": 3.3,
+     "w1": -9.1,
+     "m1": -3.8,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb10y": {
-     "w1": 4.4,
-     "m1": 1.8,
+     "w1": -2.7,
+     "m1": -5.3,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "cd91": {
-     "w1": 1.0,
-     "m1": 10.0,
+     "w1": 0.0,
+     "m1": 9.0,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "call": {
-     "w1": 3.1,
-     "m1": 5.5,
+     "w1": -2.4,
+     "m1": 0.0,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
@@ -189,7 +189,7 @@
     }
    }
   },
-  "asof_kst": "2026-10-01 20:37:12"
+  "asof_kst": "2026-10-02 22:41:58"
  },
  "holidays": [
   {
@@ -3077,7 +3077,7 @@
    "source_en": "Federal Reserve — FOMC meeting calendars",
    "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local",
    "meetings_per_year": 8,
-   "fetched_at": "2026-10-01"
+   "fetched_at": "2026-10-02"
   },
   {
    "key": "bok",
@@ -3150,7 +3150,7 @@
    "source_en": "Bank of England — Upcoming MPC dates",
    "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-10-01"
+   "fetched_at": "2026-10-02"
   },
   {
    "key": "pboc",
@@ -3554,31 +3554,6 @@
   }
  ],
  "events": [
-  {
-   "id": "indicator-cn-activity-2026-08-17",
-   "date": "2026-08-17",
-   "end_date": null,
-   "country": "cn",
-   "category": "indicator",
-   "importance": 1,
-   "title_ko": "중국 월간 실물지표 (산업생산·소매판매·고정자산투자)",
-   "title_en": "China monthly activity data",
-   "org": "중국 국가통계국 (NBS)",
-   "org_en": "National Bureau of Statistics of China",
-   "detail_ko": "통상 매월 중순(15일 전후) 10:00",
-   "detail_en": "Usually mid-month, around the 15th, 10:00",
-   "time_local": "10:00",
-   "tz": "Asia/Shanghai",
-   "time_kst": "2026-08-17 11:00",
-   "url": "https://www.stats.gov.cn/english/PressRelease/",
-   "source": "중국 국가통계국 (NBS)",
-   "source_en": "National Bureau of Statistics of China",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "cn-activity"
-   ]
-  },
   {
    "id": "indicator-us-retail-2026-08-18",
    "date": "2026-08-18",
@@ -6452,32 +6427,6 @@
    ]
   },
   {
-   "id": "earnings-LMT-2026-10-20",
-   "date": "2026-10-20",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "록히드마틴 실적발표",
-   "title_en": "Lockheed Martin earnings",
-   "org": "LMT",
-   "org_en": "LMT",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "http://phx.corporate-ir.net/phoenix.zhtml?c=83941&p=irol-IRHome",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "LMT"
-   ]
-  },
-  {
    "id": "earnings-ISRG-2026-10-20",
    "date": "2026-10-20",
    "end_date": null,
@@ -6946,6 +6895,32 @@
    ]
   },
   {
+   "id": "earnings-TXN-2026-10-21",
+   "date": "2026-10-21",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "텍사스 인스트루먼트 실적발표",
+   "title_en": "Texas Instruments earnings",
+   "org": "TXN",
+   "org_en": "TXN",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "http://investor.ti.com/",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "TXN"
+   ]
+  },
+  {
    "id": "earnings-PM-2026-10-21",
    "date": "2026-10-21",
    "end_date": null,
@@ -7127,29 +7102,29 @@
    ]
   },
   {
-   "id": "earnings-DLR-2026-10-22",
+   "id": "earnings-LMT-2026-10-22",
    "date": "2026-10-22",
    "end_date": null,
    "country": "us",
    "category": "earnings",
    "importance": 1,
-   "title_ko": "디지털리얼티 실적발표",
-   "title_en": "Digital Realty Trust earnings",
-   "org": "DLR",
-   "org_en": "DLR",
+   "title_ko": "록히드마틴 실적발표",
+   "title_en": "Lockheed Martin earnings",
+   "org": "LMT",
+   "org_en": "LMT",
    "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
    "detail_en": "No conference-call time in this source — see the company's IR notice",
    "time_local": null,
    "tz": "America/New_York",
    "time_kst": null,
-   "url": "http://investor.digitalrealty.com/corporateprofile.aspx?iid=4094311",
+   "url": "http://phx.corporate-ir.net/phoenix.zhtml?c=83941&p=irol-IRHome",
    "source": "US 스냅샷 (data/us100/latest.json)",
    "source_en": "US100 snapshot (data/us100/latest.json)",
    "confirmed": "official",
    "tags": [
     "earnings",
     "us",
-    "DLR"
+    "LMT"
    ]
   },
   {
@@ -7957,6 +7932,32 @@
    ]
   },
   {
+   "id": "earnings-HOOD-2026-10-27",
+   "date": "2026-10-27",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "로빈후드마켓 실적발표",
+   "title_en": "Robinhood Markets earnings",
+   "org": "HOOD",
+   "org_en": "HOOD",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/HOOD",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "HOOD"
+   ]
+  },
+  {
    "id": "earnings-RCL-2026-10-27",
    "date": "2026-10-27",
    "end_date": null,
@@ -8268,6 +8269,32 @@
    ]
   },
   {
+   "id": "earnings-JCI-2026-10-27",
+   "date": "2026-10-27",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "존슨콘트롤즈 실적발표",
+   "title_en": "Johnson Controls International earnings",
+   "org": "JCI",
+   "org_en": "JCI",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/JCI",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "JCI"
+   ]
+  },
+  {
    "id": "earnings-GLW-2026-10-27",
    "date": "2026-10-27",
    "end_date": null,
@@ -8317,32 +8344,6 @@
     "earnings",
     "us",
     "KO"
-   ]
-  },
-  {
-   "id": "earnings-TXN-2026-10-27",
-   "date": "2026-10-27",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "텍사스 인스트루먼트 실적발표",
-   "title_en": "Texas Instruments earnings",
-   "org": "TXN",
-   "org_en": "TXN",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "http://investor.ti.com/",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "TXN"
    ]
   },
   {
@@ -9462,6 +9463,32 @@
    ]
   },
   {
+   "id": "earnings-DLR-2026-10-29",
+   "date": "2026-10-29",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "디지털리얼티 실적발표",
+   "title_en": "Digital Realty Trust earnings",
+   "org": "DLR",
+   "org_en": "DLR",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "http://investor.digitalrealty.com/corporateprofile.aspx?iid=4094311",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "DLR"
+   ]
+  },
+  {
    "id": "earnings-RSG-2026-10-29",
    "date": "2026-10-29",
    "end_date": null,
@@ -9721,32 +9748,6 @@
    ]
   },
   {
-   "id": "earnings-ABBV-2026-10-29",
-   "date": "2026-10-29",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "애브비 실적발표",
-   "title_en": "AbbVie earnings",
-   "org": "ABBV",
-   "org_en": "ABBV",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/ABBV",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "ABBV"
-   ]
-  },
-  {
    "id": "earnings-AAPL-2026-10-29",
    "date": "2026-10-29",
    "end_date": null,
@@ -9926,6 +9927,32 @@
     "earnings",
     "us",
     "TT"
+   ]
+  },
+  {
+   "id": "earnings-HWM-2026-10-29",
+   "date": "2026-10-29",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "하우멧에어로스페이스 실적발표",
+   "title_en": "Howmet Aerospace earnings",
+   "org": "HWM",
+   "org_en": "HWM",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/HWM",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "HWM"
    ]
   },
   {
@@ -10210,6 +10237,32 @@
     "earnings",
     "us",
     "CVX"
+   ]
+  },
+  {
+   "id": "earnings-ABBV-2026-10-30",
+   "date": "2026-10-30",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "애브비 실적발표",
+   "title_en": "AbbVie earnings",
+   "org": "ABBV",
+   "org_en": "ABBV",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/ABBV",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "ABBV"
    ]
   },
   {
@@ -11038,32 +11091,6 @@
    ]
   },
   {
-   "id": "earnings-HOOD-2026-11-04",
-   "date": "2026-11-04",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "로빈후드마켓 실적발표",
-   "title_en": "Robinhood Markets earnings",
-   "org": "HOOD",
-   "org_en": "HOOD",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/HOOD",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "HOOD"
-   ]
-  },
-  {
    "id": "earnings-MCK-2026-11-04",
    "date": "2026-11-04",
    "end_date": null,
@@ -11139,32 +11166,6 @@
     "earnings",
     "us",
     "EMR"
-   ]
-  },
-  {
-   "id": "earnings-JCI-2026-11-04",
-   "date": "2026-11-04",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "존슨콘트롤즈 실적발표",
-   "title_en": "Johnson Controls International earnings",
-   "org": "JCI",
-   "org_en": "JCI",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/JCI",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "JCI"
    ]
   },
   {
@@ -11970,32 +11971,6 @@
     "earnings",
     "us",
     "PH"
-   ]
-  },
-  {
-   "id": "earnings-HWM-2026-11-05",
-   "date": "2026-11-05",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "하우멧에어로스페이스 실적발표",
-   "title_en": "Howmet Aerospace earnings",
-   "org": "HWM",
-   "org_en": "HWM",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/HWM",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "HWM"
    ]
   },
   {
@@ -17590,6 +17565,56 @@
    "tags": [
     "supply",
     "kr-agm-deadline"
+   ]
+  },
+  {
+   "id": "indicator-eu-hicp-2027-03-31",
+   "date": "2027-03-31",
+   "end_date": null,
+   "country": "eu",
+   "category": "indicator",
+   "importance": 2,
+   "title_ko": "유로존 소비자물가 (HICP 속보)",
+   "title_en": "Euro area HICP flash",
+   "org": "Eurostat",
+   "org_en": "Eurostat",
+   "detail_ko": "속보치는 통상 매월 말, 확정치는 다음 달 중순",
+   "detail_en": "Flash at month end, final in the middle of the following month",
+   "time_local": "11:00",
+   "tz": "Europe/Brussels",
+   "time_kst": "2027-03-31 18:00",
+   "url": "https://ec.europa.eu/eurostat/web/euro-indicators/release-calendar",
+   "source": "Eurostat",
+   "source_en": "Eurostat",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "eu-hicp"
+   ]
+  },
+  {
+   "id": "indicator-cn-pmi-2027-03-31",
+   "date": "2027-03-31",
+   "end_date": null,
+   "country": "cn",
+   "category": "indicator",
+   "importance": 2,
+   "title_ko": "중국 제조업·비제조업 PMI (국가통계국)",
+   "title_en": "China NBS PMI",
+   "org": "중국 국가통계국 (NBS)",
+   "org_en": "National Bureau of Statistics of China",
+   "detail_ko": "통상 매월 말일 09:30",
+   "detail_en": "Usually on the last day of the month, 09:30",
+   "time_local": "09:30",
+   "tz": "Asia/Shanghai",
+   "time_kst": "2027-03-31 10:30",
+   "url": "https://www.stats.gov.cn/english/PressRelease/",
+   "source": "중국 국가통계국 (NBS)",
+   "source_en": "National Bureau of Statistics of China",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "cn-pmi"
    ]
   },
   {
