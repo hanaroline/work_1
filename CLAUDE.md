@@ -1,7 +1,25 @@
 # work_1 — 완전판매 스크립트 자동완성
 
-이 브랜치(`claude/complete-sales-script-automation-cjsx8e`)는 미래에셋증권 지점 직원이
+이 브랜치(`claude/sales-script`)는 미래에셋증권 지점 직원이
 미스터리쇼핑에 대응할 때 쓰는 **완전판매 스크립트 자동완성기**를 만듭니다.
+
+## 시작하기 전에 가지부터 확인하십시오
+
+이 저장소는 일거리가 여럿이고, 세션 컨테이너가 **다른 이력을 체크아웃해 오는 일이 있습니다.**
+
+```bash
+git branch --show-current     # claude/sales-script 여야 합니다
+ls sales-script-standalone-v4.html
+```
+
+v4 파일이 안 보이면 가지가 틀린 것입니다:
+
+```bash
+git fetch origin claude/sales-script && git checkout claude/sales-script
+```
+
+> 옛 이름 `claude/complete-sales-script-automation-cjsx8e` 는 다른 작업과 섞여 쓰여
+> 2026-10-02 에 여기로 옮겼습니다. 그 이름으로는 작업하지 마십시오.
 
 ## 먼저 읽을 것
 
@@ -13,7 +31,7 @@
 
 ## 지켜야 할 규칙
 
-- 개발·커밋·푸시는 **`claude/complete-sales-script-automation-cjsx8e`** 브랜치에만.
+- 개발·커밋·푸시는 **`claude/sales-script`** 브랜치에만.
 - `git push -u origin <브랜치>`. **네트워크 오류일 때만** 2s·4s·8s·16s 로 4회 재시도.
   정책 거절(403 등)은 재시도하지 않습니다.
 - **PR 은 명시적으로 요청받았을 때만** 만듭니다.

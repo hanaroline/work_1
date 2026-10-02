@@ -12,12 +12,24 @@
 -------------------------------------------------------------------------------
 
   저장소   : hanaroline/work_1
-  브랜치   : claude/complete-sales-script-automation-cjsx8e
+  브랜치   : claude/sales-script
   원격     : https://github.com/hanaroline/work_1
-  기준 커밋: cf9ef11  «build(v4): 보수율 가드를 반영한 전량 재판독 결과로 다시 묶는다»
+  기준 커밋: 8491777  «docs: 인수인계 문서와 검증 도구를 저장소에 남긴다»
+
+  ※ 2026-10-02 에 전용 브랜치로 옮겼습니다.
+    옛 이름 : claude/complete-sales-script-automation-cjsx8e
+    그 이름은 다른 작업과 섞여 쓰이고 있었습니다 — 하루 사이에 force-update 가 두 번
+    있었고, 세션 컨테이너가 전혀 다른 이력을 체크아웃해 온 적도 있습니다.
+    그 이름으로는 더 작업하지 마십시오. 옛 가지는 지우지 않고 그대로 두었습니다.
 
   ※ 이 저장소에는 다른 작업의 브랜치도 많이 있습니다 (claude/asset-briefing-dashboard-…,
-    claude/els-product-structure-page-… 등). 이 작업은 위 브랜치 하나만 씁니다.
+    claude/els-product-structure-page-… 등). 이 작업은 claude/sales-script 하나만 씁니다.
+
+  ※ 세션이 열리면 가지부터 확인하십시오. 다른 이력이 잡혀 있을 수 있습니다:
+      git branch --show-current
+      git log --oneline -1
+    sales-script-standalone-v4.html 이 안 보이면 가지가 틀린 것입니다:
+      git fetch origin claude/sales-script && git checkout claude/sales-script
 
   ※ 세션 컨테이너는 shallow clone 으로 받습니다. 그래서 로컬에서 만든 커밋의 해시가
     원격의 것과 달라 보일 수 있습니다 — 내용(tree 해시)이 같으면 같은 것입니다.
