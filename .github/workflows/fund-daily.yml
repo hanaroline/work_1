@@ -1,0 +1,240 @@
+name: 공모펀드 수집 (매일)
+
+# 이 저장소의 세션은 이그레스 정책 때문에 네이버에 직접 못 붙는다
+# (CONNECT 403). 러너는 그 정책 밖이므로 여기서 대신 받아 저장소에 커밋한다.
+
+on:
+  workflow_dispatch:
+  # 여기에 schedule 을 적지 않는다 — 적어도 돌지 않기 때문이다.
+  #
+  # 깃허브는 **기본 가지(main)에 놓인 워크플로우만** schedule 로 부른다. 이
+  # 파일은 claude/fund-search-tool 에만 있으므로, 예전에 여기 적혀 있던
+  # `cron: '30 23 * * 0-4'` 는 **한 번도 돈 적이 없다.** 기록에 남은 실행
+  # 30건이 전부 push 아니면 workflow_dispatch 였다. 날마다 도는 것처럼
+  # 보였을 뿐, 실제로는 사람이 손으로 부른 것이었다. 돌지 않는 시각표를
+  # 남겨 두면 다음 사람이 또 속으므로 지운다.
+  #
+  # 부르는 쪽은 main 의 .github/workflows/fund-weekly.yml 이다.
+  #   월요일 10:00 KST (월요일 01:00 UTC) 에 이 워크플로우를 이 가지에 대고
+  #   부르고, 끝나면 fund-reverify.yml 을 부른다.
+  # 수집기·빌드·감사를 고쳤을 때 바로 검증되도록
+  push:
+    branches:
+      - 'claude/fund-**'
+    paths:
+      - 'scripts/collect_fund_kr.mjs'
+      - 'scripts/collect_fund_region.mjs'
+      - 'scripts/append_fund_history.mjs'
+      - 'scripts/build_fund_data.mjs'
+      - 'scripts/audit_fund_data.mjs'
+      - 'scripts/build_fund_page.mjs'
+      - 'scripts/build_fund_howto.mjs'
+      - 'scripts/test_fund_page.mjs'
+      - 'scripts/test_fund_lib.mjs'
+      - 'scripts/etf_lib.mjs'
+      - 'fund.html'
+      - '.github/workflows/fund-daily.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fund-daily-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          # 데이터 커밋을 쌓지 않고 덮어쓰기 때문에 직전 커밋(--amend 의 부모)이
+          # 있어야 한다. 기본값 1 은 HEAD 하나뿐이라 amend 뒤 밀어넣지 못한다.
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 수집 실패는 잡을 실패시키지 않는다. 수집기는 수집률이 기준에 못 미치면
+      # **파일을 건드리지 않고** 끝나므로, 실패해도 직전 수집분이 그대로 남는다.
+      # 반쪽짜리로 어제 데이터를 덮는 것이 제일 나쁘다.
+      #
+      # 호출은 목록 160 + 펀드당 5회 ≈ 16,000회다. 동시 6개로 15~20분 걸린다.
+      - name: 공모펀드 수집 (네이버 Npay 증권)
+        id: collect
+        continue-on-error: true
+        timeout-minutes: 45
+        run: node scripts/collect_fund_kr.mjs
+
+      # 투자지역은 **1차 출처(금융투자협회)** 에서 따로 받는다.
+      #
+      # 처음에는 네이버 유형명 앞머리에서 읽었는데 재검증에서 표본 318개 중
+      # 34개(10.7%)가 1차 출처와 어긋났다. 금투협은 지역을 국내·해외·혼합
+      # 셋으로 나누는데 네이버 유형명의 "혼합" 은 자산을 뜻하기 때문이다.
+      # 투자지역은 이 화면의 주축이므로 1차 출처를 쓴다.
+      #
+      # 실패하면 빌드가 지역을 비운다 — 네이버 값으로 되돌아가지 않는다.
+      # 10.7% 틀린다는 것을 알면서 쓰는 것은 아는 거짓을 싣는 것이다.
+      - name: 투자지역 수집 (금융투자협회)
+        id: region
+        continue-on-error: true
+        timeout-minutes: 30
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node scripts/collect_fund_region.mjs
+
+      # ── 설정원본 이력 적립 ──────────────────────────────────────────────
+      # 빌드 **앞**에 둔다. 빌드가 이 파일을 읽어 자금유입(3개월 순유입 등)을
+      # 내기 때문이다. 순서가 뒤바뀌면 오늘 열이 빠진 채로 계산된다.
+      #
+      # 왜 따로 쌓나 — 아래 커밋 단계가 자료 파일을 **덮어쓰기** 때문에 git
+      # 이력에서 어제 설정액을 꺼낼 수가 없다. 그래서 시계열은 스스로 쌓는다.
+      # 펀드당 숫자 하나뿐이라 하루 30KB 안팎이고 내용이 누적되므로 덮어쓰기와
+      # 부딪히지 않는다.
+      #
+      # 실패해도 잡을 세우지 않는다. 오늘 열이 없으면 그날 유입이 빈칸이 될
+      # 뿐이고, 빈칸은 틀린 숫자보다 낫다.
+      - name: 설정원본 이력 적립
+        continue-on-error: true
+        run: node scripts/append_fund_history.mjs
+
+      # 수집이 실패해도 기존 파일로 다시 만든다. 파일이 아예 없으면 예시
+      # 데이터로 만들고 화면에 "예시 데이터" 배지가 붙는다.
+      - name: 데이터 빌드
+        run: node scripts/build_fund_data.mjs
+
+      # 값을 만드는 함수들의 회귀 시험. 원자료 없이 몇 밀리초면 끝나고,
+      # 이번에 값을 치르고 알아낸 것(주말이 낀 계단, 아주 작은 비중, 계단을
+      # 먹은 값과 보정한 값의 구별)을 계속 지키는지 붙잡아 둔다.
+      - name: 수집기 회귀 시험
+        run: node scripts/test_fund_lib.mjs
+
+      # ── 관문 ────────────────────────────────────────────────────────────
+      # 화면에 실리는 모든 숫자를 전수 감사한다. **커밋 앞**에 둔다 — 오류가
+      # 있는 채로 커밋하면 다음 사람이 또 눈으로 찾아야 한다.
+      #
+      # 이걸 만든 이유: 원천이 단기채권 펀드의 1개월 수익률을 +244.94% 로 준다.
+      # 기준가 계열에 재산정 계단이 있고 네이버가 그것을 수익률로 계산한 값이다.
+      # 3,200개 중에서 이런 것을 눈으로 찾을 수는 없다.
+      #
+      # 감사는 바깥 자료에 붙지 않는다. data/fund.js 안에서 서로 어긋나는 것만
+      # 잡는다 — 안에서 앞뒤가 안 맞는 숫자는 바깥을 볼 것도 없이 틀린 것이다.
+      # 오류가 하나라도 있으면 종료 코드 1 로 끝나고, 여기서 잡이 멈춘다.
+      - name: 자료 전수 감사 (커밋 관문)
+        run: node scripts/audit_fund_data.mjs
+
+      # ── 사용법 PDF ──────────────────────────────────────────────────────
+      # 브라우저에는 PDF 를 짜는 기능이 없어서 화면이 그 자리에서 만들 수 없다.
+      # 그래서 여기서 미리 뽑아 base64 로 화면에 실어 둔다. **단일 파일 빌드
+      # 앞**에 둬야 오늘 자료로 만든 PDF 가 오늘 배포본에 들어간다.
+      #
+      # 이 단계는 실제 화면을 브라우저로 몰아 보면서 단계마다 그 화면을 찍는다.
+      # 그림이 붙은 사용법이라 글만 있는 것보다 훨씬 무겁지만(2MB 남짓),
+      # 처음 여는 사람에게 "어느 칸이 그 칸인가" 를 알려 주는 것은 글이 아니라
+      # 그림이다. 그림이 여덟 장 미만이거나 PDF 서명이 없으면 스스로 실패한다 —
+      # 반쯤 찍힌 사용법을 내보내느니 어제 것을 두는 편이 낫다.
+      #
+      # 실패해도 잡을 세우지 않는다 — 어제 PDF 가 남아 있고, 화면은 실린 PDF 가
+      # 오늘 자료와 다르면 스스로 단추를 감추고 왜 없는지를 적는다. 낡은 PDF 를
+      # 내주는 일은 없고, 자료 갱신은 PDF 하나 때문에 멈추지 않는다.
+      # 대신 아래 마지막 단계에서 빨간불로 남긴다.
+      - name: 사용법 PDF 빌드
+        id: helppdf
+        continue-on-error: true
+        timeout-minutes: 10
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node scripts/build_fund_howto.mjs
+
+      - name: 단일 파일 빌드
+        run: node scripts/build_fund_page.mjs
+
+      # 실제 데이터를 넣은 화면이 열리는지 브라우저로 확인한다.
+      # 여기서 걸리면 커밋하지 않는다 — 깨진 화면을 배포하지 않으려는 것이다.
+      - name: 페이지 연기 시험
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node scripts/test_fund_page.mjs
+          node scripts/test_fund_page.mjs --built
+
+      - name: 진단 자료 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fund-collect-debug
+          path: |
+            tools/discovery/fund_audit.md
+            tools/discovery/fund_audit.json
+            tools/discovery/fund_page.png
+            data/fund-kr.js
+          retention-days: 7
+
+      # 감사와 화면 시험을 모두 통과한 뒤에만 커밋한다.
+      - name: 커밋
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/fund-kr.js data/fund-region.js data/fund.js fund-search.html 2>/dev/null || true
+          # 사용법 PDF 는 화면 안에 실리는 자료다. 같이 덮어써야 배포본과
+          # 어긋나지 않는다.
+          git add data/fund-help-pdf.js tools/discovery/fund_help.pdf tools/discovery/fund_howto.html 2>/dev/null || true
+          # 화면 안에서 그림째 그리는 사용법 문서도 같은 빌드가 만든다. 여기에
+          # 빠져 있어서 날마다 배포본만 새로 나가고 저장소의 사용법 문서는 옛
+          # 자료로 남았다. 문서에 박힌 stamp 가 오늘 자료와 다르면 화면은 그림
+          # 없는 글 사용법으로 되돌아간다 — 조용히 낡는 종류의 어긋남이라
+          # 갱신본과 함께 덮어쓴다.
+          git add data/fund-help-doc.js 2>/dev/null || true
+          # 이력은 **누적** 파일이다. 덮어쓰기 커밋에 같이 실려도 최신 blob 하나에
+          # 전체 이력이 들어 있으므로 과거를 잃지 않는다.
+          git add data/fund-history.js 2>/dev/null || true
+          git add tools/discovery/fund_audit.md tools/discovery/fund_audit.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "변경 없음"
+            exit 0
+          fi
+
+          MSG="chore(fund): 공모펀드 데이터 갱신 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
+
+          # 데이터는 **최신본만 남긴다.**
+          #
+          # data/fund.js 24MB + data/fund-kr.js 25MB + fund-search.html 25MB 다.
+          # 날마다 새 커밋으로 쌓으면 내용이 거의 안 바뀌어도 blob 이 통째로 새로
+          # 생긴다(줄 단위 델타가 아니라 파일 단위다). 하루 70MB 씩 늘었고
+          # .git 이 이미 129MB 다.
+          #
+          # 그래서 직전 커밋이 데이터 갱신 커밋이면 그 위에 쌓지 않고 **덮어쓴다.**
+          # 어제 blob 은 도달 불가가 되어 원격 GC 때 회수된다.
+          #
+          # 사람이나 다른 잡이 그 사이에 코드를 올렸으면 끝 커밋이 데이터 커밋이
+          # 아니므로 덮어쓰지 않고 새로 쌓는다 — 남의 커밋을 삼키지 않는다.
+          # --force-with-lease 도 원격이 우리가 아는 상태일 때만 나간다.
+          if git log -1 --pretty=%s | grep -q '^chore(fund): 공모펀드 데이터 갱신'; then
+            echo "직전이 데이터 커밋이다 — 덮어쓴다"
+            git commit --amend -m "$MSG"
+            git push --force-with-lease
+          else
+            echo "직전이 데이터 커밋이 아니다 — 새로 쌓는다"
+            git commit -m "$MSG"
+            git push
+          fi
+
+      # 수집이 실패했으면 잡을 빨간불로 남긴다. 데이터는 지키되, 며칠씩
+      # 조용히 낡아 가는 것은 막아야 한다.
+      - name: 수집 실패 여부 확인
+        if: steps.collect.outcome == 'failure'
+        run: |
+          echo "펀드 수집이 실패했습니다. 원천이 바뀌었는지 확인이 필요합니다."
+          exit 1
+
+      # PDF 실패는 데이터를 막지 않되 조용히 넘어가지도 않는다. 며칠씩 단추가
+      # 감춰진 채로 두면 "원래 없는 기능" 으로 굳는다.
+      - name: 사용법 PDF 실패 여부 확인
+        if: steps.helppdf.outcome == 'failure'
+        run: |
+          echo "사용법 PDF 빌드가 실패했습니다. 화면의 PDF 내려받기 단추는 감춰집니다."
+          exit 1
