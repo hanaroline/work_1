@@ -162,6 +162,20 @@ jobs:
             data/etf-global.js
           retention-days: 7
 
+      # 되밀기는 한 번에 성공한다고 보지 않는다.
+      #
+      # 이 가지에는 ETF 수집기만 커밋하는 것이 아니다 — 증시 일정도, 리포트도
+      # 같은 가지에 올린다. 2026-10-02 23:10 KST 실행이 그래서 막혔다. 감사도
+      # 시험도 다 통과하고 커밋(22,934줄)까지 만들어 놓고, 그 사이 40초 전에
+      # 올라온 "증시 일정 수집 23:11 KST" 때문에 push 가 거절돼 그날 ETF
+      # 자료가 통째로 버려졌다. 예약으로 날마다 돌리면 이 다툼은 어쩌다가
+      # 아니라 **늘** 일어난다.
+      #
+      # 받아서 그 위로 옮겨 싣고 다시 민다. 우리 커밋은 방금 만든 것이라
+      # 남의 역사를 고쳐 쓰는 일이 아니다 — 남이 올린 것은 그대로 두고 우리
+      # 것만 그 위로 올라간다. 겹치는 파일이 없으므로(저쪽은 일정·리포트,
+      # 이쪽은 ETF) 보통은 그대로 얹힌다. 정말 겹쳐서 충돌하면 손대지 않고
+      # 빨간불로 남긴다 — 자동으로 고를 수 있는 종류가 아니다.
       - name: 커밋
         run: |
           git config user.name  "github-actions[bot]"
@@ -172,10 +186,29 @@ jobs:
                   docs/etf-howto.pdf docs/etf-howto.png 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "변경 없음"
-          else
-            git commit -m "chore(etf): 편입종목 데이터 갱신 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
-            git push
+            exit 0
           fi
+          git commit -m "chore(etf): 편입종목 데이터 갱신 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
+
+          BR='${{ github.ref_name }}'
+          for i in 1 2 3 4 5; do
+            git fetch origin "$BR"
+            # --autostash 는 수집 중에 생긴 추적 파일의 자잘한 변경(진단용
+            # 그림 따위)이 옮겨 싣기를 막지 않게 하려는 것이다.
+            if ! git rebase --autostash "origin/$BR"; then
+              git rebase --abort || true
+              echo "::error::그 사이 올라온 커밋과 같은 파일이 충돌합니다. 사람이 봐야 합니다."
+              exit 1
+            fi
+            if git push; then
+              echo "올렸습니다 (시도 $i)"
+              exit 0
+            fi
+            echo "되밀기가 막혔습니다 — 다시 받아서 올려 싣습니다 ($i/5)"
+            sleep $((i * 5))
+          done
+          echo "::error::다섯 번 시도했는데도 올리지 못했습니다. 이 가지에 커밋이 너무 자주 올라옵니다."
+          exit 1
 
       - name: 사용법 산출 결과 알림
         if: steps.howto.outcome == 'failure'
