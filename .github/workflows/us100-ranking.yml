@@ -20,6 +20,11 @@ on:
       - 'data/us100/RANK_REFRESH'
 
   workflow_dispatch:
+    inputs:
+      emit_top:
+        description: '줄 세운 상위 몇 종을 파일로 낼까 (0 이면 내지 않음)'
+        required: false
+        default: '0'
 
 permissions:
   contents: write
@@ -61,10 +66,26 @@ jobs:
         env:
           US100_RANK_ISSUE: '1'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/check_us100_ranking.py
+        run: |
+          python scripts/check_us100_ranking.py \
+            ${{ github.event.inputs.emit_top != '' && github.event.inputs.emit_top != '0'
+                && format('--emit-top {0}', github.event.inputs.emit_top) || '' }}
+
+      - name: 줄 세운 목록을 산출물로도 올린다
+        if: hashFiles('data/us100/ranking-top.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: us-ranking-top
+          path: data/us100/ranking-top.json
+          retention-days: 14
 
       - name: 데이터 브랜치에 올리기
+        # ranking-top.json 을 **함께 올린다.** 산출물(artifact)만으로는 모자랐다 —
+        # 내려받기가 Azure 블롭으로 넘어가는데 세션의 이그레스 정책이 그것을
+        # 막는다(CONNECT 403). 데이터 브랜치에 두면 `git show` 로 읽을 수 있다.
+        # 30KB 짜리이고 이 브랜치는 이력을 남기지 않으므로 값이 싸다.
         env:
           COMMIT_LABEL: 목록점검
-          PUBLISH_FILES: ranking.json
+          PUBLISH_FILES: ${{ hashFiles('data/us100/ranking-top.json') != ''
+                             && 'ranking.json ranking-top.json' || 'ranking.json' }}
         run: bash scripts/publish_us100_data.sh

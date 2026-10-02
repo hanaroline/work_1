@@ -1,0 +1,64 @@
+name: 매크로 엑셀 확인 (VBA 가 정말 도는가)
+
+# VBA 프로젝트를 손으로 지어 넣었다(scripts/vba_project.py). MS-OVBA 는 압축·
+# 암호화·dir 스트림 레코드가 얽혀 있어 **한 바이트만 틀려도 엑셀이 「복구할 수
+# 없습니다」를 띄운다.** 그런데 여태 검증이 「리브레오피스가 PDF 로 바꿔 준다」
+# 뿐이었다 — 시트가 멀쩡하다는 말이지 매크로가 돈다는 말이 아니다.
+#
+# 여기서 셋을 본다.
+#   ① 제3의 파서(olevba)가 읽고, 소스가 넣은 것과 한 글자까지 같은가
+#   ② 리브레오피스가 VBA 를 들여오는가 (모듈·프로시저 이름이 사는가)
+#   ③ 조회_실행 을 불렀을 때 실제로 칸이 바뀌는가
+#
+# **리브레오피스는 엑셀이 아니다.** Application.Goto·Select·MsgBox 대화상자·
+# 엑셀 자체의 매크로 보안 경고는 여기서 확인되지 않는다. 확인되는 것은
+# 「파일이 안 깨졌고, VBA 가 들여와지고, 로직이 돈다」까지다.
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/vba_project.py'
+      - 'scripts/build_proposal_xlsm.py'
+      - 'scripts/verify_xlsm_macro.py'
+      - '고객제안서_자산배분_매크로.xlsm'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xlsm-verify-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # python3-uno 는 리브레오피스가 딸려 오는 시스템 파이썬에 붙는다.
+      # 그래서 검증기는 setup-python 이 아니라 **시스템 파이썬**으로 돌린다.
+      - name: 리브레오피스와 파서 깔기
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libreoffice-calc python3-uno
+          python3 -m pip install --quiet --break-system-packages oletools openpyxl \
+            || python3 -m pip install --quiet oletools openpyxl
+
+      - name: 매크로 엑셀 다시 만들기
+        run: |
+          set -e
+          git fetch origin us100-data kr100-data claude/fund-search-tool --depth 1
+          python3 scripts/build_proposal_universe.py
+          python3 scripts/build_proposal_xlsx.py
+          python3 scripts/build_proposal_xlsm.py
+
+      - name: 확인
+        run: |
+          /usr/bin/python3 scripts/verify_xlsm_macro.py --strict \
+            | tee "$GITHUB_STEP_SUMMARY"

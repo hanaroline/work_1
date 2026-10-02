@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -739,6 +754,10 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
   <h1 class="hero-title"><span data-lang-ko>유가가 백 달러를 두드리는데 반도체만 올랐습니다</span><span data-lang-en>Crude knocked on 100; only chips went up</span></h1>
   <p class="hero-lede"><span data-lang-ko>노동절을 쉬고 다시 열린 뉴욕이 <strong>유가에 눌렸습니다.</strong> 후티 반군이 사우디 남부 에너지시설을 때리고 브렌트유가 장중 배럴당 99.46달러까지 올라 7월 24일 이후 최고를 찍자, 3대 지수가 이틀째 내렸고 <strong>S&amp;P500 안에서 내린 종목이 오른 종목의 2.4배</strong>였습니다. 그런데 <strong>그 장에서 반도체만 반대로 갔습니다</strong> &mdash; 인텔이 9.05%, AMD 가 5.90% 올랐고 SK하이닉스 ADR 이 4.83% 뛰었습니다. 오늘 국내 개장은 <strong>이 두 힘이 부딪히는 자리</strong>이고, 그 위에 <strong>내일 만기일과 모레 물가지표</strong>가 얹혀 있습니다.</span><span data-lang-en>New York, back from Labor Day, was <strong>pinned by crude.</strong> After Houthi forces struck an energy facility in southern Saudi Arabia and Brent reached $99.46 a barrel intraday &mdash; its highest since 24 July &mdash; the three main indices fell for a second day and <strong>decliners outnumbered advancers by 2.4 to one inside the S&amp;P 500</strong>. And yet <strong>semiconductors went the other way in that same session</strong>: Intel rose 9.05%, AMD 5.90%, and the SK Hynix ADR jumped 4.83%. Korea opens today <strong>where those two forces meet</strong>, with <strong>tomorrow's expiry and Friday's inflation print</strong> stacked on top.</span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>유가 대 반도체</span><span data-lang-en>Crude vs chips</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 8일(화) 마감 &middot; 환율은 오늘 아침 9월 9일 &middot; 시세 파일 09-09 07:40 수집 &middot; 작성 2026-09-09(수) 07:49 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: closes of Tuesday 8 September; FX as of this morning; data collected 09-09 07:40; compiled 07:49 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1383,8 +1402,9 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 </div><!-- /shell -->
 
 <footer class="foot">
-  <p><span data-lang-ko>미래에셋증권 마포WM · 송재섭 · 2026년 9월 9일(수) 07:49 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Jaeseop Song · Compiled 07:49 KST, Wednesday 9 September 2026.</span></p>
+  <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 9일(수) 07:49 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 07:49 KST, Wednesday 9 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

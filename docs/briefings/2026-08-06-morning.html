@@ -1,5 +1,14 @@
 <title>아침 브리핑 · 2026년 8월 6일 (목)</title>
 <style>
+/* 생성형 AI 고지 — 2026-09-30 소급. 이 판은 첫 판이라 변수·클래스 이름이 다르다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--subtle);border-left:3px solid var(--orange)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;color:var(--active)}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media print{ .ai-notice{margin:10px 0 0;padding:7px 10px;break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt} .ai-notice p{font-size:8pt;line-height:1.35} }
 :root{
   --orange:#F58220; --blue:#043B72; --soft:#FAB072; --active:#CB6015;
   --gray-hl:#D7D7D7; --clay:#C6613F;
@@ -204,6 +213,15 @@ tr.top td,tr.top th{border-left:3px solid var(--clay)}
   a{color:#000;border:0}
   .tw{overflow:visible}
 }
+
+/* 2026-10-01: 340px 넘침 수정. 「뉴스핌·한국경제·…·TheStreet」처럼 가운뎃점으로
+   이어 붙인 긴 묶음과 도메인 나열(consensus.hankyung.com, comp.fnguide.com …)은
+   줄바꿈할 자리가 없어 한 덩어리로 삐져나간다. 좁은 화면에서만 끊어 준다 —
+   넓은 화면의 줄바꿈은 건드리지 않는다. */
+@media (max-width:620px){
+  p, li, dd, dt, .small, .sub, .q, .a, .note, figcaption{
+    overflow-wrap:anywhere; word-break:break-word}
+}
 </style>
 <div class="page">
 
@@ -211,7 +229,7 @@ tr.top td,tr.top th{border-left:3px solid var(--clay)}
   <div class="mast-top">
     <div>
       <div class="brandline"><b>MIRAE ASSET</b> <span class="ko">마포WM · 아침 브리핑</span><span class="en">Mapo WM · Morning Brief</span></div>
-      <h1 class="title"><span class="ko">재섭님, 오늘의 시장입니다</span><span class="en">Jaeseop, here is today's market</span></h1>
+      <h1 class="title"><span class="ko">오늘의 시장입니다</span><span class="en">Here is today's market</span></h1>
       <p class="dateline"><span class="ko">2026년 8월 6일 (목) 07:00 KST · 기준: 8월 5일(수) 국내 마감 + 밤사이 미국 마감</span><span class="en">Thursday, 6 August 2026, 07:00 KST · Basis: Korea close Wed 5 Aug + overnight US close</span></p>
     </div>
     <div class="lang-toggle" role="radiogroup" aria-label="Language">
@@ -224,6 +242,10 @@ tr.top td,tr.top th{border-left:3px solid var(--clay)}
     <span class="en">KOSPI surged 3.76% to just below 6,600 as foreigners bought KRW 1.45tn. Overnight, however, AMD fell 7% in New York, cracking the AI rally, and Fed's Kashkari said "now is the time to start slowly moving rates up."</span>
   </div>
 </header>
+<div class="ai-notice">
+  <span class="lbl"><span class="ko">유의</span><span class="en">Notice</span></span>
+  <p><span class="ko">본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span class="en">This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
+</div>
 
 <div class="stats">
   <div class="stat">
@@ -819,7 +841,8 @@ tr.top td,tr.top th{border-left:3px solid var(--clay)}
 </section>
 
 <div class="foot">
-  <p><span class="ko">미래에셋증권 마포WM · 송재섭 · 2026년 8월 6일(목) 07:00 KST 작성. 본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 "미확인"으로 표기했습니다.</span><span class="en">Mirae Asset Securities, Mapo WM · Jaeseop Song · Compiled 07:00 KST, Thursday 6 August 2026. This is an internal reference compiled from public reporting and official releases; it does not recommend the purchase or sale of any security. Investment decisions and their consequences rest with the investor. Figures that could not be verified are marked "unverified."</span></p>
+  <p><span class="ko">미래에셋증권 마포WM · 2026년 8월 6일(목) 07:00 KST 작성. 본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 "미확인"으로 표기했습니다.</span><span class="en">Mirae Asset Securities, Mapo WM · Compiled 07:00 KST, Thursday 6 August 2026. This is an internal reference compiled from public reporting and official releases; it does not recommend the purchase or sale of any security. Investment decisions and their consequences rest with the investor. Figures that could not be verified are marked "unverified."</span></p>
+  <p><span class="ko">본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span class="en">This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 
 </div>

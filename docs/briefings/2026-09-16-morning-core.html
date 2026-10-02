@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -754,6 +769,10 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
   <h1 class="hero-title"><span data-lang-ko>반도체는 멈췄고, 금리가 바통을 넘겨받았습니다</span><span data-lang-en>Chips steadied; rates took the baton</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>이틀 전 지수를 누른 것은 AI 속도조절론이었고, 간밤에 누른 것은 금리와 유가였습니다.</strong> 반도체는 오히려 멈춰 섰습니다 &mdash; 필라델피아 반도체지수가 사흘 만에 올랐고 엔비디아&middot;AMD&middot;마이크론&middot;TSMC 가 모두 상승 마감했습니다. 그런데도 3대 지수는 이틀 연속 내렸습니다. <strong>미 국채 10년물이 장중 5.041% 로 2007년 이후 &mdash; 19년 만의 최고를 찍었고</strong>, 30년물도 같은 기록을 갈아치웠습니다. 방아쇠는 유가였습니다. 예멘 후티 반군이 사우디의 동서 송유관을 공격해 폐쇄되고 얀부 수출터미널의 선적까지 멈추면서 <strong>WTI 가 하루에 4% 넘게 뛰어 105달러대</strong>가 됐습니다. 유가 상승 &rarr; 물가 우려 &rarr; 금리 상승 &rarr; 주식 밸류에이션 압박이 하루 안에 한 줄로 이어졌습니다. <strong>그리고 오늘 밤 FOMC 결정이 나옵니다</strong> &mdash; 시장이 매기는 인상 확률은 95% 안팎이고, 논쟁은 이미 「올리느냐」에서 <strong>「얼마나 더 올리나」</strong>로 옮겨 갔습니다. 국내에서는 원화가 하루에 크게 밀렸습니다.</span><span data-lang-en><strong>Two nights ago the index was pressed by the AI slowdown argument; last night it was pressed by rates and oil.</strong> Semiconductors actually steadied &mdash; the Philadelphia index rose for the first time in three sessions, with Nvidia, AMD, Micron and TSMC all closing higher. The three major indices still fell for a second straight day. <strong>The US 10-year touched 5.041% intraday, its highest since 2007 &mdash; nineteen years</strong> &mdash; and the 30-year set the same kind of mark. Oil was the trigger: Houthi forces struck Saudi Arabia's east-west pipeline, closing it and halting loadings at the Yanbu export terminal, and <strong>WTI jumped over 4% in a day into the $105 range</strong>. Oil up, inflation worry, yields up, equity valuations squeezed &mdash; the chain ran end to end within one session. <strong>And the FOMC decision lands tonight</strong>, with markets pricing a hike at around 95% and the debate already moved from whether to hike to <strong>how much more</strong>. At home, the won fell sharply on the day.</span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>10년물 5%</span><span data-lang-en>The 10-year at 5%</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 15일(화) 마감 &middot; 환율은 오늘 아침 9월 16일 &middot; 시세 파일 09-16 07:40 수집 &middot; 작성 2026-09-16(수) 07:48 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: closes of Tuesday 15 September; FX as of this morning; data collected 09-16 07:40; compiled 07:48 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1492,8 +1511,9 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 </div><!-- /shell -->
 
 <footer class="foot">
-  <p><span data-lang-ko>미래에셋증권 마포WM · 송재섭 · 2026년 9월 16일(수) 07:48 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Jaeseop Song · Compiled 07:48 KST, Wednesday 16 September 2026.</span></p>
+  <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 16일(수) 07:48 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 07:48 KST, Wednesday 16 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

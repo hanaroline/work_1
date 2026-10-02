@@ -8,6 +8,10 @@ name: PR 점검
 #   기본   — 파이썬 대본이 컴파일되는가, 워크플로 YAML 과 자료 JSON 이 읽히는가
 #   변동성 — 이력·모델을 **실제로 다시 만들고 재검산을 돌려** 통과하는가,
 #            그 자료로 화면이 브라우저에서 깨지지 않는가
+#   매매타이밍 — 전략빌더 10종의 성적표·세팅을 다시 만들고 재검산을 돌려
+#            통과하는가, 그 자료로 화면이 브라우저에서 깨지지 않는가
+#   퇴직급여 — 단일 HTML 을 소스에서 다시 만들어 판정·세액 검사를 전부 돌리고,
+#            커밋된 한 장이 소스와 같은 바이트인가, 판단표와 화면 판정이 같은 답인가
 #
 # **자료 파일이 커밋된 것과 같은지는 보지 않는다.** 지수 일봉은 kr100-data 가지에
 # 있고 날마다 자라므로, 다시 만들면 커밋된 것과 당연히 달라진다. 그래서 「같은가」가
@@ -45,6 +49,49 @@ jobs:
           # 오타 하나로 예약 수집이 통째로 죽는 것을 여기서 막는다.
           python3 -m compileall -q scripts/ || exit 1
           echo "대본 $(ls scripts/*.py | wc -l) 개 컴파일 통과"
+
+      # **ETF 수집기의 망 없는 시험을 여기서도 돌린다.**
+      #
+      # 이 시험은 etf-signals.yml 안에서만 돌았다. 그런데 그것은 **지켜야 할 바로
+      # 그 워크플로**다 — 수집기를 고치다 안전장치를 깨뜨려도 누가 단추를 누를
+      # 때까지 아무도 모른다. 2026-09-20 에 8해치 이력이 3해치로 잘린 일이
+      # 그 시험(test_refuses_to_shrink)이 지키는 자리다.
+      - name: ETF 수집기를 망 없이 시험한다
+        run: python3 scripts/check_etf_signals.py
+
+      # 수집기 셋이 밀어 넣다 부딪혔을 때 어느 판을 남길지 가리는 셈이다.
+      # 여기가 틀리면 받아 온 한 벌이 조용히 사라진다.
+      - name: 새것 가리기가 맞는가
+        run: python3 scripts/keep_newer_snapshot.py --selftest
+
+      - name: 기업 비율이 서로 아귀가 맞는가 (망 없이)
+        # 야후가 ADR 종목에 주는 bookValue 는 현지 보통주 기준인데 price 는 ADR
+        # 기준이라, 둘을 나눈 PBR 이 통째로 틀린다 — ASML 이 1,499배로 찍혀
+        # 있었다. 같은 응답 안의 값끼리 대수로 맞대어(PBR = PER × ROE) 잡는다.
+        run: python3 scripts/fetch_us100.py --selftest
+
+      - name: 미국 긴 일봉 수집기를 망 없이 시험한다
+        # 해치를 물려받는가, 창이 미끄러진 것을 잘린 것으로 읽지 않는가,
+        # 정말 잘렸을 때 **쓰지 않고 멈추는가**. ETF 에서 이력을 한 번 잃고
+        # 세운 규칙이라 같은 잣대를 여기에도 건다.
+        run: python3 scripts/fetch_us_bars_long.py --selftest
+
+      - name: 종목 이름표를 빠짐없이 읽는가 (망 없이)
+        # 이름표가 빠져도 **아무 데서도 터지지 않는다** — 신호는 그대로 나오고
+        # 화면에만 티커가 한글명 대신 찍힌다. 영문명을 큰따옴표로 적은 네 줄
+        # (Lowe's·McDonald's·Moody's·O'Reilly)이 실제로 그렇게 빠져 있었다.
+        run: python3 scripts/build_signals.py --selftest
+
+      - name: 관심종목이 주간 교체기에 버티는가 (망 없이)
+        # 관심종목은 정의상 시총 100위 밖이라, 교체기가 보기에는 「밀린 종목」과
+        # 생김새가 똑같다. 보호막이 빠지면 넣은 다음 주에 **조용히** 사라진다 —
+        # 오류도 안 나고 100개라는 수도 맞으므로 어느 점검에도 걸리지 않는다.
+        run: python3 scripts/update_kr100_list.py --selftest
+
+      - name: 국내 목록의 앞뒤가 맞는가 (망 없이)
+        # COMPANIES · KEYWORDS · PROFILE_KO · 기본 비교 조합이 서로 가리키는 것이
+        # 같은지 본다. 종목을 손으로 더할 때 키워드·개요를 빠뜨리기 쉽다.
+        run: python3 scripts/update_kr100_list.py --check
 
       - name: 워크플로 YAML 이 읽히는가
         run: |
@@ -93,6 +140,73 @@ jobs:
           print(f'자료 {n} 개 가운데 {len(bad)} 개 어긋남 (진단물 {skipped} 개는 건너뜀)')
           sys.exit(1 if bad else 0)
           PY
+
+  retirement:
+    name: 퇴직급여 — 판정·세액 재검산과 A4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # 커밋된 한 장을 만든 환경과 같은 판으로 맞춘다 — 아래 '소스와 같은가'
+          # 검사가 바이트를 견주므로 판이 갈리면 애먼 데서 붉어진다.
+          node-version: '22'
+
+      # 이 저장소는 package.json 이 .gitignore 대상이라 빌드 의존성을 직접 건다.
+      # 판을 README 와 같게 못박는다 — 러너와 사람 기계가 다른 판을 쓰면 한쪽에서
+      # 통과한 것이 다른 쪽에서 깨진다. playwright 는 세션 시작 갈고리와 같은 판이다.
+      - name: 빌드·검사 의존성
+        run: |
+          npm install --no-save --no-audit --no-fund \
+            react@18.3.1 react-dom@18.3.1 @babel/standalone@7.25.6 \
+            tailwindcss@3.4.16 spoqa-han-sans@3.3.0 @fontsource/inter@5.3.0 \
+            playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: 단일 HTML 을 소스에서 다시 만든다
+        run: node scripts/build-retire-payout.js
+
+      # **커밋된 한 장이 소스와 어긋나면 지점에 내려가는 파일이 옛 판이다.**
+      # app.jsx 만 고치고 빌드를 잊은 PR, 그리고 산출물을 손으로 고친 PR 을
+      # 여기서 잡는다. 빌드는 고정된 판으로만 돌아가므로 같은 소스면 같은 바이트가 나온다.
+      - name: 커밋된 한 장이 소스와 같은가
+        run: |
+          if ! git diff --quiet -- retire-payout.html; then
+            echo "::error::retire-payout.html 이 소스와 어긋납니다 — 빌드해서 함께 커밋하세요"
+            git diff --stat -- retire-payout.html
+            exit 1
+          fi
+          echo "커밋된 한 장이 소스와 일치합니다"
+
+      # **판단표와 화면 판정이 어긋나면 한 파일 안에서 답이 둘이 된다.**
+      # 판단표 탭은 규칙표(rules.js)에서 전개한 자료를 보여 주고, 개별 판정은 app.jsx 가
+      # 따로 한다. 둘은 일부러 다른 구현으로 두었으므로(서로의 검산이 된다) 어긋날 수 있고,
+      # 어긋난 채로 배포되면 상담자가 같은 화면에서 서로 다른 답을 본다. 여기서 막는다.
+      - name: 판단표와 화면 판정이 같은 답을 내는가
+        run: node tools/pension-decision-matrix/crosscheck.js
+
+      # 퇴직소득세도 같은 구조다. 공제표·세율표를 조문에서 옮긴 rules.js 와 화면이 스스로
+      # 쓴 산식을 격자로 맞댄다. 표는 한 자리 틀려도 숫자가 그럴듯하게 나오고,
+      # 그대로 고객에게 간다.
+      - name: 퇴직소득세 산식이 규칙표와 같은 답을 내는가
+        run: node tools/retirement-tax/crosscheck.js
+
+      # 판정 로직·세액 산식·A4 한 장을 브라우저에서 실제로 돌려 본다.
+      # 이 검사들이 이 도구의 유일한 안전장치인데 지금까지 PR 에서 돌지 않았다 —
+      # 세법 산식을 잘못 고쳐도 사람이 눈으로 보는 것 말고는 걸러 주는 것이 없었다.
+      - name: 검사
+        run: |
+          set -o pipefail
+          node tools/retire-payout/tests/run.js 2>&1 | tee /tmp/rs.txt
+          code=$?
+          {
+            echo '### 퇴직급여 — 계좌 선택 · 인출 설계'
+            echo '```'
+            grep -E '^ (OK|FAIL)|^검사|✗' /tmp/rs.txt | head -40
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $code
 
   volatility:
     name: 변동성 — 모델 재검산과 화면
@@ -165,6 +279,13 @@ jobs:
           npm i -D playwright@1.56.1 --no-audit --no-fund
           npx playwright install --with-deps chromium
 
+      - name: 화면과 수집기가 같은 비율을 내는가
+        # 같은 규칙이 두 곳에 산다 — fetch_us100.reconcile_ratios(스냅숏을 만들 때)
+        # 와 us-top100.html 의 reconcileRatios(브라우저가 야후에 직접 붙을 때).
+        # 한 곳만 고치면 절반만 고친 것이고, 따로 두면 언젠가 갈라진다.
+        # 시험 자료를 한 곳에 두고 두 구현에 같은 것을 먹여 맞대어 본다.
+        run: node scripts/check_us100_ratios.mjs
+
       - name: 화면이 브라우저에서 깨지지 않는가
         # 재검산은 **수**가 맞는지를 본다. 자료가 다 맞아도 화면은 깨진다 —
         # 칸 이름을 바꾸면 화면이 undefined 를 찍고, 차트 라이브러리를 못 찾으면
@@ -199,4 +320,187 @@ jobs:
         with:
           name: 변동성-화면
           path: pr-check-volatility.png
+          if-no-files-found: ignore
+
+  kis-timing:
+    name: 매매 타이밍 — 전략 10종 재검산과 화면
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 커밋된 산출물이 스스로 아귀가 맞는가
+        # **--self-only 인 까닭.** 온전한 검산은 봉을 다시 읽어 맞대는데, 미국
+        # 주식 봉은 us100-data 가지에 있고 날마다 자란다. 커밋된 latest.json 은
+        # 어제 마지막 봉으로 셈한 것이라 가지가 하루 나아가면 「기준일이 마지막
+        # 봉과 다르다」가 뜬다 — 그건 흠이 아니라 자료가 자란 것이다. 여기서는
+        # 산출물 안에서 닫히는 것만 본다(손절가 산술, 칸 나눔, 멤버 선정).
+        # 온전한 검산은 아래에서 **새로 만든 자료**에 댄다.
+        run: |
+          if [ -f data/kis_timing/latest.json ] && [ -f data/kis_timing/backtest.json ]; then
+            python3 scripts/verify_kis_timing.py --self-only
+          else
+            echo "::notice::커밋된 매매 타이밍 자료가 없어 건너뜁니다"
+          fi
+
+      # 미국 주식 일봉은 기본 가지에 없다 — us100-data 가지에 있다.
+      # refspec 을 손으로 적는 까닭은 위 변동성 잡의 주석과 같다. actions/checkout
+      # 이 만드는 작업본은 원격 refspec 이 main 하나뿐이라 `git fetch origin
+      # us100-data` 만으로는 `origin/us100-data` 가 서지 않고, 수집 대본은
+      # `git show origin/us100-data:...` 로 읽으므로 거기서 죽는다.
+      - name: 미국 주식 일봉 가지 받기
+        run: |
+          for i in 1 2 3 4; do
+            if git fetch --depth 1 origin \
+                 '+refs/heads/us100-data:refs/remotes/origin/us100-data'; then
+              git rev-parse --verify origin/us100-data >/dev/null
+              echo "받음 (시도 $i)"; exit 0
+            fi
+            echo "실패 — 다시 시도한다 ($i/4)"; sleep $((i * i * 2))
+          done
+          echo "::error::us100-data 가지를 받지 못했습니다"
+          exit 1
+
+      - name: 성적표와 오늘의 세팅을 다시 만든다
+        # 커밋된 것과 같은지는 보지 않는다 — us100-data 는 날마다 자라므로 다시
+        # 만들면 당연히 달라진다. 여기서 보는 것은 **대본이 도는가** 와 **새로
+        # 만든 판이 스스로 아귀가 맞는가** 이다.
+        run: |
+          python3 scripts/kis_timing_backtest.py
+          python3 scripts/build_kis_timing.py
+
+      # 판정은 세팅 위에 실적·이벤트·수급·리포트·시황을 겹친 것이다.
+      # 국내 기업 자료가 kr100-data 가지에 있다 — refspec 을 손으로 적는 까닭은
+      # 위 us100-data 와 같다.
+      - name: 국내 기업 자료 가지 받기
+        run: |
+          for i in 1 2 3 4; do
+            if git fetch --depth 1 origin \
+                 '+refs/heads/kr100-data:refs/remotes/origin/kr100-data'; then
+              git rev-parse --verify origin/kr100-data >/dev/null
+              echo "받음 (시도 $i)"; exit 0
+            fi
+            echo "실패 — 다시 시도한다 ($i/4)"; sleep $((i * i * 2))
+          done
+          echo "::error::kr100-data 가지를 받지 못했습니다"
+          exit 1
+
+      - name: 종목 판정을 다시 만든다
+        run: python3 scripts/build_verdict.py
+
+      - name: 새로 만든 자료를 온전히 재검산한다
+        # 지표를 순진하게 다시 구현해 라이브러리와 맞대고, 화면에 오른 신호가
+        # 정말 그 조건인지 원 봉에서 다시 확인하고, 성적표 몇 칸을 다시 돌린다.
+        run: |
+          python3 scripts/verify_kis_timing.py | tee /tmp/verify-kis.txt
+          code=${PIPESTATUS[0]}
+          {
+            echo '### 전략빌더 10종 재검산'
+            echo '```'
+            cat /tmp/verify-kis.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $code
+
+      - name: 판정을 재검산한다
+        # 핵심은 **두 화면이 같은 말을 하는가**이다. 칸 나누는 규칙이 두 곳
+        # (build_kis_timing.plan · build_verdict.decide)에 적혀 있어 갈라질 수 있다.
+        run: |
+          python3 scripts/verify_verdict.py | tee /tmp/verify-verdict.txt
+          code=${PIPESTATUS[0]}
+          {
+            echo '### 종목 판정 재검산'
+            echo '```'
+            cat /tmp/verify-verdict.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $code
+
+      - name: 건네는 한 장을 짓는다
+        run: python3 scripts/build_kr_etf_report.py --all --out /tmp/kis-timing-report.html
+
+      - name: 건네는 한 장을 거꾸로 되짚는다
+        # 위의 두 재검산은 **자료**를 본다. 사람이 읽는 것은 자료가 아니라 이
+        # 한 장이다. 자료가 옳아도 화면이 그것을 옳게 옮겼다는 보장은 없다 —
+        # 미국주식 판이 달러 값을 「238원」으로 찍은 적이 있고 자료에는 흠이
+        # 없었다. 화면에 찍힌 글자에서 출발해 자료로 되짚는다.
+        run: |
+          python3 scripts/verify_report_page.py /tmp/kis-timing-report.html \
+            | tee /tmp/verify-page.txt
+          code=${PIPESTATUS[0]}
+          {
+            echo '### 건네는 한 장 되짚기'
+            echo '```'
+            cat /tmp/verify-page.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $code
+
+      - name: 브라우저 준비
+        # 세션 시작 갈고리(.claude/hooks/session-start.sh)가 박아 쓰는 판과 같게
+        # 맞춘다. 러너와 세션이 다른 판을 쓰면 한쪽에서 통과한 것이 다른 쪽에서 깨진다.
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: 한 파일 판 만들기
+        run: python3 scripts/make_kis_timing_offline.py --out /tmp/kis-timing-offline.html
+
+      - name: 화면이 브라우저에서 깨지지 않는가
+        # 재검산은 **수**가 맞는지를 본다. 자료가 다 맞아도 화면은 깨진다 —
+        # 자료의 칸 이름을 바꾸면 화면이 undefined 를 찍고, 그리는 함수 하나가
+        # 던지면 그 아래가 통째로 빈다. 그건 열어 봐야 드러난다.
+        #
+        # --offline 은 한 파일 판을 **바깥을 막은 브라우저**로 열어 본다.
+        # 「인터넷 없이 된다」는 말은 그렇게만 증명된다.
+        run: |
+          python3 -m http.server 8000 >/dev/null 2>&1 &
+          for i in $(seq 1 20); do
+            curl -sf -o /dev/null http://localhost:8000/docs/kis-timing/ && break
+            sleep 1
+          done
+          node scripts/check_kis_timing_page.mjs \
+            --base http://localhost:8000 \
+            --offline /tmp/kis-timing-offline.html
+          # 판정 화면도 같은 서버로 열어 본다. --offline 은 바깥으로 나가는
+          # 요청을 전부 끊고도 온전히 그려지는지를 증명한다.
+          node scripts/check_kis_verdict_page.mjs --offline
+
+      - name: 건네는 한 장을 화면으로 열어 본다
+        # **미리 보기 창 안에서도 연다.** 이 한 장은 메신저로 건네지는데, 그런
+        # 자리는 출처가 없는 문서(about:srcdoc)로 열리고 거기서는
+        # history.replaceState 가 SecurityError 를 던진다. file:// 로만 열어 보던
+        # 검사로는 한 번도 안 걸렸고, 받는 사람이 탭을 누를 때마다 붉은 줄이
+        # 쌓이는 것을 보고서야 알았다.
+        run: node scripts/check_report_page.mjs --file /tmp/kis-timing-report.html
+
+      - name: 건네는 한 장이 종이에서 어떻게 나뉘는가
+        # 인쇄를 「단추가 숨는가」로만 보다가 **첫 쪽이 통째로 빈 것**을 한참
+        # 지나쳤다. 탭마다 진짜로 PDF 를 떠서 쪽을 세고, 첫 쪽에 들어간 잉크를
+        # 나머지 쪽과 견준다. 눈으로 볼 수 없는 자리에서 쓸 수 있는 잣대다.
+        run: node scripts/check_report_print.mjs --file /tmp/kis-timing-report.html
+
+      - name: 어긋났을 때 화면을 남긴다
+        if: failure()
+        run: |
+          node -e "
+            const { chromium } = require('playwright');
+            (async () => {
+              const b = await chromium.launch();
+              const p = await b.newPage({ viewport: { width: 1240, height: 1400 } });
+              await p.goto('http://localhost:8000/docs/kis-timing/', { waitUntil: 'networkidle' });
+              await p.waitForTimeout(1500);
+              await p.screenshot({ path: 'pr-check-kis-timing.png', fullPage: true });
+              await b.close();
+            })();
+          " || true
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: 매매타이밍-화면
+          path: pr-check-kis-timing.png
           if-no-files-found: ignore

@@ -231,7 +231,49 @@ def companies_from_page():
         out.append({"sym": sym, "en": en1 or en2, "ko": ko, "sector": sector})
     if len(out) < 50:
         raise SystemExit("COMPANIES 파싱 결과가 %d개다 — 정규식을 확인해야 한다" % len(out))
+
+    # **적어 둔 줄 수와 읽어 낸 수가 같아야 한다.**
+    #
+    # 「50 개보다 적으면 멈춘다」만으로는 모자랐다. 목록을 100 → 200 으로 넓힐 때
+    # `Moody's`·`O'Reilly` 두 줄이 **말없이 빠졌다** — 위 정규식의 '([^']*)' 가
+    # 아포스트로피를 못 넘기기 때문이다. 198 종은 50 보다 크니 아무 표도 나지 않고,
+    # 두 종목은 수집·백테스트·화면 어디에도 없이 조용히 사라진다.
+    #
+    # 세는 쪽은 정규식이 아니라 **줄머리**다. 같은 정규식으로 세면 같이 틀린다.
+    # (영문명에 아포스트로피가 있으면 큰따옴표로 적으면 된다 — 위 패턴이 받는다.)
+    declared = len(re.findall(r"^\s*\[\s*['\"]", m.group(1), re.M))
+    if declared != len(out):
+        lost = declared - len(out)
+        raise SystemExit(
+            "COMPANIES 에 %d 줄이 적혀 있는데 %d 개만 읽혔다 — %d 줄이 조용히 빠졌다.\n"
+            "  영문명·한글명에 작은따옴표(')가 들어 있지 않은지 보십시오. "
+            "그런 줄은 영문명을 큰따옴표로 적습니다: ['MCO',\"Moody's\",'무디스','fin']"
+            % (declared, len(out), lost))
     return out
+
+
+def watchlist_from_page(page=None):
+    """화면 파일의 WATCHLIST — **시가총액 순위와 무관하게 자리를 지키는** 종목.
+
+    왜 이것이 따로 있나
+      우주는 「시총 상위 100」이라는 **규칙 하나로** 뽑은 것이다. 보고 싶은 종목을
+      한둘 끼워 넣으면 그 규칙이 깨지고, 「이 목록이 무엇인가」를 더는 한 줄로
+      말할 수 없게 된다. 그렇다고 우주 밖 종목을 못 보는 것도 아쉽다.
+
+      그래서 규칙을 바꾼다 — **「시총 상위 100」 + 「따로 지정한 관심종목」**.
+      두 묶음은 같은 COMPANIES 배열에 살아서 수집·백테스트·화면이 똑같이 읽되,
+      여기 적힌 것은 주 1회 도는 순위 교체(update_kr100_list.py)가 **건드리지
+      않는다.** 적어 두지 않으면 어떻게 되는지는 분명하다 — 관심종목은 시총
+      100위 밖이므로 교체기가 「밀린 종목」으로 보고 **가장 먼저 빼낸다.**
+
+    모양은 심볼 문자열의 평평한 배열이다. 배열이 없으면 빈 집합을 돌려준다
+      var WATCHLIST = ['036540.KQ'];
+    """
+    src = open(page or PAGE, encoding="utf-8").read()
+    m = re.search(r"var WATCHLIST = \[(.*?)\];", src, re.S)
+    if not m:
+        return set()
+    return set(re.findall(r"'([^']+)'", m.group(1)))
 
 
 # ---------------------------------------------------------------- 차트
@@ -410,6 +452,109 @@ def fetch_summary(sym):
     return res[0]
 
 
+# PBR·PSR 이 다른 값들과 아귀가 맞는지 재는 문턱. 이 배수 밖이면 버린다.
+# 성한 종목은 0.70~1.52 배 안에 들었고(89·97 종을 재 봤다) 어긋난 것은 6.9·46.1·31.3 배였다.
+# 그 사이가 훤히 비어 있어 3 배로 둔다.
+RATIO_TOL = 3.0
+
+# **이익이 0 에 가까우면 이 항등식은 뜻을 잃는다.** E/B·E/S 가 거의 0 이라
+# 분모가 조금만 흔들려도 배수가 수십 배로 튀고, 후행 PER 과 마진이 서로 다른
+# 기간의 것이면 그 차이가 그대로 증폭된다.
+#
+# 국내 100 종에 대 보고서야 알았다. 문턱만 두었을 때 삼성SDI(ROE 0.2%)와
+# 포스코퓨처엠(PER 1,175배)의 **멀쩡한 PBR 을 버렸다** — 1.75배·3.86배로
+# 아무 이상이 없는 값이다. 가르지 못하는 자리는 **버리지 말고 건너뛴다.**
+RATIO_MIN_BASE = 1.0        # ROE·순이익률 (%)
+RATIO_MAX_PER = 200.0
+
+# 매출은 **두 단계**를 거쳐 되셈하므로(EPS×주식수 → 순이익, ÷순이익률 → 매출)
+# 기간이 어긋날 여지가 두 배다. 그래서 PBR·PSR 보다 느슨하게 둔다.
+#
+# 실제로 두 우주를 재 보니, 성한 쪽에서 가장 멀리 나간 것이 알테오젠 3.9 배였다
+# (순이익률 75% — 일회성 기술료가 섞인 해라 되셈이 흔들린다). 진짜로 망가진
+# 것은 31.8 배·1,571 배로 그보다 한참 멀다. 그 사이에 둔다.
+REVENUE_TOL = 5.0
+
+
+def reconcile_ratios(q):
+    """PBR·PSR 을 **다른 칸으로 다시 셈해** 맞대어 보고, 어긋나면 버린다.
+
+    ■ 왜 필요한가 — ADR 은 단위가 섞여 들어온다
+
+    야후가 ADR 종목에 주는 `bookValue` 는 **현지 보통주 기준**인데 `price` 는
+    **ADR 기준**이라, 둘을 나눈 `priceToBook` 이 통째로 틀린다. 2026-09-29 에
+    TSMC 를 보다가 걸렸다.
+
+        TSM   PBR  92.2 배   (제대로 셈하면 13.4)
+        ASML  PBR 1499.0 배  (제대로 셈하면 32.5)
+        TSM   PSR   0.53 배  (제대로 셈하면 16.8)
+
+    화면에 「PBR 1,499배」가 찍히면 읽는 사람은 그 종목을 통째로 잘못 본다.
+    **모르는 것으로 두는 편이 틀린 것을 찍는 것보다 낫다.**
+
+    ■ 바깥 자료를 쓰지 않는다 — 대수로 푼다
+
+        PBR = P/B = (P/E) × (E/B) = PER × ROE
+        PSR = P/S = (P/E) × (E/S) = PER × 순이익률
+
+    같은 응답 안의 값끼리 맞대므로 ADR 비율을 알 필요가 없다. 단위가 어긋난
+    쪽만 튄다.
+
+    ROE·순이익률이 음수면 이 항등식이 뜻을 잃으므로(적자 기업) 건너뛴다 —
+    **가르지 못하는 것을 버리지는 않는다.**
+
+    돌려주는 것: 버린 칸을 적은 목록. q 는 그 자리에서 고친다.
+    """
+    dropped = []
+    for key, other, lbl in (('pbr', 'roe', 'ROE'), ('psr', 'netMargin', '순이익률')):
+        got, base, per = q.get(key), q.get(other), q.get('per')
+        if got is None or base is None or per is None:
+            continue
+        if per <= 0 or base <= 0 or got <= 0:
+            continue
+        # 잴 수 없는 자리는 건너뛴다 — 위 RATIO_MIN_BASE 주석 참고.
+        if base < RATIO_MIN_BASE or per > RATIO_MAX_PER:
+            continue
+        want = per * base / 100.0
+        if not want:
+            continue
+        ratio = got / want
+        if ratio > RATIO_TOL or ratio < 1.0 / RATIO_TOL:
+            # 어긋난 정도는 **늘 1 보다 큰 쪽으로** 적는다. 0.032 를 그대로
+            # 「0.0 배 어긋남」이라 쓰면 얼마나 벌어졌는지가 사라진다.
+            dropped.append('%s %s → 버림 (PER %s × %s %s%% = %.2f · %.1f 배 어긋남)'
+                           % (key, got, per, lbl, base, want,
+                              ratio if ratio > 1 else 1.0 / ratio))
+            q[key] = None
+
+    # ■ 매출도 통화가 섞여 들어온다
+    #
+    # ADR 은 bookValue 만 현지 기준인 게 아니었다. TSMC 의 totalRevenue 는
+    # **대만달러**로 오는데 cap·price 는 달러다 — 되셈한 값과 31.8 배 어긋나고,
+    # 그 31.8 이 곧 TWD/USD 환율이다. 국내에서도 두산밥캣의 매출이 63.4 억원으로
+    # 들어와 있었다(실제로는 조 단위). PSR = cap ÷ revenue 이므로 이 값이 틀리면
+    # PSR 도 함께 틀린다.
+    #
+    #     매출 = 순이익 ÷ 순이익률 = (EPS × 주식수) ÷ 순이익률
+    #
+    # 어느 쪽이 틀렸는지 여기서는 **가릴 수 있다.** 되셈은 EPS·주식수·순이익률
+    # 셋을 쓰고 그 셋은 서로 아귀가 맞는데 매출만 혼자 어긋나기 때문이다.
+    rev, eps, sh, nm = (q.get('revenue'), q.get('eps'),
+                        q.get('shares'), q.get('netMargin'))
+    if (rev and eps and sh and nm and rev > 0 and eps > 0 and sh > 0
+            and nm >= RATIO_MIN_BASE):
+        want = eps * sh / (nm / 100.0)
+        if want:
+            ratio = rev / want
+            if ratio > REVENUE_TOL or ratio < 1.0 / REVENUE_TOL:
+                dropped.append('revenue %.4g → 버림 '
+                               '(EPS %s × 주식수 %.4g ÷ 순이익률 %s%% = %.4g · %.1f 배 어긋남)'
+                               % (rev, eps, sh, nm, want,
+                                  ratio if ratio > 1 else 1.0 / ratio))
+                q['revenue'] = None
+    return dropped
+
+
 def shape_summary(m, meta):
     """quoteSummary 응답을 화면 모델과 같은 모양으로 접는다.
 
@@ -462,6 +607,10 @@ def shape_summary(m, meta):
     q["debtToEquity"] = num(fd.get("debtToEquity"), 2)
     q["cash"] = num(fd.get("totalCash"))
     q["fcf"] = num(fd.get("freeCashflow"))
+
+    # **단위가 섞여 들어온 비율을 여기서 버린다.** 뒤쪽(화면·판정)에서 걸러 내면
+    # 이미 파일에 들어간 뒤라, 그 파일을 읽는 다른 것들이 그대로 쓴다.
+    q["ratioNotes"] = reconcile_ratios(q) or None
 
     # 배당수익률: 응답이 비율(0.0044)인지 퍼센트(0.44)인지 섞여 있다.
     dy = num(sd.get("dividendYield"))
@@ -897,5 +1046,47 @@ def main():
         raise SystemExit("한 종목도 받지 못했다 — 원천이 전부 막혔거나 응답 형태가 바뀌었다")
 
 
+def selftest():
+    """망 없이 **비율 맞대기**만 시험한다.
+
+    시험 자료는 data/fixtures/ratio_cases.json 에 있고 **화면(us-top100.html)도
+    같은 파일을 읽는다.** 두 곳에 따로 두면 언젠가 갈라지고, 갈라진 뒤에는 어느
+    쪽이 맞는지 알 수 없다 — 화면은 브라우저에서 야후에 직접 붙으므로 여기서
+    막아도 그쪽은 그대로 틀릴 수 있다.
+
+    숫자는 지어내지 않았다. 2026-09-28 판 us100/kr100 latest.json 에서 그대로
+    옮겼다 — 어긋난 것들과, 같은 파일에서 **성한 쪽의 양 끝**을 함께 걸어
+    문턱이 멀쩡한 값을 버리지 않는지도 본다.
+    """
+    path = os.path.join(ROOT, 'data', 'fixtures', 'ratio_cases.json')
+    with open(path, encoding='utf-8') as f:
+        cases = [(c['name'], c['quote'], set(c['drop']))
+                 for c in json.load(f)['cases']]
+    fails = []
+    for nm, q, want in cases:
+        before = dict(q)
+        reconcile_ratios(q)
+        keys = ('pbr', 'psr', 'revenue')
+        got = {k for k in keys if before.get(k) is not None and q.get(k) is None}
+        if got != want:
+            fails.append('%s — 버린 칸 %s, 버려야 할 칸 %s' % (nm, sorted(got), sorted(want)))
+        # **버리지 않은 칸은 손대지 않아야 한다.** 값을 조용히 고치면 어디서
+        # 바뀐 것인지 나중에 아무도 못 찾는다.
+        for k in keys:
+            if k not in got and q.get(k) != before.get(k):
+                fails.append('%s — %s 를 버리지도 않고 값을 바꿨다' % (nm, k))
+
+    print('시험 %d 가지 (비율 맞대기)' % len(cases))
+    if fails:
+        print('\n실패 %d 가지' % len(fails))
+        for f in fails:
+            print('  !! ' + f)
+        return 1
+    print('실패 없음')
+    return 0
+
+
 if __name__ == "__main__":
+    if '--selftest' in sys.argv[1:]:
+        raise SystemExit(selftest())
     main()

@@ -1,6 +1,15 @@
 <title>2026년 9월 FOMC 회의 결과 | 미래에셋증권 마포WM</title>
 <style>
 *,*::before,*::after{box-sizing:border-box}
+/* 생성형 AI 고지 — 2026-09-30 소급. 이 자료는 국문 전용이다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:#F7F8FA;border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;color:var(--primary-active)}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:#3D3D3D}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media print{ .ai-notice{margin:10px 0 0;padding:7px 10px;break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt} .ai-notice p{font-size:8pt;line-height:1.35} }
 :root{
   --primary:#F58220; --primary-active:#CB6015; --secondary:#043B72;
   --soft:#FAB072; --hi:#D7D7D7;
@@ -94,6 +103,26 @@ li{margin:0 0 5px}
   table,blockquote,.grid3,.kpi{break-inside:avoid}
   h2,h3{break-after:avoid}
 }
+
+/* 2026-10-01: 340px 넘침 수정(249px). 원인 둘 —
+   ① .grid3 가 repeat(3, minmax(min(190px,100%),1fr)) 이라 좁은 화면에서도
+      190px 세 칸(=570px+)을 고집한다. 좁으면 한 줄에 하나로 내린다.
+   ② 표가 가로 스크롤 그릇 없이 놓여 있다. 브리핑 판의 .table-wrap 과 같은
+      방식으로 표 자체를 스크롤되게 해 문서 밖으로 밀지 않는다. */
+@media (max-width:620px){
+  .grid3{grid-template-columns:minmax(0,1fr)}
+  .sheet table{display:block;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  p, li, dd, dt, .kpi .s{overflow-wrap:anywhere; word-break:break-word}
+}
+
+/* 2026-10-01: 좁은 화면에서 절 제목이 글자 단위로 쪼개졌다. .sec 가 flex 한 줄이고
+   .tag 가 white-space:nowrap + margin-left:auto 라, 배지가 제 폭을 다 가져가고
+   남은 60px 에 제목이 끼어 들어가 있었다. 배지를 아랫줄로 내린다. */
+@media (max-width:620px){
+  .sec{flex-wrap:wrap}
+  .sec h2{flex:1 1 auto; overflow-wrap:normal; word-break:keep-all}
+  .sec .tag{flex:1 1 100%; margin-left:0; white-space:normal; margin-top:6px}
+}
 </style>
 
 <div class="page">
@@ -107,6 +136,10 @@ li{margin:0 0 5px}
     정리한 것입니다.</p>
   <p class="meta">결정 2026년 9월 16일(현지) · 한국시간 9월 17일(목) 새벽 &middot;
     작성 2026년 9월 17일(목) 08:03 KST &middot; 시세는 9월 16일 미국 정규장 마감 기준</p>
+</div>
+<div class="ai-notice">
+  <span class="lbl">유의</span>
+  <p>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</p>
 </div>
 
 <!-- ─────────────────────────── 1장 ─────────────────────────── -->
@@ -386,6 +419,7 @@ li{margin:0 0 5px}
       투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확정된 투자 판단이 아닙니다.</p>
     <p>작성 2026년 9월 17일(목) KST · 시세 출처: 야후 파이낸스·미 재무부(수집 시각 09-17 07:40 KST) ·
       발언과 전망 출처: 그날 수집된 국내 보도 원문</p>
+      <p>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</p>
   </div>
 </div>
 

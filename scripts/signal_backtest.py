@@ -26,12 +26,14 @@ import random
 import statistics as st
 import subprocess
 import sys
+from datetime import datetime, timedelta, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import signal_lib as S
 import vol_lib as V
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+KST = timezone(timedelta(hours=9))
 
 # ─────────────────────────────────────────────────────────────────────
 # 비용 — **가정이다. 바꿔 가며 재고 그 민감도를 함께 싣는다.**
@@ -42,7 +44,17 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # 시행 시점에 따라 다르므로 **여기 적힌 값을 사실로 읽지 말 것** — 성적을 이 값
 # 0 / 25 / 50bp 세 자리에서 모두 내어, 어느 자리에서 뒤집히는지를 보인다.
 COST_GRID_BPS = [0, 25, 50]
-DEFAULT_COST_BPS = {'KR': 25, 'US': 10}
+#
+# **ETF 는 주식과 같은 비용이 아니다.** 국내 주식에 붙는 증권거래세가 ETF 매도에는
+# 일반적으로 붙지 않는다고 알려져 있어 왕복 비용이 훨씬 가볍다. 다만 위에 적은 대로
+# **이 값들은 사실이 아니라 가정이다** — 증권사·시점·상품에 따라 다르고, 해외상장분은
+# 환전 스프레드까지 얹힌다. 그래서 어느 값이 맞는지 다투지 않고 0/25/50bp 세 자리에서
+# 모두 재어 **어느 자리에서 결론이 뒤집히는지**를 함께 싣는다.
+DEFAULT_COST_BPS = {'KR': 25, 'US': 10, 'ETF_KR': 10, 'ETF_OV': 15}
+
+# 사람이 읽는 시장 이름. 판정문이 이것을 쓴다.
+MARKET_KO = {'KR': '국내 주식', 'US': '미국 주식',
+             'ETF_KR': '국내상장 ETF', 'ETF_OV': '해외상장 ETF'}
 
 ENTRY_CUT = 70.0      # 신호 자기백분위가 이 위로 **올라선 날** 진입
 EXIT_CUT = 30.0       # 이 아래로 내려선 날 청산
@@ -76,15 +88,19 @@ def load_bars(branch, path):
 # 나머지 25 일은 전부 실제 공휴일이고 그 하루만 아니다. 세션이 빠지면 이동평균·
 # RSI·매물대처럼 **창을 쓰는 지표가 그 뒤로 전부 실제와 다른 날들을 본다.**
 #
-# **종가 갈림은 옮긴 까닭이 아니다.** 100 종목 19,400 봉에서 91.9% 가 같고, 갈리는
-# 쪽은 상대의 고저를 벗어난 종가가 네이버 629 / 야후 629 로 **정확히 동점**이라
-# 어느 쪽이 맞는지 가릴 수 없다. 다만 **하루 수익률이 15% 넘게 갈리는 종목일은
-# 2년에 4건뿐이고 전부 야후가 튄 것**이라, 두 계열의 수익률 구조는 거의 같다 —
-# 지표 대부분이 쓰는 것이 그 구조다.
+# **종가 갈림은 옮긴 까닭이 아니었다.** 91.9% 가 같고, 갈리는 쪽은 상대의 고저를
+# 벗어난 종가가 네이버 629 / 야후 629 로 **정확히 동점**이라 그때는 가릴 수 없었다.
 #
-# **아직 안 풀린 것** — 최근 5봉이 75.8% 로 갈린다(5~19일 전 봉은 99.3% 가 맞는다).
-# 어느 쪽이 잠정치인지 모른다. 그 불확실은 출처를 바꿔도 없어지지 않는다 — 다만
-# 이제 어느 쪽을 썼는지가 산출물에 적히므로, 판명되면 무엇을 다시 셈해야 하는지 안다.
+# **2026-09-18 에 가려졌다.** 한국투자증권 오픈API 원본으로 47,521 봉을 맞대 보니
+# 갈리는 봉의 **89.1% 에서 네이버가 맞았다.** 동점은 착시였다 — 서로를 기준으로
+# 재었기 때문이다. 증권사 고저를 기준으로 다시 재면 벗어난 종가는 네이버 61 건 대
+# 야후 1101 건으로 18 배 차이다. 옮긴 것이 옳았다. 판정문 data/prices_kis/verdict.txt.
+#
+# **「아직 안 풀린 것」도 그때 풀렸다.** 최근 5봉이 75.8% 로 갈리는 까닭은
+# **네이버가 확정 전 잠정치를 보여 주기 때문이다** — 최근 5봉에서는 야후가 79.8% 로
+# 맞고, 그 이전 봉에서는 네이버가 100% 맞는다. 봉이 나이를 먹으면 네이버 쪽이
+# 맞아 들어간다는 뜻이므로 출처를 되돌릴 까닭은 없다. 다만 **최근 5봉으로 나는
+# 신호는 그만큼 잠정**이고, 며칠 뒤 같은 날을 다시 셈하면 값이 달라질 수 있다.
 #
 # 미국은 네이버 원천이 없어 야후 그대로다. 두 시장은 따로 재므로 섞이지 않는다.
 PRICE_SOURCE_KR = os.environ.get('SIGNAL_KR_PRICES', 'naver')
@@ -141,6 +157,49 @@ def list_universe(branch, prefix):
     r = subprocess.run(['git', '-C', ROOT, 'ls-tree', '-r', '--name-only', branch],
                        capture_output=True, text=True)
     return [p for p in r.stdout.split() if p.startswith(prefix) and p.endswith('.json')]
+
+
+# ─────────────────────────────────────────────────────────────────────
+# ETF 우주 — 같은 엔진에 다른 종목을 먹인다
+# ─────────────────────────────────────────────────────────────────────
+#
+# **백테스트를 두 벌로 만들지 않는다.** 재는 코드가 두 벌이 되면 언젠가 한쪽만
+# 고쳐져, 주식 성적과 ETF 성적이 서로 다른 잣대로 잰 것이 된다. 이 대본이 하는
+# 일은 종목을 어디서 읽는가뿐이고 재는 자리는 아래 그대로다.
+#
+# **기준 지수(rs20)를 주지 않는다.** build_etf_signals.py 가 화면에 낼 때도 주지
+# 않는다 — 나스닥을 따라가는 ETF 를 코스피와 견준 상대강도는 그 ETF 의 추세가
+# 아니기 때문이다. 여기서 주면 **성적표가 화면과 다른 모델을 재게 된다.**
+
+ETF_PRICES = os.path.join(ROOT, 'data', 'etf', 'prices.json')
+ETF_MARKETS = {'KR': 'ETF_KR', 'OV': 'ETF_OV'}
+
+
+def load_etf_universe(path=None, limit=0):
+    """data/etf/prices.json → {시장: [(티커, 봉, None), …]}.
+
+    이력이 모자라 prepare() 가 못 받는 종목도 **여기서 거르지 않는다.** 거르면
+    몇 종목이 빠졌는지 보고서에 남지 않는다. prepare() 가 None 을 내고, 그 수를
+    세어 보고서에 적는다.
+    """
+    p = path or ETF_PRICES
+    if not os.path.exists(p):
+        raise SystemExit('%s 가 없습니다 — 먼저 scripts/fetch_etf_prices.py 를 돌리십시오' % p)
+    doc = json.load(open(p, encoding='utf-8'))
+    out = {}
+    for tk, rec in sorted(doc['items'].items()):
+        b = rec['bars']
+        bars = [{'d': b['d'][i], 'o': b['o'][i], 'h': b['h'][i], 'l': b['l'][i],
+                 'c': b['c'][i], 'v': b['v'][i] or 0} for i in range(len(b['d']))]
+        if not bars:
+            continue
+        out.setdefault(ETF_MARKETS[rec['scope']], []).append((tk, bars, None))
+    if limit:
+        out = {k: v[:limit] for k, v in out.items()}
+    cov = doc.get('coverage') or {}
+    span = {'from': cov.get('from'), 'to': cov.get('to'), 'days': cov.get('days'),
+            'years_requested': doc.get('years_requested')}
+    return out, doc.get('generated_at_kst'), doc.get('source'), span
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -232,8 +291,16 @@ def buy_hold(bars, self_pcts, cost_bps):
             'from': bars[a]['d'], 'to': bars[b]['d'], 'bars': b - a}
 
 
-def ma_cross(bars, ind, self_pcts, h, cost_bps):
-    """20일선 상향 돌파에 사고 하향 이탈에 파는 흔한 규칙. 견줄 자리."""
+def ma_cross(bars, ind, self_pcts, h, cost_bps, use_stop=False):
+    """20일선 상향 돌파에 사고 하향 이탈에 파는 흔한 규칙. 견줄 자리.
+
+    `use_stop` 을 켜면 **신호 쪽과 똑같은 ATR 손절**을 붙인다.
+
+    왜 두 벌로 재는가 — 신호 전략에는 손절이 있고 이 규칙에는 없다. 그대로 견주면
+    낙폭 차이가 **손절 때문인지 축 넷 때문인지 구별할 수 없다.** 손절을 붙인 판을
+    함께 내면 그 둘이 갈린다: 손절만 붙여도 같은 방어가 된다면 축과 적응가중치는
+    값을 못 하는 것이고, 그래도 신호 쪽이 낫다면 그 몫이 엔진의 몫이다.
+    """
     trades = []
     i = 1
     n = len(bars)
@@ -249,18 +316,27 @@ def ma_cross(bars, ind, self_pcts, h, cost_bps):
         if e >= n:
             break
         entry = bars[e]['o']
-        exit_i = None
+        a = ind['atr14'][i]
+        stop = (entry - S.STOP_ATR * a) if (use_stop and a) else None
+        exit_i, exit_px = None, None
         for j in range(e, min(n, e + maxhold + 1)):
+            # 손절을 먼저 본다 — 장중 저가가 손절가를 스치면 그날 나간다.
+            # 갭하락으로 손절가 아래에서 열리면 시가로 체결한다(신호 쪽과 같다).
+            if stop is not None and bars[j]['l'] <= stop:
+                exit_i, exit_px = j, min(stop, bars[j]['o'])
+                break
             if ind['ma20'][j] is not None and bars[j]['c'] < ind['ma20'][j]:
                 exit_i = min(n - 1, j + 1)
+                exit_px = bars[exit_i]['o']
                 break
         if exit_i is None:
             exit_i = min(n - 1, e + maxhold)
-        g = (bars[exit_i]['o'] / entry - 1) * 100
+            exit_px = bars[exit_i]['o']
+        g = (exit_px / entry - 1) * 100
         trades.append({'gross': g, 'net': g - cost_bps / 100.0, 'bars': exit_i - e,
                        'entry_i': e, 'exit_i': exit_i,
-                       'entry_px': entry, 'exit_px': bars[exit_i]['o']})
-        i = exit_i
+                       'entry_px': entry, 'exit_px': exit_px})
+        i = max(exit_i, e)
     return trades
 
 
@@ -436,11 +512,14 @@ def run_ticker(bars, prepared, h, cost_bps):
     sig, base = event_study(bars, sp, h)
     trades = simulate(bars, ind, rows, sp, h, cost_bps)
     mac = ma_cross(bars, ind, sp, h, cost_bps)
+    macs = ma_cross(bars, ind, sp, h, cost_bps, use_stop=True)
     rnd = random_entry(bars, sp, h, len(trades), cost_bps)
     eq = equity(trades, bars, sp, cost_bps)
     eq_ma = equity(mac, bars, sp, cost_bps)
+    eq_mas = equity(macs, bars, sp, cost_bps)
     return {'sig': sig, 'base': base, 'trades': trades,
-            'ma': mac, 'rand': rnd, 'eq': eq, 'eq_ma': eq_ma}
+            'ma': mac, 'ma_stop': macs, 'rand': rnd,
+            'eq': eq, 'eq_ma': eq_ma, 'eq_ma_stop': eq_mas}
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -477,6 +556,7 @@ def main(argv):
     markets = (argv[argv.index('--market') + 1].split(',')
                if '--market' in argv else ['KR', 'US'])
     out_path = argv[argv.index('--out') + 1] if '--out' in argv else None
+    etf = '--etf' in argv
 
     report = {'horizons': {}, 'cost_grid_bps': COST_GRID_BPS,
               'entry_cut': ENTRY_CUT, 'exit_cut': EXIT_CUT}
@@ -486,24 +566,38 @@ def main(argv):
 
     loaded = {}
     srcs = {}
-    for mk, branch, prefix in UNIVERSES:
-        if mk not in markets:
-            continue
-        paths = list_universe(branch, prefix)
-        if limit:
-            paths = paths[:limit]
-        bmap = bench_series(mk)
-        rows = []
-        used = {}
-        for p in paths:
-            b, src = bars_for(mk, branch, p)
-            if b:
-                used[src] = used.get(src, 0) + 1
-                rows.append((os.path.basename(p)[:-5], b, align_bench(b, bmap)))
-        loaded[mk] = rows
-        srcs[mk] = used
-        sys.stderr.write('%s 종목 %d 개 읽음 — 출처 %s\n'
-                         % (mk, len(rows), json.dumps(used, ensure_ascii=False)))
+    if etf:
+        # ETF 우주 — 종목을 어디서 읽는가만 다르고 재는 자리는 아래 그대로다
+        loaded, gen, src, span = load_etf_universe(limit=limit)
+        report['universe'] = 'etf'
+        report['etf_prices_generated_at_kst'] = gen
+        # **어느 길이의 이력으로 잰 성적인가.** engine_hash 가 「어느 모델인가」를,
+        # price_sources 가 「어느 출처인가」를 막듯 이것은 「얼마나 긴 이력인가」를
+        # 막는다. 3해치로 잰 성적을 8해치 신호 옆에 붙이면 모델도 출처도 같아서
+        # 기존 빗장 둘이 모두 통과한다 — 실제로 한 번 그렇게 됐다.
+        report['etf_prices_span'] = span
+        for mk, rows in loaded.items():
+            srcs[mk] = {('naver' if mk == 'ETF_KR' else 'yahoo'): len(rows)}
+            sys.stderr.write('%s 종목 %d 개 읽음\n' % (mk, len(rows)))
+    else:
+        for mk, branch, prefix in UNIVERSES:
+            if mk not in markets:
+                continue
+            paths = list_universe(branch, prefix)
+            if limit:
+                paths = paths[:limit]
+            bmap = bench_series(mk)
+            rows = []
+            used = {}
+            for p in paths:
+                b, src = bars_for(mk, branch, p)
+                if b:
+                    used[src] = used.get(src, 0) + 1
+                    rows.append((os.path.basename(p)[:-5], b, align_bench(b, bmap)))
+            loaded[mk] = rows
+            srcs[mk] = used
+            sys.stderr.write('%s 종목 %d 개 읽음 — 출처 %s\n'
+                             % (mk, len(rows), json.dumps(used, ensure_ascii=False)))
 
     # 지표·축은 시계와 무관하므로 flip 마다 한 번만 셈해 둔다. 이걸 안 하면
     # 시계 네 개에 같은 셈을 네 번 한다.
@@ -514,6 +608,26 @@ def main(argv):
                 prepped[(flip, mk, name)] = prepare(bars, bench, flip)
         sys.stderr.write('%s 준비 끝\n' % ('flip' if flip else 'noflip'))
 
+    # **몇 종목이 재어지지 못했는지 남긴다.** prepare() 는 이력이 210세션에 못 미치면
+    # None 을 낸다. 그 수를 적지 않으면 「76 종목으로 쟀다」로 읽히는데, 신설 ETF 가
+    # 많은 우주에서는 실제로 재어진 것이 그보다 한참 적다.
+    report['coverage'] = {}
+    for mk, rows in loaded.items():
+        kept = [(n, b) for n, b, _ in rows if prepped[(True, mk, n)]]
+        dropped = [n for n, b, _ in rows if not prepped[(True, mk, n)]]
+        days = sorted({d['d'] for _, b in kept for d in b[S.BURN_IN:]}) if kept else []
+        report['coverage'][mk] = {
+            'requested': len(rows), 'measured': len(kept), 'too_short': len(dropped),
+            'too_short_tickers': sorted(dropped),
+            'min_sessions_required': S.BURN_IN + 60,
+            'eval_days': len(days),
+            'eval_from': days[0] if days else None,
+            'eval_to': days[-1] if days else None,
+        }
+        sys.stderr.write('%s 재어짐 %d / %d (이력 모자람 %d) · 평가구간 %s~%s %d일\n'
+                         % (mk, len(kept), len(rows), len(dropped),
+                            days[0] if days else '-', days[-1] if days else '-', len(days)))
+
     for h in h_list:
         report['horizons'][h] = {}
         for flip in (True, False):
@@ -522,6 +636,7 @@ def main(argv):
             for mk, rows in loaded.items():
                 cost = DEFAULT_COST_BPS[mk]
                 sig, base, trades, ma, rnd, eqs, eqms = [], [], [], [], [], [], []
+                mas, eqmss = [], []
                 for name, bars, bench in rows:
                     r = run_ticker(bars, prepped[(flip, mk, name)], h, cost)
                     if not r:
@@ -532,6 +647,9 @@ def main(argv):
                         eqs.append(r['eq'])
                     if r['eq_ma']:
                         eqms.append(r['eq_ma'])
+                    mas += r['ma_stop']
+                    if r['eq_ma_stop']:
+                        eqmss.append(r['eq_ma_stop'])
                 m = {
                     'cost_bps': cost,
                     'event': {
@@ -567,6 +685,40 @@ def main(argv):
                         'per_day_beat_pct': round(sum(1 for e in eqs if (e['per_day_excess'] or 0) > 0) / len(eqs) * 100, 1) if eqs else None,
                         'ma_cross_excess_median_pct': round(st.median([e['excess_pct'] for e in eqms]), 2) if eqms else None,
                     },
+                    # **한 줄짜리 규칙이 같은 일을 해 주는가.**
+                    #
+                    # 이 판의 결론이 「수익은 못 늘리고 낙폭만 줄인다」로 좁혀지면,
+                    # 다음 물음은 하나뿐이다 — 20일선 교차만으로도 그 낙폭 방어가
+                    # 되는가. 된다면 축 넷과 적응가중치를 얹은 이 엔진은 값을 못
+                    # 하는 것이고, 그건 알아야 할 일이다.
+                    #
+                    # 그래서 위 equity 와 **같은 칸을 같은 함수로** 낸다. 수익만
+                    # 꺼내 견주면 정작 견줘야 할 자리를 빼고 견주게 된다.
+                    'ma_cross_stop_net': summarize(mas, 'net'),
+                    'equity_ma_cross': {
+                        'n': len(eqms),
+                        'strategy_median_pct': round(st.median([e['total_pct'] for e in eqms]), 2) if eqms else None,
+                        'excess_median_pct': round(st.median([e['excess_pct'] for e in eqms]), 2) if eqms else None,
+                        'beat_buyhold_pct': round(sum(1 for e in eqms if e['excess_pct'] > 0) / len(eqms) * 100, 1) if eqms else None,
+                        'in_market_median_pct': round(st.median([e['in_market_pct'] for e in eqms if e['in_market_pct'] is not None]), 1) if eqms else None,
+                        'mdd_median_pct': round(st.median([e['trade_mdd_pct'] for e in eqms]), 2) if eqms else None,
+                        'mdd_saved_median_pct': round(st.median([e['mdd_saved_pct'] for e in eqms]), 2) if eqms else None,
+                        'per_day_excess_median': round(st.median([e['per_day_excess'] for e in eqms if e['per_day_excess'] is not None]), 4) if eqms else None,
+                        'per_day_beat_pct': round(sum(1 for e in eqms if (e['per_day_excess'] or 0) > 0) / len(eqms) * 100, 1) if eqms else None,
+                    },
+                    # 같은 규칙에 **신호 쪽과 똑같은 ATR 손절**만 붙인 판.
+                    # 위와 견주면 낙폭 방어의 몫이 손절에서 오는지 가려진다.
+                    'equity_ma_cross_stop': {
+                        'n': len(eqmss),
+                        'strategy_median_pct': round(st.median([e['total_pct'] for e in eqmss]), 2) if eqmss else None,
+                        'excess_median_pct': round(st.median([e['excess_pct'] for e in eqmss]), 2) if eqmss else None,
+                        'beat_buyhold_pct': round(sum(1 for e in eqmss if e['excess_pct'] > 0) / len(eqmss) * 100, 1) if eqmss else None,
+                        'in_market_median_pct': round(st.median([e['in_market_pct'] for e in eqmss if e['in_market_pct'] is not None]), 1) if eqmss else None,
+                        'mdd_median_pct': round(st.median([e['trade_mdd_pct'] for e in eqmss]), 2) if eqmss else None,
+                        'mdd_saved_median_pct': round(st.median([e['mdd_saved_pct'] for e in eqmss]), 2) if eqmss else None,
+                        'per_day_excess_median': round(st.median([e['per_day_excess'] for e in eqmss if e['per_day_excess'] is not None]), 4) if eqmss else None,
+                        'per_day_beat_pct': round(sum(1 for e in eqmss if (e['per_day_excess'] or 0) > 0) / len(eqmss) * 100, 1) if eqmss else None,
+                    },
                     'cost_sensitivity': {},
                 }
                 for cb in COST_GRID_BPS:
@@ -582,6 +734,10 @@ def main(argv):
     # 이 성적이 어느 모델의 것인지 적어 둔다. build_signals.py 가 이것을 대조해
     # 「지금 모델과 다르다」를 산출물에 남긴다.
     report['price_sources'] = srcs
+    # **언제 잰 성적인가.** 이 칸이 없으면 화면이 「날마다 다시 만든 판」과 「날마다
+    # 다시 잰 성적」을 구별해 말할 수 없다 — 성적표는 손으로만 돌리는데 화면만
+    # 날마다 새 시각을 달면 읽는 사람은 숫자도 새것인 줄 안다.
+    report['measured_at_kst'] = datetime.now(KST).strftime('%Y-%m-%d %H:%M:%S')
     report['engine_hash'] = hashlib.sha256(
         open(os.path.join(ROOT, 'scripts', 'signal_lib.py'), 'rb').read()).hexdigest()[:16]
     add_verdict(report)
@@ -647,47 +803,67 @@ def add_verdict(report):
     pos = [t for t in tests if t['alone'] and t['diff'] > 0]
     neg = [t for t in tests if t['alone'] and t['diff'] < 0]
 
-    lines.append('시험한 조합 %d 가지(시계 4 × 부호전환 2 × 시장 2). '
-                 '여러 번 시험했으므로 Bonferroni 로 보정한 문턱은 p<%.4f 이다.' % (k, alpha))
+    # **시장 이름을 여기 박아 두지 않는다.** 예전에는 ('KR', 'US') 로 적혀 있었는데,
+    # 그러면 ETF 우주로 돌렸을 때 아래 일관성·낙폭 문단이 **조용히 빠진다.** 숫자는
+    # 멀쩡히 있는데 판정문만 비어 나오는 것이 가장 나쁘다 — 읽는 사람은 잴 것이 없어
+    # 안 적힌 줄 안다. 보고서에 실제로 있는 시장을 세어 쓴다.
+    mks = sorted({t['market'] for t in tests})
+    lines.append('시험한 조합 %d 가지(시계 %d × 부호전환 2 × 시장 %d — %s). '
+                 '여러 번 시험했으므로 Bonferroni 로 보정한 문턱은 p<%.4f 이다.'
+                 % (k, len(report.get('horizons') or {}) or 4, len(mks),
+                    ' · '.join(MARKET_KO.get(m, m) for m in mks), alpha))
     if survivors:
         lines.append('보정을 통과한 조합: ' +
                      ', '.join('%s h=%s %s(%+.2f%%p)' % (t['market'], t['h'], t['flip'], t['diff'])
                                for t in survivors))
     else:
-        lines.append('**보정을 통과한 조합은 없다.** 낱개로 보면 유의해 보이는 것이 있어도 '
-                     '(%s), 열여섯 번 시험한 것을 감안하면 우연으로 설명된다.'
-                     % (', '.join('%s h=%s %+.2f%%p p=%.3f' % (t['market'], t['h'], t['diff'], t['p'])
-                                  for t in tests if t['alone']) or '없다'))
+        alone = ', '.join('%s h=%s %+.2f%%p p=%.3f'
+                          % (t['market'], t['h'], t['diff'], t['p'])
+                          for t in tests if t['alone'])
+        # 시험 횟수를 글자로 박아 두지 않는다 — 우주가 달라지면 조합 수도 달라진다
+        lines.append('**보정을 통과한 조합은 없다.** ' +
+                     ('낱개로 보면 유의해 보이는 것이 있어도(%s), %d 번 시험한 것을 '
+                      '감안하면 우연으로 설명된다.' % (alone, k) if alone else
+                      '낱개로 보아도 유의한 조합이 없다.'))
 
     # 방향의 일관성 — 낱낱이 유의하지 않아도 넷이 다 같은 쪽이면 그 자체가 약한 증거다
-    for mk in ('KR', 'US'):
+    for mk in mks:
+        ko = MARKET_KO.get(mk, mk)
         ds = [t['diff'] for t in tests if t['market'] == mk and t['flip'] == 'flip']
         if len(ds) >= 3:
             if all(d > 0 for d in ds):
-                lines.append('%s 는 시계 넷이 모두 양수다(%s) — 낱낱이 유의하지는 않으나 '
+                lines.append('%s — 시계 넷이 모두 양수다(%s). 낱낱이 유의하지는 않으나 '
                              '방향이 일관된다는 것은 약한 증거다.'
-                             % (mk, ', '.join('%+.2f' % d for d in ds)))
+                             % (ko, ', '.join('%+.2f' % d for d in ds)))
             elif all(d < 0 for d in ds):
-                lines.append('**%s 는 시계 넷이 모두 음수다(%s) — 이 시장에서는 신호가 '
+                lines.append('**%s — 시계 넷이 모두 음수다(%s). 이 시장에서는 신호가 '
                              '거꾸로 간다고 보아야 한다.**'
-                             % (mk, ', '.join('%+.2f' % d for d in ds)))
+                             % (ko, ', '.join('%+.2f' % d for d in ds)))
 
-    # 수익률이 아니라 낙폭 쪽 이야기
-    eq = {}
-    for h, hv in (report.get('horizons') or {}).items():
-        m = ((hv.get('flip') or {}).get('KR') or {}).get('equity')
-        if m and m.get('excess_median_pct') is not None:
-            eq[h] = m
-    if eq:
+    # 수익률이 아니라 낙폭 쪽 이야기 — 보고서에 있는 시장마다 한 문단씩
+    for mk in mks:
+        eq = {}
+        for h, hv in (report.get('horizons') or {}).items():
+            m = ((hv.get('flip') or {}).get(mk) or {}).get('equity')
+            if m and m.get('excess_median_pct') is not None:
+                eq[h] = m
+        if not eq:
+            continue
         ex = [v['excess_median_pct'] for v in eq.values()]
-        inm = [v['in_market_median_pct'] for v in eq.values()]
-        sv = [v['mdd_saved_median_pct'] for v in eq.values()]
-        lines.append('국내 기준 매수후보유 대비 수익은 시계 어디서도 앞서지 못한다'
-                     '(%s%%p). 다만 장에 머문 시간이 %.0f~%.0f%% 뿐이고 최대낙폭을 '
-                     '%.0f~%.0f%%p 줄인다. **수익을 늘리는 도구가 아니라 겪는 낙폭을 '
-                     '줄이는 도구로 읽어야 한다.**'
-                     % (' / '.join('%+.0f' % x for x in ex), min(inm), max(inm),
+        inm = [v['in_market_median_pct'] for v in eq.values()
+               if v.get('in_market_median_pct') is not None]
+        sv = [v['mdd_saved_median_pct'] for v in eq.values()
+              if v.get('mdd_saved_median_pct') is not None]
+        if not inm or not sv:
+            continue
+        ahead = '앞선 시계가 있다' if any(x > 0 for x in ex) else '시계 어디서도 앞서지 못한다'
+        lines.append('%s — 매수후보유 대비 수익은 %s(%s%%p). 장에 머문 시간은 '
+                     '%.0f~%.0f%% 이고 최대낙폭을 %.0f~%.0f%%p 줄인다.'
+                     % (MARKET_KO.get(mk, mk), ahead,
+                        ' / '.join('%+.0f' % x for x in ex), min(inm), max(inm),
                         min(sv), max(sv)))
+    if mks:
+        lines.append('**수익을 늘리는 도구가 아니라 겪는 낙폭을 줄이는 도구로 읽어야 한다.**')
 
     report['verdict'] = {'tests': tests, 'alpha_corrected': alpha,
                          'survivors': len(survivors),

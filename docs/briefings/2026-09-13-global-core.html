@@ -157,6 +157,21 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 .hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
 .hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
 @media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+/* 생성형 AI 고지. 2026-09-30 에 지난 판에도 소급 적용했다. */
+.ai-notice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:19px 0 0;padding:9px 15px;border-radius:2px;
+  background:var(--surface-subtle);border-left:3px solid var(--primary)}
+.ai-notice .lbl{flex:none;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--primary-active);text-transform:uppercase}
+.ai-notice p{margin:0;font-size:14.5px;line-height:1.5;color:var(--body);max-width:none}
+@media (max-width:1100px){ .ai-notice p{font-size:14px} }
+@media (max-width:900px){ .ai-notice{padding:11px 14px} }
+@media print{
+  .ai-notice{margin:10px 0 0;padding:7px 10px;border-left-width:2.5pt;
+    break-inside:avoid;page-break-inside:avoid}
+  .ai-notice .lbl{font-size:7pt}
+  .ai-notice p{font-size:8pt;line-height:1.35}
+}
 .tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
   border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
 .tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
@@ -754,6 +769,10 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
   <h1 class="hero-title"><span data-lang-ko>해외 증시 브리핑</span><span data-lang-en>Global Market Briefing</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>표의 숫자는 어제와 같습니다 &mdash; 금요일 마감이 마지막이기 때문입니다. 바뀐 것은 「누가 사고 있는가」입니다.</strong> 주말 사이 세 갈래 자료가 같은 방향을 가리켰습니다. <strong>개인이 9월 들어 삼성전자와 SK하이닉스를 5개월 만에 팔자로 돌아섰고</strong>(11일까지 각각 <strong>5조 2,120억원&middot;7조 8,180억원</strong> 순매도), <strong>서학개미도 이달 미국 주식을 순매도</strong>로 돌아섰으며, <strong>외국인은 국내 채권을 3년 7개월 만에 월간 순매도</strong>했습니다. 빠져나온 돈은 <strong>파킹형 ETF 다섯 종목에 일주일 만에 1조 4,899억원</strong>이 들어가 대기 중입니다. <strong>남은 매수 주체는 자사주를 사는 기타법인 하나</strong>입니다. 그리고 이번 주 <strong>중앙은행이 셋</strong> 움직입니다 &mdash; 한국시간 <strong>17일 새벽 FOMC</strong>, <strong>18일 일본은행</strong>, <strong>20일 영란은행</strong>.</span><span data-lang-en><strong>The numbers in the tables are yesterday's, because Friday's close is the last one. What changed is who is buying.</strong> Over the weekend three separate datasets pointed the same way. <strong>Retail investors turned net sellers of Samsung Electronics and SK Hynix in September for the first time in five months</strong> &mdash; <strong>5.21tn and 7.82tn won</strong> through the 11th &mdash; <strong>Korean holders of US equities also flipped to net selling this month</strong>, and <strong>foreigners were net sellers of Korean bonds for the first time in three years and seven months.</strong> The money that came out is parked: <strong>1.49tn won flowed into five money-market ETFs in a single week.</strong> <strong>That leaves buybacks &mdash; the &ldquo;other corporates&rdquo; line &mdash; as the last standing buyer.</strong> And three central banks meet this week: the <strong>FOMC early Thursday KST</strong>, the <strong>Bank of Japan on the 18th</strong> and the <strong>Bank of England on the 20th.</strong></span></p>
   <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>파는 손만 보이는 주 앞에서</span><span data-lang-en>Facing a week where only sellers are visible</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 11일(금) 마감 &middot; 환율은 오늘 아침 9월 13일 &middot; 시세 파일 09-13 07:40 수집 &middot; 작성 2026-09-13(일) 07:51 KST</span><span data-lang-en>Basis: closes of Friday 11 September; FX as of this morning; data collected 09-13 07:40; compiled 07:51 KST</span></p>
+</div>
+<div class="ai-notice">
+  <span class="lbl"><span data-lang-ko>유의</span><span data-lang-en>Notice</span></span>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </div>
 <div class="shell">
 
@@ -1503,8 +1522,9 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 </div><!-- /shell -->
 
 <footer class="foot">
-  <p><span data-lang-ko>미래에셋증권 마포WM · 송재섭 · 2026년 9월 13일(일) 07:51 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Jaeseop Song · Compiled 07:51 KST, Sunday 13 September 2026.</span></p>
+  <p><span data-lang-ko>미래에셋증권 마포WM · 2026년 9월 13일(일) 07:51 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Compiled 07:51 KST, Sunday 13 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+  <p><span data-lang-ko>본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.</span><span data-lang-en>This material was prepared with the use of generative AI from sources believed to be reliable; we expressly disclose that its accuracy and completeness cannot be guaranteed.</span></p>
 </footer>
 
 </div><!-- /page -->

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>미국 100대 기업 시세 조회</title>
+<title>미국 200대 기업 시세 조회</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -416,7 +416,7 @@ footer .disc p{margin:0 0 12px;}
 <header class="hero">
   <div class="page">
     <span class="tag" data-ko="사내 참고자료" data-en="Internal reference">사내 참고자료</span>
-    <h1 data-ko="미국 100대 기업 시세 조회" data-en="US Top 100 Companies">미국 100대 기업 시세 조회</h1>
+    <h1 data-ko="미국 200대 기업 시세 조회" data-en="US Top 200 Companies">미국 200대 기업 시세 조회</h1>
     <p class="sub" data-ko="시가총액 상위 미국 상장 기업 100곳의 주가·밸류에이션·실적·컨센서스·일정·뉴스를 한 화면에서 조회합니다(두 곳은 미국에 상장한 외국 기업입니다)."
        data-en="Price, valuation, results, consensus, calendar and news for 100 of the largest US-listed companies — on one screen (two are non-US issuers listed in the US).">시가총액 상위 미국 상장 기업 100곳의 주가·밸류에이션·실적·컨센서스·일정·뉴스를 한 화면에서 조회합니다(두 곳은 미국에 상장한 외국 기업입니다).</p>
     <div class="meta">
@@ -747,7 +747,7 @@ footer .disc p{margin:0 0 12px;}
 
 <script>
 /* ============================================================
-   미국 100대 기업 시세 조회 — 단일 파일 대시보드
+   미국 200대 기업 시세 조회 — 단일 파일 대시보드
    외부 의존성 없음(폰트 CDN 제외). 모든 시세는 조회 시점에 브라우저가 직접 받아온다.
    ============================================================ */
 'use strict';
@@ -865,6 +865,115 @@ var COMPANIES = [
   ['TSLA','Tesla','테슬라','cd'],
   /* 주간 목록 점검으로 편입한 종목(scripts/us100_list_tool.py) */
   ['NEE','NextEra Energy','넥스트에라에너지','util'],
+
+  /* ── 101~200 위 ──────────────────────────────────────────────────
+     2026-09-29 에 100 종에서 200 종으로 넓혔다. 순위는 그날
+     scripts/check_us100_ranking.py --emit-top 200 이 낸 것이다
+     (S&P 500 505 종 + 우리 목록을 시총 내림차순). 한글명은 사람이 썼다 —
+     자동 교체를 하지 않는 까닭은 그 대본 머리말에 있다.
+
+     SCCO·NET 은 S&P 500 CSV 에 없어 섹터가 비어 왔다. 각각 mat·it 로
+     손으로 채웠다. */
+  ['DELL','Dell Technologies','델테크놀로지스','it'],
+  ['CRWD','CrowdStrike','크라우드스트라이크','it'],
+  ['GEV','GE Vernova','GE버노바','ind'],
+  ['SNDK','Sandisk','샌디스크','it'],
+  ['KLAC','KLA','KLA','it'],
+  ['MRVL','Marvell Technology','마벨테크놀로지','it'],
+  ['STX','Seagate Technology','시게이트테크놀로지','it'],
+  ['APH','Amphenol','앰피놀','it'],
+  ['SCCO','Southern Copper','서던코퍼','mat'],
+  ['WELL','Welltower','웰타워','re'],
+  ['WDC','Western Digital','웨스턴디지털','it'],
+  ['IBKR','Interactive Brokers','인터랙티브브로커스','fin'],
+  ['BA','Boeing','보잉','ind'],
+  ['UBER','Uber Technologies','우버','ind'],
+  ['GLW','Corning','코닝','it'],
+  ['FTNT','Fortinet','포티넷','it'],
+  ['NET','Cloudflare','클라우드플레어','it'],
+  ['NEM','Newmont','뉴몬트','mat'],
+  ['PH','Parker-Hannifin','파커하니핀','ind'],
+  ['COF','Capital One Financial','캐피털원','fin'],
+  ['MPC','Marathon Petroleum','마라톤페트롤리엄','eng'],
+  ['CVS','CVS Health','CVS헬스','hc'],
+  ['VLO','Valero Energy','발레로에너지','eng'],
+  ['ACN','Accenture','액센츄어','it'],
+  ['HOOD','Robinhood Markets','로빈후드마켓','fin'],
+  ['FCX','Freeport-McMoRan','프리포트맥모란','mat'],
+  ['APP','AppLovin','앱러빈','comm'],
+  ['PSX','Phillips 66','필립스66','eng'],
+  ['BNY','Bank of New York Mellon','뉴욕멜론은행','fin'],
+  ['MCK','McKesson','맥케슨','hc'],
+  ['EQIX','Equinix','에퀴닉스','re'],
+  ['TT','Trane Technologies','트레인테크놀로지스','ind'],
+  ['PWR','Quanta Services','콴타서비스','ind'],
+  ['DDOG','Datadog','데이터독','it'],
+  ['HCA','HCA Healthcare','HCA헬스케어','hc'],
+  ['CME','CME Group','CME그룹','fin'],
+  ['VRT','Vertiv Holdings','버티브홀딩스','ind'],
+  ['MAR','Marriott International','메리어트인터내셔널','cd'],
+  ['ABNB','Airbnb','에어비앤비','cd'],
+  ['CEG','Constellation Energy','콘스텔레이션에너지','util'],
+  ['USB','U.S. Bancorp','US뱅코프','fin'],
+  ['HWM','Howmet Aerospace','하우멧에어로스페이스','ind'],
+  ['GD','General Dynamics','제너럴다이내믹스','ind'],
+  ['JCI','Johnson Controls International','존슨콘트롤즈','ind'],
+  ['CDNS','Cadence Design Systems','케이던스디자인시스템','it'],
+  ['EMR','Emerson Electric','에머슨일렉트릭','ind'],
+  ['PNC','PNC Financial Services','PNC파이낸셜','fin'],
+  ['DUK','Duke Energy','듀크에너지','util'],
+  ['MMM','3M','3M','ind'],
+  ['CSX','CSX','CSX','ind'],
+  ['WMB','Williams Companies','윌리엄스컴퍼니스','eng'],
+  ['HPE','Hewlett Packard Enterprise','휴렛팩커드엔터프라이즈','it'],
+  ['LITE','Lumentum Holdings','루멘텀홀딩스','it'],
+  ['WM','Waste Management','웨이스트매니지먼트','ind'],
+  ['MNST','Monster Beverage','몬스터베버리지','cs'],
+  ['SHW','Sherwin-Williams','셔윈윌리엄스','mat'],
+  ['CTAS','Cintas','신타스','ind'],
+  ['SNPS','Synopsys','시놉시스','it'],
+  ['MCO',"Moody's",'무디스','fin'],
+  ['MRNA','Moderna','모더나','hc'],
+  ['ECL','Ecolab','에코랩','mat'],
+  ['AMT','American Tower','아메리칸타워','re'],
+  ['ITW','Illinois Tool Works','일리노이툴웍스','ind'],
+  ['SPG','Simon Property Group','사이먼프로퍼티그룹','re'],
+  ['WBD','Warner Bros. Discovery','워너브러더스디스커버리','comm'],
+  ['REGN','Regeneron Pharmaceuticals','리제네론','hc'],
+  ['BE','Bloom Energy','블룸에너지','ind'],
+  ['DASH','DoorDash','도어대시','cd'],
+  ['MDLZ','Mondelez International','몬델리즈','cs'],
+  ['SLB','SLB','SLB(슐럼버거)','eng'],
+  ['TRV','Travelers Companies','트래블러스','fin'],
+  ['ROST','Ross Stores','로스스토어스','cd'],
+  ['EOG','EOG Resources','EOG리소시스','eng'],
+  ['MSI','Motorola Solutions','모토로라솔루션스','it'],
+  ['GM','General Motors','제너럴모터스','cd'],
+  ['HLT','Hilton Worldwide','힐튼월드와이드','cd'],
+  ['TGT','Target','타깃','cs'],
+  ['NOC','Northrop Grumman','노스럽그러먼','ind'],
+  ['CI','Cigna Group','시그나','hc'],
+  ['CMI','Cummins','커민스','ind'],
+  ['NSC','Norfolk Southern','노퍽서던','ind'],
+  ['APO','Apollo Global Management','아폴로글로벌매니지먼트','fin'],
+  ['ORLY',"O'Reilly Automotive",'오라일리오토모티브','cd'],
+  ['CL','Colgate-Palmolive','콜게이트파몰리브','cs'],
+  ['FDX','FedEx','페덱스','ind'],
+  ['KMI','Kinder Morgan','킨더모건','eng'],
+  ['HON','Honeywell International','하니웰','ind'],
+  ['CVNA','Carvana','카바나','cd'],
+  ['DLR','Digital Realty Trust','디지털리얼티','re'],
+  ['MPWR','Monolithic Power Systems','모놀리식파워시스템','it'],
+  ['RSG','Republic Services','리퍼블릭서비스','ind'],
+  ['URI','United Rentals','유나이티드렌털스','ind'],
+  ['RCL','Royal Caribbean Cruises','로열캐리비안크루즈','cd'],
+  ['AEP','American Electric Power','아메리칸일렉트릭파워','util'],
+  ['BSX','Boston Scientific','보스턴사이언티픽','hc'],
+  ['TER','Teradyne','테라다인','it'],
+  ['TEL','TE Connectivity','TE커넥티비티','it'],
+  ['APD','Air Products and Chemicals','에어프로덕츠','mat'],
+  ['TDG','TransDigm Group','트랜스다임그룹','ind'],
+  ['KEYS','Keysight Technologies','키사이트테크놀로지스','it'],
 ];
 
 var SECTORS = {
@@ -1790,6 +1899,49 @@ function sampleSummary(sym) {
 /* ============================================================
    6. quoteSummary → 화면 모델로 정규화
    ============================================================ */
+/* ── 비율 맞대기 ────────────────────────────────────────────────────
+   **scripts/fetch_us100.py 의 reconcile_ratios 와 같은 규칙이다.** 상수와
+   시험 자료(data/fixtures/ratio_cases.json)를 함께 쓰고, PR 점검의
+   check_us100_ratios.mjs 가 두 쪽이 같은 답을 내는지 맞대어 본다.
+
+   왜 화면에도 두는가 — 수집기가 저장하는 스냅숏만 고치면 절반만 고친 것이다.
+   이 화면은 브라우저에서 **야후에 직접 붙어** 같은 값을 다시 받아 덮어쓴다.
+   거기에도 같은 잣대가 없으면, 실시간으로 볼 때는 여전히 PBR 1,499배가 찍힌다.
+
+   까닭과 문턱을 정한 경위는 파이썬 쪽 주석에 적어 두었다. */
+var RATIO_TOL = 3.0, RATIO_MIN_BASE = 1.0, RATIO_MAX_PER = 200.0, REVENUE_TOL = 5.0;
+
+function reconcileRatios(q) {
+  var dropped = [];
+  [['pbr', 'roe', 'ROE'], ['psr', 'netMargin', '순이익률']].forEach(function (t) {
+    var key = t[0], got = q[key], base = q[t[1]], per = q.per;
+    if (got == null || base == null || per == null) return;
+    if (per <= 0 || base <= 0 || got <= 0) return;
+    if (base < RATIO_MIN_BASE || per > RATIO_MAX_PER) return;   /* 잴 수 없는 자리 */
+    var want = per * base / 100;
+    if (!want) return;
+    var ratio = got / want;
+    if (ratio > RATIO_TOL || ratio < 1 / RATIO_TOL) {
+      dropped.push(key + ' ' + got + ' → 버림 (' + (ratio > 1 ? ratio : 1 / ratio).toFixed(1) + ' 배 어긋남)');
+      q[key] = null;
+    }
+  });
+  var rev = q.revenue, eps = q.eps, sh = q.shares, nm = q.netMargin;
+  if (rev != null && eps != null && sh != null && nm != null
+      && rev > 0 && eps > 0 && sh > 0 && nm >= RATIO_MIN_BASE) {
+    var w = eps * sh / (nm / 100);
+    if (w) {
+      var r2 = rev / w;
+      if (r2 > REVENUE_TOL || r2 < 1 / REVENUE_TOL) {
+        dropped.push('revenue ' + rev + ' → 버림 (' + (r2 > 1 ? r2 : 1 / r2).toFixed(1) + ' 배 어긋남)');
+        q.revenue = null;
+      }
+    }
+  }
+  return dropped;
+}
+if (typeof window !== 'undefined') window.reconcileRatios = reconcileRatios;
+
 function normalizeSummary(m) {
   var o = { profile: {}, quote: {}, target: {}, calendar: {}, surprises: [], epsTrend: [], financials: {}, events: [] };
 
@@ -1846,6 +1998,13 @@ function normalizeSummary(m) {
   q.revenue = raw(fd.totalRevenue); q.revenueGrowth = pctize(raw(fd.revenueGrowth));
   q.earningsGrowth = pctize(raw(fd.earningsGrowth));
   q.debtToEquity = raw(fd.debtToEquity); q.cash = raw(fd.totalCash); q.fcf = raw(fd.freeCashflow);
+
+  /* **단위·통화가 섞여 온 값을 여기서 버린다.** ADR 은 bookValue·totalRevenue 가
+     현지 기준으로 오는데 price·cap 은 ADR 기준이라 그대로 섞인다 — ASML 이
+     PBR 1,499배, TSMC 가 매출 31.8배(=TWD/USD 환율)로 찍히고 있었다.
+     모르는 것으로 두는 편이 틀린 것을 찍는 것보다 낫다. */
+  q.ratioNotes = reconcileRatios(q);
+  if (!q.ratioNotes.length) q.ratioNotes = null;
 
   /* 목표주가 · 투자의견 */
   o.target = { low: raw(fd.targetLowPrice), mean: raw(fd.targetMeanPrice), high: raw(fd.targetHighPrice),
@@ -5426,7 +5585,7 @@ function applyLang() {
   renderCompare();
   renderRankNote();
   if (CACHE[state.sel]) renderDetail(state.sel); else renderSources();
-  document.title = t('미국 100대 기업 시세 조회 | 미래에셋증권', 'US Top 100 Companies | Mirae Asset Securities');
+  document.title = t('미국 200대 기업 시세 조회 | 미래에셋증권', 'US Top 200 Companies | Mirae Asset Securities');
 }
 
 /* ============================================================

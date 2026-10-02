@@ -12,6 +12,29 @@ from briefing_lib import (
     d, DK, DE, DD, DS, n, pct, bp, eok, jo, esc,
     L, TH, THP, perf_cells, perf_line, tbl, sparkline, bar)
 
+# 생성형 AI 고지. 2026-09-30 에 넣었다.
+#
+# **자리를 히어로 바로 밑으로 잡은 이유.** 이 판은 사내 배포를 거쳐 아티팩트
+# 링크로도 나가고, 전체본은 인쇄하면 21쪽이다. 꼬리말에만 두면 끝까지 내려간
+# 사람만 본다 — 첫 쪽만 보고 고객 응대에 쓰는 것이 이 판의 실제 쓰임이므로,
+# 그 자리에서 이미 지나가 있어야 «분명히 고지»가 된다. 히어로 다음이면 첫
+# 화면과 인쇄 1쪽에 반드시 걸리고, 그날의 결론(01절)보다는 앞이다.
+#
+# **판을 가리지 않는다.** 모닝·장마감·해외 판이 모두 같은 방식으로 만들어지므로
+# 모닝에만 달면 나머지 판이 고지 없이 나간다. 그래서 kind 를 보지 않는다.
+#
+# 문구는 **받은 그대로** 싣는다 — 줄이거나 바꾸지 않는다. 영문은 같은 뜻을
+# 옮긴 것이고, 한/영 짝 검사(recheck·sweep)가 1:1 이어야 하므로 반드시 둘 다 둔다.
+AI_NOTICE_KO = ("본 자료는 생성형 AI를 활용하여 신뢰할 수 있는 자료를 기반으로 "
+                "작성되었으나, 정확성이나 완전성을 보장할 수 없는 점을 분명히 고지합니다.")
+AI_NOTICE_EN = ("This material was prepared with the use of generative AI from sources "
+                "believed to be reliable; we expressly disclose that its accuracy and "
+                "completeness cannot be guaranteed.")
+AI_NOTICE = ('<div class="ai-notice">\n'
+             '  <span class="lbl">' + L("유의", "Notice") + '</span>\n'
+             '  <p>' + L(AI_NOTICE_KO, AI_NOTICE_EN) + '</p>\n'
+             '</div>')
+
 
 def _pos52(close, fw):
     lo, hi = fw.get("low"), fw.get("high")
@@ -60,6 +83,38 @@ def _prefer_daily(idx, daily):
         out["change_pct"] = top["change_pct"]
     out["daily_basis"] = True          # 검증 노트에서 이 자국을 봅니다
     return out
+
+
+# 업종 등락률이 이 값을 넘으면 **원천이 잘못 준 것**입니다. 국내 주식의 하루
+# 가격제한폭이 ±30% 이므로, 종목을 시가총액으로 묶은 업종 지수는 어떤 날에도
+# 30% 를 넘을 수 없습니다. 넘으면 산술이 아니라 수집이 틀린 것입니다.
+SECTOR_LIMIT_PCT = 30.0
+
+
+def _sectors(sec):
+    """업종 등락률에서 **불가능한 값을 걸러낸다.**
+
+    네이버 업종 API 가 이따금 한 업종에 터무니없는 값을 실어 보냅니다.
+    2026-09-23 수집에서 「가정용품」이 **+162.93%** 였고(12종목 중 오른 것 5
+    내린 것 5), 이틀 전인 9/21 에도 같은 업종이 **+145.12%** 였습니다. 그
+    사이 9/22 는 &minus;0.15% 로 멀쩡했습니다 — 계속 틀린 것이 아니라
+    **하루씩 튀는 고장**입니다. 9/21 판이 「소프트웨어 +19.54%」를 같은 이유로
+    실었는데, 그 값도 나중에 +1.93% 로 고쳐졌습니다.
+
+    그대로 두면 「오른 업종」 표 맨 윗줄에 +162.93% 가 찍힙니다. 표가 한 줄
+    때문에 통째로 못 믿을 것이 되므로, **가격제한폭을 넘는 줄만 빼고** 남은
+    것에서 위아래 다섯을 다시 셉니다. 자료 파일은 건드리지 않습니다 — 뺀
+    개수를 돌려주므로 검증 노트에 몇 줄을 왜 뺐는지 적으십시오.
+    """
+    rows = [r for r in (sec.get("all") or []) if r.get("change_pct") is not None]
+    if not rows:                       # `all` 이 없으면 종전대로 원천의 top5/bottom5
+        return (sec.get("top5") or []), (sec.get("bottom5") or []), []
+    ok = [r for r in rows if abs(r["change_pct"]) <= SECTOR_LIMIT_PCT]
+    dropped = [r for r in rows if abs(r["change_pct"]) > SECTOR_LIMIT_PCT]
+    ok.sort(key=lambda r: -r["change_pct"])
+    # 원천의 `bottom5` 와 같은 차례로 돌려줍니다 — 덜 내린 것이 위, 가장 크게
+    # 내린 것이 아래입니다. 뒤집으면 지난 판들과 표가 거꾸로 섭니다.
+    return ok[:5], ok[-5:], dropped
 
 
 def prepare(D, H, N, today, now, kind):
@@ -140,8 +195,7 @@ def prepare(D, H, N, today, now, kind):
 
     kr_top, kr_bot = _split(S, 8)
     us_top, us_bot = _split(US, 6)
-    sec_top = (D.get("sectors") or {}).get("top5") or []
-    sec_bot = (D.get("sectors") or {}).get("bottom5") or []
+    sec_top, sec_bot, sec_dropped = _sectors(D.get("sectors") or {})
 
     ktb10 = (ec.get("ktb10y") or {}).get("value")
     gap = (ktb10 - ru["curve"]["ust10y"]) * 100 if ktb10 else None
@@ -642,8 +696,16 @@ def _hero(C):
         + L(("기준: 국내는 오늘 " + DK(today) + " 마감 &middot; 해외는 " + DK(C["prev_us"], True)
              + " 마감(아직 열지 않았습니다) &middot; 환율은 오늘 마감"
              if C["kind"] == "close" else
-             "기준: 국내&middot;해외 모두 " + DK(C["prev_us"], True) + " 마감 &middot; 환율은 오늘 아침 "
-             + DK(today))
+             # 보통 아침에는 국내 마지막 마감과 미국 마지막 마감이 같은 날이다
+             # (월요일 국내 마감과 월요일 미국 마감은 둘 다 «월요일»이다). 그런데
+             # **연휴 뒤에는 어긋난다** — 2026-09-28 모닝 판이 국내 마지막 거래일
+             # 9/23 을 두고 «국내·해외 모두 9월 25일 마감»이라고 찍었다. 추석에
+             # 국내만 9/24~25 를 쉬었기 때문이다. 두 날짜가 다르면 갈라 적는다.
+             ("기준: 국내&middot;해외 모두 " + DK(C["prev_us"], True) + " 마감"
+              if C["prev_kr"] == C["prev_us"] else
+              "기준: 국내는 " + DK(C["prev_kr"], True) + " 마감(그 뒤 휴장) &middot; "
+              "해외는 " + DK(C["prev_us"], True) + " 마감")
+             + " &middot; 환율은 오늘 아침 " + DK(today))
             + " &middot; 시세 파일 " + C["D"]["generated_at_kst"][5:16] + " 수집 &middot; 작성 "
             + now.strftime("%Y-%m-%d") + "(" + "월화수목금토일"[now.weekday()] + ") "
             + now.strftime("%H:%M") + " KST"
@@ -652,10 +714,14 @@ def _hero(C):
             ("Basis: Korea closed today; overseas closes of " + DE(C["prev_us"], True)
              + " (not yet open); FX at today&rsquo;s close"
              if C["kind"] == "close" else
-             "Basis: closes of " + DE(C["prev_us"], True) + "; FX as of this morning")
+             ("Basis: closes of " + DE(C["prev_us"], True)
+              if C["prev_kr"] == C["prev_us"] else
+              "Basis: Korea's close of " + DE(C["prev_kr"], True) + " (shut since); "
+              "overseas closes of " + DE(C["prev_us"], True))
+             + "; FX as of this morning")
             + "; data collected "
             + C["D"]["generated_at_kst"][5:16] + "; compiled " + now.strftime("%H:%M") + " KST")
-        + '</p>\n</div>')
+        + '</p>\n</div>\n' + AI_NOTICE)
 
 
 def _holidays(C):
