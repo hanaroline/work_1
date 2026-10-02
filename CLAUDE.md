@@ -39,6 +39,12 @@
 작업 규칙 전체는 **[docs/briefing-playbook.md](docs/briefing-playbook.md)**(2,024줄)
 입니다. 브리핑 일을 맡았다면 playbook 을 **처음부터 끝까지** 읽고 시작하십시오.
 
+**ETF 편입종목 조회** — 맥락·규칙·겪은 사고는
+**[docs/handover/ETF-편입종목조회.md](docs/handover/ETF-편입종목조회.md)**,
+재현용 프롬프트는 **[etf-prompt.txt](etf-prompt.txt)**(자세한 판)와
+**[etf-prompt-simple.txt](etf-prompt-simple.txt)**(평범한 말 판)입니다.
+수집은 한국장 마감(15:30 KST) 뒤에 돌리십시오 — 장중값이 섞이면 감사가 막습니다.
+
 그 밖의 갈래(증권사 리포트 · 매매 타이밍 · 100대 기업 대시보드 · 마포 WM ·
 데이터센터 밸류체인 맵)는 `docs/handover/` 의 해당 문서를, 문서가 없는 갈래는
 `README.md`(248KB)의 해당 절을 보십시오.

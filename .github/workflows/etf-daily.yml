@@ -1,0 +1,183 @@
+name: ETF 편입종목 수집 (매일)
+
+# 브리핑 세션은 사내 이그레스 정책 때문에 네이버·야후에 직접 못 붙는다
+# (CONNECT 403). 러너는 그 정책 밖이므로 여기서 대신 받아 저장소에 커밋한다.
+#
+# 수집은 두 갈래로 나눠 둔다. 한쪽이 실패해도 다른 쪽 데이터는 그대로
+# 유지되어야 하기 때문이다 — 국내가 막힌 날 해외까지 지워질 이유가 없다.
+
+# ⚠ 예약(schedule)은 **기본 브랜치에서만** 돈다.
+#
+# 이 작업은 claude/etf-** 브랜치에 있어서 아래 cron 이 한 번도 발동한 적이
+# 없다 — 실행 기록이 전부 push 뿐이다. 그래서 밀어 넣을 때만 자료가 갱신되고,
+# 안 밀면 조용히 낡는다. 실제로 8/31 부터 9/7 까지 이레를 그대로 있었다.
+#
+# 감사의 신선도 관문이 그것을 오류로 잡아 주지만(자료-낡음), 관문은 알려 줄
+# 뿐 고쳐 주지는 않는다. **이 브랜치를 기본 브랜치에 합쳐야 예약이 산다.**
+on:
+  workflow_dispatch:
+  schedule:
+    # 국내 마감(15:30 KST) 이후. 편입종목(PDF)은 직전 영업일 기준이라
+    # 장중에 받아도 어제 것이다. 마감 뒤 한 번이면 충분하다.
+    #   16:30 KST = 07:30 UTC
+    - cron: '30 7 * * 1-5'
+    # 미국 마감 반영분. 06:40 KST = 21:40 UTC 전일
+    - cron: '40 21 * * 1-5'
+  # 수집기를 고쳤을 때 바로 검증되도록
+  push:
+    branches:
+      - 'claude/etf-**'
+    paths:
+      - 'scripts/collect_etf_*.mjs'
+      - 'scripts/etf_lib.mjs'
+      - 'scripts/etf_universe.mjs'
+      - 'scripts/build_etf_data.mjs'
+      - 'scripts/audit_etf_data.mjs'
+      - '.github/workflows/etf-daily.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: etf-daily-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 수집 실패는 잡을 실패시키지 않는다. 실패하면 그 데이터 파일을
+      # 건드리지 않고 끝나므로 직전 수집분이 그대로 남는다.
+      - name: 국내 ETF 수집 (네이버)
+        id: kr
+        continue-on-error: true
+        run: node scripts/collect_etf_kr.mjs
+
+      - name: 해외 ETF 수집 (야후)
+        id: global
+        continue-on-error: true
+        run: node scripts/collect_etf_global.mjs
+
+      # 분류 태깅과 병합. 수집이 둘 다 실패해도 기존 파일로 다시 만든다.
+      - name: 데이터 병합 · 분류
+        run: node scripts/build_etf_data.mjs
+
+      - name: 분류 사전 회귀 시험
+        run: node scripts/test_etf_taxonomy.mjs
+
+      # 수익률 두 계열이 라벨대로인지 검산한다. 원천이 산출 방식을 바꾸면
+      # (예: 네이버가 기준가 수익률에 분배금을 반영하기 시작하면) 여기서 걸린다.
+      # ret.tr 은 국내·해외 모두 분배금을 재투자한 총수익률이어야 한다.
+      # 여기서 걸리면 화면의 기본 기준이 거짓이 되므로 잡을 실패시킨다.
+      - name: 수익률 계열 검산
+        run: node scripts/check_etf_return_basis.mjs
+
+      # 화면에 실리는 모든 숫자를 전수 감사한다. 계열 검산(위)이 "라벨이
+      # 맞나" 를 보는 것이라면, 이쪽은 "값이 서로 앞뒤가 맞나" 를 본다.
+      #
+      # 이걸 만든 이유: HANARO Fn전기&수소차의 6개월 총수익률이 +1837% 로
+      # 화면까지 나갔다. 야후가 18,475원 ETF 에 주당 287,320원 분배금을
+      # 기록해 둔 것이 원인이었는데, 사람이 볼 때까지 아무 시험도 걸리지
+      # 않았다. 값 하나가 이러면 나머지도 못 믿는다.
+      #
+      # 감사가 오류를 찾으면 잡을 실패시킨다. 오류가 있는 채로 커밋하면
+      # 다음 사람이 또 눈으로 찾아야 한다.
+      - name: 자료 전수 감사
+        run: node scripts/audit_etf_data.mjs
+
+      - name: 수익률 계산기 방어선 시험
+        run: node scripts/test_etf_returns.mjs
+
+      # 순위·유형평균은 데이터가 아니라 화면이 그 자리에서 만드는 값이라
+      # 위의 감사에 걸리지 않는다. 그래서 같은 규칙을 **다른 방식으로** 다시
+      # 계산해 로그에 남긴다(이분 탐색 대신 그냥 세기). 두 답이 다르면
+      # 둘 중 하나가 틀린 것이고, 모집단에 섞이면 안 되는 것이 섞였는지도
+      # 여기서 보인다. 판정은 페이지 시험이 하므로 이 단계는 기록만 한다.
+      - name: 순위·유형평균 재계산 (기록)
+        continue-on-error: true
+        run: node scripts/audit_etf_rank.mjs 091230 069500 360750
+
+      - name: 브라우저 설치
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      # 사용법 산출물(HTML·PDF·PNG)을 다시 만든다.
+      #
+      # 안 만들면 PDF 안의 "자료 기준일" 이 만들던 날에 멈춘다 — 도구는 오늘
+      # 것인데 딸려 나가는 PDF 는 지난달 것이 된다. 이 화면에서 계속 경계해 온
+      # 바로 그 종류의 거짓말이다.
+      #
+      # 한글 폰트가 없으면 두부(ㅁ)만 박히므로 먼저 깐다. 이 단계는 데이터와
+      # 무관한 곁가지라 실패해도 수집·빌드를 막지 않는다. 대신 아래 요약에
+      # 결과를 남겨 조용히 지나가지 않게 한다.
+      - name: 사용법 산출물 (HTML · PDF · 이미지)
+        id: howto
+        continue-on-error: true
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-nanum
+          fc-cache -f
+          node scripts/make_etf_howto.mjs
+
+      - name: 단일 파일 빌드
+        run: node scripts/build_etf_page.mjs
+
+      # 실제 데이터를 넣은 화면이 열리는지 브라우저로 확인한다.
+      # 여기서 걸리면 커밋하지 않는다 — 깨진 화면을 배포하지 않으려는 것이다.
+      - name: 페이지 연기 시험
+        run: |
+          node scripts/test_etf_page.mjs
+          node scripts/test_etf_page.mjs --built
+          node scripts/test_etf_offline.mjs
+
+      - name: 진단 자료 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: etf-collect-debug
+          path: |
+            tools/discovery/etf_audit.md
+            tools/discovery/etf_audit.json
+            tools/discovery/etf_page.png
+            tools/discovery/etf_offline.png
+            data/etf-kr.js
+            data/etf-global.js
+          retention-days: 7
+
+      - name: 커밋
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/etf-kr.js data/etf-global.js data/etf.js etf-holdings-search.html 2>/dev/null || true
+          git add tools/discovery/etf_audit.md tools/discovery/etf_audit.json 2>/dev/null || true
+          git add data/etf-howto-pdf.js docs/etf-howto.html docs/etf-howto-en.html \
+                  docs/etf-howto.pdf docs/etf-howto.png 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "변경 없음"
+          else
+            git commit -m "chore(etf): 편입종목 데이터 갱신 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
+            git push
+          fi
+
+      - name: 사용법 산출 결과 알림
+        if: steps.howto.outcome == 'failure'
+        run: |
+          echo "::warning::사용법 산출물(PDF·이미지) 생성에 실패했습니다. \
+          도구와 데이터는 갱신됐지만 딸려 나가는 PDF 는 직전 것이 남습니다."
+
+      # 수집이 둘 다 실패했으면 잡을 빨간불로 남긴다. 데이터는 지키되,
+      # 며칠씩 조용히 낡아 가는 것은 막아야 한다.
+      - name: 수집 실패 여부 확인
+        if: steps.kr.outcome == 'failure' && steps.global.outcome == 'failure'
+        run: |
+          echo "국내·해외 수집이 모두 실패했습니다. 원천이 바뀌었는지 확인이 필요합니다."
+          exit 1
