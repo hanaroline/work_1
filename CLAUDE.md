@@ -21,6 +21,8 @@
 | 계정 설정(커넥터·스킬) 복원 절차 | [docs/claude-handoff/ACCOUNT-SETUP.md](docs/claude-handoff/ACCOUNT-SETUP.md) |
 | 예약 프롬프트 원문 (활성 12건) | [docs/handover/예약-전체목록.md](docs/handover/예약-전체목록.md) · [docs/claude-handoff/ROUTINES.md](docs/claude-handoff/ROUTINES.md) · 기계 판독용 [routines.json](docs/claude-handoff/routines.json) |
 | 저장소 **밖에서** 볼 한 파일 사본 | [인계-보관본.txt](인계-보관본.txt) |
+| 옛 계정 세션 72건 각각의 새 계정용 첫 프롬프트 | [docs/handover/세션별-프롬프트.md](docs/handover/세션별-프롬프트.md) (·`.html`·`.txt`, 원천 `session-prompts.json` → `python3 scripts/build_session_prompts.py`) |
+| 위 프롬프트를 새 계정에서 쓸 때 유의사항 (가지·예약·공개 저장소, 10/2 점검) | [docs/handover/세션별-프롬프트-유의사항.txt](docs/handover/세션별-프롬프트-유의사항.txt) (·`.html` 체크리스트) |
 
 `인계-보관본.txt` 의 3절(예약)은 **손으로 고치지 마십시오.**
 `python3 scripts/build_handoff_archive.py` 가 `routines.json` 에서 만듭니다.

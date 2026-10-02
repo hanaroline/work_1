@@ -1,0 +1,376 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>세션 프롬프트 유의사항</title><style>:root{--bg:#f7f7f5;--card:#fff;--fg:#1d1d1f;--muted:#6b6b70;--line:#e3e3e0;--acc:#f58220;--acc2:#043b72;--code:#f2f2ef;--warn:#fff4e8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141416;--card:#1d1d20;--fg:#ececee;--muted:#a0a0a8;--line:#2e2e33;--acc:#ff9a45;--acc2:#7fb2ff;--code:#26262a;--warn:#2a2118}}
+:root[data-theme="dark"]{--bg:#141416;--card:#1d1d20;--fg:#ececee;--muted:#a0a0a8;--line:#2e2e33;--acc:#ff9a45;--acc2:#7fb2ff;--code:#26262a;--warn:#2a2118}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.65 -apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 60px}h1{font-size:21px;margin:0 0 4px}.sub{color:var(--muted);font-size:13px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}button{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:5px 12px;cursor:pointer}button:hover{border-color:var(--acc)}
+h2{font-size:16.5px;color:var(--acc2);margin:28px 0 8px}
+.it{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0;display:flex;gap:10px}
+.it.top{background:var(--warn);border-color:var(--acc)}.it input{margin-top:5px;accent-color:var(--acc);width:17px;height:17px;flex:none}
+.it b{display:block}.it p{margin:2px 0 0;overflow-wrap:anywhere}.it.done{opacity:.55}
+pre{background:var(--code);border-radius:8px;padding:8px 10px;margin:6px 0 0;white-space:pre-wrap;word-break:break-word;font:13px/1.55 ui-monospace,Consolas,monospace;position:relative}
+.cp{float:right;font-size:12px;padding:1px 8px;margin-left:8px}
+table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--card)}td,th{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:var(--code)}
+.warn{color:var(--acc);font-weight:600}
+@media print{.bar,.cp{display:none}body{background:#fff}.it{break-inside:avoid}}</style></head><body><div class="wrap">
+<h1>세션별 프롬프트 — 새 계정에서 쓸 때 유의사항</h1>
+<div class="sub">점검일 2026-10-02 · 대상 docs/handover/세션별-프롬프트.* (72건) · 체크한 것은 이 브라우저에만 기억됩니다</div>
+<div class="bar"><button id="dl">.txt 받기</button><button id="pr">인쇄 / PDF</button><button id="rs">체크 지우기</button><button id="th">밝게/어둡게</button></div>
+<h2>먼저 — 가장 중요한 다섯 가지</h2>
+<label class="it top"><input type="checkbox" id="c1"><div><b>1. 이 묶음은 아직 main 에 없습니다.</b><p>세션별 프롬프트 파일들은 가지 claude/focused-babbage-mv26jj 에만 있습니다. 새 계정 세션은 보통 main 에서 시작하므로, 옛 계정이 닫히기 전에 main 에 합치거나, 새 계정 첫 메시지에 아래 한 줄을 붙이십시오.</p>
+<pre><button class="cp" type="button">복사</button><span>먼저 git fetch origin claude/focused-babbage-mv26jj 하고, 그 가지의 docs/handover/세션별-프롬프트.md 를 읽어줘.</span></pre>
+</div></label>
+<label class="it top"><input type="checkbox" id="c2"><div><b>2. 프롬프트 51건이 main 이 아닌 작업 가지의 파일을 씁니다.</b><p>대부분은 프롬프트 안에 가지 이름이 적혀 있습니다. 새 세션이 &quot;파일이 없다&quot;고 하면 거의 이 경우입니다 — 부록 A 의 가지를 먼저 받으라고 하십시오.</p>
+<pre><button class="cp" type="button">복사</button><span>이 일은 main 이 아니라 가지 &lt;가지 이름&gt; 에 있어. git fetch origin &lt;가지 이름&gt; 하고 그 가지에서 시작해줘. main 에 합치는 건 내 확인을 받은 다음에.</span></pre>
+</div></label>
+<label class="it top"><input type="checkbox" id="c3"><div><b>3. 저장소 hanaroline/work_1 은 공개(public) 저장소입니다.</b><p>2026-10-02 GitHub 에서 private=false 로 확인했습니다. 프롬프트·인계 문서에 적는 것은 누구나 읽을 수 있습니다. API 키·비밀번호·계좌번호·고객 이름·전화번호·회사 이메일은 프롬프트에 넣지 말고, 대화창에도 붙여 넣지 마십시오. 키는 GitHub 저장소 시크릿에만 둡니다.</p>
+</div></label>
+<label class="it top"><input type="checkbox" id="c4"><div><b>4. 예약(Routine)은 프롬프트에서 만들지 말고 정본에서 만듭니다.</b><p>프롬프트 22건이 예약을 언급합니다. 예약의 정본은 docs/claude-handoff/routines.json(활성 12건)이고, 만드는 순서·창 배치는 docs/handover/계정이전-마무리.md 4절에 있습니다. 세션 프롬프트마다 예약을 만들게 두면 같은 일이 두 번 돕니다. 옛 계정의 예약이 아직 살아 있으면 먼저 끄십시오 — 옛 것과 새 것이 함께 돕니다.</p>
+<pre><button class="cp" type="button">복사</button><span>예약은 아직 만들지 마. 이 일에 해당하는 예약이 docs/claude-handoff/routines.json 에 있는지 먼저 찾아서, 지시문 원문과 cron(UTC)을 보여 줘. 내가 승인하면 그때 만들어.</span></pre>
+</div></label>
+<label class="it top"><input type="checkbox" id="c5"><div><b>5. 세션 하나에 프롬프트 하나만 붙여 넣으십시오.</b><p>여러 항목을 한 세션에 몰아 넣으면 서로 다른 가지·규칙이 섞입니다. 이어 갈 일마다 새 세션을 열고, 「새 계정 프롬프트」 칸을 통째로 복사해 첫 메시지로 보내십시오.</p>
+</div></label>
+<h2>새 계정에서 프롬프트를 쓰기 전에 (한 번만)</h2>
+<label class="it"><input type="checkbox" id="c6"><div><b>6. GitHub 연결</b><p>claude.ai 에서 GitHub 를 연결하고 hanaroline/work_1 접근을 허용합니다. 저장소와 저장소 시크릿은 GitHub 쪽에 있어 그대로 남습니다.</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c7"><div><b>7. 다른 저장소도 쓰는 항목이 있습니다</b><p>지점QR/무료 호스팅 배포·개별 홈페이지는 hanaroline/consultingpage(private), 카운터 앱은 hanaroline/counter-app, 마포WM 은 hanaroline/mapo-wm 을 씁니다. 새 계정의 GitHub 연결에서 이 저장소들도 허용해야 합니다. consultingpage 에는 work_1 이름·내부 자료를 적지 않는다는 규칙이 있습니다.</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c8"><div><b>8. Claude Code 환경</b><p>세션 시작 준비는 저장소의 .claude/hooks/session-start.sh 가 저절로 합니다. 네트워크 정책·환경 변수는 docs/claude-handoff/ACCOUNT-SETUP.md 5절을 보십시오.</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c9"><div><b>9. 커넥터·스킬</b><p>Gmail·Gamma 커넥터를 다시 연결하고, 사용자 스킬 mas-design·fin-data-integrity 는 docs/claude-handoff/skills/ 의 본문으로 다시 만듭니다. 스킬을 만들기 전이라도 &quot;docs/claude-handoff/skills/mas-design/SKILL.md 를 읽고 그 기준대로&quot; 라고 하면 같은 결과를 얻습니다.</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c10"><div><b>10. 계정 이전 첫 대화</b><p>세션별 프롬프트보다 먼저, docs/handover/계정이전-마무리.md 3절의 첫 프롬프트로 전체 인계를 한 번 받으십시오.</p>
+</div></label>
+<h2>프롬프트를 붙여 넣을 때</h2>
+<label class="it"><input type="checkbox" id="c11"><div><b>11. 오늘 날짜를 첫 줄에</b><p>세션 시계는 UTC 라 한국 저녁·밤에는 날짜가 하루 어긋납니다. 날짜가 걸린 일은 첫 줄에 날짜를 적고, Claude 가 TZ=Asia/Seoul date 로 다시 확인하게 하십시오.</p>
+<pre><button class="cp" type="button">복사</button><span>오늘은 2026년 ○월 ○일(한국 시각)이야. TZ=Asia/Seoul date 로 한 번 더 확인하고 시작해줘.</span></pre>
+</div></label>
+<label class="it"><input type="checkbox" id="c12"><div><b>12. 「먼저 읽을 것」은 끝까지</b><p>프롬프트가 인계 문서나 playbook 을 먼저 읽으라고 하면 요약본으로 대신하지 말라고 하십시오. 특히 시황 브리핑은 docs/briefing-playbook.md 를 처음부터 끝까지 읽어야 합니다.</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c13"><div><b>13. main 병합은 확인 뒤에</b><p>여러 프롬프트에 &quot;main 에 합쳐&quot; 가 들어 있습니다. 새 계정 첫 작업에서는 결과를 보고 나서 합치라고 하십시오. 기능 가지에 -f 로 푸시하지 말 것(그 가지 작업이 사라집니다).</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c14"><div><b>14. 옛 세션 ID·가지 주소</b><p>항목에 적힌 세션 ID 는 옛 계정 것이라 새 계정에서 열리지 않습니다. 기록용입니다. 가지는 GitHub 에 있으니 그대로 쓸 수 있습니다(부록 B 의 세 건 제외).</p>
+</div></label>
+<h2>항목별로 걸리는 것</h2>
+<label class="it"><input type="checkbox" id="c15"><div><b>15. 첫 요청을 다 읽지 못한 항목 26건</b><p>대화가 너무 길어 기록 맨 앞까지 가지 못한 세션은 압축 요약이나 저장소 인계 문서로 첫 요청을 대신했습니다. 해당 항목의 「주의」 칸에 적혀 있습니다. 이런 항목은 프롬프트를 믿기 전에 그 인계 문서를 직접 읽게 하십시오.</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c16"><div><b>16. 중단·미완 11건</b><p>끝내지 못한 일입니다. 프롬프트를 바로 실행하기보다 &quot;지금 상태와 남은 일을 먼저 보고해줘&quot; 로 시작하십시오: (TEST)ETF 편입종목 조회 화면, +미래에셋증권 금융상품 조회 화면, (차용)모닝시황 및 마감시황 자료 생성, +초기 작업 검증 프로세스, 간단한 카운터 웹앱, 블룸버그 브리핑 자동 번역 및 요약, +(차용)국내 시장일지 작성, 미래자산증권 시세 데이터 통합, Stock report dashboard, 새로운 프로젝트 추천, 한국 라디오 방송 사이트 계획.</p>
+<pre><button class="cp" type="button">복사</button><span>이 일을 바로 이어서 하지 말고, 저장소의 현재 상태와 남은 일, 막혔던 이유를 먼저 표로 보고해줘. 내가 고른 것만 진행해.</span></pre>
+</div></label>
+<label class="it"><input type="checkbox" id="c17"><div><b>17. 아티팩트 주소를 쓰는 항목 7건</b><p>옛 계정의 아티팩트(claude.ai) 주소는 계정이 닫히면 열리지 않고, 새 계정은 덮어쓸 권한도 없습니다. HTML 원본은 저장소에 있으니 새로 발행하고 받은 주소로 바꿔 적어야 합니다(계정이전-마무리.md 5절). +(활용)마포WM 장마감 시황 브리핑 (평일 16:10 KST), ELS 상품 통합 조회, +Claude 코드 GitHub 자동 저장 여부, +New session, +(활용)모닝 시황 브리핑, 부서 내 공유 저장소 설정, +📌 세션 산출물 자료실 — 상시 갱신 (월·목).</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c18"><div><b>18. API 키가 필요한 항목</b><p>한국투자증권(KIS) 등 키는 저장소 시크릿에 있어 GitHub Actions 에서는 그대로 돕니다. 세션 안에서 직접 쓰던 키가 있었다면 새 환경의 환경 변수로 다시 넣되, 대화창에는 붙여 넣지 마십시오.</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c19"><div><b>19. 시험·잡담 항목</b><p>테트리스·카운터 앱·New session 같은 시험용은 다시 할 필요가 없으면 건너뛰어도 됩니다.</p>
+</div></label>
+<h2>저장소 공통 규칙 — 어느 프롬프트에도 붙어 있습니다</h2>
+<label class="it"><input type="checkbox" id="c20"><div><b>20. 날짜·숫자를 지어내지 않는다</b><p>확인 못 한 것은 비워 두고 출처 주소와 함께 남깁니다. &quot;아마 이쯤&quot; 으로 채우지 않습니다.</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c21"><div><b>21. 시세·ELS·브리핑 자료는 GitHub Pages 로 노출하지 않는다</b><p>사람이 받아 갈 파일은 데이터 가지의 고정 주소에 둡니다.</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c22"><div><b>22. *.translate.goog 를 쓰지 않는다</b><p>회사 망이 비업무용으로 막습니다.</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c23"><div><b>23. 파이썬은 표준 라이브러리만</b><p>scripts/*.py 는 깔 것이 없어야 합니다. 브라우저는 playwright 1.56.1, 크로미움은 /opt/pw-browsers 에 있으니 playwright install 을 다시 부르지 않습니다.</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c24"><div><b>24. 만든 것은 돌려 보고 보고한다</b><p>화면은 크로미움으로 열어 보고, 수집기는 한 번 돌려 보고, 시험이 깨지면 깨졌다고 적게 하십시오.</p>
+</div></label>
+<h2>잘 안 될 때</h2>
+<label class="it"><input type="checkbox" id="c25"><div><b>25. &quot;그런 파일이 없다&quot;</b><p>거의 가지 문제입니다. 부록 A 에서 그 항목의 가지를 찾아 git fetch origin &lt;가지&gt; 를 시키십시오. 부록 B 의 세 건은 가지가 GitHub 에 없으니 처음부터 다시 만들어야 합니다.</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c26"><div><b>26. 푸시가 거부된다</b><p>GitHub 연결에서 그 저장소 접근이 허용됐는지, Claude GitHub 앱이 설치됐는지 확인하십시오.</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c27"><div><b>27. 예약 결과가 엉뚱한 창으로 온다</b><p>예약은 만든 창에 붙습니다. 전용 창을 먼저 열고 그 창 안에서 만드십시오(계정이전-마무리.md 4절 표).</p>
+</div></label>
+<label class="it"><input type="checkbox" id="c28"><div><b>28. 프롬프트 내용을 고치고 싶다</b><p>docs/handover/session-prompts.json 의 그 항목을 고친 뒤 python3 scripts/build_session_prompts.py 를 돌립니다. md·html·txt 를 손으로 고치지 마십시오.</p>
+</div></label>
+<h2>부록 A. main 이 아닌 가지의 파일을 쓰는 항목 (51건)</h2><p class="sub">새 세션에서 "파일이 없다"고 하면 이 가지를 먼저 받게 하십시오. <span class="warn">※</span> 는 프롬프트에 그 가지 이름이 없는 항목입니다.</p>
+<table><tr><th>항목</th><th>받아야 할 가지</th></tr>
+<tr><td>+(활용)ETF 편입종목 조회 도구</td><td>claude/etf-holdings-lookup-tool-wwtz57</td></tr>
+<tr><td>+Claude 제품 사용 시 유의사항</td><td>claude/adoring-cannon-ds28a0</td></tr>
+<tr><td>Tetris game</td><td>claude/tetris-game-chiy3o</td></tr>
+<tr><td>자동 증시시황 수집 및 브리핑</td><td>claude/auto-market-briefing-necqk2</td></tr>
+<tr><td>+고객 상품 제안서 생성 도구</td><td>claude/customer-proposal-generator-f53dlm</td></tr>
+<tr><td>+은퇴자산 설계 제안서</td><td>claude/retirement-asset-proposal-m08jfr, claude/etf-holdings-lookup-tool-wwtz57, claude/fund-search-tool</td></tr>
+<tr><td>+(활용)ELS 상품 구조 설명 페이지</td><td>claude/els-product-structure-page-ljsucw</td></tr>
+<tr><td>+(활용)고객제안서 ETF 월배당 엑셀</td><td>claude/intelligent-maxwell-dnreiw</td></tr>
+<tr><td>+(차용)퇴직급여 수령 의사결정 시뮬레이터</td><td>claude/magical-bohr-6nz96j</td></tr>
+<tr><td>(TEST)ETF 편입종목 조회 화면</td><td>claude/elegant-mendel-7s02zx</td></tr>
+<tr><td>반도체 세미나 강의안 PPT</td><td>claude/semiconductor-seminar-ppt-elk4i4</td></tr>
+<tr><td>+(활용)펀드조회 화면 (ETF와 같은 구성)</td><td>claude/fund-search-tool</td></tr>
+<tr><td>+미래에셋증권 금융상품 조회 화면</td><td>claude/mirae-asset-product-dashboard-cgyqu7</td></tr>
+<tr><td>+MS Word 문서 저장 오류</td><td>claude/cool-pasteur-dgzvrd</td></tr>
+<tr><td>+한국투자증권 모의투자 API 키 신청</td><td>claude/ecstatic-mccarthy-2kg48k</td></tr>
+<tr><td>+미국 주요기업 실적 대시보드</td><td>claude/beautiful-hopper-e7j93r</td></tr>
+<tr><td>+3개월 단기 자금 운용 상품</td><td>claude/kind-feynman-4ke7nr</td></tr>
+<tr><td>+국가법령정보센터 법령 조회 문제</td><td>claude/law-info-center-query-issue-4ob6uz</td></tr>
+<tr><td>(차용)모닝시황 및 마감시황 자료 생성</td><td>claude/wonderful-dijkstra-nc6uye</td></tr>
+<tr><td>주식 투자 자료 검증</td><td>claude/stock-investment-validation-6d61p5</td></tr>
+<tr><td>IPR account product proposals</td><td>claude/ipr-account-products-akf151</td></tr>
+<tr><td>+조회 사이트 구축</td><td>claude/query-site-builder-wad3bb</td></tr>
+<tr><td>+초기 작업 검증 프로세스 <span class="warn">※</span></td><td>claude/initial-work-validation-kg344p</td></tr>
+<tr><td>+주식 차트 매매 신호 AI</td><td>claude/blissful-sagan-sn0yse</td></tr>
+<tr><td>+(활용)ELS/펀드 완전판매 스크립트</td><td>claude/els-fund-disclosure-i6wtii</td></tr>
+<tr><td>간단한 카운터 웹앱</td><td>claude/sharp-planck-q5hets</td></tr>
+<tr><td>+Claude 코드 작업 보고서</td><td>claude/work-report-presentation-wfnh58</td></tr>
+<tr><td>+부동산 세제 자료 검증</td><td>claude/real-estate-tax-validation-a39v6m</td></tr>
+<tr><td>+New session</td><td>claude/new-session-5vw1zz</td></tr>
+<tr><td>부서 내 공유 저장소 설정</td><td>claude/department-shared-storage-vxpl94</td></tr>
+<tr><td>+IRP product proposal PPT</td><td>claude/irp-product-proposal-ppt-owsbmc</td></tr>
+<tr><td>+국내 100대 기업 정보 조회 화면</td><td>kr100-data</td></tr>
+<tr><td>블룸버그 브리핑 자동 번역 및 요약</td><td>claude/bloomberg-briefing-auto-translate-ms7zvd</td></tr>
+<tr><td>+(차용)국내 시장일지 작성</td><td>claude/elegant-ritchie-7p11xf, claude/journal-kis-flows</td></tr>
+<tr><td>내부망 파일 공유 사이트</td><td>claude/intranet-file-sharing-site-bk9cwc, claude/handoff-account-migration-2026-10</td></tr>
+<tr><td>미래자산증권 시세 데이터 통합</td><td>claude/mirae-asset-quote-integration-rrrwfm</td></tr>
+<tr><td>+(활용)완전판매 스크립트 자동화 시스템</td><td>claude/complete-sales-script-automation-cjsx8e</td></tr>
+<tr><td>제약바이오 자료 검증</td><td>claude/pharma-biotech-validation-9awrwc</td></tr>
+<tr><td>(TEST2)ETF 구성종목 조회 화면</td><td>claude/fervent-hypatia-bbg6hh</td></tr>
+<tr><td>동영상 제작</td><td>claude/video-creation-odmttg</td></tr>
+<tr><td>작업 검토 및 제안</td><td>claude/work-review-recommendations-f6kglc</td></tr>
+<tr><td>+시장 변동성 예측 모델</td><td>claude/sweet-darwin-af7cvl</td></tr>
+<tr><td>데이터센터 밸류체인 맵</td><td>claude/datacenter-value-chain-map-6s4fvs</td></tr>
+<tr><td>반도체 자료 검증 및 화면 수정</td><td>claude/semiconductor-review-ui-fix-i5wfu9</td></tr>
+<tr><td>최종본 파일 확인</td><td>claude/final-file-check-mmcfob</td></tr>
+<tr><td>+(활용)Asset briefing dashboard setup</td><td>claude/asset-briefing-dashboard-1owydo</td></tr>
+<tr><td>+📌 세션 산출물 자료실 — 상시 갱신 (월·목)</td><td>claude/organize-session-artifacts-fbg82m</td></tr>
+<tr><td>새로운 프로젝트 추천</td><td>claude/new-project-recommendation-j3hplb</td></tr>
+<tr><td>부동산 세금 계산기</td><td>claude/real-estate-tax-calculator-8dyime</td></tr>
+<tr><td>한국 라디오 방송 사이트 계획</td><td>claude/zen-euler-umuf5o</td></tr>
+<tr><td>Claude 코드 세션 프롬프트 다운로드</td><td>claude/focused-babbage-mv26jj</td></tr>
+</table>
+<h2>부록 B. 가지가 GitHub 에 없는 항목 (3건)</h2><p class="sub">저장소에 남긴 것이 없는 일입니다. 프롬프트로 처음부터 다시 하십시오.</p><table><tr><th>항목</th><th>옛 가지</th></tr>
+<tr><td>SK하이닉스 증권사별 목표가</td><td>claude/brave-ramanujan-1364j9</td></tr>
+<tr><td>+Claude 코드 GitHub 자동 저장 여부</td><td>claude/tender-ride-fly4lt</td></tr>
+<tr><td>+지점QR/무료 호스팅 배포</td><td>claude/happy-goldberg-hn0p5j</td></tr>
+</table>
+<h2>부록 C. 예약을 언급하는 항목 (22건)</h2><p class="sub">예약은 docs/claude-handoff/routines.json 에서 만들고, 이 항목들의 프롬프트로는 만들지 마십시오.</p><ul>
+<li>+(활용)ETF 편입종목 조회 도구</li>
+<li>자동 증시시황 수집 및 브리핑</li>
+<li>+(활용)ELS 상품 구조 설명 페이지</li>
+<li>+(활용)증권사 리포트 자동 요약</li>
+<li>반도체 자료 검증 및 화면 수정</li>
+<li>+(활용)마포WM 장마감 시황 브리핑 (평일 16:10 KST)</li>
+<li>(차용)모닝시황 및 마감시황 자료 생성</li>
+<li>+초기 작업 검증 프로세스</li>
+<li>+Claude 코드 GitHub 자동 저장 여부</li>
+<li>+(활용)ELS/펀드 완전판매 스크립트</li>
+<li>+Claude 코드 작업 보고서</li>
+<li>+(활용)매매 타이밍 전략 구축</li>
+<li>+(활용)모닝 시황 브리핑</li>
+<li>Claude 코드/채팅 세션 일괄 다운로드</li>
+<li>+국내 100대 기업 정보 조회 화면</li>
+<li>+(활용)증시/금융 일정 조회 화면</li>
+<li>+(차용)국내 시장일지 작성</li>
+<li>반도체 자료 검증 및 화면 수정</li>
+<li>+📌 세션 산출물 자료실 — 상시 갱신 (월·목)</li>
+<li>새로운 프로젝트 추천</li>
+<li>한국 라디오 방송 사이트 계획</li>
+<li>+(활용)미국 100대 기업 정보 조회 화면</li>
+</ul>
+<script type="text/plain" id="alltxt">==============================================================================
+세션별 프롬프트 — 새 계정에서 쓸 때 유의사항
+점검일 2026-10-02 · 대상 docs/handover/세션별-프롬프트.* (72건)
+==============================================================================
+
+
+■ 먼저 — 가장 중요한 다섯 가지
+------------------------------------------------------------------------------
+[ ] 1. 이 묶음은 아직 main 에 없습니다.
+    세션별 프롬프트 파일들은 가지 claude/focused-babbage-mv26jj 에만 있습니다. 새 계정 세션은 보통 main 에서 시작하므로, 옛 계정이 닫히기 전에 main 에 합치거나, 새 계정 첫 메시지에 아래 한 줄을 붙이십시오.
+    붙여 넣을 말 ▶ 먼저 git fetch origin claude/focused-babbage-mv26jj 하고, 그 가지의 docs/handover/세션별-프롬프트.md 를 읽어줘.
+
+[ ] 2. 프롬프트 51건이 main 이 아닌 작업 가지의 파일을 씁니다.
+    대부분은 프롬프트 안에 가지 이름이 적혀 있습니다. 새 세션이 &quot;파일이 없다&quot;고 하면 거의 이 경우입니다 — 부록 A 의 가지를 먼저 받으라고 하십시오.
+    붙여 넣을 말 ▶ 이 일은 main 이 아니라 가지 &lt;가지 이름&gt; 에 있어. git fetch origin &lt;가지 이름&gt; 하고 그 가지에서 시작해줘. main 에 합치는 건 내 확인을 받은 다음에.
+
+[ ] 3. 저장소 hanaroline/work_1 은 공개(public) 저장소입니다.
+    2026-10-02 GitHub 에서 private=false 로 확인했습니다. 프롬프트·인계 문서에 적는 것은 누구나 읽을 수 있습니다. API 키·비밀번호·계좌번호·고객 이름·전화번호·회사 이메일은 프롬프트에 넣지 말고, 대화창에도 붙여 넣지 마십시오. 키는 GitHub 저장소 시크릿에만 둡니다.
+
+[ ] 4. 예약(Routine)은 프롬프트에서 만들지 말고 정본에서 만듭니다.
+    프롬프트 22건이 예약을 언급합니다. 예약의 정본은 docs/claude-handoff/routines.json(활성 12건)이고, 만드는 순서·창 배치는 docs/handover/계정이전-마무리.md 4절에 있습니다. 세션 프롬프트마다 예약을 만들게 두면 같은 일이 두 번 돕니다. 옛 계정의 예약이 아직 살아 있으면 먼저 끄십시오 — 옛 것과 새 것이 함께 돕니다.
+    붙여 넣을 말 ▶ 예약은 아직 만들지 마. 이 일에 해당하는 예약이 docs/claude-handoff/routines.json 에 있는지 먼저 찾아서, 지시문 원문과 cron(UTC)을 보여 줘. 내가 승인하면 그때 만들어.
+
+[ ] 5. 세션 하나에 프롬프트 하나만 붙여 넣으십시오.
+    여러 항목을 한 세션에 몰아 넣으면 서로 다른 가지·규칙이 섞입니다. 이어 갈 일마다 새 세션을 열고, 「새 계정 프롬프트」 칸을 통째로 복사해 첫 메시지로 보내십시오.
+
+
+■ 새 계정에서 프롬프트를 쓰기 전에 (한 번만)
+------------------------------------------------------------------------------
+[ ] 6. GitHub 연결
+    claude.ai 에서 GitHub 를 연결하고 hanaroline/work_1 접근을 허용합니다. 저장소와 저장소 시크릿은 GitHub 쪽에 있어 그대로 남습니다.
+
+[ ] 7. 다른 저장소도 쓰는 항목이 있습니다
+    지점QR/무료 호스팅 배포·개별 홈페이지는 hanaroline/consultingpage(private), 카운터 앱은 hanaroline/counter-app, 마포WM 은 hanaroline/mapo-wm 을 씁니다. 새 계정의 GitHub 연결에서 이 저장소들도 허용해야 합니다. consultingpage 에는 work_1 이름·내부 자료를 적지 않는다는 규칙이 있습니다.
+
+[ ] 8. Claude Code 환경
+    세션 시작 준비는 저장소의 .claude/hooks/session-start.sh 가 저절로 합니다. 네트워크 정책·환경 변수는 docs/claude-handoff/ACCOUNT-SETUP.md 5절을 보십시오.
+
+[ ] 9. 커넥터·스킬
+    Gmail·Gamma 커넥터를 다시 연결하고, 사용자 스킬 mas-design·fin-data-integrity 는 docs/claude-handoff/skills/ 의 본문으로 다시 만듭니다. 스킬을 만들기 전이라도 &quot;docs/claude-handoff/skills/mas-design/SKILL.md 를 읽고 그 기준대로&quot; 라고 하면 같은 결과를 얻습니다.
+
+[ ] 10. 계정 이전 첫 대화
+    세션별 프롬프트보다 먼저, docs/handover/계정이전-마무리.md 3절의 첫 프롬프트로 전체 인계를 한 번 받으십시오.
+
+
+■ 프롬프트를 붙여 넣을 때
+------------------------------------------------------------------------------
+[ ] 11. 오늘 날짜를 첫 줄에
+    세션 시계는 UTC 라 한국 저녁·밤에는 날짜가 하루 어긋납니다. 날짜가 걸린 일은 첫 줄에 날짜를 적고, Claude 가 TZ=Asia/Seoul date 로 다시 확인하게 하십시오.
+    붙여 넣을 말 ▶ 오늘은 2026년 ○월 ○일(한국 시각)이야. TZ=Asia/Seoul date 로 한 번 더 확인하고 시작해줘.
+
+[ ] 12. 「먼저 읽을 것」은 끝까지
+    프롬프트가 인계 문서나 playbook 을 먼저 읽으라고 하면 요약본으로 대신하지 말라고 하십시오. 특히 시황 브리핑은 docs/briefing-playbook.md 를 처음부터 끝까지 읽어야 합니다.
+
+[ ] 13. main 병합은 확인 뒤에
+    여러 프롬프트에 &quot;main 에 합쳐&quot; 가 들어 있습니다. 새 계정 첫 작업에서는 결과를 보고 나서 합치라고 하십시오. 기능 가지에 -f 로 푸시하지 말 것(그 가지 작업이 사라집니다).
+
+[ ] 14. 옛 세션 ID·가지 주소
+    항목에 적힌 세션 ID 는 옛 계정 것이라 새 계정에서 열리지 않습니다. 기록용입니다. 가지는 GitHub 에 있으니 그대로 쓸 수 있습니다(부록 B 의 세 건 제외).
+
+
+■ 항목별로 걸리는 것
+------------------------------------------------------------------------------
+[ ] 15. 첫 요청을 다 읽지 못한 항목 26건
+    대화가 너무 길어 기록 맨 앞까지 가지 못한 세션은 압축 요약이나 저장소 인계 문서로 첫 요청을 대신했습니다. 해당 항목의 「주의」 칸에 적혀 있습니다. 이런 항목은 프롬프트를 믿기 전에 그 인계 문서를 직접 읽게 하십시오.
+
+[ ] 16. 중단·미완 11건
+    끝내지 못한 일입니다. 프롬프트를 바로 실행하기보다 &quot;지금 상태와 남은 일을 먼저 보고해줘&quot; 로 시작하십시오: (TEST)ETF 편입종목 조회 화면, +미래에셋증권 금융상품 조회 화면, (차용)모닝시황 및 마감시황 자료 생성, +초기 작업 검증 프로세스, 간단한 카운터 웹앱, 블룸버그 브리핑 자동 번역 및 요약, +(차용)국내 시장일지 작성, 미래자산증권 시세 데이터 통합, Stock report dashboard, 새로운 프로젝트 추천, 한국 라디오 방송 사이트 계획.
+    붙여 넣을 말 ▶ 이 일을 바로 이어서 하지 말고, 저장소의 현재 상태와 남은 일, 막혔던 이유를 먼저 표로 보고해줘. 내가 고른 것만 진행해.
+
+[ ] 17. 아티팩트 주소를 쓰는 항목 7건
+    옛 계정의 아티팩트(claude.ai) 주소는 계정이 닫히면 열리지 않고, 새 계정은 덮어쓸 권한도 없습니다. HTML 원본은 저장소에 있으니 새로 발행하고 받은 주소로 바꿔 적어야 합니다(계정이전-마무리.md 5절). +(활용)마포WM 장마감 시황 브리핑 (평일 16:10 KST), ELS 상품 통합 조회, +Claude 코드 GitHub 자동 저장 여부, +New session, +(활용)모닝 시황 브리핑, 부서 내 공유 저장소 설정, +📌 세션 산출물 자료실 — 상시 갱신 (월·목).
+
+[ ] 18. API 키가 필요한 항목
+    한국투자증권(KIS) 등 키는 저장소 시크릿에 있어 GitHub Actions 에서는 그대로 돕니다. 세션 안에서 직접 쓰던 키가 있었다면 새 환경의 환경 변수로 다시 넣되, 대화창에는 붙여 넣지 마십시오.
+
+[ ] 19. 시험·잡담 항목
+    테트리스·카운터 앱·New session 같은 시험용은 다시 할 필요가 없으면 건너뛰어도 됩니다.
+
+
+■ 저장소 공통 규칙 — 어느 프롬프트에도 붙어 있습니다
+------------------------------------------------------------------------------
+[ ] 20. 날짜·숫자를 지어내지 않는다
+    확인 못 한 것은 비워 두고 출처 주소와 함께 남깁니다. &quot;아마 이쯤&quot; 으로 채우지 않습니다.
+
+[ ] 21. 시세·ELS·브리핑 자료는 GitHub Pages 로 노출하지 않는다
+    사람이 받아 갈 파일은 데이터 가지의 고정 주소에 둡니다.
+
+[ ] 22. *.translate.goog 를 쓰지 않는다
+    회사 망이 비업무용으로 막습니다.
+
+[ ] 23. 파이썬은 표준 라이브러리만
+    scripts/*.py 는 깔 것이 없어야 합니다. 브라우저는 playwright 1.56.1, 크로미움은 /opt/pw-browsers 에 있으니 playwright install 을 다시 부르지 않습니다.
+
+[ ] 24. 만든 것은 돌려 보고 보고한다
+    화면은 크로미움으로 열어 보고, 수집기는 한 번 돌려 보고, 시험이 깨지면 깨졌다고 적게 하십시오.
+
+
+■ 잘 안 될 때
+------------------------------------------------------------------------------
+[ ] 25. &quot;그런 파일이 없다&quot;
+    거의 가지 문제입니다. 부록 A 에서 그 항목의 가지를 찾아 git fetch origin &lt;가지&gt; 를 시키십시오. 부록 B 의 세 건은 가지가 GitHub 에 없으니 처음부터 다시 만들어야 합니다.
+
+[ ] 26. 푸시가 거부된다
+    GitHub 연결에서 그 저장소 접근이 허용됐는지, Claude GitHub 앱이 설치됐는지 확인하십시오.
+
+[ ] 27. 예약 결과가 엉뚱한 창으로 온다
+    예약은 만든 창에 붙습니다. 전용 창을 먼저 열고 그 창 안에서 만드십시오(계정이전-마무리.md 4절 표).
+
+[ ] 28. 프롬프트 내용을 고치고 싶다
+    docs/handover/session-prompts.json 의 그 항목을 고친 뒤 python3 scripts/build_session_prompts.py 를 돌립니다. md·html·txt 를 손으로 고치지 마십시오.
+
+
+■ 부록 A. main 이 아닌 가지의 파일을 쓰는 항목
+------------------------------------------------------------------------------
+- +(활용)ETF 편입종목 조회 도구  →  claude/etf-holdings-lookup-tool-wwtz57
+- +Claude 제품 사용 시 유의사항  →  claude/adoring-cannon-ds28a0
+- Tetris game  →  claude/tetris-game-chiy3o
+- 자동 증시시황 수집 및 브리핑  →  claude/auto-market-briefing-necqk2
+- +고객 상품 제안서 생성 도구  →  claude/customer-proposal-generator-f53dlm
+- +은퇴자산 설계 제안서  →  claude/retirement-asset-proposal-m08jfr, claude/etf-holdings-lookup-tool-wwtz57, claude/fund-search-tool
+- +(활용)ELS 상품 구조 설명 페이지  →  claude/els-product-structure-page-ljsucw
+- +(활용)고객제안서 ETF 월배당 엑셀  →  claude/intelligent-maxwell-dnreiw
+- +(차용)퇴직급여 수령 의사결정 시뮬레이터  →  claude/magical-bohr-6nz96j
+- (TEST)ETF 편입종목 조회 화면  →  claude/elegant-mendel-7s02zx
+- 반도체 세미나 강의안 PPT  →  claude/semiconductor-seminar-ppt-elk4i4
+- +(활용)펀드조회 화면 (ETF와 같은 구성)  →  claude/fund-search-tool
+- +미래에셋증권 금융상품 조회 화면  →  claude/mirae-asset-product-dashboard-cgyqu7
+- +MS Word 문서 저장 오류  →  claude/cool-pasteur-dgzvrd
+- +한국투자증권 모의투자 API 키 신청  →  claude/ecstatic-mccarthy-2kg48k
+- +미국 주요기업 실적 대시보드  →  claude/beautiful-hopper-e7j93r
+- +3개월 단기 자금 운용 상품  →  claude/kind-feynman-4ke7nr
+- +국가법령정보센터 법령 조회 문제  →  claude/law-info-center-query-issue-4ob6uz
+- (차용)모닝시황 및 마감시황 자료 생성  →  claude/wonderful-dijkstra-nc6uye
+- 주식 투자 자료 검증  →  claude/stock-investment-validation-6d61p5
+- IPR account product proposals  →  claude/ipr-account-products-akf151
+- +조회 사이트 구축  →  claude/query-site-builder-wad3bb
+- +초기 작업 검증 프로세스  →  claude/initial-work-validation-kg344p  ※ 프롬프트에 가지 이름 없음 — 직접 일러 줄 것
+- +주식 차트 매매 신호 AI  →  claude/blissful-sagan-sn0yse
+- +(활용)ELS/펀드 완전판매 스크립트  →  claude/els-fund-disclosure-i6wtii
+- 간단한 카운터 웹앱  →  claude/sharp-planck-q5hets
+- +Claude 코드 작업 보고서  →  claude/work-report-presentation-wfnh58
+- +부동산 세제 자료 검증  →  claude/real-estate-tax-validation-a39v6m
+- +New session  →  claude/new-session-5vw1zz
+- 부서 내 공유 저장소 설정  →  claude/department-shared-storage-vxpl94
+- +IRP product proposal PPT  →  claude/irp-product-proposal-ppt-owsbmc
+- +국내 100대 기업 정보 조회 화면  →  kr100-data
+- 블룸버그 브리핑 자동 번역 및 요약  →  claude/bloomberg-briefing-auto-translate-ms7zvd
+- +(차용)국내 시장일지 작성  →  claude/elegant-ritchie-7p11xf, claude/journal-kis-flows
+- 내부망 파일 공유 사이트  →  claude/intranet-file-sharing-site-bk9cwc, claude/handoff-account-migration-2026-10
+- 미래자산증권 시세 데이터 통합  →  claude/mirae-asset-quote-integration-rrrwfm
+- +(활용)완전판매 스크립트 자동화 시스템  →  claude/complete-sales-script-automation-cjsx8e
+- 제약바이오 자료 검증  →  claude/pharma-biotech-validation-9awrwc
+- (TEST2)ETF 구성종목 조회 화면  →  claude/fervent-hypatia-bbg6hh
+- 동영상 제작  →  claude/video-creation-odmttg
+- 작업 검토 및 제안  →  claude/work-review-recommendations-f6kglc
+- +시장 변동성 예측 모델  →  claude/sweet-darwin-af7cvl
+- 데이터센터 밸류체인 맵  →  claude/datacenter-value-chain-map-6s4fvs
+- 반도체 자료 검증 및 화면 수정  →  claude/semiconductor-review-ui-fix-i5wfu9
+- 최종본 파일 확인  →  claude/final-file-check-mmcfob
+- +(활용)Asset briefing dashboard setup  →  claude/asset-briefing-dashboard-1owydo
+- +📌 세션 산출물 자료실 — 상시 갱신 (월·목)  →  claude/organize-session-artifacts-fbg82m
+- 새로운 프로젝트 추천  →  claude/new-project-recommendation-j3hplb
+- 부동산 세금 계산기  →  claude/real-estate-tax-calculator-8dyime
+- 한국 라디오 방송 사이트 계획  →  claude/zen-euler-umuf5o
+- Claude 코드 세션 프롬프트 다운로드  →  claude/focused-babbage-mv26jj
+
+■ 부록 B. 가지가 GitHub 에 없는 항목 (저장소에 남긴 것 없음)
+------------------------------------------------------------------------------
+- SK하이닉스 증권사별 목표가  (옛 가지 claude/brave-ramanujan-1364j9)
+- +Claude 코드 GitHub 자동 저장 여부  (옛 가지 claude/tender-ride-fly4lt)
+- +지점QR/무료 호스팅 배포  (옛 가지 claude/happy-goldberg-hn0p5j)
+
+■ 부록 C. 예약을 언급하는 항목 — 정본은 routines.json
+------------------------------------------------------------------------------
+- +(활용)ETF 편입종목 조회 도구
+- 자동 증시시황 수집 및 브리핑
+- +(활용)ELS 상품 구조 설명 페이지
+- +(활용)증권사 리포트 자동 요약
+- 반도체 자료 검증 및 화면 수정
+- +(활용)마포WM 장마감 시황 브리핑 (평일 16:10 KST)
+- (차용)모닝시황 및 마감시황 자료 생성
+- +초기 작업 검증 프로세스
+- +Claude 코드 GitHub 자동 저장 여부
+- +(활용)ELS/펀드 완전판매 스크립트
+- +Claude 코드 작업 보고서
+- +(활용)매매 타이밍 전략 구축
+- +(활용)모닝 시황 브리핑
+- Claude 코드/채팅 세션 일괄 다운로드
+- +국내 100대 기업 정보 조회 화면
+- +(활용)증시/금융 일정 조회 화면
+- +(차용)국내 시장일지 작성
+- 반도체 자료 검증 및 화면 수정
+- +📌 세션 산출물 자료실 — 상시 갱신 (월·목)
+- 새로운 프로젝트 추천
+- 한국 라디오 방송 사이트 계획
+- +(활용)미국 100대 기업 정보 조회 화면
+</script><script>const K='session-prompt-caution-v1';let st={};try{st=JSON.parse(localStorage.getItem(K)||'{}')}catch(e){}
+document.querySelectorAll('.it input').forEach(c=>{c.checked=!!st[c.id];c.closest('.it').classList.toggle('done',c.checked);
+c.addEventListener('change',()=>{st[c.id]=c.checked;c.closest('.it').classList.toggle('done',c.checked);try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}})});
+document.addEventListener('click',e=>{const b=e.target.closest('.cp');if(!b)return;const t=b.nextElementSibling.textContent;
+const ok=()=>{b.textContent='복사됨';setTimeout(()=>b.textContent='복사',1200)};
+if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok,()=>{});});
+document.getElementById('dl').onclick=()=>{const t=document.getElementById('alltxt').textContent;const u=URL.createObjectURL(new Blob([t],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download='세션별-프롬프트-유의사항.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
+document.getElementById('pr').onclick=()=>print();
+document.getElementById('rs').onclick=()=>{st={};try{localStorage.removeItem(K)}catch(e){}document.querySelectorAll('.it input').forEach(c=>{c.checked=false;c.closest('.it').classList.remove('done')})};
+document.getElementById('th').onclick=()=>{const r=document.documentElement;const d=r.dataset.theme==='dark'||(!r.dataset.theme&&matchMedia('(prefers-color-scheme: dark)').matches);r.dataset.theme=d?'light':'dark'};</script></div></body></html>
