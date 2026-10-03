@@ -79,6 +79,14 @@ export const perRiskOf = (it) => (it.mcLoss ? it.annualRate / +it.mcLoss.toFixed
  */
 export const perRiskSpread = (best, worst) => +perRiskOf(best).toFixed(2) / +perRiskOf(worst).toFixed(2);
 
+/**
+ * 한 상품의 위험당 대가가 지수형 평균의 몇 배인가 — 같은 이유로 **인쇄되는 두
+ * 값끼리** 나눈다. 제38179회(2026-10-02)는 원값으로 0.982/0.727 = 1.3509 라
+ * 한 자리로 접으면 1.4 지만, 자료에 찍힌 0.98 과 0.73 으로 나누면 1.3 이다.
+ * 읽는 사람이 손으로 검산하면 어긋난다.
+ */
+export const perRiskVsIdx = (it, idxPerRisk) => +perRiskOf(it).toFixed(2) / +idxPerRisk.toFixed(2);
+
 export const kindOf = (it) => it.underlyings.every((u) => IDX.has(u)) ? '지수'
   : it.underlyings.some((u) => IDX.has(u)) ? '혼합' : '종목';
 export const tierOf = (it) => TIERS[it.tier];
@@ -229,14 +237,29 @@ function couponStudy(items, best) {
          * 로 잘못 서고(실제로 D_TWIN_LOSS_D 가 터졌다), 문장도 "손실 확률은 더 집니다"
          * 로 사실과 반대로 나간다.
          */
+        // 차이는 **인쇄되는 한 자리 값**끼리 뺀다. 원값으로 빼면 표에 24.5·14.7 이
+        // 찍혀 있는데 본문은 9.7%p 차이라고 적는 일이 생긴다(위험당 대가와 같은 규칙).
+        const gap = Math.abs(+hi.mcLoss.toFixed(1) - +lo.mcLoss.toFixed(1));
         if (d > 0 && (!best || d > best.d)) {
-          best = { hi, lo, d, gap: Math.abs(hi.mcLoss - lo.mcLoss), hiRiskier: hi.mcLoss >= lo.mcLoss };
+          best = { hi, lo, d, gap: +gap.toFixed(1), hiRiskier: hi.mcLoss >= lo.mcLoss };
         }
       }
     }
     return best;
   };
-  const twin = pairBest((hi, lo) => Math.abs(hi.mcLoss - lo.mcLoss) <= 1.5);
+  /**
+   * near 는 손실 확률만 가까워서는 모자라다 — **수익률 차이가 손실 확률 차이보다
+   * 뚜렷하게 커야** "위험은 같은데 값만 다르다" 가 말이 된다. 2026-10-02 회차에서
+   * 유일하게 1.5%p 안에 든 짝이 수익률도 0.4%p 차이라, "손실 확률이 0.4%p밖에 차이
+   * 안 나는데 수익률은 0.4%p 차이 납니다" 가 굵게 인쇄됐다. 틀린 말은 아니지만
+   * 아무 말도 아니다. 그래서 수익률 차이가 1%p 이상이고 손실 확률 차이의 두 배는
+   * 되어야 near 로 친다. 못 미치면 near 는 비고, 아래 any 짝으로 넘어간다.
+   */
+  const twin = pairBest((hi, lo) => {
+    const g = Math.abs(+hi.mcLoss.toFixed(1) - +lo.mcLoss.toFixed(1));
+    const d = hi.annualRate - lo.annualRate;
+    return g <= 1.5 && d >= 1 && d >= 2 * g;
+  });
   const twinAny = twin || pairBest(() => true);
 
   // ② 가격 — 갭이 가장 크게 벌어진 상품

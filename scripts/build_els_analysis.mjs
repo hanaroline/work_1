@@ -20,7 +20,7 @@
  */
 import { writeFile } from 'node:fs/promises';
 import {
-  analyze, kindOf, tierOf, KINDS, TIER_RULE, IDX, MC, money, baseOf, unitOf, josa,
+  analyze, kindOf, tierOf, KINDS, TIER_RULE, IDX, MC, money, baseOf, unitOf, josa, perRiskVsIdx,
 } from './lib/els-analysis.mjs';
 
 const OUT = 'els-analysis.html';
@@ -165,7 +165,7 @@ const defenceLine = (it) => {
     : `그래서 손실 확률도 <b>${f1(it.mcLoss, 1)}%</b>로 지수형 평균(${f1(idxAvg, 1)}%)보다 <b>높습니다.</b> `
       + `그런데도 이 자리에 올린 이유는 안전해서가 아니라 <b>그 위험을 지는 대가를 그만큼 많이 주기 때문</b>입니다. `
       + `손실 확률 1%마다 연 <b>${f1(perRisk(it), 2)}%</b>를 주는데, 이번 주 지수형은 평균 ${f1(idxPerRisk, 2)}%입니다. `
-      + `바꿔 말하면 이만한 수익을 지수형에서 받으려면 위험을 <b>${f1(perRisk(it) / idxPerRisk, 1)}배</b> 져야 합니다. `
+      + `바꿔 말하면 이만한 수익을 지수형에서 받으려면 위험을 <b>${f1(perRiskVsIdx(it, idxPerRisk), 1)}배</b> 져야 합니다. `
       + `원금을 지키는 게 제일 중요한 분께는 이 상품 말고 <b>1번 카드</b>를 권해 주십시오.`;
 
   return `<p class="defend">${head}${body}</p>`;
@@ -319,13 +319,14 @@ if (T && CW.group.length >= 2) {
    * 아닐 때는 수익률 차이를 위험 차이와 나란히 놓고, 위험당 대가가 어느 쪽으로
    * 갔는지까지 적는다 — 수익률 차이만 크게 적으면 "더 받는다" 로만 읽힌다.
    * 이때 방향을 가정하면 안 된다. 수익률이 높은 쪽(hi)이 손실 확률까지 높다는
-   * 보장이 없어서(2026-10-02 회차가 그랬다), hiRiskier 로 갈라 적는다.
+   * 보장도, 위험당 대가가 그쪽에서 깎인다는 보장도 없다 — 2026-10-02 회차의
+   * 제38184·38177회 짝은 손실 확률도 더 높은데 위험당 대가는 오히려 올라간다.
+   * 그래서 두 방향을 각각 인쇄값으로 확인해서 적는다.
    */
+  const effUp = +eff1(T.hi) > +eff1(T.lo);
   const gapText = CW.twin
     ? `<b>손실 확률이 ${f1(T.gap, 1)}%p밖에 차이 안 나는데 수익률은 ${f1(T.d, 1)}%p 차이 납니다.</b>`
-    : T.hiRiskier
-      ? `<b>수익률은 ${f1(T.d, 1)}%p 더 주지만 손실 확률은 ${f1(T.gap, 1)}%p나 더 집니다</b> — 손실 확률 1%마다 받는 돈으로 바꾸면 ${eff1(T.lo)}%에서 ${eff1(T.hi)}%로 오히려 줄어듭니다.`
-      : `<b>수익률은 ${f1(T.d, 1)}%p 더 주면서 손실 확률은 오히려 ${f1(T.gap, 1)}%p 더 낮습니다</b> — 손실 확률 1%마다 받는 돈으로 바꾸면 ${eff1(T.lo)}%에서 ${eff1(T.hi)}%로 올라갑니다.`;
+    : `<b>수익률은 ${f1(T.d, 1)}%p 더 ${T.hiRiskier ? `주지만 손실 확률은 ${f1(T.gap, 1)}%p나 더 집니다` : `주면서 손실 확률은 오히려 ${f1(T.gap, 1)}%p 더 낮습니다`}</b> — 손실 확률 1%마다 받는 돈으로 바꾸면 ${eff1(T.lo)}%에서 ${eff1(T.hi)}%로 ${effUp ? '올라갑니다' : '오히려 줄어듭니다'}.`;
   /**
    * 무엇이 달라서 갈렸는지는 **실제로 다른 것만** 짚는다.
    * 예전에는 주기·차수·낙인 세 가지를 고정으로 적었는데, 2026-09-21 회차의 짝
@@ -343,7 +344,10 @@ if (T && CW.group.length >= 2) {
         ? ` (첫 기준선만 봐도 ${T.hi.barriers[0]}% 대 ${T.lo.barriers[0]}%)` : ''));
   }
   const why = diffs.length
-    ? `${diffs.join(', ')}가 수익률과 손실 확률을 서로 다른 방향으로 흔들기 때문입니다.`
+    // "서로 다른 방향으로" 라고 박아 두면 둘이 같은 방향으로 움직인 주에 어긋난다
+    // (2026-10-02 짝은 수익률도 손실 확률도 함께 올랐다). 요지는 방향이 아니라
+    // 폭이 다르다는 것이므로 그렇게 적는다.
+    ? `${diffs.join(', ')}가 수익률과 손실 확률을 같은 폭으로 흔들지 않기 때문입니다.`
     : '기초자산과 기간이 같아도 상환 조건이 조금씩 달라 값이 갈립니다.';
   whyItems.push(`<b>상품 조건이 달라서.</b> ${esc(CW.group[0].underlyings.join('·'))}를 기초자산으로 삼는 ${CW.group.length}종은 <b>기초자산도, 적용 변동성(${f1(CW.group[0].vmax, 1)}%)도, 기간(${CW.group[0].months}개월)도 똑같은데</b> 수익률만 ${f1(Math.min(...rates), 1)}~${f1(Math.max(...rates), 1)}%로 갈립니다. 제${T.hi.no}회는 손실 확률 ${f1(T.hi.mcLoss, 1)}%에 수익률 ${f1(T.hi.annualRate, 1)}%, 제${T.lo.no}회는 손실 확률 ${f1(T.lo.mcLoss, 1)}%에 수익률 ${f1(T.lo.annualRate, 1)}% — ${gapText} ${why}`);
 }
@@ -676,7 +680,12 @@ footer a{color:var(--muted)}
   tr{break-inside:avoid}
   th,td{padding:4px 6px}
   .tw{overflow:visible}
-  .caus,.checks{gap:10px}
+  .caus{gap:10px}
+  /* 확인 사항은 칸 사이 1px 를 띄우려고 격자 바탕을 헤어라인 색으로 깔아 둔다.
+     쪽이 갈리면 그 바탕이 페이지 아래까지 회색 덩어리로 내려온다(2026-10-02,
+     9쪽). 인쇄에서는 바탕을 걷고 칸마다 테두리를 준다. */
+  .checks{gap:10px;background:none;border:0}
+  .chk{border:1px solid var(--hair)}
   footer{margin-top:18px;padding:12px 0 0;font-size:8.5pt}
   a{text-decoration:none}
 }

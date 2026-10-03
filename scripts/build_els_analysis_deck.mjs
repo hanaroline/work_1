@@ -14,7 +14,7 @@
  * 표·도형·차트는 전부 네이티브라 파워포인트에서 그대로 고칠 수 있다.
  */
 import pptxgen from 'pptxgenjs';
-import { analyze, kindOf, tierOf, KINDS, TIER_RULE, money, baseOf, unitOf, josa } from './lib/els-analysis.mjs';
+import { analyze, kindOf, tierOf, KINDS, TIER_RULE, money, baseOf, unitOf, josa, perRiskVsIdx } from './lib/els-analysis.mjs';
 
 const A = await analyze(process.argv[2]);
 const OUT = 'els-analysis-deck.pptx';   // 문서판 els-analysis.pdf 와 겹치지 않게
@@ -208,7 +208,9 @@ if (A.plan.hasCooling) {
     s.addShape(pres.ShapeType.rect, { x, y: y0, w: cw, h: 1.5, fill: { color: WHITE }, line: { color: HAIR, width: 1 } });
     s.addText(k, { x: x + 0.22, y: y0 + 0.18, w: cw - 0.44, h: 0.26, fontFace: F, fontSize: 11.5, color: MUTED, margin: 0 });
     s.addText(v, { x: x + 0.18, y: y0 + 0.46, w: cw - 0.36, h: 0.62, fontFace: F, fontSize: 24, bold: true, color: BLUE, valign: 'middle', margin: 0 });
-    s.addText(sub, { x: x + 0.22, y: y0 + 1.1, w: cw - 0.44, h: 0.3, fontFace: F, fontSize: 10.5, color: FAINT, margin: 0 });
+    // 만기일이 들어가는 칸은 10.5pt 에서 두 줄로 꺾여 "있음" 한 마디만 아래로
+    // 떨어진다(2026-10-02). 한 줄에 들어가게 글자를 줄이고 여백을 좁힌다.
+    s.addText(sub, { x: x + 0.14, y: y0 + 1.1, w: cw - 0.28, h: 0.3, fontFace: F, fontSize: 9.5, color: FAINT, margin: 0 });
   });
 
   const bullets = [
@@ -470,9 +472,8 @@ if (A.plan.hasCooling) {
         + `제${T.lo.no}회 손실 확률 ${f1(T.lo.mcLoss)}% · 연 ${f1(T.lo.annualRate)}%\n\n`
         + (CW2.twin
           ? `손실 확률은 ${f1(T.gap)}%p 차인데 수익률은 ${f1(T.d)}%p 차입니다. `
-          : T.hiRiskier
-            ? `수익률은 ${f1(T.d)}%p 더 주지만 손실 확률은 ${f1(T.gap)}%p나 더 집니다 — 손실 확률 1%당 받는 돈으로 바꾸면 ${f1(CE.ratio(T.lo), 2)}%에서 ${f1(CE.ratio(T.hi), 2)}%로 오히려 줄어듭니다. `
-            : `수익률은 ${f1(T.d)}%p 더 주면서 손실 확률은 오히려 ${f1(T.gap)}%p 더 낮습니다 — 손실 확률 1%당 받는 돈으로 바꾸면 ${f1(CE.ratio(T.lo), 2)}%에서 ${f1(CE.ratio(T.hi), 2)}%로 올라갑니다. `)
+          // 손실 확률의 방향과 위험당 대가의 방향은 따로 논다. 둘 다 인쇄값으로 본다.
+          : `수익률은 ${f1(T.d)}%p 더 ${T.hiRiskier ? `주지만 손실 확률은 ${f1(T.gap)}%p나 더 집니다` : `주면서 손실 확률은 오히려 ${f1(T.gap)}%p 더 낮습니다`} — 손실 확률 1%당 받는 돈으로 바꾸면 ${f1(CE.ratio(T.lo), 2)}%에서 ${f1(CE.ratio(T.hi), 2)}%로 ${+f1(CE.ratio(T.hi), 2) > +f1(CE.ratio(T.lo), 2) ? '올라갑니다' : '오히려 줄어듭니다'}. `)
         + twinWhy(T) },
     { n: '②', k: '값어치가 깎여서', c: BAD,
       t: `제${CW2.priced.no}회는 연 ${f1(CW2.priced.annualRate)}%인데 손실 확률이 ${f1(CW2.priced.mcLoss)}%나 됩니다 — 손실 확률 1%당 ${f1(CE.ratio(CW2.priced), 2)}%로 이번 회차 꼴찌입니다. 넣는 순간의 값어치가 제값보다 ${f1(Math.abs(CW2.priced.fairValueGap))}%나 깎여 있기 때문입니다.\n\n`
@@ -623,7 +624,7 @@ function defence(it) {
     ? base + `다만 컴퓨터로 똑같이 돌려본 손해 볼 가능성은 ${f1(it.mcLoss)}%로 지수만 담은 상품 평균(${f1(idxAvg)}%)보다 낮고, 지수만 담은 ${idxN}종 중 ${beats}종보다도 낮습니다. `
       + (it.rho >= 0.7 ? `두 자산이 ${f1(it.rho, 2)}만큼 거의 같이 움직여서 "더 나쁜 쪽으로 판정"하는 불이익이 거의 없고, 원금 지키는 선도 ${it.knockIn}%로 훨씬 아래입니다.` : `원금 지키는 선이 ${it.knockIn}%로 훨씬 아래입니다.`)
     : base + `손해 볼 가능성도 ${f1(it.mcLoss)}%로 지수만 담은 상품 평균(${f1(idxAvg)}%)보다 높습니다. 그런데도 올린 이유는 안전해서가 아니라 대가가 크기 때문입니다 — `
-      + `손해 볼 가능성 1%마다 연 ${f1(A.perRisk(it), 2)}%로, 지수 상품 평균 ${f1(A.idxPerRisk, 2)}%의 ${f1(A.perRisk(it) / A.idxPerRisk)}배입니다. `
+      + `손해 볼 가능성 1%마다 연 ${f1(A.perRisk(it), 2)}%로, 지수 상품 평균 ${f1(A.idxPerRisk, 2)}%의 ${f1(perRiskVsIdx(it, A.idxPerRisk))}배입니다. `
       + `원금 지키는 게 제일 중요한 분께는 추천 1번을 권하십시오.`;
 }
 
@@ -676,7 +677,8 @@ function defence(it) {
     const r = [];
     if (it.mcLoss > 25) r.push(`컴퓨터로 똑같이 돌리면 100번 중 ${f1(it.mcLoss, 0)}번이 손실 (이번 주 평균 ${f1(A.mcAvgAll, 0)}번)`);
     if ((it.fairValueGap ?? 0) <= -10) r.push(`${baseOf(it)}${josa(baseOf(it), '을', '를')} 넣는 순간의 실제 값어치가 ${money(it, it.fairValue / 100)}밖에 안 됨`);
-    if (it.simShort) r.push(`회사가 과거로 돌려본 기간이 ${f1(it.simYears)}년(${it.simRuns?.toLocaleString('ko-KR')}번)뿐 — 큰 폭락장이 아예 빠져 있어 손실 ${f1(it.simLoss, 2)}%를 20년 돌려본 상품과 견줄 수 없음`);
+    // 칸이 좁다. 길게 적으면 네 줄로 꺾여 카드 밖으로 넘친다(2026-10-02, 13장).
+    if (it.simShort) r.push(`회사가 돌려본 기간이 ${f1(it.simYears)}년(${it.simRuns?.toLocaleString('ko-KR')}번)뿐 — 큰 폭락장이 빠져 손실 ${f1(it.simLoss, 2)}%를 20년 상품과 견줄 수 없음`);
     if (it.vmax >= 90) r.push(`가격 출렁임 ${f1(it.vmax, 0)}% — 이번 주에서 가장 심한 축`);
     // 같은 기초자산인데 수익률이 더 높으면서 손실 확률까지 낮은 상품이 있으면 그쪽을 가리킨다
     const key = (x) => [...x.underlyings].sort().join('|');
@@ -697,7 +699,7 @@ function defence(it) {
       { x: x + 0.2, y: y0 + 1.14, w: cw - 0.4, h: 0.3, fontFace: F, fontSize: 13, margin: 0 });
     const rs = reasons(it);
     s.addText(rs.map((t, j) => ({ text: t, options: { bullet: true, breakLine: j < rs.length - 1 } })), {
-      x: x + 0.2, y: y0 + 1.52, w: cw - 0.4, h: 1.86, fontFace: F, fontSize: 10.5, color: BODY, valign: 'top', lineSpacing: 15, paraSpaceAfter: 9, margin: 0,
+      x: x + 0.2, y: y0 + 1.5, w: cw - 0.4, h: 1.94, fontFace: F, fontSize: 10.5, color: BODY, valign: 'top', lineSpacing: 14, paraSpaceAfter: 7, margin: 0,
     });
   });
   s.addShape(pres.ShapeType.rect, { x: M, y: y0 + 3.76, w: CW, h: 0.88, fill: { color: SURF }, line: { color: HAIR, width: 1 } });
@@ -726,7 +728,9 @@ function defence(it) {
   ];
   const NUM = ['한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟'];
   const y0 = head(s, '가입 전에 꼭 짚어드릴 것', `상담에서 이 ${NUM[chk.length - 1] || chk.length} 가지를 빠뜨리면 나중에 문제가 됩니다.`);
-  const cols = 3, cw = (CW - 0.26 * (cols - 1)) / cols, ch = 1.62;
+  // 칸 높이 1.62 로는 글이 긴 칸(녹음 고지)이 다섯 줄로 꺾여 테두리 밖으로
+  // 흘렀다(2026-10-02, 14장). 아래에 빈 자리가 넉넉하므로 칸을 키운다.
+  const cols = 3, cw = (CW - 0.26 * (cols - 1)) / cols, ch = 1.95;
   chk.forEach(([k, v], i) => {
     const x = M + (i % cols) * (cw + 0.26), y = y0 + Math.floor(i / cols) * (ch + 0.24);
     const first = A.plan.hasCooling && i === 0;                 // 마감일 칸은 눈에 띄어야 한다

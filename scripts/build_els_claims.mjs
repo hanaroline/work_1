@@ -14,7 +14,7 @@
  *                     덱에서도 "A. 설명서상" / "B. 시뮬레이션" 으로 갈라 표기한다.
  */
 import { writeFile, readFile } from 'node:fs/promises';
-import { analyze, kindOf, unitOf, perRiskOf, perRiskSpread, MC_SENS, TIER_CUT } from './lib/els-analysis.mjs';
+import { analyze, kindOf, unitOf, perRiskOf, perRiskSpread, perRiskVsIdx, MC_SENS, TIER_CUT } from './lib/els-analysis.mjs';
 
 const A = await analyze(process.argv[2]);   // 인자가 없으면 가장 최근 공시 회차 (덱과 같은 규칙)
 const OUT = 'tools/discovery/els-claims.json';
@@ -589,11 +589,11 @@ if (STALE.length) {
         +perRiskOf(it).toFixed(2), '%', ['h-rec']);
       stat(`PERRISK_VS_IDX_${it.no}`, '위험당 대가 배수',
         `제${it.no}회의 위험당 대가가 지수형 평균의 몇 배인가`,
-        +(perRiskOf(it) / A.idxPerRisk).toFixed(1), '배', ['h-rec']);
+        +perRiskVsIdx(it, A.idxPerRisk).toFixed(1), '배', ['h-rec']);
       derived.push({
         id: `D${it.no}_PERRISK_VS_IDX`, kind: 'ratio',
         numerator: `PERRISK_${it.no}`, denominator: 'IDX_PERRISK',
-        printed: +(perRiskOf(it) / A.idxPerRisk).toFixed(1), tolerance: 0.06,
+        printed: +perRiskVsIdx(it, A.idxPerRisk).toFixed(1), tolerance: 0.06,
       });
     }
   }
@@ -683,6 +683,22 @@ if (STALE.length) {
       });
     }
   }
+  // 추천 카드는 백테스트 손실을 "5,117번 중 50번" 으로도 적는다. 비중(%)에서
+  // 되짚은 횟수이지 공시에 그 숫자가 적혀 있는 것은 아니므로 computed 로 올리고,
+  // 비중 × 표본 수로 검산한다. 지난주에는 이 값이 다른 항목과 우연히 겹쳐
+  // 역방향 대조를 통과했고, 이번 주에 50 이 미등록으로 걸렸다.
+  for (const s of A.slots) {
+    const R = s.pick, n = R.no;
+    if (R.simLoss == null || !R.simRuns || claims.some((c) => c.id === `R${n}_SIMLOSSRUNS`)) continue;
+    const runs = Math.round(R.simLoss / 100 * R.simRuns);
+    computed(`R${n}_SIMLOSSRUNS`, '백테스트 손실 횟수',
+      `제${n}회 발행사 모의실험에서 손실로 끝난 횟수 (A)`, runs, '회', ['h-card'],
+      { note: '공시는 비중(%)만 싣는다. 표본 수를 곱해 되짚은 값' });
+    derived.push({
+      id: `D${n}_SIMLOSSRUNS`, kind: 'product',
+      a: `R${n}_SIMLOSS`, b: R.simRuns / 100, printed: runs, tolerance: 0.5,
+    });
+  }
   // 추천 카드는 "1만원 → 빠르면 6개월 뒤 10,800원" 으로 첫 상환금액을 적는다
   for (const s of A.slots) {
     const R = s.pick, n = R.no;
@@ -718,7 +734,7 @@ const ledger = {
     '온라인 전용 확인': '종',
     '낙인까지 하락폭': '%', '만기 손실 하락폭': '%', '액면가액': '원', '공정가 괴리': '%',
     '손실 시 평균 손실 크기': '%',
-    '모의실험 횟수': '회', '1차 상환 비중': '%', '등급 경계': '%',
+    '모의실험 횟수': '회', '백테스트 손실 횟수': '회', '1차 상환 비중': '%', '등급 경계': '%',
     '공정가격(원)': '원', '공정가격(달러)': '달러', '기초자산 시세': '종',
     // 3장(구조)·5장(수익률-위험 분석)에서 새로 인쇄하는 지표
     '차수 배리어': '%', '상환금액 비율': '%', '상환금액(원)': '원', '상환금액(달러)': '달러',
