@@ -276,6 +276,11 @@ button:hover{background:var(--subtle)}
 button.primary{background:var(--orange); border-color:var(--orange); color:#fff}
 button.primary:hover{background:var(--orange-active)}
 button.icon{padding:5px 10px; font-size:14px; color:var(--muted)}
+button.icon.done{background:var(--orange); border-color:var(--orange); color:#fff}
+th[data-k]{cursor:pointer; user-select:none}
+th[data-k]:hover{text-decoration:underline}
+th[data-k].sorted{background:var(--orange); color:#fff}
+th .arw{margin-left:4px; font-size:11px}
 .btns{display:flex; gap:9px; flex-wrap:wrap; margin-top:14px}
 
 /* ── 수치 카드 ──────────────────────────────────────── */
@@ -351,7 +356,7 @@ ul.notice li{margin:5px 0}
     <button onclick="saveState()">작성 내용 저장</button>
     <button onclick="document.getElementById('loadFile').click()">불러오기</button>
     <input type="file" id="loadFile" accept=".json" style="display:none" onchange="loadState(this)">
-    <button onclick="resetAll()">처음으로</button>
+    <button onclick="resetAll()" title="고객 정보를 처음 값으로 되돌리고, 담은 종목을 모두 비웁니다">초기화</button>
     <span class="note" id="saveMsg" style="align-self:center"></span>
   </div>
 
@@ -443,9 +448,17 @@ ul.notice li{margin:5px 0}
         <select id="qAdopt"><option>전체</option><option>채택만</option><option>기준 미달만</option></select></div>
     </div>
     <div class="note" id="qCount"></div>
+    <div class="note" id="qPick"></div>
     <div class="tbl-wrap"><table>
-      <thead><tr><th>종목명</th><th class="c">지급주기</th><th class="r">연 분배율</th><th class="r">월 환산</th>
-        <th class="r">현재가</th><th class="r">변동성(__VOLNOTE__)</th><th class="r">순자산</th><th class="c">채택</th>
+      <thead><tr id="qHead">
+        <th data-k="name" onclick="sortQuery('name')">종목명<span class="arw"></span></th>
+        <th class="c" data-k="freq" onclick="sortQuery('freq')">지급주기<span class="arw"></span></th>
+        <th class="r" data-k="ttm" onclick="sortQuery('ttm')">연 분배율<span class="arw"></span></th>
+        <th class="r" data-k="ttm12" onclick="sortQuery('ttm12')">월 환산<span class="arw"></span></th>
+        <th class="r" data-k="price" onclick="sortQuery('price')">현재가<span class="arw"></span></th>
+        <th class="r" data-k="vol" onclick="sortQuery('vol')">변동성(__VOLNOTE__)<span class="arw"></span></th>
+        <th class="r" data-k="aum" onclick="sortQuery('aum')">순자산<span class="arw"></span></th>
+        <th class="c" data-k="adopted" onclick="sortQuery('adopted')">채택<span class="arw"></span></th>
         <th class="c noprint">담기</th></tr></thead>
       <tbody id="qBody"></tbody>
     </table></div>
@@ -627,7 +640,42 @@ function recalc() {
       <td class="r num">${won(p * 12 * netR)}</td></tr>`;
   }).join('');
 
+  syncPickBar();
   saveLocal();
+}
+
+/* 칸 이름 눌러 정렬.
+   ──────────────────────────────────────────────────────────────────────
+   누를 때마다 내림차순 → 오름차순 → **원래 순서** 로 돈다. 원래 순서로
+   돌아오는 자리를 둔 까닭은, 이 표의 기본 차례(연 분배율 높은 순)가 그
+   자체로 뜻이 있는 순서이기 때문이다. 한 번 정렬하면 되돌릴 길이 없는
+   표는 사람이 새로고침을 하게 만든다.
+
+   값이 없는 칸은 방향과 상관없이 늘 뒤로 보낸다. 빈칸이 맨 위로 올라오면
+   '변동성이 가장 낮은 종목' 처럼 읽혀서, 모르는 것을 1등으로 삼게 된다. */
+let qSort = { k: '', dir: 1 };
+const SORT_VAL = {
+  name: x => x.name || '', freq: x => x.freq || '',
+  ttm: x => x.ttm, ttm12: x => x.ttm, price: x => x.price,
+  vol: x => x.vol, aum: x => x.aum, adopted: x => (x.adopted ? 1 : 0),
+};
+const SORT_TEXT = new Set(['name', 'freq']);
+
+function sortQuery(k) {
+  const first = SORT_TEXT.has(k) ? 1 : -1;   // 숫자는 큰 것부터, 글자는 가나다순
+  if (qSort.k !== k) qSort = { k, dir: first };
+  else if (qSort.dir === first) qSort.dir = -first;
+  else qSort = { k: '', dir: 1 };
+  renderQuery();
+}
+
+function syncSortHeads() {
+  document.querySelectorAll('#qHead th[data-k]').forEach(th => {
+    const on = th.dataset.k === qSort.k;
+    th.classList.toggle('sorted', on);
+    const a = th.querySelector('.arw');
+    if (a) a.textContent = on ? (qSort.dir > 0 ? '▲' : '▼') : '';
+  });
 }
 
 /* 종목 조회 — 엑셀은 배열 수식을 못 써서 숨긴 칸으로 60줄까지만 뽑지만,
@@ -642,6 +690,18 @@ function renderQuery() {
     (!nm || x.name.includes(nm)) &&
     (ad === '전체' || (ad === '채택만' ? x.adopted : !x.adopted))
   );
+  if (qSort.k) {
+    const get = SORT_VAL[qSort.k], txt = SORT_TEXT.has(qSort.k);
+    hit.sort((a, b) => {
+      const va = get(a), vb = get(b);
+      if (txt) return String(va).localeCompare(String(vb), 'ko') * qSort.dir;
+      if (va == null && vb == null) return 0;
+      if (va == null) return 1;      // 빈칸은 방향과 상관없이 뒤로
+      if (vb == null) return -1;
+      return (va - vb) * qSort.dir;
+    });
+  }
+  syncSortHeads();
   $('qCount').innerHTML = `조건에 맞는 종목 <b>${hit.length}</b>종목 / 전체 ${DATA.items.length}종목`;
   $('qBody').innerHTML = hit.map(x => `<tr>
     <td>${x.name}${x.adopted ? '' : ` <span class="badge no" title="${x.why}">기준 미달</span>`}</td>
@@ -652,14 +712,38 @@ function renderQuery() {
     <td class="r num">${x.vol != null ? pct(x.vol, 1) : '—'}</td>
     <td class="r num">${x.aum ? (x.aum / 1e8).toLocaleString('ko-KR', { maximumFractionDigits: 0 }) + '억' : '—'}</td>
     <td class="c">${x.adopted ? '채택' : '제외'}</td>
-    <td class="c noprint"><button class="icon" onclick="pick('${x.code}')">담기</button></td>
+    <td class="c noprint"><button class="icon" onclick="pick('${x.code}', this)">담기</button></td>
   </tr>`).join('') || '<tr><td colspan="9" class="c">조건에 맞는 종목이 없습니다.</td></tr>';
 }
-function pick(code) {
+/* 담기.
+   ──────────────────────────────────────────────────────────────────────
+   예전에는 담고 나서 포트폴리오 표로 스크롤했다. 담긴 것을 보여 주려는
+   뜻이었지만, 종목을 여럿 담을 때는 한 번 누를 때마다 화면이 맨 위로
+   끌려 올라갔다. 다섯 개를 담으려면 네 번을 도로 내려와야 하는 셈이다.
+
+   그래서 **스크롤하지 않는다.** 대신 담겼다는 것을 누른 자리에서 알린다 —
+   누른 단추가 잠깐 '담음' 으로 바뀌고, 조회표 위의 줄이 지금까지 담은
+   개수를 센다. 포트폴리오로 갈지 말지는 사람이 그 줄의 링크로 정한다.
+   renderQuery() 를 다시 부르지 않으므로 누른 단추는 그대로 살아 있다. */
+function pick(code, btn) {
   const empty = rows.findIndex(r => !r.code);
   if (empty >= 0) rows[empty].code = code; else rows.push({ code, alloc: '' });
   render();
-  document.getElementById('pf').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (btn) {
+    btn.textContent = '담음';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = '담기'; btn.classList.remove('done'); }, 1200);
+  }
+}
+
+/* 조회표 위에 지금 담긴 개수를 띄운다. 화면 아래쪽에서 담는 동안에는
+   위쪽 포트폴리오 표가 안 보이므로, 이것이 유일한 확인 수단이다. */
+function syncPickBar() {
+  const el = $('qPick'); if (!el) return;
+  const n = rows.filter(r => r.code).length;
+  el.innerHTML = n
+    ? `포트폴리오에 담긴 종목 <b>${n}</b>종목 · <a href="#pf">포트폴리오로 이동</a>`
+    : '아직 담은 종목이 없습니다. 아래 표에서 <b>담기</b> 를 누르십시오.';
 }
 
 function renderCompare() {
@@ -680,6 +764,7 @@ function renderCompare() {
    파일로 내려받는 쪽이 본체다 — 브라우저를 바꾸거나 다른 사람에게 넘겨도
    그대로 열린다. localStorage 는 실수로 새로고침했을 때를 위한 보조일 뿐이라
    읽고 쓰는 자리를 전부 try 로 감싼다(사생활 보호 창에서는 막힌다). */
+let INIT = null;  // 파일에 박힌 처음 값. init() 에서 뜬다.
 function state() {
   return { cust: $('cust').value, amt: $('amt').value, mode: $('mode').value,
            tax: $('tax').value, pdate: $('pdate').value, rows };
@@ -706,9 +791,22 @@ function loadState(input) {
   r.readAsText(f); input.value = '';
 }
 function saveLocal() { try { localStorage.setItem('etfProposal', JSON.stringify(state())); } catch {} }
+/* 초기화.
+   ──────────────────────────────────────────────────────────────────────
+   예전에는 localStorage 만 비우고 location.reload() 를 했다. 그러면 파일에
+   박혀 있는 **처음 상태**로 돌아가는데, 그 처음 상태에는 종목 한 줄이 이미
+   담겨 있다(DATA.defaultCode · 100%). 그래서 '초기화' 를 눌렀는데 고른 종목은
+   다 지워지고 엉뚱한 한 종목만 남은 것처럼 보였다. 지우라고 눌렀는데 무언가
+   남아 있으면, 그것이 남겨 둔 것인지 지우다 만 것인지 사람이 알 수 없다.
+
+   그래서 고객 정보는 처음 값(INIT)으로 되돌리되 **포트폴리오는 빈 줄 하나로**
+   비운다. 처음 열 때 한 종목이 담겨 있는 것은 그대로 둔다 — 그건 "이렇게
+   쓰는 것" 이라는 보기이고, 검사기도 그 줄의 숫자를 엑셀과 맞대어 본다. */
 function resetAll() {
+  if (!confirm('작성한 내용을 모두 지우고 빈 제안서로 돌아갑니다. 계속하시겠습니까?')) return;
   try { localStorage.removeItem('etfProposal'); } catch {}
-  location.reload();
+  applyState({ ...INIT, rows: [{ code: '', alloc: '' }] });
+  msg('초기화했습니다.');
 }
 function msg(t) { $('saveMsg').textContent = t; setTimeout(() => { $('saveMsg').textContent = ''; }, 4000); }
 
@@ -716,6 +814,10 @@ function msg(t) { $('saveMsg').textContent = t; setTimeout(() => { $('saveMsg').
 (function init() {
   const freqs = ['전체', ...[...new Set(DATA.items.map(x => x.freq).filter(Boolean))]];
   $('qFreq').innerHTML = freqs.map(f => `<option>${f}</option>`).join('');
+  // 파일에 박힌 처음 값을 먼저 떠 둔다. localStorage 를 되살리고 나면
+  // 칸의 값이 덮여서, 초기화가 무엇으로 돌아가야 하는지 알 수 없게 된다.
+  INIT = { cust: $('cust').value, amt: $('amt').value, mode: $('mode').value,
+           tax: $('tax').value, pdate: $('pdate').value };
   let saved = null;
   try { saved = JSON.parse(localStorage.getItem('etfProposal') || 'null'); } catch {}
   if (saved) applyState(saved); else { rows = [{ code: DATA.defaultCode, alloc: 100 }]; render(); }
