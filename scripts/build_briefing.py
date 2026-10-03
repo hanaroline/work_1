@@ -277,6 +277,109 @@ def narrative_for(day, kind="morning"):
 # ══════════════════════════════════════════════════════════════════
 # 절
 # ══════════════════════════════════════════════════════════════════
+
+# 지역별 요약 카드 — **해외판에만** 세운다(지침 7-3절).
+#
+# 「01번 핵심 카드 바로 아래에 미국·유럽·일본·중국 넉 장을 `views` 로 놓고,
+# 각 카드는 대표 지수 등락 · 그날의 주도·부진 종목 · 한 줄 해석으로 구성한다.
+# **숫자는 손으로 적지 말고 시세 파일에서 계산하십시오** — 손으로 적으면 아래
+# 표와 어긋납니다.」
+#
+# 8월 29일 판부터 이 카드가 통째로 빠져 있었다(8/08~8/23 에는 있었다). 빠진
+# 까닭은 그때 카드가 **빌더가 아니라 서술 파일에 손으로 적혀 있었기** 때문이다
+# — 서술을 새로 쓰면서 같이 사라졌고, 열두 판이 그대로 나갔다. 그래서 여기로
+# 옮긴다. 숫자는 전부 시세 파일에서 세고, 손으로 쓰는 것은 한 줄 해석뿐이다.
+REGION_SPEC = (
+    ("region_us", "미국", "United States", "us_stocks",
+     (("sp500", "S&amp;P 500", "S&amp;P 500"), ("nasdaq", "나스닥", "NASDAQ"),
+      ("dow", "다우", "Dow"), ("sox", "SOX (반도체)", "SOX"))),
+    ("region_eu", "유럽", "Europe", "eu_stocks",
+     (("stoxx600", "STOXX 600", "STOXX 600"), ("dax", "DAX", "DAX"),
+      ("cac", "CAC 40", "CAC 40"), ("ftse", "FTSE 100", "FTSE 100"))),
+    ("region_jp", "일본", "Japan", "jp_stocks",
+     (("nikkei", "니케이 225", "Nikkei 225"),)),
+    ("region_cn", "중화권", "Greater China", "cn_stocks",
+     (("hangseng", "항셍", "Hang Seng"), ("shanghai", "상하이", "Shanghai"))),
+)
+
+
+def _asof(dt, base):
+    """기준일이 대표 지수와 다를 때만 날짜를 덧붙인다.
+
+    중화권이 그렇다 — 홍콩은 열고 본토는 국경절로 닫혀 있어 한 카드 안에서
+    기준일이 갈린다. 다른 날짜를 말없이 나란히 놓으면 같은 날로 읽힌다.
+    """
+    return "" if dt == base else ' <span class="mut">(' + DS(dt) + ')</span>'
+
+
+def _region_card(C, key, ko, en, skey, specs):
+    I, N = C["I"], C["N"]
+    idx = [(iko, ien, v) for k, iko, ien in specs
+           for v in (I.get(k),) if v and v.get("change_pct") is not None]
+    if not idx:
+        return ""
+    lead = idx[0]
+    base = d(lead[2]["date"])
+
+    head_ko = ko + " &mdash; " + lead[0] + " " + pct(lead[2]["change_pct"])
+    head_en = en + " &mdash; " + lead[1] + " " + pct(lead[2]["change_pct"])
+    rest_ko = " &middot; ".join(x[0] + " " + pct(x[2]["change_pct"])
+                                + _asof(d(x[2]["date"]), base) for x in idx[1:])
+    rest_en = " &middot; ".join(x[1] + " " + pct(x[2]["change_pct"])
+                                + _asof(d(x[2]["date"]), base) for x in idx[1:])
+
+    dct = {k: v for k, v in (C["D"].get(skey) or {}).items()
+           if v.get("change_pct") is not None}
+    order = sorted(dct.items(), key=lambda kv: -kv[1]["change_pct"])
+    k = 3 if len(order) >= 6 else max(1, len(order) // 2)
+
+    def _names(grp):
+        return " &middot; ".join(
+            esc(nm) + " " + pct(v["change_pct"]) + _asof(d(v["date"]), base)
+            for nm, v in grp)
+
+    def _syms(grp):
+        return " &middot; ".join(
+            esc(v.get("symbol") or nm) + " " + pct(v["change_pct"])
+            + _asof(d(v["date"]), base) for nm, v in grp)
+
+    # **오른 종목이 모자란다고 내린 쪽에서 꿔 오지 않는다.** 위아래로 셋씩
+    # 잘라 놓으면 열한 개가 오른 날 「내린 쪽」 칸에 <span class="up">+0.30%</span>
+    # 가 들어앉는다 — 실제로 그렇게 나왔다. 부호로 가르고, 없으면 없다고 적는다.
+    ups = [x for x in order if x[1]["change_pct"] > 0][:k]
+    dns = [x for x in order if x[1]["change_pct"] < 0][-k:][::-1]
+    body = ['  <p class="view-who num">' + L(rest_ko, rest_en) + '</p>'] if rest_ko else []
+    for lko, len_, grp, noko, noen in (
+            ("오른 쪽", "Up", ups, "오른 종목이 없습니다", "No names closed higher"),
+            ("내린 쪽", "Down", dns, "내린 종목이 없습니다", "No names closed lower")):
+        body.append('  <p class="view-body">' + L(
+            "<strong>" + lko + "</strong> " + (_names(grp) if grp else noko),
+            "<strong>" + len_ + "</strong> " + (_syms(grp) if grp else noen)) + '</p>')
+
+    # 한 줄 해석이 없으면 **세어서** 말한다. 지어낸 말이 아니라 같은 자료에서
+    # 나온 개수이므로, 서술을 못 받은 날에도 틀린 말이 나가지 않는다.
+    up = sum(1 for _, v in order if v["change_pct"] > 0)
+    dn = sum(1 for _, v in order if v["change_pct"] < 0)
+    iu = sum(1 for x in idx if x[2]["change_pct"] > 0)
+    fb_ko = ("수집한 %d 종목 가운데 <strong>%d개가 오르고 %d개가 내렸습니다</strong> &mdash; "
+             "대표 지수는 %d개 가운데 %d개가 올랐습니다." % (len(order), up, dn, len(idx), iu))
+    fb_en = ("Of %d names collected, <strong>%d rose and %d fell</strong> &mdash; %d of %d "
+             "headline indices closed higher." % (len(order), up, dn, iu, len(idx)))
+    a, b = N.get(key, fb_ko, fb_en)
+    body.append('  <p class="view-body">' + L(a, b) + '</p>')
+
+    return ('<div class="view">\n  <p class="view-firm">' + L(head_ko, head_en) + '</p>\n'
+            + "\n".join(body) + '\n</div>')
+
+
+def sec_regions(C):
+    """지역별 요약 넉 장. 자료가 없는 지역은 조용히 빠진다."""
+    cards = [x for x in (_region_card(C, *spec) for spec in REGION_SPEC) if x]
+    if not cards:
+        return ""
+    return '<div class="views">\n' + "\n".join(cards) + '\n</div>'
+
+
 def sec_today(C):
     """01 오늘의 결론 — 카드 여섯 + 세 줄.
 
@@ -324,7 +427,9 @@ def sec_today(C):
         paras.append(P(a, b))
 
     grid = "stat-grid six"
-    return ('<div class="' + grid + '">\n' + "\n".join(cards) + '\n</div>\n'
+    # 해외판은 카드 바로 아래에 지역별 요약 넉 장이 온다(지침 7-3절).
+    regions = (sec_regions(C) + "\n") if C["kind"] == "global" else ""
+    return ('<div class="' + grid + '">\n' + "\n".join(cards) + '\n</div>\n' + regions
             # 장마감 판에 「09시 개장에 들고 갈 것」은 맞지 않는다. **주말·휴장일
             # 판도 마찬가지다** — 오늘 09시에는 열리지 않는다(2026-09-13 에
             # 일요일 판이 그대로 「오늘 09시 개장」을 달고 나갈 뻔했다).
@@ -1439,9 +1544,23 @@ def main():
     C = prepare(D, H, N, today, now, a.kind)
     doc = Doc()
     doc.sec("today", "오늘의 결론", "The Bottom Line", sec_today(C))
-    doc.sec("korea", "국내 증시", "Korean Equities", sec_korea(C))
-    doc.sec("flows", "수급 &middot; 증시 주변자금", "Flows and Money Around the Market", sec_flows(C))
-    doc.sec("global", "간밤 해외", "Overnight Overseas", sec_global(C))
+    # 절 순서는 판에 따라 다르다(지침 7-3절). **해외판은 01 다음이 해외**이고,
+    # 02 는 「국내 증시 되짚기」로 이름을 바꿔 **직전 거래일** 마감을 담는다 —
+    # 국내가 쉬는 날 「국내 증시」라는 이름으로 오늘 값인 양 앞에 놓으면,
+    # 오늘 장이 섰던 것처럼 읽힌다. 번호는 `Doc` 이 문서 순서대로 다시 매기므로
+    # 여기서 순서만 바꾸면 따라온다.
+    kr_ko, kr_en = (("국내 증시 되짚기", "Korean Equities &mdash; A Look Back")
+                    if a.kind == "global" else ("국내 증시", "Korean Equities"))
+    if a.kind == "global":
+        doc.sec("global", "간밤 해외", "Overnight Overseas", sec_global(C))
+        doc.sec("korea", kr_ko, kr_en, sec_korea(C))
+        doc.sec("flows", "수급 &middot; 증시 주변자금",
+                "Flows and Money Around the Market", sec_flows(C))
+    else:
+        doc.sec("korea", kr_ko, kr_en, sec_korea(C))
+        doc.sec("flows", "수급 &middot; 증시 주변자금",
+                "Flows and Money Around the Market", sec_flows(C))
+        doc.sec("global", "간밤 해외", "Overnight Overseas", sec_global(C))
     if not CORE[0]:
         doc.sec("earnings", "실적 &middot; 컨퍼런스콜", "Results and Calls", sec_earnings(C))
     else:
