@@ -16,6 +16,11 @@ name: ETF 편입종목 수집 (매일)
 # 뿐 고쳐 주지는 않는다. **이 브랜치를 기본 브랜치에 합쳐야 예약이 산다.**
 on:
   workflow_dispatch:
+    inputs:
+      force:
+        description: '장중이라도 그냥 받는다 (관문 넘기기)'
+        type: boolean
+        default: false
   # 시각표를 여기에 **되살리지 마십시오.**
   #
   # 깃허브는 기본 가지(main)에 놓인 워크플로우만 schedule 로 부른다. 이 파일이
@@ -52,7 +57,72 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # 장중 관문.
+  #
+  # 예약은 제시각에 오지 않는다. 2026-10-03 아침치가 그 증거다 — cron 은
+  # 21:43 UTC(06:43 KST)인데 실제로 뜬 것은 00:44 UTC, 즉 **09:44 KST**
+  # 였다. 3시간 1분이 밀렸다. 아침 자리는 미국장 마감(06:00 KST 무렵)과
+  # 한국장 개장(09:00 KST) 사이 세 시간밖에 안 되므로, 2시간 17분만 밀려도
+  # 장중에 떨어진다. 그날은 네이버가 아직 10/03 봉을 열지 않아 10/02 종가가
+  # 그대로 와서 운 좋게 넘어갔을 뿐이다.
+  #
+  # 장중에 받으면 끝나지 않은 값이 섞여 감사가 자료-장중값섞임 ·
+  # 자료-기준일제각각 으로 그날 치를 통째로 막는다. 그러니 받기 전에
+  # 시계를 보고 장중이면 **아예 받지 않고 조용히 끝낸다.** 빨간불을 켜지
+  # 않는 것은 일부러다 — 밀린 것은 고장이 아니고, 저녁 예약(16:34 KST)이
+  # 그날 자료를 다시 챙긴다.
+  #
+  # 창은 08:30~16:00 KST 로 잡았다. CLAUDE.md 의 "15:30 이후"보다 앞뒤로
+  # 넓다 — 장 전 동시호가가 08:30 에 시작하고, 종가는 15:30 직후에야
+  # 자리를 잡기 때문이다. 예약 두 자리(16:34 · 06:43 KST)는 둘 다 이 창
+  # 밖이다. 주말은 장이 없으니 창을 적용하지 않는다.
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.clock.outputs.skip }}
+      now: ${{ steps.clock.outputs.now }}
+    steps:
+      - name: 한국 시각 확인
+        id: clock
+        run: |
+          # 08·09 는 앞의 0 때문에 8진수로 읽혀 문법 오류가 난다. 10# 로 못박는다.
+          H=$(TZ=Asia/Seoul date +%H)
+          M=$(TZ=Asia/Seoul date +%M)
+          MIN=$(( 10#$H * 60 + 10#$M ))
+          DOW=$(TZ=Asia/Seoul date +%u)          # 1=월 … 7=일
+          NOW=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST (%a)')
+          echo "now=$NOW" >> "$GITHUB_OUTPUT"
+          echo "지금 $NOW"
+
+          SKIP=no
+          if [ "$DOW" -le 5 ] && [ "$MIN" -ge 510 ] && [ "$MIN" -lt 960 ]; then
+            SKIP=yes
+          fi
+
+          # 사람이 일부러 부른 경우에는 넘어간다. push·schedule 에서는 이
+          # 값이 빈 문자열이라 자연히 거짓이 된다.
+          if [ '${{ inputs.force }}' = 'true' ]; then
+            if [ "$SKIP" = yes ]; then
+              echo "::warning::장중($NOW)이지만 force 로 불렀으므로 그대로 받습니다. 끝나지 않은 값이 섞일 수 있습니다."
+            fi
+            SKIP=no
+          fi
+
+          echo "skip=$SKIP" >> "$GITHUB_OUTPUT"
+          if [ "$SKIP" = yes ]; then
+            echo "### 장중이라 건너뜁니다" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "$NOW — 한국장이 열려 있는 시간(08:30~16:00 KST)입니다." >> "$GITHUB_STEP_SUMMARY"
+            echo "끝나지 않은 값이 섞이면 감사가 그날 자료를 막으므로 받지 않았습니다." >> "$GITHUB_STEP_SUMMARY"
+            echo "다음 예약(평일 16:34 KST)이 그날 자료를 챙깁니다." >> "$GITHUB_STEP_SUMMARY"
+            echo "장중이라 건너뜁니다 — $NOW"
+          else
+            echo "장이 닫혀 있습니다. 받습니다."
+          fi
+
   collect:
+    needs: gate
+    if: needs.gate.outputs.skip != 'yes'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
