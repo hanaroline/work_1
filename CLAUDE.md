@@ -40,6 +40,13 @@
 작업 규칙 전체는 **[docs/briefing-playbook.md](docs/briefing-playbook.md)**(2,024줄)
 입니다. 브리핑 일을 맡았다면 playbook 을 **처음부터 끝까지** 읽고 시작하십시오.
 
+**퇴직급여 상담 도구**(`retire-payout.html`) — 맥락과 결정 사항은
+**[docs/인수인계-퇴직급여도구.md](docs/인수인계-퇴직급여도구.md)**, 자주 쓰는 프롬프트는
+**[docs/프롬프트-퇴직급여도구.md](docs/프롬프트-퇴직급여도구.md)**, 작업 규칙은
+**[tools/retire-payout/CLAUDE.md](tools/retire-payout/CLAUDE.md)** 입니다(그 갈래의 파일을
+열면 저절로 따라 읽힙니다). **커밋된 HTML 이 소스에서 지은 것과 바이트까지 같은지 CI 가
+봅니다** — 소스만 고치고 `node scripts/build-retire-payout.js` 를 잊으면 거기서 끊깁니다.
+
 **상품설명의무 완전판매 스크립트** — 창구가 고객 앞에서 그대로 읽는 문장과 **교부문서
 쪽 번호**를 만듭니다. 맥락·결정사항·막힌 것은
 **[docs/인수인계/01_작업-인수인계.md](docs/인수인계/01_작업-인수인계.md)**,
