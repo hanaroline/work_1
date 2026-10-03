@@ -1,0 +1,39 @@
+{
+ "bars": 392270,
+ "coverage": {
+  "asked": 200,
+  "failed": 0,
+  "got": 200,
+  "short": 14,
+  "shrank": 0,
+  "slid": 0
+ },
+ "failed": [],
+ "from": "2018-10-03",
+ "generated_at_kst": "2026-10-03 10:10:13",
+ "note": "백테스트 전용 긴 일봉. 화면이 읽는 것은 data/us100/chart/ 이고 이쪽은 매매 타이밍 백테스트만 읽는다.",
+ "routes": {
+  "yahoo": 200
+ },
+ "short": [
+  "PLTR 2020-09-30~",
+  "SPCX 2026-06-12~",
+  "GEV 2024-03-27~",
+  "UBER 2019-05-10~",
+  "NET 2019-09-13~",
+  "HOOD 2021-07-29~",
+  "APP 2021-04-15~",
+  "DDOG 2019-09-19~",
+  "ABNB 2020-12-10~",
+  "CEG 2022-01-19~",
+  "MRNA 2018-12-07~",
+  "DASH 2020-12-09~",
+  "CRWD 2019-06-12~",
+  "SNDK 2025-02-13~"
+ ],
+ "shrank": [],
+ "slid": [],
+ "source": "yahoo-finance (막히면 stooq)",
+ "to": "2026-10-01",
+ "years_requested": 8
+}
