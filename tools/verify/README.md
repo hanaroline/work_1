@@ -33,7 +33,7 @@ node tools/verify/reg.mjs /home/user/work_1/sales-script-standalone-v3.html
 | 도구 | 보는 것 |
 |---|---|
 | `audit-stored.mjs` | `data/fund-prospectus.js` **안의 값 자체**. 보수율 아닌 값, `clsPName` 오염(개인연금 섞임·「퇴직」 없음·숫자 칸 둘 이상), 위험 항목 앞 행번호 잔존 — 다섯 관문이 모두 0건이어야 한다 |
-| `irp-dist.mjs` | IRP 총보수를 어디서 가져왔는지 3,192종목 분포 |
+| `irp-dist.mjs` | IRP 총보수를 어디서 가져왔는지 카탈로그 전 종목의 분포 |
 | `reg.mjs` | 8시트 상품 수·확인필요 건수·로드 시간·**외부 요청 0건** |
 | `missall2.mjs` | 확인필요 배너 머리글 건수 = 묶음 합 = 칩 개수. 접힌 묶음 0 |
 | `prof5.mjs` | 다섯 투자자성향의 **사내 원문** 일치와, 옛 문장이 저장된 화면의 이관 |
