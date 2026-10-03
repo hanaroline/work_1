@@ -1,10 +1,10 @@
 {
-  "at": "2026-10-03T00:46:11.938Z",
-  "dataUpdatedAt": "2026-10-03T00:46:11.622Z",
+  "at": "2026-10-03T09:00:53.203Z",
+  "dataUpdatedAt": "2026-10-03T09:00:52.701Z",
   "total": 1355,
   "counts": {
     "error": 0,
-    "warn": 1856,
+    "warn": 2073,
     "info": 1311
   },
   "errorEtfCount": 0,
@@ -12,7 +12,7 @@
     {
       "rule": "price-nav-괴리",
       "sev": "warn",
-      "count": 1113,
+      "count": 1110,
       "examples": [
         {
           "sev": "warn",
@@ -85,8 +85,19 @@
     {
       "rule": "D1-등락률-불일치",
       "sev": "warn",
-      "count": 555,
+      "count": 775,
       "examples": [
+        {
+          "sev": "warn",
+          "rule": "D1-등락률-불일치",
+          "id": "KR:069500",
+          "code": "069500",
+          "market": "KR",
+          "name": "KODEX 200",
+          "detail": "등락률 0.48% vs price.D1 0%",
+          "changeRate": 0.48,
+          "d1": 0
+        },
         {
           "sev": "warn",
           "rule": "D1-등락률-불일치",
@@ -101,6 +112,28 @@
         {
           "sev": "warn",
           "rule": "D1-등락률-불일치",
+          "id": "KR:133690",
+          "code": "133690",
+          "market": "KR",
+          "name": "TIGER 미국나스닥100",
+          "detail": "등락률 -1.4% vs price.D1 0%",
+          "changeRate": -1.4,
+          "d1": 0
+        },
+        {
+          "sev": "warn",
+          "rule": "D1-등락률-불일치",
+          "id": "KR:102110",
+          "code": "102110",
+          "market": "KR",
+          "name": "TIGER 200",
+          "detail": "등락률 0.38% vs price.D1 0%",
+          "changeRate": 0.38,
+          "d1": 0
+        },
+        {
+          "sev": "warn",
+          "rule": "D1-등락률-불일치",
           "id": "KR:379800",
           "code": "379800",
           "market": "KR",
@@ -108,42 +141,9 @@
           "detail": "등락률 -0.76% vs price.D1 0%",
           "changeRate": -0.76,
           "d1": 0
-        },
-        {
-          "sev": "warn",
-          "rule": "D1-등락률-불일치",
-          "id": "KR:379810",
-          "code": "379810",
-          "market": "KR",
-          "name": "KODEX 미국나스닥100",
-          "detail": "등락률 -1.33% vs price.D1 0%",
-          "changeRate": -1.33,
-          "d1": 0
-        },
-        {
-          "sev": "warn",
-          "rule": "D1-등락률-불일치",
-          "id": "KR:278530",
-          "code": "278530",
-          "market": "KR",
-          "name": "KODEX 200TR",
-          "detail": "등락률 0.53% vs price.D1 0%",
-          "changeRate": 0.53,
-          "d1": 0
-        },
-        {
-          "sev": "warn",
-          "rule": "D1-등락률-불일치",
-          "id": "KR:381180",
-          "code": "381180",
-          "market": "KR",
-          "name": "TIGER 미국필라델피아반도체나스닥",
-          "detail": "등락률 -1.35% vs price.D1 0%",
-          "changeRate": -1.35,
-          "d1": 0
         }
       ],
-      "etfCount": 555
+      "etfCount": 775
     },
     {
       "rule": "유형평균-한종목이흔듦",
@@ -1104,6 +1104,17 @@
       "gapPp": 41.39
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:069500",
+      "code": "069500",
+      "market": "KR",
+      "name": "KODEX 200",
+      "detail": "등락률 0.48% vs price.D1 0%",
+      "changeRate": 0.48,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:360750",
@@ -1173,6 +1184,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:133690",
+      "code": "133690",
+      "market": "KR",
+      "name": "TIGER 미국나스닥100",
+      "detail": "등락률 -1.4% vs price.D1 0%",
+      "changeRate": -1.4,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:396500",
       "code": "396500",
@@ -1235,6 +1257,17 @@
       "price": 93.14,
       "navRet": 134.8,
       "gapPp": 41.66
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:102110",
+      "code": "102110",
+      "market": "KR",
+      "name": "TIGER 200",
+      "detail": "등락률 0.38% vs price.D1 0%",
+      "changeRate": 0.38,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -1312,11 +1345,11 @@
       "code": "091160",
       "market": "KR",
       "name": "KODEX 반도체",
-      "detail": "D1: 시장가 -0.61% vs 기준가 5.65% (6.3%p 차)",
+      "detail": "D1: 시장가 0% vs 기준가 5.65% (5.7%p 차)",
       "period": "D1",
-      "price": -0.61,
+      "price": 0,
       "navRet": 5.65,
-      "gapPp": 6.26
+      "gapPp": 5.65
     },
     {
       "sev": "warn",
@@ -1382,6 +1415,17 @@
       "price": 153.29,
       "navRet": 219.5,
       "gapPp": 66.21
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:091160",
+      "code": "091160",
+      "market": "KR",
+      "name": "KODEX 반도체",
+      "detail": "등락률 -0.61% vs price.D1 0%",
+      "changeRate": -0.61,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -1500,16 +1544,27 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:122630",
+      "code": "122630",
+      "market": "KR",
+      "name": "KODEX 레버리지",
+      "detail": "등락률 1.01% vs price.D1 0%",
+      "changeRate": 1.01,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:229200",
       "code": "229200",
       "market": "KR",
       "name": "KODEX 코스닥150",
-      "detail": "D1: 시장가 -0.88% vs 기준가 5.78% (6.7%p 차)",
+      "detail": "D1: 시장가 0% vs 기준가 5.78% (5.8%p 차)",
       "period": "D1",
-      "price": -0.88,
+      "price": 0,
       "navRet": 5.78,
-      "gapPp": 6.66
+      "gapPp": 5.78
     },
     {
       "sev": "warn",
@@ -1549,6 +1604,17 @@
       "price": -1.2,
       "navRet": 8.88,
       "gapPp": 10.08
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:229200",
+      "code": "229200",
+      "market": "KR",
+      "name": "KODEX 코스닥150",
+      "detail": "등락률 -0.88% vs price.D1 0%",
+      "changeRate": -0.88,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -1622,6 +1688,17 @@
       "price": 92.89,
       "navRet": 134.46,
       "gapPp": 41.57
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:148020",
+      "code": "148020",
+      "market": "KR",
+      "name": "RISE 200",
+      "detail": "등락률 0.57% vs price.D1 0%",
+      "changeRate": 0.57,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -1763,11 +1840,11 @@
       "code": "233740",
       "market": "KR",
       "name": "KODEX 코스닥150레버리지",
-      "detail": "D1: 시장가 -1.41% vs 기준가 11.74% (13.2%p 차)",
+      "detail": "D1: 시장가 0% vs 기준가 11.74% (11.7%p 차)",
       "period": "D1",
-      "price": -1.41,
+      "price": 0,
       "navRet": 11.74,
-      "gapPp": 13.15
+      "gapPp": 11.74
     },
     {
       "sev": "warn",
@@ -1837,6 +1914,17 @@
       "name": "KODEX 코스닥150레버리지",
       "detail": "합 197.70%",
       "sum": 197.7
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:233740",
+      "code": "233740",
+      "market": "KR",
+      "name": "KODEX 코스닥150레버리지",
+      "detail": "등락률 -1.41% vs price.D1 0%",
+      "changeRate": -1.41,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -1925,6 +2013,17 @@
       "price": 57.89,
       "navRet": 91.77,
       "gapPp": 33.88
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:102780",
+      "code": "102780",
+      "market": "KR",
+      "name": "KODEX 삼성그룹",
+      "detail": "등락률 0.58% vs price.D1 0%",
+      "changeRate": 0.58,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -2139,6 +2238,17 @@
       "gapPp": 95.98
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:139260",
+      "code": "139260",
+      "market": "KR",
+      "name": "TIGER 200 IT",
+      "detail": "등락률 0.67% vs price.D1 0%",
+      "changeRate": 0.67,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:481050",
@@ -2340,6 +2450,17 @@
       "price": 7.52,
       "navRet": 13.12,
       "gapPp": 5.6
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:161510",
+      "code": "161510",
+      "market": "KR",
+      "name": "PLUS 고배당주",
+      "detail": "등락률 0.72% vs price.D1 0%",
+      "changeRate": 0.72,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -2766,6 +2887,17 @@
       "sum": 101.03
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:105190",
+      "code": "105190",
+      "market": "KR",
+      "name": "ACE 200",
+      "detail": "등락률 0.52% vs price.D1 0%",
+      "changeRate": 0.52,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:446770",
@@ -2962,11 +3094,11 @@
       "code": "091230",
       "market": "KR",
       "name": "TIGER 반도체",
-      "detail": "D1: 시장가 -0.54% vs 기준가 5.66% (6.2%p 차)",
+      "detail": "D1: 시장가 0% vs 기준가 5.66% (5.7%p 차)",
       "period": "D1",
-      "price": -0.54,
+      "price": 0,
       "navRet": 5.66,
-      "gapPp": 6.2
+      "gapPp": 5.66
     },
     {
       "sev": "warn",
@@ -3032,6 +3164,17 @@
       "price": 155.99,
       "navRet": 224.98,
       "gapPp": 68.99
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:091230",
+      "code": "091230",
+      "market": "KR",
+      "name": "TIGER 반도체",
+      "detail": "등락률 -0.54% vs price.D1 0%",
+      "changeRate": -0.54,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -3138,6 +3281,17 @@
       "gapPp": 41.43
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:152100",
+      "code": "152100",
+      "market": "KR",
+      "name": "PLUS 200",
+      "detail": "등락률 0.57% vs price.D1 0%",
+      "changeRate": 0.57,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:477080",
@@ -3153,11 +3307,11 @@
       "code": "232080",
       "market": "KR",
       "name": "TIGER 코스닥150",
-      "detail": "D1: 시장가 -0.67% vs 기준가 5.78% (6.5%p 차)",
+      "detail": "D1: 시장가 0% vs 기준가 5.78% (5.8%p 차)",
       "period": "D1",
-      "price": -0.67,
+      "price": 0,
       "navRet": 5.78,
-      "gapPp": 6.45
+      "gapPp": 5.78
     },
     {
       "sev": "warn",
@@ -3197,6 +3351,17 @@
       "price": -1.71,
       "navRet": 8.5,
       "gapPp": 10.21
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:232080",
+      "code": "232080",
+      "market": "KR",
+      "name": "TIGER 코스닥150",
+      "detail": "등락률 -0.67% vs price.D1 0%",
+      "changeRate": -0.67,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -3289,6 +3454,17 @@
       "price": 71.62,
       "navRet": 105.38,
       "gapPp": 33.76
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:226490",
+      "code": "226490",
+      "market": "KR",
+      "name": "KODEX 코스피",
+      "detail": "등락률 0.56% vs price.D1 0%",
+      "changeRate": 0.56,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -4113,6 +4289,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:237350",
+      "code": "237350",
+      "market": "KR",
+      "name": "KODEX 코스피100",
+      "detail": "등락률 0.31% vs price.D1 0%",
+      "changeRate": 0.31,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:305540",
       "code": "305540",
@@ -4371,6 +4558,17 @@
       "price": 92.96,
       "navRet": 134.29,
       "gapPp": 41.33
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:069660",
+      "code": "069660",
+      "market": "KR",
+      "name": "KIWOOM 200",
+      "detail": "등락률 0.57% vs price.D1 0%",
+      "changeRate": 0.57,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -5140,6 +5338,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:114800",
+      "code": "114800",
+      "market": "KR",
+      "name": "KODEX 인버스",
+      "detail": "등락률 -0.61% vs price.D1 0%",
+      "changeRate": -0.61,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:481060",
       "code": "481060",
@@ -5846,6 +6055,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:138540",
+      "code": "138540",
+      "market": "KR",
+      "name": "TIGER 현대차그룹플러스",
+      "detail": "등락률 -0.25% vs price.D1 0%",
+      "changeRate": -0.25,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:491620",
       "code": "491620",
@@ -5993,6 +6213,17 @@
       "name": "PLUS 고배당주채권혼합",
       "detail": "합 105.60%",
       "sum": 105.6
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:251600",
+      "code": "251600",
+      "market": "KR",
+      "name": "PLUS 고배당주채권혼합",
+      "detail": "등락률 0.4% vs price.D1 0%",
+      "changeRate": 0.4,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -6415,6 +6646,17 @@
       "price": -1.39
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:114260",
+      "code": "114260",
+      "market": "KR",
+      "name": "KODEX 국고채3년",
+      "detail": "등락률 0.23% vs price.D1 0%",
+      "changeRate": 0.23,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:371160",
@@ -6583,6 +6825,17 @@
       "sum": 101.91
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:251350",
+      "code": "251350",
+      "market": "KR",
+      "name": "KODEX MSCI선진국",
+      "detail": "등락률 -1.11% vs price.D1 0%",
+      "changeRate": -1.11,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:448290",
@@ -6601,6 +6854,19 @@
       "detail": "등락률 -0.22% vs price.D1 0%",
       "changeRate": -0.22,
       "d1": 0
+    },
+    {
+      "sev": "warn",
+      "rule": "price-nav-괴리",
+      "id": "KR:243880",
+      "code": "243880",
+      "market": "KR",
+      "name": "TIGER 200IT레버리지",
+      "detail": "D1: 시장가 0% vs 기준가 5.4% (5.4%p 차)",
+      "period": "D1",
+      "price": 0,
+      "navRet": 5.4,
+      "gapPp": 5.4
     },
     {
       "sev": "warn",
@@ -6657,6 +6923,17 @@
       "name": "TIGER 200IT레버리지",
       "detail": "합 220.27%",
       "sum": 220.27
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:243880",
+      "code": "243880",
+      "market": "KR",
+      "name": "TIGER 200IT레버리지",
+      "detail": "등락률 1.66% vs price.D1 0%",
+      "changeRate": 1.66,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -7205,6 +7482,17 @@
     {
       "sev": "warn",
       "rule": "D1-등락률-불일치",
+      "id": "KR:241180",
+      "code": "241180",
+      "market": "KR",
+      "name": "TIGER 일본니케이225",
+      "detail": "등락률 -1.05% vs price.D1 0%",
+      "changeRate": -1.05,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
       "id": "KR:385720",
       "code": "385720",
       "market": "KR",
@@ -7221,6 +7509,17 @@
       "market": "KR",
       "name": "KIWOOM 국고채10년",
       "detail": "5종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:148070",
+      "code": "148070",
+      "market": "KR",
+      "name": "KIWOOM 국고채10년",
+      "detail": "등락률 0.71% vs price.D1 0%",
+      "changeRate": 0.71,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -7585,6 +7884,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:091180",
+      "code": "091180",
+      "market": "KR",
+      "name": "KODEX 자동차",
+      "detail": "등락률 0.57% vs price.D1 0%",
+      "changeRate": 0.57,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:385510",
       "code": "385510",
@@ -7713,6 +8023,17 @@
       "market": "KR",
       "name": "ACE 베트남VN30(합성)",
       "detail": "8종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:245710",
+      "code": "245710",
+      "market": "KR",
+      "name": "ACE 베트남VN30(합성)",
+      "detail": "등락률 -1.68% vs price.D1 0%",
+      "changeRate": -1.68,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -8457,6 +8778,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:136340",
+      "code": "136340",
+      "market": "KR",
+      "name": "RISE 중기우량회사채",
+      "detail": "등락률 0.28% vs price.D1 0%",
+      "changeRate": 0.28,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:421320",
       "code": "421320",
@@ -8728,6 +9060,17 @@
       "gapPp": 6.09
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:091170",
+      "code": "091170",
+      "market": "KR",
+      "name": "KODEX 은행",
+      "detail": "등락률 0.35% vs price.D1 0%",
+      "changeRate": 0.35,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:273140",
@@ -8985,6 +9328,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:213610",
+      "code": "213610",
+      "market": "KR",
+      "name": "KODEX 삼성그룹밸류",
+      "detail": "등락률 0.16% vs price.D1 0%",
+      "changeRate": 0.16,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:409820",
       "code": "409820",
@@ -9071,6 +9425,17 @@
       "name": "TIGER 레버리지",
       "detail": "합 209.77%",
       "sum": 209.77
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:123320",
+      "code": "123320",
+      "market": "KR",
+      "name": "TIGER 레버리지",
+      "detail": "등락률 1.1% vs price.D1 0%",
+      "changeRate": 1.1,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -9292,6 +9657,17 @@
     {
       "sev": "warn",
       "rule": "D1-등락률-불일치",
+      "id": "KR:117700",
+      "code": "117700",
+      "market": "KR",
+      "name": "KODEX 건설",
+      "detail": "등락률 -0.52% vs price.D1 0%",
+      "changeRate": -0.52,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
       "id": "KR:363580",
       "code": "363580",
       "market": "KR",
@@ -9351,6 +9727,17 @@
       "price": -20.8,
       "navRet": 1.31,
       "gapPp": 22.11
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:139230",
+      "code": "139230",
+      "market": "KR",
+      "name": "TIGER 200 중공업",
+      "detail": "등락률 -0.6% vs price.D1 0%",
+      "changeRate": -0.6,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -9506,6 +9893,17 @@
       "price": 6.96,
       "navRet": 29.68,
       "gapPp": 22.72
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:228790",
+      "code": "228790",
+      "market": "KR",
+      "name": "TIGER 화장품",
+      "detail": "등락률 -2.86% vs price.D1 0%",
+      "changeRate": -2.86,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -9758,11 +10156,11 @@
       "code": "244580",
       "market": "KR",
       "name": "KODEX 바이오",
-      "detail": "D1: 시장가 -2.12% vs 기준가 6.48% (8.6%p 차)",
+      "detail": "D1: 시장가 0% vs 기준가 6.48% (6.5%p 차)",
       "period": "D1",
-      "price": -2.12,
+      "price": 0,
       "navRet": 6.48,
-      "gapPp": 8.6
+      "gapPp": 6.48
     },
     {
       "sev": "warn",
@@ -9789,6 +10187,17 @@
       "price": -25.28,
       "navRet": -16.71,
       "gapPp": 8.57
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:244580",
+      "code": "244580",
+      "market": "KR",
+      "name": "KODEX 바이오",
+      "detail": "등락률 -2.12% vs price.D1 0%",
+      "changeRate": -2.12,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -9966,6 +10375,17 @@
       "price": 28.8,
       "navRet": 61.53,
       "gapPp": 32.73
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:266160",
+      "code": "266160",
+      "market": "KR",
+      "name": "RISE 고배당",
+      "detail": "등락률 0.89% vs price.D1 0%",
+      "changeRate": 0.89,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -10327,6 +10747,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:267770",
+      "code": "267770",
+      "market": "KR",
+      "name": "TIGER 200선물레버리지",
+      "detail": "등락률 1.5% vs price.D1 0%",
+      "changeRate": 1.5,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:0005A0",
       "code": "0005A0",
@@ -10527,11 +10958,11 @@
       "code": "233160",
       "market": "KR",
       "name": "TIGER 코스닥150 레버리지",
-      "detail": "D1: 시장가 -1.11% vs 기준가 11.66% (12.8%p 차)",
+      "detail": "D1: 시장가 0% vs 기준가 11.66% (11.7%p 차)",
       "period": "D1",
-      "price": -1.11,
+      "price": 0,
       "navRet": 11.66,
-      "gapPp": 12.77
+      "gapPp": 11.66
     },
     {
       "sev": "warn",
@@ -10601,6 +11032,17 @@
       "name": "TIGER 코스닥150 레버리지",
       "detail": "합 197.86%",
       "sum": 197.86
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:233160",
+      "code": "233160",
+      "market": "KR",
+      "name": "TIGER 코스닥150 레버리지",
+      "detail": "등락률 -1.11% vs price.D1 0%",
+      "changeRate": -1.11,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -10687,6 +11129,17 @@
       "market": "KR",
       "name": "KODEX 미국달러선물인버스2X",
       "detail": "{\"KR\":-68.97}"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:261260",
+      "code": "261260",
+      "market": "KR",
+      "name": "KODEX 미국달러선물인버스2X",
+      "detail": "등락률 1% vs price.D1 0%",
+      "changeRate": 1,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -10905,6 +11358,17 @@
       "price": 105.51,
       "navRet": 154.36,
       "gapPp": 48.85
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:122090",
+      "code": "122090",
+      "market": "KR",
+      "name": "PLUS 코스피50",
+      "detail": "등락률 0.63% vs price.D1 0%",
+      "changeRate": 0.63,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -11442,6 +11906,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:237370",
+      "code": "237370",
+      "market": "KR",
+      "name": "KODEX 코리아배당성장채권혼합",
+      "detail": "등락률 0.39% vs price.D1 0%",
+      "changeRate": 0.39,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:0193G0",
       "code": "0193G0",
@@ -11585,6 +12060,17 @@
       "gapPp": 41.12
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:152870",
+      "code": "152870",
+      "market": "KR",
+      "name": "파워 200",
+      "detail": "등락률 0.6% vs price.D1 0%",
+      "changeRate": 0.6,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:438560",
@@ -11674,6 +12160,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:200250",
+      "code": "200250",
+      "market": "KR",
+      "name": "KIWOOM 인도Nifty50(합성)",
+      "detail": "등락률 -1.04% vs price.D1 0%",
+      "changeRate": -1.04,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:160580",
       "code": "160580",
@@ -11749,6 +12246,17 @@
       "name": "TIGER 구리실물",
       "detail": "합 102.28%",
       "sum": 102.28
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:160580",
+      "code": "160580",
+      "market": "KR",
+      "name": "TIGER 구리실물",
+      "detail": "등락률 -1.18% vs price.D1 0%",
+      "changeRate": -1.18,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -11905,6 +12413,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:219480",
+      "code": "219480",
+      "market": "KR",
+      "name": "KODEX 미국S&P500선물(H)",
+      "detail": "등락률 -0.21% vs price.D1 0%",
+      "changeRate": -0.21,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:138520",
       "code": "138520",
@@ -11941,6 +12460,17 @@
       "price": 56.96,
       "navRet": 94.39,
       "gapPp": 37.43
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:138520",
+      "code": "138520",
+      "market": "KR",
+      "name": "TIGER 삼성그룹",
+      "detail": "등락률 0.68% vs price.D1 0%",
+      "changeRate": 0.68,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -12039,19 +12569,6 @@
       "code": "143860",
       "market": "KR",
       "name": "TIGER 헬스케어",
-      "detail": "D1: 시장가 -2.06% vs 기준가 4.5% (6.6%p 차)",
-      "period": "D1",
-      "price": -2.06,
-      "navRet": 4.5,
-      "gapPp": 6.56
-    },
-    {
-      "sev": "warn",
-      "rule": "price-nav-괴리",
-      "id": "KR:143860",
-      "code": "143860",
-      "market": "KR",
-      "name": "TIGER 헬스케어",
       "detail": "M1: 시장가 2.68% vs 기준가 -5.04% (7.7%p 차)",
       "period": "M1",
       "price": 2.68,
@@ -12096,6 +12613,17 @@
       "price": -20.55,
       "navRet": -13.71,
       "gapPp": 6.84
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:143860",
+      "code": "143860",
+      "market": "KR",
+      "name": "TIGER 헬스케어",
+      "detail": "등락률 -2.06% vs price.D1 0%",
+      "changeRate": -2.06,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -12250,6 +12778,17 @@
       "market": "KR",
       "name": "TIGER 미국다우존스30",
       "detail": "10종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:245340",
+      "code": "245340",
+      "market": "KR",
+      "name": "TIGER 미국다우존스30",
+      "detail": "등락률 -0.55% vs price.D1 0%",
+      "changeRate": -0.55,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -12779,6 +13318,17 @@
       "detail": "5종목 모두 비중 없음 (수량만)"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:114820",
+      "code": "114820",
+      "market": "KR",
+      "name": "TIGER 국채3년",
+      "detail": "등락률 0.28% vs price.D1 0%",
+      "changeRate": 0.28,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:0184L0",
@@ -12834,6 +13384,17 @@
       "market": "KR",
       "name": "TIGER 차이나CSI300",
       "detail": "10종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:192090",
+      "code": "192090",
+      "market": "KR",
+      "name": "TIGER 차이나CSI300",
+      "detail": "등락률 -2.4% vs price.D1 0%",
+      "changeRate": -2.4,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -13000,6 +13561,17 @@
       "price": 156.5,
       "navRet": 234.19,
       "gapPp": 77.69
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:266370",
+      "code": "266370",
+      "market": "KR",
+      "name": "KODEX IT",
+      "detail": "등락률 0.58% vs price.D1 0%",
+      "changeRate": 0.58,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -13437,16 +14009,27 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:203780",
+      "code": "203780",
+      "market": "KR",
+      "name": "TIGER 미국나스닥바이오",
+      "detail": "등락률 -3.19% vs price.D1 0%",
+      "changeRate": -3.19,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:251340",
       "code": "251340",
       "market": "KR",
       "name": "KODEX 코스닥150선물인버스",
-      "detail": "D1: 시장가 0.45% vs 기준가 -5.89% (6.3%p 차)",
+      "detail": "D1: 시장가 0% vs 기준가 -5.89% (5.9%p 차)",
       "period": "D1",
-      "price": 0.45,
+      "price": 0,
       "navRet": -5.89,
-      "gapPp": 6.34
+      "gapPp": 5.89
     },
     {
       "sev": "warn",
@@ -13495,6 +14078,17 @@
       "market": "KR",
       "name": "KODEX 코스닥150선물인버스",
       "detail": "3종목 중 1개 비중 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:251340",
+      "code": "251340",
+      "market": "KR",
+      "name": "KODEX 코스닥150선물인버스",
+      "detail": "등락률 0.45% vs price.D1 0%",
+      "changeRate": 0.45,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -13764,6 +14358,17 @@
       "market": "KR",
       "name": "ACE 중국본토CSI300",
       "detail": "10종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:168580",
+      "code": "168580",
+      "market": "KR",
+      "name": "ACE 중국본토CSI300",
+      "detail": "등락률 -1.25% vs price.D1 0%",
+      "changeRate": -1.25,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -14048,6 +14653,17 @@
       "detail": "5종목 모두 비중 없음 (수량만)"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:195980",
+      "code": "195980",
+      "market": "KR",
+      "name": "PLUS 신흥국MSCI(합성 H)",
+      "detail": "등락률 0.2% vs price.D1 0%",
+      "changeRate": 0.2,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:0035T0",
@@ -14223,6 +14839,17 @@
       "sum": 130.88
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:143850",
+      "code": "143850",
+      "market": "KR",
+      "name": "TIGER 미국S&P500선물(H)",
+      "detail": "등락률 -0.21% vs price.D1 0%",
+      "changeRate": -0.21,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:298770",
@@ -14341,6 +14968,17 @@
     {
       "sev": "warn",
       "rule": "D1-등락률-불일치",
+      "id": "KR:269540",
+      "code": "269540",
+      "market": "KR",
+      "name": "PLUS 미국S&P500(H)",
+      "detail": "등락률 -0.2% vs price.D1 0%",
+      "changeRate": -0.2,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
       "id": "KR:325020",
       "code": "325020",
       "market": "KR",
@@ -14370,6 +15008,17 @@
       "market": "KR",
       "name": "RISE 국고채3년",
       "detail": "6종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:114100",
+      "code": "114100",
+      "market": "KR",
+      "name": "RISE 국고채3년",
+      "detail": "등락률 0.29% vs price.D1 0%",
+      "changeRate": 0.29,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -14421,6 +15070,17 @@
       "market": "KR",
       "name": "KODEX 미국달러선물인버스",
       "detail": "3종목 중 1개 비중 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:261270",
+      "code": "261270",
+      "market": "KR",
+      "name": "KODEX 미국달러선물인버스",
+      "detail": "등락률 0.61% vs price.D1 0%",
+      "changeRate": 0.61,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -14506,6 +15166,17 @@
       "price": 4.25,
       "navRet": 27.41,
       "gapPp": 23.16
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:211900",
+      "code": "211900",
+      "market": "KR",
+      "name": "KODEX 코리아배당성장",
+      "detail": "등락률 0.51% vs price.D1 0%",
+      "changeRate": 0.51,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -14741,6 +15412,17 @@
       "gapPp": 38.71
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:108450",
+      "code": "108450",
+      "market": "KR",
+      "name": "ACE 삼성그룹섹터가중",
+      "detail": "등락률 0.57% vs price.D1 0%",
+      "changeRate": 0.57,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:429760",
@@ -14933,6 +15615,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:138530",
+      "code": "138530",
+      "market": "KR",
+      "name": "TIGER LG그룹플러스",
+      "detail": "등락률 1.13% vs price.D1 0%",
+      "changeRate": 1.13,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:0049M0",
       "code": "0049M0",
@@ -15013,6 +15706,17 @@
       "price": -0.84,
       "navRet": 16.36,
       "gapPp": 17.2
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:210780",
+      "code": "210780",
+      "market": "KR",
+      "name": "TIGER 코스피고배당",
+      "detail": "등락률 0.63% vs price.D1 0%",
+      "changeRate": 0.63,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -15167,6 +15871,17 @@
       "price": -24.16,
       "navRet": -15.27,
       "gapPp": 8.89
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:157490",
+      "code": "157490",
+      "market": "KR",
+      "name": "TIGER 소프트웨어",
+      "detail": "등락률 0.44% vs price.D1 0%",
+      "changeRate": 0.44,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -15347,19 +16062,6 @@
       "code": "266420",
       "market": "KR",
       "name": "KODEX 헬스케어",
-      "detail": "D1: 시장가 -1.58% vs 기준가 4.5% (6.1%p 차)",
-      "period": "D1",
-      "price": -1.58,
-      "navRet": 4.5,
-      "gapPp": 6.08
-    },
-    {
-      "sev": "warn",
-      "rule": "price-nav-괴리",
-      "id": "KR:266420",
-      "code": "266420",
-      "market": "KR",
-      "name": "KODEX 헬스케어",
       "detail": "M1: 시장가 2.47% vs 기준가 -5.02% (7.5%p 차)",
       "period": "M1",
       "price": 2.47,
@@ -15404,6 +16106,17 @@
       "price": -20.11,
       "navRet": -13.42,
       "gapPp": 6.69
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:266420",
+      "code": "266420",
+      "market": "KR",
+      "name": "KODEX 헬스케어",
+      "detail": "등락률 -1.58% vs price.D1 0%",
+      "changeRate": -1.58,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -15452,6 +16165,17 @@
       "price": 4.85,
       "navRet": 27.85,
       "gapPp": 23
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:211560",
+      "code": "211560",
+      "market": "KR",
+      "name": "TIGER 배당성장",
+      "detail": "등락률 0.98% vs price.D1 0%",
+      "changeRate": 0.98,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -15623,6 +16347,17 @@
       "price": -22.73,
       "navRet": -16.9,
       "gapPp": 5.83
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:228800",
+      "code": "228800",
+      "market": "KR",
+      "name": "TIGER 여행레저",
+      "detail": "등락률 -1.14% vs price.D1 0%",
+      "changeRate": -1.14,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -15916,6 +16651,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:252400",
+      "code": "252400",
+      "market": "KR",
+      "name": "RISE 200선물레버리지",
+      "detail": "등락률 1.15% vs price.D1 0%",
+      "changeRate": 1.15,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:458750",
       "code": "458750",
@@ -16033,6 +16779,17 @@
       "name": "KODEX 미국달러선물",
       "detail": "합 199.92%",
       "sum": 199.92
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:261240",
+      "code": "261240",
+      "market": "KR",
+      "name": "KODEX 미국달러선물",
+      "detail": "등락률 -0.71% vs price.D1 0%",
+      "changeRate": -0.71,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -16236,6 +16993,17 @@
       "price": -0.49,
       "navRet": -7.74,
       "gapPp": 7.25
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:140700",
+      "code": "140700",
+      "market": "KR",
+      "name": "KODEX 보험",
+      "detail": "등락률 0.5% vs price.D1 0%",
+      "changeRate": 0.5,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -16445,6 +17213,17 @@
     {
       "sev": "warn",
       "rule": "D1-등락률-불일치",
+      "id": "KR:225040",
+      "code": "225040",
+      "market": "KR",
+      "name": "TIGER 미국S&P500레버리지(합성 H)",
+      "detail": "등락률 -0.42% vs price.D1 0%",
+      "changeRate": -0.42,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
       "id": "KR:434960",
       "code": "434960",
       "market": "KR",
@@ -16570,11 +17349,11 @@
       "code": "261070",
       "market": "KR",
       "name": "TIGER 코스닥150바이오테크",
-      "detail": "D1: 시장가 -2.47% vs 기준가 5.79% (8.3%p 차)",
+      "detail": "D1: 시장가 0% vs 기준가 5.79% (5.8%p 차)",
       "period": "D1",
-      "price": -2.47,
+      "price": 0,
       "navRet": 5.79,
-      "gapPp": 8.26
+      "gapPp": 5.79
     },
     {
       "sev": "warn",
@@ -16614,6 +17393,17 @@
       "price": -45.56,
       "navRet": -34.26,
       "gapPp": 11.3
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:261070",
+      "code": "261070",
+      "market": "KR",
+      "name": "TIGER 코스닥150바이오테크",
+      "detail": "등락률 -2.47% vs price.D1 0%",
+      "changeRate": -2.47,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -16865,6 +17655,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:253150",
+      "code": "253150",
+      "market": "KR",
+      "name": "PLUS 200선물레버리지",
+      "detail": "등락률 1.17% vs price.D1 0%",
+      "changeRate": 1.17,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:150460",
       "code": "150460",
@@ -16901,6 +17702,17 @@
       "price": -11.21,
       "navRet": 1.5,
       "gapPp": 12.71
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:150460",
+      "code": "150460",
+      "market": "KR",
+      "name": "TIGER 중국소비테마",
+      "detail": "등락률 -0.83% vs price.D1 0%",
+      "changeRate": -0.83,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -17020,6 +17832,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:114470",
+      "code": "114470",
+      "market": "KR",
+      "name": "KIWOOM 국고채3년",
+      "detail": "등락률 0.26% vs price.D1 0%",
+      "changeRate": 0.26,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:152500",
       "code": "152500",
@@ -17073,6 +17896,17 @@
       "name": "ACE 레버리지",
       "detail": "합 196.54%",
       "sum": 196.54
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:152500",
+      "code": "152500",
+      "market": "KR",
+      "name": "ACE 레버리지",
+      "detail": "등락률 1.12% vs price.D1 0%",
+      "changeRate": 1.12,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -17394,6 +18228,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:204480",
+      "code": "204480",
+      "market": "KR",
+      "name": "TIGER 차이나CSI300레버리지(합성)",
+      "detail": "등락률 -1.12% vs price.D1 0%",
+      "changeRate": -1.12,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:140950",
       "code": "140950",
@@ -17443,6 +18288,17 @@
       "price": 97.59,
       "navRet": 141.19,
       "gapPp": 43.6
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:140950",
+      "code": "140950",
+      "market": "KR",
+      "name": "파워 코스피100",
+      "detail": "등락률 0.61% vs price.D1 0%",
+      "changeRate": 0.61,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -17587,6 +18443,17 @@
       "detail": "5종목 모두 비중 없음 (수량만)"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:218420",
+      "code": "218420",
+      "market": "KR",
+      "name": "KODEX 미국S&P500에너지(합성)",
+      "detail": "등락률 1.74% vs price.D1 0%",
+      "changeRate": 1.74,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:440910",
@@ -17651,6 +18518,17 @@
       "market": "KR",
       "name": "KODEX WTI원유선물(H)",
       "detail": "{\"MISC\":86.31,\"US\":14.21,\"KR\":-3.88}"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:261220",
+      "code": "261220",
+      "market": "KR",
+      "name": "KODEX WTI원유선물(H)",
+      "detail": "등락률 3.06% vs price.D1 0%",
+      "changeRate": 3.06,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -17929,6 +18807,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:123310",
+      "code": "123310",
+      "market": "KR",
+      "name": "TIGER 인버스",
+      "detail": "등락률 -0.64% vs price.D1 0%",
+      "changeRate": -0.64,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:371470",
       "code": "371470",
@@ -18042,6 +18931,17 @@
     {
       "sev": "warn",
       "rule": "D1-등락률-불일치",
+      "id": "KR:196030",
+      "code": "196030",
+      "market": "KR",
+      "name": "ACE 일본TOPIX레버리지(H)",
+      "detail": "등락률 -1.69% vs price.D1 0%",
+      "changeRate": -1.69,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
       "id": "KR:375770",
       "code": "375770",
       "market": "KR",
@@ -18136,6 +19036,17 @@
       "name": "ACE 일본Nikkei225(H)",
       "detail": "합 23.03%",
       "sum": 23.03
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:238720",
+      "code": "238720",
+      "market": "KR",
+      "name": "ACE 일본Nikkei225(H)",
+      "detail": "등락률 -0.95% vs price.D1 0%",
+      "changeRate": -0.95,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -18421,6 +19332,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:100910",
+      "code": "100910",
+      "market": "KR",
+      "name": "KIWOOM KRX100",
+      "detail": "등락률 0.57% vs price.D1 0%",
+      "changeRate": 0.57,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:256750",
       "code": "256750",
@@ -18479,6 +19401,17 @@
       "market": "KR",
       "name": "KODEX 차이나심천ChiNext(합성)",
       "detail": "5종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:256750",
+      "code": "256750",
+      "market": "KR",
+      "name": "KODEX 차이나심천ChiNext(합성)",
+      "detail": "등락률 -0.9% vs price.D1 0%",
+      "changeRate": -0.9,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -18638,6 +19571,17 @@
       "name": "RISE 200채권혼합50",
       "detail": "합 101.71%",
       "sum": 101.71
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:183700",
+      "code": "183700",
+      "market": "KR",
+      "name": "RISE 200채권혼합50",
+      "detail": "등락률 0.4% vs price.D1 0%",
+      "changeRate": 0.4,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -18889,6 +19833,17 @@
     {
       "sev": "warn",
       "rule": "D1-등락률-불일치",
+      "id": "KR:139320",
+      "code": "139320",
+      "market": "KR",
+      "name": "TIGER 금은선물(H)",
+      "detail": "등락률 -0.26% vs price.D1 0%",
+      "changeRate": -0.26,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
       "id": "KR:322410",
       "code": "322410",
       "market": "KR",
@@ -18935,6 +19890,17 @@
       "price": 1.94,
       "navRet": 7.33,
       "gapPp": 5.39
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:139280",
+      "code": "139280",
+      "market": "KR",
+      "name": "TIGER 경기방어",
+      "detail": "등락률 -0.98% vs price.D1 0%",
+      "changeRate": -0.98,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -19193,6 +20159,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:147970",
+      "code": "147970",
+      "market": "KR",
+      "name": "TIGER 모멘텀",
+      "detail": "등락률 0.97% vs price.D1 0%",
+      "changeRate": 0.97,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:0204S0",
       "code": "0204S0",
@@ -19325,6 +20302,17 @@
       "name": "TIGER 유로스탁스50(합성 H)",
       "detail": "합 102.06%",
       "sum": 102.06
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:195930",
+      "code": "195930",
+      "market": "KR",
+      "name": "TIGER 유로스탁스50(합성 H)",
+      "detail": "등락률 -1.5% vs price.D1 0%",
+      "changeRate": -1.5,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -19623,6 +20611,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:104530",
+      "code": "104530",
+      "market": "KR",
+      "name": "KIWOOM 코리아고배당",
+      "detail": "등락률 0.23% vs price.D1 0%",
+      "changeRate": 0.23,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:241390",
       "code": "241390",
@@ -19714,6 +20713,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:241390",
+      "code": "241390",
+      "market": "KR",
+      "name": "RISE V&S셀렉트밸류채권혼합",
+      "detail": "등락률 0.79% vs price.D1 0%",
+      "changeRate": 0.79,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:117460",
       "code": "117460",
@@ -19778,6 +20788,17 @@
       "gapPp": 6.2
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:117460",
+      "code": "117460",
+      "market": "KR",
+      "name": "KODEX 에너지화학",
+      "detail": "등락률 4.09% vs price.D1 0%",
+      "changeRate": 4.09,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:0184E0",
@@ -19838,6 +20859,17 @@
       "price": 1.03,
       "navRet": -7.78,
       "gapPp": 8.81
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:266360",
+      "code": "266360",
+      "market": "KR",
+      "name": "KODEX K콘텐츠",
+      "detail": "등락률 0.32% vs price.D1 0%",
+      "changeRate": 0.32,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -19943,6 +20975,17 @@
       "price": 76.23,
       "navRet": 122.93,
       "gapPp": 46.7
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:105780",
+      "code": "105780",
+      "market": "KR",
+      "name": "RISE 5대그룹주",
+      "detail": "등락률 1.09% vs price.D1 0%",
+      "changeRate": 1.09,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -20131,6 +21174,17 @@
       "name": "KODEX 구리선물(H)",
       "detail": "합 122.04%",
       "sum": 122.04
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:138910",
+      "code": "138910",
+      "market": "KR",
+      "name": "KODEX 구리선물(H)",
+      "detail": "등락률 -0.45% vs price.D1 0%",
+      "changeRate": -0.45,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -20338,11 +21392,11 @@
       "code": "261060",
       "market": "KR",
       "name": "TIGER 코스닥150IT",
-      "detail": "D1: 시장가 -0.24% vs 기준가 6.98% (7.2%p 차)",
+      "detail": "D1: 시장가 0% vs 기준가 6.98% (7.0%p 차)",
       "period": "D1",
-      "price": -0.24,
+      "price": 0,
       "navRet": 6.98,
-      "gapPp": 7.22
+      "gapPp": 6.98
     },
     {
       "sev": "warn",
@@ -20395,6 +21449,17 @@
       "price": 22.09,
       "navRet": 78,
       "gapPp": 55.91
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:261060",
+      "code": "261060",
+      "market": "KR",
+      "name": "TIGER 코스닥150IT",
+      "detail": "등락률 -0.24% vs price.D1 0%",
+      "changeRate": -0.24,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -20452,6 +21517,17 @@
       "market": "KR",
       "name": "TIGER 원유선물인버스(H)",
       "detail": "{\"KR\":59.63,\"US\":3.66,\"MISC\":-92.64}"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:217770",
+      "code": "217770",
+      "market": "KR",
+      "name": "TIGER 원유선물인버스(H)",
+      "detail": "등락률 -2.74% vs price.D1 0%",
+      "changeRate": -2.74,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -20710,6 +21786,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:261140",
+      "code": "261140",
+      "market": "KR",
+      "name": "TIGER 우선주",
+      "detail": "등락률 -0.39% vs price.D1 0%",
+      "changeRate": -0.39,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:464920",
       "code": "464920",
@@ -20794,6 +21881,17 @@
       "price": 95.95,
       "navRet": 140.19,
       "gapPp": 44.24
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:153270",
+      "code": "153270",
+      "market": "KR",
+      "name": "KIWOOM 코스피100",
+      "detail": "등락률 0.46% vs price.D1 0%",
+      "changeRate": 0.46,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -20905,6 +22003,17 @@
       "price": -14.23,
       "navRet": -5.77,
       "gapPp": 8.46
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:227540",
+      "code": "227540",
+      "market": "KR",
+      "name": "TIGER 200 헬스케어",
+      "detail": "등락률 -1.34% vs price.D1 0%",
+      "changeRate": -1.34,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -21082,6 +22191,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:099140",
+      "code": "099140",
+      "market": "KR",
+      "name": "KODEX 차이나H",
+      "detail": "등락률 -2.5% vs price.D1 0%",
+      "changeRate": -2.5,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:387270",
       "code": "387270",
@@ -21150,6 +22270,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:139270",
+      "code": "139270",
+      "market": "KR",
+      "name": "TIGER 200 금융",
+      "detail": "등락률 0.58% vs price.D1 0%",
+      "changeRate": 0.58,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:117680",
       "code": "117680",
@@ -21202,6 +22333,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:117680",
+      "code": "117680",
+      "market": "KR",
+      "name": "KODEX 철강",
+      "detail": "등락률 1.77% vs price.D1 0%",
+      "changeRate": 1.77,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:252710",
       "code": "252710",
@@ -21243,6 +22385,17 @@
       "market": "KR",
       "name": "TIGER 200선물인버스2X",
       "detail": "{\"KR\":-72.73}"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:252710",
+      "code": "252710",
+      "market": "KR",
+      "name": "TIGER 200선물인버스2X",
+      "detail": "등락률 -1.32% vs price.D1 0%",
+      "changeRate": -1.32,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -21308,6 +22461,17 @@
       "name": "KIWOOM 200선물레버리지",
       "detail": "합 277.70%",
       "sum": 277.7
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:253250",
+      "code": "253250",
+      "market": "KR",
+      "name": "KIWOOM 200선물레버리지",
+      "detail": "등락률 0.93% vs price.D1 0%",
+      "changeRate": 0.93,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -21448,6 +22612,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:248270",
+      "code": "248270",
+      "market": "KR",
+      "name": "TIGER S&P글로벌헬스케어(합성)",
+      "detail": "등락률 -2% vs price.D1 0%",
+      "changeRate": -2,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:145850",
       "code": "145850",
@@ -21484,6 +22659,17 @@
       "price": 43.2,
       "navRet": 81.87,
       "gapPp": 38.67
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:145850",
+      "code": "145850",
+      "market": "KR",
+      "name": "TREX 펀더멘탈 200",
+      "detail": "등락률 0.27% vs price.D1 0%",
+      "changeRate": 0.27,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -21556,6 +22742,17 @@
       "price": 6.21,
       "navRet": 21.53,
       "gapPp": 15.32
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:192720",
+      "code": "192720",
+      "market": "KR",
+      "name": "파워 고배당저변동성",
+      "detail": "등락률 0.84% vs price.D1 0%",
+      "changeRate": 0.84,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -21633,6 +22830,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:245350",
+      "code": "245350",
+      "market": "KR",
+      "name": "TIGER 유로스탁스배당30",
+      "detail": "등락률 -2.52% vs price.D1 0%",
+      "changeRate": -2.52,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:0223R0",
       "code": "0223R0",
@@ -21685,6 +22893,17 @@
       "market": "KR",
       "name": "ACE MSCI인도네시아(합성)",
       "detail": "4종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:256440",
+      "code": "256440",
+      "market": "KR",
+      "name": "ACE MSCI인도네시아(합성)",
+      "detail": "등락률 -1.28% vs price.D1 0%",
+      "changeRate": -1.28,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -21998,6 +23217,17 @@
       "sum": 192.89
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:167860",
+      "code": "167860",
+      "market": "KR",
+      "name": "KIWOOM 국고채10년레버리지",
+      "detail": "등락률 1.23% vs price.D1 0%",
+      "changeRate": 1.23,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:481340",
@@ -22147,19 +23377,6 @@
       "code": "139250",
       "market": "KR",
       "name": "TIGER 200 에너지화학",
-      "detail": "D1: 시장가 3.95% vs 기준가 -1.21% (5.2%p 차)",
-      "period": "D1",
-      "price": 3.95,
-      "navRet": -1.21,
-      "gapPp": 5.16
-    },
-    {
-      "sev": "warn",
-      "rule": "price-nav-괴리",
-      "id": "KR:139250",
-      "code": "139250",
-      "market": "KR",
-      "name": "TIGER 200 에너지화학",
       "detail": "M1: 시장가 2.02% vs 기준가 -3.04% (5.1%p 차)",
       "period": "M1",
       "price": 2.02,
@@ -22217,6 +23434,17 @@
       "price": 25.77,
       "navRet": 49.38,
       "gapPp": 23.61
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:139250",
+      "code": "139250",
+      "market": "KR",
+      "name": "TIGER 200 에너지화학",
+      "detail": "등락률 3.95% vs price.D1 0%",
+      "changeRate": 3.95,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -22508,6 +23736,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:159800",
+      "code": "159800",
+      "market": "KR",
+      "name": "마이티 코스피100",
+      "detail": "등락률 0.49% vs price.D1 0%",
+      "changeRate": 0.49,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:0209Z0",
       "code": "0209Z0",
@@ -22577,6 +23816,17 @@
       "market": "KR",
       "name": "TIGER 차이나HSCEI",
       "detail": "10종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:245360",
+      "code": "245360",
+      "market": "KR",
+      "name": "TIGER 차이나HSCEI",
+      "detail": "등락률 -3.04% vs price.D1 0%",
+      "changeRate": -3.04,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -22835,6 +24085,17 @@
       "detail": "5종목 모두 비중 없음 (수량만)"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:185680",
+      "code": "185680",
+      "market": "KR",
+      "name": "KODEX 미국S&P바이오(합성)",
+      "detail": "등락률 -2.62% vs price.D1 0%",
+      "changeRate": -2.62,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:442550",
@@ -22897,6 +24158,17 @@
       "market": "KR",
       "name": "PLUS 선진국MSCI(합성 H)",
       "detail": "4종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:195970",
+      "code": "195970",
+      "market": "KR",
+      "name": "PLUS 선진국MSCI(합성 H)",
+      "detail": "등락률 -0.93% vs price.D1 0%",
+      "changeRate": -0.93,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -22973,6 +24245,17 @@
       "name": "KIWOOM 미국달러선물",
       "detail": "합 199.99%",
       "sum": 199.99
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:138230",
+      "code": "138230",
+      "market": "KR",
+      "name": "KIWOOM 미국달러선물",
+      "detail": "등락률 -0.47% vs price.D1 0%",
+      "changeRate": -0.47,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -23173,6 +24456,17 @@
       "gapPp": 40.97
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:108590",
+      "code": "108590",
+      "market": "KR",
+      "name": "TREX 200",
+      "detail": "등락률 0.52% vs price.D1 0%",
+      "changeRate": 0.52,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:280930",
@@ -23309,6 +24603,17 @@
       "market": "KR",
       "name": "TIGER 미국달러선물인버스2X",
       "detail": "{\"KR\":-85.46}"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:261120",
+      "code": "261120",
+      "market": "KR",
+      "name": "TIGER 미국달러선물인버스2X",
+      "detail": "등락률 0.91% vs price.D1 0%",
+      "changeRate": 0.91,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -23738,6 +25043,17 @@
       "detail": "4종목 모두 비중 없음 (수량만)"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:269420",
+      "code": "269420",
+      "market": "KR",
+      "name": "KODEX S&P글로벌인프라(합성)",
+      "detail": "등락률 -1.62% vs price.D1 0%",
+      "changeRate": -1.62,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:461600",
@@ -23822,6 +25138,17 @@
     {
       "sev": "warn",
       "rule": "D1-등락률-불일치",
+      "id": "KR:253290",
+      "code": "253290",
+      "market": "KR",
+      "name": "RISE 헬스케어채권혼합",
+      "detail": "등락률 -0.56% vs price.D1 0%",
+      "changeRate": -0.56,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
       "id": "KR:289040",
       "code": "289040",
       "market": "KR",
@@ -23884,6 +25211,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:226980",
+      "code": "226980",
+      "market": "KR",
+      "name": "KODEX 200 중소형",
+      "detail": "등락률 0.7% vs price.D1 0%",
+      "changeRate": 0.7,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "보유비중-일부없음",
       "id": "KR:152380",
       "code": "152380",
@@ -23920,6 +25258,17 @@
       "name": "KODEX 국채선물10년",
       "detail": "합 199.46%",
       "sum": 199.46
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:152380",
+      "code": "152380",
+      "market": "KR",
+      "name": "KODEX 국채선물10년",
+      "detail": "등락률 0.67% vs price.D1 0%",
+      "changeRate": 0.67,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -24097,6 +25446,17 @@
       "sum": 60.08
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:204450",
+      "code": "204450",
+      "market": "KR",
+      "name": "KODEX 차이나H레버리지(H)",
+      "detail": "등락률 -2.56% vs price.D1 0%",
+      "changeRate": -2.56,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:477730",
@@ -24260,6 +25620,17 @@
       "gapPp": 5.81
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:091220",
+      "code": "091220",
+      "market": "KR",
+      "name": "TIGER 은행",
+      "detail": "등락률 0.76% vs price.D1 0%",
+      "changeRate": 0.76,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:0153X0",
@@ -24355,6 +25726,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:228820",
+      "code": "228820",
+      "market": "KR",
+      "name": "TIGER KTOP30",
+      "detail": "등락률 1.32% vs price.D1 0%",
+      "changeRate": 1.32,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:169950",
       "code": "169950",
@@ -24432,6 +25814,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:169950",
+      "code": "169950",
+      "market": "KR",
+      "name": "KODEX 차이나A50",
+      "detail": "등락률 -0.19% vs price.D1 0%",
+      "changeRate": -0.19,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:229720",
       "code": "229720",
@@ -24468,6 +25861,17 @@
       "price": 33.63,
       "navRet": 65.68,
       "gapPp": 32.05
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:229720",
+      "code": "229720",
+      "market": "KR",
+      "name": "KODEX KTOP30",
+      "detail": "등락률 1.13% vs price.D1 0%",
+      "changeRate": 1.13,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -24516,6 +25920,17 @@
       "market": "KR",
       "name": "RISE 주식혼합",
       "detail": "10종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:183710",
+      "code": "183710",
+      "market": "KR",
+      "name": "RISE 주식혼합",
+      "detail": "등락률 0.36% vs price.D1 0%",
+      "changeRate": 0.36,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -24672,6 +26087,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:213630",
+      "code": "213630",
+      "market": "KR",
+      "name": "PLUS 미국다우존스고배당주(합성 H)",
+      "detail": "등락률 -0.65% vs price.D1 0%",
+      "changeRate": -0.65,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:438320",
       "code": "438320",
@@ -24811,6 +26237,17 @@
       "price": 70.89,
       "navRet": 104.88,
       "gapPp": 33.99
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:227830",
+      "code": "227830",
+      "market": "KR",
+      "name": "PLUS 코스피",
+      "detail": "등락률 0.92% vs price.D1 0%",
+      "changeRate": 0.92,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -24973,6 +26410,17 @@
     {
       "sev": "warn",
       "rule": "D1-등락률-불일치",
+      "id": "KR:195920",
+      "code": "195920",
+      "market": "KR",
+      "name": "TIGER 일본TOPIX(합성 H)",
+      "detail": "등락률 0.55% vs price.D1 0%",
+      "changeRate": 0.55,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
       "id": "KR:289260",
       "code": "289260",
       "market": "KR",
@@ -25090,6 +26538,17 @@
       "market": "KR",
       "name": "TIGER 이머징마켓MSCI레버리지(합성 H)",
       "detail": "6종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:225060",
+      "code": "225060",
+      "market": "KR",
+      "name": "TIGER 이머징마켓MSCI레버리지(합성 H)",
+      "detail": "등락률 -0.99% vs price.D1 0%",
+      "changeRate": -0.99,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -25322,6 +26781,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:219390",
+      "code": "219390",
+      "market": "KR",
+      "name": "RISE 미국S&P원유생산기업(합성 H)",
+      "detail": "등락률 3.67% vs price.D1 0%",
+      "changeRate": 3.67,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:415760",
       "code": "415760",
@@ -25456,6 +26926,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:131890",
+      "code": "131890",
+      "market": "KR",
+      "name": "ACE 삼성그룹동일가중",
+      "detail": "등락률 0.29% vs price.D1 0%",
+      "changeRate": 0.29,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:250730",
       "code": "250730",
@@ -25531,6 +27012,17 @@
       "name": "RISE 차이나HSCEI(H)",
       "detail": "합 104.90%",
       "sum": 104.9
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:250730",
+      "code": "250730",
+      "market": "KR",
+      "name": "RISE 차이나HSCEI(H)",
+      "detail": "등락률 -4.15% vs price.D1 0%",
+      "changeRate": -4.15,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -25712,6 +27204,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:130680",
+      "code": "130680",
+      "market": "KR",
+      "name": "TIGER 원유선물Enhanced(H)",
+      "detail": "등락률 3.09% vs price.D1 0%",
+      "changeRate": 3.09,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:0193K0",
       "code": "0193K0",
@@ -25889,6 +27392,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:244620",
+      "code": "244620",
+      "market": "KR",
+      "name": "KODEX 모멘텀Plus",
+      "detail": "등락률 -0.76% vs price.D1 0%",
+      "changeRate": -0.76,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:387280",
       "code": "387280",
@@ -25956,6 +27470,17 @@
       "market": "KR",
       "name": "ACE 국고채3년",
       "detail": "4종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:114460",
+      "code": "114460",
+      "market": "KR",
+      "name": "ACE 국고채3년",
+      "detail": "등락률 0.28% vs price.D1 0%",
+      "changeRate": 0.28,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -26151,6 +27676,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:104520",
+      "code": "104520",
+      "market": "KR",
+      "name": "KIWOOM 블루칩",
+      "detail": "등락률 1.29% vs price.D1 0%",
+      "changeRate": 1.29,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:0088N0",
       "code": "0088N0",
@@ -26295,6 +27831,17 @@
       "market": "KR",
       "name": "TIGER 인도니프티50레버리지(합성)",
       "detail": "9종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:236350",
+      "code": "236350",
+      "market": "KR",
+      "name": "TIGER 인도니프티50레버리지(합성)",
+      "detail": "등락률 -2.23% vs price.D1 0%",
+      "changeRate": -2.23,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -26629,6 +28176,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:137610",
+      "code": "137610",
+      "market": "KR",
+      "name": "TIGER 농산물선물Enhanced(H)",
+      "detail": "등락률 -0.18% vs price.D1 0%",
+      "changeRate": -0.18,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:0208N0",
       "code": "0208N0",
@@ -26695,6 +28253,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:140710",
+      "code": "140710",
+      "market": "KR",
+      "name": "KODEX 운송",
+      "detail": "등락률 0.52% vs price.D1 0%",
+      "changeRate": 0.52,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:166400",
       "code": "166400",
@@ -26748,6 +28317,17 @@
       "name": "TIGER 200커버드콜OTM",
       "detail": "합 109.61%",
       "sum": 109.61
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:166400",
+      "code": "166400",
+      "market": "KR",
+      "name": "TIGER 200커버드콜OTM",
+      "detail": "등락률 0.55% vs price.D1 0%",
+      "changeRate": 0.55,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -27049,6 +28629,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:251590",
+      "code": "251590",
+      "market": "KR",
+      "name": "PLUS 고배당저변동50",
+      "detail": "등락률 0.17% vs price.D1 0%",
+      "changeRate": 0.17,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:140580",
       "code": "140580",
@@ -27098,6 +28689,17 @@
       "price": 8.32,
       "navRet": 32.41,
       "gapPp": 24.09
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:140580",
+      "code": "140580",
+      "market": "KR",
+      "name": "RISE 우량업종대표주",
+      "detail": "등락률 0.21% vs price.D1 0%",
+      "changeRate": 0.21,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -27273,6 +28875,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:176950",
+      "code": "176950",
+      "market": "KR",
+      "name": "KODEX 국채선물10년인버스",
+      "detail": "등락률 -0.58% vs price.D1 0%",
+      "changeRate": -0.58,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:0216Z0",
       "code": "0216Z0",
@@ -27379,6 +28992,17 @@
       "price": 6.64,
       "navRet": 19.06,
       "gapPp": 12.42
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:266410",
+      "code": "266410",
+      "market": "KR",
+      "name": "KODEX 필수소비재",
+      "detail": "등락률 -0.32% vs price.D1 0%",
+      "changeRate": -0.32,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -27508,6 +29132,17 @@
     {
       "sev": "warn",
       "rule": "D1-등락률-불일치",
+      "id": "KR:252650",
+      "code": "252650",
+      "market": "KR",
+      "name": "KODEX 200동일가중",
+      "detail": "등락률 1.09% vs price.D1 0%",
+      "changeRate": 1.09,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
       "id": "KR:464610",
       "code": "464610",
       "market": "KR",
@@ -27623,6 +29258,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:269370",
+      "code": "269370",
+      "market": "KR",
+      "name": "TIGER S&P글로벌인프라(합성)",
+      "detail": "등락률 -1.82% vs price.D1 0%",
+      "changeRate": -1.82,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:269530",
       "code": "269530",
@@ -27655,6 +29301,17 @@
       "market": "KR",
       "name": "PLUS S&P글로벌인프라",
       "detail": "10종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:269530",
+      "code": "269530",
+      "market": "KR",
+      "name": "PLUS S&P글로벌인프라",
+      "detail": "등락률 -1.44% vs price.D1 0%",
+      "changeRate": -1.44,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -27716,6 +29373,17 @@
       "price": 19.52,
       "navRet": 32.69,
       "gapPp": 13.17
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:252000",
+      "code": "252000",
+      "market": "KR",
+      "name": "TIGER 200동일가중",
+      "detail": "등락률 0.99% vs price.D1 0%",
+      "changeRate": 0.99,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -27906,6 +29574,17 @@
       "gapPp": 29.41
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:140570",
+      "code": "140570",
+      "market": "KR",
+      "name": "RISE 수출주",
+      "detail": "등락률 1.59% vs price.D1 0%",
+      "changeRate": 1.59,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:419420",
@@ -28010,6 +29689,17 @@
       "name": "TIGER 경기방어채권혼합",
       "detail": "합 104.81%",
       "sum": 104.81
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:237440",
+      "code": "237440",
+      "market": "KR",
+      "name": "TIGER 경기방어채권혼합",
+      "detail": "등락률 0.44% vs price.D1 0%",
+      "changeRate": 0.44,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -28478,6 +30168,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:181480",
+      "code": "181480",
+      "market": "KR",
+      "name": "ACE 미국부동산리츠(합성 H)",
+      "detail": "등락률 -0.59% vs price.D1 0%",
+      "changeRate": -0.59,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:139240",
       "code": "139240",
@@ -28514,6 +30215,17 @@
       "price": -28.47,
       "navRet": -12,
       "gapPp": 16.47
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:139240",
+      "code": "139240",
+      "market": "KR",
+      "name": "TIGER 200 철강소재",
+      "detail": "등락률 0.56% vs price.D1 0%",
+      "changeRate": 0.56,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -28598,6 +30310,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:217780",
+      "code": "217780",
+      "market": "KR",
+      "name": "TIGER 차이나CSI300인버스(합성)",
+      "detail": "등락률 1.88% vs price.D1 0%",
+      "changeRate": 1.88,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:230480",
       "code": "230480",
@@ -28626,6 +30349,17 @@
       "market": "KR",
       "name": "KIWOOM 미국달러선물인버스2X",
       "detail": "{\"KR\":-82.07}"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:230480",
+      "code": "230480",
+      "market": "KR",
+      "name": "KIWOOM 미국달러선물인버스2X",
+      "detail": "등락률 0.94% vs price.D1 0%",
+      "changeRate": 0.94,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -28836,6 +30570,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:117690",
+      "code": "117690",
+      "market": "KR",
+      "name": "TIGER 차이나항셍30",
+      "detail": "등락률 -3.01% vs price.D1 0%",
+      "changeRate": -3.01,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:0221Z0",
       "code": "0221Z0",
@@ -29013,6 +30758,17 @@
       "gapPp": 17.26
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:266390",
+      "code": "266390",
+      "market": "KR",
+      "name": "KODEX 경기소비재",
+      "detail": "등락률 0.58% vs price.D1 0%",
+      "changeRate": 0.58,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:0216K0",
@@ -29134,6 +30890,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:215620",
+      "code": "215620",
+      "market": "KR",
+      "name": "HK S&P코리아로우볼",
+      "detail": "등락률 -0.44% vs price.D1 0%",
+      "changeRate": -0.44,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:174350",
       "code": "174350",
@@ -29157,6 +30924,17 @@
       "price": 5.93,
       "navRet": 17.32,
       "gapPp": 11.39
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:174350",
+      "code": "174350",
+      "market": "KR",
+      "name": "TIGER 로우볼",
+      "detail": "등락률 0.98% vs price.D1 0%",
+      "changeRate": 0.98,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -29225,6 +31003,17 @@
       "market": "KR",
       "name": "TIGER 라틴35",
       "detail": "10종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:105010",
+      "code": "105010",
+      "market": "KR",
+      "name": "TIGER 라틴35",
+      "detail": "등락률 -0.73% vs price.D1 0%",
+      "changeRate": -0.73,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -29588,6 +31377,17 @@
       "gapPp": 10.83
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:227550",
+      "code": "227550",
+      "market": "KR",
+      "name": "TIGER 200 산업재",
+      "detail": "등락률 2.25% vs price.D1 0%",
+      "changeRate": 2.25,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:304670",
@@ -29703,6 +31503,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:189400",
+      "code": "189400",
+      "market": "KR",
+      "name": "PLUS 글로벌MSCI(합성 H)",
+      "detail": "등락률 -0.68% vs price.D1 0%",
+      "changeRate": -0.68,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:0218K0",
       "code": "0218K0",
@@ -29739,6 +31550,17 @@
       "price": 16.55,
       "navRet": 29.09,
       "gapPp": 12.54
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:227570",
+      "code": "227570",
+      "market": "KR",
+      "name": "TIGER 우량가치",
+      "detail": "등락률 1.13% vs price.D1 0%",
+      "changeRate": 1.13,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -29885,6 +31707,17 @@
       "gapPp": 6.87
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:253280",
+      "code": "253280",
+      "market": "KR",
+      "name": "RISE 헬스케어",
+      "detail": "등락률 -1.24% vs price.D1 0%",
+      "changeRate": -1.24,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:272570",
@@ -30010,6 +31843,17 @@
       "name": "KIWOOM 미국달러선물레버리지",
       "detail": "합 277.34%",
       "sum": 277.34
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:225800",
+      "code": "225800",
+      "market": "KR",
+      "name": "KIWOOM 미국달러선물레버리지",
+      "detail": "등락률 -1.03% vs price.D1 0%",
+      "changeRate": -1.03,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -30188,6 +32032,17 @@
       "gapPp": 12.71
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:244670",
+      "code": "244670",
+      "market": "KR",
+      "name": "KODEX 밸류Plus",
+      "detail": "등락률 0.17% vs price.D1 0%",
+      "changeRate": 0.17,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:400590",
@@ -30286,6 +32141,17 @@
       "sum": 106.86
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:225050",
+      "code": "225050",
+      "market": "KR",
+      "name": "TIGER 유로스탁스레버리지(합성 H)",
+      "detail": "등락률 -2.53% vs price.D1 0%",
+      "changeRate": -2.53,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:0094X0",
@@ -30354,6 +32220,17 @@
       "market": "KR",
       "name": "PLUS 심천차이넥스트(합성)",
       "detail": "4종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:256450",
+      "code": "256450",
+      "market": "KR",
+      "name": "PLUS 심천차이넥스트(합성)",
+      "detail": "등락률 0.6% vs price.D1 0%",
+      "changeRate": 0.6,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -30492,6 +32369,17 @@
       "gapPp": 15.99
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:139290",
+      "code": "139290",
+      "market": "KR",
+      "name": "TIGER 200 경기소비재",
+      "detail": "등락률 0.28% vs price.D1 0%",
+      "changeRate": 0.28,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:456200",
@@ -30586,6 +32474,17 @@
       "name": "KODEX 콩선물(H)",
       "detail": "합 151.50%",
       "sum": 151.5
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:138920",
+      "code": "138920",
+      "market": "KR",
+      "name": "KODEX 콩선물(H)",
+      "detail": "등락률 -0.51% vs price.D1 0%",
+      "changeRate": -0.51,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -30850,11 +32749,11 @@
       "code": "250780",
       "market": "KR",
       "name": "TIGER 코스닥150선물인버스",
-      "detail": "D1: 시장가 0.9% vs 기준가 -5.85% (6.8%p 차)",
+      "detail": "D1: 시장가 0% vs 기준가 -5.85% (5.8%p 차)",
       "period": "D1",
-      "price": 0.9,
+      "price": 0,
       "navRet": -5.85,
-      "gapPp": 6.75
+      "gapPp": 5.85
     },
     {
       "sev": "warn",
@@ -30890,6 +32789,17 @@
       "market": "KR",
       "name": "TIGER 코스닥150선물인버스",
       "detail": "3종목 중 1개 비중 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:250780",
+      "code": "250780",
+      "market": "KR",
+      "name": "TIGER 코스닥150선물인버스",
+      "detail": "등락률 0.9% vs price.D1 0%",
+      "changeRate": 0.9,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -31008,6 +32918,17 @@
       "market": "KR",
       "name": "RISE 미국장기국채선물인버스(H)",
       "detail": "{\"KR\":93.59,\"US\":6.38,\"MISC\":-150.77}"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:267450",
+      "code": "267450",
+      "market": "KR",
+      "name": "RISE 미국장기국채선물인버스(H)",
+      "detail": "등락률 -0.26% vs price.D1 0%",
+      "changeRate": -0.26,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -31246,6 +33167,17 @@
       "sum": 111.09
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:238670",
+      "code": "238670",
+      "market": "KR",
+      "name": "PLUS 스마트베타Quality채권혼합",
+      "detail": "등락률 1.15% vs price.D1 0%",
+      "changeRate": 1.15,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:499150",
@@ -31385,6 +33317,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:220130",
+      "code": "220130",
+      "market": "KR",
+      "name": "SOL 차이나강소기업CSI500(합성 H)",
+      "detail": "등락률 -0.46% vs price.D1 0%",
+      "changeRate": -0.46,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:219900",
       "code": "219900",
@@ -31443,6 +33386,17 @@
       "market": "KR",
       "name": "ACE 중국본토CSI300레버리지(합성)",
       "detail": "4종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:219900",
+      "code": "219900",
+      "market": "KR",
+      "name": "ACE 중국본토CSI300레버리지(합성)",
+      "detail": "등락률 0.27% vs price.D1 0%",
+      "changeRate": 0.27,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -31649,6 +33603,17 @@
       "price": -8.16,
       "navRet": 4.91,
       "gapPp": 13.07
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:227560",
+      "code": "227560",
+      "market": "KR",
+      "name": "TIGER 200 생활소비재",
+      "detail": "등락률 -0.28% vs price.D1 0%",
+      "changeRate": -0.28,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -31877,6 +33842,17 @@
       "price": 9.44,
       "navRet": 19.42,
       "gapPp": 9.98
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:266550",
+      "code": "266550",
+      "market": "KR",
+      "name": "PLUS 중형주저변동50",
+      "detail": "등락률 -0.19% vs price.D1 0%",
+      "changeRate": -0.19,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -32187,19 +34163,6 @@
       "code": "243890",
       "market": "KR",
       "name": "TIGER 200에너지화학레버리지",
-      "detail": "D1: 시장가 6.91% vs 기준가 -2.64% (9.6%p 차)",
-      "period": "D1",
-      "price": 6.91,
-      "navRet": -2.64,
-      "gapPp": 9.55
-    },
-    {
-      "sev": "warn",
-      "rule": "price-nav-괴리",
-      "id": "KR:243890",
-      "code": "243890",
-      "market": "KR",
-      "name": "TIGER 200에너지화학레버리지",
       "detail": "M1: 시장가 3.16% vs 기준가 -7.85% (11.0%p 차)",
       "period": "M1",
       "price": 3.16,
@@ -32261,6 +34224,17 @@
       "name": "TIGER 200에너지화학레버리지",
       "detail": "합 220.05%",
       "sum": 220.05
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:243890",
+      "code": "243890",
+      "market": "KR",
+      "name": "TIGER 200에너지화학레버리지",
+      "detail": "등락률 6.91% vs price.D1 0%",
+      "changeRate": 6.91,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -32348,6 +34322,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:225030",
+      "code": "225030",
+      "market": "KR",
+      "name": "TIGER 미국S&P500선물인버스(H)",
+      "detail": "등락률 0.22% vs price.D1 0%",
+      "changeRate": 0.22,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:334690",
       "code": "334690",
@@ -32421,6 +34406,17 @@
       "price": -6.08,
       "navRet": 2.57,
       "gapPp": 8.65
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:244660",
+      "code": "244660",
+      "market": "KR",
+      "name": "KODEX 퀄리티Plus",
+      "detail": "등락률 -0.38% vs price.D1 0%",
+      "changeRate": -0.38,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -32626,6 +34622,17 @@
       "detail": "9종목 모두 비중 없음 (수량만)"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:267490",
+      "code": "267490",
+      "market": "KR",
+      "name": "RISE 미국장기국채선물레버리지(합성 H)",
+      "detail": "등락률 -0.56% vs price.D1 0%",
+      "changeRate": -0.56,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:280940",
@@ -32756,6 +34763,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:145670",
+      "code": "145670",
+      "market": "KR",
+      "name": "ACE 인버스",
+      "detail": "등락률 -0.8% vs price.D1 0%",
+      "changeRate": -0.8,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "price-nav-괴리",
       "id": "KR:252410",
       "code": "252410",
@@ -32818,6 +34836,17 @@
       "name": "RISE 200선물인버스",
       "detail": "합 0.14%",
       "sum": 0.14
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:252410",
+      "code": "252410",
+      "market": "KR",
+      "name": "RISE 200선물인버스",
+      "detail": "등락률 -0.71% vs price.D1 0%",
+      "changeRate": -0.71,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -32917,6 +34946,17 @@
       "market": "KR",
       "name": "KIWOOM 200선물인버스2X",
       "detail": "{\"KR\":-77.55}"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:253230",
+      "code": "253230",
+      "market": "KR",
+      "name": "KIWOOM 200선물인버스2X",
+      "detail": "등락률 -2.82% vs price.D1 0%",
+      "changeRate": -2.82,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -33099,6 +35139,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:253240",
+      "code": "253240",
+      "market": "KR",
+      "name": "KIWOOM 200선물인버스",
+      "detail": "등락률 -1.03% vs price.D1 0%",
+      "changeRate": -1.03,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "보유비중-일부없음",
       "id": "KR:306520",
       "code": "306520",
@@ -33162,6 +35213,17 @@
       "detail": "{\"KR\":-61.63}"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:253160",
+      "code": "253160",
+      "market": "KR",
+      "name": "PLUS 200선물인버스2X",
+      "detail": "등락률 -1.4% vs price.D1 0%",
+      "changeRate": -1.4,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:261920",
@@ -33169,6 +35231,17 @@
       "market": "KR",
       "name": "ACE MSCI필리핀(합성)",
       "detail": "3종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:261920",
+      "code": "261920",
+      "market": "KR",
+      "name": "ACE MSCI필리핀(합성)",
+      "detail": "등락률 -0.54% vs price.D1 0%",
+      "changeRate": -0.54,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -33259,6 +35332,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "US:QQQM",
+      "code": "QQQM",
+      "market": "US",
+      "name": "Invesco NASDAQ 100 ETF",
+      "detail": "등락률 1.02% vs price.D1 0%",
+      "changeRate": 1.02,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "분배금-못찾음",
       "id": "US:IWM",
       "code": "IWM",
@@ -33324,6 +35408,17 @@
       "dividendYield": 0
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "US:XLC",
+      "code": "XLC",
+      "market": "US",
+      "name": "State Street Communication Services Select Sector SPDR ETF",
+      "detail": "등락률 0.35% vs price.D1 0%",
+      "changeRate": 0.35,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유종목-없음",
       "id": "US:SOXL",
@@ -33331,6 +35426,39 @@
       "market": "US",
       "name": "Direxion Daily Semiconductor Bull 3X Shares",
       "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "US:DRIV",
+      "code": "DRIV",
+      "market": "US",
+      "name": "Global X Autonomous & Electric Vehicles ETF",
+      "detail": "등락률 1.45% vs price.D1 0%",
+      "changeRate": 1.45,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "US:UFO",
+      "code": "UFO",
+      "market": "US",
+      "name": "Procure Space ETF",
+      "detail": "등락률 2.81% vs price.D1 0%",
+      "changeRate": 2.81,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "US:BLOK",
+      "code": "BLOK",
+      "market": "US",
+      "name": "Amplify Blockchain Technology ETF",
+      "detail": "등락률 0.75% vs price.D1 0%",
+      "changeRate": 0.75,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -33342,6 +35470,17 @@
       "detail": "상위 편입종목이 비어 있다"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "US:IBIT",
+      "code": "IBIT",
+      "market": "US",
+      "name": "iShares Bitcoin Trust ETF",
+      "detail": "등락률 -0.48% vs price.D1 0%",
+      "changeRate": -0.48,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유종목-없음",
       "id": "US:FBTC",
@@ -33351,6 +35490,17 @@
       "detail": "상위 편입종목이 비어 있다"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "US:FBTC",
+      "code": "FBTC",
+      "market": "US",
+      "name": "Fidelity Wise Origin Bitcoin Fund",
+      "detail": "등락률 -0.38% vs price.D1 0%",
+      "changeRate": -0.38,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유종목-없음",
       "id": "US:ETHA",
@@ -33358,6 +35508,39 @@
       "market": "US",
       "name": "iShares Ethereum Trust ETF",
       "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "US:ETHA",
+      "code": "ETHA",
+      "market": "US",
+      "name": "iShares Ethereum Trust ETF",
+      "detail": "등락률 -1.28% vs price.D1 0%",
+      "changeRate": -1.28,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "US:JEPI",
+      "code": "JEPI",
+      "market": "US",
+      "name": "JPMorgan Equity Premium Income ETF",
+      "detail": "등락률 0.3% vs price.D1 0%",
+      "changeRate": 0.3,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "US:JEPQ",
+      "code": "JEPQ",
+      "market": "US",
+      "name": "JPMorgan Nasdaq Equity Premium Income ETF",
+      "detail": "등락률 0.38% vs price.D1 0%",
+      "changeRate": 0.38,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -33414,6 +35597,17 @@
       "tr": 17.77,
       "impliedCumPct": 43.76,
       "dividendYield": 1.45
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "US:SPYI",
+      "code": "SPYI",
+      "market": "US",
+      "name": "Neos S&P 500(R) High Income ETF",
+      "detail": "등락률 0.6% vs price.D1 0%",
+      "changeRate": 0.6,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -33494,9 +35688,9 @@
       "code": "TLTW",
       "market": "US",
       "name": "iShares 20+ Year Treasury Bond Buywrite Strategy ETF",
-      "detail": "등락률 -0.28% vs price.D1 -1.7%",
+      "detail": "등락률 -0.28% vs price.D1 0%",
       "changeRate": -0.28,
-      "d1": -1.7
+      "d1": 0
     },
     {
       "sev": "info",
@@ -33577,6 +35771,17 @@
     },
     {
       "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "US:NVDL",
+      "code": "NVDL",
+      "market": "US",
+      "name": "GraniteShares 2x Long NVDA Daily ETF",
+      "detail": "등락률 2.61% vs price.D1 0%",
+      "changeRate": 2.61,
+      "d1": 0
+    },
+    {
+      "sev": "warn",
       "rule": "분배금-못찾음",
       "id": "HK:2800",
       "code": "2800",
@@ -33651,6 +35856,17 @@
       "detail": "ter 없음"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1306",
+      "code": "1306",
+      "market": "JP",
+      "name": "NEXT FUNDS TOPIX Exchange Traded Fund",
+      "detail": "등락률 -0.97% vs price.D1 0%",
+      "changeRate": -0.97,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "총보수-없음",
       "id": "JP:1305",
@@ -33658,6 +35874,17 @@
       "market": "JP",
       "name": "iFreeETF TOPIX (Yearly Dividend Type)",
       "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1305",
+      "code": "1305",
+      "market": "JP",
+      "name": "iFreeETF TOPIX (Yearly Dividend Type)",
+      "detail": "등락률 -1.14% vs price.D1 0%",
+      "changeRate": -1.14,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -33669,6 +35896,17 @@
       "detail": "ter 없음"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1348",
+      "code": "1348",
+      "market": "JP",
+      "name": "MAXIS TOPIX ETF",
+      "detail": "등락률 -1.02% vs price.D1 0%",
+      "changeRate": -1.02,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "총보수-없음",
       "id": "JP:1321",
@@ -33676,6 +35914,17 @@
       "market": "JP",
       "name": "NEXT FUNDS Nikkei 225 Exchange Traded Fund",
       "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1321",
+      "code": "1321",
+      "market": "JP",
+      "name": "NEXT FUNDS Nikkei 225 Exchange Traded Fund",
+      "detail": "등락률 -1.07% vs price.D1 0%",
+      "changeRate": -1.07,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -33687,6 +35936,17 @@
       "detail": "ter 없음"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1320",
+      "code": "1320",
+      "market": "JP",
+      "name": "iFreeETF Nikkei225 (Yearly Dividend Type)",
+      "detail": "등락률 -0.94% vs price.D1 0%",
+      "changeRate": -0.94,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "총보수-없음",
       "id": "JP:1330",
@@ -33696,6 +35956,17 @@
       "detail": "ter 없음"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1330",
+      "code": "1330",
+      "market": "JP",
+      "name": "Amova Exchange Traded Index Fund 225",
+      "detail": "등락률 -0.68% vs price.D1 0%",
+      "changeRate": -0.68,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "총보수-없음",
       "id": "JP:1329",
@@ -33703,6 +35974,17 @@
       "market": "JP",
       "name": "iShares Core Nikkei 225 ETF",
       "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1329",
+      "code": "1329",
+      "market": "JP",
+      "name": "iShares Core Nikkei 225 ETF",
+      "detail": "등락률 -1.06% vs price.D1 0%",
+      "changeRate": -1.06,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -33723,6 +36005,17 @@
       "market": "JP",
       "name": "NEXT FUNDS NASDAQ-100(R) (Unhedged) Exchange Traded Fund",
       "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1545",
+      "code": "1545",
+      "market": "JP",
+      "name": "NEXT FUNDS NASDAQ-100(R) (Unhedged) Exchange Traded Fund",
+      "detail": "등락률 -1.14% vs price.D1 0%",
+      "changeRate": -1.14,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -33852,6 +36145,17 @@
       "detail": "ter 없음"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1343",
+      "code": "1343",
+      "market": "JP",
+      "name": "NEXT FUNDS REIT INDEX ETF",
+      "detail": "등락률 -1.52% vs price.D1 0%",
+      "changeRate": -1.52,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "총보수-없음",
       "id": "JP:1476",
@@ -33861,6 +36165,17 @@
       "detail": "ter 없음"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1476",
+      "code": "1476",
+      "market": "JP",
+      "name": "iShares Core Japan REIT ETF",
+      "detail": "등락률 -1.53% vs price.D1 0%",
+      "changeRate": -1.53,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유종목-없음",
       "id": "JP:1540",
@@ -33879,6 +36194,17 @@
       "detail": "ter 없음"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1540",
+      "code": "1540",
+      "market": "JP",
+      "name": "Japan Physical Gold ETF",
+      "detail": "등락률 -0.35% vs price.D1 0%",
+      "changeRate": -0.35,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유종목-없음",
       "id": "JP:1671",
@@ -33895,6 +36221,17 @@
       "market": "JP",
       "name": "Simplex WTI ETF",
       "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1671",
+      "code": "1671",
+      "market": "JP",
+      "name": "Simplex WTI ETF",
+      "detail": "등락률 2.71% vs price.D1 0%",
+      "changeRate": 2.71,
+      "d1": 0
     },
     {
       "sev": "warn",
@@ -33920,6 +36257,17 @@
       "detail": "ter 없음"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1489",
+      "code": "1489",
+      "market": "JP",
+      "name": "NEXT FUNDS Nikkei 225 High Dividend Yield Stock 50 Index Exchange Traded Fd",
+      "detail": "등락률 -1.39% vs price.D1 0%",
+      "changeRate": -1.39,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "총보수-없음",
       "id": "JP:1478",
@@ -33929,6 +36277,17 @@
       "detail": "ter 없음"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1478",
+      "code": "1478",
+      "market": "JP",
+      "name": "iShares MSCI Japan High Dividend ETF",
+      "detail": "등락률 -0.98% vs price.D1 0%",
+      "changeRate": -0.98,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유종목-없음",
       "id": "JP:1570",
@@ -33947,6 +36306,17 @@
       "detail": "ter 없음"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1570",
+      "code": "1570",
+      "market": "JP",
+      "name": "NEXT FUNDS Nikkei 225 Leveraged Index Exchange Traded Fund",
+      "detail": "등락률 -2.18% vs price.D1 0%",
+      "changeRate": -2.18,
+      "d1": 0
+    },
+    {
       "sev": "info",
       "rule": "보유종목-없음",
       "id": "JP:1357",
@@ -33963,6 +36333,17 @@
       "market": "JP",
       "name": "NEXT FUNDS Nikkei 225 Double Inverse Index ETF",
       "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "JP:1357",
+      "code": "1357",
+      "market": "JP",
+      "name": "NEXT FUNDS Nikkei 225 Double Inverse Index ETF",
+      "detail": "등락률 2.15% vs price.D1 0%",
+      "changeRate": 2.15,
+      "d1": 0
     },
     {
       "sev": "info",
@@ -34111,7 +36492,7 @@
       "id": "SS:588000",
       "code": "588000",
       "market": "SS",
-      "name": "ChinaAMC SSE STAR 50 ETF",
+      "name": "China AMC SSE Science and Technology Innovation Board 50 ETF",
       "detail": "상위 편입종목이 비어 있다"
     },
     {
@@ -34120,7 +36501,7 @@
       "id": "SS:588000",
       "code": "588000",
       "market": "SS",
-      "name": "ChinaAMC SSE STAR 50 ETF",
+      "name": "China AMC SSE Science and Technology Innovation Board 50 ETF",
       "detail": "aum 없음"
     },
     {
@@ -34129,7 +36510,7 @@
       "id": "SS:588000",
       "code": "588000",
       "market": "SS",
-      "name": "ChinaAMC SSE STAR 50 ETF",
+      "name": "China AMC SSE Science and Technology Innovation Board 50 ETF",
       "detail": "ter 없음"
     },
     {
@@ -34138,7 +36519,7 @@
       "id": "SS:588000",
       "code": "588000",
       "market": "SS",
-      "name": "ChinaAMC SSE STAR 50 ETF",
+      "name": "China AMC SSE Science and Technology Innovation Board 50 ETF",
       "detail": "등락률 -2.47% vs price.D1 0%",
       "changeRate": -2.47,
       "d1": 0
@@ -34149,7 +36530,7 @@
       "id": "SS:588080",
       "code": "588080",
       "market": "SS",
-      "name": "E Fund SSE STAR 50 ETF",
+      "name": "E Fund Management Company - Star 50 ETF",
       "detail": "상위 편입종목이 비어 있다"
     },
     {
@@ -34158,7 +36539,7 @@
       "id": "SS:588080",
       "code": "588080",
       "market": "SS",
-      "name": "E Fund SSE STAR 50 ETF",
+      "name": "E Fund Management Company - Star 50 ETF",
       "detail": "aum 없음"
     },
     {
@@ -34167,7 +36548,7 @@
       "id": "SS:588080",
       "code": "588080",
       "market": "SS",
-      "name": "E Fund SSE STAR 50 ETF",
+      "name": "E Fund Management Company - Star 50 ETF",
       "detail": "ter 없음"
     },
     {
@@ -34176,7 +36557,7 @@
       "id": "SS:588080",
       "code": "588080",
       "market": "SS",
-      "name": "E Fund SSE STAR 50 ETF",
+      "name": "E Fund Management Company - Star 50 ETF",
       "detail": "등락률 -2.55% vs price.D1 0%",
       "changeRate": -2.55,
       "d1": 0
@@ -34339,7 +36720,7 @@
       "id": "SS:515790",
       "code": "515790",
       "market": "SS",
-      "name": "Huatai-PB CSI Photovoltaic Industry ETF",
+      "name": "Pinebridge CSI Photovaltic Index ETF",
       "detail": "상위 편입종목이 비어 있다"
     },
     {
@@ -34348,7 +36729,7 @@
       "id": "SS:515790",
       "code": "515790",
       "market": "SS",
-      "name": "Huatai-PB CSI Photovoltaic Industry ETF",
+      "name": "Pinebridge CSI Photovaltic Index ETF",
       "detail": "aum 없음"
     },
     {
@@ -34357,7 +36738,7 @@
       "id": "SS:515790",
       "code": "515790",
       "market": "SS",
-      "name": "Huatai-PB CSI Photovoltaic Industry ETF",
+      "name": "Pinebridge CSI Photovaltic Index ETF",
       "detail": "ter 없음"
     },
     {
@@ -34366,7 +36747,7 @@
       "id": "SS:515790",
       "code": "515790",
       "market": "SS",
-      "name": "Huatai-PB CSI Photovoltaic Industry ETF",
+      "name": "Pinebridge CSI Photovaltic Index ETF",
       "detail": "등락률 0.52% vs price.D1 0%",
       "changeRate": 0.52,
       "d1": 0
@@ -34377,7 +36758,7 @@
       "id": "SS:516160",
       "code": "516160",
       "market": "SS",
-      "name": "China Southern CSI New Energy ETF",
+      "name": "China Southern Asset Management Co. Ltd. - China Southern CSI New Energy ETF",
       "detail": "상위 편입종목이 비어 있다"
     },
     {
@@ -34386,7 +36767,7 @@
       "id": "SS:516160",
       "code": "516160",
       "market": "SS",
-      "name": "China Southern CSI New Energy ETF",
+      "name": "China Southern Asset Management Co. Ltd. - China Southern CSI New Energy ETF",
       "detail": "aum 없음"
     },
     {
@@ -34395,7 +36776,7 @@
       "id": "SS:516160",
       "code": "516160",
       "market": "SS",
-      "name": "China Southern CSI New Energy ETF",
+      "name": "China Southern Asset Management Co. Ltd. - China Southern CSI New Energy ETF",
       "detail": "ter 없음"
     },
     {
@@ -34404,7 +36785,7 @@
       "id": "SS:516160",
       "code": "516160",
       "market": "SS",
-      "name": "China Southern CSI New Energy ETF",
+      "name": "China Southern Asset Management Co. Ltd. - China Southern CSI New Energy ETF",
       "detail": "등락률 0.72% vs price.D1 0%",
       "changeRate": 0.72,
       "d1": 0
@@ -34415,7 +36796,7 @@
       "id": "SS:518880",
       "code": "518880",
       "market": "SS",
-      "name": "Huaan Gold ETF Fund",
+      "name": "Huaan Yifu Gold Exchange Traded Fund",
       "detail": "상위 편입종목이 비어 있다"
     },
     {
@@ -34424,7 +36805,7 @@
       "id": "SS:518880",
       "code": "518880",
       "market": "SS",
-      "name": "Huaan Gold ETF Fund",
+      "name": "Huaan Yifu Gold Exchange Traded Fund",
       "detail": "aum 없음"
     },
     {
@@ -34433,7 +36814,7 @@
       "id": "SS:518880",
       "code": "518880",
       "market": "SS",
-      "name": "Huaan Gold ETF Fund",
+      "name": "Huaan Yifu Gold Exchange Traded Fund",
       "detail": "ter 없음"
     },
     {
@@ -34442,7 +36823,7 @@
       "id": "SS:518880",
       "code": "518880",
       "market": "SS",
-      "name": "Huaan Gold ETF Fund",
+      "name": "Huaan Yifu Gold Exchange Traded Fund",
       "detail": "등락률 1.34% vs price.D1 0%",
       "changeRate": 1.34,
       "d1": 0
