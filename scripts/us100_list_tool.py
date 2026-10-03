@@ -192,6 +192,16 @@ def js_str(s):
     return "'" + str(s).replace("\\", "\\\\").replace("'", "\\'").replace("\n", " ") + "'"
 
 
+def js_name(s):
+    """COMPANIES 한 줄에 들어갈 이름. 아포스트로피가 든 영문명(Moody's, O'Reilly)은
+    큰따옴표로 감싼다 — 작은따옴표로 escape 하면 JS 는 멀쩡해도 ROW_RE 가 그 줄을
+    읽지 못해, 고치고 나면 목록이 두 개 줄어든 것으로 보인다."""
+    s = str(s).replace("\n", " ")
+    if "'" in s and '"' not in s:
+        return '"' + s.replace("\\", "\\\\") + '"'
+    return js_str(s)
+
+
 def drop_from_companies(src, syms):
     a, b = block(src, "var COMPANIES = [", "];")
     body = src[a:b]
@@ -209,7 +219,7 @@ def add_to_companies(src, adds):
     body = comma_ready(src[a:b])
     lines = [body, "  /* 주간 목록 점검으로 편입한 종목(scripts/us100_list_tool.py) */"]
     for c in adds:
-        lines.append("  [%s,%s,%s,%s]," % (js_str(c["sym"]), js_str(c["en"]), js_str(c["ko"]), js_str(c["sector"])))
+        lines.append("  [%s,%s,%s,%s]," % (js_str(c["sym"]), js_name(c["en"]), js_str(c["ko"]), js_str(c["sector"])))
     return src[:a] + "\n".join(lines) + "\n" + src[b:]
 
 
