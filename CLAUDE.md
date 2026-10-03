@@ -60,6 +60,12 @@
 **[etf-prompt-simple.txt](etf-prompt-simple.txt)**(평범한 말 판)입니다.
 수집은 한국장 마감(15:30 KST) 뒤에 돌리십시오 — 장중값이 섞이면 감사가 막습니다.
 
+**월배당 커버드콜 ETF 제안서** — 맥락과 규칙은
+**[docs/handover/월배당ETF제안서-운영인계.md](docs/handover/월배당ETF제안서-운영인계.md)**,
+프롬프트와 설정 사본은
+**[docs/handover/월배당ETF제안서-프롬프트.md](docs/handover/월배당ETF제안서-프롬프트.md)**.
+갱신은 **매월 1일 10:00 KST GitHub Actions cron** 이 저절로 합니다(Claude 예약 아님).
+
 그 밖의 갈래(증권사 리포트 · 매매 타이밍 · 100대 기업 대시보드 · 마포 WM ·
 데이터센터 밸류체인 맵)는 `docs/handover/` 의 해당 문서를, 문서가 없는 갈래는
 `README.md`(248KB)의 해당 절을 보십시오.
