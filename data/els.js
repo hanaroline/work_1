@@ -8,613 +8,21 @@
  * 필드 정의는 README 의 "ELS 데이터 스키마" 절 참고.
  */
 window.ELS_DATA = {
-  "updatedAt": "2026-09-06T23:31:53.311Z",
-  "checkedAt": "2026-09-06T23:31:53.311Z",
-  "checkedCount": 40,
+  "updatedAt": "2026-10-03T01:43:34.974Z",
+  "checkedAt": "2026-10-03T01:43:34.974Z",
+  "checkedCount": 38,
   "source": "live",
   "sourceNote": "미래에셋증권 홈페이지 ELS/DLS 캘린더 (청약 진행중)",
   "sourceNoteEn": "Mirae Asset Securities ELS/DLS calendar — currently on offer",
   "products": [
     {
-      "code": "KR6MD0008W99",
-      "name": "미래에셋증권(ELS)38081",
+      "code": "KR6MD0009042",
+      "name": "미래에셋증권(ELS)38165e",
       "type": "ELS",
       "shape": "스텝다운",
       "underlyings": [
         "삼성전자",
         "SK하이닉스"
-      ],
-      "couponRate": 40,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 3,
-          "barrier": 85
-        },
-        {
-          "months": 6,
-          "barrier": 85
-        },
-        {
-          "months": 9,
-          "barrier": 85
-        },
-        {
-          "months": 12,
-          "barrier": 85
-        },
-        {
-          "months": 15,
-          "barrier": 85
-        },
-        {
-          "months": 18,
-          "barrier": 85
-        },
-        {
-          "months": 21,
-          "barrier": 85
-        },
-        {
-          "months": 24,
-          "barrier": 85
-        },
-        {
-          "months": 27,
-          "barrier": 85
-        },
-        {
-          "months": 30,
-          "barrier": 80
-        },
-        {
-          "months": 33,
-          "barrier": 75
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
-      "knockIn": 35,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "<달러청약 상품> 85-85-85-85-85-85-85-85-85-80-75-70, KI 35",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008W81",
-      "name": "미래에셋증권(ELS)38080",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "삼성전자",
-        "SK하이닉스"
-      ],
-      "couponRate": 36.5,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 85
-        },
-        {
-          "months": 12,
-          "barrier": 85
-        },
-        {
-          "months": 18,
-          "barrier": 85
-        },
-        {
-          "months": 24,
-          "barrier": 80
-        },
-        {
-          "months": 30,
-          "barrier": 75
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
-      "knockIn": 35,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "85-85-85-80-75-70, KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008WD8",
-      "name": "미래에셋증권(ELS)38085e",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "삼성전자",
-        "SK하이닉스"
-      ],
-      "couponRate": 32.3,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 3,
-          "barrier": 85
-        },
-        {
-          "months": 6,
-          "barrier": 85
-        },
-        {
-          "months": 9,
-          "barrier": 85
-        },
-        {
-          "months": 12,
-          "barrier": 85
-        },
-        {
-          "months": 15,
-          "barrier": 85
-        },
-        {
-          "months": 18,
-          "barrier": 85
-        },
-        {
-          "months": 21,
-          "barrier": 85
-        },
-        {
-          "months": 24,
-          "barrier": 85
-        },
-        {
-          "months": 27,
-          "barrier": 85
-        },
-        {
-          "months": 30,
-          "barrier": 80
-        },
-        {
-          "months": 33,
-          "barrier": 75
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
-      "knockIn": 30,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "85-85-85-85-85-85-85-85-85-80-75-70, KI 30, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008W73",
-      "name": "미래에셋증권(ELS)38079",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "삼성전자",
-        "SK하이닉스"
-      ],
-      "couponRate": 30,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 75
-        },
-        {
-          "months": 12,
-          "barrier": 75
-        },
-        {
-          "months": 18,
-          "barrier": 75
-        },
-        {
-          "months": 24,
-          "barrier": 75
-        },
-        {
-          "months": 30,
-          "barrier": 70
-        },
-        {
-          "months": 36,
-          "barrier": 65
-        }
-      ],
-      "knockIn": 35,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "75-75-75-75-70-65, KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008WH9",
-      "name": "미래에셋증권(ELS)38089e",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "마이크론 테크놀로지",
-        "테슬라"
-      ],
-      "couponRate": 29.5,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 75
-        },
-        {
-          "months": 12,
-          "barrier": 75
-        },
-        {
-          "months": 18,
-          "barrier": 75
-        },
-        {
-          "months": 24,
-          "barrier": 75
-        },
-        {
-          "months": 30,
-          "barrier": 70
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
-      "knockIn": 35,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "75-75-75-75-70-70, KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008W65",
-      "name": "미래에셋증권(ELS)38078",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "KOSPI200",
-        "삼성전자"
-      ],
-      "couponRate": 29,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 3,
-          "barrier": 90
-        },
-        {
-          "months": 6,
-          "barrier": 90
-        },
-        {
-          "months": 9,
-          "barrier": 90
-        },
-        {
-          "months": 12,
-          "barrier": 90
-        },
-        {
-          "months": 15,
-          "barrier": 85
-        },
-        {
-          "months": 18,
-          "barrier": 85
-        },
-        {
-          "months": 21,
-          "barrier": 85
-        },
-        {
-          "months": 24,
-          "barrier": 85
-        },
-        {
-          "months": 27,
-          "barrier": 80
-        },
-        {
-          "months": 30,
-          "barrier": 80
-        },
-        {
-          "months": 33,
-          "barrier": 80
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
-      "knockIn": 30,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "90-90-90-90-85-85-85-85-80-80-80-70, KI 30, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008WC0",
-      "name": "미래에셋증권(ELS)38084e",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "삼성전자",
-        "SK하이닉스"
-      ],
-      "couponRate": 27,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 85
-        },
-        {
-          "months": 12,
-          "barrier": 85
-        },
-        {
-          "months": 18,
-          "barrier": 85
-        },
-        {
-          "months": 24,
-          "barrier": 80
-        },
-        {
-          "months": 30,
-          "barrier": 75
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
-      "knockIn": 25,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "85-85-85-80-75-70, KI 25, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008W57",
-      "name": "미래에셋증권(ELS)38077",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "KOSPI200",
-        "삼성전자"
-      ],
-      "couponRate": 25.1,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 80
-        },
-        {
-          "months": 12,
-          "barrier": 80
-        },
-        {
-          "months": 18,
-          "barrier": 80
-        },
-        {
-          "months": 24,
-          "barrier": 80
-        },
-        {
-          "months": 30,
-          "barrier": 75
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
-      "knockIn": 35,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "80-80-80-80-75-70, KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008WG1",
-      "name": "미래에셋증권(ELS)38088e",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "마이크론 테크놀로지",
-        "브로드컴"
-      ],
-      "couponRate": 24.5,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 80
-        },
-        {
-          "months": 12,
-          "barrier": 80
-        },
-        {
-          "months": 18,
-          "barrier": 75
-        },
-        {
-          "months": 24,
-          "barrier": 75
-        },
-        {
-          "months": 30,
-          "barrier": 70
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
-      "knockIn": 30,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "80-80-75-75-70-70 , KI 30, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008WB2",
-      "name": "미래에셋증권(ELS)38083e",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "삼성전자",
-        "SK하이닉스"
-      ],
-      "couponRate": 24,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 75
-        },
-        {
-          "months": 12,
-          "barrier": 75
-        },
-        {
-          "months": 18,
-          "barrier": 75
-        },
-        {
-          "months": 24,
-          "barrier": 75
-        },
-        {
-          "months": 30,
-          "barrier": 70
-        },
-        {
-          "months": 36,
-          "barrier": 65
-        }
-      ],
-      "knockIn": 25,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "75-75-75-75-70-65, KI 25, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008WF3",
-      "name": "미래에셋증권(ELS)38087e",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "마이크론 테크놀로지",
-        "팔란티어 테크"
       ],
       "couponRate": 23,
       "rateBasis": "annual",
@@ -622,6 +30,239 @@ window.ELS_DATA = {
       "maturityMonths": 36,
       "schedule": [
         {
+          "months": 3,
+          "barrier": 85
+        },
+        {
+          "months": 6,
+          "barrier": 85
+        },
+        {
+          "months": 9,
+          "barrier": 85
+        },
+        {
+          "months": 12,
+          "barrier": 85
+        },
+        {
+          "months": 15,
+          "barrier": 85
+        },
+        {
+          "months": 18,
+          "barrier": 85
+        },
+        {
+          "months": 21,
+          "barrier": 85
+        },
+        {
+          "months": 24,
+          "barrier": 85
+        },
+        {
+          "months": 27,
+          "barrier": 85
+        },
+        {
+          "months": 30,
+          "barrier": 80
+        },
+        {
+          "months": 33,
+          "barrier": 75
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 35,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "85-85-85-85-85-85-85-85-85-80-75-70, KI 35, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0009083",
+      "name": "미래에셋증권(ELS)38169e",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "마이크론 테크놀로지",
+        "테슬라"
+      ],
+      "couponRate": 22.2,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 80
+        },
+        {
+          "months": 12,
+          "barrier": 80
+        },
+        {
+          "months": 18,
+          "barrier": 75
+        },
+        {
+          "months": 24,
+          "barrier": 75
+        },
+        {
+          "months": 30,
+          "barrier": 70
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 35,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "80-80-75-75-70-70, KI 35, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0009000",
+      "name": "미래에셋증권(ELS)38161",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "KOSPI200",
+        "S&P500",
+        "SK하이닉스"
+      ],
+      "couponRate": 21.1,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 80
+        },
+        {
+          "months": 12,
+          "barrier": 80
+        },
+        {
+          "months": 18,
+          "barrier": 80
+        },
+        {
+          "months": 24,
+          "barrier": 80
+        },
+        {
+          "months": 30,
+          "barrier": 75
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 35,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "80-80-80-80-75-70, KI 35, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0009067",
+      "name": "미래에셋증권(ELS)38167e",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "마이크론 테크놀로지",
+        "AMD"
+      ],
+      "couponRate": 20,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 75
+        },
+        {
+          "months": 12,
+          "barrier": 75
+        },
+        {
+          "months": 18,
+          "barrier": 75
+        },
+        {
+          "months": 24,
+          "barrier": 75
+        },
+        {
+          "months": 30,
+          "barrier": 70
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 35,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "75-75-75-75-70-70, KI 35, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0009075",
+      "name": "미래에셋증권(ELS)38168e",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "마이크론 테크놀로지",
+        "팔란티어 테크"
+      ],
+      "couponRate": 20,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
           "months": 6,
           "barrier": 75
         },
@@ -652,23 +293,127 @@ window.ELS_DATA = {
       "riskLabel": "매우높은위험",
       "riskCode": "11",
       "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "75-75-75-75-70-70, KI 25, 원화",
       "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
     },
     {
-      "code": "KR6MD0008W40",
-      "name": "미래에셋증권(ELS)38076",
+      "code": "KR6MD0008ZZ4",
+      "name": "미래에셋증권(ELS)38160",
       "type": "ELS",
       "shape": "스텝다운",
       "underlyings": [
         "삼성전자",
         "SK하이닉스"
       ],
-      "couponRate": 21,
+      "couponRate": 19.2,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 75
+        },
+        {
+          "months": 12,
+          "barrier": 75
+        },
+        {
+          "months": 18,
+          "barrier": 75
+        },
+        {
+          "months": 24,
+          "barrier": 75
+        },
+        {
+          "months": 30,
+          "barrier": 70
+        },
+        {
+          "months": 36,
+          "barrier": 65
+        }
+      ],
+      "knockIn": 35,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "75-75-75-75-70-65, KI 35, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0009059",
+      "name": "미래에셋증권(ELS)38166e",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "팔란티어 테크",
+        "테슬라"
+      ],
+      "couponRate": 19,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 75
+        },
+        {
+          "months": 12,
+          "barrier": 75
+        },
+        {
+          "months": 18,
+          "barrier": 75
+        },
+        {
+          "months": 24,
+          "barrier": 75
+        },
+        {
+          "months": 30,
+          "barrier": 70
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 30,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "75-75-75-75-70-70, KI 30, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0008ZY7",
+      "name": "미래에셋증권(ELS)38159",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "KOSPI200",
+        "삼성전자"
+      ],
+      "couponRate": 15.6,
       "rateBasis": "annual",
       "maxLossRate": -100,
       "maturityMonths": 36,
@@ -696,6 +441,554 @@ window.ELS_DATA = {
         {
           "months": 36,
           "barrier": 70
+        }
+      ],
+      "knockIn": 35,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "85-85-85-80-75-70, KI 35, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0009034",
+      "name": "미래에셋증권(ELS)38164e",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "EuroStoxx50",
+        "S&P500",
+        "삼성전자"
+      ],
+      "couponRate": 14.5,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 85
+        },
+        {
+          "months": 12,
+          "barrier": 85
+        },
+        {
+          "months": 18,
+          "barrier": 85
+        },
+        {
+          "months": 24,
+          "barrier": 80
+        },
+        {
+          "months": 30,
+          "barrier": 75
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 35,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "85-85-85-80-75-70, KI 35, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0008ZX9",
+      "name": "미래에셋증권(ELS)38158",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "삼성전자",
+        "SK하이닉스"
+      ],
+      "couponRate": 14,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 3,
+          "barrier": 85
+        },
+        {
+          "months": 6,
+          "barrier": 85
+        },
+        {
+          "months": 9,
+          "barrier": 85
+        },
+        {
+          "months": 12,
+          "barrier": 85
+        },
+        {
+          "months": 15,
+          "barrier": 85
+        },
+        {
+          "months": 18,
+          "barrier": 85
+        },
+        {
+          "months": 21,
+          "barrier": 85
+        },
+        {
+          "months": 24,
+          "barrier": 85
+        },
+        {
+          "months": 27,
+          "barrier": 85
+        },
+        {
+          "months": 30,
+          "barrier": 80
+        },
+        {
+          "months": 33,
+          "barrier": 75
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 25,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "85-85-85-85-85-85-85-85-85-80-75-70, KI 25, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0008ZW1",
+      "name": "미래에셋증권(ELS)38157",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "KOSPI200",
+        "SK하이닉스"
+      ],
+      "couponRate": 13.5,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 80
+        },
+        {
+          "months": 12,
+          "barrier": 80
+        },
+        {
+          "months": 18,
+          "barrier": 80
+        },
+        {
+          "months": 24,
+          "barrier": 80
+        },
+        {
+          "months": 30,
+          "barrier": 75
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 25,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "80-80-80-80-75-70, KI 25, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0009026",
+      "name": "미래에셋증권(ELS)38163e",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "HSCEI",
+        "KOSPI200",
+        "S&P500"
+      ],
+      "couponRate": 12.5,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 85
+        },
+        {
+          "months": 12,
+          "barrier": 85
+        },
+        {
+          "months": 18,
+          "barrier": 85
+        },
+        {
+          "months": 24,
+          "barrier": 80
+        },
+        {
+          "months": 30,
+          "barrier": 75
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 45,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "85-85-85-80-75-70, KI 45, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0008ZV3",
+      "name": "미래에셋증권(ELS)38156",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "삼성전자",
+        "SK하이닉스"
+      ],
+      "couponRate": 12,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 65
+        },
+        {
+          "months": 12,
+          "barrier": 65
+        },
+        {
+          "months": 18,
+          "barrier": 65
+        },
+        {
+          "months": 24,
+          "barrier": 65
+        },
+        {
+          "months": 30,
+          "barrier": 65
+        },
+        {
+          "months": 36,
+          "barrier": 60
+        }
+      ],
+      "knockIn": 30,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "65-65-65-65-65-60, KI 30, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0008ZT7",
+      "name": "미래에셋증권(ELS)38155",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "Nikkei225",
+        "HSCEI",
+        "KOSPI200"
+      ],
+      "couponRate": 11.8,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 85
+        },
+        {
+          "months": 12,
+          "barrier": 85
+        },
+        {
+          "months": 18,
+          "barrier": 85
+        },
+        {
+          "months": 24,
+          "barrier": 80
+        },
+        {
+          "months": 30,
+          "barrier": 75
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 40,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "85-85-85-80-75-70, KI 40, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0008ZS9",
+      "name": "미래에셋증권(ELS)38154",
+      "type": "ELS",
+      "shape": "스텝다운 노낙인",
+      "underlyings": [
+        "EuroStoxx50",
+        "KOSPI200",
+        "S&P500"
+      ],
+      "couponRate": 10.4,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 80
+        },
+        {
+          "months": 12,
+          "barrier": 80
+        },
+        {
+          "months": 18,
+          "barrier": 80
+        },
+        {
+          "months": 24,
+          "barrier": 75
+        },
+        {
+          "months": 30,
+          "barrier": 70
+        },
+        {
+          "months": 36,
+          "barrier": 60
+        }
+      ],
+      "knockIn": null,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "80-80-80-75-70-60, KI -, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0008ZR1",
+      "name": "미래에셋증권(ELS)38153",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "Nikkei225",
+        "KOSPI200",
+        "S&P500"
+      ],
+      "couponRate": 10.3,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 90
+        },
+        {
+          "months": 12,
+          "barrier": 85
+        },
+        {
+          "months": 18,
+          "barrier": 85
+        },
+        {
+          "months": 24,
+          "barrier": 80
+        },
+        {
+          "months": 30,
+          "barrier": 75
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 35,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "90-85-85-80-75-70, KI 35, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0008ZQ3",
+      "name": "미래에셋증권(ELS)38152",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "KOSPI200"
+      ],
+      "couponRate": 10,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 85
+        },
+        {
+          "months": 12,
+          "barrier": 85
+        },
+        {
+          "months": 18,
+          "barrier": 85
+        },
+        {
+          "months": 24,
+          "barrier": 80
+        },
+        {
+          "months": 30,
+          "barrier": 75
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 45,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "85-85-85-80-75-70, KI 45, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0009018",
+      "name": "미래에셋증권(ELS)38162e",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "삼성전자",
+        "SK하이닉스"
+      ],
+      "couponRate": 10,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 75
+        },
+        {
+          "months": 12,
+          "barrier": 75
+        },
+        {
+          "months": 18,
+          "barrier": 75
+        },
+        {
+          "months": 24,
+          "barrier": 75
+        },
+        {
+          "months": 30,
+          "barrier": 70
+        },
+        {
+          "months": 36,
+          "barrier": 65
         }
       ],
       "knockIn": 20,
@@ -704,22 +997,353 @@ window.ELS_DATA = {
       "riskLabel": "매우높은위험",
       "riskCode": "11",
       "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
+      "offerStart": "2026-09-29",
+      "offerEnd": "2026-10-07",
       "issueDate": null,
       "minAmount": null,
-      "structureDesc": "85-85-85-80-75-70, KI 20, 원화",
+      "structureDesc": "75-75-75-75-70-65, KI 20, 원화",
       "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
     },
     {
-      "code": "KR6MD0008WA4",
-      "name": "미래에셋증권(ELS)38082e",
+      "code": "KR6MD00090W8",
+      "name": "미래에셋증권(ELS)38184e",
       "type": "ELS",
       "shape": "스텝다운",
       "underlyings": [
-        "Nikkei225",
-        "HSCEI",
-        "KOSPI200"
+        "삼성전자",
+        "SK하이닉스"
+      ],
+      "couponRate": 23,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 85
+        },
+        {
+          "months": 12,
+          "barrier": 85
+        },
+        {
+          "months": 18,
+          "barrier": 85
+        },
+        {
+          "months": 24,
+          "barrier": 80
+        },
+        {
+          "months": 30,
+          "barrier": 75
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 35,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "85-85-85-80-75-70, KI 35, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0009109",
+      "name": "미래에셋증권(ELS)38188e",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "마이크론 테크놀로지",
+        "AMD"
+      ],
+      "couponRate": 22.3,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 3,
+          "barrier": 85
+        },
+        {
+          "months": 6,
+          "barrier": 85
+        },
+        {
+          "months": 9,
+          "barrier": 85
+        },
+        {
+          "months": 12,
+          "barrier": 85
+        },
+        {
+          "months": 15,
+          "barrier": 85
+        },
+        {
+          "months": 18,
+          "barrier": 85
+        },
+        {
+          "months": 21,
+          "barrier": 85
+        },
+        {
+          "months": 24,
+          "barrier": 85
+        },
+        {
+          "months": 27,
+          "barrier": 85
+        },
+        {
+          "months": 30,
+          "barrier": 80
+        },
+        {
+          "months": 33,
+          "barrier": 75
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 35,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "85-85-85-85-85-85-85-85-85-80-75-70, KI 35, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD00090Z1",
+      "name": "미래에셋증권(ELS)38187e",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "마이크론 테크놀로지",
+        "팔란티어 테크"
+      ],
+      "couponRate": 21,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 3,
+          "barrier": 80
+        },
+        {
+          "months": 6,
+          "barrier": 80
+        },
+        {
+          "months": 9,
+          "barrier": 80
+        },
+        {
+          "months": 12,
+          "barrier": 80
+        },
+        {
+          "months": 15,
+          "barrier": 80
+        },
+        {
+          "months": 18,
+          "barrier": 80
+        },
+        {
+          "months": 21,
+          "barrier": 80
+        },
+        {
+          "months": 24,
+          "barrier": 80
+        },
+        {
+          "months": 27,
+          "barrier": 75
+        },
+        {
+          "months": 30,
+          "barrier": 75
+        },
+        {
+          "months": 33,
+          "barrier": 70
+        },
+        {
+          "months": 36,
+          "barrier": 65
+        }
+      ],
+      "knockIn": 30,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "80-80-80-80-80-80-80-80-75-75-70-65, KI 30, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD00090Y4",
+      "name": "미래에셋증권(ELS)38186e",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "팔란티어 테크",
+        "테슬라"
+      ],
+      "couponRate": 20.2,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 3,
+          "barrier": 85
+        },
+        {
+          "months": 6,
+          "barrier": 85
+        },
+        {
+          "months": 9,
+          "barrier": 85
+        },
+        {
+          "months": 12,
+          "barrier": 85
+        },
+        {
+          "months": 15,
+          "barrier": 85
+        },
+        {
+          "months": 18,
+          "barrier": 85
+        },
+        {
+          "months": 21,
+          "barrier": 85
+        },
+        {
+          "months": 24,
+          "barrier": 85
+        },
+        {
+          "months": 27,
+          "barrier": 85
+        },
+        {
+          "months": 30,
+          "barrier": 80
+        },
+        {
+          "months": 33,
+          "barrier": 75
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 30,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "85-85-85-85-85-85-85-85-85-80-75-70, KI 30, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD00090X6",
+      "name": "미래에셋증권(ELS)38185e",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "어플라이드 머티어리얼즈",
+        "AMD"
+      ],
+      "couponRate": 18.7,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 75
+        },
+        {
+          "months": 12,
+          "barrier": 75
+        },
+        {
+          "months": 18,
+          "barrier": 75
+        },
+        {
+          "months": 24,
+          "barrier": 75
+        },
+        {
+          "months": 30,
+          "barrier": 70
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 35,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "75-75-75-75-70-70, KI 35, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD00090R8",
+      "name": "미래에셋증권(ELS)38180",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "삼성전자",
+        "SK하이닉스"
       ],
       "couponRate": 18,
       "rateBasis": "annual",
@@ -751,30 +1375,81 @@ window.ELS_DATA = {
           "barrier": 70
         }
       ],
-      "knockIn": 45,
+      "knockIn": 30,
       "principalProtection": 0,
       "riskGrade": 1,
       "riskLabel": "매우높은위험",
       "riskCode": "11",
       "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
       "issueDate": null,
       "minAmount": null,
-      "structureDesc": "85-85-85-80-75-70, KI 45, 원화",
+      "structureDesc": "85-85-85-80-75-70, KI 30, 원화",
       "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
     },
     {
-      "code": "KR6MD0008W32",
-      "name": "미래에셋증권(ELS)38075",
+      "code": "KR6MD00090Q0",
+      "name": "미래에셋증권(ELS)38179",
       "type": "ELS",
       "shape": "스텝다운",
       "underlyings": [
-        "Nikkei225",
-        "EuroStoxx50",
-        "KOSPI200"
+        "KOSPI200",
+        "SK하이닉스"
       ],
-      "couponRate": 16,
+      "couponRate": 16.4,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 80
+        },
+        {
+          "months": 12,
+          "barrier": 80
+        },
+        {
+          "months": 18,
+          "barrier": 80
+        },
+        {
+          "months": 24,
+          "barrier": 80
+        },
+        {
+          "months": 30,
+          "barrier": 75
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 30,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "80-80-80-80-75-70, KI 30, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD00090P2",
+      "name": "미래에셋증권(ELS)38178",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "삼성전자",
+        "SK하이닉스"
+      ],
+      "couponRate": 16.2,
       "rateBasis": "annual",
       "maxLossRate": -100,
       "maturityMonths": 36,
@@ -798,58 +1473,6 @@ window.ELS_DATA = {
         {
           "months": 30,
           "barrier": 75
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
-      "knockIn": 40,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "85-85-85-80-75-70, KI 40, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008WE6",
-      "name": "미래에셋증권(ELS)38086e",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "팔란티어 테크",
-        "테슬라"
-      ],
-      "couponRate": 16,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 75
-        },
-        {
-          "months": 12,
-          "barrier": 75
-        },
-        {
-          "months": 18,
-          "barrier": 75
-        },
-        {
-          "months": 24,
-          "barrier": 75
-        },
-        {
-          "months": 30,
-          "barrier": 70
         },
         {
           "months": 36,
@@ -862,31 +1485,30 @@ window.ELS_DATA = {
       "riskLabel": "매우높은위험",
       "riskCode": "11",
       "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
       "issueDate": null,
       "minAmount": null,
-      "structureDesc": "75-75-75-75-70-70, KI 25, 원화",
+      "structureDesc": "85-85-85-80-75-70, KI 25, 원화",
       "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
     },
     {
-      "code": "KR6MD0008W24",
-      "name": "미래에셋증권(ELS)38074",
+      "code": "KR6MD00090V0",
+      "name": "미래에셋증권(ELS)38183e",
       "type": "ELS",
-      "shape": "스텝다운 노낙인",
+      "shape": "스텝다운",
       "underlyings": [
-        "EuroStoxx50",
-        "KOSPI200",
-        "S&P500"
+        "삼성전자",
+        "SK하이닉스"
       ],
-      "couponRate": 14.5,
+      "couponRate": 13.1,
       "rateBasis": "annual",
       "maxLossRate": -100,
       "maturityMonths": 36,
       "schedule": [
         {
           "months": 6,
-          "barrier": 80
+          "barrier": 75
         },
         {
           "months": 12,
@@ -898,39 +1520,40 @@ window.ELS_DATA = {
         },
         {
           "months": 24,
-          "barrier": 70
+          "barrier": 75
         },
         {
           "months": 30,
-          "barrier": 65
+          "barrier": 70
         },
         {
           "months": 36,
-          "barrier": 60
+          "barrier": 65
         }
       ],
-      "knockIn": null,
+      "knockIn": 25,
       "principalProtection": 0,
       "riskGrade": 1,
       "riskLabel": "매우높은위험",
       "riskCode": "11",
       "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
       "issueDate": null,
       "minAmount": null,
-      "structureDesc": "80-75-75-70-65-60, KI -, 원화",
+      "structureDesc": "75-75-75-75-70-65, KI 25, 원화",
       "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
     },
     {
-      "code": "KR6MD0008W16",
-      "name": "미래에셋증권(ELS)38073",
+      "code": "KR6MD00090N7",
+      "name": "미래에셋증권(ELS)38177",
       "type": "ELS",
       "shape": "스텝다운",
       "underlyings": [
-        "KOSPI200"
+        "삼성전자",
+        "SK하이닉스"
       ],
-      "couponRate": 12,
+      "couponRate": 12.7,
       "rateBasis": "annual",
       "maxLossRate": -100,
       "maturityMonths": 36,
@@ -941,45 +1564,100 @@ window.ELS_DATA = {
         },
         {
           "months": 12,
-          "barrier": 90
-        },
-        {
-          "months": 18,
-          "barrier": 90
-        },
-        {
-          "months": 24,
           "barrier": 85
         },
         {
-          "months": 30,
+          "months": 18,
+          "barrier": 85
+        },
+        {
+          "months": 24,
           "barrier": 80
+        },
+        {
+          "months": 30,
+          "barrier": 75
         },
         {
           "months": 36,
           "barrier": 70
         }
       ],
-      "knockIn": 35,
+      "knockIn": 20,
       "principalProtection": 0,
       "riskGrade": 1,
       "riskLabel": "매우높은위험",
       "riskCode": "11",
       "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
       "issueDate": null,
       "minAmount": null,
-      "structureDesc": "90-90-90-85-80-70, KI 35, 원화",
+      "structureDesc": "90-85-85-80-75-70, KI 20, 원화",
       "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
     },
     {
-      "code": "KR6MD0008W08",
-      "name": "미래에셋증권(ELS)38072",
+      "code": "KR6MD00090M9",
+      "name": "미래에셋증권(ELS)38176",
       "type": "ELS",
       "shape": "스텝다운",
       "underlyings": [
+        "Nikkei225",
+        "HSCEI",
         "KOSPI200"
+      ],
+      "couponRate": 12.5,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 85
+        },
+        {
+          "months": 12,
+          "barrier": 85
+        },
+        {
+          "months": 18,
+          "barrier": 85
+        },
+        {
+          "months": 24,
+          "barrier": 80
+        },
+        {
+          "months": 30,
+          "barrier": 75
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 45,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "85-85-85-80-75-70, KI 45, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD00090L1",
+      "name": "미래에셋증권(ELS)38175",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "HSCEI",
+        "KOSPI200",
+        "S&P500"
       ],
       "couponRate": 11.5,
       "rateBasis": "annual",
@@ -1011,402 +1689,37 @@ window.ELS_DATA = {
           "barrier": 70
         }
       ],
-      "knockIn": 35,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "85-85-85-80-75-70, KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008VZ3",
-      "name": "미래에셋증권(ELS)38071",
-      "type": "ELS",
-      "shape": "리자드",
-      "underlyings": [
-        "Nikkei225",
-        "KOSPI200",
-        "S&P500"
-      ],
-      "couponRate": 10.5,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 80
-        },
-        {
-          "months": 12,
-          "barrier": 75,
-          "lizard": 40,
-          "lizardRate": 10.5
-        },
-        {
-          "months": 18,
-          "barrier": 75
-        },
-        {
-          "months": 24,
-          "barrier": 70
-        },
-        {
-          "months": 30,
-          "barrier": 65
-        },
-        {
-          "months": 36,
-          "barrier": 60
-        }
-      ],
-      "knockIn": null,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "80-75(40)-75-70-65-60, KI -, 원화, 리자드 조건 충족 시 연 10.5%",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008VY6",
-      "name": "미래에셋증권(ELS)38070",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "Nikkei225",
-        "EuroStoxx50",
-        "S&P500"
-      ],
-      "couponRate": 10,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 90
-        },
-        {
-          "months": 12,
-          "barrier": 90
-        },
-        {
-          "months": 18,
-          "barrier": 85
-        },
-        {
-          "months": 24,
-          "barrier": 80
-        },
-        {
-          "months": 30,
-          "barrier": 75
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
-      "knockIn": 45,
-      "principalProtection": 0,
-      "riskGrade": 2,
-      "riskLabel": "높은위험",
-      "riskCode": "12",
-      "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "90-90-85-80-75-70, KI 45, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008WJ5",
-      "name": "미래에셋증권(ELB)4063",
-      "type": "ELB",
-      "shape": "하이파이브 월지급식",
-      "underlyings": [
-        "KOSPI200",
-        "SK하이닉스"
-      ],
-      "couponRate": 7.02,
-      "rateBasis": "annual",
-      "maxLossRate": 0,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 3,
-          "barrier": 75
-        },
-        {
-          "months": 6,
-          "barrier": 75
-        },
-        {
-          "months": 9,
-          "barrier": 75
-        },
-        {
-          "months": 12,
-          "barrier": 75
-        },
-        {
-          "months": 15,
-          "barrier": 75
-        },
-        {
-          "months": 18,
-          "barrier": 75
-        },
-        {
-          "months": 21,
-          "barrier": 75
-        },
-        {
-          "months": 24,
-          "barrier": 75
-        },
-        {
-          "months": 27,
-          "barrier": 75
-        },
-        {
-          "months": 30,
-          "barrier": 75
-        },
-        {
-          "months": 33,
-          "barrier": 75
-        },
-        {
-          "months": 36,
-          "barrier": 75
-        }
-      ],
-      "knockIn": null,
-      "principalProtection": 100,
-      "riskGrade": 5,
-      "riskLabel": "낮은위험",
-      "riskCode": "15",
-      "status": "진행중",
-      "offerStart": "2026-08-31",
-      "offerEnd": "2026-09-09",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "75-75-75-75-75-75-75-75-75-75-75-75(월지급배리어:70), KI -, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008XH7",
-      "name": "미래에셋증권(ELB)4077",
-      "type": "ELB",
-      "shape": "낙아웃콜",
-      "underlyings": [
-        "삼성전자"
-      ],
-      "couponRate": 52,
-      "rateBasis": "annual",
-      "maxLossRate": 0,
-      "maturityMonths": 12,
-      "schedule": [],
-      "knockIn": null,
-      "principalProtection": 100,
-      "riskGrade": 5,
-      "riskLabel": "낮은위험",
-      "riskCode": "15",
-      "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "① KO 발생 시 : 원금지급\r\n② KO 미발생, 100초과-140이하 : (가격상승률 x 130%)\r\n③ KO 미발생, 100%이하 : 원금지급",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008XJ3",
-      "name": "미래에셋증권(ELB)4078",
-      "type": "ELB",
-      "shape": "낙아웃콜",
-      "underlyings": [
-        "SK하이닉스"
-      ],
-      "couponRate": 50,
-      "rateBasis": "annual",
-      "maxLossRate": 0,
-      "maturityMonths": 12,
-      "schedule": [],
-      "knockIn": null,
-      "principalProtection": 100,
-      "riskGrade": 5,
-      "riskLabel": "낮은위험",
-      "riskCode": "15",
-      "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "① KO 발생 시 : 원금지급\r\n② KO 미발생, 100초과-150이하 : (가격상승률 x 100%)\r\n③ KO 미발생, 100%이하 : 원급지급",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008XG9",
-      "name": "미래에셋증권(ELB)4076",
-      "type": "ELB",
-      "shape": "낙아웃콜",
-      "underlyings": [
-        "KOSPI200"
-      ],
-      "couponRate": 22.5,
-      "rateBasis": "annual",
-      "maxLossRate": 0,
-      "maturityMonths": 12,
-      "schedule": [],
-      "knockIn": null,
-      "principalProtection": 101.5,
-      "riskGrade": 5,
-      "riskLabel": "낮은위험",
-      "riskCode": "15",
-      "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "① KO 발생 시 : 1.50%\r\n② KO 미발생, 100초과-130이하 : (가격상승률 x 70%) + 1.50%\r\n③ KO 미발생, 100%이하 : 1.50%",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008X80",
-      "name": "미래에셋증권(ELS)38108",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "삼성전자",
-        "SK하이닉스"
-      ],
-      "couponRate": 30,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 80
-        },
-        {
-          "months": 12,
-          "barrier": 80
-        },
-        {
-          "months": 18,
-          "barrier": 80
-        },
-        {
-          "months": 24,
-          "barrier": 80
-        },
-        {
-          "months": 30,
-          "barrier": 75
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
       "knockIn": 40,
       "principalProtection": 0,
       "riskGrade": 1,
       "riskLabel": "매우높은위험",
       "riskCode": "11",
       "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
       "issueDate": null,
       "minAmount": null,
-      "structureDesc": "80-80-80-80-75-70, KI 40, 원화",
+      "structureDesc": "85-85-85-80-75-70, KI 40, 원화",
       "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
     },
     {
-      "code": "KR6MD0008XE4",
-      "name": "미래에셋증권(ELS)38114e",
+      "code": "KR6MD00090K3",
+      "name": "미래에셋증권(ELS)38174",
       "type": "ELS",
-      "shape": "스텝다운",
+      "shape": "월지급식",
       "underlyings": [
-        "마이크론 테크놀로지",
-        "AMD"
+        "EuroStoxx50",
+        "KOSPI200",
+        "S&P500"
       ],
-      "couponRate": 30,
+      "couponRate": 11.4,
       "rateBasis": "annual",
       "maxLossRate": -100,
       "maturityMonths": 36,
       "schedule": [
         {
           "months": 6,
-          "barrier": 80
-        },
-        {
-          "months": 12,
-          "barrier": 80
-        },
-        {
-          "months": 18,
-          "barrier": 75
-        },
-        {
-          "months": 24,
-          "barrier": 75
-        },
-        {
-          "months": 30,
-          "barrier": 70
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
-      "knockIn": 35,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "80-80-75-75-70-70 , KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008XD6",
-      "name": "미래에셋증권(ELS)38113e",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "마이크론 테크놀로지",
-        "KOSPI200"
-      ],
-      "couponRate": 27,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 85
+          "barrier": 90
         },
         {
           "months": 12,
@@ -1414,59 +1727,7 @@ window.ELS_DATA = {
         },
         {
           "months": 18,
-          "barrier": 85
-        },
-        {
-          "months": 24,
           "barrier": 80
-        },
-        {
-          "months": 30,
-          "barrier": 75
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
-      "knockIn": 35,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "85-85-85-80-75-70, KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008X72",
-      "name": "미래에셋증권(ELS)38107",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "삼성전자",
-        "SK하이닉스"
-      ],
-      "couponRate": 26,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 75
-        },
-        {
-          "months": 12,
-          "barrier": 75
-        },
-        {
-          "months": 18,
-          "barrier": 75
         },
         {
           "months": 24,
@@ -1479,163 +1740,6 @@ window.ELS_DATA = {
         {
           "months": 36,
           "barrier": 65
-        }
-      ],
-      "knockIn": 30,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "75-75-75-75-70-65, KI 30, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008X64",
-      "name": "미래에셋증권(ELS)38106",
-      "type": "ELS",
-      "shape": "월지급식",
-      "underlyings": [
-        "삼성전자",
-        "SK하이닉스"
-      ],
-      "couponRate": 25.62,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 90
-        },
-        {
-          "months": 12,
-          "barrier": 90
-        },
-        {
-          "months": 18,
-          "barrier": 85
-        },
-        {
-          "months": 24,
-          "barrier": 80
-        },
-        {
-          "months": 30,
-          "barrier": 75
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
-      "knockIn": 35,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "90-90-85-80-75-70(월지급배리어:50), KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008X56",
-      "name": "미래에셋증권(ELS)38105",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "KOSPI200",
-        "SK하이닉스"
-      ],
-      "couponRate": 23.3,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 85
-        },
-        {
-          "months": 12,
-          "barrier": 85
-        },
-        {
-          "months": 18,
-          "barrier": 85
-        },
-        {
-          "months": 24,
-          "barrier": 80
-        },
-        {
-          "months": 30,
-          "barrier": 75
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
-      "knockIn": 35,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "85-85-85-80-75-70, KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008X49",
-      "name": "미래에셋증권(ELS)38104",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "HSCEI",
-        "KOSPI200",
-        "S&P500"
-      ],
-      "couponRate": 15,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 85
-        },
-        {
-          "months": 12,
-          "barrier": 85
-        },
-        {
-          "months": 18,
-          "barrier": 85
-        },
-        {
-          "months": 24,
-          "barrier": 80
-        },
-        {
-          "months": 30,
-          "barrier": 75
-        },
-        {
-          "months": 36,
-          "barrier": 70
         }
       ],
       "knockIn": 45,
@@ -1644,177 +1748,20 @@ window.ELS_DATA = {
       "riskLabel": "매우높은위험",
       "riskCode": "11",
       "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
       "issueDate": null,
       "minAmount": null,
-      "structureDesc": "85-85-85-80-75-70, KI 45, 원화",
+      "structureDesc": "90-85-80-75-70-65(월지급배리어:60), KI 45, 원화",
       "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
     },
     {
-      "code": "KR6MD0008XC8",
-      "name": "미래에셋증권(ELS)38112e",
+      "code": "KR6MD00090H9",
+      "name": "미래에셋증권(ELS)38172",
       "type": "ELS",
       "shape": "스텝다운",
-      "underlyings": [
-        "팔란티어 테크",
-        "테슬라"
-      ],
-      "couponRate": 15,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 75
-        },
-        {
-          "months": 12,
-          "barrier": 75
-        },
-        {
-          "months": 18,
-          "barrier": 75
-        },
-        {
-          "months": 24,
-          "barrier": 75
-        },
-        {
-          "months": 30,
-          "barrier": 70
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
-      "knockIn": 25,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "75-75-75-75-70-70, KI 25, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008X31",
-      "name": "미래에셋증권(ELS)38103",
-      "type": "ELS",
-      "shape": "스텝다운 노낙인",
       "underlyings": [
         "Nikkei225",
-        "KOSPI200",
-        "S&P500"
-      ],
-      "couponRate": 13,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 80
-        },
-        {
-          "months": 12,
-          "barrier": 75
-        },
-        {
-          "months": 18,
-          "barrier": 75
-        },
-        {
-          "months": 24,
-          "barrier": 70
-        },
-        {
-          "months": 30,
-          "barrier": 65
-        },
-        {
-          "months": 36,
-          "barrier": 60
-        }
-      ],
-      "knockIn": null,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "80-75-75-70-65-60, KI -, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008XB0",
-      "name": "미래에셋증권(ELS)38111e",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "삼성전자",
-        "SK하이닉스"
-      ],
-      "couponRate": 12.3,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 65
-        },
-        {
-          "months": 12,
-          "barrier": 65
-        },
-        {
-          "months": 18,
-          "barrier": 65
-        },
-        {
-          "months": 24,
-          "barrier": 65
-        },
-        {
-          "months": 30,
-          "barrier": 65
-        },
-        {
-          "months": 36,
-          "barrier": 60
-        }
-      ],
-      "knockIn": 25,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "65-65-65-65-65-60, KI 25, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008X23",
-      "name": "미래에셋증권(ELS)38102",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "EuroStoxx50",
         "KOSPI200",
         "S&P500"
       ],
@@ -1848,144 +1795,92 @@ window.ELS_DATA = {
           "barrier": 70
         }
       ],
-      "knockIn": 35,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "85-85-85-80-75-70, KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008XA2",
-      "name": "미래에셋증권(ELS)38110e",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "KOSPI200",
-        "삼성전자"
-      ],
-      "couponRate": 10.7,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 70
-        },
-        {
-          "months": 12,
-          "barrier": 70
-        },
-        {
-          "months": 18,
-          "barrier": 70
-        },
-        {
-          "months": 24,
-          "barrier": 70
-        },
-        {
-          "months": 30,
-          "barrier": 70
-        },
-        {
-          "months": 36,
-          "barrier": 65
-        }
-      ],
-      "knockIn": 30,
-      "principalProtection": 0,
-      "riskGrade": 1,
-      "riskLabel": "매우높은위험",
-      "riskCode": "11",
-      "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "70-70-70-70-70-65, KI 30, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008X15",
-      "name": "미래에셋증권(ELS)38101",
-      "type": "ELS",
-      "shape": "스텝다운",
-      "underlyings": [
-        "KOSPI200"
-      ],
-      "couponRate": 10.5,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 90
-        },
-        {
-          "months": 12,
-          "barrier": 90
-        },
-        {
-          "months": 18,
-          "barrier": 80
-        },
-        {
-          "months": 24,
-          "barrier": 80
-        },
-        {
-          "months": 30,
-          "barrier": 75
-        },
-        {
-          "months": 36,
-          "barrier": 70
-        }
-      ],
       "knockIn": 40,
       "principalProtection": 0,
       "riskGrade": 1,
       "riskLabel": "매우높은위험",
       "riskCode": "11",
       "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
       "issueDate": null,
       "minAmount": null,
-      "structureDesc": "90-90-80-80-75-70, KI 40, 원화",
+      "structureDesc": "85-85-85-80-75-70, KI 40, 원화",
       "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
     },
     {
-      "code": "KR6MD0008X07",
-      "name": "미래에셋증권(ELS)38100",
+      "code": "KR6MD00090J5",
+      "name": "미래에셋증권(ELS)38173",
       "type": "ELS",
       "shape": "스텝다운",
       "underlyings": [
-        "Nikkei225",
-        "HSCEI",
-        "S&P500"
+        "KOSPI200"
       ],
-      "couponRate": 10,
+      "couponRate": 11,
       "rateBasis": "annual",
       "maxLossRate": -100,
       "maturityMonths": 36,
       "schedule": [
         {
           "months": 6,
-          "barrier": 95
+          "barrier": 90
         },
         {
           "months": 12,
+          "barrier": 90
+        },
+        {
+          "months": 18,
+          "barrier": 90
+        },
+        {
+          "months": 24,
           "barrier": 85
+        },
+        {
+          "months": 30,
+          "barrier": 80
+        },
+        {
+          "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 45,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "90-90-90-85-80-70, KI 45, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD00090T4",
+      "name": "미래에셋증권(ELS)38182e",
+      "type": "ELS",
+      "shape": "스텝다운 노낙인",
+      "underlyings": [
+        "Nikkei225",
+        "KOSPI200",
+        "S&P500"
+      ],
+      "couponRate": 11,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 80
+        },
+        {
+          "months": 12,
+          "barrier": 80
         },
         {
           "months": 18,
@@ -2001,60 +1896,7 @@ window.ELS_DATA = {
         },
         {
           "months": 36,
-          "barrier": 65
-        }
-      ],
-      "knockIn": 45,
-      "principalProtection": 0,
-      "riskGrade": 2,
-      "riskLabel": "높은위험",
-      "riskCode": "12",
-      "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
-      "issueDate": null,
-      "minAmount": null,
-      "structureDesc": "95-85-80-75-70-65, KI 45, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
-    },
-    {
-      "code": "KR6MD0008X98",
-      "name": "미래에셋증권(ELS)38109e",
-      "type": "ELS",
-      "shape": "스텝다운 노낙인",
-      "underlyings": [
-        "EuroStoxx50",
-        "KOSPI200",
-        "S&P500"
-      ],
-      "couponRate": 8.2,
-      "rateBasis": "annual",
-      "maxLossRate": -100,
-      "maturityMonths": 36,
-      "schedule": [
-        {
-          "months": 6,
-          "barrier": 75
-        },
-        {
-          "months": 12,
-          "barrier": 75
-        },
-        {
-          "months": 18,
-          "barrier": 70
-        },
-        {
-          "months": 24,
-          "barrier": 65
-        },
-        {
-          "months": 30,
           "barrier": 60
-        },
-        {
-          "months": 36,
-          "barrier": 50
         }
       ],
       "knockIn": null,
@@ -2063,38 +1905,39 @@ window.ELS_DATA = {
       "riskLabel": "매우높은위험",
       "riskCode": "11",
       "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
       "issueDate": null,
       "minAmount": null,
-      "structureDesc": "75-75-70-65-60-50, KI -, 원화",
+      "structureDesc": "80-80-80-75-70-60, KI -, 원화",
       "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
     },
     {
-      "code": "KR6MD0008XF1",
-      "name": "미래에셋증권(ELB)4075",
-      "type": "ELB",
-      "shape": "하이파이브 월지급식",
+      "code": "KR6MD00090G1",
+      "name": "미래에셋증권(ELS)38171",
+      "type": "ELS",
+      "shape": "스텝다운 노낙인",
       "underlyings": [
-        "삼성전자",
-        "SK하이닉스"
+        "EuroStoxx50",
+        "KOSPI200",
+        "S&P500"
       ],
-      "couponRate": 7.2,
+      "couponRate": 10.4,
       "rateBasis": "annual",
-      "maxLossRate": 0,
+      "maxLossRate": -100,
       "maturityMonths": 36,
       "schedule": [
         {
           "months": 6,
-          "barrier": 75
+          "barrier": 80
         },
         {
           "months": 12,
-          "barrier": 75
+          "barrier": 80
         },
         {
           "months": 18,
-          "barrier": 75
+          "barrier": 80
         },
         {
           "months": 24,
@@ -2102,11 +1945,171 @@ window.ELS_DATA = {
         },
         {
           "months": 30,
+          "barrier": 70
+        },
+        {
+          "months": 36,
+          "barrier": 60
+        }
+      ],
+      "knockIn": null,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "80-80-80-75-70-60, KI -, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD00090F3",
+      "name": "미래에셋증권(ELS)38170",
+      "type": "ELS",
+      "shape": "스텝다운",
+      "underlyings": [
+        "Nikkei225",
+        "EuroStoxx50",
+        "KOSPI200"
+      ],
+      "couponRate": 9.6,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 85
+        },
+        {
+          "months": 12,
+          "barrier": 85
+        },
+        {
+          "months": 18,
+          "barrier": 85
+        },
+        {
+          "months": 24,
+          "barrier": 80
+        },
+        {
+          "months": 30,
           "barrier": 75
         },
         {
           "months": 36,
+          "barrier": 70
+        }
+      ],
+      "knockIn": 35,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "85-85-85-80-75-70, KI 35, 원화",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD00090S6",
+      "name": "미래에셋증권(ELS)38181e",
+      "type": "ELS",
+      "shape": "리자드",
+      "underlyings": [
+        "Nikkei225",
+        "EuroStoxx50",
+        "KOSPI200"
+      ],
+      "couponRate": 9,
+      "rateBasis": "annual",
+      "maxLossRate": -100,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 85
+        },
+        {
+          "months": 12,
+          "barrier": 80,
+          "lizard": 60,
+          "lizardRate": 9
+        },
+        {
+          "months": 18,
           "barrier": 75
+        },
+        {
+          "months": 24,
+          "barrier": 70
+        },
+        {
+          "months": 30,
+          "barrier": 65
+        },
+        {
+          "months": 36,
+          "barrier": 60
+        }
+      ],
+      "knockIn": null,
+      "principalProtection": 0,
+      "riskGrade": 1,
+      "riskLabel": "매우높은위험",
+      "riskCode": "11",
+      "status": "진행중",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
+      "issueDate": null,
+      "minAmount": null,
+      "structureDesc": "85-80(60)-75-70-65-60, KI -, 원화, 리자드 조건 충족 시 연 9%",
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+    },
+    {
+      "code": "KR6MD0009117",
+      "name": "미래에셋증권(ELB)4099",
+      "type": "ELB",
+      "shape": "하이파이브 월지급식",
+      "underlyings": [
+        "삼성전자",
+        "SK하이닉스"
+      ],
+      "couponRate": 7.62,
+      "rateBasis": "annual",
+      "maxLossRate": 0,
+      "maturityMonths": 36,
+      "schedule": [
+        {
+          "months": 6,
+          "barrier": 80
+        },
+        {
+          "months": 12,
+          "barrier": 80
+        },
+        {
+          "months": 18,
+          "barrier": 80
+        },
+        {
+          "months": 24,
+          "barrier": 80
+        },
+        {
+          "months": 30,
+          "barrier": 80
+        },
+        {
+          "months": 36,
+          "barrier": 80
         }
       ],
       "knockIn": null,
@@ -2115,13 +2118,13 @@ window.ELS_DATA = {
       "riskLabel": "낮은위험",
       "riskCode": "15",
       "status": "진행중",
-      "offerStart": "2026-09-07",
-      "offerEnd": "2026-09-16",
+      "offerStart": "2026-10-02",
+      "offerEnd": "2026-10-14",
       "issueDate": null,
       "minAmount": null,
-      "structureDesc": "75-75-75-75-75-75(월지급배리어:70), KI -, 원화",
+      "structureDesc": "80-80-80-80-80-80(월지급배리어:75), KI -, 원화",
       "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
     }
   ],
-  "history": {"updatedAt":"2026-09-06T23:31:54.293Z","range":"10y","source":"Yahoo Finance (일별 종가)","dates":[20160905,20160906,20160907,20160908,20160909,20160912,20160913,20160914,20160915,20160916,20160919,20160920,20160921,20160922,20160923,20160926,20160927,20160928,20160929,20160930,20161003,20161004,20161005,20161006,20161007,20161010,20161011,20161012,20161013,20161014,20161017,20161018,20161019,20161020,20161021,20161024,20161025,20161026,20161027,20161028,20161031,20161101,20161102,20161103,20161104,20161107,20161108,20161109,20161110,20161111,20161114,20161115,20161116,20161117,20161118,20161121,20161122,20161123,20161124,20161125,20161128,20161129,20161130,20161201,20161202,20161205,20161206,20161207,20161208,20161209,20161212,20161213,20161214,20161215,20161216,20161219,20161220,20161221,20161222,20161223,20161226,20161227,20161228,20161229,20161230,20170102,20170103,20170104,20170105,20170106,20170109,20170110,20170111,20170112,20170113,20170116,20170117,20170118,20170119,20170120,20170123,20170124,20170125,20170126,20170127,20170130,20170131,20170201,20170202,20170203,20170206,20170207,20170208,20170209,20170210,20170213,20170214,20170215,20170216,20170217,20170220,20170221,20170222,20170223,20170224,20170227,20170228,20170301,20170302,20170303,20170306,20170307,20170308,20170309,20170310,20170313,20170314,20170315,20170316,20170317,20170320,20170321,20170322,20170323,20170324,20170327,20170328,20170329,20170330,20170331,20170403,20170404,20170405,20170406,20170407,20170410,20170411,20170412,20170413,20170414,20170417,20170418,20170419,20170420,20170421,20170424,20170425,20170426,20170427,20170428,20170501,20170502,20170503,20170504,20170505,20170508,20170509,20170510,20170511,20170512,20170515,20170516,20170517,20170518,20170519,20170522,20170523,20170524,20170525,20170526,20170529,20170530,20170531,20170601,20170602,20170605,20170606,20170607,20170608,20170609,20170612,20170613,20170614,20170615,20170616,20170619,20170620,20170621,20170622,20170623,20170626,20170627,20170628,20170629,20170630,20170703,20170704,20170705,20170706,20170707,20170710,20170711,20170712,20170713,20170714,20170717,20170718,20170719,20170720,20170721,20170724,20170725,20170726,20170727,20170728,20170731,20170801,20170802,20170803,20170804,20170807,20170808,20170809,20170810,20170811,20170814,20170815,20170816,20170817,20170818,20170821,20170822,20170823,20170824,20170825,20170828,20170829,20170830,20170831,20170901,20170904,20170905,20170906,20170907,20170908,20170911,20170912,20170913,20170914,20170915,20170918,20170919,20170920,20170921,20170922,20170925,20170926,20170927,20170928,20170929,20171002,20171003,20171004,20171005,20171006,20171009,20171010,20171011,20171012,20171013,20171016,20171017,20171018,20171019,20171020,20171023,20171024,20171025,20171026,20171027,20171030,20171031,20171101,20171102,20171103,20171106,20171107,20171108,20171109,20171110,20171113,20171114,20171115,20171116,20171117,20171120,20171121,20171122,20171123,20171124,20171127,20171128,20171129,20171130,20171201,20171204,20171205,20171206,20171207,20171208,20171211,20171212,20171213,20171214,20171215,20171218,20171219,20171220,20171221,20171222,20171225,20171226,20171227,20171228,20171229,20180102,20180103,20180104,20180105,20180108,20180109,20180110,20180111,20180112,20180115,20180116,20180117,20180118,20180119,20180122,20180123,20180124,20180125,20180126,20180129,20180130,20180131,20180201,20180202,20180205,20180206,20180207,20180208,20180209,20180212,20180213,20180214,20180215,20180216,20180219,20180220,20180221,20180222,20180223,20180226,20180227,20180228,20180301,20180302,20180305,20180306,20180307,20180308,20180309,20180312,20180313,20180314,20180315,20180316,20180319,20180320,20180321,20180322,20180323,20180326,20180327,20180328,20180329,20180330,20180402,20180403,20180404,20180405,20180406,20180409,20180410,20180411,20180412,20180413,20180416,20180417,20180418,20180419,20180420,20180423,20180424,20180425,20180426,20180427,20180430,20180501,20180502,20180503,20180504,20180507,20180508,20180509,20180510,20180511,20180514,20180515,20180516,20180517,20180518,20180521,20180522,20180523,20180524,20180525,20180528,20180529,20180530,20180531,20180601,20180604,20180605,20180606,20180607,20180608,20180611,20180612,20180613,20180614,20180615,20180618,20180619,20180620,20180621,20180622,20180625,20180626,20180627,20180628,20180629,20180702,20180703,20180704,20180705,20180706,20180709,20180710,20180711,20180712,20180713,20180716,20180717,20180718,20180719,20180720,20180723,20180724,20180725,20180726,20180727,20180730,20180731,20180801,20180802,20180803,20180806,20180807,20180808,20180809,20180810,20180813,20180814,20180815,20180816,20180817,20180820,20180821,20180822,20180823,20180824,20180827,20180828,20180829,20180830,20180831,20180903,20180904,20180905,20180906,20180907,20180910,20180911,20180912,20180913,20180914,20180917,20180918,20180919,20180920,20180921,20180924,20180925,20180926,20180927,20180928,20181001,20181002,20181003,20181004,20181005,20181008,20181009,20181010,20181011,20181012,20181015,20181016,20181017,20181018,20181019,20181022,20181023,20181024,20181025,20181026,20181029,20181030,20181031,20181101,20181102,20181105,20181106,20181107,20181108,20181109,20181112,20181113,20181114,20181115,20181116,20181119,20181120,20181121,20181122,20181123,20181126,20181127,20181128,20181129,20181130,20181203,20181204,20181205,20181206,20181207,20181210,20181211,20181212,20181213,20181214,20181217,20181218,20181219,20181220,20181221,20181224,20181225,20181226,20181227,20181228,20181231,20190102,20190103,20190104,20190107,20190108,20190109,20190110,20190111,20190114,20190115,20190116,20190117,20190118,20190121,20190122,20190123,20190124,20190125,20190128,20190129,20190130,20190131,20190201,20190204,20190205,20190206,20190207,20190208,20190211,20190212,20190213,20190214,20190215,20190218,20190219,20190220,20190221,20190222,20190225,20190226,20190227,20190228,20190301,20190304,20190305,20190306,20190307,20190308,20190311,20190312,20190313,20190314,20190315,20190318,20190319,20190320,20190321,20190322,20190325,20190326,20190327,20190328,20190329,20190401,20190402,20190403,20190404,20190405,20190408,20190409,20190410,20190411,20190412,20190415,20190416,20190417,20190418,20190419,20190422,20190423,20190424,20190425,20190426,20190429,20190430,20190501,20190502,20190503,20190506,20190507,20190508,20190509,20190510,20190513,20190514,20190515,20190516,20190517,20190520,20190521,20190522,20190523,20190524,20190527,20190528,20190529,20190530,20190531,20190603,20190604,20190605,20190606,20190607,20190610,20190611,20190612,20190613,20190614,20190617,20190618,20190619,20190620,20190621,20190624,20190625,20190626,20190627,20190628,20190701,20190702,20190703,20190704,20190705,20190708,20190709,20190710,20190711,20190712,20190715,20190716,20190717,20190718,20190719,20190722,20190723,20190724,20190725,20190726,20190729,20190730,20190731,20190801,20190802,20190805,20190806,20190807,20190808,20190809,20190812,20190813,20190814,20190815,20190816,20190819,20190820,20190821,20190822,20190823,20190826,20190827,20190828,20190829,20190830,20190902,20190903,20190904,20190905,20190906,20190909,20190910,20190911,20190912,20190913,20190916,20190917,20190918,20190919,20190920,20190923,20190924,20190925,20190926,20190927,20190930,20191001,20191002,20191003,20191004,20191007,20191008,20191009,20191010,20191011,20191014,20191015,20191016,20191017,20191018,20191021,20191022,20191023,20191024,20191025,20191028,20191029,20191030,20191031,20191101,20191104,20191105,20191106,20191107,20191108,20191111,20191112,20191113,20191114,20191115,20191118,20191119,20191120,20191121,20191122,20191125,20191126,20191127,20191128,20191129,20191202,20191203,20191204,20191205,20191206,20191209,20191210,20191211,20191212,20191213,20191216,20191217,20191218,20191219,20191220,20191223,20191224,20191225,20191226,20191227,20191230,20191231,20200102,20200103,20200106,20200107,20200108,20200109,20200110,20200113,20200114,20200115,20200116,20200117,20200120,20200121,20200122,20200123,20200124,20200127,20200128,20200129,20200130,20200131,20200203,20200204,20200205,20200206,20200207,20200210,20200211,20200212,20200213,20200214,20200217,20200218,20200219,20200220,20200221,20200224,20200225,20200226,20200227,20200228,20200302,20200303,20200304,20200305,20200306,20200309,20200310,20200311,20200312,20200313,20200316,20200317,20200318,20200319,20200320,20200323,20200324,20200325,20200326,20200327,20200330,20200331,20200401,20200402,20200403,20200406,20200407,20200408,20200409,20200410,20200413,20200414,20200415,20200416,20200417,20200420,20200421,20200422,20200423,20200424,20200427,20200428,20200429,20200430,20200501,20200504,20200505,20200506,20200507,20200508,20200511,20200512,20200513,20200514,20200515,20200518,20200519,20200520,20200521,20200522,20200525,20200526,20200527,20200528,20200529,20200601,20200602,20200603,20200604,20200605,20200608,20200609,20200610,20200611,20200612,20200615,20200616,20200617,20200618,20200619,20200622,20200623,20200624,20200625,20200626,20200629,20200630,20200701,20200702,20200703,20200706,20200707,20200708,20200709,20200710,20200713,20200714,20200715,20200716,20200717,20200720,20200721,20200722,20200723,20200724,20200727,20200728,20200729,20200730,20200731,20200803,20200804,20200805,20200806,20200807,20200810,20200811,20200812,20200813,20200814,20200817,20200818,20200819,20200820,20200821,20200824,20200825,20200826,20200827,20200828,20200831,20200901,20200902,20200903,20200904,20200907,20200908,20200909,20200910,20200911,20200914,20200915,20200916,20200917,20200918,20200921,20200922,20200923,20200924,20200925,20200928,20200929,20200930,20201001,20201002,20201005,20201006,20201007,20201008,20201009,20201012,20201013,20201014,20201015,20201016,20201019,20201020,20201021,20201022,20201023,20201026,20201027,20201028,20201029,20201030,20201102,20201103,20201104,20201105,20201106,20201109,20201110,20201111,20201112,20201113,20201116,20201117,20201118,20201119,20201120,20201123,20201124,20201125,20201126,20201127,20201130,20201201,20201202,20201203,20201204,20201207,20201208,20201209,20201210,20201211,20201214,20201215,20201216,20201217,20201218,20201221,20201222,20201223,20201224,20201225,20201228,20201229,20201230,20201231,20210104,20210105,20210106,20210107,20210108,20210111,20210112,20210113,20210114,20210115,20210118,20210119,20210120,20210121,20210122,20210125,20210126,20210127,20210128,20210129,20210201,20210202,20210203,20210204,20210205,20210208,20210209,20210210,20210211,20210212,20210215,20210216,20210217,20210218,20210219,20210222,20210223,20210224,20210225,20210226,20210301,20210302,20210303,20210304,20210305,20210308,20210309,20210310,20210311,20210312,20210315,20210316,20210317,20210318,20210319,20210322,20210323,20210324,20210325,20210326,20210329,20210330,20210331,20210401,20210402,20210405,20210406,20210407,20210408,20210409,20210412,20210413,20210414,20210415,20210416,20210419,20210420,20210421,20210422,20210423,20210426,20210427,20210428,20210429,20210430,20210503,20210504,20210505,20210506,20210507,20210510,20210511,20210512,20210513,20210514,20210517,20210518,20210519,20210520,20210521,20210524,20210525,20210526,20210527,20210528,20210531,20210601,20210602,20210603,20210604,20210607,20210608,20210609,20210610,20210611,20210614,20210615,20210616,20210617,20210618,20210621,20210622,20210623,20210624,20210625,20210628,20210629,20210630,20210701,20210702,20210705,20210706,20210707,20210708,20210709,20210712,20210713,20210714,20210715,20210716,20210719,20210720,20210721,20210722,20210723,20210726,20210727,20210728,20210729,20210730,20210802,20210803,20210804,20210805,20210806,20210809,20210810,20210811,20210812,20210813,20210816,20210817,20210818,20210819,20210820,20210823,20210824,20210825,20210826,20210827,20210830,20210831,20210901,20210902,20210903,20210906,20210907,20210908,20210909,20210910,20210913,20210914,20210915,20210916,20210917,20210920,20210921,20210922,20210923,20210924,20210927,20210928,20210929,20210930,20211001,20211004,20211005,20211006,20211007,20211008,20211011,20211012,20211013,20211014,20211015,20211018,20211019,20211020,20211021,20211022,20211025,20211026,20211027,20211028,20211029,20211101,20211102,20211103,20211104,20211105,20211108,20211109,20211110,20211111,20211112,20211115,20211116,20211117,20211118,20211119,20211122,20211123,20211124,20211125,20211126,20211129,20211130,20211201,20211202,20211203,20211206,20211207,20211208,20211209,20211210,20211213,20211214,20211215,20211216,20211217,20211220,20211221,20211222,20211223,20211224,20211227,20211228,20211229,20211230,20211231,20220103,20220104,20220105,20220106,20220107,20220110,20220111,20220112,20220113,20220114,20220117,20220118,20220119,20220120,20220121,20220124,20220125,20220126,20220127,20220128,20220131,20220201,20220202,20220203,20220204,20220207,20220208,20220209,20220210,20220211,20220214,20220215,20220216,20220217,20220218,20220221,20220222,20220223,20220224,20220225,20220228,20220301,20220302,20220303,20220304,20220307,20220308,20220309,20220310,20220311,20220314,20220315,20220316,20220317,20220318,20220321,20220322,20220323,20220324,20220325,20220328,20220329,20220330,20220331,20220401,20220404,20220405,20220406,20220407,20220408,20220411,20220412,20220413,20220414,20220415,20220418,20220419,20220420,20220421,20220422,20220425,20220426,20220427,20220428,20220429,20220502,20220503,20220504,20220505,20220506,20220509,20220510,20220511,20220512,20220513,20220516,20220517,20220518,20220519,20220520,20220523,20220524,20220525,20220526,20220527,20220530,20220531,20220601,20220602,20220603,20220606,20220607,20220608,20220609,20220610,20220613,20220614,20220615,20220616,20220617,20220620,20220621,20220622,20220623,20220624,20220627,20220628,20220629,20220630,20220701,20220704,20220705,20220706,20220707,20220708,20220711,20220712,20220713,20220714,20220715,20220718,20220719,20220720,20220721,20220722,20220725,20220726,20220727,20220728,20220729,20220801,20220802,20220803,20220804,20220805,20220808,20220809,20220810,20220811,20220812,20220815,20220816,20220817,20220818,20220819,20220822,20220823,20220824,20220825,20220826,20220829,20220830,20220831,20220901,20220902,20220905,20220906,20220907,20220908,20220909,20220912,20220913,20220914,20220915,20220916,20220919,20220920,20220921,20220922,20220923,20220926,20220927,20220928,20220929,20220930,20221003,20221004,20221005,20221006,20221007,20221010,20221011,20221012,20221013,20221014,20221017,20221018,20221019,20221020,20221021,20221024,20221025,20221026,20221027,20221028,20221031,20221101,20221102,20221103,20221104,20221107,20221108,20221109,20221110,20221111,20221114,20221115,20221116,20221117,20221118,20221121,20221122,20221123,20221124,20221125,20221128,20221129,20221130,20221201,20221202,20221205,20221206,20221207,20221208,20221209,20221212,20221213,20221214,20221215,20221216,20221219,20221220,20221221,20221222,20221223,20221226,20221227,20221228,20221229,20221230,20230102,20230103,20230104,20230105,20230106,20230109,20230110,20230111,20230112,20230113,20230116,20230117,20230118,20230119,20230120,20230123,20230124,20230125,20230126,20230127,20230130,20230131,20230201,20230202,20230203,20230206,20230207,20230208,20230209,20230210,20230213,20230214,20230215,20230216,20230217,20230220,20230221,20230222,20230223,20230224,20230227,20230228,20230301,20230302,20230303,20230306,20230307,20230308,20230309,20230310,20230313,20230314,20230315,20230316,20230317,20230320,20230321,20230322,20230323,20230324,20230327,20230328,20230329,20230330,20230331,20230403,20230404,20230405,20230406,20230407,20230410,20230411,20230412,20230413,20230414,20230417,20230418,20230419,20230420,20230421,20230424,20230425,20230426,20230427,20230428,20230501,20230502,20230503,20230504,20230505,20230508,20230509,20230510,20230511,20230512,20230515,20230516,20230517,20230518,20230519,20230522,20230523,20230524,20230525,20230526,20230529,20230530,20230531,20230601,20230602,20230605,20230606,20230607,20230608,20230609,20230612,20230613,20230614,20230615,20230616,20230619,20230620,20230621,20230622,20230623,20230626,20230627,20230628,20230629,20230630,20230703,20230704,20230705,20230706,20230707,20230710,20230711,20230712,20230713,20230714,20230717,20230718,20230719,20230720,20230721,20230724,20230725,20230726,20230727,20230728,20230731,20230801,20230802,20230803,20230804,20230807,20230808,20230809,20230810,20230811,20230814,20230815,20230816,20230817,20230818,20230821,20230822,20230823,20230824,20230825,20230828,20230829,20230830,20230831,20230901,20230904,20230905,20230906,20230907,20230908,20230911,20230912,20230913,20230914,20230915,20230918,20230919,20230920,20230921,20230922,20230925,20230926,20230927,20230928,20230929,20231002,20231003,20231004,20231005,20231006,20231009,20231010,20231011,20231012,20231013,20231016,20231017,20231018,20231019,20231020,20231023,20231024,20231025,20231026,20231027,20231030,20231031,20231101,20231102,20231103,20231106,20231107,20231108,20231109,20231110,20231113,20231114,20231115,20231116,20231117,20231120,20231121,20231122,20231123,20231124,20231127,20231128,20231129,20231130,20231201,20231204,20231205,20231206,20231207,20231208,20231211,20231212,20231213,20231214,20231215,20231218,20231219,20231220,20231221,20231222,20231225,20231226,20231227,20231228,20231229,20240102,20240103,20240104,20240105,20240108,20240109,20240110,20240111,20240112,20240115,20240116,20240117,20240118,20240119,20240122,20240123,20240124,20240125,20240126,20240129,20240130,20240131,20240201,20240202,20240205,20240206,20240207,20240208,20240209,20240212,20240213,20240214,20240215,20240216,20240219,20240220,20240221,20240222,20240223,20240226,20240227,20240228,20240229,20240301,20240304,20240305,20240306,20240307,20240308,20240311,20240312,20240313,20240314,20240315,20240318,20240319,20240320,20240321,20240322,20240325,20240326,20240327,20240328,20240329,20240401,20240402,20240403,20240404,20240405,20240408,20240409,20240410,20240411,20240412,20240415,20240416,20240417,20240418,20240419,20240422,20240423,20240424,20240425,20240426,20240429,20240430,20240501,20240502,20240503,20240506,20240507,20240508,20240509,20240510,20240513,20240514,20240515,20240516,20240517,20240520,20240521,20240522,20240523,20240524,20240527,20240528,20240529,20240530,20240531,20240603,20240604,20240605,20240606,20240607,20240610,20240611,20240612,20240613,20240614,20240617,20240618,20240619,20240620,20240621,20240624,20240625,20240626,20240627,20240628,20240701,20240702,20240703,20240704,20240705,20240708,20240709,20240710,20240711,20240712,20240715,20240716,20240717,20240718,20240719,20240722,20240723,20240724,20240725,20240726,20240729,20240730,20240731,20240801,20240802,20240805,20240806,20240807,20240808,20240809,20240812,20240813,20240814,20240815,20240816,20240819,20240820,20240821,20240822,20240823,20240826,20240827,20240828,20240829,20240830,20240902,20240903,20240904,20240905,20240906,20240909,20240910,20240911,20240912,20240913,20240916,20240917,20240918,20240919,20240920,20240923,20240924,20240925,20240926,20240927,20240930,20241001,20241002,20241003,20241004,20241007,20241008,20241009,20241010,20241011,20241014,20241015,20241016,20241017,20241018,20241021,20241022,20241023,20241024,20241025,20241028,20241029,20241030,20241031,20241101,20241104,20241105,20241106,20241107,20241108,20241111,20241112,20241113,20241114,20241115,20241118,20241119,20241120,20241121,20241122,20241125,20241126,20241127,20241128,20241129,20241202,20241203,20241204,20241205,20241206,20241209,20241210,20241211,20241212,20241213,20241216,20241217,20241218,20241219,20241220,20241223,20241224,20241225,20241226,20241227,20241230,20241231,20250102,20250103,20250106,20250107,20250108,20250109,20250110,20250113,20250114,20250115,20250116,20250117,20250120,20250121,20250122,20250123,20250124,20250127,20250128,20250129,20250130,20250131,20250203,20250204,20250205,20250206,20250207,20250210,20250211,20250212,20250213,20250214,20250217,20250218,20250219,20250220,20250221,20250224,20250225,20250226,20250227,20250228,20250303,20250304,20250305,20250306,20250307,20250310,20250311,20250312,20250313,20250314,20250317,20250318,20250319,20250320,20250321,20250324,20250325,20250326,20250327,20250328,20250331,20250401,20250402,20250403,20250404,20250407,20250408,20250409,20250410,20250411,20250414,20250415,20250416,20250417,20250418,20250421,20250422,20250423,20250424,20250425,20250428,20250429,20250430,20250501,20250502,20250505,20250506,20250507,20250508,20250509,20250512,20250513,20250514,20250515,20250516,20250519,20250520,20250521,20250522,20250523,20250526,20250527,20250528,20250529,20250530,20250602,20250603,20250604,20250605,20250606,20250609,20250610,20250611,20250612,20250613,20250616,20250617,20250618,20250619,20250620,20250623,20250624,20250625,20250626,20250627,20250630,20250701,20250702,20250703,20250704,20250707,20250708,20250709,20250710,20250711,20250714,20250715,20250716,20250717,20250718,20250721,20250722,20250723,20250724,20250725,20250728,20250729,20250730,20250731,20250801,20250804,20250805,20250806,20250807,20250808,20250811,20250812,20250813,20250814,20250815,20250818,20250819,20250820,20250821,20250822,20250825,20250826,20250827,20250828,20250829,20250901,20250902,20250903,20250904,20250905,20250908,20250909,20250910,20250911,20250912,20250915,20250916,20250917,20250918,20250919,20250922,20250923,20250924,20250925,20250926,20250929,20250930,20251001,20251002,20251003,20251006,20251007,20251008,20251009,20251010,20251013,20251014,20251015,20251016,20251017,20251020,20251021,20251022,20251023,20251024,20251027,20251028,20251029,20251030,20251031,20251103,20251104,20251105,20251106,20251107,20251110,20251111,20251112,20251113,20251114,20251117,20251118,20251119,20251120,20251121,20251124,20251125,20251126,20251127,20251128,20251201,20251202,20251203,20251204,20251205,20251208,20251209,20251210,20251211,20251212,20251215,20251216,20251217,20251218,20251219,20251222,20251223,20251224,20251225,20251226,20251229,20251230,20251231,20260102,20260105,20260106,20260107,20260108,20260109,20260112,20260113,20260114,20260115,20260116,20260119,20260120,20260121,20260122,20260123,20260126,20260127,20260128,20260129,20260130,20260202,20260203,20260204,20260205,20260206,20260209,20260210,20260211,20260212,20260213,20260216,20260217,20260218,20260219,20260220,20260223,20260224,20260225,20260226,20260227,20260302,20260303,20260304,20260305,20260306,20260309,20260310,20260311,20260312,20260313,20260316,20260317,20260318,20260319,20260320,20260323,20260324,20260325,20260326,20260327,20260330,20260331,20260401,20260402,20260403,20260406,20260407,20260408,20260409,20260410,20260413,20260414,20260415,20260416,20260417,20260420,20260421,20260422,20260423,20260424,20260427,20260428,20260429,20260430,20260501,20260504,20260505,20260506,20260507,20260508,20260511,20260512,20260513,20260514,20260515,20260518,20260519,20260520,20260521,20260522,20260525,20260526,20260527,20260528,20260529,20260601,20260602,20260603,20260604,20260605,20260608,20260609,20260610,20260611,20260612,20260615,20260616,20260617,20260618,20260619,20260622,20260623,20260624,20260625,20260626,20260629,20260630,20260701,20260702,20260703,20260706,20260707,20260708,20260709,20260710,20260713,20260714,20260715,20260716,20260717,20260720,20260721,20260722,20260723,20260724,20260727,20260728,20260729,20260730,20260731,20260803,20260804,20260805,20260806,20260807,20260810,20260811,20260812,20260813,20260814,20260817,20260818,20260819,20260820,20260821,20260824,20260825,20260826,20260827,20260828,20260831,20260901,20260902,20260903,20260904],"series":{"AMD":[null,100,93.19,84.88,80.38,80.93,78.2,82.29,82.02,82.43,83.92,84.06,85.69,86.78,89.24,86.1,89.1,89.78,90.87,94.14,94.69,94.96,92.37,94.82,91.96,93.19,88.56,90.19,88.42,91.96,90.87,91.69,92.23,94.82,88.83,95.5,102.18,99.32,96.87,98.09,98.5,96.59,92.1,91.28,89.37,94.82,95.37,94.55,85.83,91.14,92.51,94.96,104.5,115.26,118.66,121.8,118.39,119.89,119.89,119.48,120.3,121.66,121.39,114.31,116.21,118.26,128.75,130.25,140.87,140.87,145.5,143.6,143.73,147.96,145.23,149.18,156.81,156.27,158.04,157.77,157.77,164.44,157.36,157.9,154.5,154.5,155.72,155.72,153.13,154.22,156.54,155.86,152.59,146.59,144.14,144.14,133.79,134.6,133.11,132.83,135.01,142.23,141.01,143.32,145.37,144.55,141.28,164.31,167.3,166.76,185.69,181.06,184.74,182.83,185.01,183.79,180.65,181.2,176.7,178.88,178.88,190.74,194.55,195.1,192.37,207.08,197,203.81,189.37,177.52,177.66,177.79,180.11,181.61,189.51,194.55,192.1,190.46,185.97,183.79,196.19,188.28,192.1,187.87,186.65,186.65,186.51,186.78,191.42,198.23,199.46,192.92,193.05,180.79,184.2,178.47,178.47,173.84,167.71,167.71,174.25,176.43,174.93,178.61,177.11,178.88,183.79,182.7,185.56,181.2,185.56,140.6,141.55,137.6,138.83,136.78,138.69,147,150.82,153.41,155.59,173.71,152.59,153.68,155.45,150.41,148.37,148.37,149.59,149.86,149.86,151.5,152.45,148.91,148.5,153.13,163.9,168.66,175.75,167.3,164.71,162.94,160.35,156.68,155.86,162.53,172.21,190.46,195.91,193.05,191.83,182.56,180.25,171.66,170.03,165.53,165.53,179.7,177.38,182.02,188.15,189.24,194.69,184.33,189.65,188.01,183.65,184.6,188.01,189.1,192.92,192.23,201.09,192.37,190.05,185.42,186.78,182.15,180.38,178.75,182.97,178.61,174.8,165.12,166.62,173.84,177.38,172.07,168.12,168.53,164.17,165.8,170.03,170.3,169.35,166.62,165.53,172.62,177.11,179.7,179.7,176.02,175.2,172.07,166.89,170.98,167.57,166.49,167.03,170.57,178.2,178.75,187.19,182.7,181.2,171.8,169.62,173.57,173.57,173.71,173.16,182.83,181.34,181.74,180.25,183.51,186.65,189.1,193.46,193.73,194.28,192.92,191.69,190.05,188.15,192.1,194.14,167.98,163.62,161.31,148.37,149.73,147.14,147.82,151.5,162.53,164.17,159.54,151.5,153.41,151.09,151.5,150.82,153.27,155.04,154.5,155.31,154.9,154.9,155.04,157.36,152.18,147.55,148.37,146.19,136.65,135.01,136.24,136.78,135.42,138.42,134.88,137.74,138.01,140.19,149.59,149.18,149.59,148.37,143.6,143.6,142.51,143.46,143.73,140.05,149.59,157.36,165.12,161.85,167.3,161.04,162.94,165.4,163.76,163.76,162.26,165.94,169.89,171.53,172.34,176.29,173.16,169.07,176.43,181.47,175.34,187.19,180.52,169.62,157.63,158.72,158.04,152.86,154.09,159.13,160.49,166.21,166.08,161.04,161.04,163.76,159.67,161.31,164.44,169.21,170.71,164.99,162.13,160.9,162.26,160.22,166.76,163.08,159.4,156.95,158.58,154.77,156.13,156.27,155.72,151.36,153.41,148.64,144.82,142.23,136.24,133.65,136.92,136.92,129.84,130.11,133.11,136.51,130.93,129.84,135.97,133.79,137.33,135.29,137.47,143.32,141.14,137.74,136.1,136.78,137.47,132.29,150.41,151.36,148.23,151.63,149.46,148.91,153.68,157.9,158.17,162.81,165.26,162.81,166.62,169.62,174.66,174.66,177.11,176.98,176.84,178.47,182.7,184.47,184.47,182.02,188.28,187.06,196.19,202.32,202.32,213.49,202.86,207.77,214.31,215.94,222.34,221.39,222.62,233.11,227.38,225.07,213.22,215.26,205.86,211.17,203.95,208.58,204.22,206.54,204.36,204.36,211.17,222.89,226.29,225.48,221.66,225.61,221.66,225.89,229.84,229.56,227.66,224.8,226.98,220.57,218.66,250,258.04,264.58,249.73,251.77,255.99,251.91,264.71,266.49,266.76,260.22,259.67,268.8,272.75,268.39,263.35,269.35,272.21,277.93,284.74,303.68,326.7,344.14,341.28,343.32,339.1,342.92,342.92,382.29,388.42,379.29,373.02,407.22,410.08,438.83,415.26,445.78,441.83,435.01,425.2,424.8,422.62,444.28,443.73,438.56,444.01,420.84,428.07,395.37,387.33,378.47,372.62,360.49,371.12,340.6,344.69,358.86,357.77,383.92,371.93,362.67,322.34,341.01,341.83,310.49,262.53,240.19,229.56,234.33,248.09,275.48,275.61,271.12,281.74,297.55,288.83,286.51,259.26,267.17,283.51,292.78,281.47,260.35,261.72,255.18,255.18,264.03,273.57,286.78,290.74,291.96,290.19,323.02,287.74,287.74,290.19,265.12,272.34,272.21,279.02,270.57,271.12,256.54,265.67,247.41,244.41,230.65,226.84,226.84,243.87,238.28,242.78,251.5,256.54,232.29,258.86,280.25,282.7,275.07,268.94,276.16,275.61,277.66,268.8,275.89,282.97,282.97,269.21,269.75,284.06,298.77,274.93,262.26,314.58,332.56,333.92,328.75,317.57,316.89,308.86,314.03,312.81,310.9,311.31,315.12,322.62,322.62,326.29,326.29,325.89,331.88,336.65,329.84,319.89,320.57,322.62,318.39,320.16,305.31,300.82,299.86,312.81,320.03,318.53,310.9,317.3,316.76,354.22,350.14,379.97,359.26,353.81,350,339.1,341.42,347.68,359.13,364.44,395.37,396.32,394.82,388.69,371.12,379.16,378.61,379.43,372.34,380.52,374.52,377.11,377.11,383.92,381.06,387.74,376.84,379.84,377.25,376.43,365.26,385.42,384.47,373.57,363.22,369.07,370.71,380.93,357.49,372.21,375.75,381.61,374.66,363.49,372.62,373.43,359.13,360.22,360.22,395.78,382.7,381.88,373.43,375.75,402.86,401.91,433.51,441.55,452.72,441.55,438.42,427.66,413.62,397.82,414.85,415.53,408.86,396.46,398.64,393.19,407.63,418.8,413.76,425.07,425.61,424.93,424.93,429.16,436.51,451.63,460.35,450.41,452.45,468.53,461.17,457.77,449.59,442.92,447.55,456.27,464.71,458.72,463.49,456.13,461.44,414.85,406.81,401.09,381.34,393.19,397.68,462.13,465.8,441.83,437.47,411.99,404.22,424.8,428.88,418.53,431.88,434.6,402.45,412.53,411.44,419.35,428.47,428.47,428.47,420.98,421.66,429.16,416.35,415.53,411.85,405.45,411.58,418.12,420.03,422.21,414.44,412.67,409.4,417.44,402.18,402.45,401.5,391.28,394.96,391.83,385.69,390.74,395.23,394.14,384.6,387.74,386.65,405.31,415.94,418.53,419.75,424.25,421.93,436.38,429.29,427.25,432.15,445.64,458.99,450,451.36,462.26,475.34,494.41,492.51,489.51,494.28,494.41,494.69,500.14,511.17,522.48,525.34,543.32,562.53,558.31,538.42,533.38,542.1,531.2,536.92,536.92,533.38,527.66,529.97,540.74,539.78,539.92,530.38,537.33,537.74,580.25,560.63,576.98,582.7,576.29,583.51,601.5,619.35,634.06,634.06,635.29,629.16,620.16,624.8,668.94,662.13,659.26,657.36,651.63,667.17,656.27,664.17,656.81,661.44,678.07,693.87,693.87,695.5,700.68,704.5,685.97,671.12,688.42,647.28,664.58,640.33,654.22,673.71,679.02,671.93,677.52,711.99,732.97,734.2,742.92,753.54,753.54,775.07,802.45,780.25,725.89,669.21,648.09,647,599.59,619.62,646.59,636.92,682.7,655.45,661.99,589.51,618.26,622.62,531.47,598.09,527.38,570.57,532.97,542.51,539.65,567.3,629.7,608.04,647.14,634.6,652.04,619.62,594.82,606.13,580.25,647.41,647.96,664.71,659.13,659.13,694.01,748.37,749.18,775.89,771.12,776.16,720.98,761.85,761.58,765.4,769.62,756.27,731.06,713.76,679.56,716.08,711.04,710.63,707.77,724.66,759.4,732.43,710.9,742.64,738.42,743.73,755.72,768.26,744.55,751.63,751.63,724.66,718.53,704.9,732.97,730.65,729.43,718.39,717.03,723.43,721.66,768.26,782.56,719.75,728.88,744.96,741.96,743.19,736.24,738.83,746.05,735.56,713.76,707.49,682.56,685.01,716.76,716.35,713.08,713.08,727.52,721.12,727.93,780.11,761.31,730.11,745.5,753.95,748.23,749.86,782.83,776.57,841.83,811.58,945.5,939.65,921.12,1036.65,1065.4,1054.9,1058.17,1158.58,1162.26,1181.34,1155.99,1120.44,1047.41,1125.48,1114.99,1107.63,1122.89,1112.53,1104.77,1127.66,1141.83,1131.88,1176.43,1171.93,1141.69,1165.53,1237.33,1255.86,1229.16,1124.52,1117.3,1117.3,1072.07,1115.94,1076.02,1040.05,1061.31,1075.34,1044.41,1042.92,1020.84,1061.85,1058.58,1018.12,1032.97,1063.49,1082.83,1114.03,1117.03,1156.13,1114.44,1173.71,1150.95,1181.06,1178.61,1132.15,1148.37,1161.85,1147.28,1132.56,1133.11,1117.17,1111.17,1079.02,1082.02,1116.62,1120.3,1074.66,1040.87,1062.94,1025.75,1017.71,1043.32,1108.31,1130.79,1170.03,1132.43,1062.53,1107.36,1114.99,1109.4,1140.74,1135.69,1124.52,1165.4,1153.13,1162.26,1158.99,1181.34,1181.34,1187.87,1262.4,1261.99,1277.11,1257.63,1281.2,1281.61,1265.94,1223.84,1248.77,1248.64,1291.28,1323.16,1319.48,1319.35,1306.81,1270.16,1269.21,1247.28,1250.82,1250.82,1247.96,1234.6,1257.36,1249.46,1257.49,1263.9,1230.65,1296.46,1288.56,1324.93,1299.18,1250.41,1236.92,1201.77,1201.77,1218.66,1209.13,1247,1264.17,1282.43,1290.33,1210.35,1192.37,1166.76,1194.28,1210.63,1197.41,1196.73,1197.55,1246.19,1238.56,1258.17,1262.4,1277.52,1277.52,1246.05,1225.34,1207.63,1220.44,1163.08,1154.5,1184.47,1122.89,1151.36,1176.98,1146.19,1101.63,1059.26,1069.75,1007.63,1069.89,1056.13,1106.68,1104.22,1123.98,1127.38,1125.75,1064.31,1077.11,1094.01,1067.85,1041.96,1038.42,1054.63,1050.95,1035.42,1069.48,1104.77,1104.77,1109.4,1109.54,1119.89,1135.56,1127.52,1070.57,1092.51,1070.16,1130.93,1119.21,1105.04,1079.97,1111.85,1077.11,1127.52,1163.62,1160.9,1144.69,1143.19,1111.99,1070.16,1070.98,1060.35,1061.17,1073.71,1035.29,1046.73,1016.89,995.78,1016.21,1017.03,1014.17,1038.56,1063.49,1051.36,1055.04,1060.76,1067.3,1068.39,1091.01,1091.01,1100.95,1116.76,1093.73,1111.44,1108.31,1102.04,1089.37,1111.17,1107.77,1111.04,1096.32,1091.42,1152.04,1153.27,1125.2,1138.69,1141.96,1173.02,1166.49,1186.38,1219.62,1279.7,1271.25,1290.19,1290.19,1287.06,1233.51,1222.62,1238.42,1237.19,1229.7,1213.22,1184.33,1170.16,1179.56,1186.78,1218.12,1242.64,1255.45,1250.95,1240.19,1334.2,1402.59,1446.73,1479.97,1533.51,1618.12,1530.65,1500.14,1465.67,1450.68,1467.03,1450.95,1506.13,1464.31,1465.4,1409.26,1412.81,1425.75,1481.88,1466.62,1475.48,1461.44,1517.71,1516.62,1508.45,1498.5,1487.74,1497.55,1497.55,1487.06,1446.46,1446.19,1433.24,1427.79,1440.46,1438.69,1447.14,1415.26,1383.51,1400.82,1422.07,1446.19,1441.42,1473.57,1383.11,1367.17,1401.91,1395.78,1367.03,1387.06,1411.99,1450.27,1431.34,1426.16,1431.06,1487.19,1525.75,1527.52,1586.24,1584.88,1585.69,1625.75,1632.43,1667.03,1674.8,1665.94,1650.68,1638.01,1706.13,1738.83,1778.34,1873.3,1857.49,2045.78,2028.88,1905.59,1989.24,2014.85,1995.78,2076.98,2061.85,2111.99,2117.3,2077.93,2042.51,2149.86,2149.86,2109.13,2205.86,2157.63,2031.47,2052.86,1961.99,1894.55,1973.43,1978.75,1881.47,1887.6,1822.89,1847.41,1995.91,1888.83,1876.7,1850.14,1965.26,1960.22,1991.01,1991.01,2103,2086.51,2019.89,1977.52,1960.49,2046.87,1967.57,1854.9,1855.99,1798.37,1798.37,1870.71,1872.89,1808.45,1864.85,1864.85,1797.41,1747.55,1660.63,1618.66,1587.6,1514.03,1508.31,1397.82,1433.79,1556.54,1591.01,1672.48,1635.97,1683.92,1684.88,1747,1809.95,1713.49,1541.96,1556.81,1654.9,1603.41,1530.93,1550.82,1550.82,1575.61,1495.37,1588.69,1649.32,1680.38,1550.82,1611.44,1525.61,1476.98,1402.59,1437.74,1512.94,1450.41,1420.84,1393.05,1489.51,1571.8,1521.66,1545.78,1579.29,1563.76,1552.04,1642.1,1630.38,1638.15,1678.88,1624.25,1489.65,1473.98,1505.86,1455.31,1412.4,1413.08,1376.02,1326.57,1295.64,1331.61,1267.85,1267.85,1279.16,1320.57,1280.93,1224.11,1200.82,1235.56,1160.22,1156.81,1221.25,1165.12,1223.98,1241.55,1354.5,1278.88,1298.91,1176.57,1208.86,1197.82,1186.1,1295.91,1283.92,1396.05,1311.72,1317.03,1273.84,1295.23,1241.96,1262.26,1345.37,1393.19,1393.19,1387.74,1379.02,1479.43,1448.23,1439.37,1434.33,1388.28,1346.05,1291.83,1185.15,1185.15,1216.62,1117.85,1111.31,1111.31,1141.55,1141.01,1123.02,1186.38,1173.84,1100.54,1062.53,1041.83,1003.68,1003.68,1024.52,1026.57,1080.38,1081.06,1048.37,1040.33,1056.13,1070.84,1105.04,1109.4,1170.03,1218.39,1241.01,1200.27,1192.64,1161.44,1223.71,1248.91,1287.06,1318.53,1352.72,1336.38,1415.67,1393.87,1363.35,1301.63,1349.46,1336.78,1373.71,1376.16,1365.12,1338.83,1368.39,1307.22,1264.85,1260.08,1263.35,1323.98,1242.23,1205.59,1184.47,1156.27,1121.66,1093.19,1093.19,1072.48,1084.6,1127.79,1164.17,1153.13,1049.46,1055.18,1044.41,1042.37,1045.91,1025.2,1014.71,946.87,925.89,903.27,915.12,931.34,873.84,863.22,900.68,925.07,925.61,924.39,796.19,787.6,785.15,788.15,803,762.13,789.65,789.1,779.7,787.06,801.36,799.73,837.47,813.76,798.37,844.82,818.26,812.81,798.77,818.94,847.28,859.4,869.89,816.35,932.83,985.97,1001.77,1040.46,990.46,1006.81,1002.32,987.19,1025.2,1040.87,1040.87,1023.71,997.14,999.86,1057.63,1055.59,1021.53,1003,957.36,955.59,960.08,934.47,962.81,976.16,939.1,906.4,891.14,879.97,886.24,922.07,870.03,879.02,879.02,861.99,852.45,883.11,882.43,882.43,872.21,880.93,849.18,871.39,916.08,927.11,940.87,964.58,967.3,967.3,975.34,960.9,922.48,954.63,1042.64,1017.71,1020.57,1023.98,1027.25,987.06,1023.84,1153.13,1203.13,1172.89,1140.05,1170.44,1153.81,1133.65,1110.08,1132.56,1170.98,1160.49,1091.01,1069.48,1069.48,1045.91,1043.73,1086.51,1063.9,1073.16,1070.57,1066.62,1095.91,1110.63,1105.72,1118.66,1163.08,1144.82,1126.29,1117.3,1191.42,1221.8,1316.08,1332.97,1318.94,1306.95,1329.43,1366.21,1334.47,1316.21,1288.28,1309.13,1333.51,1335.29,1315.53,1306.13,1261.04,1259.81,1259.81,1300.82,1281.06,1257.9,1254.63,1250,1224.39,1223.16,1225.34,1227.66,1204.77,1193.05,1141.69,1170.84,1191.28,1217.57,1221.93,1224.93,1111.99,1179.97,1223.98,1294.82,1295.1,1321.8,1322.89,1297.82,1326.98,1382.56,1413.49,1470.44,1441.69,1471.39,1473.02,1475.07,1639.65,1730.65,1730.65,1706.68,1610.49,1627.66,1605.72,1606.68,1692.51,1605.31,1649.18,1701.91,1760.08,1696.59,1734.74,1692.64,1635.97,1635.97,1620.3,1527.38,1508.17,1498.77,1464.71,1503.95,1500.95,1515.53,1551.91,1577.93,1577.93,1552.45,1546.05,1541.83,1547.41,1516.62,1561.04,1579.29,1579.56,1611.99,1606.68,1586.24,1502.04,1511.58,1506.95,1539.51,1499.86,1513.62,1538.96,1558.58,1602.18,1489.78,1541.55,1577.93,1591.42,1542.64,1505.04,1501.77,1465.53,1525.61,1517.03,1460.35,1422.89,1436.65,1474.39,1439.51,1490.87,1386.92,1393.05,1397.96,1443.05,1452.18,1440.33,1491.14,1491.14,1509.26,1488.83,1452.18,1445.37,1434.88,1434.74,1467.44,1452.72,1382.7,1394.69,1384.33,1367.03,1309.4,1310.63,1326.7,1307.36,1336.1,1400,1400.82,1406.95,1363.49,1417.85,1402.04,1461.04,1457.36,1485.15,1475.61,1482.15,1431.74,1450.41,1432.43,1391.96,1395.1,1387.06,1362.53,1385.15,1308.72,1276.16,1313.76,1310.35,1341.96,1471.93,1469.07,1529.29,1522.48,1545.64,1547.55,1546.19,1615.67,1591.14,1633.24,1607.63,1632.56,1643.32,1655.72,1623.43,1669.07,1669.07,1666.35,1670.98,1662.26,1687.33,1650.68,1653.81,1615.4,1612.81,1591.55,1748.91,1756.4,1831.2,1874.8,1882.7,1880.11,1895.78,1892.37,1909.4,1845.64,1906.13,1901.91,1901.91,1953.81,1990.05,2026.7,2008.31,1888.01,1843.6,1853,1888.01,1991.55,2033.51,2023.71,2016.62,1996.73,1996.73,2162.67,2182.15,2216.21,2373.71,2291.28,2294.55,2429.02,2456.81,2414.85,2422.75,2344.14,2284.6,2322.62,2420.44,2373.71,2287.19,2328.88,2307.22,2349.86,2342.1,2337.06,2434.6,2408.17,2368.8,2368.8,2257.36,2238.28,2477.66,2404.9,2397.96,2425.07,2405.18,2623.02,2760.76,2797.82,2794.69,2869.62,2879.84,2825.48,2702.86,2762.4,2653.81,2548.5,2603,2597.41,2471.66,2448.64,2434.33,2447.55,2433.65,2423.3,2446.73,2458.99,2458.99,2497.82,2434.6,2462.81,2259.26,2321.8,2314.71,2326.7,2277.11,2322.89,2224.52,2184.2,2226.98,2098.37,2112.81,1997.82,2025.07,2074.52,2067.3,2094.82,2144.41,2182.56,2157.77,1965.53,1991.28,2051.77,2122.34,2103.95,2092.92,2076.16,2069.75,2051.23,2086.65,2175.34,2215.53,2240.74,2266.08,2243.32,2255.04,2185.69,2266.48,2266.48,2338.01,2249.86,2271.8,2273.84,2228.2,2179.7,2263.9,2272.21,2287.06,2184.47,2165.67,2183.11,2178.47,2174.8,2158.04,2106.68,2106.68,2204.09,2196.59,2183.24,2183.24,2146.32,2172.62,2209.95,2148.37,2238.56,2232.97,2232.97,2341.96,2434.47,2412.81,2506.27,2478.75,2474.25,2450,2418.94,2172.07,2122.21,2065.12,2123.57,2098.09,1970.44,1884.47,1907.22,1903.95,1886.1,1968.39,1805.72,1805.18,1836.78,1773.57,1753,1857.22,1829.29,1863.35,1922.75,1917.57,2007.63,2023.98,2115.53,2130.79,2150,2066.76,2111.44,2043.46,2050.41,1994.01,1982.15,2023.98,2023.98,1865.67,1919.21,1899.73,1830.38,1882.15,1946.05,2041.69,2054.09,2075.07,2071.93,2054.77,2020.3,2135.42,2124.66,2135.56,2156.95,2207.36,2281.88,2239.1,2235.42,2176.43,2176.84,2218.66,2328.34,2329.29,2354.22,2329.97,2236.78,2287.33,2251.63,2134.06,2127.11,2128.75,2124.93,2151.23,2099.32,2083.24,2090.46,2128.47,2178.75,2264.99,2024.52,1962.81,1932.7,1917.03,1929.97,1976.84,2041.14,2015.67,2007.49,1956.81,1897.82,1891.55,1837.87,1892.78,1899.05,1874.66,1873.16,1884.88,1922.75,1876.29,1856.13,1856.13,1868.94,1935.42,1934.33,1961.72,1925.89,1888.15,1782.97,1740.33,1773.16,1779.29,1729.02,1726.02,1703.27,1654.09,1619.62,1624.11,1697.55,1720.57,1720.57,1703.81,1705.59,1668.12,1645.64,1643.46,1708.04,1764.99,1734.74,1659.95,1659.95,1580.93,1598.37,1581.61,1634.33,1613.62,1654.77,1654.77,1665.94,1685.97,1676.29,1673.57,1566.89,1555.45,1598.77,1619.35,1579.7,1556.81,1628.07,1526.02,1500.82,1465.4,1505.18,1513.62,1522.07,1523.3,1540.87,1540.87,1556.95,1562.53,1555.45,1510.08,1472.89,1416.35,1426.98,1355.72,1360.49,1338.28,1372.62,1385.15,1346.73,1366.62,1316.48,1318.26,1373.16,1336.65,1375.61,1424.93,1410.22,1447.28,1459.67,1450.14,1551.09,1564.17,1501.23,1453,1406.27,1399.73,1400.27,1402.72,1277.93,1168.39,1139.51,1065.53,1319.35,1208.45,1272.48,1287.47,1298.23,1202.86,1192.1,1192.1,1165.67,1175.2,1231.47,1287.06,1316.76,1313.22,1308.72,1326.29,1316.76,1346.05,1370.44,1343.6,1367.3,1385.56,1401.09,1473.02,1532.15,1603.81,1566.62,1596.32,1563.22,1546.46,1526.7,1508.31,1502.86,1502.86,1560.76,1537.6,1539.92,1508.58,1561.72,1598.23,1615.53,1576.16,1582.97,1658.45,1679.02,1650.41,1614.44,1582.56,1721.93,1731.61,1727.38,1727.38,1747.14,1765.4,1885.97,1953.68,1957.49,1959.26,1933.24,1854.36,1887.19,1878.88,1878.88,1836.51,1877.66,1885.69,1964.03,1994.82,1992.37,2120.03,2180.93,2185.42,2138.83,2138.96,2107.9,2161.44,2208.72,2267.98,2365.94,2417.44,2445.64,2402.04,2339.24,2408.45,2374.8,2222.34,2348.77,2353.68,2347.14,2383.51,2512.53,2465.26,2418.39,2399.73,2269.07,2250.68,2230.38,2285.56,2225.61,2270.03,2276.98,2296.73,2215.67,2215.67,2211.44,2208.86,2204.22,2059.13,2062.81,2122.89,2173.57,2120.84,2160.35,2195.64,2186.1,2168.39,2151.5,2144.28,2176.98,2192.1,2191.83,2197.14,2172.48,2198.37,2204.22,2234.47,2312.4,2243.46,2775.34,2881.61,3209.26,3172.89,2927.79,2948.5,2971.25,3250.68,3195.64,3175.48,3277.38,3242.92,3136.65,3201.5,3445.78,3537.74,3515.12,3601.23,3471.93,3489.37,3537.47,3406.68,3492.23,3238.42,3181.74,3323.98,3235.97,3527.11,3378.2,3362.53,3276.84,3137.47,3045.64,2806.81,2776.29,2929.84,2808.31,2918.8,2918.8,2963.62,2994.01,2932.43,2964.58,2942.51,2969.62,3012.4,3019.35,3016.62,3016.76,2871.66,2828.07,2849.73,2699.05,2739.24,2907.77,2928.47,2927.79,2929.7,2929.7,2929.02,2937.47,2933.79,2917.71,3044.55,3011.99,2920.3,2861.31,2788.56,2767.98,2829.56,3010.49,3046.32,3105.18,3158.45,3158.45,3159.67,3403.27,3456.81,3537.87,3423.84,3433.65,3443.32,3435.69,3225.2,3355.18,3298.5,2727.38,2622.62,2839.78,2942.78,2909.67,2909.81,2805.72,2824.52,2824.52,2766.76,2726.43,2770.71,2726.84,2678.47,2913.35,2872.75,2774.93,2727.66,2705.99,2601.5,2753,2717.3,2621.66,2761.31,2768.8,2790.6,2694.01,2634.74,2678.2,2674.52,2717.44,2796.59,2742.92,2761.31,2797.96,3000.95,2776.16,2751.91,2670.84,2771.53,2863.9,2963.22,2963.22,2999.73,3018.12,3158.31,3223.98,3338.42,3362.81,3475.07,3516.62,3791.01,3792.78,3745.91,3875.89,4134.33,4159.81,4738.56,4558.99,4403.41,4592.78,4829.56,4911.99,4653.13,4840.05,5741.01,5564.85,6201.5,6250.54,6107.49,6069.48,6126.7,5777.93,5735.56,5641.01,6097.82,6125.2,6369.35,6369.35,6864.99,6751.23,7058.45,7031.33,6950,7105.45,7391.28,7128.07,6353.95,6680.24,6478.34,6163.49,6654.63,6969.62,7455.86,6911.31,6982.02,7321.12,7321.12,7515.4,7082.42,7080.93,7255.72,7105.99,7350,7914.3,7368.94,7054.77,7054.77,7521.12,7031.47,7049.18,7448.5,7600.68,7280.52,7467.71,7208.99,6824.8,6754.22,6860.63,7417.3,7524.93,7352.72,7111.04,6743.19,6193.73,5852.32,6612.94,6487.06,6602.72,7065.12,6567.44,6665.94,6585.29,6397.28,6462.13,6579.43,6580.52,7008.04,6893.73,6599.32,6354.5,6395.91,6447.55,6222.75,6528.34,6552.18,6494.14,6343.05,6413.08,6261.72,6226.98,6214.71,6506.4],"EuroStoxx50":[100,99.76,100.45,100.19,99.21,97.9,96.66,96.34,96.62,95.37,96.45,96.33,96.9,99.16,98.53,96.69,96.53,97.19,97.2,97.55,97.43,98.44,98.33,98.18,97.5,98.64,98.15,97.74,96.67,98.3,97.76,99,99.29,99.97,100,100.53,100.32,100.11,100.24,100.05,99.27,98.23,96.83,96.62,96,97.78,98.24,99.31,98.99,98.45,98.77,99.09,98.33,98.83,98.15,98.55,98.92,98.52,98.8,99.05,98.02,98.73,99.15,98.48,97.97,99.19,100.75,102.1,103.51,103.9,103.95,105.17,104.36,105.59,105.9,105.85,106.56,106.27,106.23,106.38,106.38,106.53,106.53,106.31,106.92,106.92,107.71,107.79,107.76,107.91,107.52,107.43,107.48,106.79,108.02,107.05,106.74,107.03,106.91,107.21,106.35,106.62,108.07,107.85,107.33,106.01,104.97,105.89,105.72,106.35,105.22,105.14,105.21,106.5,106.28,107.39,107.51,107.99,107.58,107.51,107.63,108.5,108.5,108.33,107.36,107.53,107.86,110.16,109.98,110.58,110.07,109.99,110.14,110.79,111,110.98,110.46,110.78,111.77,112.05,111.69,111.44,111.15,112.17,111.91,111.68,112.59,112.92,113.12,113.75,112.84,113.13,112.83,113.38,113.59,113.09,112.75,112.7,112.04,112.04,112.04,110.79,111.16,111.77,111.78,116.24,116.42,116.28,115.78,115.66,115.66,116.26,116.53,117.88,118.88,118.34,118.57,118.46,117.74,118.19,118.33,118.33,116.48,115.74,116.55,116.21,116.81,116.54,116.54,116.29,116.29,115.71,115.5,115.9,116.71,116.71,115.48,115.31,115.8,116.52,115.15,115.6,115.25,114.55,115.15,116.31,115.69,115.49,115.53,115.14,115.73,114.97,114.88,112.79,111.83,113.46,113.06,113.02,112.49,112.55,113.01,112.57,114.22,114.63,114.57,114.25,113.03,113.73,113.71,112.15,112.2,112.86,113.44,113.5,112.67,112.08,112.08,112.4,112.63,113.96,113.91,114.23,112.7,111.56,110.68,112.12,112.49,113.22,112.49,111.97,111.24,112.28,111.73,111.93,111.73,111.16,110.09,110.59,111.17,111.9,111.46,111.15,111.57,112.02,112.02,113.57,114.13,114.47,114.58,114.23,114.59,114.74,114.55,115.01,115.07,114.95,114.9,115.52,115.79,116.8,117.06,117.16,116.81,117.41,117.08,117.31,116.93,117.21,117.15,117.12,117.18,117.22,117.61,117.04,117.14,117.26,117.32,116.69,118.18,118.67,118.99,119.37,120.14,119.86,119.89,119.65,118.88,118.76,117.38,116.77,116.14,115.55,115.21,115.83,115.26,115.72,116.3,115.76,116.06,116.36,115.8,116.44,116.64,115.99,114.62,116.2,116.02,115.72,116.1,116.69,116.39,116.98,116.38,115.55,115.69,117.28,116.39,115.43,116.02,115.46,115.46,115.46,115.35,114.51,113.85,113.85,114.04,115.96,117.22,117.51,117.72,117.29,116.82,117.38,117.36,117.69,117.39,117.65,118.57,119.09,119.32,118.38,117.95,118.51,118.37,117.19,117.27,116.24,114.48,113.03,110.31,112.25,109.74,108.07,109.44,108.55,109.49,110.14,111.34,110.73,111.61,111.45,111.51,111.82,112.53,112.36,111.74,110.45,108.03,109.02,109.1,109.74,110.91,111.14,111.43,110.39,110.18,110.93,111.69,110.3,110.87,110.51,108.79,107.16,106.53,107.78,108.24,109.22,109.22,109.22,108.75,108.54,111.45,110.74,110.96,111.73,111.11,111.9,112.03,111.81,113.01,113.43,113.29,113.53,114.15,114.08,113.26,113.92,114.33,114.91,114.91,115.47,114.67,115.37,115.81,115.6,115.99,115.99,115.85,115.86,115.81,115.76,116.72,116.12,116.12,116.56,115.08,114.43,114.22,113.16,111.39,111.81,110.69,112.21,112.73,112.32,112.45,112.42,112.01,113.08,112.93,113.06,114.6,113.89,112.64,111.62,111.76,110.59,111.83,109.47,109.46,110.38,109.35,110.33,109.57,110.68,110.86,111.8,112.05,112.44,112.86,111.2,111.95,112.25,112.07,112.34,113.24,112.8,112.42,112.23,113.18,112.7,114.02,114.61,114.12,114.55,114.55,112.72,113.15,113.18,113.86,113.51,113.53,111.33,110.79,110.78,109.14,109.74,109.59,110.27,110.85,111.13,111.1,111.37,112.29,112.02,112.3,111.48,110.24,110.31,109.15,107.73,107.09,107.01,107.53,107.6,108.09,108.32,108.67,108.72,109.12,109.45,110.57,111.47,110.81,111.12,111.55,112.09,110.45,110.93,110.12,110.65,109.66,108.7,107.54,107.93,106.15,104.27,103.79,104.31,105.84,105.37,104.35,104.33,103.65,102.06,101.71,102.82,101.86,102.51,102.26,103.89,104.11,104.44,104.54,104.22,105.47,105.2,104.93,103.78,104.78,104.15,103.66,103.35,102.69,101.25,102.48,101.59,101.93,103.09,102.88,102.94,103.14,103.1,104.46,103.63,102.36,98.97,99.38,98.03,99.27,100.98,101.12,100.49,99.54,98.78,99.15,97.48,97.5,97.5,97.5,97.5,95.44,97.04,97.04,97.04,96,98.84,98.57,99.26,99.76,99.94,99.75,99.27,99.69,99.99,99.73,101.86,101.54,101.14,101.12,101.58,102.78,101.94,102.46,102.73,102.66,103.04,102.84,104.46,104.39,102.38,101.88,102.86,103.67,104.05,103.41,105.32,105.43,105.26,105.91,106.04,106.27,106.57,106.88,106.66,107.17,107.62,107.78,108.11,108.03,107.51,106.69,107.37,107.35,107.99,108.59,110.02,110.08,110.77,109.58,109.41,107.41,107.24,107.86,107.94,107.88,108.9,110,110.33,111.63,111.84,112.02,111.71,111.03,111.27,111.62,112.03,112.11,112.53,113,113.7,113.7,113.7,113.85,113.81,113.46,113.74,113.79,114.2,114.2,113.36,113.8,112.52,110.51,111.03,108.87,109.21,107.9,109.32,110.01,111.73,111.31,109.49,110.04,110.04,108.11,108.87,109.31,108.81,107.15,107.15,106.59,107.23,108.31,108.52,108.47,109.77,109.77,110.51,110.04,110.16,109.8,109.93,112.19,112.25,112.69,112.65,112.28,111.91,111.87,111.85,112.87,113.64,113.98,115.04,115.16,114.63,114.49,114.04,113.77,113.62,113.65,113.79,114.42,113.77,113.16,113.08,113.4,114.79,114.79,114.05,114.52,114.49,112.52,112.65,112.65,109.7,107.58,106.95,107.55,109.67,108.32,108.09,109.08,106.86,106.66,108.17,109.47,108.86,110.31,109.62,108.34,108.81,109.51,109.35,110.84,111.34,111.53,111.15,112.13,113.23,113.57,113.56,113.69,114.27,114.99,115.35,114.32,114.41,114.63,115.43,116.04,114.92,114.76,114.15,114.77,115.21,115.98,114.32,110.91,111.04,111.99,112.79,111.54,112.49,113.53,115.99,115.55,116.93,116.95,116.6,116.3,116.97,117.13,117.2,117.67,117.77,117.81,117.69,117.63,117.12,117.74,119.09,119.46,119.86,120.44,120.21,120.12,120.62,120.2,119.86,120.6,120.38,120.11,119.7,119.56,119.81,120.47,120.4,120.64,120.37,120.34,117.84,117.33,118.92,118.54,119.97,119.32,119.3,119.81,120.43,121.23,122.58,121.69,121.49,121.49,122.71,122.71,122.71,122.71,122.71,122.89,121.8,121.8,121.8,122.61,121.93,122.15,122.58,123.34,123.13,122.81,122.65,122.46,122.63,123.74,123.44,123.12,122.49,121.42,122.79,119.5,120.85,121.4,119.92,118.3,118.96,121.27,122.75,123.65,123.42,123.25,124.31,125.24,124.99,124.8,125.2,124.66,125.59,124.22,123.48,118.53,116.08,116.25,112.29,108.18,108.49,109.56,111.14,109.29,105.02,96.15,94.55,94.41,82.7,84.03,79.62,82.22,77.52,79.74,82.81,80.76,88.22,90.98,92.53,88.66,89.86,90.55,87.09,87.36,86.53,90.85,92.85,92.64,93.99,93.99,93.99,94.8,91.24,91.38,93.85,94.54,90.7,92.11,92.68,91.27,93.65,95.27,97.35,95.13,95.13,91.51,93.44,92.4,93.6,94.49,93.7,93.71,91.32,89.69,90.03,94.61,94.31,95.6,95.6,94.41,96.55,97.45,99.14,100.55,99.11,99.11,102.64,106.24,105.98,109.96,109.38,107.9,107.02,102.17,102.47,101.91,105.36,106.16,105.6,106.22,105.33,107.19,103.85,104.59,104.11,105.02,105.08,104.9,107.88,107.04,108.85,107.92,106.77,105.96,107.1,108.85,107.92,109.77,109.35,109.36,110.09,110.65,109.52,109.56,107.58,107.32,107.34,107.23,104.24,103.14,105.54,105.74,106.2,105.29,105.69,105.92,108.27,109.28,108.62,107.39,107.41,106.89,107.8,106.38,105.92,108.26,108.19,109.07,108.23,107.73,106.33,106.5,108.45,107.36,105.94,107.68,106.16,108.03,107.64,107.74,107.77,108.27,108.49,107.76,106.69,102.71,102.81,103.33,102.66,101.93,104.73,104.44,103.77,103.78,103.68,104.63,105.06,105.06,105.79,106.35,107.16,106.55,106.36,103.74,105.45,105.36,104.88,103.35,103.05,103.94,100.9,99.77,96.29,96.18,96.12,98.11,100.68,102.71,104.48,104.11,110.73,111.86,112.66,111.39,111.52,112.62,112.7,113.14,112.16,112.67,112.52,113.98,114.11,114.08,114.63,113.48,114.54,114.42,114.28,115,114.7,114.56,114.67,114.45,113.26,113.85,114.42,115.12,115.7,115.21,112.06,113.64,115,115,115,116.17,116.37,116.05,116.05,115.81,115.28,117.33,117.7,118.44,117.64,117.37,117.51,118.32,116.96,117.06,116.82,117.75,117.57,117.05,115.45,116.74,114.9,115.58,113.12,114.73,116.66,117.29,118.34,118.78,119.1,118.96,118.54,119.3,120.08,121.33,121.08,120.22,119.61,120.66,120.22,119.87,120.42,119.74,118.16,120.44,120.47,120.64,120.38,119.23,122.28,123.02,124.12,124.95,124.55,124.44,125.13,125.09,125.66,124.67,124.57,124.35,124.53,124.53,125.64,126.16,127.57,127.34,128.21,128.21,128.21,129.01,128.56,129.25,129.28,128.73,128.9,129.2,129.76,131.04,130.62,128.03,129.2,130.45,130.4,130.65,130.36,130.46,129.87,129.15,129.98,127.53,130.06,129.95,131.08,130.73,128.22,128.26,128.26,130.54,130.19,130.14,127.91,129.97,130.81,130.81,131.14,131,131.24,132.26,131.25,132.3,132.84,132.54,132.87,133.14,133.09,133.12,133.09,134.09,134.28,134.63,134.9,135.11,132.68,133.62,133.97,132.44,133.95,133.89,132.89,133.46,132.06,132.53,132.71,132.81,131.68,132.52,129.7,132.18,133,133.04,133.2,131.8,131.13,127.65,128.55,130.84,131.89,133.51,133.3,132.08,133.32,133.76,132.87,133.76,133.8,134.68,135.2,135.64,135.72,136.07,136.67,137.32,137.43,136.55,136.35,136.12,134.02,134.76,135.7,135.76,135.85,135.49,136.17,136.43,136.35,137.35,137.51,136.53,137.97,137.28,135.72,135.72,135.5,136.13,136.2,134.71,135.49,134.22,131.39,133.14,134.85,136.3,135.12,135.35,131.88,132.58,131.53,131.12,129.85,132.09,130.38,133.16,132.35,132.33,131.76,132.67,134.81,135.91,134.89,135.39,135.56,135.03,136.1,136.09,137.25,137.15,137.57,138.11,139.08,139.59,140.03,140.8,141.76,141.42,141.17,141.3,141.6,142,142.52,143.01,142.99,142.44,141.55,140.97,139.19,138.94,139.5,132.88,133.53,132.02,135.79,133.48,132.57,134.42,138.94,137.54,136.74,136.44,135.92,134.66,135.16,136.53,135.21,133.45,135.65,137.02,138.61,138.61,139.33,140.1,139.22,139.91,139.91,140.75,141.91,142.71,140.52,139.91,137.75,139.12,140.25,140.23,138.81,139.79,138.35,138.69,139.7,137.43,131.74,132.51,135.32,135.98,134.42,135.64,137.26,137.18,134.55,132.78,133.89,134.17,136.6,136.37,135.01,132.06,134.64,134.43,133.65,132.38,129.5,129.5,129.1,124.42,129.02,127.51,122.36,124.14,121.58,115.54,114.12,113.89,122.37,118.64,119.79,121.56,121.46,126.38,126.24,126.8,126.13,127.57,125.72,125.53,125.67,126.3,130.04,128.64,126.8,127.33,128.38,127.3,124.27,123.54,125.37,124.76,124.49,124.38,125.05,125.05,125.05,124.47,126.62,127.63,124.77,122.09,120.92,121.35,122.72,123.56,121.28,122.21,121.03,120.11,117.92,114.6,115.5,118.53,117.41,120.33,119.74,121.57,119.92,118.05,118.83,120.49,118.52,119.48,119.48,123.76,124.82,123.12,122.16,123.31,122.94,122.94,123.69,123.11,121.02,116.95,113.8,112.92,114.77,111.38,111.72,112.74,113.53,112.57,111.65,114.8,114.99,115.32,114.19,112.26,112.04,112.18,109.17,111.18,113.35,113.94,112.8,113.3,112.23,110.36,112.98,114.11,116.56,116.49,116.86,116.86,117.11,116.17,117.22,118.67,120.48,120.48,119.72,121.28,122,121.05,122.08,120.72,121.82,122.07,122.72,123.13,123.64,122.04,122.74,121.21,118.86,118.68,119.16,119.39,117.09,116.01,115.73,114.28,112.32,115.16,113.4,113.73,113.79,114.13,116,118.48,116.52,115.92,115.08,113.74,113.71,112.65,113.46,111.36,108.8,108.61,108.16,108.37,106.54,107.82,108.59,113.22,112.02,111.56,109.68,109.07,108.54,108.25,109.25,109.88,111.83,112.55,112.79,113.49,112.96,114.63,116.5,117.14,117.12,117.4,117.54,118.63,117.69,116.75,119.84,120.51,121.5,121.13,124.98,125.7,126.31,127.21,126.16,126.02,127.53,127.02,127.69,128.23,128.73,128.75,127.87,127.84,128.82,129.47,129.25,128.56,127.99,127.4,127.41,128.1,127.43,129.54,129.17,124.63,123.6,123.84,123.55,125.81,124.23,124.02,124.02,124.54,123.76,125.1,123.26,123.26,126.14,129.12,128.65,130.55,132.2,131.84,133.21,134.08,134.87,135.07,135.63,135.63,133.03,133.86,134.87,134.94,134.78,135.62,135.75,135.12,135.28,135.54,137.8,138.35,136.64,136.77,136.76,138.1,136.4,137.81,137.73,139.07,139.63,138.9,138.78,138.1,137.86,138.36,135.78,138.03,137.71,136.98,137.79,139.55,140.16,139.03,139.34,139.27,137.43,133.11,135.8,131.1,133.77,132.08,133.85,135.87,136.33,136.7,134.21,135.32,135.43,137.48,139.24,140.21,140.08,140.21,139.66,140.02,140.02,140.02,140.8,140.82,141.77,142.67,141.91,142.77,142.76,142.47,143.24,143.02,142.25,141.27,141.6,141.64,141.64,139.55,140.05,139.3,141.03,141.3,140.47,139.94,140.03,140.3,140.25,140.22,140.47,140.47,142.81,142.5,141.09,138.54,138.73,140.94,140.94,139.44,137.05,138.34,140.48,139.5,139.56,139.45,139.64,139.38,140.25,141.26,142.19,141.83,142.8,141.74,141.12,140.46,139.86,138.79,139.09,139.89,141.17,141.49,142.94,142.91,142.67,141.36,137.22,137.66,138.3,139.28,141.68,142.7,142.97,141.56,141.98,141.74,142.11,142.69,142.41,142.68,141.22,144.51,145.13,145.28,145.28,140.9,139.87,140.79,140.94,139.35,140.28,142.45,140.41,140.7,139.35,139.21,137.37,136.89,137.28,138.43,138.63,137.51,137.65,139.51,140.58,140.21,139.62,139.15,139.06,138.71,137.71,137.15,137.68,138.23,137.84,137.23,139.06,139.56,137.96,137.85,138.94,136.88,136.7,135.41,134.17,134.25,135.22,135.64,134.44,133.07,133.21,133.21,134.66,133.63,136.64,136.49,136.41,134.39,134.84,134.92,133.41,132.9,130.77,131.33,132.09,132.35,131.57,130.44,130.89,131.95,132.95,135.48,135.64,135.12,134.95,135.77,137.42,136.38,137.51,139.45,140.22,139.8,141.04,141.09,140.75,141.41,141.71,142.06,141.48,141.28,142.01,142.4,143.57,143.45,144.68,145.67,145.36,146.97,147.52,147.4,147.2,147.49,147.82,146.9,147.37,147.31,147.02,146.91,146.91,146.91,147.14,146.68,146.92,146.92,144.53,145.37,145.03,145.74,145.15,145.21,144.34,145.57,144.74,144.48,143.07,144.69,144.55,145.58,145.11,148.3,148.89,150.62,150.74,151.5,151.04,150.72,151.24,151.26,152.42,152.03,153.06,153.23,154.22,152.37,153.01,154.12,154.85,154.76,154.67,155.16,157.76,158.32,158.05,158.75,158.68,158.49,159.04,159.63,158.99,159.72,161.62,161.2,160.2,161.92,162.48,162.24,162.01,161.9,162.72,162.47,164.16,163.47,163.9,164.55,165.12,165.17,165.17,165.17,163.83,164.71,164.76,162.94,163.96,162.17,162.49,161.38,161,161.96,159.76,159.67,160.4,159.8,160.41,162.73,162.13,160.48,162.68,161.85,159.9,159.9,158.91,159.91,161.06,162.98,163.7,163.7,165.23,165.03,165.07,165.74,164.82,164.55,164.55,163.99,163.28,163.68,163.61,164.38,163.45,161.27,161.88,161.93,162.58,160.95,163.62,164.71,164.13,163,161.33,163.58,160.37,157.23,158.58,159.71,158.74,160.76,159.45,160.87,160.38,159.73,159.3,159.02,160.19,159.42,161.35,162.05,161.79,161.48,159.33,161.12,161.69,163.86,161.91,160.77,158.93,158.24,156.85,159.13,159.76,157.97,156.33,157.99,156.46,157.29,158.33,158.33,150.72,148.54,148.66,151.68,151.7,151.91,151.8,152.55,153.61,156.22,157.28,158.28,157.83,158.73,158.72,159.51,159.1,159.17,159.64,161.37,161.1,161.59,159.62,157.53,156.45,153.95,155.27,154.25,154.78,156.42,157.39,156.86,157.94,157.11,160.62,158.29,158.74,160.53,159.76,163.52,164.65,162.48,160.97,161.27,159.9,161,161.48,160.8,161.89,161.5,162.59,163.79,160.73,159.49,160.75,162.01,160.55,160.49,159.94,160.36,160.61,161.48,160.84,158.75,156.86,158.49,157.66,158.25,155.98,157.65,156.05,157.72,154.17,154.02,157.05,155.8,155.65,154.38,153.68,154.53,155.61,155.96,154.73,153.79,154.62,156.11,157.48,158.51,159.83,160.89,161.74,161.99,160.89,161.14,161.34,161.42,160.74,160.6,161.07,158.53,157.99,157.68,157.68,157.68,157.68,159.18,158.21,158.21,158.21,158.28,162.03,162.85,162.34,163.04,161.72,160.97,161.83,163.51,165.94,167.28,167.8,167.85,169.15,169.53,169.59,168.58,168.82,169.96,171.63,171.78,169.54,171.06,171.27,174.05,173.03,174.1,175.16,175.64,178.72,178.49,179.35,179.81,177.45,177.44,177.89,177.2,177.01,179.62,177.82,177.52,180.03,175.05,178.35,179.37,177.68,175.03,172.53,174.14,173.13,175.59,176.94,178.22,178.95,177.11,176.23,175.97,177.9,175.84,174.84,173.23,170.53,172.87,172.34,166.14,158.51,151.3,155.11,150.18,156.58,155.55,159.58,161.5,161.37,160.36,160.36,160.36,161.21,165.67,166.2,167.47,168,167.72,167.67,167.67,171.73,171.66,171.02,169.94,171.85,172.53,175.21,175.98,175.57,175.85,176.35,176.34,177.23,177.23,176.25,173.06,175.31,175.96,174.76,174.76,174.37,174.01,174.67,175.63,175.8,176.44,176.44,175.96,175.24,174.18,171.9,173.49,171.84,171.13,168.86,170.05,169.67,172.11,170.65,170.39,173.04,172.31,171.64,172.82,173.61,171.85,173.56,174.55,176.94,176.7,174.92,174.51,173.97,172.15,174.72,174.13,173.61,171.9,173.65,174,173.9,173.43,174.78,175.24,172.86,172.86,170.33,170.57,171.02,173.25,173.76,173.24,173.38,175.08,176.59,177.04,176.58,178.16,177.81,177.48,178.32,176.89,174.93,175.23,175.35,173.89,174.39,171.92,173.02,173.73,172.8,174.25,174.44,174.21,175.03,175.16,176.77,174.56,174.47,177.3,177.36,176.82,177.81,177.56,176.92,178.7,178.93,179.68,181.35,183.44,183.64,182.89,182.4,183.57,182.79,179.72,180.92,180.4,182.12,183.65,182.2,184.59,184.78,183.23,184.18,184.38,185.57,185.35,185.39,185.18,183.97,184.53,183.91,184.2,182.32,180.87,184.05,186.04,188.04,186.6,185,183.29,179.84,180.07,180.98,179.2,179.64,181.11,183.76,183.68,184.17,184.15,184.76,185.03,185.79,185.98,186.04,185.8,185.47,186.96,185.88,186.91,185.78,184.61,186.56,187.17,186.63,186.81,186.81,186.81,186.81,186.89,188.33,188.33,188.33,192.47,192.74,192.47,191.84,194.87,195.48,195.92,195.12,196.29,195.91,192.54,191.45,191.15,193.53,193.27,193.58,194.78,192.78,191.44,193.26,195.2,194.8,193.99,192.54,194.9,196.87,196.48,196.11,195.32,194.47,194.27,195.66,198.31,196.89,199.22,198.65,198.74,200.58,200.2,199.45,194.53,187.54,190.76,187.9,185.85,184.72,189.66,188.28,186.79,185.75,186.47,187.46,186.4,182.41,178.75,181.12,181.35,183.56,180.85,178.9,180.07,180.97,186.27,184.97,184.97,184.97,183.04,192.14,191.58,192.55,191.87,194.45,193.01,192.79,196.83,194.39,192.69,191.91,191.53,191.17,190.41,189.63,188.99,191.1,191.1,187.27,190.72,195.83,194.06,192.08,191.56,188.73,190.44,190.44,189.36,190.05,190.12,194.18,193.66,195.59,195.59,197.04,197.25,196.74,196.6,196.09,198.46,196.69,198.31,196.97,196.98,196.57,195.28,196.8,201.05,202.41,203.32,204.7,205.46,204.48,205.07,202.44,201.93,203.65,202.15,202.48,205.61,204.13,206.67,208.36,207.89,205.35,201.61,204.19,203.73,203.76,204.06,203.58,204.17,202.45,202.34,204.23,205.25,201.78,204.08,204.12,204.36,203.04,206.14,206.59,208.81,210.77,210.45,211.28,211.97,212.36,212.86,212.3,212.68,212.49,212.19,210.17,209.39,208.67,209.97,209.51,209.76,210.25,208.75,210.73,208.61,206.94,206.72,207.38,207.72],"HSCEI":[100,101.1,101.42,101.81,102.31,98.2,97.36,97.07,97.61,97.61,99.16,99.2,100.19,100.64,99.65,97.95,99.15,98.87,99.63,97.47,98.5,99.25,99.8,101.19,100.95,100.95,99.73,98.4,96.61,97.67,97.06,98.88,98.07,98.53,98.53,100.23,100.07,98.66,97.75,96.79,97.24,98.73,96.84,96.45,96.55,97.74,98.26,95.4,97.1,95.96,95.04,95.6,95.24,94.87,95.1,96.07,98.18,98.33,98.46,99.59,100.46,100.16,100.08,100.63,99.5,98.79,99.37,99.99,100.67,100.38,98.66,98.87,98.73,96.43,96.34,95.39,94.43,94.92,93.59,93.4,93.4,93.4,94.61,94.73,95.57,95.57,96.23,96.04,97.64,97.77,97.68,98.31,99.02,98.91,99.56,98.33,98.69,99.72,99.61,98.83,98.94,99.27,99.1,100.24,99.73,99.73,99.73,99.25,98.63,98.5,100.1,100.16,101.27,102.49,103,104.35,104.31,106.16,106.35,105.39,106.26,105.88,107.19,107.03,105.98,105.09,104.75,104.65,104.23,103.19,103.46,104.06,104.57,102.7,102.43,104.36,104.93,104.5,107.08,106.95,107.66,108.28,106.37,106.68,106.58,105.41,106.06,106.17,105.34,104.51,104.92,104.92,105.44,104.54,104.51,104.31,103.41,103.84,103.8,103.8,103.8,102.17,101.56,102.29,102.23,102.82,104.49,104.95,104.38,103.96,103.96,103.49,103.49,102.62,100.97,101.54,103.04,104.04,104.34,104.6,106.3,106.14,105.62,104.48,104.44,105.53,105.74,105.7,107.54,107.62,108.02,108.02,107.86,108.03,108.5,107.8,107.89,107.94,108.33,107.75,106.67,107.07,106.96,105.24,105.64,107.02,106.49,105.73,105.82,106.1,107.12,106.79,105.88,106.12,105.44,105.92,104.84,105.6,105.25,104.29,103.91,105.96,106.99,108.61,109.13,109.69,109.41,110.48,110.34,109.73,110.07,109.69,110.18,110.45,109.41,110.14,112.14,112.46,111.92,111.93,112.45,112.71,111.52,109.68,107.55,108.92,109.23,110.04,109.88,108.78,109.37,111.44,111.44,112.41,114.83,115.38,114.91,115.7,114.9,114.8,113.75,113.84,113.21,112.9,113.42,114.15,114.36,113.8,112.92,112.58,113.89,113.17,113.66,113.91,113,111.01,111.57,112.26,110.62,110.98,110.98,115,115.94,115.94,116.57,115.82,116.16,116.08,116.99,117.18,118.03,117.68,118.22,115.53,117.58,116.89,116.02,116.91,116.43,118.44,117.63,117.06,118.37,117.98,118.02,117.23,118.46,117.76,119.47,119.48,118.86,118.02,116.09,117.33,118.09,117.37,120.79,121.65,119.39,121.13,119.75,119.07,118.49,116.74,116.47,117.17,116.83,113.55,113.43,114.84,116.29,115.08,117.18,117.3,115.62,116.12,117.41,117.04,117.97,118.54,118.54,118.54,118.18,118.85,119.11,122.77,122.97,124.14,124.22,124.46,124.67,125.01,125.07,126.84,126.85,130.08,130.91,133.21,134.07,134.32,137.23,138.56,136.19,139.6,138.95,136.2,137.95,136.66,137.72,137.12,129.05,126.48,125.94,121.07,121.05,122.11,124.72,127.52,127.52,127.52,126.11,129.06,127.45,129.55,130.55,128.65,125.95,126.43,124.14,121.98,125.24,123.9,125.47,126.45,129.16,129.66,129.03,129.39,128.91,128.79,128.15,127.37,126.42,123.37,124.08,125.14,122.08,122.05,122.05,122.05,123.46,120.62,120.62,121.74,122.81,125.36,125.37,125.01,124.73,122.15,121.06,121.93,124.51,122.62,122.07,124.56,123.03,121.55,122.75,125.44,125.44,124.04,122.26,120.96,121.73,123.54,123.95,124.45,125.58,127.61,126.55,126.55,124.9,125.68,125.62,125.62,122.99,123.62,122.55,123.24,121.65,119.72,121.85,122.27,124.61,124.71,124.95,126.22,123.75,123.82,124.17,122.43,121.57,120.75,120.75,116.91,117.04,115.61,115.35,114.02,113.11,110.67,110.56,112.64,112.64,110.6,108.97,107.91,108.06,109.54,110.12,108.42,109.38,109.32,108.89,107.74,107.61,107.05,108.67,109.16,111.63,112.65,112.11,112.38,112.37,112.15,111.62,109.18,108.78,108.86,110.53,110.89,112.1,111.32,109.52,109.29,107.17,106.6,106.95,108.16,109.23,110.37,110.01,109.65,112.4,112.89,112.74,111.57,110.63,110,110.78,108.29,107.61,107.42,106.13,105.11,104.15,106.84,107.57,106.42,107.39,109.27,109.79,112.17,110.14,110.14,111.75,111.28,112.08,112.08,109.4,109.72,107.29,107.12,105.72,106,106.23,102.66,104.77,103.19,103.74,103.74,103.11,103.98,106.71,104.11,104.03,103.52,102.32,101.85,101.71,103.13,104.56,108.72,107.27,108.16,108.25,108.88,106.11,106.2,106.59,105.84,107.37,107.66,108.15,106.46,106.67,106.26,105.68,107.03,106.97,108.18,107.67,108.05,110.7,110.96,109.42,106.61,105.48,104.5,104.22,105.97,107.39,105.38,105.3,104.07,103.71,102.65,102.75,102.36,102.36,102.36,101.63,101.64,102.99,100.03,100.05,102.03,102.98,103.08,105.37,105.74,106.35,104.7,106.84,107.37,106.93,108.2,108.98,107.96,108.14,108.75,110.61,110.7,110.55,110.85,112.26,112.55,112.27,112.27,112.27,112.27,111.45,112.07,112.35,113.92,113.63,111.26,113.41,113.09,114.23,115.01,116.24,118.31,117.43,116.55,115.63,117.05,117.75,117.82,117.92,116.58,113.49,114.71,116.64,116.02,116.45,117.07,118.76,118.88,118.25,117.43,117.16,114.26,114.25,115,114.89,115.76,117.57,117.46,119.07,118.94,118.94,119.97,120.19,119.67,118.18,118.61,118.32,120.25,120.53,119.71,119.71,119.71,119.33,118.65,117,117.09,118.39,117.41,117.41,117.56,117.75,114.27,114.55,112.89,110.32,111.19,111.19,109.5,109.9,109.98,108.73,108.17,108.18,107.87,105.8,106.26,105.82,105.96,105.7,106.3,105.66,106.1,105.19,105.23,105.12,105.12,107.08,108.03,106.76,106.53,105.99,106.08,106.89,109.5,111.11,111.1,111.42,109.28,109.52,110.85,110.69,110.69,111.7,111.11,111.01,110.83,109.1,108.34,108.86,109.7,109.74,110.26,110.53,110.35,109.7,110.97,109.56,109.96,110.46,111.19,110.4,109.66,110.05,108.59,108.05,105.27,102.55,101.85,101.66,102.15,101.66,101.7,100.16,100.36,100.74,101.36,102.83,103.07,103.53,102.97,103.7,101.86,101.68,101.53,101.65,102.57,102.77,102.09,104.66,105.63,106.1,105.97,105.83,107.47,107.75,108.72,108.11,106.83,106.59,105.64,105.54,104.65,104.48,103.44,103.88,103.24,103.77,103.77,103.58,103.97,103.22,103.22,103.77,103.45,103.95,106.33,106.89,106.81,107.14,107.71,107.22,107.25,107.08,106.32,107.14,106.47,107.52,107.29,106.6,107.15,108.06,110,110.65,110.48,111.24,110.7,107.97,108.75,107,106.07,106.04,107.39,108.81,108.03,106.3,106.87,108.12,108,108.03,107.44,104.79,105.43,105.34,104.31,105,105.87,105.87,105.74,106.84,107.98,110.25,109.65,111.54,112.15,111.75,112.2,112.43,112.26,112.26,112.26,113.87,114.19,113.61,115.16,114.48,113.58,113.92,112.71,114.76,114.62,115.93,115.51,114.9,115.24,116.17,115.27,111.59,113.67,111.41,111.65,111.65,111.65,108.02,105.03,104.17,104.45,106.15,106.75,109.5,108.9,108.38,109.95,110.72,110.22,110.51,111.47,109.91,110.97,111.02,109.77,107.5,107.62,106.83,107.76,104.8,106.66,106.66,107.03,109.13,106.37,101.57,103.28,102.44,98.93,98.16,93.87,93.75,89.52,87.07,92.76,89.03,93.43,96.94,96.1,96.69,95.64,97.6,95.67,96.91,96.55,98.19,100.17,98.49,99.8,99.8,99.8,100.17,98.92,98.39,99.84,99.94,97.81,98.37,98.71,98.23,100.46,101.56,102.14,102.14,102.14,97.64,98.65,99.77,99.33,100.38,101.63,100.02,100.05,98.54,98.41,98.94,100.54,100.69,100.2,95.89,96.29,97.61,97.32,97.16,97.26,100.03,100.46,101.39,101.4,102.4,101.81,102.96,103.18,101.16,100.02,98.22,100.38,100.8,100.87,101.47,100.49,101.66,101.08,101.08,100.23,99.26,99.27,99.27,102.3,104.2,109.12,107.83,109.33,109.68,107.23,107.58,105.85,105.7,103.09,103.79,104.73,106.25,104.2,105.03,102.55,102.49,103.27,103.6,102.71,102.13,102.06,103.8,104.33,103.78,102.37,101.63,103.28,103.92,104.21,104.43,105.65,106.05,104.91,103.31,103.88,105.15,104.69,104.78,103.78,103.58,101.64,101.86,101.73,101.11,100.54,99.33,100,98.96,98.51,99.21,99.76,99.98,100.15,99,99.72,98.07,97.42,97.24,95.33,94.63,95.45,94.41,95.59,95.59,95.59,96.11,97.01,97.95,97.9,97.84,100.49,100.49,100.92,99.31,100.86,101.5,101.6,102.51,102.59,103,103,101.76,101.35,101.27,99.28,101.08,102.45,102.73,106.59,106.79,108.16,107.69,107.23,107.62,107.27,107.61,107.32,108.23,107.37,107.35,108.5,107.95,107.4,108.86,109.76,107.28,108.43,107.56,107.69,108.08,106.54,105.89,106.69,105.95,106.33,106.23,105.79,106.42,107.27,106.64,105.81,105.63,106.63,106.1,106.1,104.89,106.29,108.47,109.23,109.08,109.6,110.88,109.83,111.44,112.5,114.11,113.78,114.94,115.16,116.6,119.37,121.55,120.94,118.79,121.67,118.97,118.52,115.29,114.02,116.52,118.09,118.53,117.63,117.61,117.59,118.03,120.14,120.85,120.85,120.85,122.44,124.39,122.49,123.15,120.99,121.15,117.08,119.19,114.41,116.51,115.57,118.67,115.21,114.87,112.05,111.62,112.5,115.36,113.66,113.36,115.25,115.54,116.68,114.78,115.02,113.03,110.35,109.29,111.55,111.32,112.11,111.61,114.11,114.11,114.11,114.11,112.61,113.01,111.67,110.62,110.38,111.89,110.94,112.18,112.84,112.77,110.76,111.28,112.59,111.71,111.73,112.05,112.4,110.12,108.98,109.51,109.07,109.42,108.83,108.35,106.11,107.39,105.18,105.84,106.85,108.38,108.38,108.26,108.87,108.25,109.79,110.43,110.35,109.8,110.77,111.8,111.41,110.13,109.92,109.33,109.14,108.89,109.01,109.36,109.36,108.53,107.45,107.72,108.3,107.3,106.5,108.58,108.61,110.66,110.51,109.43,108.47,108.47,105.95,104.51,104.47,103.25,99.92,100.56,101.17,102.88,102.39,103.5,103.28,101.3,100.35,100,101.79,100.09,95.16,90.33,92.27,95.78,93.92,94.98,94.81,95.82,94.57,94.33,94.74,96.63,97.13,96.29,95.39,94.25,92.14,93.08,90.7,88.93,89.67,92.55,92.32,90.91,91.12,91.51,93.42,94.31,95.02,94.52,95.33,96.31,96.12,93.42,95.49,93.98,92.38,90.91,89.58,90.95,87.87,87.89,87.89,88.84,87.53,87.32,88.71,89.11,88.77,88.77,86.68,86.62,85.58,88.63,89.27,91.54,90.02,90.02,90.02,91.21,91.26,92.94,94.37,94.33,95.18,94.83,94.19,92.51,92.09,91.16,90.53,90.17,90.1,91.07,89.73,89.45,89.58,90.65,92.04,92.71,92.42,93.85,93.52,91.92,91.25,90.84,89.8,89.46,89.62,87.24,86.45,85.13,85.71,86.53,86.01,84.17,86.74,86.7,88.07,87.26,86.99,85.64,84.87,84.94,83.6,81.81,82.82,83.36,83.46,83.43,83.43,83.36,82.38,82.36,83.78,83.3,83.21,81.54,82.08,83.73,85.1,85.13,87.61,87.51,87.02,86.1,85.95,85.87,89.13,89.39,88.07,86.5,86.59,84.34,83.52,84.94,84.94,84.94,84.94,87.32,87.38,86.6,88.74,89.41,89.36,87.67,86.75,88.29,88.62,86.85,86.02,84.13,84.61,81.69,81.29,81.62,81.92,80.44,80.36,78.19,75.4,73.63,73.13,73.81,71.82,66.69,62.29,70.08,75.35,74.93,73.69,76.68,77.67,76.58,74.09,75.24,76.42,77.41,76.56,76.67,79.05,79.05,77.4,76.25,76.19,73.33,73.9,74.41,75.13,75.13,75.13,72.91,72.21,70.82,70.93,68,68.64,69.03,70.38,74.24,74.24,73.93,72.61,72.4,69.27,69.27,67.73,68.86,67.08,69.24,69.44,71.99,72.11,70.18,72.44,71.43,70.02,70.17,69.96,72.04,73.8,75.45,74.72,73.93,73.93,76.29,75.97,78.12,77.37,77.41,74.67,74.6,75.81,73.85,74.95,75.27,76.8,74.61,75.92,77.61,79.52,80.3,78.27,77.99,77.99,77.8,77.74,76.76,76.69,76.82,74.47,73.16,72.69,72.49,70.78,72.92,72.2,73.03,72.22,72.29,71.99,73.09,72.14,72.05,70.04,69.95,68.18,68.53,69.98,70.21,69.39,69.12,67.59,69.41,69.76,69.32,68.44,68.72,68.16,68.36,68.11,67.63,66.79,69.67,70.4,69.91,69.58,69.83,68.58,67.87,66.91,66.69,66.25,65.48,67.42,67.42,67.47,65.82,66.21,65.31,64.48,65.16,63.75,63.03,62.2,62.44,62.56,60.61,60.14,60.16,59.58,59.58,63.32,62.92,61.79,59.82,58.28,57.91,56.57,57.26,57.3,58.56,56.94,56.07,56.13,52.03,52.7,53.07,53.33,51.16,50.24,52.99,54.47,52.6,55.77,57.33,56.99,56.3,55.1,59.68,60.83,63.77,63.33,62.46,62.31,61.05,60.03,60.48,60.96,60.74,59.74,63.44,64.84,64.95,64.79,68.22,67.68,65.44,67.82,69.52,67.43,67.7,68.18,67.05,67.49,67.18,65.84,66.12,68.32,67.57,67.57,67.57,68.89,68.11,68.2,68.2,69.52,71.87,72.96,72.67,74.12,73.89,74.37,74.38,75.19,74.77,74.4,74.67,74.39,76.13,76.13,76.13,76.13,78.4,79.08,76.25,75.53,76.91,76.35,75.14,73.13,73.57,73.13,74.4,72.49,72.68,72.33,71.39,72.12,71.12,71.86,70.44,69.51,69.78,68.19,67.85,66.95,70.33,69.75,70.59,70.57,70.31,68.43,67.64,65.57,67.04,65.5,66.73,65.94,67.3,65.81,66.63,67.54,69.54,69.12,67.63,68.46,69.97,70.42,70.89,70.6,69.94,69.94,70.13,70.13,70.13,70.7,69.85,69.94,70.34,71.78,71.24,70.08,70.14,68.81,68.49,67.15,67.69,67.9,68.18,68.18,67.95,67.03,68.35,69.15,70.17,68.51,67.98,68.1,67.78,68.97,69.06,67.51,68.31,67.08,68.09,67.17,65.9,64.43,64.43,63.59,63.92,62.7,62.56,65.39,65.75,65.91,66.54,66.53,67.03,66.99,67.32,66.9,68.89,69.51,68.93,67.7,66.18,66.18,65.05,64.82,66.17,66.34,65.37,65.36,67.04,67.27,66.02,63.77,63.06,63.43,64.04,64.88,66.57,66.72,66.72,65.1,64.92,64.74,65.26,63.79,67.18,66.62,67.86,69.26,70.18,69.73,67.84,67.67,68.49,68.5,67.01,67.27,67.43,66.53,65.35,64.76,63.81,64.01,62.53,61.35,62.03,62.23,63.76,62.82,63.54,64.97,64.66,64.42,64.42,66.46,65.07,65.14,64.24,64.24,64.07,63.68,63.43,63.83,64.18,63.17,63.43,62.88,62.04,63.71,62.36,61.35,61.74,60.94,62.54,62.54,60.52,59.84,59.89,60.77,61.02,61.57,62.39,63.75,62.21,61.54,61.98,61.8,60.26,59.73,59.73,58.99,59.55,59.61,60.82,60.63,59.63,59.61,60.13,61.57,62.89,61.92,61.44,61.34,60.03,60.92,60.67,63.11,62.22,60.77,62.09,61.81,61.8,62.77,61.45,61.29,60.6,59.19,59.58,58.61,58.02,57.06,57.62,57.13,56.95,56.28,57.11,56.47,56.7,57.99,57.32,56.89,57.09,57.17,55.84,55.84,55.84,57,58.64,58.68,57.7,57.26,57.47,57.04,55.75,55.44,55.15,55.89,55.76,55.4,54.35,52.21,52.61,52.16,50.88,52.3,54.45,55.63,54.53,55.02,53.66,52.84,53.14,53.09,53.07,55.68,55.15,54.52,53.98,53.98,53.98,54.79,55.04,56.55,55.79,56.14,57.4,58.58,58.64,58.22,59.07,57.87,57.76,58.28,58.11,56.59,57.71,57.11,57.54,58.48,60.52,60.35,60.09,59.21,59.49,58.8,59.04,60.07,58.57,58.54,59.26,58.27,59.11,59.11,59.11,60.63,59.76,59.76,59.65,59.7,59.97,61.21,61.07,59.81,59.57,58.43,58.49,59.04,58.46,59.32,60.57,62.05,62.26,63.78,63.91,63.82,63.82,65.48,66.6,66.86,66.39,65.68,66.74,68.35,68.78,68.58,68.58,69.9,70.54,70.85,69.39,69.35,68.17,67.19,68.03,68.01,66.7,65.74,65.03,66.45,66.67,66.55,66.68,66.23,66.23,65.63,64.69,65.32,64.85,64.83,64.78,67.01,66.69,65.51,65.52,65.76,65.89,64.33,64.41,64.41,64.85,65.67,65.82,64.92,63.93,63.84,63.59,64.82,66.45,65.32,64.25,64.06,64.15,62.71,63.62,63.01,62.48,61.2,61.14,61.85,60.9,62.12,61.91,60.78,59.78,59.53,60.35,60.44,61.22,61.34,61.54,61.29,61.39,62.68,63.33,63.02,62.48,63.32,63.26,63.87,64.15,63.33,63.55,64.4,63.19,63.1,62.4,62.11,62.11,61.06,61.3,60.86,61.21,61.76,61.95,62.82,62.82,64.14,64.91,64.99,68.3,68.82,72.09,74.26,76.39,76.39,81.8,80.51,82.97,84.74,76.13,74.93,77.52,77.52,77.11,74.03,73.93,73.03,76.01,74.67,74.9,76.07,74.86,75.13,75.19,75.45,74.12,73.89,74.69,74.95,76.87,74.9,76.77,75.9,74.82,72.5,72.54,70.93,71,71.79,72.04,72.13,71.56,70.06,69.8,69.7,71.49,70.44,70.66,71.3,71.94,72.07,71.35,72.6,74.88,74.32,73.74,74.87,73.1,72.56,72.28,73.05,72.75,72.67,73.38,74.3,74.3,74.3,74.31,74.06,74.16,72.13,72.83,72.58,71.71,71.11,70.99,70.17,69.62,71.08,71.32,72.21,72.31,73.6,74.47,73.01,72.88,74.38,75.1,75.09,75.09,75.09,75.09,75.11,77.75,76.97,78.23,79.18,80.84,79.78,81.97,81.41,84.75,84.67,86.21,86.09,84.66,88.16,87.67,86.46,89.44,88.85,85.63,85.65,85.12,87.79,90.92,90.68,88.75,89.06,88.32,87.9,90.31,90.82,93.36,93.22,91.04,88.93,90.03,87.65,88.03,88.27,87.55,86.63,86.84,86.79,85.65,85.65,73.88,75.59,76.66,78.01,79.36,81.03,81.2,79.13,80.34,80.34,80.34,80.88,82.56,81.96,82.2,82.19,82.07,82.15,82.15,83.73,83.73,84.04,83.84,84.43,84.52,87.07,85.31,87.41,86.56,86.14,86.06,87.37,88.1,87.05,87.32,85.83,86.16,85.89,87.07,85.77,85.03,86.67,87.25,88.34,87.78,89.31,89.18,90.19,88.8,88.05,88.8,88.45,87.42,85.56,86.74,87.46,89.11,90.12,89.56,89.13,88.28,88.28,88.75,87.97,87.58,87.57,88.59,87.45,88.18,88.37,88.83,90.3,90.14,90.06,91.41,91.96,92.32,94,94.17,93.08,93.35,93.04,91.94,90.36,89.56,90.47,91.05,90.87,91.37,90.49,90.41,90.71,93.08,92.86,91.95,91.89,91.61,91.69,91.29,92.36,94.07,93.06,91.76,90.71,91.02,92.79,92.65,92.06,90.91,92.13,92.79,94.02,94.89,94.2,95.26,95.47,95.48,97.62,96.2,96.36,95.32,94.5,96.06,96.07,94.63,96.17,97.2,97.2,98.92,98.25,97.38,97.38,96.88,96.94,95.2,93.81,92.36,94.1,94.19,91.67,93.92,94.63,93.83,94.61,95.25,96.3,95.37,95.37,95.08,93.27,94.18,93.31,93.21,95.17,94.27,96.06,96.25,97.03,97.64,95.6,94.89,93.33,93.09,93.01,90.74,92.36,93.16,93.2,93.23,92.88,93.31,93.41,91.84,92.63,93.57,92.4,90.9,91.09,90.88,92.36,90.71,89.09,89.96,89.94,90.55,90.94,90.67,90.69,90.69,90.69,90.45,91.46,90.67,93.27,93.06,94.04,92.96,91.95,92.04,93.79,94.45,94.76,94.27,93.8,92.92,92.52,92.8,92.71,93.19,93.05,94.04,96.76,97.17,94.78,92.37,92.09,92.04,92.5,91.87,93.26,94.02,94.28,93.33,91.88,92.27,92.27,92.27,92.27,91.14,93.56,91.63,91.9,89.66,90.12,88.52,87.57,86.3,85.97,87.77,87.29,88.6,88.55,88.49,88.21,89.68,89.79,89.88,88.46,87.22,84.51,86.46,87.31,85.35,85.99,85.44,85.19,86.51,86.03,86.03,86.03,86.03,88.27,87.6,88.04,87.5,88.21,88.69,90.59,89.97,90.52,90.98,89.53,88.83,89.27,89.07,87.94,89.57,88.31,88.31,89.26,88.81,89.52,90.73,90.42,90.37,90.35,90.29,90.11,88.41,87.46,87.89,87.53,86.21,86.98,86.98,87.25,86.09,85.09,85.71,86.55,89.14,87.45,86.48,85.82,84.85,84.68,84.62,83.59,85.19,85.2,83.82,82.84,81.14,81.14,80.51,78.93,78.99,77.4,75.89,77.36,76.89,76.89,77.44,78.32,79.47,79.04,82.24,81.35,81.78,82.05,82.43,83.25,84.62,82.77,85.26,85.05,83.93,84.97,84.14,85.1,85.82,87.72,87.94,87.61,88.01,87.22,87.52,86.45,86.79,87.7,86.75,85.92,85.72,84.85,85.85,85.99,86.17,86.95,87.83,86.17,85.91,86.81,86.37,86.37,86.6,86.08,85.96,85.3,87.02],"KOSPI200":[100,100.5,100.26,100.47,99.1,96.49,96.97,96.97,96.97,96.97,97.8,98.25,98.8,99.5,99.51,99.17,99.97,99.45,100.27,99.17,99.17,99.82,99.75,100.57,100.16,100.26,98.66,98.68,97.8,98.25,98.67,99.36,99.45,99.53,99.08,99.94,99.59,98.41,98.85,98.8,98.57,98.59,97.38,97.4,97.28,98.06,98.31,96.16,98.33,97.05,96.29,95.98,96.41,96.46,96.37,96.1,97.2,97.7,97.07,97.16,97.43,97.41,97.93,98.01,97.4,97.11,98.46,98.73,100.91,100.49,100.42,100.77,100.91,100.7,101.12,100.88,101.14,100.95,100.9,100.76,100.76,101.1,100.02,100.14,100.14,100.14,101.28,101.34,100.9,101.37,101.58,101.58,103.28,103.97,103.19,102.51,102.98,102.87,103.1,102.65,102.88,102.95,103.28,104.18,104.18,104.18,103.25,103.82,103.41,103.55,103.79,103.59,103.11,103.1,103.47,103.53,103.18,103.53,103.58,103.54,103.89,104.8,105.09,105.1,104.14,103.59,104.01,104.01,105.01,103.9,104.15,104.71,104.87,104.61,104.87,106.07,107.03,107.03,107.88,108.56,108.13,109.32,108.85,108.92,108.73,107.98,108.32,108.56,108.48,108.09,108.46,108.2,108.13,107.64,107.46,106.77,106.1,106.38,107.5,107.5,107.11,107.16,106.49,106.98,107.86,108.6,109.93,110.45,110.67,110.62,110.62,111.56,111.56,112.64,112.64,115.49,115.49,114.08,115.45,114.87,115.11,115.42,115.29,114.96,114.81,115.79,116.07,116.2,117.56,118.23,118.06,117.31,117.34,117.1,118.56,118.37,118.37,117.73,117.95,119.16,117.95,118.63,118.61,118.12,118.16,118.86,119.13,118.44,119.19,119.5,120.12,120.21,119.72,120.38,120.07,120.32,119.57,120.08,120.12,119.65,119.96,120.78,120.77,121.84,122.23,122.68,122.73,122.83,123.48,123.94,124.02,123.31,123.04,123.44,120.99,121.17,122.11,122.36,120.28,120.73,120.92,120.71,119.21,118.77,116.59,117.44,117.44,118.3,119.02,118.78,118.68,119.14,119.28,119.68,119.86,119.22,118.87,119.26,118.73,118.54,118.54,117.11,116.77,118.23,118.41,119.33,119.56,119.4,120.37,120.82,122.84,122.67,122.66,122.57,122.57,121.86,121.05,120.87,120.88,121.81,121.81,121.81,121.81,121.81,121.81,121.81,124.21,125.6,126.37,126.08,126.26,126.53,126.48,125.74,126.67,126.89,126.7,126.83,125.94,126.8,127.25,128.47,130.47,130,130.5,129.95,129.7,130.1,129.85,129.39,128.77,128.49,127.93,128.78,128.71,128.22,128.45,129.21,128.84,129.19,126.92,127.48,127.36,125.27,125.09,126.63,126.95,124.99,124.63,125.05,125.21,124.82,125.63,125.07,125.65,125.79,125.85,125.85,123.14,123.71,123.71,122.82,123.34,125.07,125.07,125.56,125.99,125.01,126.7,127.59,127.2,126.18,125.43,125.84,126.09,127.11,126.79,126.76,126.91,125.66,127.46,127.45,128.67,129.17,130.2,128.41,128.4,128.39,125.95,124.51,122.48,119.58,120.02,117.4,118.68,119.73,121.09,121.09,121.09,121.94,120.49,121.12,120.23,122.02,122.22,122.03,120.5,120.5,118.76,117.31,119.57,119.84,121.24,122.35,123.52,124.4,124.01,124.3,124.36,123.38,123.94,123.86,124.53,120.33,121.28,121.84,120.09,120.87,121.17,120.94,120.7,118.83,120.57,120.02,120.72,120.91,120.53,120.64,121.27,121.39,121.18,122.72,123.29,122.43,122.43,121.65,120.93,122.51,123.56,124.62,124.62,124.22,123.46,122,122,121.66,121.1,122.21,122.67,122.37,121.3,121.7,121.05,121.46,121.8,121.8,122.6,122.28,122.5,122.86,121.78,119.11,119.75,120.64,121.26,121.61,121.61,122.35,121.31,122.18,122.03,122.03,119.86,118.91,117.61,116.06,117.09,115.94,116.97,116.84,116.61,116.41,114.87,115.41,112.82,112.98,112.56,112.32,112.89,113.7,114.08,113.4,113.39,115.02,114.53,114.34,114.19,113.97,114.37,113.45,113.81,113.56,114.37,114.69,114.5,114.56,115.04,113.06,113.85,113.71,114.46,114.46,114.55,113.1,111.64,112.11,112.11,111.02,111.14,111.16,112.44,112.85,113.35,113.83,114.32,114.47,114.79,114.79,115.57,114.58,115.08,113.6,113.34,112.79,113.12,112.64,112.6,112.63,114.5,113.71,114.04,114.25,115.17,115.86,115.86,115.86,115.86,116.54,115.74,115.61,114.21,114.21,112.38,112.19,111.66,111.66,110.87,105.97,107.6,106.76,106.65,107.86,106.87,107.31,107.61,104.97,104.51,102.73,101.17,100.21,101.09,101.68,101.27,104.98,104.02,104.59,104.16,104.8,104.5,104.59,103.87,103.56,104.58,104.63,104.88,103.83,103.32,103.13,102.58,103.91,104.79,105.32,105.59,104.51,106.37,105.26,104.56,102.9,103.33,102.2,101.94,103.4,103.76,102.28,102.58,102.13,102.95,101.99,102.09,101.85,101.85,100.52,100.36,100.9,100.9,99.46,98.51,99.33,100.74,100,102.3,102.28,102.88,102.06,103.96,104.46,104.71,105.48,105.53,105.03,105.48,106.54,108.48,108.47,109,110.39,110.11,110.07,110.07,110.07,110.07,110.02,108.42,108.65,109.26,109.76,111.18,109.37,110.11,109.73,111.08,111.08,111.21,111.31,110.88,111.22,109.31,109.31,108.81,108.01,107.78,107.41,105.85,105.94,106.97,106.3,106.55,107.79,107.81,107.77,107.81,108.76,109.05,106.86,106.92,106.79,105.95,106.49,107.96,108.5,110.02,110.21,110.41,110.3,110.43,110.89,110.7,111.07,111.45,111.93,111.82,110.08,110.11,110.1,110.33,109.27,108.93,108.36,110.46,109.74,109.74,110.2,109.26,109.26,108.35,107.9,104.38,104.78,103.5,103.44,103.85,102.45,101.81,102.05,102.5,102.7,102.6,101.84,101.83,101.95,100.67,101.65,101.64,103.28,103.09,103.22,103.22,103.32,104.8,105.23,105.05,104.43,104.18,104.02,104.51,106.04,106.3,106.1,106.14,106.02,106.12,106.98,106.88,106.79,106.29,104.9,105.74,105.67,103.43,103.11,103.51,104.68,105.02,105.01,105.55,104.56,104.25,105.74,105.74,106.27,105.23,105.16,104.86,103.12,103.59,102.58,102.35,101.29,99.06,97.6,97.06,97.21,98.16,98.35,97.38,98.16,98.16,97.79,98.26,99.39,99.51,98.71,98.64,97.13,97.64,98.42,97.95,99.75,99.78,99.46,100.79,101.85,102.27,102.99,103.51,104.31,104.31,104.31,104.77,104.64,105.17,105.89,106.47,106.55,107.06,105.69,105.87,104.5,105.36,105.69,103.43,103.43,102.98,103.09,104.51,104.51,103.53,104.49,105.62,105.66,106.42,106.14,105.07,105.45,106.84,106.39,106.57,106.71,106.99,106.9,106.11,106.23,107.24,108.82,109.53,109.58,109.52,109.05,108.17,109.25,108.33,109.36,110.65,110.61,110.24,108.69,107.18,107.62,108.69,108.55,108.94,108.32,106.6,106.86,106.37,105.59,105.26,106.52,107.08,107.58,107.95,109.81,111.74,111.6,113.39,113.32,113.35,113.74,113.57,112.81,112.81,113.26,113.7,113.15,113.15,111.83,111.98,111.09,112.17,111.47,113.39,114.41,115.59,116.13,115.44,116.62,116.82,117.69,116.36,117.89,116.44,116.44,116.44,112.76,113.23,111.07,109.59,109.79,111.96,112.47,115.79,114.86,114.1,115.27,116.14,115.9,116.7,116.61,114.67,114.9,114.25,112.63,108.23,109.47,107.82,106.72,103.23,104.13,104.59,107.12,108.37,105.95,101.34,101.94,98.99,95.37,92.69,89.73,87.39,83.13,76.75,82.29,77.75,84.86,89.7,88.33,90.04,89.53,91.21,87.18,89.29,89.24,92.75,94.31,93.16,94.6,95.52,93.75,95.31,95.31,95.17,98.22,97.11,96.06,97.01,97.73,96.4,98.15,98.75,99.43,99.43,99.43,96.52,96.52,98.21,98,98.84,98.19,97.59,98.54,97.69,97.75,98.38,100.83,101.19,101.58,99.99,101.2,102.95,103.08,103.33,103.34,105.22,106.33,110.12,110.33,111.93,111.99,112.2,112.42,111.16,108.53,103.2,108.84,109,108.58,109.14,108.39,108.59,110.42,107.74,109.14,107.09,107.88,107.94,109.33,110.11,111.93,110.45,110.14,110.63,109.79,111.63,111.55,112.57,111.4,112.3,112.01,113.68,113.25,112.61,111.95,113.04,115.59,116.03,116.26,115.28,115.34,116.72,118.1,119.9,120.39,122,123.64,124.28,124.53,122.95,122.95,120.49,120.76,116.16,117.92,119.14,120.78,121.01,119.93,120.26,118.29,119.32,119.97,121.87,120.18,120.81,122.24,120.85,121.91,121.88,123.63,124.54,124.14,122.48,122.63,121.66,118.94,119.26,116.5,116.92,118.25,119.18,119.18,119.18,119.18,120.75,121.11,122.23,122.27,122.27,122.92,123.09,121.93,120.91,120.1,120.39,121.21,121.61,120.85,121.24,120.76,120.09,120.62,119.37,116.16,117.84,120.19,120.87,123.83,124.06,125.49,125.61,127.53,126.99,128.27,131.19,130.89,130.94,131.01,131.19,134.21,134.91,134.15,135.62,135.85,133.28,135.73,138.14,139.29,141.59,142.45,139.98,143.07,142.26,143.37,143.11,142.84,143.48,143.28,143.1,143.34,141.13,143.01,146.04,146.04,146.33,146.85,149.93,149.93,154.01,156.38,154.86,158.22,165.7,166.05,164.79,165.76,165.56,161.93,158.1,162.28,163.31,165.72,164.51,168.43,164.35,163.18,160.38,155.82,160.01,162.16,163.77,161.11,163.03,161.36,160.96,161.63,161.63,161.63,164.46,165.32,163.38,160.78,162.12,160.56,160.15,156.82,162.73,157.88,157.88,159.76,161.87,159.52,158.68,157.27,156.29,155.4,158.3,160.27,159.52,160.73,159.46,160.63,159.03,158.93,157.41,156.79,157.34,159.02,158.7,160.46,159.85,161.54,163.2,163.63,164.03,164.34,164.4,163.42,163.39,165.26,165.89,166.64,166.55,166.37,167.39,164.36,164.6,164.75,166.52,166.44,164.64,164.18,162.67,161.9,163.14,163.14,163.33,165.06,167.78,165.14,162.48,160.25,161.83,161.1,162.95,162.95,162.41,162.56,161.98,163.44,163.13,162.92,164.05,164.81,165.74,165.67,167.1,166.47,166.87,166.72,164.91,165.36,166.68,166.85,167.2,168.29,167.44,167.55,166.18,167.32,168.21,168.84,169.62,169.46,168.52,169.02,168.06,167.92,168.56,169.27,168.3,166.63,164.78,166.11,167.43,166.99,168.22,167.47,165.57,165.06,164.07,166.15,166.21,164.64,164.93,165.29,165.42,163.27,164.38,165.61,167.94,167.44,166.88,166.25,165.06,163.59,162.68,160.24,160.24,158.42,159.21,155.97,154.36,155.82,158.87,159.43,158.06,158,158.49,161.68,161.73,160.18,161.46,161.9,160.92,159.66,156.86,157.41,157.8,158.82,159.01,157.61,158.29,158.29,158.29,158.29,158.09,157.85,158.28,156.45,154.09,154.56,152.05,152.05,149.44,147.1,149.49,149.21,149.21,146.62,147.94,150.05,151.44,150.99,152.29,151.65,151.43,151.49,152.14,153.7,152.32,151.71,149.62,150.13,152.06,150.01,150.8,150.15,150.05,150.35,148.76,148.66,150.35,151.89,151.78,149.99,149.22,150.41,153.7,152.69,152.29,150.95,148.31,146.98,143.75,147.56,150.07,150.96,151.31,152.64,153.01,154.49,153.28,153.01,152.29,152.39,153.17,153.66,150.74,151.73,152.55,153.35,154.26,153.52,154.53,152.8,151.82,151.82,151.82,152.29,150.36,148.75,150.54,149.25,149.81,152,151.36,149.23,147.82,146.75,145.67,146.51,144.85,143.01,139.57,138.97,134.26,137.88,137.88,137.88,137.88,139.27,141.1,139.78,139.99,141.99,143.11,141.97,139.8,138.82,141.47,142.33,141.95,141.85,140.01,140.36,136.74,138.05,139.25,139.25,138.88,141.37,139.3,135.97,134.56,134.56,137.89,136.85,136.58,135.2,137.15,139.22,139.55,138.18,139.29,140.52,139.96,139.45,139.45,140.11,140.39,140.81,139.88,140.56,140.48,139.04,137.01,137.12,137.03,135.7,138.27,137.64,136.28,136.2,137.64,137.7,138.28,136.89,134.41,135.06,133.34,134.86,136.76,136.35,136.08,136.28,136.28,134.42,134.42,132.36,132.28,130.16,133.07,132.47,133.85,134.16,132.2,134.53,134.93,132.52,133.11,132.59,134.05,135.76,136.55,136.55,135,135.58,135.58,133.13,133.35,133.5,131.68,127.05,126.42,124.1,124.11,123.28,121.11,121.85,118.66,117.64,120.19,121.78,122.9,120.5,118.32,117.09,117.09,119.02,116.42,118.75,119.45,118.74,117.48,118.08,117.61,118.59,121.27,120.9,121.71,123.12,122.22,122.61,123.1,123.15,123.87,124.52,124.39,123.88,124.71,125.35,126.14,126.03,126.37,124.92,127.07,127.36,127.36,127.78,127.06,126.64,125.86,124.31,122.74,123.19,124.65,124.75,121.84,123.05,124.39,121.33,120.52,120.35,120.56,118.69,119.06,119.06,119.06,122.69,120.45,119.64,118.89,118.04,118.45,117.34,116.18,114.67,111.6,111.77,109.07,108.86,108.37,108.37,111.03,111.33,112.18,111.85,111.85,109.75,110.57,108.83,111.45,111.53,113.08,112.19,111.16,111.14,112.26,112.3,113.18,115.09,113.64,115.38,117.04,117.04,116.18,117.21,118.58,120.17,121.41,119.83,124.44,123.84,124.14,124,122,122.14,121.19,120.17,120.98,122.21,121.73,120.25,121.55,123.63,124.03,121.33,120.9,119.45,118.73,118.72,120.02,119.26,119.23,120.64,118.52,118.43,118.15,117.1,116.79,118.43,116.34,116.42,117.17,114.42,112.12,112.12,111.61,111.53,114,114.72,116.13,119.28,119.23,119.54,119.67,120.85,121.72,120.84,120.13,120.86,121.55,121.55,121.55,123.54,125.39,126.32,124.28,122.19,123.71,124.76,125.5,122.8,123.46,125.42,125.13,124.67,123.92,124.58,122.47,124.83,123.55,123.94,123.85,121.68,123.03,122.07,120.91,121.24,121.24,121.81,121.85,123.61,123.17,121.47,120.95,119.65,120.63,117.69,119.05,118.78,120.19,119.2,119.53,120.98,121.61,121.05,120.49,121.85,122.1,122.5,124.03,123.39,123.92,124.62,122.41,124.54,125.7,127.43,127.9,128.29,128.52,128.61,128.45,128.55,128.12,127.46,126.6,124.97,124.78,125.21,125.74,125.74,126.75,125.76,125.62,125.62,126.68,126.41,125.57,125.28,124.64,124.97,125.29,125.79,127.04,128.73,129.51,129.83,129.6,129.16,129.84,129.84,131.53,130.61,130.21,131.98,132.46,132.46,132.19,132.01,133.57,132.71,133.41,132.74,132.18,132.94,132.16,131.94,130.73,131.38,130.35,131.1,131.07,130.34,129.56,130.16,132.14,131.56,130.58,129.49,127.7,127.42,129.8,130.74,131.39,133.62,133.17,132.25,132.15,131.59,131.87,132.61,132.85,131.17,132.78,132.5,133.12,135.19,132.41,131.54,131.43,130.83,130.16,131.57,131.13,130.56,129.54,129.54,127.59,127.19,126.49,126.65,126.98,126.77,128.57,127.2,128.07,128.55,129,128.93,130.29,131.34,131.06,130.12,129.69,129.56,130.02,129.23,129.41,131.41,132.87,131.21,130.5,130.47,128.27,127.88,127.71,125.91,125.83,125.83,125.83,125.83,125.83,123.04,122.7,122.84,122.84,122.9,125.07,126.66,125.47,124.51,126.08,126.64,124.31,122.46,121.51,122.64,121.9,118.53,118.83,118.99,117.69,119.28,121.38,122.57,128.7,126.06,124.79,125.29,124.69,124.52,125.78,128.62,128.76,127.89,128.73,129.63,129.72,129.76,128.64,128.51,130,129.65,130.35,128.95,129.46,128.2,128.43,128.13,129.64,130.15,130.86,129.67,131.46,132.49,132.3,132.47,134.84,134.33,134.47,134.47,134.97,135.75,137.88,137.88,138.87,135.26,134.06,133.73,133.1,132.42,131.2,131.06,130.26,130.66,128.92,125.6,125.99,128.25,128.11,129.01,128.36,128.56,128.72,130.12,129.98,129.5,131.88,136.12,134.47,133.95,135.67,136.07,136.07,136.07,137.64,135.84,135.27,136.93,138.99,137.47,137.13,137.76,138.1,136.91,135.87,137.42,136.95,136.95,139.08,137.73,137.21,137.43,139.31,138.01,139.08,139.82,141.23,138.42,139.16,137.63,139.93,143.91,143.53,142.79,144.28,144.08,143.75,144.29,144.15,144.95,142.4,144.67,143.11,143.47,142.61,142.61,142.78,141.45,140.7,137.37,135.88,138.29,135.8,137.46,137.11,140.04,137.31,139.05,140.38,140.63,140.63,140.31,140.03,140.03,143.58,144.08,142.05,142.92,142.89,142.91,142.91,144.28,142.73,143.92,143.1,143.05,143.13,141,142.95,143.02,140.56,138.15,137.96,140.76,139.62,141.13,141.13,143.04,141.53,141.62,142.94,144.33,144.82,143.99,145.48,147.52,148.2,146.7,145.74,146.3,147.52,147.23,147.9,148.03,146.82,147.6,149.64,152.31,151.93,152.44,152.36,153.49,151.09,151.69,152.25,150.8,149.82,147.85,146.29,146.99,145.84,142.99,144.12,145.87,144.38,146.55,146.56,140.64,127.82,131.62,134.45,133.53,135.39,136.96,137.51,138.8,138.8,142.16,140.78,142.12,141.82,142.16,141.7,141.08,140.41,140.69,138.69,139.25,139.46,138.19,133.52,133.23,131.86,131.02,130.37,129.28,132.43,132.37,132.37,132.37,132.37,132.21,132.75,133.18,134.65,132.71,137.28,136.32,132.78,132.78,131.23,131.23,131.62,133.78,132.58,132.58,132.96,133.05,134.7,135.21,133.75,133.93,133.04,133.5,131.76,133.37,132.06,132.25,133.75,134.14,132.88,130.69,129.98,132.34,131.52,131.19,131.29,130.84,128.89,126.06,122.8,122.36,123.45,126.5,126.37,126.72,126.9,128.01,129.65,129.26,127.99,127.66,125.35,125.3,127.65,125.79,124.74,124.04,120.84,123.55,124.73,126.73,127.29,126.95,125.27,126.99,124.16,122.6,124.4,124.55,124.55,123.81,122.87,122.41,122.41,122.39,124.79,127.68,127.44,129.01,129.18,128.85,127.22,127.38,127.47,129.31,129.06,128.62,128.81,130.47,128.83,129.69,129.69,129.69,129.69,129.69,128.39,125,126.61,128.05,129.61,128.6,128.83,129.67,129.88,131.36,132.01,132.92,133.97,136.55,135.63,135.54,134.76,133.85,134.54,133.43,128.74,128.74,128.65,129.83,131.07,130.34,130.48,129.01,131.29,131.5,131.26,134.1,133.97,135.13,136.15,136.8,136.05,135.22,136.73,134.9,132.09,128.02,130.26,129.51,128.22,126.59,119.24,119.41,117.29,125.2,124.14,125.3,126.38,124.61,125.67,126.46,126.83,126.56,128.62,128.53,129.75,129.83,130.59,130.47,130.47,130.48,130.48,130.48,131.46,131.52,131.52,133.68,133.71,135.49,134.48,134.98,133.48,133.65,134.56,132.8,132.98,135.61,135.3,137.25,139.84,138.51,138.53,138.53,142.47,145.02,145.02,147.51,148.2,150.13,150.45,149.17,151.81,152.2,153.62,153.79,156.11,155.72,160.9,161.57,160.09,158.96,159.68,160.32,159.62,162.12,158.97,159.07,162.23,162.54,165.01,164.87,166.57,167.45,166.06,166.25,166.04,167.37,164.86,165.63,165.63,165.91,166.91,167.86,169.39,168.93,162.04,163.61,166.1,165.88,167.67,166.95,166.88,166.24,168.28,168.14,168.14,165.3,164.14,163.17,163.46,165.04,167.11,165.39,165.73,166.31,165.66,163.04,164.9,165.76,166.51,166.72,167.48,169.96,173.34,174.86,178.22,178.96,182.12,179.86,183.08,182.34,184.21,185.46,185.02,185.11,180.26,183.03,182.57,184.63,190.04,190.04,190.04,190.04,190.04,190.04,195.26,193.29,191.38,196.64,201.99,202.39,206.16,206.16,208.98,206.58,211.84,217.87,215.49,220.12,221.54,223.18,230.72,224.13,217.76,218.91,214.91,221.58,223.93,225.98,226.72,217,222.1,214.32,212.86,217.3,208.12,208.29,209.76,215.44,216.98,213.37,213.36,217.89,219.84,219.44,223.7,226.92,225.6,225.51,223.45,226.44,221.26,216.27,220.54,217.86,218.92,224.44,225.17,225.01,225.01,227.27,233.28,233.39,233.39,240.4,249.86,253.99,255.92,255.81,257.38,259.15,262.17,264.12,268.21,271.39,274.98,272.87,275.36,278.19,280.11,277.32,286.99,292.22,294.87,295.95,279.41,300.24,304.41,291.54,288.13,300.78,300.71,303.79,314.39,313.74,313.74,313.74,313.74,323.62,331.07,333.34,341.58,348.11,363.59,359.47,359.47,331,291.48,320.14,319.22,298.61,316.99,321.23,318.71,313.1,318.45,323.87,342.23,332.14,332.19,309.99,318.76,323.02,311.54,310.12,300.54,286.77,313.45,298.35,307.47,312.68,316.25,340.01,333.44,338.46,335.38,345.48,353.03,361.22,358.73,360.4,370.61,371.48,375.76,374.31,383.35,384.78,387.69,382.13,382.13,404.28,404.28,435.08,442.87,443.37,466.58,455.79,469.95,478.81,447.69,451.12,436.15,433.49,471.89,472.2,472.2,485.49,500.25,497.83,517.19,539.17,541.99,541.99,531.34,499.55,456.99,498.15,472.62,474.33,497.35,523.9,536.03,545.74,562.02,562.12,568.95,509.05,527.51,560.06,526.3,520.93,527.93,514.31,469.73,500.42,498.05,472.03,446.14,450.52,460.9,415.49,420.67,448.27,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1,416.1],"Nikkei225":[100,100.26,99.85,99.54,99.58,97.86,98.19,97.51,96.29,96.96,96.96,96.8,98.65,98.65,98.34,97.11,97.92,96.64,97.98,96.55,97.42,98.23,98.72,99.19,98.96,98.96,99.92,98.84,98.45,98.94,99.19,99.57,99.77,101.16,100.86,101.16,101.92,102.08,101.75,102.4,102.27,102.38,100.57,100.57,99.22,100.82,100.79,95.39,101.8,101.98,103.73,103.7,104.84,104.84,105.46,106.27,106.6,106.6,107.61,107.89,107.74,107.45,107.46,108.66,108.15,107.26,107.76,108.56,110.14,111.5,112.43,112.99,113.01,113.12,113.87,113.82,114.42,114.13,114.03,114.03,113.85,113.88,113.88,112.37,112.19,112.19,112.19,115.01,114.57,114.18,114.18,113.29,113.66,112.31,113.2,112.08,110.42,110.9,111.94,112.33,110.88,110.27,111.86,113.88,114.26,113.68,111.76,112.39,111.02,111.04,111.38,110.99,111.56,110.98,113.74,114.21,112.92,114.09,113.56,112.89,112.99,113.76,113.75,113.7,113.18,112.15,112.22,113.83,114.83,114.27,113.74,113.54,113.01,113.39,115.07,115.24,115.1,114.91,114.98,114.58,114.58,114.19,111.76,112.02,113.06,111.43,112.71,112.79,111.89,110.99,111.42,110.4,110.7,109.15,109.55,110.33,110.04,108.89,108.15,107.62,107.73,108.11,108.19,108.18,109.29,110.79,111.98,113.22,113,112.67,113.34,114.13,114.13,114.13,114.13,116.78,116.47,116.8,117.16,116.71,116.62,116.92,116.3,114.77,114.99,115.5,115.12,115.88,116.29,115.55,115.52,115.5,115.34,116.57,118.43,118.39,117.27,117.3,116.85,117.47,116.85,116.79,116.7,116.4,117.05,117.78,118.74,118.2,118.04,118.17,118.29,118.71,118.15,118.68,117.58,117.71,117.58,117.87,117.35,116.97,117.86,118.53,117.96,117.97,118.08,118.08,117.39,117.51,118.24,117.97,117.24,117.12,117.68,117.85,117.15,116.95,117.3,117.86,117.56,117.11,117.72,117.36,115.85,115.8,115.8,114.67,115.94,115.8,115.64,114.28,113.83,113.77,114.07,113.59,114.17,114.16,113.65,114.49,115.31,115.58,114.5,113.78,113.62,113.85,113.13,114.72,116.08,116.6,116.26,116.86,116.86,119.14,119.21,119.43,119.13,119.72,119.33,118.95,119.52,119.48,119.74,120.99,121.07,121.08,121.44,121.44,122.22,122.56,122.99,124.17,124.76,125.23,125.39,125.89,125.94,127.35,127.98,127.41,127.6,129.18,129.19,129.19,131.59,132.29,132.29,132.34,134.63,134.49,134.22,133.13,131.36,131.36,129.29,131.19,131.45,130.66,131.57,132.2,132.2,132.36,132.04,131.98,132.63,133.38,133.93,133.28,132.78,130.17,132.05,133.89,134.64,134.21,133.58,133.2,132.37,134.42,134.22,134.36,134.21,134.42,134.64,134.37,134.47,133.73,133.62,133.62,133.62,137.97,139.19,139.19,139.98,139.62,139.17,138.83,139.19,140.58,140.09,139.48,139.74,139.79,141.59,140.52,138.92,138.7,138.69,136.71,135.57,137.85,136.61,133.13,126.84,127.04,128.49,125.5,125.5,124.69,124.16,125.99,127.48,130,128.69,128.95,127.58,128.5,130.03,131.41,129.53,127.51,124.32,123.5,125.71,124.74,125.42,126.01,128.09,128.94,127.82,127.98,127.23,126.08,125.49,125.49,126.73,121.01,121.88,125.12,123.44,124.19,125.92,125.54,124.97,125.13,127.04,126.59,127.24,127.92,127.29,127.13,127.83,128.16,128.23,130.05,130.25,130.08,129.64,130.76,130.39,131,131.87,131.87,132.11,131.9,131.9,131.9,131.87,132.11,131.53,132.04,133.58,134.21,133.93,133.34,134.05,134.59,135.01,134.76,133.17,131.69,131.77,131.95,131.23,129.23,130.31,130.13,131.92,132.29,132.8,133.96,133.2,133.85,134.28,134.8,133.46,134.13,133.12,130.76,132.39,133.19,132.16,131.11,131.13,130.72,130.71,130.91,128.02,127.87,127.47,126.47,127.88,129.43,130.28,128.73,130.23,132.63,132.63,133.22,133.79,133.61,133.22,131.46,132.12,132.73,132.57,133.31,132.32,132.38,133.51,132.13,132.21,132.1,133.02,132.91,132.64,130.88,128.29,131.22,130.32,130.25,130.71,130.29,130.42,131.25,131.54,132.66,133.82,133.9,134.1,134.23,134.2,133.28,133.22,132.54,131.99,130.93,131.32,133.03,132.67,133.95,135.55,135.55,137.46,138.94,138.96,140.1,140.1,140.51,141.06,139.67,141.57,142.31,142.45,141.52,140.72,139.6,139.6,137.75,137.97,132.59,133.2,130.72,132.35,134.06,132.99,132.25,132.73,129.19,129.66,124.83,124.34,124.14,125.94,128.66,127.29,130.56,128.53,129.99,129.63,131.98,130.59,130.71,128.01,128.22,127.97,127.25,128.08,126.68,126.24,127.05,127.05,128.02,128.85,130.16,130.67,131.19,132.5,129.34,128.65,126.2,127.24,124.54,124.13,126.79,128.05,125.46,126.23,123.93,123.19,119.69,118.36,118.36,112.43,113.44,117.84,117.47,117.47,117.47,117.47,114.82,117.62,118.58,119.89,118.35,119.5,119.5,120.65,119.99,119.75,121.3,121.61,121.04,120.87,120.76,121.93,121.2,121.29,120.65,121.93,122.01,122.57,122.34,122.52,121.8,119.34,119.34,122.46,124.1,124.08,122.67,124.91,125.03,125.79,125.98,125.75,126.36,125.89,126.52,125.52,126.79,128.08,127.52,126.76,125.93,123.41,123.99,126.21,124.96,124.94,125.9,126.69,126.58,126.83,126.83,126.94,123.12,125.77,125.48,123.45,124.46,126.24,126.22,127.44,127.51,128,127.73,127.97,127.29,127.43,128.37,130.12,130.43,130.76,129.65,130.3,130.4,130.65,130.3,130.93,130.64,130.64,130.64,130.64,130.64,130.64,130.64,128.68,126.79,125.62,125.28,124.38,123.65,124.36,123.63,124.72,125.03,124.86,124.92,124.14,123.94,124.33,124.78,123.28,122.92,120.92,119.8,119.79,121.94,121.93,122.58,124.05,124.46,124.02,123.44,123.94,123.98,123.1,125.22,125.97,124.77,124.94,124.39,123.76,125.24,124.88,127.54,127.68,127,127.38,127.64,126.39,126.57,126.39,127.03,127.28,127.28,126.4,126.01,123.53,126,125.7,126.9,127.42,127.7,127.12,126.88,127.42,126.32,126.43,123.77,121.61,120.82,120.42,120.87,121.41,121.41,120.06,121.23,119.77,119.85,120.69,121.36,121.02,121.07,121.56,118.92,120.06,120.2,120.09,121.52,121.03,121.06,121.2,123.76,124.43,125.13,125.56,126.77,127.71,129.06,129.06,129.13,128.9,129.39,129.59,129.59,129.71,129.24,129.41,128.42,127.69,128.45,127.83,125.26,125.66,125.46,126.71,125.94,126.5,127.95,127.95,130.34,131.9,131.78,132.02,132.35,132.35,132.8,133.53,133.82,134.22,134.84,134.07,134.57,134.12,134.12,136.47,136.78,136.93,137.3,136.94,138.05,136.87,135.83,136.78,137.44,136.71,135.87,135.22,135.66,136.71,137.19,137.56,137.4,136.72,138.1,137.22,135.79,136.76,137.08,137.52,137.4,137.3,137.49,141,140.58,141.25,140.48,140.07,139.79,139.81,139.87,139.59,140.42,139.91,138.85,138.85,138.85,138.85,136.2,138.37,136.2,139.34,139.99,139.99,141.01,140.38,140.47,141.11,141.35,140.07,141.05,139.66,139.85,137.01,136.26,137.22,134.86,136.2,134.83,135.49,136.87,140.12,139.86,139.02,139.02,140.05,139.85,139.03,138.07,136.13,137.35,137.81,137.27,137.27,132.68,131.63,128.82,124.1,125.28,123.74,123.84,125.19,121.79,115.62,116.61,113.96,108.93,102.31,99.79,99.85,98.17,97.15,97.15,99.12,106.19,114.73,109.55,113.8,112.02,111.03,106.03,104.58,104.59,109.03,111.23,113.59,113.55,114.44,111.77,115.27,114.75,113.22,116.78,115.45,113.17,112.33,114.04,113.06,116.11,116.04,116.04,118.52,115.15,115.15,115.15,115.15,115.48,118.44,119.68,119.54,118.95,116.89,117.61,118.17,119.93,120.88,120.63,119.67,121.74,124.85,125.72,128.63,128.41,129.49,131.04,132.73,133.21,134.2,136.04,135.53,135.73,131.9,130.92,126.37,132.54,131.8,131.21,131.94,131.69,132.35,132.26,130.65,132.13,129.1,130.82,129.84,129.98,130.92,133.32,132.73,131.7,132.23,130.83,133.73,132.57,134.68,133.65,133.21,133.34,134.32,133.54,133.54,133.54,133.33,132.98,131.46,131.12,127.42,130.27,132.49,132.15,131.58,131.06,131.06,133.53,134.08,136.46,136.69,135.56,135.3,135.64,134.29,134.53,134.91,136.74,136.7,136.22,134.31,135.82,135.81,136.45,137.73,136.2,135.52,136.6,135.19,136.38,137.38,138.28,137.67,137.79,136.87,137.11,137.11,137.11,137.03,135.51,136.2,138,138.16,136.08,136.08,135.17,136.83,137.54,137.48,138.79,138.63,138.27,138.53,138.67,137.97,137.41,138.93,138.32,138.75,137.78,138.03,137.9,137.85,137.45,136.94,134.86,136.73,136.73,139.08,141.48,142.77,145.79,146.18,148.79,149.79,149,152.06,152.69,151.01,150.46,149.83,149.83,153.58,154.35,155.76,156.39,155.15,157.23,157.3,157.35,157.01,155.82,155.34,157.4,157.04,156.43,156.9,156.64,157.05,157.34,157.08,156.8,155.16,155.68,156.53,156.46,157.62,161.81,161.08,161.08,159.99,159.4,158.8,161.35,165.16,165.16,165.31,167.02,168.44,167.39,165.76,168.06,167.41,168.78,168.05,169.17,167.55,168.07,165.5,162.37,164.88,166.47,168.14,166.35,168.92,172.49,173.18,173.52,173.52,173.26,176.57,178.83,177.8,177.47,176.19,177,177,174.15,177.07,170.01,174.11,172.61,173.49,169.8,169.42,168.7,170.38,170.43,171.45,174.42,174.71,175.62,175.58,177.35,174.86,171.23,170.19,166.72,168.63,171.25,172.47,172.75,171.26,172.49,175.22,176.6,174.3,174.5,174.37,174.72,173.37,174.62,173.86,173.98,174.22,174.23,170.8,167.33,171.32,170.33,170.95,170.16,170.53,170.53,169.11,169.11,169.11,169.11,172.16,172.31,173.25,167.91,165.21,161.1,164.84,163.31,166.73,164.6,164.92,166.21,166.48,167.59,168.11,167.56,171.09,169.39,169.12,169.9,170.55,169.87,170.32,170,169.39,169.97,169.91,171.16,172.8,171.92,170.32,170,164.41,169.53,169.48,169.48,170.6,170.49,169.11,168.99,168.49,168.94,167.85,168.12,166.5,165.03,163.99,167.68,168.56,167.91,165.98,164.36,162.3,160.75,161.69,161.69,161.69,163.36,164.17,161.89,163.07,160.14,163.06,162.24,161.9,162.75,163.29,163.29,163.69,164.76,164.43,164.21,161.54,160.96,161.91,160.12,158.55,161.37,162.77,162.73,162.83,162.24,163.11,164.87,166.99,167.53,170.96,174.08,175.59,177.14,176.13,178.32,178.71,180.01,179.08,177.98,179.02,179.02,175.14,173.96,173.96,177.54,177.49,177.16,173.41,172.87,168.87,166.95,163.3,161.58,162.45,164.63,167.27,165.7,165.17,167.58,170.61,170.36,171.48,171.71,168.5,169.07,167.87,170.83,170.79,169.16,169.58,174.01,173.27,173.27,174.87,173.8,173.19,171.89,170.84,171.84,173.79,174.77,174.95,174.25,173.73,174.59,174.75,174.75,171.99,173.14,168.75,166.01,163.3,163.96,162.89,164.52,163.92,167.02,169.39,168.6,166.91,168.1,166.88,167.04,170.6,167.54,163.98,167.38,167.64,169.03,168.94,168.31,170.62,169.66,168.99,168.99,168.99,171.98,172.16,167.21,167.15,167.15,165.65,168.84,167.21,165.07,166.3,165.85,161.22,163.01,161.54,161.93,159.24,158.54,153.6,156.81,158.48,158.93,161.6,159.89,161.06,159.93,160.14,161.88,162.56,162.56,158.94,157.68,161.17,159.84,159.19,157.95,155.24,155.24,152.43,155.4,155.7,157.56,154.91,155.99,152.52,148.03,145.51,145.08,150.79,147.69,148.54,148.77,151.21,156.44,157.46,157.46,159.79,164.58,164.99,165.22,164.01,165.82,164.5,163.29,162.38,162.8,163.1,160.53,157.82,158.39,157.43,154.57,157.55,159.48,159.02,157.3,158.39,159.75,161.72,159.09,156.07,156.71,154.87,157.58,157.58,157.41,157.41,157.41,157.41,158.49,154.48,153.58,153.86,151.13,155.11,155.81,156.48,157.95,154.97,156.94,158.48,156.99,156.58,156.15,157.19,160.64,160.11,161.16,160.9,162.94,163.85,164.01,165.72,165.79,163.31,158.4,156.3,154.52,155.13,152.39,151.26,154.05,153.48,153.61,155.49,157.72,158.76,157.33,154.91,152.23,153.51,155.09,153.24,155.48,155.64,157.37,154.58,155.41,156.38,157.23,157.23,158.25,162.47,163.19,163.84,162.58,162.32,162.67,163.26,163.18,164.3,161.96,162.83,163.94,165.37,165.8,164.34,163.28,163.28,167.55,169.46,169.44,171.52,169.87,169.8,169.01,167,166.18,167.15,168.11,163.63,165.49,164.88,162.36,162.29,162.11,162.15,161,164.73,165.6,167.52,167.95,163.28,163.61,161.8,161.8,162.51,160.31,159.38,159.38,155.14,155.96,153.62,155.08,152.23,153.87,158.43,159.18,160.3,159.15,159.15,154.96,154.93,154,159.01,157.16,159.39,159.98,158.51,157.83,158.33,159.94,161.01,160.5,159.09,161.92,162.46,162.37,162.37,159.65,161.57,163.59,162.68,161.09,165.89,164.13,164.28,164.51,163.93,163.75,164.02,165.02,165.02,166.59,166,165.3,164.51,164.16,165.67,163.04,163.29,163.67,162.5,161.84,163.76,163.42,164.08,165.26,164.65,161.57,159.87,155.94,154.88,155.58,153.98,154.99,155.23,154.6,153.15,153.16,153.16,153.16,150.94,151.55,152.45,152.45,153.63,155.22,155.24,153.3,151.56,153.42,157.25,154.98,155.85,157.92,160.23,160.79,160.6,160.72,161.02,160.39,160.51,160.83,161.46,162.54,162.5,162.03,161.9,162.41,160.98,162.01,161.42,162.56,161.48,161.59,161.25,159.09,159.09,161.13,160.96,161.09,161.5,161.4,163.92,165.74,166.16,166.95,168,165.19,163.36,159.78,159.82,158.54,160.43,158.15,158.15,161.21,160.94,160.73,161.27,161.51,163.66,163.07,164.59,165.45,166.03,163.25,161.25,161.51,162.19,163.89,164.83,165.26,167.24,167.36,168.21,167.9,168.2,167.65,167.83,167.98,166.79,167.03,169.37,170.93,171.14,171.14,171.14,171.14,169.92,171.64,170.93,170.96,172.49,173.89,175.16,176.63,179.45,180.83,182.46,181.7,180.09,180.78,181.46,183.32,183.88,181.29,182.82,185.03,189.1,190.79,187.31,185.71,189.38,190.37,193.8,196.64,196.54,197.83,195.86,195.97,197.06,195.24,192.41,191.92,190.98,194.83,195.06,194.8,198.11,196.17,195.68,192.36,190.1,188.93,189.01,187.49,190.28,190.12,190.12,190.72,193.08,190.7,189.61,191.93,191.83,191.74,193.05,192.28,194.7,196.49,191.97,188.75,188.95,189.31,190.03,189.02,190.6,190.6,188.17,189.22,186.45,185.62,184.6,185.27,186.98,187.88,189.51,185.61,188.82,189.15,189.78,191.45,191.99,193.33,193.9,195.1,193.64,191.38,190.56,192.38,191.97,194.68,196.82,196.82,195.11,193.83,191.17,190.18,191.8,189.67,190,187.07,186.98,186.41,183.35,179.17,182.39,181.92,181.92,186.33,187.45,190.72,189.67,185.82,188.06,188.07,184.48,183.47,181.95,182.32,183.53,179.61,181.9,180.17,181.12,185.48,187.53,187.53,191.98,189.41,188.8,191.61,191.15,191.25,191.9,196.74,196.18,197.12,195.97,195.77,196.34,196.34,197.36,196.32,196.09,195.57,196.55,196.22,195.05,192.37,196.31,192.86,189.63,192.47,192.77,193.26,191.85,193.52,192.27,194.98,197.66,194.51,194.68,195.18,195.48,197.69,196.86,196.41,196.41,196.41,195.38,195.9,195.9,198.17,202.15,205.72,208.81,210.72,209.06,208.23,208.16,211.08,214.51,214.33,212.63,212.68,209.84,211.46,211.68,212.98,211.36,212.22,213.38,212.24,212,216.36,216.56,216.56,222.82,221.29,223.96,225.9,225.8,225.17,224.57,229.48,229.48,230.28,230.31,230.13,229.88,234.25,235.42,235.35,235.31,232.42,232.95,227.85,227.72,227.12,227.77,227.19,233.25,234.8,234.8,239.56,239.99,237.21,237.11,239.25,235.76,236.94,233.62,233.83,231.56,233.44,228.86,230.94,233.44,232.32,231.5,231.98,230.27,225.8,222.81,223.5,217.57,219.74,220.41,225.74,220.86,222.65,222.65,225.42,224.64,224.42,224.42,224.42,227.94,224.22,223.47,224.38,224.09,225.13,225.3,228.44,227.66,229.31,228.59,226.66,229.51,226.83,228.32,228.06,226.3,223.35,225.9,228.45,227.95,225.91,227.16,227.05,229.13,229.7,228.18,227.26,227.82,223.64,225.87,226.39,226.75,226.54,227.76,229.92,232.82,230.91,232.33,232.61,235.21,238.18,240.14,240.13,239.36,244.05,245.53,247.83,241.76,241.76,242.26,241.22,235.52,235.15,232.42,232.39,229.81,222.27,221.08,225.79,226.12,229.5,223.78,210.77,184.64,203.52,205.95,204.44,205.57,205.57,212.66,213.89,215.56,223.4,219.45,223.41,222.75,224.27,225.17,223.68,224.73,225.22,225.16,226.84,227.15,227.06,217.45,215.15,213.59,212.56,212.23,209.07,216.19,214.71,214.71,212.49,213.53,218.08,221.42,221.42,222.69,222.27,228.47,233.77,222.56,226.86,221.91,226.28,226.77,230.86,228.54,230.54,231.14,232.46,232.46,234.25,229.96,228.38,228.8,228.64,225.45,223.65,223.88,222.53,226.59,228.34,230.53,229.38,223.35,223.35,225.82,231.73,231.14,231.84,232.04,231.11,227.27,226.18,226.81,224.33,225.47,225.1,223.19,224.7,227.61,225.63,223.83,225.08,224.26,226.05,230.37,230.53,231.23,229.44,229.85,231.06,231.09,233.89,231.67,231.59,231.05,229.38,227.81,227.16,229.85,229.12,229.67,232.24,236.42,234.16,234.16,234.16,234.16,230.71,235.26,234.66,232.46,230.02,230.02,225.82,225.65,226.4,225.69,228.33,229.07,232.7,234.53,234.38,232.23,229,231.34,231.92,232.27,226.09,227.72,227.92,229.3,227.66,227.74,227.74,228.69,231.61,229.78,229.93,230.49,229.87,227.02,227.6,227.6,224.43,223.87,224.54,218.08,221.78,219.11,219.62,221.3,216.5,217.33,215.95,216.1,215.93,217.48,219.49,222.13,221.58,221.58,221.14,220.74,221.75,223.2,221.86,217.87,209.05,209.09,209.69,203.88,198.27,182.75,193.76,186.14,203.13,197.13,199.45,201.13,199.09,201.77,203.84,201.2,200.85,204.66,205.66,209.57,210.36,210.36,211.56,213.95,216.17,216.17,216.17,215.87,216.75,220.12,220.95,224.11,223.79,221.6,221.59,220.09,220.27,218.92,217.08,218.11,220.29,221.42,221.41,225.58,222.83,219.93,219.79,221.55,220.42,221.52,223.56,224.28,225.51,224.05,222.06,224.86,226.19,228.23,225.9,225.4,225.11,227.68,228.57,232.34,235.66,237.64,234.69,233.38,233.52,233.66,232.35,232.95,233.73,232.7,232.25,231.6,232.88,232.8,234.19,233.71,233.71,233.45,241.65,245.49,243.32,240.63,238.73,238.62,241.05,239.47,236.48,238,239.44,240.99,245.46,245.46,250.73,253.99,250.32,254.6,256.58,255.59,251.73,250.09,250.23,251.25,248.83,249.57,251.38,250.73,247.62,248.34,246.15,249.92,252.49,256.16,255.08,257.3,260.44,262.76,262.76,263.55,262.89,265.9,264.39,267.02,267.02,267.82,268.55,266.2,264.38,263.73,261.49,263.75,268.64,281.41,281.44,280.17,285.14,282.25,282.25,274.96,279.81,283.36,279.28,288.69,289.45,289.41,285.5,289.36,296.48,294.75,301.14,301.25,307.62,307.62,302.26,294.71,298.65,295.09,298.82,298.42,299.71,300.99,295.68,295.37,285.86,284.89,292.43,285.4,285.4,285.6,290.88,294.45,294.96,289.38,289.38,292.67,299.5,296.36,296.88,297.31,297.01,294.34,298.38,294.45,289.85,290.61,287.61,290.58,295.83,295.89,295.49,295.86,297.87,296.56,295.46,295.46,295.46,304.23,308.25,304.98,300.03,304.85,304.85,314.3,318.95,317.59,316.57,314.5,311.02,309.75,315.12,316.05,310.4,313.03,313.18,313.28,312.97,309.05,321.18,318.67,315.88,318.43,330.82,338.37,338.37,338.31,334.21,333.42,332.01,335.4,337.3,333.53,333.53,336.44,343.85,344.84,345.41,340.76,330.32,318.39,324.45,326.46,309.48,318.4,322.96,319.6,315.89,315.48,315.19,324.22,313.26,313.26,302.36,306.69,315.48,314.62,313.27,304.54,299.71,315.42,307.93,311.8,313.5,313.6,330.49,328.07,334.11,331.64,339.7,341.21,349.33,343.22,345.26,348.34,349.73,347.12,350.5,355.32,351.68,351.68,347.96,349.3,349.3,349.3,349.3,368.79,368.09,366.35,368.26,371.37,367.74,360.43,356.95,355.39,351.01,362.05,371.76,382.44,381.49,381.5,379.71,389.31,392.86,391.69,401.48,396.01,390.83,375.78,383.95,376.69,376.91,387.5,406.85,407.36,410.28,417.04,418.19,424.67,409.61,406.01,424.74,407.1,407.73,411.22,413.64,403.42,409.35,409.32,400.62,392.19,397.61,402.39,394.67,397.61,403.53,392.28,376.47,376.47,388.74,388.06,389.86,379.23,381.1,366.04,360.58,363.12,377.76,374.2,375.39,389.14,385.52,385.07,393.07,393.07,396.32,400.93,403.31,406.28,395.95,383.42,388.65,387.47,384.61,386.54,388.92,388.15,389.76,389.21,388.64,377.55,376.9,381.63],"S&P500":[null,100,99.99,99.76,97.32,98.75,97.28,97.22,98.21,97.84,97.83,97.86,98.93,99.57,99,98.15,98.79,99.31,98.38,99.17,98.84,98.35,98.78,98.82,98.5,98.96,97.72,97.84,97.53,97.55,97.26,97.86,98.07,97.94,97.93,98.39,98.02,97.85,97.56,97.25,97.24,96.58,95.95,95.53,95.37,97.49,97.85,98.94,99.13,98.99,98.98,99.72,99.56,100.03,99.79,100.54,100.75,100.83,100.83,101.23,100.7,100.83,100.56,100.21,100.25,100.83,101.18,102.51,102.73,103.34,103.22,103.9,103.06,103.46,103.27,103.48,103.85,103.6,103.41,103.54,103.54,103.77,102.9,102.87,102.39,102.39,103.26,103.85,103.77,104.14,103.77,103.77,104.06,103.84,104.03,104.03,103.72,103.91,103.53,103.88,103.6,104.28,105.12,105.04,104.95,104.32,104.23,104.26,104.32,105.07,104.85,104.88,104.95,105.55,105.93,106.48,106.91,107.44,107.35,107.53,107.53,108.18,108.07,108.11,108.27,108.38,108.1,109.58,108.94,108.99,108.64,108.32,108.07,108.16,108.51,108.55,108.19,109.09,108.91,108.77,108.55,107.21,107.41,107.29,107.2,107.09,107.87,107.99,108.3,108.06,107.88,107.94,107.61,107.82,107.73,107.81,107.65,107.25,106.52,106.52,107.43,107.12,106.94,107.75,107.42,108.58,109.24,109.19,109.25,109.04,109.23,109.36,109.22,109.29,109.73,109.74,109.62,109.75,109.51,109.35,109.87,109.8,107.8,108.2,108.93,109.49,109.69,109.97,110.45,110.49,110.49,110.36,110.31,111.14,111.55,111.42,111.11,111.28,111.31,111.22,111.11,111.61,111.5,111.25,111.28,112.21,111.46,111.39,111.34,111.52,111.55,110.65,111.63,110.67,110.84,111.09,111.09,111.25,110.21,110.92,111.02,110.93,111.74,111.95,112.48,112.47,112.54,113.14,113.12,113.08,112.96,113.29,113.33,113.21,113.06,112.98,113.26,113.31,113.07,113.28,113.47,113.19,113.15,111.51,111.66,112.78,112.72,112.88,111.14,110.93,111.06,112.17,111.78,111.55,111.73,111.79,111.88,112.4,113.04,113.27,113.27,112.41,112.76,112.74,112.58,113.8,114.18,114.26,114.14,114.35,114.52,114.64,114.72,114.37,114.44,114.19,114.19,114.66,114.8,115.22,115.67,115.92,116.07,116.72,116.6,116.38,116.66,116.87,116.67,116.77,116.98,117.05,117.14,117.18,117.78,117.31,117.5,116.95,117.1,118.05,117.67,117.78,117.97,117.99,118.36,118.51,118.48,118.66,118.21,118.1,118.22,117.95,117.29,118.26,117.95,118.1,118.87,118.78,118.78,119.02,118.98,120.15,120.1,121.09,120.84,120.72,120.26,120.25,120.6,121.27,121.66,121.84,121.79,121.29,122.38,123.04,122.64,122.54,122.78,122.72,122.72,122.59,122.69,122.92,122.28,123.29,124.08,124.58,125.46,125.67,125.83,125.69,126.58,127.43,127.43,126.98,128.18,127.97,128.53,129.57,129.85,129.78,129.85,131.39,130.51,129.09,129.15,129.06,126.33,121.15,123.26,122.65,118.04,119.81,121.47,121.79,123.42,124.91,124.96,124.96,124.23,123.55,123.67,125.65,127.13,125.51,124.12,122.46,123.09,124.44,124.77,124.71,125.27,127.45,127.28,126.47,125.75,125.65,125.86,124.08,124.26,124.03,120.91,118.38,121.59,119.49,119.14,120.78,120.78,118.08,119.57,120.96,121.79,119.12,119.51,121.51,120.84,121.84,121.49,122.47,123.78,123.88,123.17,122.12,122.13,120.49,120.71,121.97,122.11,121.11,121.42,120.54,120.27,121.81,122.23,122.2,123.39,124.54,124.75,124.86,124.01,124.51,124.41,124.08,125,124.6,125.01,124.76,124.46,124.46,123.02,124.58,123.73,125.07,125.63,125.72,126.8,126.7,127.1,127.24,127.46,126.95,127.26,127.13,126.86,126.35,126.57,125.76,126,124.27,124.54,123.47,124.23,124.33,124.71,124.09,124.09,125.16,126.22,127.34,127.78,126.87,127.98,128.12,127.99,128.5,128.77,128.27,128.14,128.38,128.99,130.17,129.77,128.92,128.18,128.8,128.67,129.3,129.91,130.36,130.73,130.7,130.51,129.58,129.06,129.89,128.9,129.92,130.35,130.67,130.94,130.89,130.67,131.48,132.48,132.52,133.28,132.68,132.7,132.7,132.48,132.11,131.63,131.34,131.59,132.08,132.13,132.82,132.86,132.12,132.83,133,134.04,133.99,133.52,133.34,132.91,133.27,133.27,133.76,133.7,133.8,132.71,131.97,131.92,131.73,127.4,124.78,126.56,125.81,128.51,128.48,126.63,126.59,126.04,125.35,121.48,123.74,121.6,120.8,122.69,124.02,125.33,124.54,125.24,126.02,128.69,128.37,127.19,124.69,124.5,123.56,124.87,125.14,123.06,120.83,121.2,121.2,120.4,122.27,122.67,125.49,125.21,126.24,127.62,123.49,123.49,123.3,120.43,120.64,120.59,121.25,121.22,118.91,116.44,116.45,114.66,112.85,110.53,107.53,107.53,112.86,113.83,113.69,114.65,114.8,111.96,115.8,116.61,117.74,118.22,118.76,118.74,118.12,119.38,119.65,120.56,122.15,122.15,120.42,120.68,120.85,121.87,120.92,120.74,122.62,123.67,123.78,124.62,125.21,124.93,123.76,123.85,123.93,125.53,125.91,125.58,126.94,126.94,127.13,127.36,126.91,127.72,127.88,127.78,127.71,127.35,128.23,127.73,127.59,126.75,125.72,125.46,127.3,127.67,128.56,128.45,129.09,129.57,129.55,129.17,130.57,128.09,127.98,128.9,128.31,128.77,129.63,131.13,131.13,131.42,131.69,132.3,132.44,131.64,132.09,132.1,132.97,132.89,132.96,132.65,132.86,132.86,133,134.17,133.88,133.83,134.46,134.6,134.73,133.72,133.43,134.72,134.12,131.9,131.69,131.29,131.78,128.6,129.63,130.39,131.55,130.78,129.9,131,130.63,129.08,129.25,129.25,128.17,127.28,127.55,125.87,125.52,128.21,129.26,130.05,131.41,132.03,131.98,131.71,132.25,132.04,132.16,133.45,133.84,135.11,134.94,134.71,133.43,133.26,133.77,134.54,135.58,135.97,137.02,137.02,136.77,136.11,136.28,136.89,137.2,137.84,137.86,137.39,136.49,136.98,136.14,136.52,137.46,138.1,137.37,138.39,138.17,137.81,136.31,135.08,134.1,130.11,131.8,131.9,134.38,133.49,131.84,133.84,129.92,130.24,132.12,133.71,132.66,133.75,133.68,130.21,131.64,131.22,132.08,133.76,133.84,133.84,132.92,134.36,136.11,136.23,136.22,136.26,137.25,137.64,137.54,137.11,137.47,137.51,137.52,136.84,136.83,135.68,136.51,136.18,135.46,136.14,134.47,132.07,133.12,135.01,134.41,132.32,133.52,134.38,135.85,135.66,137.01,136.74,137.11,136.58,137.51,137.02,137.41,137.68,138.24,139.01,138.89,139.35,138.92,140.27,140.79,140.62,140.72,141.1,141.46,141.19,141.41,141.51,141.63,142.72,142.79,142.7,142.17,141.94,142.25,143.32,143.63,144.23,144.23,143.65,142.41,141.47,142.36,142.58,143.88,143.43,143.27,143.68,144.92,144.93,145.96,146.01,145.95,146.6,147.32,147.45,147.42,147.42,148.18,148.18,147.33,147.76,149,147.95,148.47,148.05,148.78,149.77,149.34,150.38,150.16,150.44,151.7,152.28,152.28,151.88,151.92,152.1,150.72,148.35,149.84,149.71,150.18,147.52,148.59,150.82,152.51,153.02,152.19,153.31,153.57,154.56,154.31,154.59,154.59,154.14,154.87,154.28,152.65,147.54,143.07,142.53,136.24,135.11,141.33,137.36,143.16,138.3,135.94,125.62,131.82,125.38,113.45,123.99,109.13,115.67,109.68,110.19,105.42,102.33,111.93,113.22,120.29,116.24,120.13,118.21,112.99,115.57,113.82,121.83,121.63,125.77,127.59,127.59,126.3,130.17,127.3,128.04,131.47,129.12,125.16,128.03,127.96,129.74,131.65,130.96,134.44,133.2,129.46,130.01,131.19,130.27,131.77,134,134.01,131.27,128.97,130.46,130.97,135.1,133.68,135.91,134.85,135.17,135.17,136.83,138.86,138.57,139.23,139.76,140.9,142.83,142.35,146.08,147.84,146.68,145.9,137.3,139.1,140.25,142.91,142.4,142.48,141.68,142.6,143.21,139.51,141.04,137.62,139.64,141.79,142.51,143.15,143.15,145.43,143.85,144.98,144.16,145.67,144.31,146.24,147.57,147.07,147.48,148.72,148.97,149.83,147.98,147.07,148.16,147.2,149.03,148.47,149.61,150.68,151.23,152.2,153.18,153.27,153.69,152.47,154.6,154.29,154.26,154.68,155.03,154.35,154.84,155.37,156.93,157.5,159.1,159.37,160.44,160.09,161.29,163.77,158.02,156.73,156.73,152.38,155.45,152.72,152.8,154.75,155.56,154.84,153.53,151.82,150.06,151.64,148.04,148.48,150.86,153.29,152.55,153.81,154.62,153.14,155.89,153.72,156.39,157.64,159.03,161.64,160.62,159.56,159.31,159.33,156.73,157.47,157.13,157.95,158.49,155.55,155.07,149.6,151.39,149.55,151.4,154.09,157.49,160.55,160.51,162.38,162.16,163.4,161.77,163.97,165.88,165.08,163.18,163.82,162.71,163.62,166.27,166,166,166.4,165.64,167.5,167.8,167.7,169.18,168.85,169.32,167.98,167.76,167.55,166.82,168.98,169.28,170.25,169.65,168.99,168.64,168.76,169.36,169.36,170.84,170.46,170.69,171.79,169.25,170.45,171.42,173.97,174.92,173.78,173.85,174.25,173.59,172.34,172.34,173.75,176.17,176.22,175.69,176.33,176.06,171.54,173.22,169.87,172.6,175,175.18,177.08,177.77,179.08,178.88,178.82,179.12,179.96,179.96,179.86,179.8,179.01,178.68,177.29,177.52,179.53,175.14,174.31,178.45,177.01,174.7,172.35,175.71,174.77,177.25,178.31,180.17,180.35,181.52,181.24,181.76,179.08,178.97,180.23,178.85,177.87,178.8,181.78,181.62,181.05,181.7,183.85,183.85,186.51,186.32,186.6,187.39,188.83,188.8,189.42,188.64,190.74,191.43,190.41,189.11,190.87,189.12,191.18,191.52,191.48,191.32,192.61,191.23,191.75,190.47,190.61,192.16,193.58,191.56,189.9,185.83,188.09,190.89,190.41,188.79,188.23,190.22,190.07,191.95,191.55,191.91,192.13,192.28,192.28,192.18,192.46,191.76,193.46,193.3,193.34,192.98,193.88,194.26,194.61,194.22,193.17,193.09,190.56,193.22,194.21,194,195.13,195.78,196.23,196.29,196.55,197.58,199.06,199.06,198.65,199.32,197.62,199.84,200.53,199.83,200.06,199.41,197.91,194.76,197.72,199.35,199.75,201.78,202.26,201.3,201.27,202.11,201.02,200.65,202.3,201.36,202.57,202.91,202.72,202.92,203.18,204.02,204.35,204.88,203.44,201.25,201.5,203.14,204.87,205.18,205.64,204.44,206.24,207.13,206.85,206.91,207.5,207.43,207.43,206.73,206.45,205.5,203.92,204.38,203.21,204.93,204.61,202.75,199.3,199.14,201.04,203.48,203.77,203.21,199.07,199.38,197.01,199.27,196.68,198.75,199.57,201.23,200.84,199.46,198.98,199.58,202.99,204.5,205.19,206.71,207.47,208.09,207.86,208.85,209.23,208.17,210.22,210.63,211.01,211.79,213.15,214.05,214.84,215.04,214.28,212.52,212.64,214.17,214.17,215,214.44,215.17,214.86,214.18,214.53,215.02,215.02,210.14,212.91,208.87,206.41,209.34,207.57,210,214.35,215.01,213.47,215.51,213.54,211.94,215.41,213.52,211.33,208.92,212.64,214.8,216.14,216.14,219.13,218.91,219.21,218.56,217.98,219.37,219.24,214.98,214.78,213.91,213.6,215.56,216.16,213.08,213.26,213.26,209.34,207.31,205.02,201.14,201.7,199.24,198.95,197.88,202.69,206.52,207.94,209.9,204.78,205.83,205.07,206.8,209.8,206,202.09,201.31,204.49,204.67,200.33,198.9,198.9,196.88,193.26,196.15,200.53,200.04,196.95,200.62,199.57,197.98,192.14,190.75,195.65,194.81,192.29,190.86,194.95,199.31,201.77,204.12,204.03,206.34,203.81,206.73,207.78,209.26,211.83,210.5,207.2,207.91,209.59,206.96,204.95,205.82,205.27,201.81,201.12,203.37,200.9,200.9,200.86,204.08,203.96,200.95,195.37,196.49,190.96,191.36,196.09,188.98,190.05,190.97,196.67,189.66,188.58,182.54,182.99,179.98,179.74,184.04,183.31,187.01,179.45,178.41,178.43,181.74,180.27,181.97,185.59,190.18,190.18,188.99,187.57,191.03,187.91,188.5,190.29,188.24,183.76,178.41,171.49,170.84,173.34,167.7,168.07,168.07,172.18,171.96,173.6,178.91,178.37,174.78,174.66,173.13,174.95,174.95,175.23,175.86,178.49,178.34,176.28,174.66,173.88,173.36,176.68,175.21,180.05,181.11,182.89,181.19,181.43,179.33,184.02,186.26,188.9,188.37,187.11,190.04,189.89,189.58,189.35,188.54,192.56,192.42,195.76,196.53,196.9,195.48,195.92,193.39,189.25,188.83,189.38,192.05,185.58,184.34,182.31,180.88,181.43,179.48,179.48,178.74,182.02,183.23,186.02,187.99,179.86,180.47,178.43,177.15,178.36,176.35,173.33,171.87,168.91,167.17,166.81,170.09,166.5,163.99,168.24,173.38,173.03,171.26,166.46,165.21,164.14,163.6,167.85,163.87,168.21,170.14,169,167.66,171.63,173.67,176.5,175.19,174.13,178.42,177.09,176.36,171.95,170.13,172.45,174.11,175.08,171.44,180.95,182.62,180.99,182.56,181.06,180.5,181.36,180.65,183.11,184.19,184.19,184.14,181.29,181,186.61,186.44,186.22,182.89,180.26,179.92,181.27,179.94,182.51,183.84,182.73,178.17,176.19,174.6,174.78,177.38,174.82,175.85,175.85,175.13,173.03,176.05,175.6,175.6,174.9,176.22,174.17,178.14,178.01,179.25,181.55,182.17,182.9,182.9,182.53,179.69,178.32,181.69,183.85,183.72,183.68,185.71,186.17,183.76,186.45,188.39,191.16,189.18,188.02,190.44,188.33,186.67,187.08,189.22,189.17,189.69,187.08,186.56,186.56,182.82,182.53,183.51,181.57,182.13,181.58,180.72,182.09,185.03,185.16,182.32,182.58,179.21,176.61,176.35,179.25,178,181.13,179.13,180.73,183.07,180.06,180.6,181.62,181.91,181.63,184.21,185.27,187.94,188.64,187.54,187.08,187.75,187.75,187.93,187.92,187.15,189.63,189.24,189.86,190.03,190.01,188.88,189.05,189.21,186.22,185.5,189.13,190.69,190.62,188.41,187.09,185.74,189.17,189.26,188.39,189.24,188.92,188.62,189.18,187.97,190.2,192,191.72,191.75,189.6,188.21,189.86,192.34,192.34,192.34,191.17,193.05,195.86,195.46,195.92,195.18,196.39,196.61,198.44,199.82,199.98,202.42,201.68,201.68,200.72,199.67,200.41,198.87,197.98,200.25,200.18,201.07,203.54,203.78,203.78,203.38,201.77,201.19,201.67,203.03,204.54,206.27,206.06,206.85,208.32,208.82,207.41,207.47,208.31,208.9,208.86,207.52,209.57,209.88,209.32,206.42,205.9,204.81,206.65,205.78,204.33,204.38,204.17,205.34,202.97,201.43,199.88,199.85,201.23,200.67,202.88,200.15,201.5,202.76,205.7,206.49,206.16,206.53,206.53,205.67,204.23,203.58,203.87,205.24,204.07,204.32,206.04,203.54,203.68,203.25,201.34,198.04,197.58,198.38,195.45,195.5,196.65,196.12,196.13,193.44,195.01,194.75,197.05,198.29,199.33,200.18,198.93,197.93,200.03,200.01,197.33,195.66,193.19,192.87,194.27,191.48,189.22,188.31,190.57,191.81,193.82,197.48,199.33,199.68,200.25,200.45,198.83,201.93,201.76,205.61,205.94,206.19,206.45,207.98,207.56,208.4,208.4,208.52,208.12,208.32,208.12,208.91,210.14,209,208.88,208.07,209.72,210.58,211.41,212.38,215.28,215.85,215.84,216.81,218.08,214.88,217.1,217.46,217.46,218.38,218.69,218.77,218.15,216.92,215.18,214.44,214.83,217.86,217.54,218.77,218.63,218.79,218.79,217.98,216.75,218.66,221.35,221.84,222.49,222.67,223.84,223.69,225.38,225.25,221.62,224.39,226.79,226.06,226.58,228.45,228.58,229.9,229.68,226.54,228.71,230.04,228.93,228.93,227.56,227.85,232.66,232.74,231.86,232.25,231.87,233.08,234.95,234.67,232.28,233.47,235.88,234.34,234.07,236.69,236.24,235.56,234.03,235.51,236.84,238.95,239.72,239.39,238.66,237.99,240.04,240.31,240.31,239.83,238.09,238.35,235.41,238.02,237.93,238.28,236.03,237.78,234.32,231.51,231.03,229.69,229.19,227.18,229.16,231.9,231.95,230.89,233.25,233.99,230.31,229.52,231.61,234.52,236.94,237.26,237.26,238.47,238.86,238.8,239.96,242.77,242.27,242.55,242.77,243.38,242.72,240.93,242.61,242.61,242.67,240.89,239.45,241.37,241.64,242,244.87,244.82,244.55,245.18,245.84,247.93,248.52,248.42,250.32,250.95,250.95,250.32,249.93,249.16,250.14,250.54,250.76,249.74,250.41,251.96,253.24,253.24,254.62,254.88,255.07,257.67,255.41,256.82,257.55,259.19,255.58,253.59,251.77,254.49,254.1,248.21,246.94,249.68,249.88,248.64,252.57,249.11,244.53,237.2,239.66,237.8,243.28,244.42,244.43,248.55,249.5,253.52,254.03,256.5,255.99,257.07,254.78,257.7,256.89,257.3,255.76,255.75,258.33,258.33,252.87,252.46,251.7,247.36,250.22,251.34,254.02,255.93,257.31,257.63,257.7,256.95,261.32,260.81,261.54,262.2,261.71,262.77,262.44,263.55,261.09,261.13,260.69,263.03,260.51,263.03,264.9,264.35,265.95,268,265.96,267.21,267.16,268.22,267.74,267.61,265.15,265.72,265.64,266.34,266.77,265.89,260.94,262.01,261.27,264.48,271.17,273.18,274.21,274.48,273.68,273.75,272.09,268.5,269.55,270.62,270.62,272.07,273.01,273.84,275.4,274.36,274.36,275.89,276.57,276.69,278.37,277.85,278.54,276.83,276.01,278.26,276.76,276.75,277.8,276.73,268.57,268.33,271.25,273.23,276.24,276.24,276.13,273.08,270.16,269,268.4,271.78,273.29,270.25,270.67,270.67,266.5,266.92,267.23,272.12,271.55,274.26,274.26,276.67,278.36,279.84,279.04,274.98,277.51,276.21,277.67,276.27,274.17,276.15,277.23,278.24,275.6,277.45,277.55,276.79,279.68,279.66,279.66,280.34,281.01,279.79,275.01,273.65,272.37,272.4,268.08,272.33,267.54,264.27,267.22,262.45,263.9,256.79,254.84,256.09,252.53,257.9,259.56,256.79,259.56,259,259.21,263.78,264.2,261.25,260.39,255.25,256.66,257.63,259.37,246.81,232.07,231.53,227.89,249.57,240.94,245.3,247.25,246.82,241.29,241.61,241.61,235.91,241.84,245.87,250.85,252.7,252.86,254.33,254.7,256.31,260.08,258.42,256.44,257.55,259.04,258.86,267.29,269.22,269.5,270.61,272.51,272.75,271.69,267.31,267.19,265.4,265.4,270.83,269.32,270.4,270.37,271.48,273.06,273.08,271.64,274.43,274.68,276.19,275.43,276.48,273.36,275.93,273.62,273.54,273.54,272.94,275.56,278.63,278.63,280.86,282.33,283.79,283.47,284.81,287.19,287.19,284.93,284.73,286.45,287.24,286.29,286.7,285.56,286.47,288.01,287.99,288.39,288.57,290.83,291.03,292.19,292.24,291.38,291.01,289.94,285.3,289.5,288.1,290.2,289.96,292.23,291.49,294.8,295.75,295.84,294.99,294.96,293.23,292.51,291.34,295.77,294.51,295.72,296.43,297.37,295.46,295.46,293.42,294.92,297.38,296.44,297.06,297.86,298.75,301.28,301.14,302.55,302.16,301.87,303.32,304.8,306.14,304.46,303.59,302.07,303.85,304.65,305.9,306.94,307.13,307.15,308.27,307.1,308.89,308.03,299.68,304.36,303.88,305.11,303.18,304.78,308.04,308.05,306.4,308.19,310.62,314.44,315.16,315.15,312.02,312.84,313.38,309.7,310.83,307.36,307.75,312.49,313.13,313.33,308.14,307.99,305.17,302.65,303.78,299.05,301.99,306.66,309.44,311.58,311.58,313.25,311.58,312.35,313.28,313.61,314.22,313.13,312.85,314.97,315.62,312.26,311.76,311.01,307.41,309.85,312.58,314.59,316.02,317.04,317.04,316.95,315.84,315.4,313.08,313.68,315.67,317.63,316.53,316.56,318.61,319.11,318.49,316.79,317.61,317.41,317.41,310.86,314.46,316.19,316.29,317.87,319.17,319.14,318.73,317.36,319.07,316.39,314.79,310.93,317.05,318.54,317.49,317.47,312.5,312.66,312.66,312.98,314.72,313.83,316.01,312.73,315.12,317.69,315.98,314.61,314.74,311.76,314.18,312.41,308.26,310.82,310.16,309.9,305.18,303.33,306.4,307.16,302.98,302.15,297.58,300.99,299.86,301.48,296.24,291.28,290.13,298.59,300.73,301.06,301.06,302.4,302.63,310.22,312.13,311.77,314.95,318.66,321.2,322.04,325.91,325.14,323.08,326.46,325.11,327.7,328.1,326.5,326.37,329.71,330.67,329.33,332,336.85,335.57,338.39,339.03,338.49,340.47,343.07,338.83,338.58,336.32,339.95,340.53,341.8,341.8,343.89,343.95,345.93,346.68,347.59,348.04,345.47,346.87,337.7,338.71,337.83,332.36,338.18,339.88,345.5,343.54,339.36,343.04,343.04,341.77,336.86,336.53,336.5,336.34,340.29,342.99,342.25,342.25,342.25,344.73,343.19,342.23,345.01,346.47,343.72,345.01,346.33,344.56,341.08,340.42,343.44,342.97,338.82,338.99,339.05,339.76,334.61,340.16,342.55,347.61,353.83,353.24,352.62,354.8,354.59,353.45,354.38,356.69,356.09,354.23,351.79,352.53,349.47,350.99,350.01,351.13,351.05,353.58,352.7,351.53,349.03,350.64,354.35,353.01],"SK하이닉스":[100,101.33,101.07,103.2,103.87,98.67,100.8,100.8,100.8,100.8,104.53,104.67,104.4,105.07,104.93,105.33,109.73,109.87,107.2,107.2,107.2,111.47,113.6,113.47,112.53,110.13,110.13,110,109.2,110.8,112.8,111.07,106.8,106.8,109.2,107.07,109.47,114.4,114.67,113.2,109.33,112,109.33,109.73,109.87,110.67,110.67,105.73,109.33,106.27,105.87,105.87,108.93,111.73,112,108.67,113.87,114.8,113.73,113.6,113.6,113.07,114.4,117.87,118.4,118.4,120.53,120.67,123.33,121.33,120.8,119.87,122.27,121.6,123.73,120.4,120.4,120,121.33,123.47,121.73,121.73,120.93,119.2,119.2,122.13,126,124,125.2,128,132.13,132.67,137.6,134.93,134.13,131.47,131.47,130.27,132.27,131.07,135.47,137.6,137.87,142.13,142.13,142.13,143.2,144,140.8,143.2,143.2,142.13,145.6,140.53,133.33,135.2,129.2,127.73,132.27,134.4,133.07,135.73,134.93,133.87,126.67,122.67,124.53,124.53,127.2,125.6,131.6,130.13,128,128,131.2,136,134.13,130.13,131.07,124.67,126.93,126.8,129.73,129.2,132,135.2,135.47,136.8,135.73,134.67,138.13,136,134.13,131.73,132.8,130.67,130.27,130.67,132.67,132.8,131.2,133.87,132.93,137.07,138.67,139.73,139.73,143.2,142.93,144,144,147.73,147.73,149.07,149.07,151.73,151.73,148.27,150.4,147.47,148.27,147.47,145.87,148.53,144.53,149.33,146.93,148.8,148.8,152.27,154.4,153.07,152,150.4,152.27,149.6,149.6,150.67,151.2,155.47,153.33,156.8,158.13,161.6,161.33,167.47,170.67,172.8,173.33,173.33,180,184.53,179.2,182.67,179.73,176.8,175.47,181.33,181.6,177.6,179.47,184,183.73,188.27,189.6,189.87,188.8,189.33,190.13,189.87,194.67,187.73,178.13,182.4,172.27,176,174.67,181.33,174.67,170.67,170.93,176.8,171.2,171.73,163.73,173.6,173.6,176.27,177.07,178.67,179.2,181.87,181.33,181.6,182.4,181.07,180.27,182.67,182.93,183.2,181.6,186.4,191.2,190.4,193.6,196.8,199.2,201.87,204.8,205.87,212.53,211.2,215.2,221.6,221.6,230.13,230.13,219.73,221.87,221.07,221.07,221.07,221.07,221.07,221.07,221.07,236.53,237.6,236,229.6,224.53,222.67,215.73,210.67,216.53,225.87,218.13,217.87,209.87,209.07,212.8,219.2,227.47,222.4,225.07,222.67,219.73,221.87,219.73,218.67,219.47,222.4,218.67,220,221.33,218.93,226.67,231.47,225.87,226.93,221.6,220.27,219.73,204.8,206.4,210.93,207.73,206.67,202.67,209.87,209.87,207.47,204.8,202.67,201.87,205.87,213.87,213.87,205.33,204.53,204.53,197.33,200.27,204,204,204.27,207.2,205.6,211.47,208.53,205.07,194.4,193.6,198.4,193.87,198.4,197.6,200.53,195.47,189.6,190.13,193.07,202.13,201.33,200.8,194.93,196,198.4,192.53,187.2,187.2,189.6,197.07,195.73,198.67,207.2,206.93,206.93,206.93,204,201.33,205.07,202.4,206.13,206.67,209.87,204.8,204.8,206.4,208.8,219.73,220.53,222.67,222.13,226.4,240,241.87,238.93,239.47,239.73,238.93,235.73,236.27,221.6,224,217.07,214.13,214.13,216.8,216.8,218.13,214.4,221.07,214.13,214.93,214.4,216.53,224,224.53,224,220.8,225.6,234.4,225.07,225.07,218.93,219.73,230.67,232.27,225.33,225.33,221.6,221.07,221.33,221.33,222.67,222.4,228.8,229.6,227.73,225.6,232,231.2,234.4,237.6,237.6,254.13,252.27,253.87,252,252.8,253.33,249.07,243.73,239.47,242.67,242.67,242.4,235.73,237.87,235.73,235.73,230.13,232,224,224.27,234.13,236,238.67,226.13,224.8,227.2,222.67,228.53,223.2,229.6,226.67,229.87,227.47,233.6,232.8,231.47,228.27,236.8,238.13,236.27,238.13,240.8,234.4,217.87,222.93,214.67,221.6,229.6,229.07,230.13,228.27,221.87,222.13,211.73,215.2,212.8,208,200.27,201.07,202.4,202.4,199.2,198.67,199.2,209.07,212.8,216.27,218.13,222.67,219.73,220.8,220.53,221.33,214.93,216.53,213.33,210.13,202.4,204,204.27,200.27,198.67,207.2,205.87,208,210.13,210.93,204.53,204.53,204.53,204.53,200,194.93,196.53,191.2,191.2,186.67,187.47,189.87,189.87,187.47,184,193.07,187.47,185.87,187.73,183.2,188.8,186.67,184.27,177.87,172.53,178.67,178.13,181.87,181.87,182.13,193.6,188,186.93,188.8,194.4,194.4,198.67,191.73,187.73,191.47,186.93,186.13,180,181.6,184.8,184.8,189.07,188.8,191.73,190.67,185.6,188,184,181.87,176,178.13,174.67,173.07,176.53,174.67,164.8,165.87,162.93,160.8,156.27,160,161.07,161.07,160.27,164.27,161.33,161.33,161.6,153.87,155.47,156.53,157.87,169.6,174.13,173.6,165.6,170.67,172.8,173.07,172.27,178.67,177.6,178.13,188,198.93,191.47,195.73,202.4,197.07,202.4,202.4,202.4,202.4,204.53,196,197.6,202.4,203.2,206.4,196.8,199.2,196.53,201.87,204.53,204.53,201.07,200.53,196.53,186.67,186.67,186.93,185.87,181.6,181.6,177.87,177.6,180.53,178.13,179.47,181.6,180.8,181.33,188,202.4,202.93,194.4,193.87,195.73,192.8,197.87,204.27,203.73,213.07,209.07,210.67,207.73,207.47,209.6,209.07,208.27,212.53,214.4,213.87,211.2,218.13,214.67,216,209.33,213.87,209.6,213.33,210.67,210.67,215.2,214.4,214.4,213.07,214.13,202.67,198.4,196,198.93,198.67,191.73,190.93,189.07,187.47,183.73,181.33,180.27,178.4,175.73,176.27,175.73,174.13,177.6,173.6,173.6,173.6,174.4,178.13,179.2,175.2,169.33,168.27,169.87,169.07,179.2,179.47,175.73,178.4,177.87,183.73,187.2,185.33,186.67,190.4,184.27,187.2,182.4,179.73,186.13,194.4,201.33,199.2,203.2,202.93,198.93,199.2,204.8,209.07,210.13,206.93,211.2,212.8,205.33,210.4,205.07,207.2,202.93,201.07,192,195.47,192.8,195.47,198.67,198.67,205.07,205.07,203.73,200.27,203.73,202.13,196.8,198.4,191.47,194.67,195.47,195.47,206.4,206.93,205.33,213.33,221.33,218.4,224.8,221.6,220.27,220.27,220.27,212,211.73,213.87,220.53,219.2,220.8,222.4,218.4,222.13,217.07,219.2,218.67,212,212,214.13,214.13,215.73,215.73,210.67,213.33,214.67,216.53,219.73,216,206.4,206.67,210.93,207.2,213.33,221.07,221.07,221.33,217.33,218.67,221.6,225.87,226.93,222.67,222.93,219.47,216.8,221.87,222.4,222.4,227.2,228,227.47,220.53,215.73,217.87,217.87,219.47,220.53,220.8,215.73,214.67,209.87,207.2,210.13,214.93,215.2,215.2,214.93,222.4,234.4,236.27,247.47,248,249.6,253.33,252.27,250.13,250.13,252.8,256,250.93,250.93,252.53,252,251.47,250.67,259.73,264,263.73,268,268,261.87,264.53,264,266.4,264.8,269.33,263.2,263.2,263.2,256.8,261.07,250.67,249.33,252.53,258.93,260.53,268,264.8,263.47,266.13,266.67,272,278.67,280,272,276,277.33,274.67,265.33,261.33,252.27,247.47,234.4,245.6,247.47,251.47,253.07,246.93,246.93,237.6,228,220.8,220,214.93,214.4,194.93,184,199.47,185.07,209.87,225.33,215.2,222.13,223.2,222.13,209.07,213.33,212.27,221.6,228.8,225.33,226.67,224.27,217.07,219.47,219.47,216.8,224.27,218.67,216.8,223.73,220.27,217.07,220.27,222.4,223.2,223.2,223.2,216,216,219.73,219.73,226.67,225.33,228.53,222.93,214.93,218.4,216.27,220.53,224.27,222.4,216.8,217.07,218.4,217.07,223.73,217.33,222.93,222.13,236.53,233.87,241.07,242.67,239.47,242.13,236,227.2,218.67,227.73,231.47,229.87,227.73,226.4,224.27,229.33,224.8,225.6,222.93,226.93,227.47,225.07,227.73,229.33,226.13,223.2,221.33,220.8,221.33,221.07,221.33,220.53,221.07,219.2,224.27,221.87,219.73,223.2,220.8,221.6,221.87,227.47,220.8,218.13,217.6,215.2,216.27,214.93,217.07,216.8,216,215.2,213.87,213.87,208.27,200,191.47,198.67,201.33,205.33,210.13,210.93,207.47,200.27,200.53,201.33,209.87,209.87,209.07,211.73,206.13,204.27,209.07,213.33,218.4,217.33,219.2,223.2,225.33,216.8,222.93,224.8,221.07,220,224,224,224,224,221.87,221.33,222.4,221.07,221.07,228,235.2,230.67,232.27,227.47,231.2,227.2,223.47,222.13,223.73,221.87,220.27,221.07,217.87,213.07,212.27,217.07,221.87,229.6,230.13,229.33,230.67,232,234.93,239.2,261.33,261.6,261.33,261.87,258.13,266.67,262.93,259.2,265.07,263.47,260,268,290.67,297.33,306.67,314.67,306.67,321.33,310.67,308,312,313.33,313.33,318.67,316,309.33,300,309.33,314.67,314.67,308,309.33,316,316,336,348,349.33,358.67,368,354.67,344,354.67,348,340,346.67,348,348,350.67,342.67,360,344,342.67,328,326.67,333.33,346.67,346.67,333.33,340,333.33,334.67,336,336,336,352,353.33,346.67,336,354.67,364,369.33,362.67,396,377.33,377.33,385.33,392,378.67,373.33,361.33,364,354.67,365.33,373.33,364,374.67,373.33,378.67,368,368,360,356,354.67,360,352,358.67,353.33,374.67,376,381.33,381.33,382.67,384,373.33,366.67,372,365.33,366.67,366.67,368,369.33,353.33,354.67,353.33,350.67,360,346.67,346.67,341.33,350.67,352,352,344,345.33,346.67,328,318.67,313.33,316,313.33,322.67,322.67,326.67,326.67,318.67,328,328,334.67,333.33,338.67,342.67,336,344,342.67,342.67,340,326.67,328,341.33,338.67,342.67,345.33,337.33,332,325.33,325.33,330.67,336,342.67,336,333.33,340,332,326.67,328,333.33,329.33,324,318.67,320,328,329.33,329.33,324,317.33,316,312,318.67,316,312,309.33,304,304,300,309.33,320,322.67,320,314.67,309.33,300,281.33,268,270.67,270.67,270.67,277.33,273.33,273.33,274.67,280,276,277.33,276,276,284,288,284,285.33,282.67,278.67,282.67,274.67,280,284,286.67,286.67,277.33,285.33,285.33,285.33,285.33,281.33,277.33,278.67,276,266.67,274.67,266.67,266.67,261.07,257.33,255.2,250.67,250.67,244,245.33,250.13,262.4,258.93,260.53,261.07,256.8,262.67,266.67,272,270.67,284,274.67,284,286.67,281.33,282.67,285.33,286.67,290.67,289.33,286.67,284,296,298.67,294.67,293.33,297.33,318.67,317.33,318.67,313.33,308,309.33,304,310.67,320,314.67,316,324,320,329.33,321.33,324,322.67,329.33,330.67,325.33,321.33,332,338.67,340,341.33,336,340,338.67,349.33,349.33,349.33,342.67,334.67,333.33,338.67,332,341.33,342.67,345.33,342.67,338.67,337.33,338.67,333.33,317.33,317.33,314.67,314.67,302.67,321.33,321.33,321.33,321.33,330.67,332,328,328,328,345.33,352,353.33,338.67,348,354.67,350.67,350.67,350.67,350.67,326.67,328,328,328,333.33,344,344,318.67,314.67,314.67,314.67,314.67,309.33,309.33,309.33,309.33,330.67,330.67,329.33,329.33,321.33,314.67,314.67,320,322.67,314.67,309.33,312,310.67,301.33,302.67,298.67,297.33,296,301.33,293.33,288,290.67,300,300,301.33,294.67,288,296,289.33,292,300,294.67,293.33,292,292,286.67,286.67,293.33,294.67,290.67,300,294.67,300,302.67,296,300,301.33,289.33,288,274.67,282.67,285.33,288,288,285.33,285.33,285.33,277.33,282.67,281.33,276,264,264.27,261.07,259.73,257.07,252,253.87,245.87,240.53,244.27,253.33,254.13,250.67,242.67,233.33,237.6,246.67,245.6,250.4,252.8,249.87,248.8,250.67,250.67,263.2,269.33,266.67,272,273.33,266.67,266.67,268,266.67,265.07,261.07,258.93,257.33,260,260,262.67,256.8,253.6,244.8,248.8,248.8,248.8,257.87,258.93,255.2,257.07,253.87,249.6,248.53,250.93,253.6,246.67,248.53,253.87,246.4,244.53,242.93,244.8,241.07,241.07,241.07,241.07,252.8,248,245.33,243.2,240,234.67,234.67,229.33,222.67,220,218.67,216.53,215.47,221.6,221.6,229.87,239.47,239.73,243.2,243.2,240.53,250.67,253.07,254.67,253.87,255.47,247.73,240.53,241.33,244.8,249.33,250.4,240,222.4,220.53,223.73,225.33,220.53,225.33,230.67,233.87,237.87,237.6,249.33,242.4,244.27,244,233.87,235.73,230.13,227.2,227.2,231.73,226.93,221.6,223.2,226.67,225.87,218.4,216,216,210.4,210.13,217.33,216.27,219.47,218.13,213.87,209.07,210.67,208.8,208,211.2,207.47,205.33,205.33,202.67,200,200,201.87,201.6,216,217.07,221.6,229.33,230.67,232.8,231.47,228.53,228.8,229.33,226.93,228,233.6,233.6,233.6,243.73,243.73,244,241.87,236,243.73,243.73,245.87,237.6,242.13,253.07,253.07,249.33,241.6,249.07,244.53,247.73,245.33,246.67,243.2,237.6,247.2,242.67,240,238.4,238.4,234.93,232.8,239.2,237.07,231.47,228.27,222.13,224.8,216.27,210.93,210.67,224,223.2,222.93,231.73,236,232.8,228,235.73,231.73,236.8,236.27,232.53,225.33,225.6,223.47,237.6,241.87,244.8,240.8,236.53,238.13,236,233.6,235.2,233.87,237.6,232.53,228,233.07,236.8,238.67,238.67,240.53,239.47,236.53,236.53,236.53,232.8,231.73,230.13,232.53,230.4,241.07,245.07,249.6,259.47,261.87,261.07,260.53,276,291.2,291.2,294.13,289.6,294.13,294.13,289.87,289.87,288,292.53,307.73,306.13,318.67,316.8,317.33,317.07,306.13,309.6,306.93,304,302.93,302.67,301.33,304.8,309.87,307.2,313.6,314.4,311.2,303.47,298.13,294.13,302.4,307.73,304.27,314.67,312.53,314.13,313.33,311.73,306.93,304,302.4,301.33,330.67,341.33,329.07,333.6,318.67,320,320.27,325.07,316.27,316,316,307.47,306.4,306.4,308.8,306.13,312.53,310.4,310.67,309.33,322.4,310.67,309.07,316.27,318.4,324.8,320,317.87,318.4,315.2,316,303.2,309.07,311.2,316,325.87,326.4,317.33,317.87,314.67,310.67,312.8,312,306.67,305.87,305.87,305.87,305.87,305.87,307.73,320.53,321.07,321.07,318.67,317.87,331.2,332.53,330.93,346.67,346.67,335.2,336.53,330.67,338.13,340,320,317.6,317.6,310.13,320.8,334.13,335.47,354.67,347.73,340.27,341.33,348,351.47,346.67,357.6,352.8,346.4,350.4,352,350.13,346.93,341.33,348.53,350.4,347.73,357.07,353.6,349.6,335.73,334.93,334.93,340,343.73,349.33,349.87,364.53,373.33,373.33,368.53,374.67,374.67,374.93,374.93,375.73,374.4,377.33,377.33,379.73,364.8,363.73,366.67,362.67,366.4,356,362.67,357.6,357.6,352.27,349.33,363.2,376.8,380.27,375.47,377.33,366.4,362.67,360,365.07,359.2,353.87,359.73,352.8,368,368,380.8,380.8,380.8,400,396.53,397.07,391.47,403.47,398.93,397.33,417.33,430.4,431.47,410.13,421.33,416.53,416.53,444,442.13,434.4,439.73,458.4,444.27,441.87,436.27,431.73,429.87,438.13,427.2,417.33,453.33,452.8,451.73,470.93,483.2,475.2,488,494.67,496.8,477.87,501.33,487.47,483.2,487.73,487.73,502.4,499.73,501.87,477.6,476.53,486.13,462.13,457.6,456,479.47,454.93,474.13,469.07,464.53,464.53,462.93,461.87,461.87,478.93,474.67,467.73,479.73,490.13,494.13,494.13,514.67,506.4,506.93,512,527.2,533.33,529.6,537.33,540,540,521.87,504.53,517.87,515.47,516.53,516.53,553.33,554.67,566.67,573.33,592,589.33,594.67,625.33,622.67,633.33,624,594.67,600,632,630.67,630.67,628,618.67,629.33,613.33,629.33,622.67,636,637.33,642.67,621.33,613.33,621.33,588,566.67,558.67,546.67,546.67,556,506.67,511.47,521.6,503.73,518.93,515.47,461.87,416.27,436.53,451.47,435.73,457.33,472,485.07,497.87,497.87,532.53,517.07,532.53,513.6,509.6,494.67,478.93,466.67,478.13,452.53,463.2,464,448.8,412.8,425.07,417.07,418.67,414.67,419.2,450.13,434.13,434.13,434.13,434.13,407.47,418.93,432,436,440.8,482.4,490.13,465.6,465.6,450.93,450.93,464.27,493.07,474.67,474.67,497.87,496,496,514.4,503.2,522.67,499.47,509.07,500.8,522.67,528.53,536,522.67,507.47,520,496.8,485.87,517.33,515.2,522.13,522.13,534.67,513.6,495.47,487.73,461.33,475.2,457.87,454.93,454.93,450.13,471.2,472,472.27,448.8,429.6,426.4,423.47,439.73,448,461.33,445.6,450.4,454.4,458.13,469.6,468,478.13,490.67,489.33,466.67,449.33,452.27,449.33,449.33,453.6,465.33,463.73,463.73,456.53,485.07,532.8,520,519.2,546.67,542.67,518.13,520,528.53,560,572,565.33,581.33,601.33,585.33,589.33,589.33,589.33,589.33,589.33,531.2,509.07,509.6,530.13,542.67,541.33,528.27,532.53,530.4,556,560,565.33,560,582.67,565.33,558.67,546.67,534.67,541.33,531.2,507.2,507.2,496.27,514.93,513.07,513.07,501.07,500.8,530.4,532.53,545.33,549.33,541.33,548,560,574.67,564,554.67,570.67,552,531.47,508.53,525.33,527.73,518.93,485.87,439.47,452,440,488.53,482.13,480.53,481.6,464,466.67,466.67,470.93,463.47,482.67,475.47,491.73,485.33,482.13,473.33,473.33,496,496,496,508.8,507.47,506.93,520,529.33,549.33,534.67,545.33,531.73,538.67,534.67,525.07,533.33,541.33,540,554.67,565.33,545.33,553.33,553.33,580,598.67,598.67,610.67,614.67,640,628,628,661.33,664,657.33,656,685.33,692,742.67,762.67,781.33,757.33,778.67,761.33,744,742.67,721.33,722.67,752,749.33,792,785.33,800,796,789.33,718.67,717.33,726.67,716,717.33,718.67,709.33,698.67,700,702.67,729.33,688,688,702.67,689.33,698.67,684,712,717.33,741.33,737.33,737.33,713.33,701.33,681.33,653.33,669.33,692,697.33,693.33,716,717.33,682.67,694.67,700,708,729.33,738.67,768,810.67,818.67,876,882.67,928,889.33,948,948,936,962.67,953.33,950.67,897.33,930.67,926.67,960,1054.67,1054.67,1054.67,1054.67,1054.67,1054.67,1141.33,1106.67,1097.33,1126.67,1206.67,1241.33,1294.67,1277.33,1284,1276,1360,1426.67,1389.33,1488,1514.67,1490.67,1653.33,1562.67,1544,1581.33,1546.67,1616,1650.67,1645.33,1632,1493.33,1616,1520,1498.67,1522.67,1389.33,1386.67,1384,1397.33,1450.67,1413.33,1434.67,1488,1472,1445.33,1450.67,1538.67,1509.33,1565.33,1506.67,1522.67,1477.33,1413.33,1469.33,1472,1458.67,1546.67,1557.33,1568,1568,1597.33,1706.67,1736,1736,1805.33,1856,1936,1978.67,2016,1984,1997.33,1968,1978.67,1997.33,2016,2037.33,1981.33,1973.33,2013.33,2045.33,1962.67,2133.33,2242.67,2296,2424,2213.33,2418.67,2400,2245.33,2237.33,2365.33,2336,2293.33,2368,2346.67,2346.67,2346.67,2346.67,2384,2530.67,2536,2680,2714.67,2930.67,2829.33,2829.33,2504,2264,2509.33,2464,2229.33,2501.33,2546.67,2480,2426.67,2597.33,2586.67,2816,2701.33,2685.33,2488,2629.33,2653.33,2488,2488,2328,2152,2392,2213.33,2336,2362.67,2442.67,2754.67,2661.33,2738.67,2773.33,2941.33,3029.33,3080,3008,3109.33,3264,3261.33,3266.67,3258.67,3445.33,3466.67,3448,3429.33,3429.33,3858.67,3858.67,4269.33,4410.67,4496,5013.33,4893.33,5269.33,5253.33,4850.67,4906.67,4653.33,4653.33,5173.33,5176,5176,5472,5981.33,6104,6221.33,6301.33,6293.33,6293.33,6128,5520,5096,5906.67,5461.33,5602.67,5733.33,6101.33,6352,6722.67,7160,7370.67,7784,6813.33,6989.33,7778.67,7128,7008,7066.67,6826.67,5832,6466.67,6248,5869.33,5536,5829.33,5813.33,4920,5101.33,5552,4912,4912,4704,4896,4880,5117.33,4690.67,4842.67,4133.33,3736,3525.33,4581.33,4178.67,4205.33,4448,3986.67,3792,3786.67,3800,4010.67,4248,4386.67,4386.67,4432,4000,4509.33,4613.33,4456,4474.67,4501.33,4613.33,4408,4464,4514.67,4301.33,4256,4392],"마이크론 테크놀로지":[null,100,100.88,102.59,98.82,100.82,98.47,99.53,102.59,102.76,99.65,99.47,103.82,103.41,102.76,102.06,105.82,102.53,103.12,104.53,104.23,104.64,104.06,104.23,103.53,102.88,99.12,98.65,99.06,100.71,99.88,102.35,101.23,101.12,99.59,100.29,103.12,103.7,103.06,101.12,100.88,99.82,98.06,97.71,98.06,102.18,102.35,101.12,99.88,103.88,104.12,106.41,107.23,112.76,112.93,114.58,116.05,117.05,117.05,118.34,117.52,114.17,114.81,108.64,110.46,109.41,112.05,120.16,121.46,120.52,117.7,118.34,117.7,119.28,119.17,119.64,121.4,120.99,136.33,136.74,136.74,136.98,133.92,130.92,128.87,128.87,132.57,131.45,129.98,129.57,131.33,132.16,133.98,131.16,130.39,130.39,127.81,131.22,127.63,129.1,128.69,134.33,138.51,138.27,140.92,142.15,141.74,145.5,145.74,144.62,143.09,144.62,142.33,143.74,141.39,140.51,135.92,135.33,135.1,137.27,137.27,139.74,139.62,138.04,136.63,139.68,137.8,144.33,145.21,150.32,151.15,150.73,149.21,147.85,148.03,151.09,150.38,153.56,153.09,151.68,154.09,150.03,153.2,155.61,167.14,169.08,168.67,167.55,170.31,169.9,168.37,168.08,166.14,168.25,167.67,162.49,159.79,156.91,157.2,157.2,159.49,159.55,160.26,164.37,160.61,156.2,158.67,157.5,162.43,162.67,166.31,163.26,164.61,163.37,165.78,164.96,169.37,172.37,170.66,170.08,169.49,170.61,158.73,161.55,163.55,164.96,166.31,170.43,173.02,174.96,174.96,180.48,180.89,180.83,183.48,183.48,185.6,191.06,190.77,179.89,183.42,185.42,182.6,179.66,175.54,183.42,181.25,188.18,187.48,186.54,191.06,186.13,189.54,185.01,175.54,171.31,171.31,179.37,176.95,177.54,179.31,184.42,184.89,183.01,186.89,186.48,187.54,187.07,188.12,188.18,186.18,175.78,175.25,177.78,172.13,165.31,166.61,168.31,163.61,164.14,168.08,169.55,168.02,161.61,164.67,171.9,174.49,180.42,174.13,178.6,173.78,179.01,179.01,177.66,178.07,182.72,185.07,185.83,187.95,191.65,191.65,188.54,189.59,192.77,190.77,196.59,201.59,203.35,203.29,203.7,208.29,211.35,211.46,211.11,212.05,205,200.94,218.05,223.16,231.22,235.21,237.33,232.57,231.45,233.22,240.8,246.8,244.62,238.57,237.51,243.92,237.45,244.86,242.86,243.97,244.33,244.56,241.39,238.68,240.15,244.86,260.49,260.91,260.67,256.97,254.26,258.38,259.2,255.73,263.26,268.08,269.25,266.67,271.49,271.37,280.07,290.42,288.89,288.89,292.06,282.48,281.78,257.14,249.21,246.85,234.57,242.27,244.44,253.97,254.03,252.85,246.09,247.21,248.32,249.27,256.97,258.55,268.96,261.14,259.38,259.38,248.38,249.74,245.8,241.74,256.73,264.43,275.6,269.25,267.78,252.62,254.61,251.73,251.68,251.68,252.32,260.2,258.61,251.32,252.09,258.38,253.26,252.85,256.73,254.5,244.97,257.03,249.79,239.98,231.63,257.97,246.97,235.16,237.57,248.03,250.62,255.44,255.73,259.91,259.91,263.96,261.85,260.14,273.54,282.07,285.6,286.95,279.95,288.71,305.88,315.93,317.28,324.63,320.93,349.03,349.38,351.44,345.91,356.14,353.56,359.49,359.02,346.38,318.69,326.63,308.05,302.7,306.53,306.53,294.3,303.06,313.87,293,284.89,281.95,296.77,296.77,309.17,307.05,303.64,307.23,317.52,302.29,297.59,288.18,276.95,279.84,294.77,279.37,270.31,275.07,269.78,274.07,279.72,285.01,285.54,299.88,309.58,304.64,311.58,317.52,332.16,321.58,313.87,326.16,347.03,352.56,361.49,360.67,360.67,368.14,367.84,338.57,345.33,347.44,349.27,349.32,350.56,360.91,360.91,355.97,353.03,347.91,342.33,343.62,348.32,346.56,349.44,335.68,312.52,320.93,307.23,312.4,308.29,320.28,302.65,302.65,310.64,312.93,319.28,327.69,318.52,325.98,331.28,330.1,334.86,337.74,330.51,323.46,319.17,312.58,313.87,316.05,317.23,311.64,310.35,307.41,313.93,310.46,309.64,311.82,313.87,307.23,302,301.82,297.59,279.19,276.9,276.95,282.6,293.59,295.36,292.18,298.06,306.11,307.7,304.7,310.17,308.76,308.76,305.29,291.24,262.49,263.73,263.96,256.32,245.39,256.44,260.44,256.2,266.49,264.9,270.78,263.02,265.49,262.43,260.73,264.49,265.9,265.43,269.02,265.43,259.61,256.2,253.2,248.5,244.62,246.74,249.68,248.91,254.03,248.97,242.8,237.8,233.74,227.4,208.29,216.23,208.11,203.76,211.7,221.75,235.86,237.04,234.69,233.98,240.62,237.74,229.92,220.11,222.52,223.57,234.63,231.86,216.52,212.35,213.87,213.87,213.99,214.99,217.52,227.57,222.87,226.69,235.33,216.81,216.81,221.46,207.58,204.59,207,211.82,205.88,201.06,199.18,200.53,184.66,183.89,178.25,170.61,170.61,181.6,187.71,185.6,186.54,192.53,182.25,192.24,199.88,198.35,208.35,211.11,211.7,203.82,199.82,197.41,199.18,210.23,210.23,199.12,201.29,215.11,229.04,223.87,219.81,224.81,224.69,232.8,232.04,231.45,244.09,231.51,226.81,226.81,237.51,245.03,248.27,246.85,246.85,246.68,248.15,244.15,250.26,251.32,252.56,242.92,240.33,244.44,241.39,235.1,222.99,222.4,227.22,229.45,230.75,228.28,225.81,232.45,232.86,237.33,235.92,258.61,244.68,238.39,237.04,230.63,231.28,242.97,248.38,249.5,258.08,252.15,254.67,252.2,245.27,247.91,248.56,246.97,245.86,251.38,253.67,255.14,255.14,255.14,251.44,252.97,251.32,247.5,247.56,247.27,246.33,250.21,254.73,247.68,236.68,233.69,230.86,228.92,219.75,226.4,225.81,219.34,211.99,203.53,209.52,204.17,198.82,199.88,199.88,193.65,195.71,195.88,191.71,192.18,202.76,196,196.77,199.82,205.41,204.82,193.77,196.24,192,190.65,201.59,199.53,200.76,195.47,195.12,192.12,217.75,223.81,226.87,235.8,232.8,232.75,232.75,231.75,237.57,243.09,252.2,255.61,261.67,261.02,253.15,254.97,262.61,267.61,277.43,276.01,282.13,280.83,279.19,275.25,279.01,263.9,256.32,259.14,246.56,250.56,245.44,250.62,244.09,247.68,259.67,247.15,248.32,256.03,264.61,260.02,259.67,263.26,252.56,255.32,249.5,253.67,262.61,266.14,266.14,264.49,275.19,288.24,287.89,288.83,290.36,296.77,296.53,296.88,294.83,298.88,296.77,292.89,289.01,291.59,285.19,290.83,285.71,254.03,251.91,248.68,246.8,255.5,261.9,259.61,250.68,252.09,254.44,265.14,263.73,273.13,265.49,267.49,255.56,265.84,262.55,262.55,276.9,282.36,286.24,282.83,281.48,279.54,284.42,291.53,286.18,280.31,284.54,277.43,271.96,275.72,272.19,275.13,280.48,281.13,273.84,267.9,267.78,269.66,279.37,274.66,283.13,283.13,279.31,272.72,265.9,272.19,274.07,281.78,273.07,279.01,289.59,299.65,301,311.23,311.58,311.82,320.58,323.69,325.69,325.81,325.81,323.99,317.64,312.82,316.17,325.63,320.58,314.93,342.56,338.15,336.92,333.16,337.74,338.15,330.22,339.09,338.98,338.98,346.68,347.85,348.03,339.56,325.75,331.98,325.1,323.52,312.11,316.17,326.28,333.74,344.97,334.39,337.04,336.57,348.44,348.79,343.92,343.92,339.51,352.67,346.85,335.04,323.4,306.29,307.88,297.35,308.99,320.93,304.53,325.04,315.81,302.59,270.25,281.36,257.03,228.16,252.73,202.65,219.75,203.94,213.35,212.29,224.87,254.38,249.85,263.32,255.61,261.73,247.27,234.51,241.56,242.33,272.6,273.6,283.89,271.19,271.19,271.43,279.95,272.96,267.67,268.67,255.14,243.45,258.14,257.32,259.61,266.2,266.37,292.95,281.54,264.9,261.38,266.96,270.9,273.9,283.66,283.36,268.61,255.91,268.84,261.08,269.96,265.26,274.19,265.84,264.2,264.2,269.25,290.71,273.19,281.66,272.43,275.25,287.6,301.12,315.81,315.7,312.46,308.47,285.24,286.24,289.48,299.94,299.59,296.77,298.82,300.71,293,283.89,289.18,285.07,288.95,302.88,292.18,292.95,292.95,299.35,288.59,292.24,293.83,298.06,290.77,292.24,296.94,294.53,290.83,301.06,302.88,303.64,309.47,294.06,303.29,294.47,296.24,298.3,294.3,296.24,301.59,300.12,286.3,286.6,288.95,280.78,285.01,271.25,268.08,265.84,261.02,258.97,252.73,250.79,257.26,265.14,264.32,262.32,268.61,267.55,269.02,281.19,272.37,273.25,273.25,264.73,265.43,263.79,270.96,288.24,288.36,295.18,299.71,298.3,288.95,292.18,293.06,290.83,288.89,292.3,298.12,276.07,281.72,273.66,279.84,278.19,284.6,293.36,293.3,297.94,304.82,303.53,305.35,303.41,309.41,314.7,313.4,319.69,310.7,306.53,305.47,293.94,296.77,295.94,292.24,300.29,305.47,320.87,324.28,328.98,325.75,331.33,330.69,340.56,363.67,364.43,357.08,363.49,360.96,377.31,375.96,372.9,372.9,377.6,376.78,394.36,406.29,410.93,431.16,426.87,430.28,419.81,419.05,414.64,420.58,430.04,429.1,424.81,420.11,420.16,414.11,411.23,414.93,414.93,415.4,412.76,422.81,441.98,435.33,454.2,453.32,465.08,455.14,462.49,467.14,469.78,477.95,474.54,474.54,502.65,490.89,499.76,483.72,477.84,467.43,441.45,460.85,460.14,472.84,479.84,465.08,477.66,476.78,493.89,489.83,484.13,508.41,517.4,517.4,515.81,505.88,520.52,534.74,507.23,518.69,543.92,518.05,538.1,557.08,535.51,523.87,495.77,522.81,500,524.99,502.12,525.04,515.99,522.34,537.51,557.08,528.04,532.1,536.63,502.06,487.95,494.36,517.28,509.05,508.76,518.58,543.27,543.27,551.15,549.62,552.38,560.2,560.26,561.96,541.74,533.04,530.69,532.98,519.75,514.29,526.1,498,505.76,516.4,525.93,505.76,517.7,506,499.82,496.24,500.59,498.53,505.47,475.31,474.31,451.5,453.79,468.55,472.6,463.73,469.9,476.95,474.54,487.36,477.54,483.48,493.42,494.65,494.65,494.71,495.83,482.25,492.42,494.06,473.43,462.43,466.08,466.43,473.19,483.13,473.19,474.07,452.38,453.09,456.55,464.55,473.72,482.25,490.18,487.54,499.59,470.96,472.25,472.25,476.66,459.85,453.32,462.9,467.72,461.2,461.43,452.2,440.98,438.45,443.21,453.79,444.03,446.44,448.56,436.33,444.15,453.15,456.08,456.44,475.37,481.95,479.07,482.07,471.55,446.27,441.09,412.99,416.93,416.99,416.11,415.17,413.17,412.87,421.75,423.16,435.27,427.81,435.04,430.1,433.27,433.39,434.98,433.92,433.92,432.92,424.87,428.4,432.1,437.1,432.04,433.98,438.74,436.8,425.46,424.1,434.86,435.27,435.33,441.98,429.75,421.16,417.28,417.34,415.17,414.46,411.17,414.7,412.23,406.94,392.24,390.24,398.59,397.88,395.41,397.24,401.35,403.53,396.88,404.23,405.29,401.18,409.05,406.23,415.64,415.99,418.87,424.69,428.69,438.33,444.39,431.57,438.27,454.44,451.38,451.56,443.62,452.79,488.12,493,502.12,506.82,506.82,490.42,506.41,493.83,500.59,487.24,479.84,484.71,504.59,505.7,499.29,502.88,495.88,489.65,503.59,486.13,487.95,482.25,533.1,531.1,555.09,555.09,555.14,546.38,565.37,551.97,547.62,562.9,566.37,554.97,562.32,555.26,551.97,553.79,559.14,562.14,572.37,572.37,545.97,529.1,500.12,481.66,487.65,474.54,481.89,462.79,466.02,483.66,478.84,496.83,481.89,477.19,475.43,494.53,518.05,535.1,527.69,528.28,564.37,564.73,551.03,533.8,533.8,532.45,513.29,522.22,529.69,522.4,507.11,548.5,524.28,481.54,445.03,453.62,467.02,445.15,428.1,408,429.81,468.37,473.37,466.84,460.61,465.14,444.74,459.79,459.14,469.49,482.36,465.37,457.91,447.85,456.61,438.62,433.74,430.81,424.1,423.46,423.05,425.51,412.29,412.29,418.28,427.57,430.34,416.93,408.05,412.23,394.36,390.77,412.58,400.88,415.05,418.93,432.8,419.11,413.58,399.35,405.11,393.65,398.06,422.81,414.29,437.86,417.7,408,405.06,409.11,391.65,399,415.05,431.04,431.04,434.1,432.39,443.09,411.17,414.17,415.99,403.29,388.12,368.14,345.91,345.09,347.56,323.4,327.75,327.75,333.92,331.22,330.51,343.56,345.56,340.15,329.34,324.99,315.4,315.4,333.51,337.27,345.97,347.68,339.86,347.91,346.03,348.91,361.73,355.38,366.84,372.13,374.13,360.32,353.62,350.73,363.84,364.9,363.67,367.67,367.25,377.72,381.25,367.2,361.26,347.74,360.96,366.37,382.36,380.36,375.43,362.26,370.25,355.73,342.8,340.15,342.8,359.79,338.8,335.16,330.98,332.33,336.92,331.16,331.16,324.69,323.34,325.63,337.68,340.62,315.23,312.23,309.76,310.7,306.29,298.65,294.53,291.95,294.53,287.36,297.35,299.82,294,294.53,304.06,317.23,321.75,321.11,311.05,302.06,315.76,310.11,322.52,309.94,314.52,308.94,311.76,315.7,329.51,330.63,328.45,325.98,306.94,317.7,318.05,322.52,314.23,314.4,330.16,332.51,337.98,329.04,354.32,367.55,363.2,370.96,346.09,345.33,344.39,336.04,344.62,346.44,346.44,343.39,327.75,324.04,338.92,326.22,321.46,317.7,315.58,316.4,324.51,322.57,325.4,324.75,320.93,305.94,306.11,304.06,297.94,300.94,290.59,295.12,295.12,294.06,288.77,297.77,293.83,293.83,296.12,318.64,321.63,333.74,331.33,336.33,341.33,336.68,334.69,334.69,334.22,332.22,331.33,343.68,363.43,360.14,361.79,369.19,375.48,362.79,354.5,368.02,371.37,366.9,352.62,365.26,354.2,353.79,351.68,353.44,364.9,363.55,353.03,346.91,346.91,338.62,334.98,345.39,342.03,340.39,339.92,337.1,331.75,333.8,334.1,326.63,334.45,326.87,322.93,316.87,319.05,318.22,332.57,333.1,338.86,344.68,341.98,360.61,359.55,351.5,348.5,373.54,370.9,354.73,350.44,336.68,335.21,344.27,344.27,371.96,373.72,364.26,370.37,368.2,367.67,364.08,356.55,361.32,359.38,349.85,341.8,358.73,363.9,378.37,366.55,363.9,358.08,355.73,359.96,357.85,358.2,352.67,362.2,358.14,380.01,374.66,381.66,397.24,400.76,389.36,388.07,391.12,409.23,434.63,434.63,421.46,400.94,406.17,406.64,398.41,397.06,394.24,384.01,384.66,396.53,399,406.35,404.59,397.77,397.77,393.3,386.83,389.48,383.77,384.77,392.65,394.3,378.19,371.02,375.66,375.66,364.84,359.96,356.55,367.31,373.9,375.01,379.37,376.72,383.07,381.78,381.89,380.31,385.95,384.95,386.13,396.12,417.81,418.58,419.69,415.99,400.76,406.7,410.99,407.88,397.71,392.12,384.71,378.42,401.41,384.07,377.54,373.66,373.84,376.01,372.78,383.25,374.43,374.6,383.95,392,400.29,411.17,413.82,413.82,413.23,413.93,410.76,412.58,411.7,413.35,416.52,422.05,410.82,414.46,415.7,409.64,399.18,404.94,403.17,399.41,401,383.3,399.94,399.53,398.77,400.41,405.94,411.29,408.47,406.06,412.76,410.05,406.88,406.11,405.64,406.47,397,395.18,393.18,400.18,390.95,379.37,385.95,388.42,393.12,408,414.11,426.69,428.69,427.98,424.93,432.51,443.03,439.62,453.67,453.5,450.73,455.97,462.2,450.97,453.26,453.26,451.91,455.67,447.5,450.85,447.5,446.38,436.74,433.22,429.92,432.98,440.68,457.32,459.49,469.08,483.19,478.6,479.48,483.07,462.61,502.53,508.47,508.47,511.82,509.47,505.58,501.7,484.07,483.6,486.24,490.59,499.41,489.89,484.3,490.24,484.36,484.36,497.41,489.59,498.65,514.46,524.63,514.58,517.81,524.4,517.64,523.63,506.53,504.12,503.29,508.41,511.35,497.35,500.71,499,503,503.82,479.31,481.07,479.89,467.37,467.37,474.49,479.07,505.06,505.58,525.93,539.98,527.4,532.69,559.38,563.02,555.38,561.79,581.89,573.9,555.61,572.72,553.56,537.51,548.21,551.32,552.62,565.84,645.8,647.91,688.59,698.41,701.06,693.06,693.06,730.75,721.63,752.56,729.51,726.51,722.81,720.93,718.4,749.62,720.28,713.52,715.87,683.89,658.02,627.69,641.51,661.14,657.14,655.97,675.13,672.31,664.08,644.91,660.38,674.31,706.23,700.82,701.47,692.59,712.76,723.1,733.74,751.38,751.85,736.57,758.38,749.56,742.39,742.33,761.26,761.26,779.95,773.54,742.45,734.86,753.5,744.5,786.07,764.67,769.78,792.59,794.06,827.45,841.5,831.04,869.08,902.12,902.12,847.68,820.34,817.23,829.63,836.92,777.37,773.25,773.19,779.48,804.35,804.35,773.66,768.31,770.96,801.82,765.61,785.13,769.37,749.5,702.53,690.48,671.72,677.72,671.66,648.32,631.69,643.21,634.04,602.94,645.62,596.77,544.97,531.57,523.22,510.29,541.27,547.21,556.38,572.84,590.3,628.75,634.86,638.62,634.86,636.86,612.93,604.64,581.48,575.31,557.67,561.85,565.78,565.78,520.75,524.93,525.51,507.82,507.17,510.58,532.92,512.7,536.27,512.52,521.63,513.52,524.69,534.39,550.09,552.62,563.02,645.97,631.98,609.7,589.71,587.01,598.59,601.12,605,602.82,597.88,621.34,628.57,636.92,613.29,642.21,658.73,653.44,641.27,633.86,617.58,628.16,634.39,625.46,635.98,611.88,585.83,586.3,598.06,620.16,657.44,666.73,657.85,638.74,611.99,587.42,583.07,566.37,573.25,574.54,578.31,604.12,603.41,614.23,598.47,577.31,577.31,575.84,579.37,586.95,606.7,593,594.77,604.47,576.72,600,577.54,602.59,636.45,638.45,610.82,511.99,529.81,527.45,524.87,524.87,528.04,521.05,501.53,494.77,513.4,528.34,583.54,599.12,584.42,584.42,584.01,558.85,572.37,606.64,603.17,621.69,621.69,643.03,642.15,616.34,606.64,535.63,518.81,523.28,543.8,536.39,528.63,532.98,550.26,555.79,542.62,563.96,553.09,538.98,562.38,585.07,585.07,627.81,613.52,606.58,581.07,560.91,548.03,574.43,539.8,550.44,532.28,536.16,554.61,524.81,546.5,511.93,523.52,562.26,557.79,592.53,606.17,598,600,605.53,556.85,569.9,553.67,541.62,535.92,519.93,510.82,521.52,520.87,437.04,380.48,401.94,385.3,457.79,411.82,408.88,417.52,417.64,407.58,404.47,404.47,392.36,412.76,428.75,455.14,469.02,461.85,451.97,452.38,457.2,474.54,472.78,473.31,485.71,500.59,504.76,542.56,569.84,560.38,561.14,576.13,579.95,576.72,563.43,557.5,548.91,548.91,566.61,565.43,569.08,555.32,577.19,601.12,607,624.87,638.21,652.26,671.02,682.13,683.01,679.6,704.53,707.47,716.17,716.17,726.63,717.7,751.97,748.09,740.74,733.45,724.57,710.7,715.7,718.93,718.93,705,731.45,718.64,723.75,732.1,697.3,706.11,684.48,665.84,672.49,665.67,642.09,645.68,656.85,654.09,654.03,658.2,674.54,641.62,616.58,633.57,641.15,639.51,657.67,698.94,727.34,751.03,730.57,736.57,710.58,726.34,717.52,689.07,680.72,691.83,684.42,684.89,692.24,717.23,699.65,699.65,696.53,697.94,730.22,772.31,772.84,795.06,823.05,885.19,924.34,927.51,933.69,940.56,992.89,956.67,967.78,978.31,950.68,921.99,924.57,963.55,983.66,1070.84,1080.25,1104.23,1122.63,1091.65,1155.44,1130.69,1067.61,1133.27,1099.71,1128.4,1190.65,1189.77,1215.58,1189.24,1166.78,1215.23,1287.6,1293.94,1304.59,1332.33,1316.93,1315.52,1379.78,1281.78,1396.24,1401.12,1398.71,1489.12,1417.46,1439.74,1393,1451.09,1422.4,1343.33,1328.16,1183.83,1219.11,1316.46,1319.99,1353.67,1353.67,1390.24,1413.64,1407.94,1376.6,1332.45,1394.59,1451.62,1483.95,1550.32,1519.46,1417.64,1396.24,1366.9,1325.81,1461.2,1563.32,1626.04,1624.16,1685.36,1685.36,1674.25,1730.57,1720.34,1677.9,1854.32,1835.1,2018.99,1996.18,1922.52,2028.75,2033.33,1987.83,1959.73,1979.01,2132.57,2132.57,2145.8,2287.54,2337.33,2349.5,2287.42,2411.76,2558.97,2561.96,2439.04,2573.78,2465.84,2230.45,2250.97,2320.34,2254.56,2194.3,2412.35,2433.69,2420.11,2420.11,2350.26,2474.72,2453.56,2517.17,2474.84,2457.44,2522.05,2443.03,2424.28,2426.04,2232.1,2356.08,2334.22,2176.95,2288.77,2369.84,2461.43,2383.01,2505.17,2597.3,2714.23,2714.46,2611.82,2486.18,2377.13,2325.28,2246.27,2089.71,2100.06,1891.83,1986.13,2162.55,2153.09,2153.09,2220.81,2219.75,2391.12,2478.01,2472.6,2507.7,2737.57,2682.13,2688.01,2675.31,2636.21,2641.86,2865.84,2831.98,2920.16,3083.83,2964.67,3047.97,3040.33,3187.6,3388.89,3763.67,3918.81,3801.47,4390.42,4675.66,4506.64,4724.46,4562.08,4260.2,4006.7,4107.82,4303.29,4480.31,4415.05,4415.05,5266.78,5458.02,5429.28,5708.41,6087.6,6255.73,6346.68,5855.38,5079.42,5580.72,5502,5243.27,5854.61,5770.78,6396.18,6000.94,6132.8,6666.61,6666.61,7121.58,6183.25,6164.08,7134.39,6656.85,6732.98,6785.95,6068.67,5735.21,5735.21,5789.24,5516.64,5577.9,5829.75,5757.2,5508.52,5779.66,5316.17,5015.87,4990.89,5087.95,5707.35,5640.68,5821.34,5414.17,5292.18,4823.81,4344.5,5142.03,4838.51,4876.54,5247.91,5250.97,5182.07,5159.14,5061.73,5105.94,5357.38,5583.95,5712.29,5947.97,5530.63,5509.17,5727.98,5683.6,5352.32,5484.83,5516.75,5499.06,5484.19,5636.27,5487.6,5620.69,5632.92,5976.43],"브로드컴":[null,100,98.71,98.41,93.97,96.13,96.58,99.13,100.95,100.08,99.78,98.32,99.26,98.68,97.4,97.42,99.86,99.77,100.79,100.83,99.4,98.8,101.39,101.81,101.82,102.14,100.04,99.63,98.74,99.41,98.7,100.63,100.45,101.35,101.06,103.19,101.49,101.11,100.67,98.98,99.52,98.66,100.85,101.1,100.63,103.42,103.45,101.36,98.15,97.92,95.72,97.28,98.09,97.63,98.28,100.86,103.46,103.5,103.5,103.3,102.07,102.54,99.64,95.14,95.98,97.1,96.29,98.51,99.77,104.67,104.13,104.87,103.81,105.21,104.28,105.47,106.41,106.54,105.55,106.34,106.34,106.55,105.31,105.13,103.31,103.31,104.23,103.49,101.86,103.21,103.43,105.53,104.86,104.54,105.46,105.46,104.68,108.14,108.45,111.68,111.63,115.58,118.34,119.33,120.23,118.77,116.6,119.05,119.26,120.49,120.72,120.34,120.92,120.01,120.12,120.81,120.01,120.39,121.67,122.97,122.97,124.34,125.17,123.07,122.95,124.65,123.28,125.74,127,127.6,127.38,128.14,128.36,129.75,132.29,132.35,131.12,132.05,129.96,129.27,129.3,126.25,127.07,126.74,127.98,128.02,129.14,129.35,128.6,127.97,127.88,127.97,126.9,127.12,127.56,127.42,127.15,122.27,123.51,123.51,125,124.55,124.86,127.53,127.21,129.3,130.45,129.56,130.39,129.05,129.35,131.77,131.44,130.57,132.35,131.55,133.52,135.2,135.06,137.91,139.7,140.67,135.11,138.9,136.82,139.32,138.25,140.04,140.77,140.98,140.98,140.16,139.96,137.11,148.76,147.41,148.37,148.61,149.01,142.22,141.83,141.99,140.58,139.09,138.08,140.94,140.26,143.26,142.63,143.34,141.88,137.54,140.88,136.79,136.21,134.28,134.28,135.37,137.37,140.05,141.3,140.79,144.02,144.54,146.28,145.54,146.63,148.68,148.12,147.93,147.88,148.63,150.21,146.67,146.33,144.16,145.17,148.08,146.28,145.63,147.54,146.91,145.63,140.68,142.71,146.65,148.27,148.11,144.33,145.75,145.89,149.15,150.16,149.06,143.54,142.17,141.28,143.79,147.32,147.71,147.71,145.56,145.75,144.1,142.67,144.79,144.44,143.92,144.33,146.43,146.01,145.97,141.97,140.49,139.82,137.64,138.67,140.61,141.99,141.75,140.54,139.98,141.44,142.41,143.62,144.02,143.77,146.35,145.38,144.92,144.17,141.8,142.61,142.78,142.75,142.76,144.76,143.67,142.47,147.81,152.68,154.24,151.54,151.67,159.92,162.2,158.57,159.21,155.25,154.86,154.89,153.86,155.23,159.04,158.89,160.65,161.65,160.94,160.94,165.04,166.35,162.13,158.68,162.44,158.71,154.07,152.92,154.23,154.23,151.91,151.93,151.2,153.14,151.57,155.31,154.52,154.12,155.25,152.85,153.33,153.33,150.85,151.44,152.2,150.15,156.05,157.76,157.81,158.75,159.13,156.93,153.61,154,154.47,154.47,153.86,155.35,157.69,155.69,153.19,153.65,150.12,144.53,146.58,143.47,140.84,144.96,139.56,137.63,133.31,140.49,138.74,134.17,137.64,142.84,143.69,144.75,147.18,145.46,145.46,145.89,145.31,145.73,148.28,147.84,147.17,144.04,142.2,146.62,144.35,146.67,144.39,144.33,148.32,153.62,152.67,152.3,156.49,148.96,143.16,141.65,143.78,142.36,141.72,144.79,142.82,138.33,137.73,137.73,133.07,138.39,138.51,138.11,133.76,137.19,140.12,140.46,139.94,144.32,145.75,147.13,145.87,141.94,138.59,136.44,133.48,133.84,134.67,136.05,134.09,134.65,133.69,131.65,134.73,137.91,139.6,139.13,142.32,142.24,143.05,141.19,140.57,139.95,137.93,139.71,139.39,140.6,142.33,146.13,146.13,145.93,145.76,147.32,149.82,151.01,151.53,154.02,154.69,150.77,152.44,152.79,154.05,156.9,157.94,154.59,152.51,152.67,151.75,151.79,147.53,147.01,144.42,143.13,141.81,141.47,139.85,139.85,143.42,144.76,144.61,146.44,142.28,122.72,118.33,118.79,121.75,122.02,122.95,122.93,126.66,127.03,132.07,130.44,129.19,131.61,129.61,126.71,126.45,127.3,126.8,128.76,128.26,126.58,124.04,123.37,121.16,120.74,121.97,122.31,120.82,123.03,121.3,120.16,122.15,124.47,125.32,125.65,126.62,128.01,128.01,128.25,129.41,126.22,135.93,140.63,135.91,134.36,137.59,138.13,137.25,140.11,141.32,143.15,145,145.79,144.74,143.44,144.04,144.2,145.83,145,145.77,145.04,142.74,141.07,143.02,135.49,133.78,136.15,135.87,139.29,138.61,133.27,133.42,133.62,133.87,127.83,129.89,124.58,123.61,129.17,130.62,134.35,129.03,128.63,133.4,137,140.41,139.68,130.7,131.4,132.2,138.13,138.87,133.92,133.09,134.42,134.42,134.37,137.53,137.83,137.48,137.8,138.76,141.48,135.62,135.62,132.81,133.58,139.83,144.27,149.02,150.96,148.94,148.53,145.92,142.54,141.37,143.14,136.65,136.65,145.03,146.61,148.21,148.61,148.16,134.99,136.31,139.09,137.97,143.94,145.83,146.45,146.62,149.91,147.11,149.23,152.44,152.44,150.96,150.51,154.03,156.6,156.41,155.65,158.28,156.78,155.94,159.04,157.8,161.43,157.27,160.18,161.15,163.29,164.42,164.52,164.77,164.77,164.62,165.65,164.2,161.6,162.83,160.72,158.67,160.94,159.41,160.66,161.9,158.59,155.18,154.41,157.25,157.59,158.51,156.75,169.66,171.74,174.93,170.09,173.47,171.04,170.75,173.6,172.98,174.79,175.75,178.72,177.12,177.79,176.5,177.84,177.95,177.35,179.73,180.84,185.29,184.92,186.15,187.33,186.22,186.22,184.1,184.48,183.71,182.24,181.42,182.77,186.09,186.38,184.58,184.52,182.1,179.6,177.32,177.71,177.65,171.47,176.5,177.89,173.75,169.43,159.32,160.92,157.35,152.01,149.59,149.59,148.73,148.52,149.98,147.07,147.97,155.29,155.3,159.43,160.65,163.77,165.68,163.49,164.59,155.42,155.45,162.51,162.18,163.09,160.13,163.18,161.61,164.49,166.98,168.24,175.54,172.61,166.5,166.5,165.2,160.7,161.03,160.43,161.34,166.8,168.52,166.06,166.62,169.36,169.49,173.09,175.79,177.54,175.56,175.87,176.35,175.08,169.49,166.77,162.79,156.43,155.72,157.83,158.38,161.15,161.1,165.81,158.71,157.01,160.01,162.93,163.86,168.03,168.1,159.05,162.02,161.06,161.34,165.62,165.19,165.19,160.17,165.41,170.09,170.61,171.02,172.09,174.17,175.68,169.68,168.71,168.81,168.17,169.87,166.14,166.84,165,161.17,161.84,160.22,161.35,160.64,157.84,160.39,164.48,161.36,158,159.64,160.4,164.18,164.62,169.68,168.6,169.16,167.58,169.24,168.01,163.83,165,169.39,170.4,168.42,169.63,171.16,173.34,178.26,183.54,183.03,182.2,183.17,182.79,184.41,183.33,180.58,182.88,181.81,185.68,182.16,184.25,184.06,186.8,184.85,186.11,186.11,184.81,181.6,179.15,181.02,181.88,184.72,183.74,184.14,186.86,191.58,184.35,188.85,189.25,191.37,189.42,186.44,186.75,187.32,187.32,185.84,185,183.2,184.7,188.42,183.63,183.35,182.72,180.44,178.99,174.88,176.03,180.12,177.17,179.46,180.47,180.47,180.05,182.92,186.82,189.36,180.61,186.04,185.57,184.22,178.35,178.39,182.12,185.49,186.84,184.24,183.64,187.12,189.77,189.35,185.72,185.72,181.62,184.51,180.74,177.97,170.43,165.21,167.08,160.11,159.33,166.55,160.29,166.83,160.16,157.48,144.78,153.65,143.76,127.87,136.89,109.63,116.6,98.11,113.65,112.34,113.07,124.35,127.15,142.12,134.83,140.33,138.57,130.7,138.55,136.91,147.54,148.02,152.6,148.63,148.63,151.91,156.42,150.46,150.96,155.39,150.95,144.74,151.94,151.33,154.77,156.9,154.72,161.32,158.75,151.78,153.28,154.8,154.4,156.49,160.74,160.96,156.9,153.8,155.82,152.2,159.87,158.94,162.88,160.61,161.69,161.69,164.83,168.08,165.48,170.23,169.49,174.2,180.91,180.53,185.32,185.58,184.29,184.13,171.68,175.48,177.73,181.6,183.19,186.27,176.95,183.25,181.94,179.41,180.51,179.67,181.05,184.46,182.78,184.38,184.38,186.32,183,186.77,187.9,186.7,181.95,184.15,183.39,181.96,182.76,185.35,183.72,183.4,180.99,178.72,182.75,179.63,180.51,182.41,185.13,187.74,191.93,192.6,192.38,190.49,191.33,189.38,195,192.53,191.6,193.06,192.07,192.41,192.19,192.88,195.21,196.46,198.52,198.21,201.53,202.89,210.13,219.18,205.78,212.13,212.13,204.87,210.42,208.7,210.23,211.69,214.44,214.52,213.86,210.25,205.6,211.33,205.49,206.03,208.53,214.67,212.89,212.93,215.43,208.55,213.97,212.73,214.34,218.19,220.16,223.51,222.96,222.27,222.05,221.3,219.62,220.33,217.45,218.22,217.84,212.18,210.17,202.93,207.49,204.34,205.29,206.76,213.11,222.6,222.45,219.49,212.23,219.71,216.36,218.29,222.57,222.44,222.45,224.62,224.04,226.18,229.24,228.42,228.42,230.83,234.7,236.45,235.96,233.66,240.61,245.99,247.46,243.26,239.65,237.18,240.68,244.34,248.33,249.04,253.98,250.66,253.13,248.66,252.17,252.17,252.41,250.75,254.14,255.9,248.52,250.2,248.66,259.14,260.46,260.53,262.65,263.71,264.21,260.58,260.58,268.42,269.95,272.83,271.78,271.65,271.11,259.91,264.02,263.3,272.79,278.71,271.88,275.06,272.36,276.27,277.4,274.72,279.6,284.23,284.23,285.87,281.99,282.44,286.36,278.41,275.8,281.05,267.19,274.62,286.14,280.84,270.64,259.26,263.09,246.2,259.26,255.75,265.16,263.69,275.14,279.47,282.64,271.27,277.3,277.78,271.22,267.25,269.84,281.73,276.22,266.6,270.99,278.17,278.17,285.49,282.8,281.98,283.74,283.51,282.68,283.44,278.96,280.54,279.83,270.02,267.25,268.73,265.99,272.43,275.77,272.56,268.38,272.52,266.63,263.09,259.81,259.4,262.17,264.51,254.88,257.2,246.86,251.67,258.11,257.12,253.5,258.16,265.93,263.73,268.38,268.58,269.13,273.34,276.05,276.05,273.71,276.87,271.65,277.62,271.06,270.91,271.15,273.92,275.1,278.1,275.13,272.21,275.38,270.89,271.54,271.45,272.74,274.73,270.13,276.33,278.87,278.69,274.48,273.62,273.62,276.61,274.42,274.99,280.64,283.9,282.88,281.47,278.98,273.57,272.16,273.87,279.96,278.39,282.38,281.85,277.83,279.16,282.94,283.69,283.27,284.51,285.1,285.02,283.71,283.27,281.86,282.61,283.03,284.14,285.3,279.77,274.09,276.76,277.71,281.97,281.37,282.53,283.89,289.85,291.58,290.6,288.23,287.49,290.87,290.87,290.23,288.94,288.42,291.15,291.62,293.32,297.92,296.52,295.73,289.2,286.96,292.57,294.74,295.1,295.06,286.98,286.08,283.42,284.83,278.17,283.71,285.67,288.67,288.05,287.75,283.62,283.47,290.82,294.13,294.19,298.3,297.71,300.5,301.23,305.13,312.02,305.73,309.51,310.74,308.62,313.89,316.99,320.64,326.66,326.68,326.01,320.73,324.61,329.18,330.67,332.42,332.93,335.95,332.39,323.37,324.44,326.55,326.55,319.46,329.83,323.6,324.23,322.88,326.2,330.2,345.06,343.99,340.98,369.19,363.33,359.39,373.97,362.76,371.1,376.99,377.7,382.93,388.54,388.54,394.09,391,393.11,388.71,388.9,387.68,392.12,375.8,372.31,361.86,363.04,363.56,363.53,349.03,348.55,348.55,337.69,329.61,320.12,311.65,316.53,312.18,325.61,316.95,327.35,342.42,346.42,352.68,339.48,344.92,343.44,350.8,357.3,345.62,335.14,338.15,352.29,349.04,338.4,338.98,338.98,337.5,330.33,338.98,343.66,343.33,333.21,342.36,338.16,348.33,333.55,336.62,348.93,343.5,337.73,331.85,346.44,354.83,352.23,356.76,351.43,357.3,350.31,366.12,367.55,369.89,374.91,368.84,368.02,366.44,371.04,358.92,351.84,352.45,343.07,339.34,341.95,346.31,335.39,335.39,342.78,349.28,349.34,346.42,343.04,343.59,327.33,327.03,338.36,324.02,336.85,339.67,352.81,338.98,339.04,329,339.8,331.45,334.06,343.8,340.54,355.44,333.47,319.23,317.47,307.63,306.37,310.71,321.84,340.9,340.9,339.06,335.25,337.08,329.23,328.01,334.89,330.43,325.08,316.35,302.52,304.02,307.84,290.58,291.44,291.44,294.43,289.95,290.23,297.54,295.56,291.32,286.62,283.93,279.28,279.28,278.38,282.06,291.37,291.46,282.21,281.34,281.55,283.25,288.99,287,297.49,299.11,302.56,299.54,299.89,298.71,308.47,311.87,312.96,313.48,310.47,319.54,323.09,322.29,318.84,311.4,321.69,318.78,326.26,326.69,322.41,314.78,326.39,320.53,309.03,309.63,310.25,321.53,304.42,300.51,295.96,291.71,287.56,292.36,292.36,291.17,295.23,299.2,305.32,309.21,294.36,298.51,292.31,293.69,293.3,288.17,281.79,279.14,273.92,270.17,271.62,272.33,263.08,259.5,266.97,280.46,283.34,280.25,269.13,255.82,251.76,251.65,255.97,249.62,254.45,254.14,254.41,251.49,262.85,266.81,268.89,269.54,266.16,276.39,274.76,273.47,266.53,259.57,271.95,277.74,281.77,274.38,296.07,302.8,299.95,306.5,299.08,299.3,301.09,302.42,309.79,311.89,311.89,309.71,305.21,304.73,322.05,321.89,316.07,310.13,307.32,303.04,310.39,318.36,325.32,333.75,335.73,326.13,324.9,321.23,317.95,328.01,323.26,322.87,322.87,323.52,318.46,326.01,326.79,326.79,323.48,327.43,324.38,343.91,337.17,336.02,337.9,340.12,338.4,338.4,338.54,335.65,329.18,333.59,339.94,341.92,342.3,349.84,345.41,339.83,341.91,352.28,354.04,349.28,351.43,359.12,351.67,350.33,346.73,351.33,352.02,355.17,350.99,348.09,348.09,339.88,336.74,341.2,337.67,342.17,347.33,346.91,349.88,369.82,369.91,365.37,369.53,363.83,359.34,360.3,369.64,365.89,372,368.77,376.22,372.15,368.74,373.6,371.81,366.36,365.11,365.58,370.4,374.95,375.49,370.78,367.63,363.9,363.9,366.68,363.28,360.43,364.84,362.09,366.66,369.56,370.84,369.97,369.9,370.86,363.54,360.13,361.43,366.16,372.85,357.88,358.39,356.61,368.28,367.66,361.49,366.03,366.84,368.88,373.93,374.89,384.26,396.2,398.74,396.48,401.23,397.15,425.95,475,475,469.51,472.22,461.69,474.58,468.91,461.72,463.26,470.02,470.26,499.92,497.44,517.93,516.32,507.37,507.37,507.32,495.42,492.36,480.51,480.2,495.85,495.58,504.13,506.97,512.24,512.24,503.72,495.62,494.89,512.99,515.52,520.13,520.37,519.33,532.06,528.01,526.81,519.19,524.11,526.94,536.52,521.97,522.23,525.89,525.22,537.7,521.51,517.23,515.28,524.29,516.17,497.21,492.64,484.96,499.18,492.41,486.84,483.4,482.67,505.63,500.17,512.32,499.39,497.85,503.26,520.12,521.5,539.39,509.95,509.95,509.74,509.8,500.89,501.2,502.13,493.58,498.5,509.43,497.77,496.79,496.32,485.43,472.45,484.56,487.37,477.03,477.39,486.27,485.44,487.99,476.23,481.48,481.51,494.02,500.22,501.7,511.14,529.28,516.18,527.51,516.89,518.43,507.21,498.91,503.93,514.97,496.57,483.2,489.98,491.67,491.74,498.5,509.23,515.89,514.8,524.73,532.51,532.66,559.63,553.44,568.65,570.08,560.81,571.44,581.95,573.47,568.09,568.09,572.1,555.37,553.1,549.87,541.05,543.54,540.02,533.68,528.14,539.02,551.9,601.54,626.7,636.87,646.69,660.28,670.37,666.03,648.97,658.85,655.75,655.75,661.54,658.19,656,652.4,634.35,618.69,613.1,613.26,628.2,632.67,631.54,642.89,647.39,647.39,651.64,645.04,668.56,707.89,713.33,716.72,732.83,718.88,704.2,711.73,706.11,689.66,701.35,715.57,726.53,714.58,734.69,745.04,750.11,739.33,731.53,737.71,739.37,727.93,727.93,716.86,717.39,762.65,757.67,765.13,757.59,753.61,760.08,817.75,819.56,784.77,789.01,822.33,764.89,755.77,755.04,735.17,737.74,722.09,723.11,723.56,745.76,787.84,791.04,789.94,778.19,770.74,774.64,774.64,789.16,782.44,796.73,770.02,782.83,780.89,779.71,772.86,807.98,785.55,766.04,776.77,749.64,735.82,704.1,715.64,730.09,734.55,756.53,785.55,782.36,759.95,726.39,723.89,747,765.82,761.61,774.62,763.1,778.96,781.71,806.56,839.37,825.32,815.48,826.43,817.77,813.7,814.31,822.82,822.82,825.51,812.78,797.24,776.48,772.59,777.8,825.89,818.98,822.12,841.89,853.9,874.06,981.29,1014.05,1068.89,1053.49,1053.49,1013.77,969.39,930.57,923.9,930.45,927.33,938.36,958.97,968.72,1010.65,1010.65,995.51,1020.37,1013.04,1019.69,997.05,993.96,1001.87,989.95,911.63,938.16,919.64,941.32,957.16,884.51,872.36,886.21,877.97,838.81,939.1,859.26,840.56,830.39,841.15,796.43,851.78,866.51,868.61,912.68,921.62,970.95,968.56,980.19,969.9,968.91,948.8,972.3,932.9,943.25,924.49,917.18,951.61,951.61,892.99,900.76,893.16,800.7,823.03,866.22,925.01,961.78,980.07,958.62,949.56,944.89,978.49,1000,1010.75,1021.86,1025.83,1040.85,1009.29,1008.18,978.78,997.43,1004.62,1032.38,1023.26,1056.28,1086.79,1085.27,1060.67,1065.52,1028.52,1033.43,1060.96,1051.37,1051.96,1048.39,1014.09,1001.46,1011.1,1005.38,1047.57,1032.38,992.23,987.26,985.1,1016.36,1049.39,1074.28,1073.29,1045.65,1029.92,1014.49,995.79,963.41,968.26,966.39,954.12,958.15,959.85,963.3,962.83,933.2,933.2,947.28,973.17,982.76,996.84,996.32,1049.27,1045.82,1004.15,1070.72,1055.87,1313.85,1461.13,1404.03,1306.95,1275.98,1290.41,1357.98,1400.82,1400.82,1434.02,1412.92,1376.86,1355,1355.82,1359.15,1381.71,1336.29,1340.21,1340.21,1310.99,1316.72,1313.27,1332.55,1340.79,1387.73,1387.73,1404.5,1408.01,1404.32,1430.16,1181.36,1211.92,1206.02,1260.43,1293.22,1272.53,1300,1355.93,1352.19,1314.26,1373.7,1373.7,1381.36,1378.14,1362.01,1362.01,1335.65,1336.82,1325.19,1277.97,1215.25,1183.75,1244.54,1156.05,1165.58,1095.09,1095.73,1119.7,1048.8,1139.45,1078.02,1110.99,1135.18,1118.41,1142.84,1136.76,1102.69,1143.02,1113.62,1120.16,1117.77,1100.29,1047.75,1005.2,988.43,978.55,984.92,1005.79,900.12,855,900.88,911.92,1082.12,1007.01,1063.35,1042.43,1045.88,1020.51,999.36,999.36,971.42,991.12,1033.96,1099.65,1123.96,1124.9,1117.3,1124.9,1153.3,1190.18,1173.12,1169.43,1197.02,1214.32,1216.83,1295.03,1358.39,1356.63,1359.67,1336.12,1347.93,1354.06,1342.67,1347.34,1336.76,1336.76,1377.26,1399.36,1414.2,1414.79,1453.59,1501.17,1525.89,1519.17,1443.19,1427.7,1429.75,1478.14,1496.61,1453.54,1473.41,1457.45,1468.5,1468.5,1461.08,1483.17,1541.61,1546.76,1579.02,1574.23,1611.05,1547.28,1577.44,1608.3,1608.3,1602.45,1588.54,1624.2,1609.58,1603.62,1610.75,1641.96,1641.2,1674.17,1655.99,1684.45,1628.23,1658.04,1687.38,1695.97,1720.05,1738.28,1768.67,1716.54,1686.97,1740.04,1712.04,1763.12,1775.34,1782.41,1776.15,1828.35,1806.49,1818.99,1790.41,1787.03,1723.61,1701.75,1692.58,1718.29,1719.64,1741.73,1754.82,1803.92,1738.11,1738.11,1743.07,1767.33,1789.01,1957.28,2020.16,1967.68,2159.96,2101.87,2103.27,2127.94,2104.03,2023.2,2018.41,2016.01,1980.07,1980.95,1983.11,1964.35,1955.17,1916.42,1928.17,1948.51,1976.5,1977.62,1960.78,1966.16,2019.29,2016.48,1897.31,2084.75,2011.28,2053.36,2069.84,2041.67,2041.15,2002.69,1988.9,2012.22,2069.73,2116.01,2179.84,2255.87,2200.29,2160.32,2118.94,2056.93,2098.07,2078.26,2042.26,2094.62,2057.04,2076.1,1987.03,2001.52,2002.63,1990.06,2071.42,2027,1988.31,2209,2250.32,2323.61,2323.61,2355.11,2256.46,2230.1,2224.49,2226.94,2280.77,2344.24,2374.58,2413.62,2375.04,2103.62,1986.03,1994.74,1905.44,1928,1989.25,1995.62,2041.61,2046.87,2046.87,2058.04,2042.02,2044.71,2022.79,2031.68,2007.13,2009.18,2007.6,1943.19,2016.19,2058.5,2072.53,1986.5,2004.79,2055.58,2055.58,1943.89,1921.68,1902.34,1870.54,1898.6,1945,1947.63,1932.96,1936.29,1935.18,1872.18,1800.41,1814.79,1945.76,2010.17,1989.71,2003.27,1935.53,1900.47,1900.47,1943.54,1949.21,1952.02,1944.18,1930.68,1902.34,1942.2,1880.19,1867.62,1863.35,1834.25,1855.82,1944.89,1931.5,2020.75,2002.22,1996.32,1963.59,1882.88,1899.01,1877.91,1846.46,1869.32,1814.79,1884.92,1860.26,1863.3,1808.42,1757.33,1714.85,1808.94,1832.2,1838.4,1838.4,1837.7,1951.9,2049.27,2074.28,2171.54,2219.46,2225.48,2318.64,2328.87,2376.04,2335.65,2350.5,2470.19,2454.35,2470.84,2444.18,2336.82,2369.67,2439.68,2462.19,2434.25,2497.72,2486.5,2411.22,2513.15,2503.97,2450.61,2435.94,2570.37,2485.04,2458.85,2402.51,2441.61,2422.97,2420.46,2420.46,2466.45,2465.58,2493.16,2611.16,2688.31,2814.55,2800.88,2448.33,2254.41,2317.94,2291.99,2174.75,2253.48,2233.02,2302.4,2201.69,2296.32,2404.15,2404.15,2291.82,2221.8,2233.02,2214.55,2133.37,2176.8,2207.77,2158.62,2106.66,2106.66,2185.27,2167.04,2271.71,2344.3,2337.64,2244.59,2274.17,2304.38,2188.49,2167.33,2210.17,2258.91,2319.17,2293.8,2232.14,2239.74,2226.24,2164.35,2266.74,2275.16,2292.4,2443.95,2444.65,2458.04,2500.06,2468.73,2431.79,2431.62,2441.96,2296.84,2293.57,2220.92,2118.53,2127.59,2153.42,2096.79,2084.98,2078.26,2171.48,2155.41,2164.47,2160.61,2146.35,2087.43,2091.76],"삼성전자":[100,102.3,100.93,102.05,98.07,91.22,95.08,95.08,95.08,95.08,97.01,98.69,99.13,100.75,97.82,97.63,97.7,97.57,99.63,99.5,99.5,100.5,100.81,105.29,106.23,104.61,96.2,95.58,96.95,98.19,99,98.94,101.18,100.87,98.94,100.12,99.44,97.57,97.95,100.5,102.05,102.86,102.3,100.62,101.31,102.12,102.37,99.38,102.68,99.5,96.7,95.83,97.01,97.63,98.75,99.19,102.12,102.68,102.74,102.74,104.42,104.42,108.72,108.9,107.53,106.97,108.84,110.34,111.46,110.83,109.09,109.96,110.65,109.53,111.64,111.77,112.83,112.39,112.64,110.96,111.96,112.02,111.33,112.2,112.2,112.39,113.57,112.58,110.71,112.7,115.88,115.94,119.18,120.8,116.63,114.13,115.07,115.01,116.69,115.82,118.49,118.8,122.67,124.22,124.22,124.22,122.85,121.79,122.54,122.85,123.16,120.86,119.55,119.55,119.43,118.18,117,117.43,118.37,117.87,120.36,121.23,122.35,121.98,118.99,118.49,119.68,119.68,123.66,123.35,124.78,125.16,125.16,125.16,125.09,126.4,128.77,128.89,130.26,132,130.45,132.5,132.19,130.14,129.2,128.27,129.14,130.07,130.7,128.27,129.02,131.01,131.2,130.26,129.51,130.57,129.51,130.45,132.07,130.82,129.39,129.2,127.33,125.4,126.9,128.39,132.94,133.25,136.49,138.92,138.92,139.79,139.79,141.72,141.72,146.39,146.39,141.97,141.66,142.65,143.52,144.4,144.27,143.03,139.23,140.41,139.85,139.73,142.22,143.46,142.03,138.98,139.17,139.1,143.09,143.03,143.03,141.03,140.6,143.52,141.28,141.34,141.22,142.22,141.91,144.96,149.88,147.82,149.32,148.26,150.31,150.37,148.51,149.25,148.01,147.01,146.33,148.13,149.63,149,151.49,152.55,155.29,157.41,157.16,157.66,158.28,157.97,159.4,159.03,158.34,155.67,155.17,155.04,148.69,150.06,151.31,152.55,148.75,148.51,148.13,148.57,144.08,142.9,138.92,140.1,140.1,143.84,146.45,146.01,145.83,146.33,147.82,147.95,146.39,143.52,143.46,143.84,144.21,144.71,143.34,145.58,146.33,149.81,152.8,155.04,154.42,154.48,156.6,156.91,163.39,162.27,162.58,164.38,164.38,166.94,166.94,160.9,159.59,159.65,159.65,159.65,159.65,159.65,159.65,159.65,164.38,170.11,170.61,168.12,167.87,170.61,170.49,164.94,167.62,169.05,168.24,167.81,163.14,165.26,168.24,171.48,178.14,177.65,175.53,175.53,174.66,176.71,175.4,175.59,175.53,174.1,172.29,173.66,173.79,171.86,172.1,174.22,172.17,172.67,163.89,165.88,163.76,158.16,158.28,159.84,159.59,155.73,157.97,161.89,161.21,162.2,159.78,158.97,157.6,159.4,160.52,160.52,152.99,154.73,154.73,150.06,153.67,158.66,158.66,158.84,160.71,159.03,162.27,161.96,156.91,152.05,150.19,150.06,151.12,155.67,154.48,155.35,153.55,150.19,153.05,153.61,156.48,158.09,159.46,155.04,155.35,155.11,148.51,149.19,147.63,142.59,143.21,139.17,142.34,148.01,152.55,152.55,152.55,150.62,147.57,147.2,145.58,147.01,147.51,147.51,146.51,146.51,143.28,140.72,146.39,151.37,153.18,154.86,154.86,160.83,161.15,160.46,159.22,157.97,159.4,158.97,161.21,154.79,156.54,155.6,151.62,152.68,153.24,151.12,149.81,146.08,151.74,150.68,153.18,152.18,152.12,152.55,155.04,156.72,155.6,159.9,164.32,160.71,161.58,157.1,156.91,162.33,165.01,165.01,165.01,165.01,165.01,161.58,161.58,163.76,158.47,160.65,159.71,155.98,153.18,155.2,153.8,154.11,155.67,155.67,161.27,160.02,164.07,162.83,159.71,154.11,157.85,159.71,159.09,159.71,159.71,157.53,154.58,155.35,153.8,153.8,150.06,148.35,145.08,146.33,146.33,146.48,147.1,145.24,146.33,149.28,145.7,145.24,141.81,143.68,143.99,143.06,139.79,141.97,144.15,143.21,141.66,144.77,143.37,142.75,144.93,146.01,147.73,144.77,143.68,143.68,146.01,146.01,144.77,143.99,144.93,141.81,142.43,142.59,145.39,145.7,146.01,141.34,140.26,140.57,140.57,137.76,137.3,136.52,139.48,143.52,143.84,143.68,144.15,144.93,145.7,148.35,150.84,147.73,148.35,145.08,143.52,139.79,141.66,140.26,138.7,137.14,142.75,140.57,141.66,143.68,147.1,147.57,147.57,147.57,147.57,147.88,144.61,144.3,142.28,142.28,139.17,139.17,139.94,139.94,141.03,134.18,136.99,136.36,135.74,137.45,137.14,136.67,135.59,134.03,132.47,127.65,127.65,128.89,131.85,132,131.23,137.45,136.36,136.21,136.99,137.14,137.92,140.72,138.54,137.3,137.76,136.99,135.9,133.25,131.07,132.16,132,132.63,134.03,134.34,134.34,130.29,134.65,131.23,129.05,126.09,127.49,125.16,125.31,125.93,124.53,121.26,121.89,121.11,121.73,120.33,120.33,120.8,120.8,119.4,119.08,120.49,120.49,120.64,117.06,116.59,120.64,118.62,123.29,123.91,126.09,124.69,127.96,129.05,130.6,131.69,133.09,131.23,130.76,134.03,139.32,140.26,141.66,144.46,143.68,144.3,144.3,144.3,144.3,143.84,139.48,140.1,143.37,143.84,147.88,143.37,143.84,143.06,146.01,146.17,146.79,147.42,145.55,145.55,140.41,140.41,139.63,137.76,136.99,138.39,136.36,135.9,139.01,136.52,136.52,137.61,136.05,136.67,137.14,142.75,144.93,141.66,140.88,141.19,139.63,139.01,140.26,142.43,145.08,146.17,145.86,145.24,145.24,145.39,143.99,145.86,146.48,147.1,146.48,141.97,141.03,141.19,140.72,139.32,139.01,139.63,143.68,142.75,142.75,142.9,141.03,141.03,139.63,137.76,132.16,133.56,132.78,132.78,132.47,129.36,128.27,130.76,134.34,135.43,136.52,132.94,132.78,132.47,130.14,132.47,132.32,136.36,135.27,136.67,136.67,137.61,139.48,139.63,138.85,136.21,136.99,136.67,138.08,141.19,141.66,142.28,141.66,141.97,142.28,144.77,146.33,145.08,143.99,141.34,143.21,142.12,138.23,140.41,141.81,143.84,144.15,144.61,145.86,143.37,143.52,145.7,146.95,147.26,144.46,146.95,146.79,143.52,144.93,141.19,140.72,139.94,136.83,135.43,134.5,132.78,134.34,136.05,133.87,136.05,136.05,136.67,135.74,138.39,138.54,137.14,136.83,135.74,137.14,137.45,135.12,136.99,136.36,134.65,137.3,142.28,144.15,146.01,146.33,146.79,146.79,146.79,146.64,146.01,148.51,153.02,153.18,153.49,154.11,152.24,153.18,150.68,152.71,152.09,148.19,148.19,149.44,148.66,152.24,152.24,151.15,153.02,155.67,155.98,157.85,157.22,155.35,156.6,159.4,159.4,157.85,158.47,159.71,159.09,156.91,156.91,159.4,162.83,164.07,165.94,164.69,162.2,160.65,163.76,163.45,164.38,167.19,166.56,166.56,161.89,158.78,160.65,161.27,161.27,162.52,159.71,156.6,156.91,155.35,153.95,154.11,156.91,159.4,160.34,161.58,165.94,170.3,170.3,176.53,175.28,174.35,174.35,172.79,171.23,171.23,172.48,175.9,173.72,173.72,171.86,172.79,172.79,173.72,176.84,182.44,185.24,186.8,186.8,183.69,188.98,190.85,194.27,191.16,193.96,189.29,189.29,189.29,183.06,184,178.08,175.59,178.08,183.37,185.24,190.22,188.04,185.87,186.49,188.36,188.98,192.4,191.47,186.18,187.42,186.8,184.31,176.84,180.26,175.9,174.03,168.74,171.23,172.48,178.7,179.95,175.9,175.9,169.99,162.2,162.2,155.51,152.24,147.26,141.97,133.72,141.34,132.32,146.17,151.46,148.82,150.37,148.97,148.66,142.59,145.7,146.33,151.62,154.42,151.31,152.86,153.33,150.37,152.55,152.55,152.55,160.02,155.98,153.33,155.2,155.2,153.64,155.2,155.98,155.67,155.67,155.67,151,151,153.18,151.93,151.93,150.68,149.13,151.15,149.44,148.97,151.93,156.6,155.67,155.51,151.77,152.09,153.33,155.35,156.91,157.85,159.4,160.02,169.68,169.99,172.79,170.92,172.79,172.48,169.05,162.83,155.35,162.2,162.52,162.83,164.69,161.89,160.02,164.69,161.58,165.94,163.14,164.38,163.76,164.69,166.87,171.23,166.25,165.01,164.38,164.07,166.25,167.5,170.3,167.5,169.36,168.74,172.17,170.3,168.43,168.74,173.1,182.44,183.69,183.69,180.26,176.84,178.39,177.15,180.57,179.02,179.95,181.2,183.69,182.75,180.57,180.57,181.82,179.95,172.48,174.03,174.66,175.59,175.59,173.1,172.48,168.12,168.74,169.36,175.59,173.1,175.9,182.75,181.82,184.31,183.69,188.04,189.91,189.91,185.24,184.62,184.31,181.2,182.44,179.95,180.26,181.2,181.2,181.2,181.2,181.2,182.75,183.69,186.49,185.87,185.87,188.04,189.6,189.6,186.8,185.24,186.8,189.6,189.6,187.11,187.42,188.04,186.18,183.69,180.88,176.21,178.7,183.06,182.13,187.73,187.11,187.42,187.42,190.85,189.91,196.76,206.41,204.55,201.74,201.12,201.43,210.15,210.77,207.35,211.71,212.33,207.66,211.08,216.38,217,222.6,226.96,223.23,230.07,226.96,228.52,229.76,229.76,229.76,228.21,227.27,227.27,225.09,230.07,242.22,242.22,245.02,243.77,252.18,252.18,258.41,261.21,255.92,258.09,276.46,283.31,282.07,279.27,279.27,273.97,264.63,270.86,271.48,274.28,270.24,278.33,269.93,266.5,260.59,255.29,258.41,262.76,263.39,256.85,259.96,258.41,257.47,254.05,254.05,254.05,262.14,264.32,259.03,255.6,257.16,255.92,255.29,255.29,265.57,256.85,256.85,260.27,261.52,256.54,255.6,255.29,253.42,251.87,255.29,257.78,254.67,257.78,256.23,258.09,254.98,255.29,254.67,252.18,252.8,253.74,254.05,255.92,253.42,258.09,264.01,265.88,267.75,266.5,263.7,260.27,259.03,261.52,261.52,261.83,261.21,259.34,261.21,257.16,256.54,257.78,259.96,258.09,255.6,254.36,253.74,254.36,257.16,257.16,256.23,254.98,259.03,252.8,249.07,244.4,249.38,247.82,247.82,247.82,247.51,249.38,248.13,248.75,248.44,247.82,249.38,250.62,250.93,251.56,257.78,255.92,254.98,254.98,252.49,252.18,252.18,250.62,251.87,254.67,251.87,250.62,248.75,249.07,249.38,252.8,254.05,254.98,252.18,251.25,249.38,249.07,250.31,252.8,251.56,248.75,247.2,248.13,248.44,247.51,250.93,248.44,245.95,245.95,244.4,248.13,246.89,245.33,244.4,246.58,245.95,244.4,246.89,253.42,258.09,255.6,253.74,253.74,249.69,244.4,239.73,231.63,231.63,231.01,230.07,227.58,226.34,228.21,235.37,235.68,232.25,231.32,232.25,238.79,239.1,236.61,238.48,240.66,236.92,237.55,234.43,234.43,237.55,238.48,239.73,236.92,240.35,240.35,240.35,240.35,240.97,240.66,241.91,237.55,230.7,230.7,227.9,227.9,224.78,221.98,222.91,222.6,222.6,214.82,214.2,216.06,218.24,218.56,219.8,218.87,218.56,219.18,218.56,221.36,218.24,220.11,217.31,217.62,222.6,219.18,219.8,218.56,219.8,219.49,218.56,217.62,219.8,222.29,221.98,220.11,218.56,221.67,233.19,234.43,232.88,229.45,225.09,225.09,221.98,231.63,235.99,235.37,237.55,240.97,240.97,243.46,239.41,239.1,239.73,241.59,242.22,242.84,240.04,243.15,247.2,248.75,250.62,249.69,250,245.33,243.77,243.77,243.77,245.02,240.97,239.41,243.77,242.84,245.64,245.64,242.53,240.66,241.28,239.73,237.55,238.17,235.37,233.81,230.39,230.39,221.98,228.21,228.21,228.21,228.21,228.21,230.39,227.27,227.27,227.27,234.74,233.19,229.45,229.45,232.88,233.5,231.32,231.32,231.32,231.32,222.6,223.85,223.85,223.85,223.23,226.96,226.96,218.24,216.38,216.38,216.38,217.93,218.56,218.56,219.18,219.18,220.11,217.62,218.87,219.49,217.31,217.31,217,218.56,217.62,216.69,215.13,215.75,215.44,213.26,211.71,211.08,211.39,208.59,213.89,210.15,207.35,207.66,209.53,209.84,210.77,208.59,206.41,205.79,202.37,201.74,209.84,209.53,210.15,211.39,211.39,207.04,207.04,204.55,204.55,202.05,207.04,206.41,210.46,212.02,210.15,211.71,211.39,207.04,206.72,205.17,207.04,210.77,209.84,209.84,207.66,207.97,207.97,203.92,203.3,202.99,198.63,193.34,192.71,188.98,189.6,186.18,182.75,182.13,179.33,178.7,181.82,183.06,184.93,180.57,177.46,174.97,177.77,178.08,175.59,181.2,182.75,183.06,180.88,180.57,179.02,186.8,192.71,189.6,188.36,192.4,190.85,190.22,192.09,192.4,192.71,191.16,190.85,192.09,190.85,191.47,191.47,189.29,186.8,184,186.49,187.42,187.42,189.91,188.04,191.47,189.6,186.8,184,183.69,185.87,186.8,182.44,183.06,185.87,181.82,179.02,177.77,177.77,174.35,173.1,173.1,173.1,180.88,176.84,174.35,174.97,175.59,173.72,172.17,169.36,169.68,167.81,168.74,164.69,163.76,165.32,165.32,171.86,174.35,175.28,174.97,174.97,172.48,173.72,171.86,175.28,176.21,175.9,173.72,172.79,174.03,179.02,179.64,184.93,185.24,178.39,184.93,186.8,185.55,184.31,184.93,187.42,192.4,193.03,188.04,195.83,192.71,194.27,195.21,191.16,192.4,191.16,188.67,189.91,191.16,189.91,187.11,188.67,193.65,194.89,188.04,187.73,184.31,183.37,184.31,188.04,185.24,185.87,188.36,184.62,185.24,185.24,182.44,180.57,184,180.88,180.26,180.88,176.21,172.17,172.17,172.79,172.48,179.95,181.2,183.69,188.98,188.04,188.36,188.36,189.29,190.22,189.91,188.04,191.47,192.4,192.4,192.4,197.07,198.63,201.12,197.07,191.16,189.91,197.7,197.7,191.78,193.03,196.45,197.07,195.83,195.83,196.76,193.65,198.32,194.89,195.21,193.34,190.22,193.03,190.85,188.36,188.67,188.67,189.29,188.36,191.47,188.98,187.73,187.11,185.24,186.8,183.69,186.18,186.49,190.85,187.42,187.73,190.22,193.96,196.14,193.34,195.83,195.21,196.76,199.25,196.45,198.01,198.94,193.96,202.37,204.55,205.17,205.48,205.79,202.68,203.3,204.23,203.92,203.3,204.55,202.99,198.01,199.56,201.12,203.92,203.92,204.55,203.61,202.68,202.68,205.17,203.3,201.12,199.88,199.56,200.81,203.61,202.37,206.1,212.95,213.26,212.95,213.26,214.2,218.87,218.87,225.09,222.29,220.73,224.78,223.23,223.23,221.05,220.73,224.16,221.05,224.16,223.85,222.6,223.54,221.67,222.29,219.49,221.98,222.91,225.4,226.03,226.34,225.4,224.78,227.27,227.27,224.16,222.91,217.62,216.38,222.6,223.85,223.85,228.52,228.21,224.16,223.23,221.05,218.87,219.18,217.93,217.31,223.23,219.8,217.31,221.36,217.62,214.2,212.64,213.26,210.46,214.51,211.71,210.15,209.53,209.53,208.59,207.66,206.41,207.35,207.35,208.9,212.33,208.9,207.97,207.97,208.9,208.28,221.05,221.67,220.11,217.93,219.18,218.87,220.42,219.49,220.73,223.23,224.16,218.56,217.31,216.69,214.51,214.2,216.06,213.57,212.95,212.95,212.95,212.95,212.95,210.15,207.66,205.48,205.48,206.72,212.33,214.51,211.71,209.53,216.06,219.49,216.38,214.2,212.95,213.26,211.71,207.66,209.53,209.53,208.28,213.57,217,216.69,220.73,220.73,217.62,218.87,219.49,219.18,220.42,224.78,226.65,225.72,226.34,226.65,226.65,225.4,223.23,221.98,226.34,226.34,226.65,224.16,226.03,221.67,223.23,222.6,226.03,227.27,228.83,226.65,227.58,228.21,226.96,228.52,232.88,233.5,236.3,236.3,238.48,242.84,244.4,244.4,247.82,239.73,238.48,238.48,238.17,232.57,229.14,227.9,227.58,230.07,226.03,221.05,223.23,232.57,233.81,234.12,230.39,230.7,228.52,231.63,231.32,226.34,229.14,234.12,231.32,231.63,233.5,230.7,230.7,230.7,234.12,230.39,227.9,226.65,229.76,228.21,227.27,227.58,226.96,226.65,226.96,227.9,228.52,228.52,233.19,229.45,226.96,224.78,228.21,225.4,228.21,230.7,231.32,225.09,226.65,226.65,239.41,246.89,245.64,243.46,248.75,248.44,251.56,256.54,255.29,264.63,261.83,265.57,263.08,263.08,260.27,260.27,261.83,260.59,255.92,249.07,245.64,247.82,241.59,236.92,235.06,244.71,237.55,238.79,238.79,241.28,241.28,242.84,241.59,241.59,253.11,253.11,248.13,246.58,244.08,243.77,243.77,243.46,240.97,245.64,244.08,241.91,243.77,236.3,240.35,241.59,234.12,228.83,228.83,235.68,234.43,240.97,240.97,240.66,235.68,234.12,238.17,244.71,247.82,243.15,248.44,252.8,254.05,249.07,250.93,251.56,253.11,254.05,253.74,254.67,254.67,254.67,263.39,271.17,272.1,273.35,273.35,272.73,262.76,269.93,273.04,269.93,270.55,262.76,258.41,261.21,255.29,250.31,251.87,252.8,252.18,261.21,258.72,247.82,222.29,225.72,232.57,228.52,232.57,235.06,236.92,240.35,240.35,249.69,243.77,245.64,243.77,243.77,241.91,236.92,235.99,237.86,230.39,231.32,231.63,225.72,217.93,214.82,214.51,210.15,206.1,202.05,206.41,200.5,200.5,200.5,200.5,196.45,196.14,194.89,196.76,193.65,201.43,199.88,191.47,191.47,190.85,190.85,188.67,189.91,187.73,187.73,183.37,184.62,184.62,189.91,185.24,185.87,184.31,183.69,179.64,184,176.21,174.03,180.88,185.55,184,184.31,181.51,182.75,179.33,178.39,178.39,177.46,171.23,165.01,157.53,155.35,166.56,176.53,175.28,172.17,175.59,174.35,180.26,181.51,175.28,172.79,168.74,166.87,166.87,165.32,167.19,168.43,166.25,168.12,168.12,174.03,174.66,173.1,168.74,170.92,165.32,165.01,166.56,169.36,169.36,166.87,167.19,165.63,165.63,166.25,169.36,174.03,172.48,178.39,174.66,172.17,168.43,167.81,167.19,169.05,167.19,166.25,166.56,169.05,167.19,167.19,167.19,167.19,167.19,167.19,163.14,158.78,164.07,164.69,168.12,167.19,173.1,173.41,173.72,173.72,174.35,174.35,177.15,182.75,181.82,181.2,178.39,178.08,176.21,175.28,169.68,169.68,169.68,168.12,169.05,167.19,167.19,166.87,170.92,170.3,170.3,179.33,179.33,182.13,187.42,192.09,188.36,186.18,191.16,192.4,187.42,179.95,183.06,183.06,179.33,174.66,165.63,166.56,165.01,175.59,171.86,174.97,176.21,170.3,171.54,172.17,172.48,171.23,173.41,173.41,173.41,173.72,173.72,172.79,172.79,169.05,169.05,169.05,169.99,169.99,170.61,179.33,177.15,178.7,178.39,176.84,173.72,174.03,173.41,170.3,168.74,170.3,167.81,174.03,174.66,174.97,176.84,176.84,179.95,184,184,186.18,184.31,186.49,185.24,181.51,178.08,180.88,186.18,184.31,185.24,180.57,188.36,190.85,187.42,189.29,186.18,187.42,189.29,198.63,197.07,192.09,191.16,188.04,189.91,194.89,194.58,198.32,201.43,207.66,208.9,211.08,205.48,206.72,205.48,205.17,219.18,219.8,226.03,222.29,214.51,217,217.62,214.2,219.49,223.54,221.05,221.36,223.85,222.91,222.91,217.93,217.93,219.49,219.8,222.29,222.6,218.87,219.8,216.69,217,210.46,215.13,217.31,218.24,216.38,218.24,222.6,226.03,228.52,234.74,238.17,247.2,243.46,250,250,259.96,263.7,265.88,268.06,259.34,262.14,261.21,267.75,279.42,279.42,279.42,279.42,279.42,279.42,293.9,290.47,285.18,295.77,304.17,304.79,305.42,303.55,306.97,300.44,307.6,317.56,309.78,312.89,324.1,334.68,345.89,326.59,313.2,308.84,304.79,313.2,322.23,320.98,320.05,302.62,313.2,304.48,300.44,313.2,295.14,301.06,309.15,320.05,322.23,312.89,313.82,321.92,325.34,327.21,337.48,340.91,337.48,336.24,334.06,339.04,326.28,320.05,335.93,334.99,330.95,344.02,347.14,345.89,345.89,364.26,372.04,373.29,373.29,400.06,429.95,432.44,438.98,432.13,432.75,432.13,428.39,436.8,448.01,463.57,464.82,452.05,465.44,474.16,473.54,473.54,496.58,505.6,500.31,499.69,468.24,521.48,526.46,495.95,493.77,518.06,516.19,522.42,556.04,564.13,564.13,564.13,564.13,591.53,591.84,600.87,622.67,633.56,678.7,674.03,674.03,607.41,536.11,596.51,585.93,540.16,584.99,591.53,584.99,571.3,587.48,603.67,649.13,624.22,620.8,580.01,590.6,588.42,560.71,560.71,548.88,520.55,590.44,555.42,579.7,601.18,611.77,655.35,635.12,641.34,625.78,642.9,656.91,677.15,672.48,667.81,681.82,677.15,698.94,683.37,698.94,691.16,703.61,686.49,686.49,723.85,723.85,828.14,845.27,835.93,888.85,868.62,884.18,921.54,842.15,874.84,857.72,859.28,932.44,910.65,910.65,930.88,955.79,932.44,986.92,1086.55,1122.35,1122.35,1094.33,1024.28,919.99,1002.49,941.78,930.88,1004.05,1049.19,1067.87,1078.77,1128.58,1102.12,1100.56,965.13,1060.09,1116.13,1056.97,1005.6,1039.85,979.14,890.41,963.57,990.04,921.54,863.95,865.5,887.3,792.34,818.8,870.17,793.9,793.9,759.65,806.35,811.02,840.6,776.77,790.78,684.93,649.13,644.46,817.25,745.64,747.2,765.88,717.62,719.18,716.06,745.64,795.45,834.37,854.61,854.61,835.93,770.55,843.71,876.4,800.12,800.12,814.13,828.14,800.12,809.46,812.58,779.89,778.33,795.45],"테슬라":[null,100,99.45,97.3,95.88,97.77,96.66,96.83,98.81,101.27,101.73,100.89,101.18,101.77,102.28,103.04,101.47,101.7,98.95,100.59,105.36,104.23,102.78,99.1,96.93,99.07,98.65,99.35,98.72,96.88,95.63,98.16,100.36,98.16,98.65,99.97,99.76,99.71,100.58,98.59,97.49,94.06,92.7,92.4,93.95,95.26,96.11,93.7,91.38,92.96,89.46,90.6,90.68,93.01,91.22,90.97,94.25,95.22,95.22,96.95,96.69,93.46,93.38,89.67,89.47,92.1,91.63,95.23,94.8,94.75,94.87,97.69,97.96,97.41,99.83,99.95,102.94,102.4,102.77,105.18,105.18,108.23,108.34,105.84,105.35,105.35,106.98,111.91,111.79,112.91,114.03,113.33,113.26,113.19,117.22,117.22,116.15,117.52,120.18,120.66,122.72,125.53,125.46,124.49,124.71,123.57,124.21,122.88,124.02,123.91,127.09,126.94,129.21,132.72,132.74,138.34,138.53,137.93,132.6,134.22,134.22,136.76,134.85,126.21,126.71,121.4,123.25,123.27,123.49,124.03,123.85,122.56,121.71,120.74,120.14,121.37,127.2,126.08,129.2,128.93,129.13,123.59,125.73,125.61,129.74,133.22,136.79,136.75,137.02,137.21,147.18,149.73,145.44,147.27,149.16,154.02,152.2,146.35,149.88,149.88,148.62,148.03,150.63,149.14,150.67,151.87,154.71,152.92,152.16,154.84,159.16,157.22,153.34,145.67,152.02,151.45,158.39,160.34,159.3,160.14,155.74,156.29,150.92,154.35,153.25,153.01,149.81,152.95,156.2,160.3,160.3,165.21,168.13,167.81,167.55,171.24,173.96,177.32,182.42,176.17,177,185.35,187.67,185.05,183.11,182.32,183.52,185.57,188.64,189.05,186.11,178.66,183.03,177.86,178.28,173.85,173.85,161.26,152.26,154.42,155.82,161.33,162.46,159.45,161.6,157.56,161.83,160.36,162.66,161.91,168.87,167.43,169.53,164.9,165.2,159.48,157.56,160.67,171.12,175.97,175.11,180.06,179.23,175.22,176.44,179.36,178.64,178.92,173.5,171.31,166.57,168.29,173.92,174,171.6,170.42,171.26,174.13,175.47,175.22,175.22,172.36,169.86,172.86,169.3,179.31,178.84,180.56,186.19,187.26,189.81,184.93,184.35,180.68,173.1,170.09,170.22,168.11,167.43,168.17,168.38,171.64,175.03,175.19,175.95,169.08,175.31,174.83,175.36,175.3,172.85,175.39,177.32,173.45,170.14,166.16,166.32,160.65,160.81,158.2,157.81,163.45,158.3,147.54,150.91,149.28,150.89,150.07,149.38,149.38,155.5,152.2,153.48,154.07,155.33,152.22,156.69,154.12,154.12,155.57,156.19,156.56,151.62,152.27,151.13,150.47,149.73,154.44,153.45,155.37,162.16,168.14,167.15,166.59,169.33,167.07,163.24,162.19,163.52,160.33,160.33,156.43,153.65,155.48,153.5,158.03,156.41,155.12,156.08,165.86,164.52,165.06,166.62,165.76,165.76,167.66,171.16,169.88,172.57,173.33,173.93,170.53,166.46,169.03,172.33,170.5,174.68,172.19,169.48,164.24,164.66,170.09,155.42,153.04,155.66,159.57,158.91,164.7,165.4,165.4,165.05,164.32,170.67,173.57,176.22,173.05,169.14,163.16,165.22,164.35,161.81,163.83,162.25,161.3,170.34,168.54,161.04,160.53,158.43,154.59,153.11,156.06,152.39,148.67,149.97,137.64,127.09,131.21,131.21,124.48,131.9,141.47,150.73,147.56,142.81,150.22,148.37,144.99,148.07,143.57,141.84,144.63,147.95,143.1,139.71,139.75,138.39,140.75,144.99,144.9,147.87,148.47,140.24,144.99,149.27,148.88,151.28,150.38,148.43,143.95,140.11,141.24,140.28,136.48,140.26,135.59,137.59,136.99,137.48,137.48,139.9,143.82,140.38,143.87,146.3,143.53,157.52,155.84,156.61,163.73,168.99,169.98,176.36,176.59,182.83,173.82,178.58,171.33,164.49,164.18,168.61,169.85,172.52,169.08,165.2,153.26,153.26,152.42,152.3,157.03,158.99,157.25,156.15,157.21,152.89,159.09,159.67,157.88,154.6,149.48,146.64,152.22,151.19,146.52,143.06,146.99,148.32,172.33,171.66,168.61,187.14,182.59,173.77,175.26,175.72,171.39,166.98,165.38,150.62,152.07,158.7,158.58,157.82,159.16,157.41,153.75,150.38,149.46,148.73,148.73,142.46,138.41,138.52,129.78,140.76,137.77,143.24,142.71,145.54,145.36,140.49,147.42,147.08,147.46,147.75,148.4,152.63,151.61,130.54,153.18,148.41,145.34,138.95,129.15,123.53,129.57,126.65,124.36,127.58,127.98,136.37,133.99,130.11,128.19,128.65,145.02,142.24,155.23,163.14,165.09,162.65,166.31,169.74,170.79,168.32,168.15,171.65,173.25,172.81,163.33,167,169.6,171.79,174.68,174.27,171.32,166.74,166.74,160.64,170.59,169.56,171.51,168.2,172.79,176.74,177.34,177.34,179,176.49,180.03,180.82,180.74,185.77,180.3,171.78,166.16,164.16,155.49,157.65,145.63,145.63,160.77,155.86,164.61,164.08,152.9,148.08,156.63,165.14,165.34,166.9,170.08,171.21,164.87,169.81,170.61,171.23,149.02,149.02,147.37,141.79,143.72,146.45,146.12,146.65,152.23,151.37,153.93,154.26,158.43,156.4,151.61,150.77,154.24,153.73,151.94,149.77,151.79,151.79,150.69,149.17,143.58,145.3,147.3,146.85,155.17,157.71,145.34,140.69,136.34,136.19,136.37,140.09,143.43,139.7,142.46,142.96,135.79,132.86,131.87,134.89,135.1,130.42,128.39,132.02,135.5,137.37,137.98,142.57,140.95,143.87,132.02,135.56,134.69,134.26,136.1,132.34,131.98,131.33,134.77,133.72,134.72,134.72,129.54,130.11,127.53,122.09,115.93,119.05,117.68,115.37,120.35,125.74,125.89,121.81,120.71,119.3,118.09,111.92,114.53,114.36,112.57,104.04,101.25,101.11,95.02,96.38,93.99,93.99,93.03,93.61,92.8,91.29,88.24,95.45,96.92,101.54,100.82,104.95,107.04,103.17,105.46,105.96,110.95,110.8,111.64,108.28,109.38,110.26,108.35,108.11,109.87,110.17,112,110.71,115.81,115.81,114.92,113.56,113.43,117.79,117.64,120.83,124.98,124.43,125.65,125,127.29,126.06,128.27,130.59,112.81,112.43,116.24,119.44,119.12,115.29,115.54,112.57,113.77,115.08,117.49,115.87,112.91,115.86,108.28,106.32,108.44,111.83,111.35,108.87,109.53,104.23,106,105.55,106.29,109.31,111.23,111.23,110.94,108.8,113.19,112.14,114.28,116.13,121.83,121.22,120.89,119.71,120.69,120.05,121.58,118.63,118.93,110.05,112.75,119.59,119.38,118.75,120.64,119.87,114.89,114.1,117.2,118.35,120.56,120.66,122.22,126.69,127.15,128.06,129.16,126.68,124.98,126.01,125.56,147.75,161.78,161.57,155.9,155.31,155.26,154.47,156.52,156.4,161.01,165.43,166.22,170.14,172.52,170.64,172.24,173.63,172.55,177.25,173.65,174.94,164.2,165.82,162.17,163.33,163.33,162.67,165.1,165.75,164.19,162.88,165.6,167.4,171.99,173.89,177.33,176.69,188.09,186.85,193.83,199.2,199.97,206.69,209.66,209.66,212.46,212.19,204.46,206.25,212.13,218.41,222.62,231.26,242.64,237.31,235.74,258.77,265.21,255.63,253.16,251.69,251.69,269.78,280.81,282.11,278.47,275.12,279.5,286.44,315.93,320.75,384.56,437.34,362.22,369.26,368.82,380.26,381.79,378.29,396.39,394.43,394.43,423.21,452.31,443.43,444.21,411.08,394.37,383.97,334.76,329.33,366.62,367.55,369.52,357.22,346.83,299.76,318.16,312.69,276.36,269.5,219.43,212.1,178.09,210.84,210.78,214.12,248.98,265.86,260.4,253.59,247.56,258.34,237.42,224.06,236.66,254.52,268.92,270.59,282.5,282.5,320.93,349.99,359.82,367.41,371.69,367.97,338.57,360.95,347.89,357.52,393.8,379.19,394.67,385.49,345.77,375.28,378.75,385.83,384.58,403.99,399.99,399.06,389.96,396.06,394.01,401.14,398.37,402.09,408.03,402.74,402.74,403.72,404.39,397.28,411.67,442.78,434.63,435.32,426.16,436.65,468.33,463.77,505.37,479.63,461.12,488.54,484.21,488.98,494.98,493.47,490.22,493.9,473.72,486.11,473.17,497.63,532.37,552,595.9,595.9,676.22,685.23,673.41,687.41,761.55,738.09,747.82,762.22,739.85,739.95,810.04,773.24,785.06,745.98,698.61,759.06,727.94,739.1,733.37,705.4,732.14,733.13,732.15,734.4,716.22,699.39,677.61,766.53,799.19,813.84,905.01,930.38,926.16,986.95,1010.69,993.05,997.55,1061.56,1103.76,1091.26,1228.42,1171.05,1102.82,1003.3,1031.21,1031.21,814.01,902.92,915.4,918.8,1034.41,1108.71,1088.99,1043.81,1089.95,1107.8,1045.78,937.63,955.95,1004.14,1038.31,1033.06,1057.56,1104.77,1023.25,1049.35,1020.51,1048.41,1049.94,1069.86,1090.32,1101.05,1137.16,1106.54,1083.84,1062.05,1040.13,1041.86,1049.62,1036.9,1036.04,1046.89,1000.89,1012.74,956.56,987.3,1044.96,1037.77,1079.94,1059.88,1038.46,1011.59,1028.27,1015.04,1007,1005.99,1088.62,1199.63,1230.76,1206.95,1286.42,1369.08,1414.98,1414.98,1443.97,1399.2,1441.5,1402.21,1462.75,1476.7,1582.01,1602.03,1490.11,1545.8,1503.7,1577.26,1561.04,1535.2,1616.87,1713.26,1601.98,1578.51,1592.42,1631.34,1631.34,1636.07,1641.74,1712.72,1739.56,1798.97,1812.13,1863.58,2011.64,2169.35,1999.68,2093.97,2106.22,2083.03,2036.58,2036.58,2081.92,2096.46,2083,2087.07,2171.28,2176.92,2130.26,2059.43,1956.15,2070.23,2151.53,2106.91,2095.33,2100.85,2128.43,2094.02,1983.98,2000.84,2011.83,2011.83,1962.78,1967.53,1940.98,1926,1761.33,1722.72,1829.17,1681.75,1665.19,1771.02,1692.16,1610.22,1531.92,1474.02,1387.86,1660.45,1646.85,1724.6,1710.13,1745.16,1668.59,1730.04,1610.12,1614.33,1651.63,1632.3,1553.69,1578.64,1525.19,1506.9,1566.88,1646.53,1631.29,1631.29,1703.52,1704.93,1654.02,1685.65,1668.93,1730.46,1879.21,1805.03,1821.35,1823.65,1761.65,1772.4,1834.34,1774.12,1798.06,1819.75,1737.27,1711.78,1668.89,1748.85,1688.36,1660.5,1653.95,1635.7,1657.47,1550.66,1521.47,1454.15,1409.28,1453.78,1421.95,1424.52,1389,1446.48,1431.94,1494.95,1490.63,1526.23,1555.12,1541.24,1541.24,1537.99,1491.69,1412.12,1476.73,1491.72,1487.92,1476.06,1504.02,1503.45,1522.68,1477.49,1491.08,1519.99,1536.53,1530.42,1537.52,1618.52,1675.84,1656.24,1697.78,1678.15,1675.54,1671.15,1673.57,1673.57,1625.94,1589.14,1609.25,1619.46,1690.33,1648.03,1610.66,1603.81,1588.08,1593.01,1628.21,1615.37,1600.5,1586.01,1621.11,1589.46,1594.88,1669.75,1694.03,1749.42,1749.59,1752.5,1761.65,1723.36,1759.5,1750.21,1744.86,1780.43,1767.91,1691.49,1641.05,1698.44,1660.18,1676.92,1741.11,1746.51,1753.19,1728.44,1754.97,1801.78,1813.64,1809.62,1805.43,1808.34,1808.34,1856.04,1858.38,1860.82,1814.99,1831.58,1835.26,1863.21,1866.07,1872.23,1799.96,1822.66,1853.62,1857.81,1908.96,1950.8,1916.78,1926.02,1911.65,1911.01,1926.56,1924.25,1929.57,1956.34,1936.33,1952.23,1986.2,1999.41,2017.26,2078.17,2144.92,2130.53,2134.3,2203.82,2242.47,2526.4,2510.55,2558.45,2655.03,2746.14,2979.32,2889.12,2992.31,3031.87,3012.6,2866.78,2523.05,2632.62,2621.68,2547.5,2498.13,2600.03,2684.54,2702.71,2802.99,2851.82,2733.89,2751.07,2751.07,2667.06,2802.82,2821.97,2699.3,2673.67,2502.02,2487.33,2592.69,2635.11,2474.49,2507.1,2382.32,2362.84,2405.93,2284.97,2298.9,2218.46,2313.59,2486.98,2630.28,2630.28,2696.69,2683.21,2677.59,2638.51,2605.09,2957.6,2833.88,2682.34,2624.61,2531.58,2608.39,2623.87,2726.96,2542.92,2587.41,2587.41,2540.33,2454.4,2455.92,2326.83,2292.56,2263.96,2310.83,2043.83,2086.35,2309.13,2295.64,2232.56,2196.77,2276.09,2236.7,2272.84,2297.49,2229.82,2120,2158.85,2273.9,2276.27,2160.31,2112.56,2112.56,2025.17,1883.45,1973.99,1996.43,2145.71,2130.77,2169.03,2068.95,2066.48,1983.39,2032.24,2117.46,2066.51,1960.63,1889.19,1976.75,2071.27,2148.6,2231.89,2270.77,2450.28,2462.92,2499.43,2491.35,2691.51,2710.57,2696.81,2656.41,2673.64,2823.67,2690.09,2577.92,2606.27,2527.95,2405.78,2432.95,2520.26,2428.14,2428.14,2475.69,2534.51,2408.91,2486.76,2477.57,2460.24,2160.48,2173.03,2163.17,2146.53,2225.85,2241.41,2348.32,2152.74,2133.93,1940.32,1972.19,1809.4,1794.61,1897.13,1785.66,1877.46,1749.77,1748.8,1636.59,1663.71,1548.49,1624.02,1744.64,1872.58,1872.58,1869.2,1825.1,1910.47,1734.33,1762.17,1766.65,1788.69,1772.72,1717.42,1595.45,1633.56,1723.12,1575.95,1603.02,1603.02,1752.97,1745.94,1738.43,1817.09,1811.27,1720.63,1689.76,1660.06,1680.69,1680.69,1723.61,1713.75,1808.48,1854.48,1733.05,1723.64,1753,1762.41,1775.38,1778.93,1815.78,1830.35,2009.37,2013.34,1985.16,1914.36,2032.39,2077.36,2197.53,2198.47,2222.95,2273.31,2282.45,2131.12,2147.78,2095.35,2176.87,2119.73,2218.83,2287.53,2267.14,2248.16,2239.83,2193.96,2144.01,2192.38,2197.14,2189.54,2130.53,2106.35,2053.69,2038.23,2049.7,1998.3,1998.3,2029.43,2098.06,2139.18,2216.24,2251.29,2160.41,2237.91,2246.34,2243.38,2285.68,2283.17,2224.52,2134.23,2036.16,2041.19,2092.44,2128.46,1983.51,1961.62,1792.63,1844.7,1780.88,1761.06,1649.68,1648.87,1601.09,1606.57,1639.7,1515.97,1622.17,1628.38,1642.06,1532.91,1585.86,1562.27,1644.87,1661.29,1664.62,1689.99,1682.74,1684.81,1589.85,1592.29,1534.31,1457.48,1414.73,1313.34,1410.44,1449.27,1412.14,1437.81,1382.34,1354.61,1332.57,1241.46,1256.54,1354.83,1354.83,1352.31,1352.76,1337.3,1439.88,1439.88,1441.06,1349.28,1329.83,1287.09,1282.65,1324.14,1241.09,1190.28,1159.59,1166.03,1111,1108.34,1019.08,1017.38,927.01,910.74,910.74,806.83,833.53,900.9,910.96,910.96,799.44,840.41,816,836.12,885.74,878.94,911.26,913.77,905.19,905.19,972.42,952.37,940.47,986.69,1063.08,1064.12,1068.11,1185.25,1315.63,1232.51,1281.02,1341.59,1392.32,1404.97,1440.32,1455.48,1488.61,1533.21,1456.07,1439.43,1547.48,1584.38,1494.16,1540.53,1540.53,1459.62,1485.43,1494.38,1456,1535.5,1521.3,1499.56,1411.77,1462.73,1433.29,1388.18,1345.95,1278.8,1282.65,1290.34,1355.27,1334.49,1361.71,1332.13,1355.2,1461.17,1413.62,1421.54,1408.15,1418.5,1399.13,1433.81,1444.17,1534.24,1440.39,1424.2,1371.99,1368.58,1368.58,1364.52,1381.38,1335.16,1374.8,1368.14,1383.23,1363.04,1335.53,1205.37,1220.83,1202.12,1188.21,1137.04,1184.66,1215.13,1196.79,1185.55,1187.77,1192.13,1257.65,1270.45,1250.92,1246.41,1272.59,1242.27,1230.22,1231.47,1285.76,1308.16,1332.2,1396.76,1373.84,1352.61,1364.22,1428.56,1428.56,1487.65,1508.13,1534.68,1582.38,1609.3,1636.67,1660.78,1736.87,1807.42,1847.58,1913.25,1899.05,1892.47,1926.79,1926.79,2029.66,1918.8,1956.88,1897.65,1782.65,1850.39,1894.99,1904.3,1935.88,2069.37,2069.37,2089.04,2045.11,2029.51,1993.86,1995.19,2011.46,2055.17,2080.91,2147.46,2169.35,2153.97,1944.24,1922.94,1989.79,1961.84,1954.96,1891.07,1970.42,1977.74,1930.71,1879.23,1917.76,1877.38,1859.56,1846.62,1791.08,1814.38,1794.48,1773.11,1722.82,1668.39,1621.21,1593.63,1710.4,1724.52,1751.66,1701.23,1764.46,1766.16,1901.94,1899.87,1908.59,1811.94,1811.94,1896.83,1863.04,1859.86,1837.75,2023.22,1978.11,2006.36,2041.41,2029.21,1961.84,1970.86,1941.95,1890.99,1810.97,1826.58,1805.35,1778.58,1822.07,1850.47,1860.67,1823.18,1931.37,1923.16,1926.71,1920.35,1949.56,1944.9,1914.44,1857.12,1877.83,1884.71,1794.7,1627.79,1567.74,1568.41,1601.24,1570.92,1521.67,1533.06,1459.55,1485.28,1520.93,1615.96,1626.68,1621.58,1643.1,1642.58,1552.88,1587.41,1654.42,1755.73,1795.89,1727.48,1732.73,1742.35,1783.76,1732.07,1732.07,1741.24,1745.9,1824.58,1805.5,1775.48,1766.23,1742.2,1765.42,1770.23,1794.41,1803.28,1772.96,1752.77,1769.63,1856.6,1874.72,1864.22,1902.23,1827.69,1882.12,1867.62,1867.62,1897.72,1933.44,1872.36,1837.6,1837.15,1763.42,1759.58,1756.32,1778.21,1737.61,1730.07,1680.37,1618.77,1618.77,1626.31,1594.07,1566.93,1569.22,1544.15,1546.66,1536.98,1350.61,1355.2,1412,1416.88,1385.08,1396.69,1389.66,1339,1368.88,1387.22,1401.86,1431.52,1391.29,1360.89,1395.58,1482.4,1478.7,1478.7,1432.92,1440.39,1459.92,1419.69,1474.63,1477.07,1494.16,1492.97,1498.59,1391.36,1336.64,1305.58,1321.18,1296.7,1314.67,1312.97,1253.36,1201.75,1209.66,1285.31,1266.97,1299.07,1278.07,1263.35,1276.66,1313.93,1329.91,1300.03,1300.03,1295.81,1232.29,1245.23,1265.42,1219.49,1279.25,1308.09,1270.23,1291.23,1264.98,1194.2,1161.88,1149.61,1108.79,1087.49,1050.51,1069.96,1199.01,1258.54,1244.56,1435.07,1355.42,1331.09,1331.24,1339.96,1366.37,1314.97,1292.12,1271.78,1245.9,1271.19,1313.05,1286.72,1293,1312.38,1293.82,1379.97,1331.98,1284.87,1325.54,1325.54,1307.13,1302.99,1322.22,1316.96,1303.73,1292.49,1294.19,1315.93,1312.53,1285.24,1262.09,1311.12,1349.43,1316.45,1386.19,1367.11,1367.11,1342.77,1353.42,1350.24,1385.52,1452.23,1459.99,1463.39,1551.99,1710.25,1822.14,1822.14,1860.08,1870.58,1940.02,1946.9,1782.5,1835.75,1868.36,1897.35,1837.75,1843.14,1768.97,1860.01,1822.07,1597.32,1628.83,1625.5,1716.46,1646.35,1716.24,1603.76,1535.79,1470.79,1483.8,1418.13,1470.49,1479.07,1460.51,1536.98,1489.28,1583.64,1598.28,1647.09,1635.11,1651.16,1557.91,1629.34,1576.76,1547.18,1521.59,1525.51,1583.42,1583.42,1557.46,1622.61,1702.19,1558.42,1599.39,1672.61,1687.1,1699.53,1703.08,1677.12,1685.18,1680.22,1803.88,1761.94,1848.84,1880.42,1900.75,1880.05,1926.19,1934.85,1908.15,1841.59,1779.77,1849.43,1781.02,1808.16,1782.65,1765.79,1610.71,1620.77,1623.8,1636.81,1633.56,1632.15,1618.47,1611.97,1580.02,1926.34,1990.76,1941.35,1919.24,1904.67,1847.73,1841.3,1795.89,1859.49,2133.78,2195.76,2375.54,2588.37,2429.3,2442.24,2301.29,2371.84,2505.1,2558.79,2529.43,2511.76,2607.31,2503.99,2501.33,2461.84,2461.84,2552.58,2640.81,2598.88,2647.02,2732.51,2878.42,2882.64,2965.46,3141.33,3092,3226.08,3424.2,3548.74,3254.92,3225.63,3113.89,3184.44,3418.72,3418.72,3358.45,3192.28,3086.9,2986.54,2804.91,3035.35,3039.86,2916.43,2920.72,2920.72,2919.24,2982.62,2931.22,3166.84,3060.35,3154.12,3154.12,3136.15,3069.89,3049.7,3006.8,2937.07,2944.02,2877.53,2960.21,2992.16,2837.45,2900.53,2796.7,2768.23,2674.31,2593.77,2429.37,2488.61,2632.3,2631.56,2631.56,2618.77,2666.47,2620.91,2498.15,2444.39,2239.31,2150.57,2085.12,2166.69,2105.09,2011.83,2064.04,1948.31,1942.54,1642.88,1705.22,1834.71,1779.91,1848.69,1760.17,1666.25,1744.27,1747.23,1839.3,2058.79,2130.9,2011.98,2019.89,1949.05,1916.58,1985.36,2091.11,1976.63,1770.67,1725.26,1640.73,2013.02,1866.59,1865.92,1866.22,1879.23,1786.35,1785.02,1785.02,1682.44,1759.87,1854.31,1919.17,2107.31,2114.18,2159.67,2086.67,2074.55,2124.02,2072.62,2036.31,2042.75,2106.35,2205.74,2354.53,2470.57,2571.22,2535.28,2588.23,2529.88,2542.67,2474.63,2522.11,2509.54,2509.54,2683.7,2639.4,2650.72,2562.19,2534.31,2546,2455.63,2105.46,2182.67,2282.06,2411.55,2414.07,2359.93,2405.78,2434.03,2339.52,2381.67,2381.67,2382.49,2578.61,2517.9,2422.35,2409.26,2393.36,2349.21,2223.86,2334.34,2332.13,2332.13,2173.79,2202.41,2188.14,2291.6,2318.52,2343.59,2298.33,2378.86,2362.15,2437.88,2429.3,2456.07,2459.4,2257.8,2337.38,2407.85,2375.39,2359.41,2279.77,2238.06,2287.09,2283.09,2365.85,2383.3,2437.88,2507.25,2520.63,2509.84,2481.73,2444.61,2478.63,2435.36,2395.36,2367.33,2514.49,2563.23,2600.72,2585.42,2558.65,2469.09,2469.09,2435.73,2470.71,2503.55,2594.59,2561.75,2565.97,2572.03,2727.48,2928.12,3032.39,3118.03,3149.39,3082.75,3150.94,3211.14,3149.31,3274.59,3131.12,3256.91,3277.7,3288.86,3397.87,3224.38,3178.75,3351.94,3202.85,3244.27,3220.97,3057.91,3223.64,3174.38,3218.09,3170.76,3248.85,3308.9,3273.18,3246.34,3320.37,3207.51,3345.81,3405.93,3413.03,3254.7,3376.42,3463.76,3285.46,3417.17,3297.66,3176.45,3292.63,3251.15,3184.44,2972.86,2990.31,3024.11,2967.39,2987.65,2922.87,2892.25,3089.63,3101.61,3154.71,3154.71,3181.26,3181.04,3174.38,3303.8,3361.41,3364.89,3250.85,3292.19,3338.63,3304.91,3394.17,3515.09,3622.84,3455.55,3574.69,3558.65,3614.33,3590.89,3589.71,3589.71,3514.2,3399.2,3360.67,3325.84,3239.68,3340.26,3201.89,3190.43,3222.9,3291.01,3320.22,3307.2,3248.04,3243.38,3235.47,3235.47,3100.5,3190.65,3323.18,3320.96,3218.46,3186.66,3190.8,3080.61,3183.04,3119.43,3120.54,3002.59,2937.51,3040.3,3086.23,3144.58,3167.21,3084.38,3087.12,3087.12,3036.75,3041.86,3044.74,3045.56,2956.88,3027.51,3086.82,3021.59,2976.7,2982.69,2902.16,3002.07,2999.19,2933.96,2948.38,2952.52,3015.97,2921.24,2893.06,2925.31,2952.74,2904.75,2812.45,2721.19,2816.52,2832.64,2854.24,2751.89,2675.86,2627.42,2749.22,2819.55,2666.69,2666.69,2609.23,2563.6,2538.46,2555.98,2580.61,2606.27,2693.39,2898.61,2876.05,2962.73,2902.68,2857.71,2865.77,2763.79,2782.87,2800.4,2780.8,2756.99,2822.29,2890.25,2902.75,2879.53,2948.75,3045.33,3167.8,3290.93,3205.52,3292.93,3278.36,3122.61,3032.02,2988.54,3085.79,3090.15,3150.5,3150.5,3206.55,3256.62,3269.49,3222.82,3075.58,3133.71,3133.41,3094.59,2891.58,3024.33,2933.59,2821.99,2951.86,3005.69,3040.6,2992.6,2931.37,2961.77,2961.77,2995.49,2822.14,2777.18,2774.15,2808.09,3045.7,3110.49,3145.24,2909.7,2909.7,3104.35,2979.59,2914.21,3006.58,3015.53,2919.39,2929.89,2917.17,2892.03,2816.45,2733.1,2802.32,2765.94,2364.22,2314.97,2286.79,2273.63,2206.18,2284.06,2301.51,2381.9,2420.87,2377.98,2363.04,2429.97,2446.98,2461.25,2422.05,2514.13,2531.21,2509.24,2491.27,2596.66,2552.36,2683.48,2580.61,2590.22,2557.46,2623.95,2579.13,2721.12,2633.41,2640.22,2783.39,2618.55],"팔란티어 테크":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,100,99.58,96.84,95.05,104.21,105.26,105.26,104.74,104.11,99.68,98.32,104.32,102.21,100.74,97.58,96.84,101.89,99.89,104.74,115.26,114.21,113.16,106.63,110.95,110.53,112.84,125.05,145.58,154.42,147.37,168,153.47,166.32,167.68,187.89,188.42,199.79,191.05,221.47,250.74,305.79,305.79,291.16,285.37,270.21,236.95,252.95,251.05,304.63,300.95,280.32,284.63,286.32,286.74,278.21,272.84,286.63,273.37,300.11,295.16,302,292.11,292.11,269.79,259.58,264.21,247.89,246,258.95,247.79,263.16,265.26,272.95,275.58,268.42,262.32,269.89,269.89,280.21,277.26,273.47,342.95,381.37,372.32,410.53,375.37,370.32,357.47,326.53,334.32,337.37,358.42,379.47,401.79,375.79,348.53,335.89,335.89,293.05,285.05,264.95,305.26,294.74,281.58,277.79,252.21,251.58,261.16,257.68,248.32,260.32,252.11,237.05,255.37,260.53,281.37,283.37,282,269.58,265.37,252.42,256,254.95,244.84,230.32,237.68,237.68,228.74,232,245.16,242.84,242.84,246.74,244.95,241.05,246.42,253.05,245.68,267.58,249.47,243.68,236.53,230.95,229.26,238.21,240.63,246.42,253.79,251.37,251.05,246,242.53,234.74,227.79,222.63,211.47,207.89,194.42,212.74,198.84,193.37,211.37,215.37,223.58,217.58,216.95,218.42,223.37,226.11,232.84,238.95,241.58,241.58,242.74,257.37,248.74,252.95,257.47,256.63,254.42,254.11,259.68,263.16,256.95,261.05,267.89,267.05,267.58,267.37,276.53,279.26,281.89,288.21,280.32,277.47,260.21,257.26,257.26,259.79,240.95,242.95,245.16,241.58,236.32,226.95,226,224.95,226.74,233.47,237.05,232.32,229.58,232.95,228.21,237.47,233.47,228.53,232.63,234.11,234.74,237.05,229.68,241.37,241.26,235.26,262,262.11,257.89,252.32,266.11,254.32,252.74,261.26,264.21,256.32,261.79,270.63,271.16,277.26,275.79,279.05,280.42,280.42,281.05,269.26,275.05,276.63,271.89,276.42,285.05,301.37,302.21,279.47,280.21,288.74,302.84,300.63,289.16,266.74,258.11,253.05,256.11,243.89,244.32,248.21,249.79,247.37,247.68,249.37,254,256.32,252.63,255.37,259.89,254.95,260.84,257.16,267.47,268.63,263.79,269.89,272.42,279.58,272.84,274.95,278.63,273.68,281.58,255.26,237.05,242,240.32,246.42,243.47,236.74,226.32,225.37,217.37,216.74,222.21,222.21,221.37,221.79,217.37,204,207.26,199.79,197.89,204.84,208.63,202.21,199.37,193.68,196.21,198.53,193.05,200.63,189.05,198.95,198.74,199.26,199.26,199.37,195.47,191.26,196.74,191.68,195.05,191.26,178.53,176.21,174.32,173.68,177.79,176,168.53,168.53,168.53,157.58,153.26,153.89,142.42,141.05,137.47,134.21,129.26,133.79,144.32,149.47,140.21,131.05,136.21,136.63,138.42,146,142.74,138.21,139.58,149.16,147.05,123.89,116,116,110.32,109.79,124.53,120.74,124.74,128.21,126.95,119.37,115.37,116.95,116.21,122.63,124.95,119.89,110.53,113.37,124.11,129.68,134.95,132.53,139.68,138.74,140.95,136.53,141.26,149.47,146.11,144.53,145.58,154,146.21,136.84,135.16,133.68,133.26,131.16,135.79,130.74,130.74,127.89,135.89,134.63,129.79,125.89,127.47,117.05,111.16,115.26,109.47,113.05,111.05,115.58,106.53,99.79,78.53,76.74,70.63,77.26,87.79,84.63,88,84.32,87.47,85.05,84.32,79.47,83.79,88,93.16,93.16,91.37,89.05,97.89,94.11,94.53,96.11,96.63,91.37,86.95,80.42,82.32,85.47,80.74,86.74,86.74,91.68,94.84,99.58,107.26,101.26,98,97.16,95.47,97.58,97.58,106,103.16,107.16,107.05,100.63,99.89,97.68,93.68,95.16,95.05,98.32,106.42,110.42,103.58,101.89,98.95,105.47,106.63,108.95,110.21,114.95,117.89,119.16,120.53,103.37,97.37,100.95,99.16,104.32,104.32,102.53,99.26,96.32,89.58,84.95,84.32,85.26,88.63,83.58,82.21,82,81.26,78.84,77.89,77.89,76.63,77.79,79.26,82,84.32,78.74,80.32,84.32,81.89,82.74,80.21,80.95,77.58,77.89,79.26,80.32,83.58,85.05,85.58,86.74,89.05,88.63,89.16,85.79,84.84,84.63,84.95,85.05,79.26,83.58,85.89,83.26,84.63,87.26,87.05,91.16,90.21,90.53,90.95,92.53,91.05,86.53,85.05,83.47,73.89,75.89,73.47,80.42,88.53,85.26,87.79,84.84,80.21,77.79,75.68,76,77.58,77.58,76.63,75.37,74.53,78.95,82.74,80.63,75.68,73.58,74.42,74.95,74.84,76.74,78.95,77.37,73.79,72.63,66.84,66.42,68.42,66.53,66.21,66.21,63.16,63.89,67.37,67.58,67.58,67.26,69.26,66.53,67.37,68.42,70.53,73.47,73.79,73.26,73.26,74.42,72.63,70.84,73.89,77.68,73.89,76,76.21,79.47,77.58,81.89,86.32,94.63,88.53,87.47,87.68,86.53,83.68,79.05,80.11,97.05,106.42,102.21,96.84,96.84,89.16,88,86,85.16,84.53,82.53,80.95,83.89,87.68,87.16,87.16,85.58,80.95,77.37,82.84,83.05,83.16,84,82.95,85.05,88.95,86.42,87.68,86.32,84.63,84.21,86.53,85.79,88.95,88.21,87.89,84,85.16,85.16,88.32,90.63,87.68,90.32,92.74,92.63,91.89,89.37,85.79,86.11,85.26,81.47,81.47,82.32,81.58,81.89,79.89,79.58,77.68,78,81.47,100.53,104.63,104,100,100.21,99.68,107.89,123.58,123.26,124.63,133.05,128.74,135.16,143.68,143.68,154.84,154.84,153.05,152.84,160.42,162.74,154.63,159.89,158.11,164.74,168.42,167.47,174.74,171.58,171.58,166.21,154.11,147.89,147.68,146.74,153.79,160.84,160,161.37,163.37,163.37,165.26,159.26,161.47,171.58,173.58,174.63,176.21,172.63,183.16,190.32,190,180.32,172.95,171.79,174.21,172.95,170,187.47,208.84,210.42,199.68,196.95,191.58,189.37,179.37,160.53,162.21,162.21,165.47,161.79,162.63,148.95,151.58,152.63,154.42,161.05,148.84,152.95,154.11,162.11,171.89,157.68,159.79,159.79,160.11,161.05,160.11,159.26,166.21,164.11,164.21,166.63,161.37,162.74,159.47,155.16,147.37,148.74,149.68,146.95,156.32,166,168.42,167.16,156.84,165.58,166.42,174.84,185.37,187.37,188.63,188.84,182.74,182.74,187.79,181.05,179.58,169.58,170.53,175.16,164.11,160.95,158.63,154.63,155.79,157.05,189.16,198.84,195.16,197.89,194.63,192.32,207.05,207.47,209.89,210,208.11,215.68,224.63,208.42,207.26,207.26,202.11,200.84,207.47,208.84,211.05,213.37,193.68,192.63,180.32,181.26,187.05,187.05,184.21,188.11,191.68,191.58,187.79,188.95,181.58,185.16,183.26,183.26,186.11,183.89,184.84,180.74,174.53,169.37,171.05,168.21,175.47,172.53,176.74,175.58,176.42,176.42,174,172.53,172.63,176.63,185.26,182.42,176.32,173.26,172.11,179.89,176.21,169.37,171.89,179.16,176,230.21,248.42,258,256.63,263.68,252.74,265.16,267.47,257.26,257.26,246.32,239.37,248.32,241.79,248,258.21,257.05,264,262.42,253.05,250.63,275.37,278.53,274.11,266.84,260,263.16,257.16,247.26,252.63,250.53,258.63,257.79,254.53,258,262,258,242.21,242.21,240.63,239.16,238.95,236.63,241.68,242.11,240.11,236,240.42,238.63,230.53,230.32,224.32,222.42,215.47,220.74,227.79,227.26,228.53,237.05,240.32,231.26,232.84,237.37,245.58,265.37,225.26,226.95,222.53,216.84,220.42,225.68,228.11,227.89,229.05,227.58,223.58,222.84,218.11,221.16,221.16,221.58,220.42,228.74,228.21,224.42,232.63,241.68,250.42,245.37,243.47,251.05,250.21,244.95,248.11,263.37,271.79,271.79,269.05,250.95,254.32,258.53,253.68,265.47,266.63,272.42,271.89,272.11,272.11,286.63,291.58,288.32,299.16,290.95,295.47,301.79,301.79,297.05,301.47,300.84,299.58,303.26,280,280.32,286.11,285.05,277.58,283.05,274.53,260.42,253.58,279.89,277.05,308.21,315.89,309.26,319.89,326.32,328.63,337.68,342.11,340.21,342.53,336,334.53,324.74,324.63,319.58,326.32,331.37,331.37,321.16,322,317.47,319.26,364.21,365.89,366.84,367.47,374.63,382.21,383.68,382.95,387.68,391.58,399.47,388.42,390.74,390.53,387.79,391.58,383.79,394.63,413.05,421.16,409.37,436.32,454,458.11,458,456.84,446.63,441.37,442.11,452.32,449.47,452,448.32,458.53,472.21,473.37,472.95,459.89,437.47,441.26,435.89,538.21,584.53,588.21,614.63,634.11,630,638.95,622.95,692.32,644.84,662.95,653.89,645.89,677.37,680.53,692,695.26,695.26,706.11,698.84,746.95,735.26,756.53,803.58,762.74,746.21,763.26,770.53,800.74,797.37,783.05,752.74,781.16,847.89,849.37,867.16,867.16,864.63,832.42,812.42,796.11,791.47,840.95,799.16,736.74,718.21,718.21,708,684,693.79,717.26,728.84,755.47,755.47,769.16,809.16,831.37,831.37,794.11,844.53,839.58,854.95,868.32,881.47,1092.95,1066.95,1171.37,1166.84,1227.89,1185.47,1235.68,1241.16,1254.32,1254.32,1311.79,1179.58,1118.63,1066.84,954.53,924.63,940.11,892.32,893.89,878.11,888.42,948.74,846.95,893.79,804,821.58,880.53,838.11,907.79,919.47,883.05,906.32,919.89,957.47,1018.42,1015.79,971.37,948.32,903.68,888.42,891.37,920.53,880,779.05,819.37,813.89,968.53,932.53,932.11,974.95,1035.79,975.89,987.16,987.16,955.79,989.37,1061.26,1134.53,1187.16,1206.84,1221.89,1246.74,1223.16,1308.21,1302.84,1145.89,1162.95,1254.21,1234.74,1246.95,1348.42,1370.32,1348.63,1363.37,1329.79,1322,1269.26,1287.26,1298,1298,1298.84,1302.74,1287.58,1387.16,1389.89,1401.79,1368.53,1262.21,1344.42,1390.11,1398,1435.68,1423.05,1446.32,1488.53,1454.74,1473.26,1473.26,1445.26,1472.84,1507.68,1504.21,1518.42,1376.21,1434.95,1375.58,1390.74,1414.32,1414.32,1464.42,1470.63,1506.63,1500,1495.79,1570,1564,1588.53,1620.95,1616,1597.79,1569.16,1627.68,1630.11,1671.58,1661.89,1644.63,1669.58,1666.84,1623.89,1691.16,1823.89,1889.89,1917.89,1968,1922.95,1968.11,1940.74,1905.47,1864.95,1831.89,1660.53,1642.21,1644,1670.95,1654.42,1693.37,1649.68,1664.42,1649.58,1649.58,1653.58,1630.53,1643.58,1611.68,1643.16,1709.05,1755.16,1730.11,1804.53,1802.21,1792.21,1771.89,1862.84,1919.89,1887.68,1921.58,1890.11,1885.47,1869.16,1882.74,1920.21,1946.84,1968.95,1821.79,1889.79,1917.58,1932.21,1952.32,1846.74,1865.37,1892,1890.74,1874.95,1875.26,1911.47,1910.63,1847.26,1899.79,1943.47,1991.37,1995.79,2092.74,2047.89,2110.21,2180.84,2007.79,1977.89,1842.63,1872.95,2038,2010.11,1938.63,1812,1831.68,1802.63,1761.37,1741.26,1639.42,1630,1707.89,1721.58,1744.95,1744.95,1773.16,1763.05,1796.74,1853.47,1872.84,1913.26,1910.42,1914.11,1978,1974.11,1932.32,1928.95,1976.32,1866.21,1954.63,2035.58,2041.89,2043.47,2043.89,2043.89,1986.42,1938.74,1903.58,1871.05,1766.95,1832,1891.68,1912.42,1861.68,1868.32,1888.53,1883.79,1877.89,1863.89,1799.58,1799.58,1774,1740.32,1746.32,1785.26,1762.84,1744.21,1656.32,1598.53,1543.05,1555.37,1661.89,1468.84,1368.53,1430.53,1504.32,1468.53,1428.21,1359.26,1383.26,1383.26,1400.21,1425.05,1419.89,1423.58,1374.74,1356.21,1412.53,1430.95,1444.11,1528.11,1549.68,1612.53,1607.05,1654.32,1646.63,1590.95,1595.79,1615.79,1588.95,1607.58,1632.42,1608.11,1638.74,1586.11,1693.05,1629.26,1631.16,1553.26,1505.89,1447.89,1539.79,1542,1562.74,1562.74,1557.16,1579.68,1481.68,1373.58,1348,1393.37,1428.42,1496.32,1502.74,1540.95,1535.68,1536.53,1606.53,1490.21,1506.21,1506.32,1486.11,1452.32,1464.32,1516.53,1537.16,1430.63,1408.32,1442.63,1450.53,1440.95,1431.58,1368.95,1407.68,1410.42,1422.53,1423.79,1443.68,1446.47,1440.84,1440.84,1437.89,1394.84,1508.84,1647.79,1691.05,1601.79,1496.84,1491.58,1426.63,1436.53,1390.21,1370.63,1379.79,1347.26,1418,1402.63,1375.05,1352.32,1352.32,1257.89,1228.42,1194.74,1129.16,1188.74,1217.89,1228.11,1323.47,1361.05,1361.05,1395.16,1414.42,1391.79,1358.32,1334.63,1368.84,1407.58,1408,1415.16,1393.47,1419.47,1396.42,1311.26,1298.63,1293.89,1384.53,1300.32,1294.74,1286.95,1295.37,1322.63,1712.21,1667.68,1641.26,1810.63,1844.53,1841.47,1800.42,1884.32,1832,1816.32,1805.68,1844.11,1831.16,1894.11,1851.47,1818.21,1868.42,1957.16,1960.95,1961.89,1893.89,1783.79,1921.37,1835.05]},"symbols":{"AMD":"AMD","EuroStoxx50":"^STOXX50E","HSCEI":"^HSCE","KOSPI200":"^KS200","Nikkei225":"^N225","S&P500":"^GSPC","SK하이닉스":"000660.KS","마이크론 테크놀로지":"MU","브로드컴":"AVGO","삼성전자":"005930.KS","테슬라":"TSLA","팔란티어 테크":"PLTR"},"missing":[]}
+  "history": {"updatedAt":"2026-10-03T01:43:36.180Z","range":"10y","source":"Yahoo Finance (일별 종가)","dates":[20161003,20161004,20161005,20161006,20161007,20161010,20161011,20161012,20161013,20161014,20161017,20161018,20161019,20161020,20161021,20161024,20161025,20161026,20161027,20161028,20161031,20161101,20161102,20161103,20161104,20161107,20161108,20161109,20161110,20161111,20161114,20161115,20161116,20161117,20161118,20161121,20161122,20161123,20161124,20161125,20161128,20161129,20161130,20161201,20161202,20161205,20161206,20161207,20161208,20161209,20161212,20161213,20161214,20161215,20161216,20161219,20161220,20161221,20161222,20161223,20161226,20161227,20161228,20161229,20161230,20170102,20170103,20170104,20170105,20170106,20170109,20170110,20170111,20170112,20170113,20170116,20170117,20170118,20170119,20170120,20170123,20170124,20170125,20170126,20170127,20170130,20170131,20170201,20170202,20170203,20170206,20170207,20170208,20170209,20170210,20170213,20170214,20170215,20170216,20170217,20170220,20170221,20170222,20170223,20170224,20170227,20170228,20170301,20170302,20170303,20170306,20170307,20170308,20170309,20170310,20170313,20170314,20170315,20170316,20170317,20170320,20170321,20170322,20170323,20170324,20170327,20170328,20170329,20170330,20170331,20170403,20170404,20170405,20170406,20170407,20170410,20170411,20170412,20170413,20170414,20170417,20170418,20170419,20170420,20170421,20170424,20170425,20170426,20170427,20170428,20170501,20170502,20170503,20170504,20170505,20170508,20170509,20170510,20170511,20170512,20170515,20170516,20170517,20170518,20170519,20170522,20170523,20170524,20170525,20170526,20170529,20170530,20170531,20170601,20170602,20170605,20170606,20170607,20170608,20170609,20170612,20170613,20170614,20170615,20170616,20170619,20170620,20170621,20170622,20170623,20170626,20170627,20170628,20170629,20170630,20170703,20170704,20170705,20170706,20170707,20170710,20170711,20170712,20170713,20170714,20170717,20170718,20170719,20170720,20170721,20170724,20170725,20170726,20170727,20170728,20170731,20170801,20170802,20170803,20170804,20170807,20170808,20170809,20170810,20170811,20170814,20170815,20170816,20170817,20170818,20170821,20170822,20170823,20170824,20170825,20170828,20170829,20170830,20170831,20170901,20170904,20170905,20170906,20170907,20170908,20170911,20170912,20170913,20170914,20170915,20170918,20170919,20170920,20170921,20170922,20170925,20170926,20170927,20170928,20170929,20171002,20171003,20171004,20171005,20171006,20171009,20171010,20171011,20171012,20171013,20171016,20171017,20171018,20171019,20171020,20171023,20171024,20171025,20171026,20171027,20171030,20171031,20171101,20171102,20171103,20171106,20171107,20171108,20171109,20171110,20171113,20171114,20171115,20171116,20171117,20171120,20171121,20171122,20171123,20171124,20171127,20171128,20171129,20171130,20171201,20171204,20171205,20171206,20171207,20171208,20171211,20171212,20171213,20171214,20171215,20171218,20171219,20171220,20171221,20171222,20171225,20171226,20171227,20171228,20171229,20180102,20180103,20180104,20180105,20180108,20180109,20180110,20180111,20180112,20180115,20180116,20180117,20180118,20180119,20180122,20180123,20180124,20180125,20180126,20180129,20180130,20180131,20180201,20180202,20180205,20180206,20180207,20180208,20180209,20180212,20180213,20180214,20180215,20180216,20180219,20180220,20180221,20180222,20180223,20180226,20180227,20180228,20180301,20180302,20180305,20180306,20180307,20180308,20180309,20180312,20180313,20180314,20180315,20180316,20180319,20180320,20180321,20180322,20180323,20180326,20180327,20180328,20180329,20180330,20180402,20180403,20180404,20180405,20180406,20180409,20180410,20180411,20180412,20180413,20180416,20180417,20180418,20180419,20180420,20180423,20180424,20180425,20180426,20180427,20180430,20180501,20180502,20180503,20180504,20180507,20180508,20180509,20180510,20180511,20180514,20180515,20180516,20180517,20180518,20180521,20180522,20180523,20180524,20180525,20180528,20180529,20180530,20180531,20180601,20180604,20180605,20180606,20180607,20180608,20180611,20180612,20180613,20180614,20180615,20180618,20180619,20180620,20180621,20180622,20180625,20180626,20180627,20180628,20180629,20180702,20180703,20180704,20180705,20180706,20180709,20180710,20180711,20180712,20180713,20180716,20180717,20180718,20180719,20180720,20180723,20180724,20180725,20180726,20180727,20180730,20180731,20180801,20180802,20180803,20180806,20180807,20180808,20180809,20180810,20180813,20180814,20180815,20180816,20180817,20180820,20180821,20180822,20180823,20180824,20180827,20180828,20180829,20180830,20180831,20180903,20180904,20180905,20180906,20180907,20180910,20180911,20180912,20180913,20180914,20180917,20180918,20180919,20180920,20180921,20180924,20180925,20180926,20180927,20180928,20181001,20181002,20181003,20181004,20181005,20181008,20181009,20181010,20181011,20181012,20181015,20181016,20181017,20181018,20181019,20181022,20181023,20181024,20181025,20181026,20181029,20181030,20181031,20181101,20181102,20181105,20181106,20181107,20181108,20181109,20181112,20181113,20181114,20181115,20181116,20181119,20181120,20181121,20181122,20181123,20181126,20181127,20181128,20181129,20181130,20181203,20181204,20181205,20181206,20181207,20181210,20181211,20181212,20181213,20181214,20181217,20181218,20181219,20181220,20181221,20181224,20181225,20181226,20181227,20181228,20181231,20190102,20190103,20190104,20190107,20190108,20190109,20190110,20190111,20190114,20190115,20190116,20190117,20190118,20190121,20190122,20190123,20190124,20190125,20190128,20190129,20190130,20190131,20190201,20190204,20190205,20190206,20190207,20190208,20190211,20190212,20190213,20190214,20190215,20190218,20190219,20190220,20190221,20190222,20190225,20190226,20190227,20190228,20190301,20190304,20190305,20190306,20190307,20190308,20190311,20190312,20190313,20190314,20190315,20190318,20190319,20190320,20190321,20190322,20190325,20190326,20190327,20190328,20190329,20190401,20190402,20190403,20190404,20190405,20190408,20190409,20190410,20190411,20190412,20190415,20190416,20190417,20190418,20190419,20190422,20190423,20190424,20190425,20190426,20190429,20190430,20190501,20190502,20190503,20190506,20190507,20190508,20190509,20190510,20190513,20190514,20190515,20190516,20190517,20190520,20190521,20190522,20190523,20190524,20190527,20190528,20190529,20190530,20190531,20190603,20190604,20190605,20190606,20190607,20190610,20190611,20190612,20190613,20190614,20190617,20190618,20190619,20190620,20190621,20190624,20190625,20190626,20190627,20190628,20190701,20190702,20190703,20190704,20190705,20190708,20190709,20190710,20190711,20190712,20190715,20190716,20190717,20190718,20190719,20190722,20190723,20190724,20190725,20190726,20190729,20190730,20190731,20190801,20190802,20190805,20190806,20190807,20190808,20190809,20190812,20190813,20190814,20190815,20190816,20190819,20190820,20190821,20190822,20190823,20190826,20190827,20190828,20190829,20190830,20190902,20190903,20190904,20190905,20190906,20190909,20190910,20190911,20190912,20190913,20190916,20190917,20190918,20190919,20190920,20190923,20190924,20190925,20190926,20190927,20190930,20191001,20191002,20191003,20191004,20191007,20191008,20191009,20191010,20191011,20191014,20191015,20191016,20191017,20191018,20191021,20191022,20191023,20191024,20191025,20191028,20191029,20191030,20191031,20191101,20191104,20191105,20191106,20191107,20191108,20191111,20191112,20191113,20191114,20191115,20191118,20191119,20191120,20191121,20191122,20191125,20191126,20191127,20191128,20191129,20191202,20191203,20191204,20191205,20191206,20191209,20191210,20191211,20191212,20191213,20191216,20191217,20191218,20191219,20191220,20191223,20191224,20191225,20191226,20191227,20191230,20191231,20200102,20200103,20200106,20200107,20200108,20200109,20200110,20200113,20200114,20200115,20200116,20200117,20200120,20200121,20200122,20200123,20200124,20200127,20200128,20200129,20200130,20200131,20200203,20200204,20200205,20200206,20200207,20200210,20200211,20200212,20200213,20200214,20200217,20200218,20200219,20200220,20200221,20200224,20200225,20200226,20200227,20200228,20200302,20200303,20200304,20200305,20200306,20200309,20200310,20200311,20200312,20200313,20200316,20200317,20200318,20200319,20200320,20200323,20200324,20200325,20200326,20200327,20200330,20200331,20200401,20200402,20200403,20200406,20200407,20200408,20200409,20200410,20200413,20200414,20200415,20200416,20200417,20200420,20200421,20200422,20200423,20200424,20200427,20200428,20200429,20200430,20200501,20200504,20200505,20200506,20200507,20200508,20200511,20200512,20200513,20200514,20200515,20200518,20200519,20200520,20200521,20200522,20200525,20200526,20200527,20200528,20200529,20200601,20200602,20200603,20200604,20200605,20200608,20200609,20200610,20200611,20200612,20200615,20200616,20200617,20200618,20200619,20200622,20200623,20200624,20200625,20200626,20200629,20200630,20200701,20200702,20200703,20200706,20200707,20200708,20200709,20200710,20200713,20200714,20200715,20200716,20200717,20200720,20200721,20200722,20200723,20200724,20200727,20200728,20200729,20200730,20200731,20200803,20200804,20200805,20200806,20200807,20200810,20200811,20200812,20200813,20200814,20200817,20200818,20200819,20200820,20200821,20200824,20200825,20200826,20200827,20200828,20200831,20200901,20200902,20200903,20200904,20200907,20200908,20200909,20200910,20200911,20200914,20200915,20200916,20200917,20200918,20200921,20200922,20200923,20200924,20200925,20200928,20200929,20200930,20201001,20201002,20201005,20201006,20201007,20201008,20201009,20201012,20201013,20201014,20201015,20201016,20201019,20201020,20201021,20201022,20201023,20201026,20201027,20201028,20201029,20201030,20201102,20201103,20201104,20201105,20201106,20201109,20201110,20201111,20201112,20201113,20201116,20201117,20201118,20201119,20201120,20201123,20201124,20201125,20201126,20201127,20201130,20201201,20201202,20201203,20201204,20201207,20201208,20201209,20201210,20201211,20201214,20201215,20201216,20201217,20201218,20201221,20201222,20201223,20201224,20201225,20201228,20201229,20201230,20201231,20210104,20210105,20210106,20210107,20210108,20210111,20210112,20210113,20210114,20210115,20210118,20210119,20210120,20210121,20210122,20210125,20210126,20210127,20210128,20210129,20210201,20210202,20210203,20210204,20210205,20210208,20210209,20210210,20210211,20210212,20210215,20210216,20210217,20210218,20210219,20210222,20210223,20210224,20210225,20210226,20210301,20210302,20210303,20210304,20210305,20210308,20210309,20210310,20210311,20210312,20210315,20210316,20210317,20210318,20210319,20210322,20210323,20210324,20210325,20210326,20210329,20210330,20210331,20210401,20210402,20210405,20210406,20210407,20210408,20210409,20210412,20210413,20210414,20210415,20210416,20210419,20210420,20210421,20210422,20210423,20210426,20210427,20210428,20210429,20210430,20210503,20210504,20210505,20210506,20210507,20210510,20210511,20210512,20210513,20210514,20210517,20210518,20210519,20210520,20210521,20210524,20210525,20210526,20210527,20210528,20210531,20210601,20210602,20210603,20210604,20210607,20210608,20210609,20210610,20210611,20210614,20210615,20210616,20210617,20210618,20210621,20210622,20210623,20210624,20210625,20210628,20210629,20210630,20210701,20210702,20210705,20210706,20210707,20210708,20210709,20210712,20210713,20210714,20210715,20210716,20210719,20210720,20210721,20210722,20210723,20210726,20210727,20210728,20210729,20210730,20210802,20210803,20210804,20210805,20210806,20210809,20210810,20210811,20210812,20210813,20210816,20210817,20210818,20210819,20210820,20210823,20210824,20210825,20210826,20210827,20210830,20210831,20210901,20210902,20210903,20210906,20210907,20210908,20210909,20210910,20210913,20210914,20210915,20210916,20210917,20210920,20210921,20210922,20210923,20210924,20210927,20210928,20210929,20210930,20211001,20211004,20211005,20211006,20211007,20211008,20211011,20211012,20211013,20211014,20211015,20211018,20211019,20211020,20211021,20211022,20211025,20211026,20211027,20211028,20211029,20211101,20211102,20211103,20211104,20211105,20211108,20211109,20211110,20211111,20211112,20211115,20211116,20211117,20211118,20211119,20211122,20211123,20211124,20211125,20211126,20211129,20211130,20211201,20211202,20211203,20211206,20211207,20211208,20211209,20211210,20211213,20211214,20211215,20211216,20211217,20211220,20211221,20211222,20211223,20211224,20211227,20211228,20211229,20211230,20211231,20220103,20220104,20220105,20220106,20220107,20220110,20220111,20220112,20220113,20220114,20220117,20220118,20220119,20220120,20220121,20220124,20220125,20220126,20220127,20220128,20220131,20220201,20220202,20220203,20220204,20220207,20220208,20220209,20220210,20220211,20220214,20220215,20220216,20220217,20220218,20220221,20220222,20220223,20220224,20220225,20220228,20220301,20220302,20220303,20220304,20220307,20220308,20220309,20220310,20220311,20220314,20220315,20220316,20220317,20220318,20220321,20220322,20220323,20220324,20220325,20220328,20220329,20220330,20220331,20220401,20220404,20220405,20220406,20220407,20220408,20220411,20220412,20220413,20220414,20220415,20220418,20220419,20220420,20220421,20220422,20220425,20220426,20220427,20220428,20220429,20220502,20220503,20220504,20220505,20220506,20220509,20220510,20220511,20220512,20220513,20220516,20220517,20220518,20220519,20220520,20220523,20220524,20220525,20220526,20220527,20220530,20220531,20220601,20220602,20220603,20220606,20220607,20220608,20220609,20220610,20220613,20220614,20220615,20220616,20220617,20220620,20220621,20220622,20220623,20220624,20220627,20220628,20220629,20220630,20220701,20220704,20220705,20220706,20220707,20220708,20220711,20220712,20220713,20220714,20220715,20220718,20220719,20220720,20220721,20220722,20220725,20220726,20220727,20220728,20220729,20220801,20220802,20220803,20220804,20220805,20220808,20220809,20220810,20220811,20220812,20220815,20220816,20220817,20220818,20220819,20220822,20220823,20220824,20220825,20220826,20220829,20220830,20220831,20220901,20220902,20220905,20220906,20220907,20220908,20220909,20220912,20220913,20220914,20220915,20220916,20220919,20220920,20220921,20220922,20220923,20220926,20220927,20220928,20220929,20220930,20221003,20221004,20221005,20221006,20221007,20221010,20221011,20221012,20221013,20221014,20221017,20221018,20221019,20221020,20221021,20221024,20221025,20221026,20221027,20221028,20221031,20221101,20221102,20221103,20221104,20221107,20221108,20221109,20221110,20221111,20221114,20221115,20221116,20221117,20221118,20221121,20221122,20221123,20221124,20221125,20221128,20221129,20221130,20221201,20221202,20221205,20221206,20221207,20221208,20221209,20221212,20221213,20221214,20221215,20221216,20221219,20221220,20221221,20221222,20221223,20221226,20221227,20221228,20221229,20221230,20230102,20230103,20230104,20230105,20230106,20230109,20230110,20230111,20230112,20230113,20230116,20230117,20230118,20230119,20230120,20230123,20230124,20230125,20230126,20230127,20230130,20230131,20230201,20230202,20230203,20230206,20230207,20230208,20230209,20230210,20230213,20230214,20230215,20230216,20230217,20230220,20230221,20230222,20230223,20230224,20230227,20230228,20230301,20230302,20230303,20230306,20230307,20230308,20230309,20230310,20230313,20230314,20230315,20230316,20230317,20230320,20230321,20230322,20230323,20230324,20230327,20230328,20230329,20230330,20230331,20230403,20230404,20230405,20230406,20230407,20230410,20230411,20230412,20230413,20230414,20230417,20230418,20230419,20230420,20230421,20230424,20230425,20230426,20230427,20230428,20230501,20230502,20230503,20230504,20230505,20230508,20230509,20230510,20230511,20230512,20230515,20230516,20230517,20230518,20230519,20230522,20230523,20230524,20230525,20230526,20230529,20230530,20230531,20230601,20230602,20230605,20230606,20230607,20230608,20230609,20230612,20230613,20230614,20230615,20230616,20230619,20230620,20230621,20230622,20230623,20230626,20230627,20230628,20230629,20230630,20230703,20230704,20230705,20230706,20230707,20230710,20230711,20230712,20230713,20230714,20230717,20230718,20230719,20230720,20230721,20230724,20230725,20230726,20230727,20230728,20230731,20230801,20230802,20230803,20230804,20230807,20230808,20230809,20230810,20230811,20230814,20230815,20230816,20230817,20230818,20230821,20230822,20230823,20230824,20230825,20230828,20230829,20230830,20230831,20230901,20230904,20230905,20230906,20230907,20230908,20230911,20230912,20230913,20230914,20230915,20230918,20230919,20230920,20230921,20230922,20230925,20230926,20230927,20230928,20230929,20231002,20231003,20231004,20231005,20231006,20231009,20231010,20231011,20231012,20231013,20231016,20231017,20231018,20231019,20231020,20231023,20231024,20231025,20231026,20231027,20231030,20231031,20231101,20231102,20231103,20231106,20231107,20231108,20231109,20231110,20231113,20231114,20231115,20231116,20231117,20231120,20231121,20231122,20231123,20231124,20231127,20231128,20231129,20231130,20231201,20231204,20231205,20231206,20231207,20231208,20231211,20231212,20231213,20231214,20231215,20231218,20231219,20231220,20231221,20231222,20231225,20231226,20231227,20231228,20231229,20240102,20240103,20240104,20240105,20240108,20240109,20240110,20240111,20240112,20240115,20240116,20240117,20240118,20240119,20240122,20240123,20240124,20240125,20240126,20240129,20240130,20240131,20240201,20240202,20240205,20240206,20240207,20240208,20240209,20240212,20240213,20240214,20240215,20240216,20240219,20240220,20240221,20240222,20240223,20240226,20240227,20240228,20240229,20240301,20240304,20240305,20240306,20240307,20240308,20240311,20240312,20240313,20240314,20240315,20240318,20240319,20240320,20240321,20240322,20240325,20240326,20240327,20240328,20240329,20240401,20240402,20240403,20240404,20240405,20240408,20240409,20240410,20240411,20240412,20240415,20240416,20240417,20240418,20240419,20240422,20240423,20240424,20240425,20240426,20240429,20240430,20240501,20240502,20240503,20240506,20240507,20240508,20240509,20240510,20240513,20240514,20240515,20240516,20240517,20240520,20240521,20240522,20240523,20240524,20240527,20240528,20240529,20240530,20240531,20240603,20240604,20240605,20240606,20240607,20240610,20240611,20240612,20240613,20240614,20240617,20240618,20240619,20240620,20240621,20240624,20240625,20240626,20240627,20240628,20240701,20240702,20240703,20240704,20240705,20240708,20240709,20240710,20240711,20240712,20240715,20240716,20240717,20240718,20240719,20240722,20240723,20240724,20240725,20240726,20240729,20240730,20240731,20240801,20240802,20240805,20240806,20240807,20240808,20240809,20240812,20240813,20240814,20240815,20240816,20240819,20240820,20240821,20240822,20240823,20240826,20240827,20240828,20240829,20240830,20240902,20240903,20240904,20240905,20240906,20240909,20240910,20240911,20240912,20240913,20240916,20240917,20240918,20240919,20240920,20240923,20240924,20240925,20240926,20240927,20240930,20241001,20241002,20241003,20241004,20241007,20241008,20241009,20241010,20241011,20241014,20241015,20241016,20241017,20241018,20241021,20241022,20241023,20241024,20241025,20241028,20241029,20241030,20241031,20241101,20241104,20241105,20241106,20241107,20241108,20241111,20241112,20241113,20241114,20241115,20241118,20241119,20241120,20241121,20241122,20241125,20241126,20241127,20241128,20241129,20241202,20241203,20241204,20241205,20241206,20241209,20241210,20241211,20241212,20241213,20241216,20241217,20241218,20241219,20241220,20241223,20241224,20241225,20241226,20241227,20241230,20241231,20250102,20250103,20250106,20250107,20250108,20250109,20250110,20250113,20250114,20250115,20250116,20250117,20250120,20250121,20250122,20250123,20250124,20250127,20250128,20250129,20250130,20250131,20250203,20250204,20250205,20250206,20250207,20250210,20250211,20250212,20250213,20250214,20250217,20250218,20250219,20250220,20250221,20250224,20250225,20250226,20250227,20250228,20250303,20250304,20250305,20250306,20250307,20250310,20250311,20250312,20250313,20250314,20250317,20250318,20250319,20250320,20250321,20250324,20250325,20250326,20250327,20250328,20250331,20250401,20250402,20250403,20250404,20250407,20250408,20250409,20250410,20250411,20250414,20250415,20250416,20250417,20250418,20250421,20250422,20250423,20250424,20250425,20250428,20250429,20250430,20250501,20250502,20250505,20250506,20250507,20250508,20250509,20250512,20250513,20250514,20250515,20250516,20250519,20250520,20250521,20250522,20250523,20250526,20250527,20250528,20250529,20250530,20250602,20250603,20250604,20250605,20250606,20250609,20250610,20250611,20250612,20250613,20250616,20250617,20250618,20250619,20250620,20250623,20250624,20250625,20250626,20250627,20250630,20250701,20250702,20250703,20250704,20250707,20250708,20250709,20250710,20250711,20250714,20250715,20250716,20250717,20250718,20250721,20250722,20250723,20250724,20250725,20250728,20250729,20250730,20250731,20250801,20250804,20250805,20250806,20250807,20250808,20250811,20250812,20250813,20250814,20250815,20250818,20250819,20250820,20250821,20250822,20250825,20250826,20250827,20250828,20250829,20250901,20250902,20250903,20250904,20250905,20250908,20250909,20250910,20250911,20250912,20250915,20250916,20250917,20250918,20250919,20250922,20250923,20250924,20250925,20250926,20250929,20250930,20251001,20251002,20251003,20251006,20251007,20251008,20251009,20251010,20251013,20251014,20251015,20251016,20251017,20251020,20251021,20251022,20251023,20251024,20251027,20251028,20251029,20251030,20251031,20251103,20251104,20251105,20251106,20251107,20251110,20251111,20251112,20251113,20251114,20251117,20251118,20251119,20251120,20251121,20251124,20251125,20251126,20251127,20251128,20251201,20251202,20251203,20251204,20251205,20251208,20251209,20251210,20251211,20251212,20251215,20251216,20251217,20251218,20251219,20251222,20251223,20251224,20251225,20251226,20251229,20251230,20251231,20260102,20260105,20260106,20260107,20260108,20260109,20260112,20260113,20260114,20260115,20260116,20260119,20260120,20260121,20260122,20260123,20260126,20260127,20260128,20260129,20260130,20260202,20260203,20260204,20260205,20260206,20260209,20260210,20260211,20260212,20260213,20260216,20260217,20260218,20260219,20260220,20260223,20260224,20260225,20260226,20260227,20260302,20260303,20260304,20260305,20260306,20260309,20260310,20260311,20260312,20260313,20260316,20260317,20260318,20260319,20260320,20260323,20260324,20260325,20260326,20260327,20260330,20260331,20260401,20260402,20260403,20260406,20260407,20260408,20260409,20260410,20260413,20260414,20260415,20260416,20260417,20260420,20260421,20260422,20260423,20260424,20260427,20260428,20260429,20260430,20260501,20260504,20260505,20260506,20260507,20260508,20260511,20260512,20260513,20260514,20260515,20260518,20260519,20260520,20260521,20260522,20260525,20260526,20260527,20260528,20260529,20260601,20260602,20260603,20260604,20260605,20260608,20260609,20260610,20260611,20260612,20260615,20260616,20260617,20260618,20260619,20260622,20260623,20260624,20260625,20260626,20260629,20260630,20260701,20260702,20260703,20260706,20260707,20260708,20260709,20260710,20260713,20260714,20260715,20260716,20260717,20260720,20260721,20260722,20260723,20260724,20260727,20260728,20260729,20260730,20260731,20260803,20260804,20260805,20260806,20260807,20260810,20260811,20260812,20260813,20260814,20260817,20260818,20260819,20260820,20260821,20260824,20260825,20260826,20260827,20260828,20260831,20260901,20260902,20260903,20260904,20260907,20260908,20260909,20260910,20260911,20260914,20260915,20260916,20260917,20260918,20260921,20260922,20260923,20260924,20260925,20260928,20260929,20260930,20261001,20261002],"series":{"AMD":[100,100.29,97.55,100.14,97.12,98.42,93.53,95.25,93.38,97.12,95.97,96.83,97.41,100.14,93.81,100.86,107.91,104.89,102.3,103.6,104.03,102.01,97.27,96.4,94.39,100.14,100.72,99.86,90.65,96.26,97.7,100.29,110.36,121.73,125.32,128.63,125.04,126.62,126.62,126.19,127.05,128.49,128.2,120.72,122.73,124.89,135.97,137.55,148.78,148.78,153.67,151.65,151.8,156.26,153.38,157.55,165.61,165.04,166.91,166.62,166.62,173.67,166.19,166.76,163.17,163.17,164.46,164.46,161.73,162.88,165.32,164.6,161.15,154.82,152.23,152.23,141.29,142.16,140.58,140.29,142.59,150.22,148.92,151.37,153.53,152.66,149.21,173.53,176.69,176.12,196.12,191.22,195.11,193.09,195.4,194.1,190.79,191.37,186.62,188.92,188.92,201.44,205.47,206.04,203.17,218.71,208.06,215.25,200,187.48,187.63,187.77,190.22,191.8,200.14,205.47,202.88,201.15,196.4,194.1,207.19,198.85,202.88,198.42,197.12,197.12,196.98,197.27,202.16,209.35,210.65,203.74,203.88,190.94,194.53,188.49,188.49,183.6,177.12,177.12,184.03,186.33,184.75,188.63,187.05,188.92,194.1,192.95,195.97,191.37,195.97,148.49,149.5,145.32,146.62,144.46,146.47,155.25,159.28,162.01,164.32,183.45,161.15,162.3,164.17,158.85,156.69,156.69,157.99,158.27,158.27,160,161.01,157.27,156.83,161.73,173.09,178.13,185.61,176.69,173.96,172.09,169.35,165.47,164.6,171.65,181.87,201.15,206.91,203.88,202.59,192.81,190.36,181.29,179.57,174.82,174.82,189.78,187.34,192.23,198.71,199.86,205.61,194.68,200.29,198.56,193.96,194.96,198.56,199.71,203.74,203.02,212.37,203.17,200.72,195.83,197.27,192.37,190.5,188.78,193.24,188.63,184.6,174.39,175.97,183.6,187.34,181.73,177.55,177.99,173.38,175.11,179.57,179.86,178.85,175.97,174.82,182.3,187.05,189.78,189.78,185.9,185.04,181.73,176.26,180.58,176.98,175.83,176.4,180.14,188.2,188.78,197.7,192.95,191.37,181.44,179.14,183.31,183.31,183.45,182.88,193.09,191.51,191.94,190.36,193.81,197.12,199.71,204.32,204.6,205.18,203.74,202.45,200.72,198.71,202.88,205.04,177.41,172.81,170.36,156.69,158.13,155.4,156.12,160,171.65,173.38,168.49,160,162.01,159.57,160,159.28,161.87,163.74,163.17,164.03,163.6,163.6,163.74,166.19,160.72,155.83,156.69,154.39,144.32,142.59,143.88,144.46,143.02,146.19,142.45,145.47,145.76,148.06,157.99,157.55,157.99,156.69,151.65,151.65,150.5,151.51,151.8,147.91,157.99,166.19,174.39,170.94,176.69,170.07,172.09,174.68,172.95,172.95,171.37,175.25,179.42,181.15,182.01,186.19,182.88,178.56,186.33,191.65,185.18,197.7,190.65,179.14,166.47,167.63,166.91,161.44,162.73,168.06,169.5,175.54,175.4,170.07,170.07,172.95,168.63,170.36,173.67,178.71,180.29,174.24,171.22,169.93,171.37,169.21,176.12,172.23,168.35,165.76,167.48,163.45,164.89,165.04,164.46,159.86,162.01,156.98,152.95,150.22,143.88,141.15,144.6,144.6,137.12,137.41,140.58,144.17,138.27,137.12,143.6,141.29,145.04,142.88,145.18,151.37,149.06,145.47,143.74,144.46,145.18,139.71,158.85,159.86,156.55,160.14,157.84,157.27,162.3,166.76,167.05,171.94,174.53,171.94,175.97,179.14,184.46,184.46,187.05,186.91,186.76,188.49,192.95,194.82,194.82,192.23,198.85,197.55,207.19,213.67,213.67,225.47,214.24,219.42,226.33,228.06,234.82,233.81,235.11,246.19,240.14,237.7,225.18,227.34,217.41,223.02,215.4,220.29,215.68,218.13,215.83,215.83,223.02,235.4,238.99,238.13,234.1,238.27,234.1,238.56,242.73,242.45,240.43,237.41,239.71,232.95,230.94,264.03,272.52,279.42,263.74,265.9,270.36,266.04,279.57,281.44,281.73,274.82,274.24,283.88,288.06,283.45,278.13,284.46,287.48,293.53,300.72,320.72,345.04,363.45,360.43,362.59,358.13,362.16,362.16,403.74,410.22,400.58,393.96,430.07,433.09,463.45,438.56,470.79,466.62,459.42,449.06,448.63,446.33,469.21,468.63,463.17,468.92,444.46,452.09,417.55,409.06,399.71,393.53,380.72,391.94,359.71,364.03,378.99,377.84,405.47,392.81,383.02,340.43,360.14,361.01,327.91,277.27,253.67,242.45,247.48,262.01,290.94,291.08,286.33,297.55,314.24,305.04,302.59,273.81,282.16,299.42,309.21,297.27,274.96,276.4,269.5,269.5,278.85,288.92,302.88,307.05,308.35,306.47,341.15,303.88,303.88,306.47,280,287.63,287.48,294.68,285.76,286.33,270.94,280.58,261.29,258.13,243.6,239.57,239.57,257.55,251.65,256.4,265.61,270.94,245.32,273.38,295.97,298.56,290.5,284.03,291.65,291.08,293.24,283.88,291.37,298.85,298.85,284.32,284.89,300,315.54,290.36,276.98,332.23,351.22,352.66,347.19,335.4,334.68,326.19,331.65,330.36,328.35,328.78,332.81,340.72,340.72,344.6,344.6,344.17,350.5,355.54,348.35,337.84,338.56,340.72,336.26,338.13,322.45,317.7,316.69,330.36,337.99,336.4,328.35,335.11,334.53,374.1,369.78,401.29,379.42,373.67,369.64,358.13,360.58,367.19,379.28,384.89,417.55,418.56,416.98,410.5,391.94,400.43,399.86,400.72,393.24,401.87,395.54,398.27,398.27,405.47,402.45,409.5,397.99,401.15,398.42,397.55,385.76,407.05,406.04,394.53,383.6,389.78,391.51,402.3,377.55,393.09,396.83,403.02,395.68,383.88,393.53,394.39,379.28,380.43,380.43,417.99,404.17,403.31,394.39,396.83,425.47,424.46,457.84,466.33,478.13,466.33,463.02,451.65,436.83,420.14,438.13,438.85,431.8,418.71,421.01,415.25,430.5,442.3,436.98,448.92,449.5,448.78,448.78,453.24,461.01,476.98,486.19,475.68,477.84,494.82,487.05,483.45,474.82,467.77,472.66,481.87,490.79,484.46,489.5,481.73,487.34,438.13,429.64,423.6,402.73,415.25,420,488.06,491.94,466.62,462.01,435.11,426.91,448.63,452.95,442.01,456.12,458.99,425.04,435.68,434.53,442.88,452.52,452.52,452.52,444.6,445.32,453.24,439.71,438.85,434.96,428.2,434.68,441.58,443.6,445.9,437.7,435.83,432.37,440.86,424.75,425.04,424.03,413.24,417.12,413.81,407.34,412.66,417.41,416.26,406.19,409.5,408.35,428.06,439.28,442.01,443.31,448.06,445.61,460.86,453.38,451.22,456.4,470.65,484.75,475.25,476.69,488.2,502.01,522.16,520.14,516.98,522.01,522.16,522.45,528.2,539.86,551.8,554.82,573.81,594.1,589.64,568.63,563.31,572.52,561.01,567.05,567.05,563.31,557.27,559.71,571.08,570.07,570.22,560.14,567.48,567.91,612.81,592.09,609.35,615.4,608.63,616.26,635.25,654.1,669.64,669.64,670.94,664.46,654.96,659.86,706.47,699.28,696.26,694.24,688.2,704.6,693.09,701.44,693.67,698.56,716.12,732.81,732.81,734.53,740,744.03,724.46,708.78,727.05,683.6,701.87,676.26,690.94,711.51,717.12,709.64,715.54,751.94,774.1,775.4,784.6,795.83,795.83,818.56,847.48,824.03,766.62,706.76,684.46,683.31,633.24,654.39,682.88,672.66,721.01,692.23,699.14,622.59,652.95,657.55,561.29,631.65,556.98,602.59,562.88,572.95,569.93,599.14,665.04,642.16,683.45,670.22,688.63,654.39,628.2,640.14,612.81,683.74,684.32,702.01,696.12,696.12,732.95,790.36,791.22,819.42,814.39,819.71,761.44,804.6,804.32,808.35,812.81,798.71,772.09,753.81,717.7,756.26,750.94,750.5,747.48,765.32,802.01,773.53,750.79,784.32,779.86,785.47,798.13,811.37,786.33,793.81,793.81,765.32,758.85,744.46,774.1,771.65,770.36,758.71,757.27,764.03,762.16,811.37,826.47,760.14,769.78,786.76,783.6,784.89,777.55,780.29,787.91,776.83,753.81,747.19,720.86,723.45,756.98,756.55,753.09,753.09,768.35,761.58,768.78,823.88,804.03,771.08,787.34,796.26,790.22,791.94,826.76,820.14,889.06,857.12,998.56,992.37,972.81,1094.82,1125.18,1114.1,1117.55,1223.6,1227.48,1247.63,1220.86,1183.31,1106.19,1188.63,1177.55,1169.78,1185.9,1174.96,1166.76,1190.94,1205.9,1195.4,1242.45,1237.7,1205.76,1230.94,1306.76,1326.33,1298.13,1187.63,1180,1180,1132.23,1178.56,1136.4,1098.42,1120.86,1135.68,1103.02,1101.44,1078.13,1121.44,1117.99,1075.25,1090.94,1123.17,1143.6,1176.55,1179.71,1221.01,1176.98,1239.57,1215.54,1247.34,1244.75,1195.68,1212.81,1227.05,1211.65,1196.12,1196.69,1179.86,1173.53,1139.57,1142.73,1179.28,1183.17,1134.96,1099.28,1122.59,1083.31,1074.82,1101.87,1170.5,1194.24,1235.68,1195.97,1122.16,1169.5,1177.55,1171.65,1204.75,1199.42,1187.63,1230.79,1217.84,1227.48,1224.03,1247.63,1247.63,1254.53,1333.24,1332.81,1348.78,1328.2,1353.09,1353.53,1336.98,1292.52,1318.85,1318.71,1363.74,1397.41,1393.53,1393.38,1380.14,1341.44,1340.43,1317.27,1321.01,1321.01,1317.99,1303.88,1327.91,1319.57,1328.06,1334.82,1299.71,1369.21,1360.86,1399.28,1372.09,1320.58,1306.33,1269.21,1269.21,1287.05,1276.98,1316.98,1335.11,1354.39,1362.73,1278.27,1259.28,1232.23,1261.3,1278.56,1264.6,1263.88,1264.75,1316.12,1308.06,1328.78,1333.24,1349.21,1349.21,1315.97,1294.1,1275.4,1288.92,1228.35,1219.28,1250.94,1185.9,1215.97,1243.02,1210.5,1163.45,1118.71,1129.78,1064.17,1129.93,1115.4,1168.78,1166.19,1187.05,1190.65,1188.92,1124.03,1137.55,1155.4,1127.77,1100.43,1096.69,1113.81,1109.93,1093.53,1129.5,1166.76,1166.76,1171.65,1171.8,1182.73,1199.28,1190.79,1130.65,1153.81,1130.22,1194.39,1182.01,1167.05,1140.58,1174.24,1137.55,1190.79,1228.92,1226.04,1208.92,1207.34,1174.39,1130.22,1131.08,1119.86,1120.72,1133.96,1093.38,1105.47,1073.96,1051.65,1073.24,1074.1,1071.08,1096.83,1123.17,1110.36,1114.24,1120.29,1127.19,1128.35,1152.23,1152.23,1162.73,1179.42,1155.11,1173.81,1170.5,1163.88,1150.5,1173.53,1169.93,1173.38,1157.84,1152.66,1216.69,1217.99,1188.35,1202.59,1206.04,1238.85,1231.94,1252.95,1288.06,1351.51,1342.59,1362.59,1362.59,1359.28,1302.73,1291.22,1307.91,1306.62,1298.71,1281.3,1250.79,1235.83,1245.76,1253.38,1286.47,1312.37,1325.9,1321.15,1309.78,1409.06,1481.29,1527.91,1563.02,1619.57,1708.92,1616.55,1584.32,1547.91,1532.09,1549.35,1532.37,1590.65,1546.47,1547.63,1488.35,1492.09,1505.76,1565.04,1548.92,1558.27,1543.45,1602.88,1601.73,1593.09,1582.59,1571.22,1581.58,1581.58,1570.5,1527.63,1527.34,1513.67,1507.91,1521.3,1519.42,1528.35,1494.68,1461.15,1479.42,1501.87,1527.34,1522.3,1556.26,1460.72,1443.88,1480.58,1474.1,1443.74,1464.89,1491.22,1531.65,1511.65,1506.19,1511.37,1570.65,1611.37,1613.24,1675.25,1673.81,1674.68,1716.98,1724.03,1760.58,1768.78,1759.42,1743.31,1729.93,1801.87,1836.4,1878.13,1978.42,1961.73,2160.58,2142.73,2012.52,2100.86,2127.91,2107.77,2193.53,2177.55,2230.5,2236.12,2194.53,2157.12,2270.5,2270.5,2227.48,2329.64,2278.71,2145.47,2168.06,2072.09,2000.86,2084.17,2089.78,1987.05,1993.53,1925.18,1951.08,2107.91,1994.82,1982.01,1953.96,2075.54,2070.22,2102.73,2102.73,2221.01,2203.6,2133.24,2088.49,2070.5,2161.73,2077.99,1958.99,1960.14,1899.28,1899.28,1975.68,1977.99,1909.93,1969.5,1969.5,1898.27,1845.61,1753.81,1709.5,1676.69,1598.99,1592.95,1476.26,1514.24,1643.88,1680.29,1766.33,1727.77,1778.42,1779.42,1845.04,1911.51,1809.64,1628.49,1644.17,1747.77,1693.38,1616.83,1637.84,1637.84,1664.03,1579.28,1677.84,1741.87,1774.68,1637.84,1701.87,1611.22,1559.86,1481.29,1518.42,1597.84,1531.8,1500.58,1471.22,1573.09,1660,1607.05,1632.52,1667.91,1651.51,1639.14,1734.24,1721.87,1730.07,1773.09,1715.4,1573.24,1556.69,1590.36,1536.98,1491.65,1492.37,1453.24,1401.01,1368.35,1406.33,1338.99,1338.99,1350.94,1394.68,1352.81,1292.81,1268.2,1304.89,1225.32,1221.73,1289.78,1230.5,1292.66,1311.22,1430.5,1350.65,1371.8,1242.59,1276.69,1265.04,1252.66,1368.63,1355.97,1474.39,1385.32,1390.94,1345.32,1367.91,1311.65,1333.09,1420.86,1471.37,1471.37,1465.61,1456.4,1562.45,1529.5,1520.14,1514.82,1466.19,1421.58,1364.32,1251.65,1251.65,1284.89,1180.58,1173.67,1173.67,1205.61,1205.04,1186.04,1252.95,1239.71,1162.3,1122.16,1100.29,1060,1060,1082.01,1084.17,1141.01,1141.73,1107.19,1098.71,1115.4,1130.94,1167.05,1171.65,1235.68,1286.76,1310.65,1267.63,1259.57,1226.62,1292.37,1318.99,1359.28,1392.52,1428.63,1411.37,1495.11,1472.09,1439.86,1374.68,1425.18,1411.8,1450.79,1453.38,1441.73,1413.96,1445.18,1380.58,1335.83,1330.79,1334.24,1398.27,1311.94,1273.24,1250.94,1221.15,1184.6,1154.53,1154.53,1132.66,1145.47,1191.08,1229.5,1217.84,1108.35,1114.39,1103.02,1100.86,1104.6,1082.73,1071.65,1000,977.84,953.96,966.47,983.6,922.88,911.65,951.22,976.98,977.55,976.26,840.86,831.8,829.21,832.37,848.06,804.89,833.96,833.38,823.45,831.22,846.33,844.6,884.46,859.42,843.17,892.23,864.17,858.42,843.6,864.89,894.82,907.63,918.71,862.16,985.18,1041.3,1057.99,1098.85,1046.04,1063.31,1058.56,1042.59,1082.73,1099.28,1099.28,1081.15,1053.09,1055.97,1116.98,1114.82,1078.85,1059.28,1011.08,1009.21,1013.96,986.91,1016.83,1030.94,991.8,957.27,941.15,929.35,935.97,973.81,918.85,928.35,928.35,910.36,900.29,932.66,931.94,931.94,921.15,930.36,896.83,920.29,967.48,979.14,993.67,1018.71,1021.58,1021.58,1030.07,1014.82,974.24,1008.2,1101.15,1074.82,1077.84,1081.44,1084.89,1042.45,1081.3,1217.84,1270.65,1238.71,1204.03,1236.12,1218.56,1197.27,1172.37,1196.12,1236.69,1225.61,1152.23,1129.5,1129.5,1104.6,1102.3,1147.48,1123.6,1133.38,1130.65,1126.47,1157.41,1172.95,1167.77,1181.44,1228.35,1209.06,1189.5,1180,1258.27,1290.36,1389.93,1407.77,1392.95,1380.29,1404.03,1442.88,1409.35,1390.07,1360.58,1382.59,1408.35,1410.22,1389.35,1379.42,1331.8,1330.5,1330.5,1373.81,1352.95,1328.49,1325.04,1320.14,1293.09,1291.8,1294.1,1296.55,1272.37,1260,1205.76,1236.55,1258.13,1285.9,1290.5,1293.67,1174.39,1246.19,1292.66,1367.48,1367.77,1395.97,1397.12,1370.65,1401.44,1460.14,1492.81,1552.95,1522.59,1553.96,1555.68,1557.84,1731.65,1827.77,1827.77,1802.45,1700.86,1718.99,1695.83,1696.83,1787.48,1695.4,1741.73,1797.41,1858.85,1791.8,1832.09,1787.63,1727.77,1727.77,1711.22,1613.09,1592.81,1582.88,1546.91,1588.35,1585.18,1600.58,1638.99,1666.47,1666.47,1639.57,1632.81,1628.35,1634.24,1601.73,1648.63,1667.91,1668.2,1702.45,1696.83,1675.25,1586.33,1596.4,1591.51,1625.9,1584.03,1598.56,1625.32,1646.04,1692.09,1573.38,1628.06,1666.47,1680.72,1629.21,1589.5,1586.04,1547.77,1611.22,1602.16,1542.3,1502.73,1517.27,1557.12,1520.29,1574.53,1464.75,1471.22,1476.4,1524.03,1533.67,1521.15,1574.82,1574.82,1593.96,1572.37,1533.67,1526.47,1515.4,1515.25,1549.78,1534.24,1460.29,1472.95,1462.01,1443.74,1382.88,1384.17,1401.15,1380.72,1411.08,1478.56,1479.42,1485.9,1440,1497.41,1480.72,1543.02,1539.14,1568.49,1558.42,1565.32,1512.09,1531.8,1512.81,1470.07,1473.38,1464.89,1438.99,1462.88,1382.16,1347.77,1387.48,1383.88,1417.27,1554.53,1551.51,1615.11,1607.91,1632.37,1634.39,1632.95,1706.33,1680.43,1724.89,1697.84,1724.17,1735.54,1748.63,1714.53,1762.73,1762.73,1759.86,1764.75,1755.54,1782.01,1743.31,1746.62,1706.04,1703.31,1680.86,1847.05,1854.96,1933.96,1980,1988.35,1985.61,2002.16,1998.56,2016.55,1949.21,2013.09,2008.63,2008.63,2063.45,2101.73,2140.43,2121.01,1993.96,1947.05,1956.98,1993.96,2103.31,2147.63,2137.27,2129.78,2108.78,2108.78,2284.03,2304.6,2340.58,2506.91,2419.86,2423.31,2565.32,2594.68,2550.36,2558.71,2475.68,2412.81,2452.95,2556.26,2506.91,2415.54,2459.57,2436.69,2481.73,2473.53,2468.2,2571.22,2543.31,2501.73,2501.73,2384.03,2363.88,2616.69,2539.86,2532.52,2561.15,2540.14,2770.22,2915.68,2954.82,2951.51,3030.65,3041.44,2984.03,2854.53,2917.41,2802.73,2691.51,2749.06,2743.17,2610.36,2586.04,2570.94,2584.89,2570.22,2559.28,2584.03,2596.98,2596.98,2637.99,2571.22,2601.01,2386.04,2452.09,2444.6,2457.27,2404.89,2453.24,2349.35,2306.76,2351.94,2216.12,2231.37,2109.93,2138.71,2190.94,2183.31,2212.37,2264.75,2305.04,2278.85,2075.83,2103.02,2166.91,2241.44,2222.01,2210.36,2192.66,2185.9,2166.33,2203.74,2297.41,2339.86,2366.47,2393.24,2369.21,2381.58,2308.35,2393.67,2393.67,2469.21,2376.12,2399.28,2401.44,2353.24,2302.01,2390.94,2399.71,2415.4,2307.05,2287.19,2305.61,2300.72,2296.83,2279.14,2224.89,2224.89,2327.77,2319.86,2305.76,2305.76,2266.76,2294.53,2333.96,2268.92,2364.17,2358.27,2358.27,2473.38,2571.08,2548.2,2646.91,2617.84,2613.09,2587.48,2554.68,2293.96,2241.3,2181.01,2242.73,2215.83,2081.01,1990.22,2014.24,2010.79,1991.94,2078.85,1907.05,1906.47,1939.86,1873.09,1851.37,1961.44,1931.94,1967.91,2030.65,2025.18,2120.29,2137.55,2234.24,2250.36,2270.65,2182.73,2229.93,2158.13,2165.47,2105.9,2093.38,2137.55,2137.55,1970.36,2026.91,2006.33,1933.09,1987.77,2055.25,2156.26,2169.35,2191.51,2188.2,2170.07,2133.67,2255.25,2243.88,2255.4,2277.99,2331.22,2409.93,2364.75,2360.86,2298.56,2298.99,2343.17,2458.99,2460,2486.33,2460.72,2362.3,2415.68,2377.99,2253.81,2246.47,2248.2,2244.17,2271.94,2217.12,2200.14,2207.77,2247.91,2301.01,2392.09,2138.13,2072.95,2041.15,2024.6,2038.27,2087.77,2155.68,2128.78,2120.14,2066.62,2004.32,1997.7,1941.01,1998.99,2005.61,1979.86,1978.27,1990.65,2030.65,1981.58,1960.29,1960.29,1973.81,2044.03,2042.88,2071.8,2033.96,1994.1,1883.02,1837.99,1872.66,1879.14,1826.04,1822.88,1798.85,1746.91,1710.5,1715.25,1792.81,1817.12,1817.12,1799.42,1801.3,1761.73,1737.99,1735.68,1803.88,1864.03,1832.09,1753.09,1753.09,1669.64,1688.06,1670.36,1726.04,1704.17,1747.63,1747.63,1759.42,1780.58,1770.36,1767.48,1654.82,1642.73,1688.49,1710.22,1668.35,1644.17,1719.42,1611.65,1585.04,1547.63,1589.64,1598.56,1607.48,1608.78,1627.34,1627.34,1644.32,1650.22,1642.73,1594.82,1555.54,1495.83,1507.05,1431.8,1436.83,1413.38,1449.64,1462.88,1422.3,1443.31,1390.36,1392.23,1450.22,1411.65,1452.81,1504.89,1489.35,1528.49,1541.58,1531.51,1638.13,1651.94,1585.47,1534.53,1485.18,1478.27,1478.85,1481.44,1349.64,1233.96,1203.45,1125.32,1393.38,1276.26,1343.88,1359.71,1371.08,1270.36,1258.99,1258.99,1231.08,1241.15,1300.58,1359.28,1390.65,1386.91,1382.16,1400.72,1390.65,1421.58,1447.34,1418.99,1444.03,1463.31,1479.71,1555.68,1618.13,1693.81,1654.53,1685.9,1650.94,1633.24,1612.37,1592.95,1587.19,1587.19,1648.35,1623.88,1626.33,1593.24,1649.35,1687.91,1706.19,1664.6,1671.8,1751.51,1773.24,1743.02,1705.04,1671.37,1818.56,1828.78,1824.32,1824.32,1845.18,1864.46,1991.8,2063.31,2067.34,2069.21,2041.73,1958.42,1993.09,1984.32,1984.32,1939.57,1983.02,1991.51,2074.24,2106.76,2104.17,2238.99,2303.31,2308.06,2258.85,2258.99,2226.19,2282.73,2332.66,2395.25,2498.71,2553.09,2582.88,2536.83,2470.5,2543.6,2508.06,2347.05,2480.58,2485.76,2478.85,2517.27,2653.53,2603.6,2554.1,2534.39,2396.4,2376.98,2355.54,2413.81,2350.5,2397.41,2404.75,2425.61,2340,2340,2335.54,2332.81,2327.91,2174.68,2178.56,2242.01,2295.54,2239.86,2281.58,2318.85,2308.78,2290.07,2272.23,2264.6,2299.14,2315.11,2314.82,2320.43,2294.39,2321.73,2327.91,2359.86,2442.16,2369.35,2931.08,3043.31,3389.35,3350.94,3092.09,3113.96,3137.99,3433.09,3374.96,3353.67,3461.3,3424.89,3312.66,3381.15,3639.14,3736.26,3712.37,3803.31,3666.76,3685.18,3735.97,3597.84,3688.2,3420.14,3360.29,3510.5,3417.55,3725.04,3567.77,3551.22,3460.72,3313.53,3216.55,2964.32,2932.09,3094.24,2965.9,3082.59,3082.59,3129.93,3162.01,3096.98,3130.94,3107.63,3136.26,3181.44,3188.78,3185.9,3186.04,3032.81,2986.76,3009.64,2850.5,2892.95,3070.94,3092.81,3092.09,3094.1,3094.1,3093.38,3102.3,3098.42,3081.44,3215.4,3181.01,3084.17,3021.87,2945.04,2923.31,2988.35,3179.42,3217.27,3279.42,3335.68,3335.68,3336.98,3594.24,3650.79,3736.4,3615.97,3626.33,3636.55,3628.49,3406.19,3543.45,3483.6,2880.43,2769.78,2999.14,3107.91,3072.95,3073.09,2963.17,2983.02,2983.02,2922.01,2879.42,2926.19,2879.86,2828.78,3076.83,3033.96,2930.65,2880.72,2857.84,2747.48,2907.48,2869.78,2768.78,2916.26,2924.17,2947.19,2845.18,2782.59,2828.49,2824.6,2869.93,2953.53,2896.83,2916.26,2954.96,3169.35,2931.94,2906.33,2820.72,2927.05,3024.6,3129.5,3129.5,3168.06,3187.48,3335.54,3404.89,3525.76,3551.51,3670.07,3713.96,4003.74,4005.61,3956.12,4093.38,4366.33,4393.24,5004.46,4814.82,4650.5,4850.5,5100.58,5187.63,4914.24,5111.65,6063.17,5877.12,6549.5,6601.3,6450.22,6410.07,6470.5,6102.16,6057.41,5957.55,6440,6468.92,6726.76,6726.76,7250.22,7130.07,7454.53,7425.9,7340,7504.17,7806.04,7528.06,6710.5,7055.11,6841.87,6509.35,7028.06,7360.72,7874.24,7299.14,7373.81,7731.94,7731.94,7937.12,7479.86,7478.27,7662.88,7504.75,7762.45,8358.42,7782.45,7450.65,7450.65,7943.17,7426.04,7444.75,7866.47,8027.19,7689.07,7886.76,7613.53,7207.77,7133.24,7245.61,7833.53,7947.19,7765.32,7510.07,7121.58,6541.3,6180.72,6984.03,6851.08,6973.24,7461.58,6935.97,7040,6954.82,6756.26,6824.75,6948.63,6949.78,7401.3,7280.58,6969.64,6711.08,6754.82,6809.35,6571.94,6894.68,6919.86,6858.56,6698.99,6772.95,6613.09,6576.4,6563.45,6871.51,6871.51,7276.83,7497.84,7246.04,7426.33,7099.42,7254.68,7374.1,7843.02,8054.96,8856.4,8975.11,8843.31,9054.1,9073.81,8746.33,8742.01,8802.3,8859.42,9121.01],"EuroStoxx50":[100,101.03,100.93,100.77,100.07,101.24,100.74,100.32,99.22,100.89,100.34,101.62,101.92,102.61,102.64,103.18,102.97,102.75,102.89,102.69,101.89,100.82,99.39,99.17,98.53,100.36,100.83,101.93,101.6,101.05,101.38,101.71,100.93,101.44,100.74,101.15,101.53,101.12,101.4,101.66,100.61,101.33,101.77,101.08,100.55,101.81,103.41,104.79,106.25,106.64,106.69,107.94,107.11,108.38,108.7,108.65,109.37,109.08,109.04,109.19,109.19,109.34,109.35,109.11,109.74,109.74,110.56,110.64,110.6,110.76,110.35,110.26,110.32,109.61,110.87,109.87,109.56,109.85,109.73,110.04,109.16,109.44,110.93,110.69,110.17,108.81,107.74,108.69,108.51,109.16,108,107.91,107.99,109.31,109.08,110.23,110.35,110.85,110.42,110.35,110.47,111.37,111.36,111.19,110.19,110.37,110.71,113.06,112.88,113.5,112.97,112.89,113.04,113.72,113.93,113.91,113.37,113.7,114.72,115,114.64,114.38,114.08,115.13,114.86,114.63,115.56,115.9,116.11,116.76,115.82,116.11,115.81,116.38,116.58,116.07,115.73,115.67,115,115,115,113.72,114.09,114.73,114.73,119.31,119.5,119.35,118.84,118.71,118.71,119.33,119.6,120.99,122.02,121.46,121.7,121.59,120.85,121.31,121.46,121.46,119.55,118.8,119.63,119.28,119.89,119.61,119.61,119.36,119.36,118.77,118.55,118.96,119.79,119.79,118.53,118.35,118.86,119.6,118.19,118.65,118.3,117.57,118.19,119.38,118.75,118.54,118.58,118.18,118.78,118,117.92,115.77,114.79,116.45,116.04,116,115.46,115.52,115.99,115.54,117.23,117.65,117.59,117.27,116.01,116.73,116.71,115.11,115.16,115.84,116.43,116.5,115.65,115.04,115.04,115.37,115.6,116.97,116.92,117.25,115.67,114.51,113.6,115.08,115.45,116.21,115.46,114.93,114.17,115.24,114.68,114.88,114.68,114.09,113,113.51,114.11,114.85,114.4,114.09,114.52,114.98,114.98,116.56,117.14,117.5,117.61,117.24,117.62,117.76,117.58,118.05,118.11,117.99,117.94,118.56,118.85,119.89,120.15,120.25,119.89,120.51,120.17,120.41,120.02,120.31,120.24,120.21,120.27,120.32,120.72,120.13,120.23,120.36,120.42,119.78,121.3,121.8,122.13,122.53,123.31,123.02,123.06,122.81,122.02,121.9,120.48,119.85,119.21,118.61,118.25,118.89,118.31,118.77,119.37,118.81,119.13,119.43,118.86,119.51,119.72,119.06,117.64,119.27,119.08,118.78,119.16,119.77,119.47,120.07,119.45,118.6,118.74,120.37,119.47,118.48,119.09,118.51,118.51,118.51,118.4,117.54,116.86,116.86,117.05,119.02,120.31,120.61,120.82,120.39,119.9,120.48,120.45,120.79,120.49,120.76,121.7,122.24,122.47,121.5,121.07,121.64,121.5,120.29,120.37,119.3,117.5,116.02,113.22,115.21,112.63,110.92,112.33,111.42,112.38,113.04,114.28,113.65,114.56,114.4,114.46,114.77,115.5,115.33,114.69,113.36,110.88,111.9,111.98,112.63,113.83,114.08,114.37,113.3,113.09,113.86,114.64,113.22,113.79,113.42,111.66,109.99,109.35,110.62,111.1,112.11,112.11,112.11,111.62,111.4,114.39,113.66,113.89,114.68,114.05,114.86,114.99,114.76,115.99,116.42,116.28,116.53,117.16,117.09,116.25,116.93,117.35,117.94,117.94,118.52,117.7,118.41,118.87,118.66,119.05,119.05,118.91,118.92,118.87,118.82,119.8,119.18,119.18,119.63,118.12,117.45,117.24,116.15,114.33,114.76,113.61,115.18,115.71,115.28,115.42,115.38,114.97,116.07,115.91,116.04,117.63,116.89,115.61,114.57,114.71,113.51,114.78,112.36,112.35,113.29,112.24,113.24,112.46,113.6,113.79,114.75,115.01,115.41,115.83,114.14,114.91,115.21,115.03,115.31,116.23,115.78,115.39,115.19,116.17,115.67,117.03,117.63,117.14,117.58,117.58,115.7,116.14,116.17,116.87,116.51,116.53,114.27,113.71,113.7,112.03,112.64,112.49,113.18,113.78,114.06,114.03,114.31,115.26,114.98,115.26,114.42,113.15,113.22,112.03,110.58,109.92,109.83,110.36,110.44,110.94,111.18,111.54,111.59,112,112.34,113.49,114.42,113.74,114.05,114.5,115.05,113.36,113.86,113.02,113.57,112.56,111.57,110.38,110.78,108.95,107.03,106.53,107.07,108.63,108.16,107.11,107.08,106.39,104.75,104.4,105.53,104.55,105.22,104.96,106.64,106.86,107.2,107.3,106.97,108.26,107.97,107.7,106.52,107.55,106.9,106.4,106.08,105.4,103.92,105.18,104.27,104.63,105.81,105.6,105.66,105.86,105.82,107.22,106.36,105.06,101.58,102,100.62,101.89,103.65,103.79,103.14,102.17,101.39,101.76,100.05,100.07,100.07,100.07,100.07,97.96,99.6,99.6,99.6,98.54,101.45,101.17,101.88,102.39,102.58,102.39,101.89,102.32,102.63,102.36,104.55,104.22,103.81,103.79,104.26,105.49,104.63,105.17,105.44,105.37,105.76,105.56,107.22,107.15,105.08,104.57,105.57,106.41,106.8,106.14,108.1,108.21,108.03,108.7,108.84,109.07,109.39,109.7,109.48,110,110.46,110.63,110.96,110.88,110.35,109.51,110.2,110.19,110.84,111.46,112.93,112.99,113.69,112.47,112.3,110.25,110.07,110.71,110.79,110.73,111.78,112.9,113.25,114.58,114.79,114.97,114.66,113.96,114.21,114.57,114.99,115.07,115.5,115.98,116.7,116.7,116.7,116.85,116.81,116.46,116.74,116.79,117.21,117.21,116.36,116.81,115.49,113.43,113.97,111.75,112.09,110.75,112.2,112.92,114.68,114.25,112.38,112.94,112.95,110.96,111.75,112.19,111.68,109.98,109.98,109.4,110.06,111.17,111.39,111.34,112.67,112.67,113.43,112.94,113.07,112.7,112.83,115.15,115.21,115.66,115.62,115.24,114.87,114.82,114.8,115.85,116.64,116.99,118.08,118.2,117.66,117.52,117.05,116.78,116.62,116.65,116.8,117.44,116.78,116.15,116.06,116.39,117.82,117.82,117.06,117.54,117.51,115.49,115.62,115.62,112.59,110.42,109.78,110.39,112.57,111.18,110.94,111.96,109.68,109.48,111.02,112.36,111.73,113.22,112.51,111.2,111.68,112.41,112.24,113.77,114.28,114.48,114.08,115.09,116.21,116.56,116.56,116.69,117.29,118.02,118.4,117.34,117.43,117.66,118.48,119.11,117.96,117.79,117.16,117.8,118.26,119.04,117.33,113.83,113.97,114.95,115.77,114.48,115.46,116.52,119.06,118.6,120.02,120.04,119.68,119.37,120.06,120.22,120.29,120.77,120.88,120.92,120.8,120.74,120.21,120.85,122.23,122.61,123.02,123.62,123.38,123.29,123.8,123.38,123.02,123.78,123.56,123.28,122.86,122.72,122.97,123.65,123.58,123.82,123.54,123.51,120.95,120.43,122.06,121.67,123.14,122.47,122.45,122.98,123.61,124.43,125.82,124.91,124.7,124.7,125.95,125.95,125.95,125.95,125.95,126.14,125.01,125.01,125.01,125.84,125.15,125.37,125.81,126.59,126.38,126.05,125.89,125.69,125.87,127.01,126.7,126.37,125.72,124.62,126.04,122.66,124.04,124.61,123.09,121.42,122.1,124.47,125.99,126.91,126.68,126.5,127.59,128.55,128.29,128.1,128.51,127.95,128.9,127.5,126.74,121.66,119.14,119.32,115.25,111.04,111.35,112.46,114.08,112.18,107.79,98.69,97.05,96.9,84.88,86.24,81.72,84.39,79.57,81.84,84.99,82.89,90.55,93.38,94.97,91,92.23,92.94,89.39,89.66,88.81,93.25,95.3,95.09,96.47,96.47,96.47,97.31,93.65,93.79,96.32,97.03,93.09,94.54,95.13,93.68,96.12,97.78,99.92,97.65,97.65,93.93,95.91,94.84,96.07,96.99,96.17,96.19,93.73,92.05,92.4,97.11,96.8,98.13,98.13,96.9,99.09,100.02,101.75,103.2,101.72,101.72,105.35,109.04,108.78,112.87,112.27,110.75,109.85,104.87,105.18,104.6,108.14,108.96,108.38,109.02,108.11,110.02,106.59,107.35,106.86,107.79,107.86,107.67,110.73,109.87,111.72,110.77,109.59,108.76,109.93,111.72,110.77,112.66,112.23,112.24,113,113.57,112.41,112.45,110.42,110.15,110.17,110.06,106.99,105.86,108.33,108.53,109,108.07,108.48,108.71,111.13,112.16,111.48,110.22,110.25,109.71,110.64,109.19,108.71,111.11,111.05,111.95,111.09,110.57,109.14,109.31,111.31,110.2,108.74,110.52,108.97,110.88,110.48,110.58,110.61,111.13,111.35,110.61,109.51,105.42,105.52,106.06,105.37,104.62,107.49,107.2,106.51,106.52,106.42,107.39,107.83,107.83,108.58,109.16,109.99,109.36,109.16,106.48,108.24,108.14,107.65,106.08,105.77,106.68,103.56,102.4,98.83,98.72,98.66,100.7,103.34,105.42,107.24,106.86,113.65,114.81,115.63,114.33,114.46,115.6,115.67,116.13,115.12,115.64,115.49,116.99,117.12,117.09,117.65,116.48,117.57,117.44,117.3,118.03,117.73,117.59,117.69,117.47,116.25,116.86,117.44,118.16,118.76,118.25,115.01,116.64,118.03,118.03,118.03,119.24,119.44,119.11,119.11,118.87,118.32,120.43,120.81,121.56,120.75,120.46,120.61,121.44,120.05,120.15,119.91,120.86,120.67,120.14,118.5,119.82,117.94,118.63,116.11,117.75,119.74,120.39,121.46,121.92,122.24,122.1,121.67,122.45,123.25,124.54,124.28,123.39,122.76,123.84,123.39,123.03,123.59,122.9,121.28,123.62,123.65,123.82,123.56,122.38,125.5,126.26,127.39,128.25,127.84,127.73,128.43,128.39,128.98,127.96,127.86,127.63,127.82,127.82,128.95,129.49,130.94,130.71,131.6,131.6,131.6,132.41,131.96,132.66,132.69,132.13,132.3,132.61,133.18,134.5,134.06,131.41,132.61,133.89,133.84,134.09,133.8,133.9,133.3,132.56,133.41,130.89,133.49,133.38,134.54,134.18,131.6,131.65,131.65,133.98,133.63,133.58,131.29,133.4,134.26,134.26,134.6,134.46,134.71,135.75,134.72,135.79,136.35,136.04,136.38,136.66,136.6,136.63,136.6,137.63,137.82,138.19,138.46,138.67,136.18,137.15,137.51,135.93,137.48,137.42,136.4,136.99,135.54,136.03,136.21,136.31,135.16,136.02,133.12,135.67,136.51,136.55,136.72,135.28,134.59,131.02,131.94,134.29,135.37,137.04,136.82,135.56,136.84,137.29,136.38,137.29,137.33,138.23,138.77,139.22,139.31,139.66,140.28,140.95,141.06,140.15,139.95,139.72,137.56,138.32,139.28,139.34,139.44,139.07,139.77,140.03,139.95,140.98,141.14,140.14,141.61,140.9,139.31,139.31,139.08,139.72,139.79,138.27,139.07,137.76,134.86,136.65,138.41,139.9,138.69,138.92,135.36,136.08,135,134.58,133.28,135.58,133.82,136.68,135.84,135.82,135.24,136.18,138.37,139.5,138.45,138.96,139.14,138.59,139.7,139.68,140.87,140.77,141.2,141.76,142.75,143.28,143.73,144.52,145.51,145.16,144.89,145.03,145.34,145.75,146.28,146.79,146.77,146.2,145.29,144.7,142.87,142.61,143.18,136.39,137.05,135.5,139.37,137,136.07,137.97,142.61,141.17,140.35,140.04,139.5,138.22,138.73,140.13,138.78,136.97,139.24,140.64,142.27,142.27,143,143.8,142.9,143.61,143.61,144.47,145.66,146.48,144.23,143.6,141.39,142.79,143.95,143.94,142.48,143.48,142,142.35,143.39,141.06,135.21,136.01,138.89,139.57,137.97,139.22,140.89,140.81,138.1,136.29,137.42,137.71,140.21,139.97,138.58,135.55,138.19,137.98,137.17,135.88,132.92,132.92,132.51,127.71,132.42,130.87,125.59,127.42,124.79,118.59,117.13,116.9,125.6,121.77,122.95,124.77,124.67,129.72,129.58,130.15,129.46,130.94,129.04,128.84,128.99,129.63,133.47,132.04,130.15,130.69,131.77,130.66,127.55,126.8,128.68,128.05,127.78,127.66,128.35,128.35,128.35,127.76,129.96,131,128.06,125.32,124.11,124.55,125.96,126.83,124.48,125.44,124.23,123.28,121.03,117.62,118.55,121.66,120.51,123.51,122.91,124.78,123.09,121.17,121.96,123.67,121.65,122.63,122.63,127.03,128.12,126.37,125.38,126.57,126.19,126.19,126.95,126.36,124.21,120.03,116.81,115.9,117.8,114.32,114.67,115.72,116.52,115.55,114.6,117.83,118.02,118.37,117.2,115.22,115,115.14,112.05,114.12,116.34,116.94,115.78,116.29,115.19,113.28,115.96,117.12,119.64,119.57,119.94,119.94,120.2,119.24,120.32,121.8,123.67,123.67,122.88,124.48,125.22,124.24,125.3,123.91,125.04,125.3,125.96,126.38,126.9,125.26,125.98,124.41,122,121.81,122.31,122.55,120.18,119.08,118.79,117.3,115.28,118.21,116.39,116.73,116.79,117.14,119.06,121.61,119.6,118.98,118.12,116.74,116.71,115.63,116.45,114.3,111.68,111.47,111.01,111.23,109.36,110.66,111.46,116.21,114.98,114.51,112.57,111.95,111.4,111.11,112.14,112.78,114.78,115.52,115.77,116.49,115.95,117.65,119.58,120.24,120.21,120.49,120.64,121.76,120.79,119.83,123.01,123.69,124.71,124.33,128.28,129.01,129.65,130.57,129.49,129.35,130.89,130.37,131.06,131.61,132.13,132.15,131.25,131.21,132.22,132.88,132.66,131.95,131.37,130.76,130.77,131.49,130.79,132.96,132.57,127.92,126.86,127.1,126.81,129.14,127.51,127.3,127.3,127.83,127.02,128.4,126.52,126.52,129.47,132.53,132.05,133.99,135.69,135.32,136.73,137.62,138.43,138.64,139.21,139.21,136.54,137.4,138.43,138.5,138.34,139.2,139.34,138.69,138.85,139.12,141.44,142,140.25,140.38,140.38,141.74,140,141.45,141.36,142.74,143.31,142.57,142.44,141.75,141.5,142.01,139.36,141.67,141.35,140.6,141.42,143.23,143.86,142.7,143.02,142.94,141.05,136.62,139.39,134.56,137.3,135.57,137.38,139.46,139.93,140.31,137.76,138.89,139.01,141.11,142.92,143.91,143.77,143.92,143.35,143.72,143.72,143.72,144.52,144.54,145.51,146.43,145.66,146.54,146.53,146.24,147.03,146.8,146,145,145.34,145.38,145.38,143.23,143.74,142.97,144.75,145.03,144.18,143.63,143.73,144,143.95,143.92,144.18,144.18,146.58,146.26,144.82,142.2,142.39,144.66,144.66,143.12,140.67,141.99,144.19,143.18,143.25,143.14,143.33,143.06,143.95,144.99,145.94,145.58,146.57,145.49,144.84,144.16,143.55,142.46,142.76,143.58,144.9,145.23,146.71,146.68,146.44,145.1,140.84,141.29,141.95,142.96,145.42,146.47,146.74,145.3,145.73,145.48,145.86,146.45,146.17,146.45,144.94,148.32,148.96,149.12,149.12,144.62,143.56,144.5,144.66,143.03,143.98,146.21,144.12,144.41,143.02,142.88,141,140.5,140.9,142.08,142.29,141.14,141.28,143.19,144.29,143.92,143.31,142.83,142.73,142.38,141.35,140.77,141.31,141.88,141.48,140.85,142.73,143.24,141.6,141.49,142.6,140.49,140.31,138.98,137.71,137.79,138.79,139.22,137.99,136.59,136.73,136.73,138.22,137.15,140.24,140.1,140.01,137.94,138.4,138.48,136.93,136.41,134.22,134.79,135.58,135.85,135.05,133.88,134.34,135.44,136.46,139.06,139.23,138.69,138.51,139.35,141.04,139.98,141.14,143.13,143.92,143.49,144.76,144.82,144.47,145.14,145.45,145.81,145.22,145.01,145.76,146.16,147.36,147.24,148.5,149.52,149.2,150.85,151.42,151.3,151.08,151.38,151.72,150.78,151.26,151.2,150.9,150.79,150.79,150.79,151.02,150.55,150.8,150.8,148.35,149.21,148.86,149.59,148.98,149.04,148.15,149.41,148.56,148.29,146.84,148.51,148.37,149.42,148.94,152.21,152.82,154.59,154.72,155.5,155.02,154.7,155.23,155.25,156.44,156.04,157.1,157.27,158.29,156.39,157.05,158.18,158.93,158.85,158.76,159.26,161.93,162.5,162.22,162.94,162.87,162.67,163.24,163.85,163.18,163.93,165.89,165.45,164.43,166.19,166.77,166.52,166.28,166.18,167.01,166.76,168.49,167.79,168.22,168.89,169.48,169.53,169.53,169.53,168.15,169.06,169.11,167.24,168.29,166.45,166.78,165.64,165.25,166.23,163.98,163.89,164.63,164.02,164.64,167.02,166.41,164.72,166.98,166.12,164.12,164.12,163.1,164.13,165.31,167.29,168.02,168.02,169.59,169.38,169.43,170.12,169.17,168.89,168.89,168.32,167.59,168,167.93,168.72,167.76,165.52,166.16,166.21,166.87,165.19,167.94,169.05,168.46,167.3,165.59,167.9,164.6,161.39,162.76,163.93,162.93,165.01,163.66,165.12,164.61,163.95,163.5,163.22,164.42,163.63,165.61,166.33,166.06,165.74,163.54,165.38,165.95,168.18,166.19,165.01,163.13,162.42,160.99,163.33,163.98,162.14,160.46,162.16,160.59,161.45,162.51,162.51,154.7,152.46,152.58,155.68,155.7,155.92,155.81,156.58,157.67,160.34,161.43,162.46,162,162.92,162.91,163.72,163.3,163.37,163.85,165.63,165.35,165.85,163.83,161.69,160.59,158.01,159.37,158.32,158.87,160.55,161.55,161,162.11,161.26,164.86,162.47,162.93,164.77,163.98,167.84,169,166.77,165.22,165.53,164.13,165.25,165.74,165.05,166.17,165.76,166.88,168.12,164.97,163.71,164.99,166.29,164.79,164.73,164.17,164.6,164.85,165.74,165.08,162.94,161,162.67,161.82,162.43,160.1,161.81,160.17,161.88,158.24,158.09,161.2,159.91,159.76,158.45,157.74,158.61,159.72,160.08,158.81,157.85,158.7,160.23,161.64,162.7,164.05,165.14,166.01,166.27,165.14,165.39,165.6,165.68,164.98,164.84,165.33,162.71,162.16,161.85,161.85,161.85,161.85,163.38,162.39,162.39,162.39,162.46,166.3,167.14,166.63,167.35,165.99,165.22,166.1,167.83,170.32,171.7,172.23,172.28,173.61,174,174.07,173.03,173.28,174.44,176.16,176.32,174.02,175.57,175.79,178.64,177.6,178.7,179.79,180.28,183.44,183.2,184.09,184.55,182.13,182.13,182.59,181.88,181.69,184.36,182.51,182.21,184.78,179.67,183.06,184.11,182.37,179.66,177.09,178.74,177.7,180.23,181.61,182.93,183.67,181.79,180.88,180.62,182.59,180.48,179.46,177.8,175.03,177.43,176.89,170.53,162.69,155.29,159.2,154.15,160.71,159.65,163.79,165.76,165.63,164.59,164.59,164.59,165.46,170.04,170.58,171.89,172.44,172.15,172.09,172.09,176.26,176.19,175.53,174.43,176.39,177.08,179.84,180.63,180.2,180.49,181.01,181,181.91,181.91,180.91,177.63,179.93,180.61,179.37,179.37,178.98,178.61,179.28,180.26,180.44,181.1,181.1,180.6,179.86,178.78,176.44,178.07,176.38,175.65,173.32,174.54,174.15,176.66,175.15,174.89,177.61,176.86,176.17,177.38,178.19,176.38,178.14,179.15,181.61,181.37,179.54,179.12,178.56,176.69,179.33,178.73,178.19,176.44,178.23,178.6,178.49,178.01,179.4,179.86,177.42,177.42,174.83,175.07,175.53,177.82,178.35,177.82,177.95,179.7,181.25,181.71,181.25,182.87,182.5,182.16,183.03,181.56,179.55,179.86,179.98,178.48,178.99,176.46,177.59,178.31,177.36,178.85,179.05,178.81,179.65,179.78,181.44,179.17,179.08,181.98,182.04,181.49,182.5,182.24,181.59,183.42,183.65,184.42,186.13,188.29,188.48,187.72,187.21,188.42,187.61,184.47,185.7,185.16,186.93,188.49,187.01,189.46,189.66,188.07,189.04,189.24,190.46,190.24,190.29,190.07,188.83,189.4,188.77,189.07,187.13,185.64,188.91,190.95,193.01,191.52,189.89,188.13,184.58,184.83,185.76,183.93,184.38,185.89,188.61,188.53,189.03,189.01,189.63,189.91,190.7,190.89,190.95,190.71,190.37,191.89,190.79,191.85,190.69,189.48,191.49,192.11,191.55,191.74,191.74,191.74,191.74,191.82,193.3,193.3,193.3,197.56,197.83,197.55,196.91,200.02,200.64,201.09,200.27,201.47,201.08,197.63,196.5,196.19,198.64,198.37,198.69,199.92,197.87,196.5,198.36,200.35,199.94,199.12,197.62,200.05,202.07,201.67,201.29,200.48,199.61,199.4,200.83,203.55,202.09,204.48,203.9,203.99,205.88,205.49,204.72,199.66,192.49,195.8,192.86,190.76,189.6,194.67,193.25,191.73,190.65,191.4,192.4,191.32,187.22,183.47,185.9,186.14,188.41,185.62,183.62,184.82,185.75,191.19,189.86,189.86,189.86,187.87,197.21,196.64,197.64,196.93,199.58,198.11,197.87,202.02,199.52,197.77,196.97,196.59,196.21,195.44,194.63,193.98,196.15,196.15,192.22,195.75,201,199.19,197.15,196.61,193.71,195.47,195.47,194.36,195.06,195.14,199.3,198.78,200.75,200.75,202.24,202.45,201.94,201.79,201.27,203.7,201.89,203.55,202.17,202.18,201.76,200.43,202,206.36,207.75,208.69,210.11,210.88,209.88,210.48,207.79,207.26,209.02,207.49,207.82,211.04,209.52,212.12,213.86,213.37,210.77,206.93,209.58,209.1,209.14,209.44,208.96,209.56,207.8,207.68,209.63,210.67,207.11,209.47,209.51,209.76,208.4,211.59,212.04,214.32,216.33,216.01,216.86,217.57,217.96,218.48,217.91,218.29,218.1,217.79,215.71,214.92,214.18,215.52,215.04,215.3,215.8,214.26,216.3,214.11,212.41,212.18,212.86,213.2,213.57,213.88,210.49,209.07,210.94,208.78,207.99,208.99,210.87,207.98,210.71,210.93,210.1,209.19,210.2,210.15,210.78,209.07,205.95,208.05],"HSCEI":[100,100.76,101.32,102.72,102.48,102.48,101.25,99.89,98.07,99.15,98.53,100.38,99.56,100.03,100.03,101.75,101.59,100.16,99.23,98.26,98.72,100.24,98.31,97.92,98.02,99.22,99.76,96.85,98.58,97.42,96.48,97.05,96.69,96.32,96.55,97.54,99.67,99.82,99.95,101.1,101.98,101.68,101.6,102.16,101.01,100.29,100.88,101.51,102.2,101.91,100.16,100.38,100.24,97.89,97.8,96.84,95.87,96.37,95.01,94.82,94.82,94.82,96.05,96.17,97.02,97.02,97.69,97.5,99.13,99.25,99.16,99.8,100.52,100.41,101.07,99.82,100.19,101.23,101.13,100.33,100.45,100.78,100.61,101.77,101.25,101.25,101.25,100.76,100.13,100,101.62,101.68,102.81,104.05,104.56,105.93,105.9,107.77,107.97,106.99,107.87,107.49,108.82,108.66,107.59,106.69,106.35,106.24,105.82,104.76,105.04,105.64,106.16,104.26,103.98,105.94,106.53,106.09,108.71,108.57,109.3,109.92,107.99,108.3,108.2,107.01,107.67,107.79,106.94,106.1,106.52,106.52,107.04,106.12,106.1,105.89,104.98,105.42,105.38,105.38,105.38,103.72,103.1,103.85,103.79,104.38,106.08,106.55,105.97,105.54,105.54,105.06,105.06,104.18,102.51,103.09,104.6,105.62,105.93,106.19,107.92,107.75,107.23,106.07,106.03,107.14,107.35,107.31,109.17,109.26,109.67,109.67,109.5,109.67,110.15,109.44,109.53,109.58,109.98,109.39,108.29,108.7,108.59,106.84,107.24,108.65,108.11,107.33,107.43,107.71,108.75,108.41,107.49,107.73,107.04,107.53,106.43,107.2,106.85,105.87,105.49,107.57,108.61,110.27,110.79,111.36,111.07,112.16,112.02,111.4,111.75,111.35,111.86,112.13,111.08,111.82,113.85,114.17,113.62,113.63,114.16,114.42,113.21,111.35,109.19,110.57,110.89,111.72,111.55,110.43,111.03,113.13,113.13,114.12,116.57,117.13,116.65,117.46,116.65,116.55,115.48,115.58,114.93,114.62,115.14,115.88,116.1,115.53,114.64,114.29,115.62,114.9,115.39,115.64,114.72,112.69,113.27,113.97,112.3,112.67,112.67,116.75,117.7,117.7,118.34,117.58,117.92,117.85,118.76,118.96,119.82,119.47,120.02,117.29,119.36,118.67,117.78,118.69,118.2,120.24,119.41,118.84,120.17,119.78,119.82,119.01,120.26,119.55,121.29,121.3,120.67,119.81,117.86,119.11,119.88,119.16,122.63,123.5,121.21,122.98,121.57,120.88,120.29,118.51,118.24,118.95,118.6,115.28,115.15,116.59,118.05,116.82,118.96,119.09,117.38,117.88,119.19,118.82,119.76,120.34,120.34,120.34,119.98,120.66,120.92,124.64,124.84,126.03,126.11,126.35,126.56,126.91,126.98,128.77,128.78,132.05,132.9,135.23,136.1,136.36,139.32,140.66,138.26,141.73,141.06,138.27,140.05,138.73,139.81,139.21,131.01,128.4,127.85,122.91,122.89,123.97,126.62,129.45,129.45,129.45,128.02,131.02,129.38,131.51,132.54,130.6,127.87,128.35,126.03,123.84,127.14,125.79,127.38,128.38,131.12,131.64,130.99,131.36,130.87,130.74,130.09,129.31,128.34,125.25,125.97,127.04,123.94,123.91,123.91,123.91,125.34,122.45,122.45,123.59,124.68,127.27,127.28,126.91,126.62,124.01,122.9,123.78,126.4,124.48,123.93,126.45,124.9,123.4,124.61,127.35,127.35,125.92,124.12,122.79,123.58,125.42,125.84,126.34,127.49,129.55,128.48,128.47,126.8,127.59,127.53,127.53,124.86,125.5,124.42,125.11,123.5,121.54,123.7,124.13,126.5,126.6,126.85,128.14,125.64,125.7,126.06,124.29,123.41,122.58,122.58,118.69,118.82,117.36,117.11,115.75,114.82,112.35,112.24,114.35,114.35,112.28,110.63,109.55,109.7,111.2,111.79,110.07,111.04,110.98,110.54,109.38,109.24,108.67,110.32,110.82,113.33,114.36,113.82,114.09,114.08,113.85,113.32,110.84,110.43,110.52,112.21,112.58,113.8,113.01,111.19,110.96,108.8,108.22,108.58,109.8,110.89,112.05,111.68,111.32,114.1,114.6,114.45,113.26,112.31,111.67,112.47,109.94,109.24,109.05,107.75,106.71,105.74,108.46,109.21,108.04,109.02,110.93,111.45,113.88,111.82,111.82,113.45,112.97,113.78,113.78,111.06,111.39,108.93,108.75,107.33,107.61,107.84,104.23,106.36,104.76,105.32,105.32,104.68,105.56,108.34,105.7,105.61,105.09,103.88,103.4,103.26,104.7,106.15,110.37,108.9,109.8,109.89,110.54,107.73,107.82,108.21,107.45,109.01,109.3,109.79,108.08,108.29,107.88,107.28,108.66,108.59,109.82,109.31,109.69,112.38,112.64,111.09,108.23,107.08,106.09,105.8,107.58,109.02,106.98,106.9,105.65,105.29,104.21,104.31,103.92,103.92,103.92,103.18,103.19,104.56,101.55,101.57,103.58,104.55,104.65,106.97,107.34,107.97,106.29,108.46,109.01,108.56,109.85,110.63,109.61,109.79,110.41,112.29,112.38,112.23,112.53,113.97,114.26,113.97,113.97,113.97,113.97,113.15,113.77,114.06,115.65,115.36,112.95,115.14,114.8,115.97,116.76,118.01,120.11,119.21,118.32,117.39,118.83,119.54,119.61,119.71,118.35,115.22,116.46,118.41,117.79,118.22,118.84,120.57,120.69,120.05,119.22,118.94,115.99,115.99,116.75,116.64,117.52,119.36,119.24,120.88,120.75,120.75,121.79,122.01,121.49,119.98,120.41,120.12,122.08,122.36,121.53,121.53,121.53,121.15,120.45,118.78,118.87,120.19,119.2,119.2,119.35,119.54,116.01,116.29,114.6,112,112.88,112.88,111.16,111.57,111.65,110.38,109.81,109.82,109.51,107.41,107.87,107.43,107.57,107.3,107.92,107.27,107.72,106.79,106.83,106.72,106.72,108.71,109.67,108.38,108.15,107.61,107.7,108.51,111.17,112.8,112.79,113.11,110.94,111.18,112.53,112.38,112.38,113.4,112.8,112.7,112.51,110.76,109.99,110.52,111.37,111.41,111.93,112.21,112.03,111.37,112.66,111.22,111.63,112.14,112.88,112.08,111.33,111.72,110.24,109.69,106.87,104.11,103.4,103.2,103.7,103.21,103.25,101.69,101.89,102.27,102.9,104.4,104.64,105.1,104.54,105.28,103.41,103.23,103.07,103.19,104.13,104.34,103.64,106.25,107.24,107.72,107.58,107.44,109.1,109.39,110.37,109.76,108.46,108.21,107.25,107.15,106.24,106.07,105.01,105.46,104.81,105.35,105.35,105.16,105.55,104.79,104.79,105.35,105.02,105.53,107.94,108.51,108.44,108.77,109.34,108.85,108.88,108.71,107.93,108.77,108.09,109.15,108.92,108.22,108.78,109.7,111.67,112.33,112.16,112.93,112.38,109.61,110.41,108.63,107.68,107.66,109.02,110.46,109.67,107.92,108.5,109.76,109.65,109.67,109.07,106.39,107.03,106.95,105.89,106.59,107.47,107.48,107.35,108.46,109.62,111.92,111.31,113.24,113.85,113.45,113.91,114.14,113.97,113.97,113.97,115.61,115.92,115.33,116.91,116.22,115.31,115.65,114.42,116.5,116.36,117.69,117.27,116.65,116.99,117.93,117.02,113.29,115.4,113.1,113.35,113.35,113.35,109.66,106.63,105.75,106.04,107.77,108.37,111.16,110.55,110.03,111.62,112.41,111.9,112.19,113.16,111.58,112.65,112.71,111.44,109.14,109.26,108.45,109.39,106.39,108.28,108.28,108.66,110.79,107.99,103.11,104.85,104,100.44,99.66,95.29,95.18,90.88,88.4,94.17,90.38,94.85,98.41,97.56,98.16,97.1,99.09,97.13,98.38,98.01,99.68,101.69,99.99,101.32,101.32,101.32,101.69,100.43,99.89,101.36,101.46,99.29,99.86,100.21,99.72,101.99,103.1,103.69,103.69,103.69,99.13,100.15,101.28,100.84,101.91,103.17,101.54,101.57,100.04,99.91,100.44,102.07,102.22,101.72,97.35,97.75,99.09,98.8,98.64,98.74,101.55,101.99,102.93,102.94,103.95,103.36,104.52,104.75,102.7,101.54,99.72,101.9,102.34,102.41,103.01,102.02,103.2,102.62,102.62,101.75,100.77,100.78,100.78,103.86,105.78,110.78,109.47,111,111.34,108.86,109.22,107.46,107.3,104.65,105.37,106.32,107.87,105.78,106.63,104.1,104.05,104.84,105.17,104.27,103.68,103.61,105.38,105.92,105.36,103.92,103.17,104.85,105.5,105.8,106.02,107.26,107.66,106.51,104.88,105.46,106.75,106.28,106.37,105.36,105.16,103.18,103.41,103.28,102.65,102.07,100.84,101.52,100.47,100,100.71,101.27,101.5,101.68,100.5,101.24,99.56,98.9,98.71,96.78,96.07,96.9,95.85,97.05,97.05,97.05,97.57,98.48,99.44,99.39,99.32,102.02,102.02,102.45,100.81,102.39,103.04,103.15,104.07,104.15,104.57,104.57,103.3,102.89,102.81,100.79,102.61,104.01,104.29,108.21,108.41,109.81,109.33,108.86,109.25,108.9,109.25,108.95,109.88,109.01,108.98,110.15,109.6,109.03,110.51,111.43,108.91,110.08,109.2,109.33,109.72,108.16,107.5,108.31,107.56,107.94,107.85,107.4,108.04,108.91,108.26,107.42,107.24,108.25,107.72,107.72,106.49,107.91,110.12,110.9,110.74,111.26,112.56,111.5,113.14,114.21,115.84,115.51,116.69,116.91,118.37,121.18,123.4,122.78,120.59,123.52,120.78,120.32,117.05,115.75,118.29,119.89,120.33,119.42,119.39,119.38,119.82,121.96,122.69,122.69,122.69,124.3,126.28,124.35,125.03,122.83,122.99,118.86,121.01,116.15,118.28,117.33,120.48,116.96,116.61,113.75,113.32,114.21,117.11,115.38,115.08,117,117.3,118.45,116.53,116.76,114.74,112.03,110.96,113.25,113.01,113.81,113.31,115.84,115.84,115.84,115.84,114.33,114.73,113.36,112.3,112.05,113.59,112.62,113.88,114.56,114.48,112.45,112.97,114.3,113.4,113.43,113.75,114.11,111.79,110.63,111.18,110.72,111.08,110.49,109.99,107.73,109.02,106.78,107.45,108.47,110.03,110.03,109.91,110.53,109.89,111.46,112.11,112.03,111.46,112.45,113.5,113.1,111.81,111.59,111,110.8,110.55,110.67,111.02,111.02,110.18,109.08,109.36,109.95,108.93,108.12,110.23,110.26,112.34,112.19,111.09,110.12,110.12,107.56,106.1,106.05,104.82,101.44,102.09,102.71,104.44,103.94,105.07,104.85,102.84,101.87,101.52,103.34,101.61,96.61,91.7,93.68,97.24,95.35,96.42,96.25,97.27,96,95.77,96.19,98.1,98.6,97.75,96.84,95.68,93.54,94.5,92.08,90.28,91.04,93.96,93.73,92.3,92.51,92.9,94.84,95.74,96.47,95.96,96.78,97.78,97.58,94.84,96.94,95.41,93.79,92.29,90.94,92.33,89.21,89.23,89.23,90.19,88.86,88.64,90.05,90.47,90.12,90.12,88,87.94,86.88,89.98,90.63,92.94,91.39,91.39,91.39,92.59,92.65,94.35,95.8,95.77,96.63,96.27,95.62,93.91,93.49,92.55,91.9,91.54,91.47,92.46,91.09,90.81,90.94,92.02,93.44,94.12,93.83,95.27,94.94,93.32,92.64,92.22,91.16,90.82,90.98,88.56,87.76,86.42,87.02,87.85,87.32,85.45,88.06,88.02,89.41,88.59,88.31,86.94,86.16,86.23,84.87,83.06,84.08,84.63,84.73,84.7,84.7,84.62,83.64,83.61,85.06,84.57,84.48,82.78,83.33,85,86.39,86.43,88.94,88.84,88.35,87.41,87.25,87.18,90.48,90.75,89.41,87.81,87.91,85.62,84.79,86.23,86.23,86.23,86.23,88.65,88.7,87.92,90.09,90.77,90.72,89,88.07,89.63,89.96,88.17,87.32,85.41,85.89,82.93,82.53,82.86,83.16,81.67,81.58,79.38,76.55,74.74,74.25,74.93,72.91,67.7,63.24,71.15,76.5,76.07,74.81,77.85,78.85,77.74,75.22,76.38,77.59,78.58,77.72,77.84,80.25,80.25,78.58,77.41,77.35,74.44,75.02,75.54,76.27,76.27,76.27,74.02,73.3,71.9,72,69.03,69.68,70.08,71.45,75.37,75.37,75.05,73.71,73.5,70.32,70.32,68.76,69.91,68.1,70.3,70.5,73.08,73.21,71.25,73.54,72.52,71.08,71.24,71.02,73.14,74.92,76.59,75.86,75.05,75.05,77.45,77.12,79.31,78.55,78.58,75.81,75.73,76.97,74.97,76.09,76.42,77.96,75.75,77.07,78.79,80.73,81.52,79.46,79.18,79.18,78.98,78.92,77.93,77.85,77.99,75.6,74.27,73.79,73.59,71.86,74.03,73.29,74.14,73.32,73.39,73.08,74.2,73.23,73.14,71.11,71.02,69.21,69.57,71.05,71.28,70.45,70.17,68.61,70.47,70.82,70.37,69.48,69.76,69.2,69.4,69.14,68.66,67.8,70.73,71.47,70.97,70.64,70.9,69.62,68.91,67.93,67.7,67.26,66.47,68.45,68.45,68.5,66.82,67.22,66.31,65.46,66.15,64.72,63.98,63.14,63.38,63.52,61.53,61.06,61.07,60.48,60.48,64.28,63.88,62.73,60.73,59.17,58.79,57.43,58.13,58.17,59.45,57.81,56.93,56.98,52.82,53.5,53.88,54.14,51.93,51,53.8,55.3,53.4,56.62,58.21,57.86,57.16,55.94,60.59,61.75,64.74,64.29,63.41,63.26,61.98,60.94,61.4,61.88,61.66,60.64,64.41,65.83,65.94,65.77,69.26,68.7,66.43,68.85,70.58,68.45,68.72,69.22,68.07,68.52,68.21,66.84,67.13,69.36,68.6,68.6,68.6,69.94,69.15,69.24,69.24,70.57,72.97,74.07,73.77,75.24,75.01,75.5,75.51,76.33,75.91,75.53,75.81,75.52,77.28,77.28,77.28,77.28,79.59,80.28,77.41,76.68,78.08,77.51,76.29,74.24,74.69,74.24,75.53,73.59,73.78,73.43,72.48,73.22,72.2,72.95,71.52,70.56,70.84,69.23,68.88,67.97,71.4,70.81,71.67,71.64,71.38,69.47,68.67,66.57,68.06,66.5,67.74,66.94,68.32,66.81,67.64,68.57,70.6,70.17,68.66,69.5,71.04,71.49,71.97,71.67,71,71,71.19,71.19,71.19,71.78,70.91,71,71.4,72.87,72.32,71.14,71.21,69.85,69.53,68.17,68.72,68.94,69.21,69.21,68.99,68.05,69.38,70.2,71.23,69.55,69.02,69.14,68.81,70.02,70.11,68.54,69.35,68.1,69.13,68.19,66.9,65.41,65.41,64.55,64.89,63.65,63.51,66.39,66.75,66.92,67.55,67.54,68.05,68.01,68.35,67.92,69.94,70.56,69.98,68.73,67.19,67.19,66.04,65.81,67.17,67.34,66.37,66.35,68.06,68.3,67.02,64.74,64.02,64.39,65.02,65.87,67.58,67.73,67.73,66.09,65.91,65.72,66.25,64.76,68.2,67.63,68.89,70.31,71.25,70.79,68.87,68.7,69.53,69.55,68.03,68.29,68.45,67.54,66.34,65.75,64.78,64.98,63.48,62.28,62.97,63.17,64.73,63.77,64.5,65.96,65.64,65.39,65.39,67.47,66.06,66.13,65.21,65.21,65.05,64.65,64.4,64.8,65.16,64.13,64.4,63.84,62.99,64.67,63.31,62.28,62.68,61.86,63.49,63.49,61.44,60.75,60.81,61.7,61.94,62.5,63.33,64.72,63.16,62.48,62.92,62.74,61.18,60.64,60.64,59.89,60.45,60.51,61.75,61.55,60.53,60.51,61.04,62.5,63.84,62.86,62.37,62.27,60.94,61.85,61.6,64.07,63.17,61.7,63.03,62.75,62.73,63.73,62.39,62.22,61.52,60.09,60.49,59.5,58.9,57.93,58.49,57.99,57.81,57.13,57.98,57.32,57.56,58.87,58.19,57.76,57.96,58.04,56.68,56.68,56.68,57.87,59.53,59.57,58.58,58.13,58.34,57.9,56.6,56.28,55.98,56.74,56.61,56.25,55.18,53.01,53.41,52.95,51.66,53.09,55.28,56.48,55.36,55.86,54.48,53.64,53.94,53.9,53.88,56.53,55.99,55.35,54.8,54.8,54.8,55.62,55.88,57.41,56.64,57,58.27,59.47,59.54,59.11,59.97,58.74,58.64,59.16,59,57.45,58.58,57.97,58.42,59.37,61.44,61.26,61,60.11,60.39,59.69,59.94,60.98,59.46,59.43,60.16,59.15,60.01,60.01,60.01,61.56,60.67,60.67,60.55,60.61,60.88,62.14,62,60.72,60.48,59.32,59.38,59.94,59.35,60.22,61.49,63,63.2,64.75,64.88,64.79,64.79,66.48,67.61,67.87,67.4,66.68,67.75,69.39,69.83,69.62,69.62,70.96,71.61,71.93,70.44,70.41,69.21,68.21,69.07,69.05,67.72,66.74,66.02,67.46,67.69,67.56,67.69,67.23,67.23,66.63,65.67,66.32,65.83,65.82,65.76,68.03,67.7,66.5,66.52,66.76,66.89,65.31,65.39,65.39,65.83,66.67,66.82,65.91,64.9,64.81,64.56,65.8,67.46,66.32,65.23,65.03,65.13,63.67,64.58,63.97,63.43,62.13,62.07,62.79,61.82,63.07,62.85,61.7,60.69,60.44,61.27,61.36,62.15,62.27,62.47,62.22,62.33,63.63,64.29,63.98,63.43,64.28,64.23,64.84,65.13,64.3,64.51,65.38,64.15,64.06,63.35,63.05,63.05,61.99,62.23,61.78,62.14,62.7,62.89,63.78,63.78,65.12,65.9,65.98,69.34,69.87,73.18,75.39,77.55,77.55,83.04,81.73,84.23,86.03,77.28,76.06,78.7,78.7,78.28,75.16,75.06,74.14,77.16,75.81,76.04,77.23,76,76.27,76.33,76.6,75.25,75.02,75.83,76.09,78.04,76.04,77.94,77.05,75.96,73.6,73.64,72.01,72.08,72.88,73.14,73.23,72.65,71.12,70.87,70.76,72.57,71.51,71.74,72.38,73.03,73.17,72.43,73.7,76.01,75.45,74.86,76.01,74.22,73.66,73.38,74.16,73.86,73.77,74.5,75.43,75.43,75.43,75.44,75.19,75.28,73.22,73.93,73.69,72.8,72.19,72.07,71.24,70.67,72.16,72.41,73.31,73.41,74.72,75.6,74.12,73.98,75.51,76.24,76.24,76.24,76.24,76.24,76.26,78.94,78.14,79.42,80.39,82.07,80.99,83.22,82.64,86.04,85.96,87.53,87.4,85.95,89.5,89.01,87.77,90.8,90.2,86.93,86.95,86.41,89.13,92.3,92.06,90.1,90.42,89.66,89.23,91.68,92.2,94.78,94.63,92.43,90.28,91.4,88.98,89.37,89.61,88.88,87.95,88.16,88.1,86.95,86.95,75,76.74,77.82,79.19,80.57,82.26,82.44,80.33,81.56,81.56,81.56,82.11,83.82,83.2,83.45,83.44,83.32,83.4,83.4,85,85,85.32,85.12,85.72,85.81,88.39,86.6,88.74,87.88,87.45,87.37,88.7,89.44,88.37,88.65,87.14,87.47,87.2,88.4,87.08,86.33,87.98,88.57,89.69,89.12,90.67,90.54,91.56,90.15,89.38,90.15,89.79,88.75,86.86,88.06,88.78,90.47,91.49,90.92,90.49,89.62,89.62,90.1,89.31,88.91,88.9,89.93,88.78,89.52,89.72,90.18,91.67,91.51,91.43,92.8,93.36,93.72,95.43,95.6,94.5,94.77,94.45,93.34,91.73,90.92,91.84,92.44,92.25,92.75,91.86,91.79,92.08,94.49,94.27,93.35,93.29,93.01,93.08,92.68,93.77,95.5,94.48,93.15,92.08,92.4,94.2,94.06,93.46,92.29,93.53,94.2,95.45,96.33,95.63,96.71,96.92,96.93,99.11,97.66,97.82,96.77,95.94,97.52,97.53,96.07,97.63,98.68,98.68,100.42,99.74,98.86,98.86,98.35,98.42,96.64,95.24,93.76,95.53,95.62,93.07,95.35,96.07,95.25,96.05,96.7,97.77,96.82,96.82,96.52,94.68,95.61,94.73,94.63,96.62,95.71,97.52,97.71,98.51,99.13,97.05,96.33,94.75,94.5,94.42,92.11,93.76,94.58,94.62,94.65,94.29,94.73,94.83,93.24,94.04,94.99,93.81,92.29,92.47,92.26,93.76,92.09,90.44,91.33,91.31,91.92,92.32,92.05,92.07,92.07,92.07,91.82,92.85,92.05,94.69,94.48,95.47,94.38,93.35,93.44,95.22,95.89,96.2,95.7,95.22,94.33,93.92,94.21,94.12,94.6,94.46,95.47,98.23,98.65,96.22,93.77,93.49,93.44,93.91,93.27,94.68,95.45,95.71,94.75,93.28,93.67,93.67,93.67,93.67,92.53,94.98,93.02,93.3,91.03,91.49,89.86,88.9,87.61,87.28,89.1,88.62,89.95,89.89,89.84,89.55,91.05,91.15,91.24,89.8,88.54,85.79,87.77,88.63,86.64,87.3,86.74,86.48,87.83,87.33,87.33,87.33,87.33,89.61,88.93,89.38,88.83,89.55,90.03,91.96,91.34,91.9,92.36,90.9,90.18,90.63,90.43,89.27,90.94,89.66,89.66,90.61,90.16,90.89,92.11,91.8,91.75,91.73,91.67,91.48,89.75,88.79,89.22,88.87,87.52,88.3,88.3,88.57,87.4,86.38,87.01,87.86,90.5,88.78,87.8,87.12,86.14,85.97,85.91,84.86,86.48,86.5,85.09,84.1,82.37,82.37,81.74,80.13,80.19,78.57,77.05,78.54,78.05,78.05,78.61,79.52,80.68,80.24,83.49,82.59,83.02,83.3,83.68,84.52,85.9,84.03,86.56,86.34,85.21,86.26,85.42,86.39,87.12,89.05,89.27,88.94,89.35,88.55,88.85,87.77,88.11,89.04,88.07,87.22,87.02,86.14,87.16,87.3,87.48,88.27,89.17,87.48,87.22,88.13,87.68,87.68,87.92,87.39,87.26,86.59,88.35,87.05,86.72,86.43,85.45,85.16,85.55,84.73,84.75,84.43,84.94,86.12,86.36,85.44,85.36,84.33,84.86,84.46,84.89,84.89,82.93],"KOSPI200":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,100],"Nikkei225":[100,100.83,101.33,101.81,101.57,101.57,102.57,101.45,101.06,101.55,101.82,102.2,102.41,103.84,103.53,103.83,104.62,104.78,104.44,105.11,104.98,105.08,103.23,103.23,101.85,103.49,103.45,97.91,104.49,104.68,106.47,106.44,107.61,107.61,108.25,109.08,109.42,109.42,110.45,110.74,110.59,110.29,110.3,111.53,111.01,110.1,110.61,111.43,113.05,114.45,115.4,115.98,115.99,116.12,116.88,116.83,117.45,117.14,117.04,117.04,116.86,116.9,116.89,115.34,115.16,115.16,115.16,118.05,117.6,117.2,117.2,116.28,116.66,115.28,116.2,115.04,113.34,113.83,114.9,115.3,113.81,113.19,114.81,116.89,117.28,116.69,114.72,115.36,113.95,113.97,114.33,113.93,114.51,113.91,116.75,117.23,115.91,117.11,116.56,115.88,115.98,116.77,116.76,116.7,116.18,115.11,115.18,116.84,117.87,117.29,116.75,116.54,116,116.39,118.11,118.29,118.14,117.95,118.02,117.61,117.61,117.21,114.72,114.98,116.05,114.38,115.69,115.78,114.85,113.92,114.37,113.32,113.63,112.04,112.45,113.25,112.95,111.77,111.01,110.46,110.58,110.96,111.05,111.04,112.18,113.72,114.94,116.21,115.98,115.65,116.34,117.15,117.15,117.15,117.15,119.86,119.55,119.89,120.26,119.79,119.71,120.01,119.38,117.8,118.03,118.55,118.16,118.94,119.37,118.6,118.58,118.55,118.39,119.65,121.56,121.52,120.37,120.4,119.94,120.57,119.94,119.88,119.79,119.48,120.15,120.9,121.88,121.33,121.16,121.29,121.42,121.85,121.28,121.82,120.69,120.83,120.69,120.98,120.46,120.06,120.98,121.67,121.08,121.09,121.21,121.21,120.49,120.62,121.36,121.09,120.35,120.22,120.79,120.97,120.25,120.04,120.41,120.97,120.67,120.2,120.83,120.47,118.92,118.86,118.86,117.7,119.01,118.86,118.7,117.3,116.84,116.78,117.09,116.6,117.19,117.18,116.65,117.52,118.36,118.63,117.53,116.79,116.62,116.86,116.12,117.76,119.15,119.68,119.33,119.95,119.95,122.3,122.36,122.59,122.28,122.89,122.48,122.1,122.68,122.64,122.91,124.19,124.27,124.28,124.65,124.65,125.45,125.8,126.24,127.45,128.06,128.54,128.7,129.22,129.27,130.71,131.37,130.78,130.97,132.59,132.61,132.61,135.07,135.79,135.79,135.84,138.19,138.05,137.77,136.65,134.84,134.83,132.71,134.66,134.93,134.12,135.05,135.69,135.69,135.86,135.53,135.47,136.14,136.91,137.48,136.8,136.29,133.61,135.54,137.43,138.2,137.76,137.11,136.72,135.87,137.97,137.77,137.91,137.76,137.98,138.2,137.92,138.03,137.26,137.15,137.15,137.15,141.62,142.87,142.87,143.69,143.31,142.85,142.5,142.87,144.3,143.8,143.16,143.43,143.48,145.34,144.23,142.6,142.37,142.36,140.32,139.16,141.49,140.22,136.65,130.19,130.4,131.88,128.82,128.82,127.99,127.44,129.32,130.86,133.44,132.09,132.36,130.95,131.89,133.47,134.89,132.95,130.88,127.61,126.77,129.03,128.04,128.73,129.34,131.48,132.35,131.2,131.36,130.59,129.41,128.81,128.81,130.08,124.21,125.11,128.43,126.7,127.47,129.25,128.86,128.28,128.44,130.4,129.94,130.6,131.3,130.66,130.49,131.21,131.55,131.62,133.49,133.69,133.52,133.07,134.22,133.84,134.47,135.36,135.36,135.6,135.39,135.39,135.39,135.36,135.61,135,135.54,137.11,137.76,137.47,136.86,137.59,138.15,138.58,138.33,136.7,135.17,135.26,135.44,134.7,132.65,133.76,133.57,135.41,135.79,136.31,137.5,136.72,137.38,137.83,138.36,136.99,137.67,136.64,134.22,135.89,136.72,135.65,134.58,134.6,134.18,134.17,134.38,131.41,131.25,130.84,129.81,131.26,132.86,133.73,132.13,133.67,136.14,136.14,136.74,137.33,137.15,136.75,134.93,135.62,136.24,136.08,136.83,135.82,135.88,137.04,135.63,135.7,135.6,136.53,136.42,136.15,134.34,131.68,134.69,133.77,133.7,134.17,133.74,133.86,134.72,135.02,136.17,137.36,137.44,137.65,137.78,137.75,136.8,136.74,136.04,135.48,134.39,134.79,136.55,136.18,137.49,139.14,139.14,141.1,142.62,142.63,143.81,143.81,144.23,144.79,143.37,145.31,146.07,146.22,145.26,144.44,143.29,143.29,141.39,141.61,136.1,136.73,134.18,135.85,137.61,136.51,135.75,136.24,132.61,133.09,128.14,127.63,127.42,129.27,132.06,130.66,134.01,131.93,133.43,133.06,135.47,134.05,134.17,131.4,131.62,131.36,130.61,131.46,130.03,129.57,130.41,130.41,131.41,132.25,133.61,134.12,134.66,136,132.76,132.05,129.54,130.6,127.84,127.41,130.15,131.43,128.77,129.57,127.21,126.44,122.86,121.49,121.49,115.41,116.44,120.96,120.58,120.58,120.58,120.58,117.85,120.73,121.72,123.06,121.48,122.66,122.66,123.84,123.16,122.92,124.5,124.83,124.24,124.07,123.95,125.15,124.4,124.5,123.84,125.15,125.24,125.82,125.58,125.76,125.02,122.5,122.5,125.7,127.39,127.36,125.92,128.21,128.34,129.12,129.31,129.08,129.7,129.22,129.87,128.84,130.15,131.47,130.89,130.11,129.26,126.67,127.27,129.55,128.26,128.25,129.23,130.04,129.93,130.18,130.18,130.3,126.38,129.1,128.8,126.72,127.76,129.58,129.56,130.81,130.88,131.38,131.1,131.35,130.66,130.8,131.76,133.56,133.88,134.22,133.08,133.75,133.85,134.11,133.75,134.39,134.1,134.1,134.1,134.1,134.1,134.1,134.1,132.08,130.15,128.94,128.59,127.67,126.92,127.65,126.9,128.02,128.33,128.16,128.22,127.43,127.22,127.62,128.08,126.54,126.17,124.11,122.97,122.95,125.17,125.15,125.82,127.33,127.75,127.3,126.71,127.22,127.26,126.35,128.53,129.3,128.07,128.24,127.68,127.04,128.55,128.18,130.91,131.06,130.36,130.75,131.01,129.74,129.92,129.73,130.39,130.65,130.65,129.74,129.34,126.79,129.33,129.03,130.26,130.79,131.07,130.48,130.23,130.79,129.66,129.78,127.04,124.83,124.02,123.6,124.07,124.62,124.62,123.24,124.44,122.94,123.01,123.88,124.57,124.22,124.28,124.77,122.06,123.24,123.38,123.27,124.74,124.23,124.26,124.4,127.03,127.72,128.43,128.88,130.12,131.09,132.47,132.47,132.55,132.3,132.81,133.02,133.02,133.14,132.66,132.83,131.81,131.07,131.85,131.21,128.58,128.99,128.78,130.06,129.27,129.84,131.33,131.33,133.79,135.39,135.26,135.51,135.85,135.85,136.31,137.06,137.36,137.77,138.41,137.62,138.13,137.67,137.67,140.08,140.4,140.56,140.93,140.56,141.7,140.49,139.42,140.39,141.08,140.33,139.46,138.8,139.25,140.33,140.81,141.2,141.03,140.34,141.76,140.85,139.38,140.37,140.7,141.16,141.04,140.93,141.12,144.73,144.3,144.99,144.19,143.78,143.49,143.51,143.57,143.28,144.14,143.61,142.52,142.52,142.52,142.52,139.8,142.03,139.8,143.02,143.69,143.69,144.74,144.09,144.19,144.84,145.09,143.77,144.78,143.36,143.55,140.63,139.86,140.85,138.43,139.8,138.4,139.07,140.49,143.83,143.55,142.7,142.7,143.75,143.55,142.71,141.72,139.73,140.98,141.45,140.9,140.9,136.19,135.11,132.23,127.38,128.59,127.01,127.12,128.5,125.01,118.68,119.69,116.97,111.81,105.01,102.43,102.49,100.77,99.72,99.72,101.74,109,117.76,112.45,116.81,114.98,113.97,108.84,107.35,107.36,111.91,114.17,116.6,116.55,117.47,114.73,118.32,117.78,116.22,119.87,118.5,116.16,115.3,117.05,116.05,119.19,119.11,119.11,121.66,118.2,118.2,118.2,118.2,118.53,121.57,122.85,122.7,122.1,119.98,120.72,121.3,123.1,124.08,123.82,122.83,124.96,128.15,129.04,132.04,131.81,132.92,134.5,136.24,136.73,137.74,139.64,139.11,139.32,135.39,134.38,129.71,136.05,135.29,134.68,135.43,135.18,135.85,135.76,134.11,135.63,132.51,134.28,133.27,133.42,134.39,136.84,136.24,135.18,135.73,134.29,137.27,136.08,138.24,137.18,136.74,136.86,137.87,137.07,137.07,137.07,136.85,136.5,134.93,134.58,130.79,133.72,136,135.64,135.06,134.53,134.53,137.06,137.63,140.07,140.31,139.15,138.87,139.23,137.85,138.09,138.48,140.35,140.32,139.82,137.86,139.41,139.4,140.05,141.37,139.8,139.11,140.22,138.76,139.98,141.01,141.93,141.31,141.43,140.49,140.74,140.74,140.74,140.65,139.09,139.8,141.65,141.81,139.68,139.68,138.75,140.45,141.18,141.11,142.46,142.3,141.93,142.19,142.34,141.62,141.04,142.61,141.98,142.42,141.42,141.68,141.54,141.49,141.09,140.57,138.43,140.35,140.35,142.75,145.22,146.55,149.65,150.05,152.72,153.75,152.94,156.08,156.73,155,154.44,153.79,153.79,157.64,158.43,159.88,160.52,159.25,161.38,161.46,161.52,161.16,159.94,159.45,161.57,161.2,160.57,161.05,160.78,161.2,161.5,161.24,160.94,159.27,159.8,160.67,160.59,161.78,166.09,165.34,165.34,164.22,163.62,163,165.62,169.53,169.53,169.68,171.44,172.89,171.82,170.15,172.5,171.84,173.25,172.49,173.64,171.98,172.52,169.88,166.66,169.24,170.87,172.58,170.75,173.38,177.05,177.76,178.1,178.1,177.85,181.24,183.56,182.5,182.16,180.85,181.68,181.68,178.76,181.75,174.51,178.71,177.17,178.08,174.29,173.9,173.17,174.88,174.93,175.99,179.04,179.33,180.26,180.22,182.04,179.48,175.76,174.69,171.13,173.09,175.78,177.03,177.32,175.79,177.06,179.86,181.28,178.91,179.12,178.98,179.34,177.96,179.24,178.45,178.58,178.83,178.84,175.32,171.75,175.85,174.84,175.47,174.66,175.04,175.04,173.58,173.58,173.58,173.58,176.71,176.87,177.84,172.35,169.58,165.36,169.2,167.63,171.14,168.96,169.28,170.6,170.88,172.03,172.56,172,175.61,173.87,173.59,174.39,175.06,174.36,174.83,174.49,173.87,174.46,174.4,175.69,177.37,176.47,174.82,174.5,168.75,174.01,173.96,173.96,175.11,175,173.58,173.46,172.95,173.41,172.29,172.56,170.9,169.4,168.33,172.12,173.02,172.35,170.37,168.71,166.6,165,165.97,165.97,165.97,167.68,168.51,166.17,167.38,164.37,167.37,166.53,166.18,167.05,167.6,167.6,168.01,169.11,168.78,168.55,165.82,165.22,166.19,164.36,162.74,165.64,167.07,167.03,167.14,166.53,167.42,169.23,171.41,171.96,175.48,178.69,180.23,181.83,180.79,183.04,183.43,184.77,183.82,182.69,183.75,183.75,179.77,178.56,178.56,182.24,182.18,181.85,177.99,177.44,173.33,171.37,167.62,165.85,166.75,168.98,171.69,170.08,169.53,172.01,175.13,174.87,176.01,176.25,172.96,173.54,172.31,175.35,175.3,173.63,174.07,178.61,177.85,177.85,179.5,178.4,177.77,176.43,175.36,176.39,178.39,179.39,179.58,178.86,178.32,179.21,179.38,179.38,176.54,177.72,173.22,170.4,167.61,168.3,167.2,168.87,168.25,171.43,173.87,173.06,171.33,172.55,171.29,171.46,175.11,171.98,168.31,171.81,172.08,173.5,173.4,172.76,175.13,174.15,173.46,173.46,173.46,176.53,176.71,171.63,171.57,171.57,170.03,173.3,171.64,169.44,170.7,170.24,165.48,167.32,165.81,166.21,163.45,162.73,157.67,160.96,162.68,163.14,165.88,164.12,165.31,164.16,164.38,166.16,166.86,166.86,163.14,161.85,165.44,164.07,163.4,162.13,159.35,159.35,156.46,159.51,159.81,161.73,159.01,160.12,156.55,151.95,149.36,148.91,154.77,151.6,152.47,152.7,155.21,160.57,161.62,161.62,164.01,168.93,169.35,169.59,168.35,170.21,168.85,167.61,166.68,167.1,167.41,164.77,161.99,162.58,161.59,158.66,161.72,163.7,163.23,161.46,162.57,163.98,166,163.3,160.2,160.86,158.97,161.75,161.75,161.57,161.57,161.57,161.57,162.69,158.56,157.65,157.93,155.13,159.22,159.93,160.61,162.13,159.07,161.09,162.67,161.15,160.72,160.28,161.35,164.89,164.35,165.42,165.16,167.25,168.18,168.35,170.1,170.17,167.63,162.59,160.43,158.6,159.24,156.42,155.26,158.12,157.54,157.67,159.6,161.89,162.96,161.49,159.01,156.25,157.57,159.19,157.29,159.59,159.75,161.53,158.67,159.52,160.52,161.39,161.39,162.43,166.76,167.5,168.17,166.88,166.61,166.98,167.58,167.49,168.65,166.25,167.13,168.28,169.75,170.19,168.69,167.6,167.6,171.98,173.94,173.92,176.05,174.36,174.29,173.47,171.42,170.58,171.57,172.55,167.96,169.87,169.24,166.65,166.58,166.4,166.44,165.26,169.08,169.98,171.95,172.39,167.6,167.94,166.08,166.08,166.81,164.55,163.59,163.59,159.24,160.08,157.69,159.18,156.26,157.94,162.62,163.39,164.54,163.36,163.36,159.06,159.03,158.07,163.21,161.31,163.6,164.21,162.71,162,162.51,164.17,165.27,164.74,163.3,166.2,166.75,166.66,166.66,163.87,165.84,167.92,166.98,165.35,170.28,168.47,168.63,168.86,168.27,168.08,168.36,169.39,169.39,171,170.39,169.67,168.86,168.5,170.05,167.35,167.61,168,166.8,166.12,168.09,167.74,168.42,169.63,169,165.84,164.1,160.06,158.97,159.7,158.06,159.08,159.34,158.69,157.2,157.21,157.21,157.21,154.93,155.56,156.48,156.48,157.7,159.33,159.35,157.36,155.57,157.47,161.41,159.08,159.97,162.1,164.47,165.04,164.85,164.97,165.27,164.63,164.75,165.09,165.73,166.84,166.79,166.32,166.18,166.71,165.24,166.3,165.69,166.86,165.76,165.87,165.51,163.29,163.29,165.4,165.22,165.35,165.78,165.67,168.25,170.12,170.55,171.36,172.44,169.56,167.68,164,164.05,162.73,164.67,162.34,162.34,165.47,165.19,164.98,165.54,165.79,167.99,167.38,168.94,169.82,170.42,167.56,165.51,165.79,166.48,168.23,169.19,169.63,171.66,171.79,172.66,172.34,172.65,172.09,172.26,172.42,171.2,171.45,173.85,175.45,175.66,175.66,175.66,175.66,174.41,176.18,175.45,175.48,177.05,178.49,179.79,181.3,184.2,185.61,187.29,186.51,184.85,185.56,186.26,188.17,188.74,186.09,187.65,189.92,194.1,195.84,192.27,190.63,194.38,195.4,198.92,201.84,201.74,203.06,201.04,201.15,202.28,200.41,197.49,197,196.03,199.98,200.22,199.95,203.35,201.36,200.85,197.44,195.13,193.93,194.01,192.45,195.31,195.14,195.14,195.76,198.18,195.74,194.62,197.01,196.9,196.81,198.16,197.36,199.85,201.68,197.05,193.75,193.95,194.32,195.06,194.02,195.64,195.64,193.15,194.23,191.38,190.53,189.48,190.17,191.92,192.85,194.52,190.52,193.81,194.15,194.8,196.52,197.07,198.44,199.03,200.26,198.76,196.44,195.6,197.46,197.04,199.82,202.02,202.02,200.27,198.95,196.23,195.21,196.87,194.68,195.03,192.02,191.93,191.34,188.2,183.91,187.22,186.73,186.73,191.26,192.4,195.77,194.69,190.73,193.03,193.04,189.36,188.32,186.76,187.14,188.39,184.36,186.71,184.94,185.91,190.39,192.48,192.48,197.05,194.42,193.79,196.68,196.21,196.31,196.98,201.94,201.37,202.34,201.15,200.94,201.53,201.53,202.58,201.51,201.27,200.75,201.74,201.41,200.2,197.46,201.5,197.96,194.64,197.56,197.87,198.37,196.92,198.63,197.36,200.13,202.88,199.66,199.83,200.34,200.65,202.92,202.06,201.61,201.61,201.61,200.55,201.08,201.08,203.41,207.5,211.16,214.34,216.29,214.59,213.74,213.67,216.66,220.18,220,218.25,218.31,215.39,217.05,217.28,218.61,216.95,217.84,219.02,217.85,217.61,222.09,222.29,222.29,228.72,227.15,229.89,231.87,231.77,231.12,230.51,235.55,235.55,236.37,236.4,236.21,235.96,240.45,241.64,241.57,241.53,238.57,239.11,233.88,233.74,233.13,233.8,233.2,239.42,241,241,245.9,246.34,243.48,243.38,245.58,242,243.21,239.8,240.01,237.68,239.62,234.91,237.05,239.62,238.46,237.63,238.11,236.36,231.77,228.7,229.41,223.32,225.55,226.24,231.71,226.7,228.54,228.54,231.38,230.59,230.36,230.36,230.36,233.97,230.15,229.38,230.31,230.02,231.08,231.26,234.48,233.68,235.38,234.64,232.65,235.58,232.83,234.36,234.09,232.29,229.26,231.87,234.49,233.98,231.89,233.17,233.05,235.19,235.77,234.22,233.27,233.84,229.55,231.84,232.37,232.75,232.53,233.78,236,238.98,237.02,238.47,238.76,241.43,244.48,246.49,246.48,245.69,250.5,252.02,254.38,248.16,248.16,248.66,247.6,241.74,241.37,238.57,238.54,235.89,228.15,226.93,231.76,232.1,235.57,229.7,216.34,189.52,208.91,211.4,209.84,211.01,211.01,218.29,219.55,221.26,229.31,225.25,229.31,228.64,230.21,231.13,229.6,230.67,231.17,231.12,232.84,233.16,233.07,223.2,220.84,219.24,218.18,217.84,214.59,221.9,220.39,220.39,218.11,219.18,223.85,227.27,227.27,228.58,228.15,234.51,239.96,228.45,232.86,227.78,232.26,232.76,236.96,234.58,236.63,237.25,238.61,238.61,240.44,236.04,234.42,234.85,234.69,231.42,229.57,229.8,228.42,232.58,234.38,236.63,235.45,229.26,229.26,231.8,237.85,237.26,237.97,238.17,237.22,233.28,232.16,232.81,230.26,231.43,231.06,229.09,230.64,233.63,231.6,229.75,231.04,230.19,232.02,236.46,236.62,237.34,235.51,235.93,237.17,237.2,240.07,237.79,237.71,237.16,235.45,233.84,233.16,235.93,235.18,235.74,238.38,242.68,240.35,240.35,240.35,240.35,236.81,241.49,240.87,238.6,236.11,236.11,231.79,231.61,232.38,231.65,234.37,235.13,238.85,240.74,240.57,238.37,235.06,237.46,238.06,238.41,232.07,233.74,233.94,235.36,233.68,233.76,233.76,234.74,237.74,235.86,236.01,236.59,235.95,233.02,233.61,233.61,230.37,229.79,230.48,223.85,227.64,224.9,225.43,227.16,222.23,223.08,221.66,221.82,221.64,223.23,225.3,228,227.44,227.44,226.99,226.58,227.61,229.1,227.73,223.63,214.58,214.62,215.23,209.27,203.51,187.58,198.89,191.06,208.5,202.34,204.73,206.45,204.36,207.11,209.24,206.52,206.16,210.07,211.1,215.11,215.92,215.92,217.16,219.61,221.89,221.89,221.89,221.58,222.48,225.94,226.79,230.04,229.71,227.46,227.45,225.91,226.1,224.71,222.82,223.88,226.11,227.27,227.26,231.54,228.72,225.75,225.6,227.41,226.25,227.38,229.47,230.21,231.47,229.98,227.94,230.81,232.17,234.27,231.88,231.36,231.07,233.7,234.61,238.48,241.89,243.92,240.9,239.55,239.69,239.84,238.5,239.11,239.91,238.85,238.39,237.73,239.04,238.96,240.39,239.89,239.89,239.63,248.04,251.99,249.76,247,245.05,244.93,247.43,245.8,242.73,244.29,245.77,247.36,251.95,251.95,257.36,260.71,256.94,261.34,263.36,262.35,258.39,256.71,256.85,257.9,255.41,256.17,258.03,257.36,254.17,254.9,252.66,256.53,259.17,262.94,261.82,264.1,267.33,269.71,269.71,270.52,269.84,272.93,271.38,274.08,274.08,274.9,275.65,273.24,271.37,270.7,268.4,270.72,275.74,288.85,288.88,287.58,292.68,289.71,289.71,282.24,287.21,290.85,286.66,296.32,297.11,297.06,293.05,297.01,304.32,302.55,309.11,309.22,315.76,315.76,310.25,302.51,306.55,302.89,306.72,306.31,307.63,308.95,303.5,303.18,293.41,292.42,300.17,292.95,292.95,293.15,298.57,302.24,302.76,297.03,297.03,300.41,307.42,304.19,304.73,305.18,304.86,302.13,306.27,302.24,297.51,298.29,295.21,298.26,303.65,303.72,303.3,303.69,305.75,304.4,303.27,303.27,303.27,312.27,316.4,313.05,307.96,312.92,312.92,322.61,327.38,325.99,324.94,322.82,319.25,317.94,323.45,324.4,318.61,321.31,321.46,321.57,321.25,317.23,329.67,327.09,324.23,326.86,339.57,347.32,347.32,347.26,343.05,342.23,340.79,344.27,346.22,342.35,342.35,345.34,352.94,353.96,354.55,349.77,339.06,326.81,333.03,335.09,317.67,326.82,331.5,328.06,324.24,323.83,323.52,332.79,321.55,321.55,310.36,314.8,323.82,322.94,321.55,312.59,307.64,323.76,316.07,320.05,321.79,321.89,339.23,336.75,342.94,340.41,348.69,350.23,358.57,352.29,354.4,357.55,358.98,356.29,359.76,364.71,360.98,360.98,357.17,358.54,358.54,358.54,358.54,378.55,377.82,376.04,378,381.19,377.46,369.97,366.39,364.79,360.3,371.62,381.59,392.55,391.57,391.59,389.75,399.61,403.25,402.05,412.09,406.48,401.17,385.72,394.11,386.65,386.88,397.74,417.61,418.13,421.13,428.07,429.25,435.9,420.45,416.75,435.98,417.87,418.52,422.1,424.58,414.09,420.18,420.14,411.22,402.56,408.13,413.03,405.11,408.13,414.2,402.66,386.42,386.42,399.02,398.32,400.17,389.25,391.18,375.72,370.12,372.73,387.75,384.1,385.32,399.43,395.71,395.25,403.47,403.47,406.8,411.53,413.97,417.02,406.42,393.56,398.93,397.72,394.78,396.76,399.2,398.42,400.07,399.5,398.92,387.53,386.87,391.72,400.03,393.22,392.46,393.23,385.64,382.52,382.46,385.11,386.39,391.71,391.71,391.71,391.71,394.69,399.82,396.88,394.5,402.16,415.44,411.54],"S&P500":[100,99.5,99.93,99.98,99.65,100.11,98.87,98.98,98.67,98.69,98.39,99,99.22,99.08,99.07,99.54,99.17,98.99,98.7,98.39,98.38,97.71,97.07,96.64,96.48,98.63,99,100.1,100.29,100.15,100.14,100.89,100.73,101.2,100.96,101.71,101.93,102.01,102.01,102.41,101.87,102.01,101.74,101.38,101.42,102.01,102.36,103.71,103.93,104.55,104.43,105.11,104.26,104.67,104.48,104.69,105.07,104.81,104.62,104.75,104.75,104.98,104.11,104.07,103.59,103.59,104.47,105.07,104.99,105.36,104.98,104.98,105.28,105.05,105.25,105.25,104.94,105.12,104.74,105.09,104.81,105.5,106.35,106.27,106.18,105.54,105.44,105.48,105.54,106.3,106.08,106.1,106.18,106.79,107.17,107.73,108.16,108.7,108.61,108.79,108.79,109.45,109.33,109.37,109.54,109.65,109.37,110.86,110.21,110.27,109.91,109.59,109.34,109.42,109.78,109.82,109.45,110.37,110.19,110.04,109.82,108.46,108.66,108.55,108.46,108.35,109.13,109.25,109.57,109.32,109.14,109.21,108.87,109.08,108.99,109.07,108.91,108.5,107.76,107.76,108.69,108.37,108.19,109.01,108.68,109.85,110.52,110.47,110.53,110.32,110.51,110.64,110.5,110.56,111.02,111.02,110.91,111.03,110.79,110.63,111.16,111.08,109.06,109.46,110.2,110.77,110.98,111.25,111.75,111.78,111.78,111.65,111.6,112.44,112.86,112.72,112.41,112.58,112.61,112.52,112.41,112.92,112.8,112.55,112.58,113.52,112.76,112.7,112.65,112.82,112.86,111.95,112.93,111.96,112.13,112.39,112.39,112.56,111.5,112.21,112.32,112.23,113.05,113.26,113.79,113.79,113.85,114.47,114.45,114.41,114.28,114.62,114.65,114.54,114.39,114.3,114.58,114.64,114.39,114.6,114.79,114.52,114.47,112.82,112.96,114.1,114.04,114.2,112.44,112.23,112.36,113.48,113.09,112.85,113.04,113.1,113.19,113.71,114.36,114.59,114.59,113.73,114.08,114.06,113.89,115.13,115.51,115.6,115.47,115.69,115.86,115.98,116.06,115.7,115.78,115.52,115.53,116,116.14,116.57,117.02,117.28,117.42,118.09,117.96,117.75,118.02,118.23,118.03,118.14,118.34,118.42,118.51,118.55,119.16,118.68,118.88,118.32,118.47,119.43,119.05,119.16,119.35,119.37,119.74,119.89,119.87,120.04,119.59,119.48,119.6,119.33,118.67,119.64,119.32,119.48,120.26,120.17,120.17,120.42,120.37,121.55,121.51,122.51,122.26,122.13,121.67,121.66,122.01,122.69,123.08,123.27,123.21,122.71,123.81,124.48,124.07,123.97,124.22,124.16,124.16,124.03,124.13,124.35,123.71,124.74,125.53,126.04,126.93,127.14,127.3,127.16,128.06,128.92,128.92,128.47,129.68,129.47,130.03,131.08,131.37,131.29,131.37,132.93,132.03,130.6,130.66,130.57,127.81,122.57,124.71,124.08,119.42,121.21,122.89,123.22,124.87,126.37,126.42,126.42,125.68,124.99,125.11,127.12,128.61,126.98,125.57,123.9,124.53,125.9,126.23,126.17,126.73,128.94,128.77,127.95,127.22,127.12,127.34,125.53,125.71,125.48,122.33,119.76,123.01,120.89,120.53,122.19,122.19,119.47,120.97,122.37,123.21,120.51,120.91,122.93,122.26,123.26,122.91,123.91,125.23,125.33,124.61,123.55,123.56,121.9,122.13,123.4,123.54,122.53,122.84,121.95,121.68,123.24,123.66,123.63,124.83,126,126.21,126.32,125.46,125.97,125.86,125.53,126.46,126.06,126.47,126.22,125.92,125.92,124.46,126.04,125.17,126.53,127.1,127.19,128.28,128.19,128.59,128.72,128.95,128.43,128.75,128.62,128.34,127.83,128.05,127.23,127.47,125.72,126,124.91,125.69,125.78,126.17,125.54,125.54,126.62,127.7,128.83,129.27,128.36,129.48,129.62,129.49,130,130.28,129.77,129.64,129.88,130.5,131.69,131.29,130.43,129.68,130.31,130.18,130.82,131.42,131.89,132.26,132.23,132.04,131.1,130.57,131.41,130.41,131.44,131.88,132.2,132.47,132.42,132.19,133.01,134.03,134.07,134.83,134.24,134.26,134.26,134.03,133.66,133.17,132.87,133.13,133.62,133.67,134.38,134.42,133.67,134.38,134.55,135.61,135.56,135.08,134.9,134.46,134.83,134.83,135.32,135.27,135.37,134.26,133.52,133.46,133.28,128.9,126.24,128.04,127.28,130.02,129.98,128.11,128.07,127.52,126.81,122.9,125.19,123.02,122.21,124.13,125.47,126.8,126,126.7,127.5,130.2,129.87,128.68,126.14,125.96,125,126.33,126.61,124.5,122.24,122.61,122.61,121.81,123.7,124.11,126.96,126.68,127.71,129.11,124.93,124.93,124.74,121.83,122.05,122.01,122.67,122.64,120.3,117.8,117.81,116,114.17,111.82,108.79,108.79,114.18,115.16,115.02,115.99,116.14,113.27,117.15,117.98,119.12,119.61,120.15,120.13,119.5,120.78,121.05,121.97,123.58,123.58,121.83,122.09,122.26,123.3,122.33,122.15,124.05,125.12,125.23,126.08,126.67,126.39,125.21,125.3,125.38,127,127.38,127.05,128.43,128.43,128.62,128.85,128.4,129.22,129.38,129.28,129.21,128.84,129.73,129.22,129.08,128.24,127.19,126.92,128.78,129.17,130.06,129.95,130.6,131.08,131.06,130.68,132.1,129.59,129.48,130.41,129.81,130.27,131.15,132.67,132.67,132.95,133.23,133.85,133.99,133.18,133.64,133.64,134.53,134.44,134.51,134.21,134.42,134.42,134.55,135.74,135.45,135.4,136.03,136.18,136.31,135.28,135,136.3,135.69,133.45,133.23,132.83,133.32,130.11,131.15,131.92,133.09,132.31,131.42,132.54,132.16,130.59,130.76,130.76,129.67,128.77,129.04,127.34,126.99,129.71,130.77,131.57,132.95,133.57,133.52,133.25,133.8,133.58,133.71,135.01,135.41,136.69,136.52,136.28,134.99,134.82,135.34,136.12,137.16,137.56,138.62,138.62,138.37,137.7,137.87,138.49,138.81,139.45,139.47,139,138.09,138.59,137.73,138.12,139.06,139.72,138.98,140.01,139.78,139.42,137.9,136.66,135.67,131.63,133.34,133.44,135.95,135.05,133.38,135.4,131.44,131.76,133.66,135.28,134.21,135.32,135.25,131.74,133.18,132.76,133.63,135.32,135.41,135.41,134.47,135.93,137.7,137.83,137.81,137.86,138.85,139.25,139.15,138.72,139.08,139.12,139.13,138.44,138.43,137.27,138.11,137.78,137.04,137.74,136.05,133.61,134.68,136.59,135.98,133.86,135.08,135.95,137.44,137.25,138.61,138.33,138.72,138.17,139.12,138.63,139.02,139.29,139.86,140.64,140.52,140.98,140.55,141.91,142.43,142.26,142.36,142.75,143.12,142.84,143.06,143.16,143.28,144.39,144.46,144.37,143.83,143.6,143.91,145,145.31,145.92,145.92,145.34,144.08,143.12,144.03,144.25,145.56,145.1,144.94,145.37,146.61,146.62,147.67,147.72,147.66,148.31,149.05,149.18,149.15,149.15,149.91,149.92,149.05,149.49,150.74,149.68,150.21,149.79,150.52,151.52,151.09,152.14,151.91,152.2,153.47,154.06,154.06,153.65,153.7,153.87,152.48,150.08,151.59,151.46,151.94,149.25,150.33,152.58,154.3,154.81,153.98,155.1,155.37,156.37,156.11,156.4,156.4,155.95,156.68,156.08,154.44,149.26,144.74,144.2,137.83,136.69,142.99,138.97,144.83,139.92,137.53,127.08,133.36,126.85,114.78,125.44,110.41,117.03,110.96,111.48,106.65,103.53,113.24,114.55,121.69,117.6,121.54,119.59,114.31,116.92,115.15,123.25,123.05,127.24,129.09,129.09,127.78,131.69,128.79,129.54,133.01,130.63,126.62,129.53,129.46,131.26,133.19,132.49,136.01,134.76,130.98,131.54,132.72,131.8,133.31,135.56,135.58,132.8,130.48,131.99,132.51,136.68,135.25,137.5,136.43,136.75,136.75,138.43,140.48,140.19,140.86,141.39,142.55,144.5,144.01,147.79,149.56,148.4,147.61,138.91,140.72,141.89,144.58,144.06,144.15,143.33,144.27,144.89,141.14,142.69,139.23,141.28,143.45,144.17,144.83,144.83,147.13,145.54,146.67,145.85,147.37,145.99,147.95,149.29,148.79,149.21,150.46,150.72,151.58,149.72,148.79,149.89,148.92,150.77,150.2,151.36,152.44,152.99,153.98,154.97,155.07,155.49,154.25,156.41,156.09,156.06,156.49,156.85,156.16,156.65,157.19,158.77,159.34,160.96,161.23,162.32,161.96,163.18,165.69,159.87,158.57,158.57,154.17,157.27,154.51,154.59,156.56,157.38,156.65,155.33,153.59,151.82,153.41,149.77,150.22,152.62,155.08,154.33,155.61,156.43,154.93,157.72,155.51,158.22,159.49,160.89,163.53,162.5,161.42,161.18,161.2,158.57,159.32,158.97,159.8,160.35,157.36,156.89,151.35,153.16,151.3,153.17,155.89,159.33,162.43,162.38,164.28,164.05,165.31,163.66,165.89,167.82,167.02,165.08,165.74,164.61,165.54,168.21,167.95,167.95,168.35,167.57,169.46,169.77,169.66,171.16,170.83,171.31,169.94,169.73,169.51,168.77,170.95,171.26,172.24,171.64,170.97,170.61,170.74,171.34,171.34,172.84,172.45,172.68,173.8,171.23,172.44,173.43,176,176.97,175.81,175.88,176.28,175.62,174.36,174.36,175.78,178.23,178.28,177.75,178.39,178.12,173.55,175.24,171.86,174.62,177.05,177.22,179.15,179.85,181.18,180.97,180.91,181.21,182.07,182.07,181.96,181.9,181.1,180.77,179.37,179.59,181.63,177.19,176.34,180.54,179.08,176.74,174.37,177.77,176.82,179.32,180.4,182.28,182.46,183.65,183.36,183.88,181.17,181.06,182.33,180.94,179.95,180.9,183.9,183.74,183.16,183.83,186,186,188.69,188.5,188.78,189.58,191.04,191,191.63,190.85,192.97,193.66,192.64,191.33,193.11,191.33,193.42,193.76,193.72,193.56,194.87,193.47,194,192.7,192.84,194.41,195.84,193.8,192.12,188,190.29,193.13,192.64,191,190.43,192.44,192.29,194.2,193.79,194.15,194.38,194.53,194.53,194.43,194.71,194.01,195.72,195.56,195.6,195.24,196.15,196.53,196.89,196.49,195.43,195.35,192.78,195.48,196.49,196.27,197.41,198.07,198.53,198.58,198.85,199.89,201.39,201.39,200.98,201.65,199.93,202.18,202.88,202.17,202.4,201.74,200.22,197.04,200.03,201.68,202.09,204.14,204.62,203.66,203.62,204.48,203.37,203,204.66,203.71,204.94,205.28,205.09,205.29,205.55,206.41,206.74,207.28,205.82,203.6,203.86,205.52,207.27,207.58,208.04,206.83,208.65,209.55,209.27,209.33,209.93,209.86,209.86,209.14,208.87,207.91,206.3,206.77,205.58,207.32,207,205.12,201.63,201.47,203.39,205.86,206.16,205.59,201.4,201.71,199.31,201.6,198.98,201.08,201.9,203.58,203.19,201.79,201.31,201.92,205.36,206.89,207.59,209.13,209.89,210.52,210.3,211.29,211.68,210.61,212.68,213.09,213.48,214.26,215.65,216.55,217.36,217.55,216.79,215.01,215.12,216.68,216.68,217.51,216.95,217.68,217.38,216.68,217.04,217.54,217.54,212.6,215.4,211.32,208.82,211.79,210,212.46,216.86,217.53,215.97,218.03,216.04,214.42,217.93,216.02,213.8,211.36,215.12,217.31,218.67,218.67,221.69,221.47,221.78,221.11,220.53,221.94,221.8,217.5,217.29,216.41,216.1,218.08,218.69,215.58,215.75,215.75,211.79,209.73,207.42,203.5,204.06,201.58,201.27,200.19,205.06,208.94,210.37,212.35,207.17,208.24,207.47,209.21,212.25,208.41,204.45,203.67,206.88,207.06,202.68,201.22,201.22,199.18,195.52,198.44,202.88,202.38,199.25,202.97,201.9,200.3,194.39,192.98,197.94,197.09,194.54,193.09,197.23,201.64,204.13,206.51,206.42,208.75,206.19,209.15,210.21,211.71,214.31,212.96,209.62,210.34,212.04,209.38,207.35,208.23,207.68,204.17,203.47,205.75,203.25,203.25,203.21,206.47,206.34,203.3,197.66,198.78,193.19,193.59,198.39,191.19,192.27,193.2,198.97,191.88,190.79,184.68,185.13,182.08,181.85,186.19,185.45,189.19,181.55,180.49,180.52,183.87,182.37,184.1,187.76,192.4,192.4,191.2,189.77,193.26,190.1,190.7,192.52,190.44,185.91,180.5,173.5,172.84,175.37,169.66,170.04,170.04,174.2,173.97,175.63,181,180.46,176.83,176.7,175.15,177,177,177.28,177.91,180.58,180.43,178.35,176.7,175.91,175.38,178.75,177.26,182.15,183.23,185.03,183.31,183.55,181.43,186.17,188.43,191.11,190.57,189.3,192.26,192.11,191.8,191.56,190.75,194.81,194.67,198.05,198.83,199.2,197.76,198.21,195.65,191.47,191.04,191.6,194.3,187.75,186.5,184.44,183,183.55,181.58,181.58,180.83,184.15,185.37,188.2,190.19,181.97,182.58,180.52,179.22,180.45,178.42,175.36,173.88,170.89,169.12,168.76,172.08,168.45,165.91,170.2,175.41,175.05,173.26,168.41,167.15,166.06,165.51,169.81,165.79,170.18,172.13,170.98,169.62,173.64,175.71,178.56,177.24,176.17,180.5,179.16,178.42,173.96,172.12,174.47,176.14,177.13,173.45,183.06,184.76,183.1,184.7,183.18,182.61,183.48,182.77,185.25,186.34,186.34,186.29,183.41,183.12,188.79,188.63,188.4,185.03,182.36,182.02,183.39,182.05,184.65,185.99,184.87,180.26,178.25,176.65,176.83,179.46,176.86,177.9,177.9,177.18,175.05,178.11,177.66,177.66,176.95,178.28,176.2,180.23,180.09,181.35,183.68,184.3,185.04,185.04,184.66,181.79,180.4,183.82,186,185.87,185.83,187.88,188.35,185.9,188.63,190.6,193.4,191.4,190.22,192.67,190.54,188.85,189.27,191.43,191.38,191.91,189.27,188.74,188.74,184.96,184.67,185.65,183.7,184.26,183.7,182.83,184.22,187.19,187.32,184.45,184.71,181.3,178.68,178.41,181.35,180.08,183.24,181.23,182.84,185.22,182.17,182.71,183.74,184.04,183.75,186.37,187.43,190.14,190.84,189.74,189.26,189.94,189.94,190.13,190.12,189.34,191.85,191.45,192.08,192.25,192.23,191.09,191.26,191.42,188.4,187.67,191.35,192.92,192.85,190.62,189.28,187.92,191.39,191.47,190.6,191.45,191.13,190.82,191.39,190.17,192.43,194.25,193.97,194,191.82,190.41,192.08,194.59,194.59,194.59,193.4,195.31,198.15,197.75,198.22,197.46,198.68,198.91,200.76,202.16,202.32,204.79,204.03,204.03,203.07,202,202.75,201.2,200.3,202.59,202.52,203.43,205.92,206.16,206.16,205.76,204.13,203.54,204.03,205.41,206.93,208.68,208.47,209.27,210.76,211.26,209.83,209.9,210.75,211.34,211.31,209.95,212.02,212.33,211.77,208.84,208.31,207.2,209.07,208.19,206.72,206.78,206.55,207.74,205.34,203.79,202.22,202.19,203.58,203.01,205.26,202.49,203.85,205.13,208.11,208.91,208.57,208.95,208.95,208.07,206.62,205.96,206.25,207.64,206.45,206.71,208.45,205.92,206.07,205.62,203.69,200.35,199.89,200.7,197.74,197.78,198.95,198.41,198.43,195.7,197.29,197.03,199.36,200.61,201.66,202.52,201.26,200.25,202.37,202.35,199.64,197.95,195.45,195.12,196.54,193.72,191.43,190.51,192.8,194.05,196.09,199.79,201.66,202.02,202.59,202.79,201.15,204.3,204.13,208.02,208.35,208.6,208.87,210.41,209.98,210.84,210.84,210.96,210.55,210.76,210.56,211.35,212.6,211.45,211.33,210.5,212.18,213.05,213.88,214.87,217.8,218.38,218.36,219.35,220.64,217.4,219.63,220,220,220.93,221.25,221.33,220.7,219.45,217.69,216.95,217.34,220.41,220.09,221.33,221.18,221.35,221.35,220.52,219.29,221.22,223.94,224.43,225.09,225.27,226.46,226.31,228.02,227.88,224.21,227.01,229.44,228.71,229.24,231.12,231.26,232.58,232.36,229.19,231.38,232.73,231.61,231.61,230.22,230.51,235.38,235.46,234.57,234.97,234.58,235.81,237.7,237.41,234.99,236.2,238.63,237.08,236.81,239.46,239,238.32,236.77,238.27,239.61,241.75,242.53,242.19,241.45,240.77,242.85,243.12,243.12,242.63,240.88,241.14,238.16,240.81,240.72,241.07,238.79,240.56,237.06,234.21,233.73,232.38,231.87,229.84,231.84,234.62,234.67,233.59,235.98,236.73,233,232.2,234.32,237.27,239.72,240.04,240.04,241.26,241.66,241.6,242.77,245.61,245.1,245.39,245.61,246.22,245.56,243.75,245.45,245.45,245.51,243.7,242.25,244.19,244.47,244.83,247.73,247.68,247.41,248.05,248.72,250.83,251.42,251.32,253.25,253.89,253.89,253.25,252.85,252.08,253.07,253.47,253.7,252.66,253.34,254.91,256.2,256.2,257.6,257.86,258.05,260.68,258.4,259.83,260.56,262.22,258.57,256.55,254.72,257.47,257.07,251.12,249.83,252.6,252.8,251.55,255.52,252.02,247.39,239.97,242.46,240.58,246.13,247.28,247.29,251.45,252.42,256.49,257,259.5,258.98,260.08,257.76,260.72,259.89,260.31,258.75,258.74,261.35,261.35,255.83,255.42,254.65,250.25,253.15,254.28,256.99,258.92,260.32,260.65,260.72,259.96,264.37,263.86,264.6,265.27,264.77,265.84,265.51,266.63,264.15,264.18,263.74,266.11,263.55,266.11,268,267.45,269.06,271.14,269.08,270.33,270.29,271.36,270.87,270.74,268.25,268.83,268.75,269.46,269.89,269,263.99,265.07,264.33,267.57,274.34,276.38,277.42,277.69,276.88,276.95,275.27,271.64,272.7,273.78,273.79,275.25,276.2,277.04,278.62,277.57,277.57,279.12,279.81,279.93,281.63,281.1,281.8,280.07,279.24,281.52,279.99,279.99,281.05,279.97,271.71,271.47,274.42,276.42,279.48,279.48,279.36,276.27,273.32,272.15,271.54,274.96,276.48,273.41,273.84,273.84,269.62,270.05,270.35,275.31,274.72,277.47,277.47,279.9,281.62,283.12,282.31,278.19,280.76,279.44,280.92,279.5,277.37,279.38,280.47,281.49,278.83,280.7,280.79,280.03,282.95,282.93,282.93,283.62,284.29,283.06,278.23,276.85,275.55,275.59,271.22,275.52,270.67,267.36,270.34,265.52,266.99,259.79,257.82,259.08,255.48,260.92,262.59,259.79,262.6,262.03,262.24,266.87,267.29,264.31,263.43,258.23,259.66,260.65,262.4,249.7,234.78,234.23,230.56,252.49,243.76,248.17,250.14,249.71,244.11,244.43,244.43,238.67,244.67,248.74,253.78,255.65,255.82,257.3,257.68,259.31,263.13,261.45,259.44,260.56,262.07,261.89,270.41,272.37,272.65,273.78,275.7,275.94,274.87,270.43,270.31,268.5,268.5,273.99,272.47,273.56,273.54,274.66,276.25,276.27,274.81,277.64,277.9,279.42,278.65,279.72,276.56,279.16,276.82,276.74,276.74,276.14,278.79,281.89,281.89,284.15,285.63,287.11,286.79,288.15,290.55,290.55,288.26,288.06,289.8,290.6,289.64,290.05,288.9,289.83,291.38,291.36,291.76,291.95,294.23,294.44,295.61,295.66,294.78,294.42,293.33,288.64,292.89,291.47,293.59,293.36,295.64,294.9,298.25,299.21,299.3,298.44,298.41,296.66,295.94,294.75,299.23,297.95,299.18,299.9,300.84,298.92,298.92,296.85,298.36,300.86,299.9,300.53,301.34,302.24,304.81,304.66,306.09,305.7,305.4,306.86,308.36,309.72,308.02,307.14,305.6,307.41,308.22,309.48,310.53,310.72,310.74,311.88,310.69,312.5,311.64,303.19,307.92,307.44,308.67,306.73,308.35,311.64,311.65,309.99,311.79,314.26,318.12,318.85,318.83,315.67,316.5,317.04,313.32,314.47,310.95,311.35,316.14,316.8,317,311.75,311.59,308.74,306.19,307.34,302.55,305.52,310.25,313.06,315.22,315.22,316.91,315.22,316,316.94,317.28,317.9,316.79,316.51,318.65,319.31,315.91,315.4,314.65,311,313.47,316.24,318.27,319.72,320.75,320.75,320.65,319.53,319.09,316.75,317.35,319.36,321.34,320.24,320.26,322.33,322.84,322.22,320.5,321.32,321.12,321.12,314.49,318.14,319.88,319.99,321.59,322.9,322.88,322.46,321.07,322.8,320.09,318.47,314.57,320.76,322.27,321.2,321.19,316.16,316.31,316.31,316.64,318.4,317.5,319.71,316.39,318.81,321.4,319.68,318.29,318.42,315.41,317.86,316.06,311.86,314.45,313.78,313.52,308.75,306.88,309.98,310.76,306.53,305.69,301.06,304.51,303.37,305.01,299.7,294.69,293.53,302.08,304.24,304.58,304.58,305.93,306.17,313.84,315.78,315.42,318.63,322.38,324.96,325.8,329.73,328.94,326.86,330.27,328.91,331.53,331.94,330.32,330.18,333.57,334.54,333.18,335.89,340.79,339.49,342.35,343,342.45,344.45,347.09,342.8,342.54,340.26,343.93,344.52,345.8,345.8,347.91,347.97,349.97,350.73,351.65,352.11,349.51,350.93,341.65,342.67,341.78,336.25,342.14,343.86,349.54,347.55,343.33,347.06,347.06,345.77,340.8,340.47,340.44,340.27,344.27,347,346.25,346.25,346.25,348.76,347.21,346.23,349.05,350.52,347.74,349.05,350.38,348.59,345.07,344.4,347.46,346.98,342.79,342.96,343.01,343.73,338.52,344.14,346.55,351.68,357.97,357.37,356.74,358.95,358.74,357.59,358.53,360.86,360.25,358.37,355.9,356.65,353.56,355.1,354.1,355.23,355.16,357.72,356.83,355.64,353.11,354.74,358.49,357.14,357.14,355.06,353.34,351.27,354.29,352.58,351,349.43,353.4,353.99,359.28,359.27,356.56,356.47,358.29,355.53,354.93,354.04,354.73,357.33],"SK하이닉스":[null,100,101.91,101.79,100.96,98.8,98.8,98.68,97.97,99.4,101.2,99.64,95.81,95.81,97.97,96.05,98.21,102.63,102.87,101.56,98.09,100.48,98.09,98.44,98.56,99.28,99.28,94.86,98.09,95.33,94.98,94.98,97.73,100.24,100.48,97.49,102.15,102.99,102.03,101.91,101.91,101.44,102.63,105.74,106.22,106.22,108.13,108.25,110.65,108.85,108.37,107.54,109.69,109.09,111,108.01,108.01,107.66,108.85,110.77,109.21,109.21,108.49,106.94,106.94,109.57,113.04,111.24,112.32,114.83,118.54,119.02,123.44,121.05,120.33,117.94,117.94,116.87,118.66,117.58,121.53,123.44,123.68,127.51,127.51,127.51,128.47,129.19,126.32,128.47,128.47,127.51,130.62,126.08,119.62,121.29,115.91,114.59,118.66,120.57,119.38,121.77,121.05,120.1,113.64,110.05,111.72,111.72,114.11,112.68,118.06,116.75,114.83,114.83,117.7,122.01,120.33,116.75,117.58,111.84,113.88,113.76,116.39,115.91,118.42,121.29,121.53,122.73,121.77,120.81,123.92,122.01,120.33,118.18,119.14,117.22,116.87,117.22,119.02,119.14,117.7,120.1,119.26,122.97,124.4,125.36,125.36,128.47,128.23,129.19,129.19,132.54,132.54,133.73,133.73,136.12,136.12,133.01,134.93,132.3,133.01,132.3,130.86,133.25,129.67,133.97,131.82,133.49,133.49,136.6,138.52,137.32,136.36,134.93,136.6,134.21,134.21,135.17,135.65,139.47,137.56,140.67,141.87,144.98,144.74,150.24,153.11,155.02,155.5,155.5,161.48,165.55,160.77,163.88,161.24,158.61,157.42,162.68,162.92,159.33,161,165.07,164.83,168.9,170.1,170.33,169.38,169.86,170.57,170.33,174.64,168.42,159.81,163.64,154.55,157.89,156.7,162.68,156.7,153.11,153.35,158.61,153.59,154.07,146.89,155.74,155.74,158.13,158.85,160.29,160.77,163.16,162.68,162.92,163.64,162.44,161.72,163.88,164.11,164.35,162.92,167.22,171.53,170.81,173.68,176.56,178.71,181.1,183.73,184.69,190.67,189.47,193.06,198.8,198.8,206.46,206.46,197.13,199.04,198.33,198.33,198.33,198.33,198.33,198.33,198.33,212.2,213.16,211.72,205.98,201.44,199.76,193.54,189,194.26,202.63,195.69,195.45,188.28,187.56,190.91,196.65,204.07,199.52,201.91,199.76,197.13,199.04,197.13,196.17,196.89,199.52,196.17,197.37,198.56,196.41,203.35,207.66,202.63,203.59,198.8,197.61,197.13,183.73,185.17,189.23,186.36,185.41,181.82,188.28,188.28,186.12,183.73,181.82,181.1,184.69,191.87,191.87,184.21,183.49,183.49,177.03,179.67,183.01,183.01,183.25,185.89,184.45,189.71,187.08,183.97,174.4,173.68,177.99,173.92,177.99,177.27,179.9,175.36,170.1,170.57,173.21,181.34,180.62,180.14,174.88,175.84,177.99,172.73,167.94,167.94,170.1,176.79,175.6,178.23,185.89,185.65,185.65,185.65,183.01,180.62,183.97,181.58,184.93,185.41,188.28,183.73,183.73,185.17,187.32,197.13,197.85,199.76,199.28,203.11,215.31,216.99,214.35,214.83,215.07,214.35,211.48,211.96,198.8,200.96,194.74,192.11,192.11,194.5,194.5,195.69,192.34,198.33,192.11,192.82,192.34,194.26,200.96,201.44,200.96,198.09,202.39,210.29,201.91,201.91,196.41,197.13,206.94,208.37,202.15,202.15,198.8,198.33,198.56,198.56,199.76,199.52,205.26,205.98,204.31,202.39,208.13,207.42,210.29,213.16,213.16,227.99,226.32,227.75,226.08,226.79,227.27,223.44,218.66,214.83,217.7,217.7,217.46,211.48,213.4,211.48,211.48,206.46,208.13,200.96,201.2,210.05,211.72,214.11,202.87,201.67,203.83,199.76,205.02,200.24,205.98,203.35,206.22,204.07,209.57,208.85,207.66,204.78,212.44,213.64,211.96,213.64,216.03,210.29,195.45,200,192.58,198.8,205.98,205.5,206.46,204.78,199.04,199.28,189.95,193.06,190.91,186.6,179.67,180.38,181.58,181.58,178.71,178.23,178.71,187.56,190.91,194.02,195.69,199.76,197.13,198.09,197.85,198.56,192.82,194.26,191.39,188.52,181.58,183.01,183.25,179.67,178.23,185.89,184.69,186.6,188.52,189.23,183.49,183.49,183.49,183.49,179.43,174.88,176.32,171.53,171.53,167.46,168.18,170.33,170.33,168.18,165.07,173.21,168.18,166.75,168.42,164.35,169.38,167.46,165.31,159.57,154.78,160.29,159.81,163.16,163.16,163.4,173.68,168.66,167.7,169.38,174.4,174.4,178.23,172.01,168.42,171.77,167.7,166.99,161.48,162.92,165.79,165.79,169.62,169.38,172.01,171.05,166.51,168.66,165.07,163.16,157.89,159.81,156.7,155.26,158.37,156.7,147.85,148.8,146.17,144.26,140.19,143.54,144.5,144.5,143.78,147.37,144.74,144.74,144.98,138.04,139.47,140.43,141.63,152.15,156.22,155.74,148.56,153.11,155.02,155.26,154.55,160.29,159.33,159.81,168.66,178.47,171.77,175.6,181.58,176.79,181.58,181.58,181.58,181.58,183.49,175.84,177.27,181.58,182.3,185.17,176.56,178.71,176.32,181.1,183.49,183.49,180.38,179.9,176.32,167.46,167.46,167.7,166.75,162.92,162.92,159.57,159.33,161.96,159.81,161,162.92,162.2,162.68,168.66,181.58,182.06,174.4,173.92,175.6,172.97,177.51,183.25,182.78,191.15,187.56,189,186.36,186.12,188.04,187.56,186.84,190.67,192.34,191.87,189.47,195.69,192.58,193.78,187.8,191.87,188.04,191.39,189,189,193.06,192.34,192.34,191.15,192.11,181.82,177.99,175.84,178.47,178.23,172.01,171.29,169.62,168.18,164.83,162.68,161.72,160.05,157.66,158.13,157.66,156.22,159.33,155.74,155.74,155.74,156.46,159.81,160.77,157.18,151.91,150.96,152.39,151.67,160.77,161,157.66,160.05,159.57,164.83,167.94,166.27,167.46,170.81,165.31,167.94,163.64,161.24,166.99,174.4,180.62,178.71,182.3,182.06,178.47,178.71,183.73,187.56,188.52,185.65,189.47,190.91,184.21,188.76,183.97,185.89,182.06,180.38,172.25,175.36,172.97,175.36,178.23,178.23,183.97,183.97,182.78,179.67,182.78,181.34,176.56,177.99,171.77,174.64,175.36,175.36,185.17,185.65,184.21,191.39,198.56,195.93,201.67,198.8,197.61,197.61,197.61,190.19,189.95,191.87,197.85,196.65,198.09,199.52,195.93,199.28,194.74,196.65,196.17,190.19,190.19,192.11,192.11,193.54,193.54,189,191.39,192.58,194.26,197.13,193.78,185.17,185.41,189.23,185.89,191.39,198.33,198.33,198.56,194.98,196.17,198.8,202.63,203.59,199.76,200,196.89,194.5,199.04,199.52,199.52,203.83,204.55,204.07,197.85,193.54,195.45,195.45,196.89,197.85,198.09,193.54,192.58,188.28,185.89,188.52,192.82,193.06,193.06,192.82,199.52,210.29,211.96,222.01,222.49,223.92,227.27,226.32,224.4,224.4,226.79,229.67,225.12,225.12,226.56,226.08,225.6,224.88,233.01,236.84,236.6,240.43,240.43,234.93,237.32,236.84,239,237.56,241.63,236.12,236.12,236.12,230.38,234.21,224.88,223.68,226.56,232.3,233.73,240.43,237.56,236.36,238.76,239.23,244.02,250,251.2,244.02,247.61,248.8,246.41,238.04,234.45,226.32,222.01,210.29,220.33,222.01,225.6,227.03,221.53,221.53,213.16,204.55,198.09,197.37,192.82,192.34,174.88,165.07,178.95,166.03,188.28,202.15,193.06,199.28,200.24,199.28,187.56,191.39,190.43,198.8,205.26,202.15,203.35,201.2,194.74,196.89,196.89,194.5,201.2,196.17,194.5,200.72,197.61,194.74,197.61,199.52,200.24,200.24,200.24,193.78,193.78,197.13,197.13,203.35,202.15,205.02,200,192.82,195.93,194.02,197.85,201.2,199.52,194.5,194.74,195.93,194.74,200.72,194.98,200,199.28,212.2,209.81,216.27,217.7,214.83,217.22,211.72,203.83,196.17,204.31,207.66,206.22,204.31,203.11,201.2,205.74,201.67,202.39,200,203.59,204.07,201.91,204.31,205.74,202.87,200.24,198.56,198.09,198.56,198.33,198.56,197.85,198.33,196.65,201.2,199.04,197.13,200.24,198.09,198.8,199.04,204.07,198.09,195.69,195.22,193.06,194.02,192.82,194.74,194.5,193.78,193.06,191.87,191.87,186.84,179.43,171.77,178.23,180.62,184.21,188.52,189.23,186.12,179.67,179.9,180.62,188.28,188.28,187.56,189.95,184.93,183.25,187.56,191.39,195.93,194.98,196.65,200.24,202.15,194.5,200,201.67,198.33,197.37,200.96,200.96,200.96,200.96,199.04,198.56,199.52,198.33,198.33,204.55,211,206.94,208.37,204.07,207.42,203.83,200.48,199.28,200.72,199.04,197.61,198.33,195.45,191.15,190.43,194.74,199.04,205.98,206.46,205.74,206.94,208.13,210.77,214.59,234.45,234.69,234.45,234.93,231.58,239.23,235.89,232.54,237.8,236.36,233.25,240.43,260.77,266.75,275.12,282.3,275.12,288.28,278.71,276.32,279.9,281.1,281.1,285.89,283.49,277.51,269.14,277.51,282.3,282.3,276.32,277.51,283.49,283.49,301.44,312.2,313.4,321.77,330.14,318.18,308.61,318.18,312.2,305.02,311,312.2,312.2,314.59,307.42,322.97,308.61,307.42,294.26,293.06,299.04,311,311,299.04,305.02,299.04,300.24,301.44,301.44,301.44,315.79,316.99,311,301.44,318.18,326.56,331.34,325.36,355.26,338.52,338.52,345.69,351.67,339.71,334.93,324.16,326.56,318.18,327.75,334.93,326.56,336.12,334.93,339.71,330.14,330.14,322.97,319.38,318.18,322.97,315.79,321.77,316.99,336.12,337.32,342.11,342.11,343.3,344.5,334.93,328.95,333.73,327.75,328.95,328.95,330.14,331.34,316.99,318.18,316.99,314.59,322.97,311,311,306.22,314.59,315.79,315.79,308.61,309.81,311,294.26,285.89,281.1,283.49,281.1,289.47,289.47,293.06,293.06,285.89,294.26,294.26,300.24,299.04,303.83,307.42,301.44,308.61,307.42,307.42,305.02,293.06,294.26,306.22,303.83,307.42,309.81,302.63,297.85,291.87,291.87,296.65,301.44,307.42,301.44,299.04,305.02,297.85,293.06,294.26,299.04,295.45,290.67,285.89,287.08,294.26,295.45,295.45,290.67,284.69,283.49,279.9,285.89,283.49,279.9,277.51,272.73,272.73,269.14,277.51,287.08,289.47,287.08,282.3,277.51,269.14,252.39,240.43,242.82,242.82,242.82,248.8,245.22,245.22,246.41,251.2,247.61,248.8,247.61,247.61,254.78,258.37,254.78,255.98,253.59,250,253.59,246.41,251.2,254.78,257.18,257.18,248.8,255.98,255.98,255.98,255.98,252.39,248.8,250,247.61,239.23,246.41,239.23,239.23,234.21,230.86,228.95,224.88,224.88,218.9,220.1,224.4,235.41,232.3,233.73,234.21,230.38,235.65,239.23,244.02,242.82,254.78,246.41,254.78,257.18,252.39,253.59,255.98,257.18,260.77,259.57,257.18,254.78,265.55,267.94,264.35,263.16,266.75,285.89,284.69,285.89,281.1,276.32,277.51,272.73,278.71,287.08,282.3,283.49,290.67,287.08,295.45,288.28,290.67,289.47,295.45,296.65,291.87,288.28,297.85,303.83,305.02,306.22,301.44,305.02,303.83,313.4,313.4,313.4,307.42,300.24,299.04,303.83,297.85,306.22,307.42,309.81,307.42,303.83,302.63,303.83,299.04,284.69,284.69,282.3,282.3,271.53,288.28,288.28,288.28,288.28,296.65,297.85,294.26,294.26,294.26,309.81,315.79,316.99,303.83,312.2,318.18,314.59,314.59,314.59,314.59,293.06,294.26,294.26,294.26,299.04,308.61,308.61,285.89,282.3,282.3,282.3,282.3,277.51,277.51,277.51,277.51,296.65,296.65,295.45,295.45,288.28,282.3,282.3,287.08,289.47,282.3,277.51,279.9,278.71,270.33,271.53,267.94,266.75,265.55,270.33,263.16,258.37,260.77,269.14,269.14,270.33,264.35,258.37,265.55,259.57,261.96,269.14,264.35,263.16,261.96,261.96,257.18,257.18,263.16,264.35,260.77,269.14,264.35,269.14,271.53,265.55,269.14,270.33,259.57,258.37,246.41,253.59,255.98,258.37,258.37,255.98,255.98,255.98,248.8,253.59,252.39,247.61,236.84,237.08,234.21,233.01,230.62,226.08,227.75,220.57,215.79,219.14,227.27,227.99,224.88,217.7,209.33,213.16,221.29,220.33,224.64,226.79,224.16,223.21,224.88,224.88,236.12,241.63,239.23,244.02,245.22,239.23,239.23,240.43,239.23,237.8,234.21,232.3,230.86,233.25,233.25,235.65,230.38,227.51,219.62,223.21,223.21,223.21,231.34,232.3,228.95,230.62,227.75,223.92,222.97,225.12,227.51,221.29,222.97,227.75,221.05,219.38,217.94,219.62,216.27,216.27,216.27,216.27,226.79,222.49,220.1,218.18,215.31,210.53,210.53,205.74,199.76,197.37,196.17,194.26,193.3,198.8,198.8,206.22,214.83,215.07,218.18,218.18,215.79,224.88,227.03,228.47,227.75,229.19,222.25,215.79,216.51,219.62,223.68,224.64,215.31,199.52,197.85,200.72,202.15,197.85,202.15,206.94,209.81,213.4,213.16,223.68,217.46,219.14,218.9,209.81,211.48,206.46,203.83,203.83,207.89,203.59,198.8,200.24,203.35,202.63,195.93,193.78,193.78,188.76,188.52,194.98,194.02,196.89,195.69,191.87,187.56,189,187.32,186.6,189.47,186.12,184.21,184.21,181.82,179.43,179.43,181.1,180.86,193.78,194.74,198.8,205.74,206.94,208.85,207.66,205.02,205.26,205.74,203.59,204.55,209.57,209.57,209.57,218.66,218.66,218.9,216.99,211.72,218.66,218.66,220.57,213.16,217.22,227.03,227.03,223.68,216.75,223.44,219.38,222.25,220.1,221.29,218.18,213.16,221.77,217.7,215.31,213.88,213.88,210.77,208.85,214.59,212.68,207.66,204.78,199.28,201.67,194.02,189.23,189,200.96,200.24,200,207.89,211.72,208.85,204.55,211.48,207.89,212.44,211.96,208.61,202.15,202.39,200.48,213.16,216.99,219.62,216.03,212.2,213.64,211.72,209.57,211,209.81,213.16,208.61,204.55,209.09,212.44,214.11,214.11,215.79,214.83,212.2,212.2,212.2,208.85,207.89,206.46,208.61,206.7,216.27,219.86,223.92,232.78,234.93,234.21,233.73,247.61,261.24,261.24,263.88,259.81,263.88,263.88,260.05,260.05,258.37,262.44,276.08,274.64,285.89,284.21,284.69,284.45,274.64,277.75,275.36,272.73,271.77,271.53,270.33,273.44,277.99,275.6,281.34,282.06,279.19,272.25,267.46,263.88,271.29,276.08,272.97,282.3,280.38,281.82,281.1,279.67,275.36,272.73,271.29,270.33,296.65,306.22,295.22,299.28,285.89,287.08,287.32,291.63,283.73,283.49,283.49,275.84,274.88,274.88,277.03,274.64,280.38,278.47,278.71,277.51,289.23,278.71,277.27,283.73,285.65,291.39,287.08,285.17,285.65,282.78,283.49,272.01,277.27,279.19,283.49,292.34,292.82,284.69,285.17,282.3,278.71,280.62,279.9,275.12,274.4,274.4,274.4,274.4,274.4,276.08,287.56,288.04,288.04,285.89,285.17,297.13,298.33,296.89,311,311,300.72,301.91,296.65,303.35,305.02,287.08,284.93,284.93,278.23,287.8,299.76,300.96,318.18,311.96,305.26,306.22,312.2,315.31,311,320.81,316.51,310.77,314.35,315.79,314.11,311.24,306.22,312.68,314.35,311.96,320.33,317.22,313.64,301.2,300.48,300.48,305.02,308.37,313.4,313.88,327.03,334.93,334.93,330.62,336.12,336.12,336.36,336.36,337.08,335.89,338.52,338.52,340.67,327.27,326.32,328.95,325.36,328.71,319.38,325.36,320.81,320.81,316.03,313.4,325.84,338.04,341.15,336.84,338.52,328.71,325.36,322.97,327.51,322.25,317.46,322.73,316.51,330.14,330.14,341.63,341.63,341.63,358.85,355.74,356.22,351.2,361.96,357.89,356.46,374.4,386.12,387.08,367.94,377.99,373.68,373.68,398.33,396.65,389.71,394.5,411.24,398.56,396.41,391.39,387.32,385.65,393.06,383.25,374.4,406.7,406.22,405.26,422.49,433.49,426.32,437.8,443.78,445.69,428.71,449.76,437.32,433.49,437.56,437.56,450.72,448.33,450.24,428.47,427.51,436.12,414.59,410.53,409.09,430.14,408.13,425.36,420.81,416.75,416.75,415.31,414.35,414.35,429.67,425.84,419.62,430.38,439.71,443.3,443.3,461.72,454.31,454.78,459.33,472.97,478.47,475.12,482.06,484.45,484.45,468.18,452.63,464.59,462.44,463.4,463.4,496.41,497.61,508.37,514.35,531.1,528.71,533.49,561,558.61,568.18,559.81,533.49,538.28,566.99,565.79,565.79,563.4,555.02,564.59,550.24,564.59,558.61,570.57,571.77,576.56,557.42,550.24,557.42,527.51,508.37,501.2,490.43,490.43,498.8,454.55,458.85,467.94,451.91,465.55,462.44,414.35,373.44,391.63,405.02,390.91,410.29,423.44,435.17,446.65,446.65,477.75,463.88,477.75,460.77,457.18,443.78,429.67,418.66,428.95,405.98,415.55,416.27,402.63,370.33,381.34,374.16,375.6,372.01,376.08,403.83,389.47,389.47,389.47,389.47,365.55,375.84,387.56,391.15,395.45,432.78,439.71,417.7,417.7,404.55,404.55,416.51,442.34,425.84,425.84,446.65,444.98,444.98,461.48,451.44,468.9,448.09,456.7,449.28,468.9,474.16,480.86,468.9,455.26,466.51,445.69,435.89,464.11,462.2,468.42,468.42,479.67,460.77,444.5,437.56,413.88,426.32,410.77,408.13,408.13,403.83,422.73,423.44,423.68,402.63,385.41,382.54,379.9,394.5,401.91,413.88,399.76,404.07,407.66,411,421.29,419.86,428.95,440.19,439,418.66,403.11,405.74,403.11,403.11,406.94,417.46,416.03,416.03,409.57,435.17,477.99,466.51,465.79,490.43,486.84,464.83,466.51,474.16,502.39,513.16,507.18,521.53,539.47,525.12,528.71,528.71,528.71,528.71,528.71,476.56,456.7,457.18,475.6,486.84,485.65,473.92,477.75,475.84,498.8,502.39,507.18,502.39,522.73,507.18,501.2,490.43,479.67,485.65,476.56,455.02,455.02,445.22,461.96,460.29,460.29,449.52,449.28,475.84,477.75,489.23,492.82,485.65,491.63,502.39,515.55,505.98,497.61,511.96,495.22,476.79,456.22,471.29,473.44,465.55,435.89,394.26,405.5,394.74,438.28,432.54,431.1,432.06,416.27,418.66,418.66,422.49,415.79,433.01,426.56,441.15,435.41,432.54,424.64,424.64,444.98,444.98,444.98,456.46,455.26,454.78,466.51,474.88,492.82,479.67,489.23,477.03,483.25,479.67,471.05,478.47,485.65,484.45,497.61,507.18,489.23,496.41,496.41,520.33,537.08,537.08,547.85,551.44,574.16,563.4,563.4,593.3,595.69,589.71,588.52,614.83,620.81,666.27,684.21,700.96,679.43,698.56,683.01,667.46,666.27,647.13,648.33,674.64,672.25,710.53,704.55,717.7,714.11,708.13,644.74,643.54,651.91,642.34,643.54,644.74,636.36,626.79,627.99,630.38,654.31,617.22,617.22,630.38,618.42,626.79,613.64,638.76,643.54,665.07,661.48,661.48,639.95,629.19,611.24,586.12,600.48,620.81,625.6,622.01,642.34,643.54,612.44,623.21,627.99,635.17,654.31,662.68,689,727.27,734.45,785.89,791.87,832.54,797.85,850.48,850.48,839.71,863.64,855.26,852.87,805.02,834.93,831.34,861.24,946.17,946.17,946.17,946.17,946.17,946.17,1023.92,992.82,984.45,1010.77,1082.54,1113.64,1161.48,1145.93,1151.91,1144.74,1220.1,1279.9,1246.41,1334.93,1358.85,1337.32,1483.25,1401.91,1385.17,1418.66,1387.56,1449.76,1480.86,1476.08,1464.11,1339.71,1449.76,1363.64,1344.5,1366.03,1246.41,1244.02,1241.63,1253.59,1301.44,1267.94,1287.08,1334.93,1320.57,1296.65,1301.44,1380.38,1354.07,1404.31,1351.67,1366.03,1325.36,1267.94,1318.18,1320.57,1308.61,1387.56,1397.13,1406.7,1406.7,1433.01,1531.1,1557.42,1557.42,1619.62,1665.07,1736.84,1775.12,1808.61,1779.9,1791.87,1765.55,1775.12,1791.87,1808.61,1827.75,1777.51,1770.33,1806.22,1834.93,1760.77,1913.88,2011.96,2059.81,2174.64,1985.65,2169.86,2153.11,2014.35,2007.18,2122.01,2095.69,2057.42,2124.4,2105.26,2105.26,2105.26,2105.26,2138.76,2270.33,2275.12,2404.31,2435.41,2629.19,2538.28,2538.28,2246.41,2031.1,2251.2,2210.53,2000,2244.02,2284.69,2224.88,2177.03,2330.14,2320.57,2526.32,2423.44,2409.09,2232.06,2358.85,2380.38,2232.06,2232.06,2088.52,1930.62,2145.93,1985.65,2095.69,2119.62,2191.39,2471.29,2387.56,2456.94,2488.04,2638.76,2717.7,2763.16,2698.56,2789.47,2928.23,2925.84,2930.62,2923.44,3090.91,3110.05,3093.3,3076.56,3076.56,3461.72,3461.72,3830.14,3956.94,4033.49,4497.61,4389.95,4727.27,4712.92,4351.67,4401.91,4174.64,4174.64,4641.15,4643.54,4643.54,4909.09,5366.03,5476.08,5581.34,5653.11,5645.93,5645.93,5497.61,4952.15,4571.77,5299.04,4899.52,5026.32,5143.54,5473.68,5698.56,6031.1,6423.44,6612.44,6983.25,6112.44,6270.33,6978.47,6394.74,6287.08,6339.71,6124.4,5232.06,5801.44,5605.26,5265.55,4966.51,5229.67,5215.31,4413.88,4576.56,4980.86,4406.7,4406.7,4220.1,4392.34,4377.99,4590.91,4208.13,4344.5,3708.13,3351.67,3162.68,4110.05,3748.8,3772.73,3990.43,3576.56,3401.91,3397.13,3409.09,3598.09,3811,3935.41,3935.41,3976.08,3588.52,4045.45,4138.76,3997.61,4014.35,4038.28,4138.76,3954.55,4004.78,4050.24,3858.85,3818.18,3940.19,4265.55,4289.47,4440.19,4433.01,4334.93,4059.81,4043.06,4208.13,4174.64,4442.58,4468.9,4401.91,4454.55,4454.55,4454.55,4229.67,4222.49,4248.8,4385.17,4404.31],"마이크론 테크놀로지":[100,100.39,99.83,100,99.32,98.7,95.09,94.64,95.04,96.62,95.83,98.2,97.12,97.01,95.54,96.22,98.93,99.49,98.87,97.01,96.79,95.77,94.08,93.74,94.08,98.03,98.2,97.01,95.83,99.66,99.89,102.09,102.88,108.18,108.35,109.93,111.34,112.3,112.3,113.54,112.75,109.53,110.15,104.23,105.98,104.96,107.5,115.28,116.53,115.62,112.92,113.54,112.92,114.44,114.33,114.78,116.47,116.07,130.8,131.19,131.19,131.42,128.48,125.61,123.63,123.63,127.19,126.11,124.7,124.31,126,126.79,128.54,125.83,125.1,125.1,122.62,125.89,122.45,123.86,123.46,128.88,132.88,132.66,135.19,136.38,135.98,139.59,139.82,138.75,137.28,138.75,136.55,137.9,135.65,134.8,130.4,129.84,129.61,131.7,131.7,134.07,133.95,132.43,131.08,134.01,132.21,138.47,139.31,144.22,145.01,144.61,143.15,141.85,142.02,144.95,144.28,147.32,146.87,145.52,147.83,143.94,146.98,149.29,160.35,162.21,161.82,160.74,163.4,163,161.53,161.25,159.39,161.42,160.86,155.89,153.3,150.54,150.82,150.82,153.02,153.07,153.75,157.7,154.09,149.86,152.23,151.1,155.84,156.06,159.56,156.63,157.92,156.74,159.05,158.26,162.49,165.37,163.73,163.17,162.61,163.68,152.28,154.99,156.91,158.26,159.56,163.51,165.99,167.85,167.85,173.15,173.55,173.49,176.03,176.03,178.06,183.31,183.02,172.59,175.97,177.89,175.18,172.36,168.42,175.97,173.89,180.54,179.86,178.96,183.31,178.57,181.84,177.5,168.42,164.35,164.35,172.08,169.77,170.33,172.02,176.93,177.38,175.58,179.3,178.91,179.92,179.47,180.49,180.54,178.62,168.64,168.13,170.56,165.14,158.6,159.84,161.48,156.97,157.47,161.25,162.66,161.2,155.05,157.98,164.92,167.4,173.1,167.06,171.35,166.72,171.74,171.74,170.45,170.84,175.3,177.55,178.29,180.32,183.87,183.87,180.88,181.9,184.94,183.02,188.61,193.4,195.09,195.04,195.43,199.83,202.76,202.88,202.54,203.44,196.67,192.78,209.19,214.1,221.83,225.66,227.69,223.12,222.05,223.75,231.02,236.77,234.69,228.88,227.86,234.01,227.81,234.91,232.99,234.07,234.4,234.63,231.58,228.99,230.4,234.91,249.92,250.31,250.08,246.53,243.94,247.88,248.67,245.35,252.57,257.19,258.32,255.84,260.46,260.35,268.7,278.62,277.16,277.16,280.2,271.01,270.33,246.7,239.09,236.83,225.04,232.43,234.52,243.65,243.71,242.58,236.1,237.17,238.24,239.14,246.53,248.05,258.04,250.54,248.84,248.84,238.3,239.59,235.82,231.92,246.31,253.69,264.41,258.32,256.91,242.36,244.28,241.51,241.46,241.46,242.08,249.63,248.11,241.12,241.85,247.88,242.98,242.58,246.31,244.16,235.03,246.59,239.65,230.23,222.22,247.49,236.94,225.61,227.92,237.96,240.44,245.06,245.35,249.35,249.35,253.24,251.21,249.58,262.44,270.61,274,275.3,268.58,276.99,293.46,303.1,304.4,311.45,307.9,334.86,335.19,337.17,331.87,341.68,339.2,344.9,344.44,332.32,305.75,313.37,295.54,290.41,294.08,294.08,282.35,290.75,301.13,281.11,273.32,270.5,284.72,284.72,296.62,294.59,291.31,294.75,304.62,290.02,285.5,276.48,265.71,268.47,282.8,268.02,259.33,263.9,258.83,262.94,268.36,273.43,273.94,287.7,297.01,292.27,298.93,304.62,318.67,308.52,301.13,312.92,332.94,338.24,346.81,346.02,346.02,353.19,352.9,324.82,331.3,333.33,335.08,335.14,336.32,346.25,346.25,341.51,338.69,333.78,328.43,329.67,334.18,332.49,335.25,322.05,299.83,307.9,294.75,299.72,295.77,307.28,290.36,290.36,298.03,300.23,306.32,314.38,305.58,312.75,317.82,316.69,321.26,324.03,317.09,310.32,306.2,299.89,301.13,303.21,304.34,298.98,297.74,294.92,301.18,297.86,297.07,299.15,301.13,294.75,289.73,289.57,285.5,267.85,265.65,265.71,271.12,281.67,283.36,280.32,285.96,293.68,295.21,292.33,297.57,296.22,296.22,292.89,279.41,251.83,253.02,253.24,245.91,235.42,246.02,249.86,245.8,255.67,254.15,259.79,252.34,254.71,251.78,250.14,253.75,255.1,254.65,258.09,254.65,249.07,245.8,242.92,238.41,234.69,236.72,239.54,238.8,243.71,238.86,232.94,228.14,224.25,218.16,199.83,207.45,199.66,195.49,203.1,212.75,226.28,227.41,225.16,224.48,230.85,228.09,220.59,211.17,213.48,214.5,225.1,222.45,207.73,203.72,205.19,205.19,205.3,206.26,208.69,218.33,213.82,217.48,225.78,208.01,208.01,212.46,199.15,196.28,198.59,203.21,197.52,192.89,191.09,192.39,177.16,176.42,171.01,163.68,163.68,174.22,180.09,178.06,178.96,184.72,174.84,184.43,191.77,190.3,199.89,202.54,203.1,195.54,191.71,189.4,191.09,201.69,201.69,191.03,193.12,206.37,219.74,214.78,210.89,215.68,215.57,223.35,222.62,222.05,234.18,222.11,217.6,217.6,227.86,235.08,238.18,236.83,236.83,236.66,238.07,234.24,240.1,241.12,242.3,233.05,230.57,234.52,231.58,225.55,213.93,213.37,217.99,220.14,221.38,219.01,216.64,223.01,223.41,227.69,226.34,248.11,234.74,228.71,227.41,221.26,221.88,233.11,238.3,239.37,247.6,241.91,244.33,241.96,235.31,237.85,238.47,236.94,235.87,241.17,243.37,244.78,244.78,244.78,241.23,242.7,241.12,237.45,237.51,237.23,236.32,240.05,244.39,237.62,227.07,224.2,221.49,219.63,210.83,217.2,216.64,210.43,203.38,195.26,201.02,195.88,190.75,191.77,191.77,185.79,187.76,187.93,183.93,184.38,194.53,188.04,188.78,191.71,197.07,196.5,185.9,188.27,184.21,182.91,193.4,191.43,192.61,187.54,187.2,184.32,208.91,214.72,217.65,226.23,223.35,223.29,223.29,222.34,227.92,233.22,241.96,245.23,251.04,250.42,242.87,244.61,251.95,256.74,266.16,264.81,270.67,269.43,267.85,264.07,267.68,253.19,245.91,248.62,236.55,240.38,235.48,240.44,234.18,237.62,249.13,237.11,238.24,245.63,253.86,249.46,249.13,252.57,242.3,244.95,239.37,243.37,251.95,255.33,255.33,253.75,264.02,276.54,276.2,277.1,278.57,284.72,284.49,284.83,282.85,286.75,284.72,280.99,277.27,279.75,273.6,279.02,274.11,243.71,241.68,238.58,236.77,245.12,251.27,249.07,240.5,241.85,244.11,254.37,253.02,262.04,254.71,256.63,245.18,255.05,251.89,251.89,265.65,270.9,274.62,271.35,270.05,268.19,272.87,279.7,274.56,268.92,272.98,266.16,260.91,264.52,261.14,263.96,269.09,269.71,262.72,257.02,256.91,258.71,268.02,263.51,271.63,271.63,267.96,261.65,255.1,261.14,262.94,270.33,261.99,267.68,277.83,287.48,288.78,298.59,298.93,299.15,307.56,310.55,312.46,312.58,312.58,310.83,304.74,300.11,303.33,312.41,307.56,302.14,328.65,324.42,323.24,319.63,324.03,324.42,316.81,325.32,325.21,325.21,332.6,333.73,333.9,325.78,312.52,318.5,311.9,310.38,299.44,303.33,313.03,320.19,330.96,320.81,323.35,322.9,334.29,334.63,329.95,329.95,325.72,338.35,332.77,321.43,310.27,293.85,295.38,285.28,296.45,307.9,292.16,311.84,302.99,290.3,259.28,269.94,246.59,218.89,242.47,194.42,210.83,195.66,204.68,203.67,215.74,244.05,239.71,252.62,245.23,251.1,237.23,224.99,231.75,232.49,261.53,262.49,272.36,260.18,260.18,260.41,268.58,261.87,256.8,257.76,244.78,233.56,247.66,246.87,249.07,255.39,255.56,281.05,270.11,254.15,250.76,256.12,259.9,262.77,272.14,271.86,257.7,245.52,257.92,250.48,259,254.48,263.06,255.05,253.47,253.47,258.32,278.91,262.1,270.22,261.36,264.07,275.92,288.89,302.99,302.88,299.77,295.94,273.66,274.62,277.72,287.76,287.42,284.72,286.69,288.49,281.11,272.36,277.44,273.49,277.21,290.58,280.32,281.05,281.05,287.2,276.88,280.37,281.9,285.96,278.96,280.37,284.88,282.57,279.02,288.83,290.58,291.31,296.9,282.12,290.98,282.52,284.21,286.18,282.35,284.21,289.34,287.93,274.68,274.96,277.21,269.37,273.43,260.24,257.19,255.05,250.42,248.45,242.47,240.61,246.81,254.37,253.58,251.66,257.7,256.68,258.09,269.77,261.31,262.15,262.15,253.98,254.65,253.07,259.95,276.54,276.65,283.19,287.54,286.18,277.21,280.32,281.16,279.02,277.16,280.43,286.01,264.86,270.28,262.55,268.47,266.89,273.04,281.44,281.39,285.84,292.44,291.2,292.95,291.09,296.84,301.92,300.68,306.71,298.08,294.08,293.06,282.01,284.72,283.93,280.37,288.1,293.06,307.84,311.11,315.62,312.52,317.88,317.26,326.73,348.9,349.63,342.58,348.73,346.31,361.99,360.69,357.76,357.76,362.27,361.48,378.34,389.79,394.25,413.65,409.53,412.8,402.76,402.03,397.8,403.5,412.58,411.68,407.56,403.05,403.1,397.29,394.53,398.08,398.08,398.53,396,405.64,424.03,417.65,435.76,434.91,446.19,436.66,443.71,448.17,450.71,458.54,455.27,455.27,482.23,470.95,479.47,464.07,458.43,448.45,423.52,442.13,441.46,453.64,460.35,446.19,458.26,457.42,473.83,469.94,464.47,487.76,496.39,496.39,494.87,485.34,499.38,513.03,486.63,497.63,521.83,497.01,516.24,534.46,513.76,502.59,475.63,501.58,479.7,503.67,481.73,503.72,495.04,501.13,515.68,534.46,506.6,510.49,514.83,481.67,468.13,474.28,496.28,488.38,488.1,497.52,521.21,521.21,528.76,527.3,529.95,537.45,537.51,539.14,519.74,511.39,509.14,511.34,498.65,493.4,504.74,477.78,485.22,495.43,504.57,485.22,496.67,485.45,479.53,476.09,480.26,478.29,484.94,456.01,455.05,433.16,435.36,449.52,453.41,444.9,450.82,457.59,455.27,467.57,458.15,463.85,473.38,474.56,474.56,474.62,475.69,462.66,472.42,474,454.2,443.65,447.15,447.49,453.98,463.51,453.98,454.82,434.01,434.69,438.01,445.69,454.48,462.66,470.28,467.74,479.3,451.83,453.07,453.07,457.3,441.17,434.91,444.11,448.73,442.47,442.7,433.84,423.07,420.64,425.21,435.36,426,428.31,430.34,418.61,426.11,434.74,437.56,437.9,456.06,462.38,459.62,462.49,452.4,428.14,423.18,396.22,400,400.06,399.21,398.31,396.39,396.11,404.62,405.98,417.6,410.43,417.37,412.63,415.68,415.79,417.32,416.3,416.3,415.34,407.61,411,414.55,419.35,414.5,416.36,420.92,419.06,408.18,406.88,417.2,417.6,417.65,424.03,412.3,404.06,400.34,400.39,398.31,397.63,394.47,397.86,395.49,390.41,376.31,374.39,382.4,381.73,379.36,381.11,385.05,387.14,380.77,387.82,388.83,384.88,392.44,389.73,398.76,399.1,401.86,407.45,411.28,420.53,426.34,414.04,420.47,435.98,433.05,433.22,425.61,434.4,468.3,472.98,481.73,486.24,486.24,470.5,485.84,473.77,480.26,467.46,460.35,465.03,484.09,485.17,479.02,482.46,475.75,469.77,483.14,466.38,468.13,462.66,511.45,509.53,532.54,532.54,532.6,524.2,542.41,529.55,525.38,540.05,543.37,532.43,539.48,532.71,529.55,531.3,536.44,539.31,549.13,549.13,523.8,507.61,479.81,462.1,467.85,455.27,462.32,443.99,447.1,464.02,459.39,476.65,462.32,457.81,456.12,474.45,497.01,513.37,506.26,506.82,541.46,541.79,528.65,512.13,512.13,510.83,492.44,501.02,508.18,501.18,486.52,526.23,502.99,461.99,426.96,435.19,448.05,427.07,410.72,391.43,412.35,449.35,454.15,447.88,441.91,446.25,426.68,441.12,440.5,450.42,462.77,446.47,439.31,429.67,438.07,420.81,416.13,413.31,406.88,406.26,405.87,408.23,395.54,395.54,401.3,410.21,412.86,400,391.48,395.49,378.34,374.9,395.83,384.6,398.2,401.92,415.23,402.09,396.79,383.14,388.66,377.66,381.9,405.64,397.46,420.08,400.73,391.43,388.61,392.5,375.75,382.8,398.2,413.54,413.54,416.47,414.83,425.1,394.47,397.35,399.1,386.91,372.36,353.19,331.87,331.08,333.45,310.27,314.44,314.44,320.36,317.77,317.09,329.61,331.53,326.34,315.96,311.79,302.59,302.59,319.97,323.58,331.92,333.56,326.06,333.78,331.98,334.74,347.04,340.95,351.95,357.02,358.94,345.69,339.26,336.49,349.07,350.08,348.9,352.74,352.34,362.38,365.76,352.28,346.59,333.62,346.31,351.49,366.84,364.92,360.18,347.55,355.22,341.29,328.88,326.34,328.88,345.18,325.04,321.55,317.54,318.84,323.24,317.71,317.71,311.51,310.21,312.41,323.97,326.79,302.43,299.55,297.18,298.08,293.85,286.52,282.57,280.09,282.57,275.69,285.28,287.65,282.06,282.57,291.71,304.34,308.69,308.07,298.42,289.79,302.93,297.52,309.42,297.35,301.75,296.39,299.1,302.88,316.13,317.2,315.12,312.75,294.47,304.79,305.13,309.42,301.47,301.64,316.75,319.01,324.25,315.68,339.93,352.62,348.45,355.89,332.04,331.3,330.4,322.39,330.63,332.37,332.37,329.44,314.44,310.89,325.16,312.97,308.4,304.79,302.76,303.55,311.34,309.48,312.18,311.56,307.9,293.51,293.68,291.71,285.84,288.72,278.79,283.14,283.14,282.12,277.04,285.67,281.9,281.9,284.09,305.7,308.57,320.19,317.88,322.67,327.47,323.01,321.09,321.09,320.64,318.73,317.88,329.72,348.67,345.52,347.1,354.2,360.24,348.05,340.1,353.07,356.29,352,338.3,350.42,339.82,339.42,337.39,339.09,350.08,348.79,338.69,332.83,332.83,324.87,321.38,331.36,328.14,326.57,326.11,323.41,318.27,320.25,320.53,313.37,320.87,313.59,309.81,304,306.09,305.3,319.06,319.57,325.1,330.68,328.09,345.97,344.95,337.23,334.35,358.38,355.84,340.33,336.21,323.01,321.6,330.29,330.29,356.85,358.54,349.46,355.33,353.24,352.74,349.29,342.08,346.64,344.78,335.65,327.92,344.16,349.13,363,351.66,349.13,343.54,341.29,345.35,343.32,343.65,338.35,347.49,343.6,364.58,359.45,366.16,381.11,384.49,373.55,372.31,375.24,392.61,416.98,416.98,404.34,384.66,389.68,390.13,382.23,380.94,378.23,368.42,369.04,380.43,382.8,389.85,388.16,381.61,381.61,377.33,371.12,373.66,368.19,369.15,376.71,378.29,362.83,355.95,360.41,360.41,350.03,345.35,342.08,352.4,358.71,359.79,363.96,361.42,367.51,366.27,366.38,364.86,370.28,369.32,370.45,380.03,400.85,401.58,402.65,399.1,384.49,390.19,394.3,391.31,381.56,376.2,369.09,363.06,385.11,368.47,362.21,358.49,358.66,360.74,357.64,367.68,359.22,359.39,368.36,376.09,384.04,394.47,397.01,397.01,396.45,397.12,394.08,395.83,394.98,396.56,399.61,404.91,394.13,397.63,398.82,393.01,382.97,388.49,386.8,383.19,384.72,367.74,383.7,383.31,382.57,384.15,389.45,394.59,391.88,389.57,396,393.4,390.36,389.62,389.17,389.96,380.88,379.13,377.21,383.93,375.07,363.96,370.28,372.65,377.16,391.43,397.29,409.36,411.28,410.6,407.67,414.95,425.04,421.77,435.25,435.08,432.43,437.45,443.43,432.66,434.86,434.86,433.56,437.17,429.33,432.54,429.33,428.26,419.01,415.62,412.46,415.4,422.79,438.75,440.83,450.03,463.56,459.17,460.01,463.45,443.82,482.12,487.82,487.82,491.03,488.78,485.05,481.33,464.41,463.96,466.5,470.67,479.13,469.99,464.64,470.33,464.69,464.69,477.21,469.71,478.4,493.57,503.33,493.68,496.79,503.1,496.62,502.37,485.96,483.64,482.85,487.76,490.58,477.16,480.37,478.74,482.57,483.36,459.84,461.53,460.41,448.39,448.39,455.22,459.62,484.55,485.05,504.57,518.05,505.98,511.05,536.66,540.16,532.83,538.97,558.26,550.59,533.05,549.46,531.08,515.68,525.94,528.93,530.17,542.87,619.57,621.6,660.63,670.05,672.59,664.92,664.92,701.07,692.33,722,699.89,697.01,693.46,691.65,689.23,719.18,691.03,684.55,686.8,656.12,631.3,602.2,615.45,634.29,630.46,629.33,647.72,645.01,637.11,618.73,633.56,646.93,677.55,672.36,672.98,664.47,683.81,693.74,703.95,720.87,721.32,706.66,727.58,719.12,712.24,712.18,730.34,730.34,748.28,742.13,712.3,705.02,722.9,714.27,754.15,733.62,738.52,760.41,761.82,793.85,807.33,797.29,833.78,865.48,865.48,813.25,787.03,784.04,795.94,802.93,745.8,741.85,741.79,747.83,771.69,771.69,742.24,737.11,739.65,769.26,734.52,753.24,738.13,719.06,674,662.44,644.44,650.2,644.39,622,606.03,617.09,608.29,578.45,619.4,572.53,522.84,509.98,501.97,489.57,519.29,524.99,533.78,549.58,566.33,603.21,609.08,612.69,609.08,611,588.04,580.09,557.87,551.95,535.03,539.03,542.81,542.81,499.61,503.61,504.17,487.2,486.58,489.85,511.28,491.88,514.5,491.71,500.45,492.67,503.38,512.69,527.75,530.17,540.16,619.74,606.32,584.94,565.76,563.17,574.28,576.71,580.43,578.34,573.6,596.11,603.05,611.05,588.38,616.13,631.98,626.9,615.23,608.12,592.5,602.65,608.63,600.06,610.15,587.03,562.04,562.49,573.77,594.98,630.74,639.65,631.13,612.8,587.14,563.56,559.39,543.37,549.97,551.21,554.82,579.58,578.91,589.28,574.17,553.86,553.86,552.45,555.84,563.11,582.06,568.92,570.61,579.92,553.3,575.63,554.09,578.12,610.6,612.52,586.01,491.2,508.29,506.03,503.55,503.55,506.6,499.89,481.16,474.68,492.56,506.88,559.84,574.79,560.69,560.69,560.29,536.15,549.13,582.01,578.68,596.45,596.45,616.92,616.07,591.31,582.01,513.87,497.74,502.03,521.71,514.61,507.16,511.34,527.92,533.22,520.59,541.06,530.63,517.09,539.54,561.31,561.31,602.31,588.61,581.95,557.47,538.13,525.78,551.1,517.88,528.09,510.66,514.38,532.09,503.5,524.31,491.14,502.26,539.42,535.14,568.47,581.56,573.72,575.63,580.94,534.24,546.76,531.19,519.63,514.16,498.82,490.07,500.34,499.72,419.29,365.03,385.62,369.66,439.2,395.09,392.27,400.56,400.68,391.03,388.04,388.04,376.42,396,411.34,436.66,449.97,443.09,433.62,434.01,438.64,455.27,453.58,454.09,465.99,480.26,484.26,520.53,546.7,537.62,538.35,552.74,556.4,553.3,540.55,534.86,526.62,526.62,543.6,542.47,545.97,532.77,553.75,576.71,582.35,599.49,612.3,625.78,643.77,654.43,655.27,652,675.92,678.74,687.08,687.08,697.12,688.55,721.43,717.71,710.66,703.67,695.15,681.84,686.63,689.73,689.73,676.37,701.75,689.45,694.36,702.37,668.98,677.44,656.68,638.8,645.18,638.64,616.02,619.46,630.17,627.52,627.47,631.47,647.15,615.57,591.54,607.84,615.12,613.54,630.96,670.56,697.8,720.53,700.9,706.66,681.73,696.84,688.38,661.08,653.07,663.73,656.63,657.08,664.13,688.1,671.24,671.24,668.25,669.6,700.56,740.95,741.46,762.78,789.62,849.24,886.8,889.85,895.77,902.37,952.57,917.82,928.48,938.58,912.07,884.55,887.03,924.42,943.71,1027.35,1036.38,1059.39,1077.04,1047.32,1108.52,1084.77,1024.25,1087.25,1055.05,1082.57,1142.3,1141.46,1166.22,1140.95,1119.4,1165.88,1235.31,1241.4,1251.61,1278.23,1263.45,1262.1,1323.75,1229.72,1339.54,1344.22,1341.91,1428.65,1359.9,1381.27,1336.44,1392.16,1364.64,1288.78,1274.22,1135.76,1169.6,1263,1266.38,1298.7,1298.7,1333.78,1356.23,1350.76,1320.7,1278.34,1337.96,1392.67,1423.69,1487.37,1457.76,1360.07,1339.54,1311.39,1271.97,1401.86,1499.83,1560.01,1558.21,1616.92,1616.92,1606.26,1660.29,1650.48,1609.76,1779.02,1760.58,1937,1915.12,1844.44,1946.36,1950.76,1907.11,1880.15,1898.65,2045.97,2045.97,2058.66,2194.64,2242.41,2254.09,2194.53,2313.82,2455.05,2457.92,2339.99,2469.26,2365.71,2139.88,2159.56,2226.11,2163,2105.19,2314.38,2334.86,2321.83,2321.83,2254.82,2374.22,2353.92,2414.95,2374.34,2357.64,2419.63,2343.82,2325.83,2327.52,2141.46,2260.41,2239.42,2088.55,2195.83,2273.6,2361.48,2286.24,2403.44,2491.82,2604,2604.23,2505.75,2385.22,2280.6,2230.85,2155.05,2004.85,2014.78,1815,1905.47,2074.73,2065.65,2065.65,2130.63,2129.61,2294.02,2377.38,2372.19,2405.87,2626.4,2573.21,2578.85,2566.67,2529.16,2534.57,2749.46,2716.98,2801.58,2958.6,2844.28,2924.2,2916.86,3058.15,3251.27,3610.83,3759.67,3647.1,4212.13,4485.79,4323.63,4532.6,4376.82,4087.2,3843.99,3941,4128.54,4298.36,4235.76,4235.76,5052.9,5236.38,5208.8,5476.59,5840.38,6001.69,6088.95,5617.6,4873.15,5354.09,5278.57,5030.34,5616.86,5536.44,6136.44,5757.25,5883.76,6395.88,6395.88,6832.37,5932.15,5913.76,6844.67,6386.52,6459.56,6510.38,5822.22,5502.31,5502.31,5554.15,5292.61,5351.38,5593.01,5523.41,5284.83,5544.95,5100.28,4812.18,4788.21,4881.33,5475.58,5411.62,5584.94,5194.3,5077.27,4627.92,4168.08,4933.22,4642.02,4678.51,5034.8,5037.73,4971.63,4949.63,4856.18,4898.59,5139.82,5357.19,5480.32,5706.43,5306.04,5285.45,5495.38,5452.79,5134.97,5262.1,5292.72,5275.75,5261.48,5407.39,5264.75,5392.44,5404.17,5733.73,5733.73,5641.62,5796.79,5512.75,5500.62,5211.68,5231.81,5225.89,5513.25,5729.27,5888.1,6182.52,6045.57,6094.36,6104.23,5944.61,6007.22,6007.39,6189.45,6062.55],"삼성전자":[null,100,100.31,104.77,105.7,104.09,95.72,95.11,96.47,97.71,98.51,98.45,100.68,100.37,98.45,99.63,98.95,97.09,97.46,100,101.55,102.35,101.8,100.12,100.81,101.61,101.86,98.88,102.17,99.01,96.22,95.35,96.53,97.15,98.27,98.7,101.61,102.17,102.23,102.23,103.9,103.9,108.18,108.36,107,106.44,108.3,109.79,110.9,110.29,108.55,109.42,110.1,108.98,111.09,111.21,112.27,111.83,112.08,110.41,111.4,111.46,110.78,111.65,111.65,111.83,113.01,112.02,110.16,112.14,115.3,115.37,118.59,120.2,116.05,113.57,114.5,114.44,116.11,115.24,117.91,118.22,122.06,123.61,123.61,123.61,122.24,121.19,121.93,122.24,122.55,120.26,118.96,118.96,118.84,117.6,116.42,116.85,117.78,117.29,119.76,120.63,121.75,121.38,118.4,117.91,119.08,119.08,123.05,122.74,124.16,124.54,124.54,124.54,124.47,125.77,128.13,128.25,129.62,131.35,129.8,131.85,131.54,129.49,128.56,127.63,128.5,129.43,130.05,127.63,128.38,130.36,130.55,129.62,128.87,129.93,128.87,129.8,131.41,130.17,128.75,128.56,126.7,124.78,126.27,127.76,132.28,132.59,135.81,138.23,138.23,139.1,139.1,141.02,141.02,145.66,145.66,141.26,140.95,141.95,142.81,143.68,143.56,142.32,138.54,139.71,139.16,139.03,141.51,142.75,141.33,138.29,138.48,138.41,142.38,142.32,142.32,140.33,139.9,142.81,140.58,140.64,140.52,141.51,141.2,144.24,149.13,147.09,148.57,147.52,149.57,149.63,147.77,148.51,147.27,146.28,145.6,147.4,148.88,148.27,150.74,151.8,154.52,156.63,156.38,156.88,157.5,157.19,158.61,158.24,157.56,154.89,154.4,154.28,147.96,149.32,150.56,151.8,148.02,147.77,147.4,147.83,143.37,142.19,138.23,139.41,139.41,143.12,145.72,145.29,145.11,145.6,147.09,147.21,145.66,142.81,142.75,143.12,143.49,143.99,142.63,144.86,145.6,149.07,152.04,154.28,153.66,153.72,155.82,156.13,162.58,161.46,161.77,163.57,163.57,166.11,166.11,160.1,158.8,158.86,158.86,158.86,158.86,158.86,158.86,158.86,163.57,169.27,169.76,167.29,167.04,169.76,169.64,164.13,166.79,168.22,167.41,166.98,162.33,164.44,167.41,170.63,177.26,176.77,174.66,174.66,173.79,175.84,174.54,174.72,174.66,173.23,171.44,172.8,172.92,171,171.25,173.36,171.31,171.81,163.07,165.06,162.95,157.37,157.5,159.05,158.8,154.96,157.19,161.09,160.41,161.4,158.98,158.18,156.82,158.61,159.73,159.73,152.23,153.97,153.97,149.32,152.91,157.87,157.87,158.05,159.91,158.24,161.46,161.15,156.13,151.3,149.44,149.32,150.37,154.89,153.72,154.58,152.79,149.44,152.29,152.85,155.7,157.31,158.67,154.28,154.58,154.34,147.77,148.45,146.9,141.88,142.5,138.48,141.64,147.27,151.8,151.8,151.8,149.88,146.84,146.47,144.86,146.28,146.78,146.78,145.79,145.79,142.57,140.02,145.66,150.62,152.42,154.09,154.09,160.04,160.35,159.67,158.43,157.19,158.61,158.18,160.41,154.03,155.76,154.83,150.87,151.92,152.48,150.37,149.07,145.35,150.99,149.94,152.42,151.43,151.36,151.8,154.28,155.95,154.83,159.11,163.51,159.91,160.78,156.32,156.13,161.52,164.19,164.19,164.19,164.19,164.19,160.78,160.78,162.95,157.68,159.85,158.92,155.2,152.42,154.43,153.04,153.35,154.89,154.89,160.47,159.23,163.26,162.02,158.92,153.35,157.06,158.92,158.3,158.92,158.92,156.75,153.81,154.58,153.04,153.04,149.32,147.61,144.36,145.6,145.6,145.76,146.38,144.52,145.6,148.54,144.98,144.52,141.11,142.97,143.28,142.35,139.1,141.26,143.43,142.5,140.95,144.05,142.66,142.04,144.21,145.29,147,144.05,142.97,142.97,145.29,145.29,144.05,143.28,144.21,141.11,141.73,141.88,144.67,144.98,145.29,140.64,139.56,139.87,139.87,137.08,136.62,135.84,138.79,142.81,143.12,142.97,143.43,144.21,144.98,147.61,150.09,147,147.61,144.36,142.81,139.1,140.95,139.56,138.01,136.46,142.04,139.87,140.95,142.97,146.38,146.84,146.84,146.84,146.84,147.15,143.9,143.59,141.57,141.57,138.48,138.48,139.25,139.25,140.33,133.52,136.31,135.69,135.07,136.77,136.46,136,134.91,133.36,131.82,127.01,127.01,128.25,131.2,131.35,130.58,136.77,135.69,135.53,136.31,136.46,137.24,140.02,137.86,136.62,137.08,136.31,135.22,132.59,130.42,131.51,131.35,131.97,133.36,133.67,133.67,129.65,133.98,130.58,128.41,125.46,126.86,124.54,124.69,125.31,123.92,120.66,121.28,120.51,121.13,119.73,119.73,120.2,120.2,118.8,118.49,119.89,119.89,120.04,116.48,116.02,120.04,118.03,122.68,123.3,125.46,124.07,127.32,128.41,129.96,131.04,132.43,130.58,130.11,133.36,138.63,139.56,140.95,143.74,142.97,143.59,143.59,143.59,143.59,143.12,138.79,139.41,142.66,143.12,147.15,142.66,143.12,142.35,145.29,145.45,146.07,146.69,144.83,144.83,139.71,139.71,138.94,137.08,136.31,137.7,135.69,135.22,138.32,135.84,135.84,136.93,135.38,136,136.46,142.04,144.21,140.95,140.18,140.49,138.94,138.32,139.56,141.73,144.36,145.45,145.14,144.52,144.52,144.67,143.28,145.14,145.76,146.38,145.76,141.26,140.33,140.49,140.02,138.63,138.32,138.94,142.97,142.04,142.04,142.19,140.33,140.33,138.94,137.08,131.51,132.9,132.13,132.13,131.82,128.72,127.63,130.11,133.67,134.76,135.84,132.28,132.13,131.82,129.49,131.82,131.66,135.69,134.6,136,136,136.93,138.79,138.94,138.17,135.53,136.31,136,137.39,140.49,140.95,141.57,140.95,141.26,141.57,144.05,145.6,144.36,143.28,140.64,142.5,141.42,137.55,139.71,141.11,143.12,143.43,143.9,145.14,142.66,142.81,144.98,146.22,146.53,143.74,146.22,146.07,142.81,144.21,140.49,140.02,139.25,136.15,134.76,133.83,132.13,133.67,135.38,133.21,135.38,135.38,136,135.07,137.7,137.86,136.46,136.15,135.07,136.46,136.77,134.45,136.31,135.69,133.98,136.62,141.57,143.43,145.29,145.6,146.07,146.07,146.07,145.91,145.29,147.77,152.26,152.42,152.73,153.35,151.49,152.42,149.94,151.95,151.33,147.46,147.46,148.7,147.92,151.49,151.49,150.4,152.26,154.89,155.2,157.06,156.44,154.58,155.82,158.61,158.61,157.06,157.68,158.92,158.3,156.13,156.13,158.61,162.02,163.26,165.12,163.88,161.4,159.85,162.95,162.64,163.57,166.36,165.74,165.74,161.09,157.99,159.85,160.47,160.47,161.71,158.92,155.82,156.13,154.58,153.19,153.35,156.13,158.61,159.54,160.78,165.12,169.45,169.45,175.65,174.41,173.48,173.48,171.93,170.38,170.38,171.62,175.03,172.86,172.86,171,171.93,171.93,172.86,175.96,181.54,184.32,185.87,185.87,182.78,188.04,189.9,193.31,190.21,193,188.35,188.35,188.35,182.16,183.09,177.2,174.72,177.2,182.47,184.32,189.28,187.11,184.94,185.56,187.42,188.04,191.45,190.52,185.25,186.49,185.87,183.4,175.96,179.37,175.03,173.17,167.91,170.38,171.62,177.82,179.06,175.03,175.03,169.14,161.4,161.4,154.74,151.49,146.53,141.26,133.05,140.64,131.66,145.45,150.71,148.08,149.63,148.23,147.92,141.88,144.98,145.6,150.87,153.66,150.56,152.11,152.57,149.63,151.8,151.8,151.8,159.23,155.2,152.57,154.43,154.43,152.88,154.43,155.2,154.89,154.89,154.89,150.25,150.25,152.42,151.18,151.18,149.94,148.39,150.4,148.7,148.23,151.18,155.82,154.89,154.74,151.02,151.33,152.57,154.58,156.13,157.06,158.61,159.23,168.84,169.14,171.93,170.07,171.93,171.62,168.22,162.02,154.58,161.4,161.71,162.02,163.88,161.09,159.23,163.88,160.78,165.12,162.33,163.57,162.95,163.88,166.05,170.38,165.43,164.19,163.57,163.26,165.43,166.67,169.45,166.67,168.53,167.91,171.31,169.45,167.6,167.91,172.24,181.54,182.78,182.78,179.37,175.96,177.51,176.27,179.68,178.13,179.06,180.3,182.78,181.85,179.68,179.68,180.92,179.06,171.62,173.17,173.79,174.72,174.72,172.24,171.62,167.29,167.91,168.53,174.72,172.24,175.03,181.85,180.92,183.4,182.78,187.11,188.97,188.97,184.32,183.71,183.4,180.3,181.54,179.06,179.37,180.3,180.3,180.3,180.3,180.3,181.85,182.78,185.56,184.94,184.94,187.11,188.66,188.66,185.87,184.32,185.87,188.66,188.66,186.18,186.49,187.11,185.25,182.78,179.99,175.34,177.82,182.16,181.23,186.8,186.18,186.49,186.49,189.9,188.97,195.79,205.39,203.53,200.74,200.12,200.43,209.11,209.73,206.32,210.66,211.28,206.63,210.04,215.3,215.92,221.5,225.84,222.12,228.93,225.84,227.39,228.62,228.62,228.62,227.08,226.15,226.15,223.98,228.93,241.02,241.02,243.8,242.57,250.93,250.93,257.13,259.91,254.65,256.82,275.09,281.91,280.67,277.88,277.88,272.61,263.32,269.52,270.14,272.92,268.9,276.95,268.59,265.18,259.29,254.03,257.13,261.46,262.08,255.58,258.67,257.13,256.2,252.79,252.79,252.79,260.84,263.01,257.74,254.34,255.89,254.65,254.03,254.03,264.25,255.58,255.58,258.98,260.22,255.27,254.34,254.03,252.17,250.62,254.03,256.51,253.41,256.51,254.96,256.82,253.72,254.03,253.41,250.93,251.55,252.48,252.79,254.65,252.17,256.82,262.7,264.56,266.42,265.18,262.39,258.98,257.74,260.22,260.22,260.53,259.91,258.05,259.91,255.89,255.27,256.51,258.67,256.82,254.34,253.1,252.48,253.1,255.89,255.89,254.96,253.72,257.74,251.55,247.83,243.18,248.14,246.59,246.59,246.59,246.28,248.14,246.9,247.52,247.21,246.59,248.14,249.38,249.69,250.31,256.51,254.65,253.72,253.72,251.24,250.93,250.93,249.38,250.62,253.41,250.62,249.38,247.52,247.83,248.14,251.55,252.79,253.72,250.93,250,248.14,247.83,249.07,251.55,250.31,247.52,245.97,246.9,247.21,246.28,249.69,247.21,244.73,244.73,243.18,246.9,245.66,244.11,243.18,245.35,244.73,243.18,245.66,252.17,256.82,254.34,252.48,252.48,248.45,243.18,238.54,230.48,230.48,229.86,228.93,226.46,225.22,227.08,234.2,234.51,231.1,230.17,231.1,237.61,237.92,235.44,237.3,239.47,235.75,236.37,233.27,233.27,236.37,237.3,238.54,235.75,239.16,239.16,239.16,239.16,239.78,239.47,240.71,236.37,229.55,229.55,226.77,226.77,223.67,220.88,221.81,221.5,221.5,213.75,213.14,214.99,217.16,217.47,218.71,217.78,217.47,218.09,217.47,220.26,217.16,219.02,216.23,216.54,221.5,218.09,218.71,217.47,218.71,218.4,217.47,216.54,218.71,221.19,220.88,219.02,217.47,220.57,232.03,233.27,231.72,228.31,223.98,223.98,220.88,230.48,234.82,234.2,236.37,239.78,239.78,242.26,238.23,237.92,238.54,240.4,241.02,241.64,238.85,241.95,245.97,247.52,249.38,248.45,248.76,244.11,242.57,242.57,242.57,243.8,239.78,238.23,242.57,241.64,244.42,244.42,241.33,239.47,240.09,238.54,236.37,236.99,234.2,232.65,229.24,229.24,220.88,227.08,227.08,227.08,227.08,227.08,229.24,226.15,226.15,226.15,233.58,232.03,228.31,228.31,231.72,232.34,230.17,230.17,230.17,230.17,221.5,222.74,222.74,222.74,222.12,225.84,225.84,217.16,215.3,215.3,215.3,216.85,217.47,217.47,218.09,218.09,219.02,216.54,217.78,218.4,216.23,216.23,215.92,217.47,216.54,215.61,214.06,214.68,214.37,212.21,210.66,210.04,210.35,207.56,212.83,209.11,206.32,206.63,208.49,208.8,209.73,207.56,205.39,204.77,201.36,200.74,208.8,208.49,209.11,210.35,210.35,206.01,206.01,203.53,203.53,201.05,206.01,205.39,209.42,210.97,209.11,210.66,210.35,206.01,205.7,204.15,206.01,209.73,208.8,208.8,206.63,206.94,206.94,202.91,202.29,201.98,197.65,192.38,191.76,188.04,188.66,185.25,181.85,181.23,178.44,177.82,180.92,182.16,184.01,179.68,176.58,174.1,176.89,177.2,174.72,180.3,181.85,182.16,179.99,179.68,178.13,185.87,191.76,188.66,187.42,191.45,189.9,189.28,191.14,191.45,191.76,190.21,189.9,191.14,189.9,190.52,190.52,188.35,185.87,183.09,185.56,186.49,186.49,188.97,187.11,190.52,188.66,185.87,183.09,182.78,184.94,185.87,181.54,182.16,184.94,180.92,178.13,176.89,176.89,173.48,172.24,172.24,172.24,179.99,175.96,173.48,174.1,174.72,172.86,171.31,168.53,168.84,166.98,167.91,163.88,162.95,164.5,164.5,171,173.48,174.41,174.1,174.1,171.62,172.86,171,174.41,175.34,175.03,172.86,171.93,173.17,178.13,178.75,184.01,184.32,177.51,184.01,185.87,184.63,183.4,184.01,186.49,191.45,192.07,187.11,194.86,191.76,193.31,194.24,190.21,191.45,190.21,187.73,188.97,190.21,188.97,186.18,187.73,192.69,193.93,187.11,186.8,183.4,182.47,183.4,187.11,184.32,184.94,187.42,183.71,184.32,184.32,181.54,179.68,183.09,179.99,179.37,179.99,175.34,171.31,171.31,171.93,171.62,179.06,180.3,182.78,188.04,187.11,187.42,187.42,188.35,189.28,188.97,187.11,190.52,191.45,191.45,191.45,196.1,197.65,200.12,196.1,190.21,188.97,196.72,196.72,190.83,192.07,195.48,196.1,194.86,194.86,195.79,192.69,197.34,193.93,194.24,192.38,189.28,192.07,189.9,187.42,187.73,187.73,188.35,187.42,190.52,188.04,186.8,186.18,184.32,185.87,182.78,185.25,185.56,189.9,186.49,186.8,189.28,193,195.17,192.38,194.86,194.24,195.79,198.27,195.48,197.03,197.96,193,201.36,203.53,204.15,204.46,204.77,201.67,202.29,203.22,202.91,202.29,203.53,201.98,197.03,198.57,200.12,202.91,202.91,203.53,202.6,201.67,201.67,204.15,202.29,200.12,198.88,198.57,199.81,202.6,201.36,205.08,211.9,212.21,211.9,212.21,213.14,217.78,217.78,223.98,221.19,219.64,223.67,222.12,222.12,219.95,219.64,223.05,219.95,223.05,222.74,221.5,222.43,220.57,221.19,218.4,220.88,221.81,224.29,224.91,225.22,224.29,223.67,226.15,226.15,223.05,221.81,216.54,215.3,221.5,222.74,222.74,227.39,227.08,223.05,222.12,219.95,217.78,218.09,216.85,216.23,222.12,218.71,216.23,220.26,216.54,213.14,211.59,212.21,209.42,213.44,210.66,209.11,208.49,208.49,207.56,206.63,205.39,206.32,206.32,207.87,211.28,207.87,206.94,206.94,207.87,207.25,219.95,220.57,219.02,216.85,218.09,217.78,219.33,218.4,219.64,222.12,223.05,217.47,216.23,215.61,213.44,213.14,214.99,212.52,211.9,211.9,211.9,211.9,211.9,209.11,206.63,204.46,204.46,205.7,211.28,213.44,210.66,208.49,214.99,218.4,215.3,213.14,211.9,212.21,210.66,206.63,208.49,208.49,207.25,212.52,215.92,215.61,219.64,219.64,216.54,217.78,218.4,218.09,219.33,223.67,225.53,224.6,225.22,225.53,225.53,224.29,222.12,220.88,225.22,225.22,225.53,223.05,224.91,220.57,222.12,221.5,224.91,226.15,227.7,225.53,226.46,227.08,225.84,227.39,231.72,232.34,235.13,235.13,237.3,241.64,243.18,243.18,246.59,238.54,237.3,237.3,236.99,231.41,228,226.77,226.46,228.93,224.91,219.95,222.12,231.41,232.65,232.96,229.24,229.55,227.39,230.48,230.17,225.22,228,232.96,230.17,230.48,232.34,229.55,229.55,229.55,232.96,229.24,226.77,225.53,228.62,227.08,226.15,226.46,225.84,225.53,225.84,226.77,227.39,227.39,232.03,228.31,225.84,223.67,227.08,224.29,227.08,229.55,230.17,223.98,225.53,225.53,238.23,245.66,244.42,242.26,247.52,247.21,250.31,255.27,254.03,263.32,260.53,264.25,261.77,261.77,258.98,258.98,260.53,259.29,254.65,247.83,244.42,246.59,240.4,235.75,233.89,243.49,236.37,237.61,237.61,240.09,240.09,241.64,240.4,240.4,251.86,251.86,246.9,245.35,242.87,242.57,242.57,242.26,239.78,244.42,242.87,240.71,242.57,235.13,239.16,240.4,232.96,227.7,227.7,234.51,233.27,239.78,239.78,239.47,234.51,232.96,236.99,243.49,246.59,241.95,247.21,251.55,252.79,247.83,249.69,250.31,251.86,252.79,252.48,253.41,253.41,253.41,262.08,269.83,270.76,272,272,271.38,261.46,268.59,271.69,268.59,269.21,261.46,257.13,259.91,254.03,249.07,250.62,251.55,250.93,259.91,257.43,246.59,221.19,224.6,231.41,227.39,231.41,233.89,235.75,239.16,239.16,248.45,242.57,244.42,242.57,242.57,240.71,235.75,234.82,236.68,229.24,230.17,230.48,224.6,216.85,213.75,213.44,209.11,205.08,201.05,205.39,199.5,199.5,199.5,199.5,195.48,195.17,193.93,195.79,192.69,200.43,198.88,190.52,190.52,189.9,189.9,187.73,188.97,186.8,186.8,182.47,183.71,183.71,188.97,184.32,184.94,183.4,182.78,178.75,183.09,175.34,173.17,179.99,184.63,183.09,183.4,180.61,181.85,178.44,177.51,177.51,176.58,170.38,164.19,156.75,154.58,165.74,175.65,174.41,171.31,174.72,173.48,179.37,180.61,174.41,171.93,167.91,166.05,166.05,164.5,166.36,167.6,165.43,167.29,167.29,173.17,173.79,172.24,167.91,170.07,164.5,164.19,165.74,168.53,168.53,166.05,166.36,164.81,164.81,165.43,168.53,173.17,171.62,177.51,173.79,171.31,167.6,166.98,166.36,168.22,166.36,165.43,165.74,168.22,166.36,166.36,166.36,166.36,166.36,166.36,162.33,157.99,163.26,163.88,167.29,166.36,172.24,172.55,172.86,172.86,173.48,173.48,176.27,181.85,180.92,180.3,177.51,177.2,175.34,174.41,168.84,168.84,168.84,167.29,168.22,166.36,166.36,166.05,170.07,169.45,169.45,178.44,178.44,181.23,186.49,191.14,187.42,185.25,190.21,191.45,186.49,179.06,182.16,182.16,178.44,173.79,164.81,165.74,164.19,174.72,171,174.1,175.34,169.45,170.69,171.31,171.62,170.38,172.55,172.55,172.55,172.86,172.86,171.93,171.93,168.22,168.22,168.22,169.14,169.14,169.76,178.44,176.27,177.82,177.51,175.96,172.86,173.17,172.55,169.45,167.91,169.45,166.98,173.17,173.79,174.1,175.96,175.96,179.06,183.09,183.09,185.25,183.4,185.56,184.32,180.61,177.2,179.99,185.25,183.4,184.32,179.68,187.42,189.9,186.49,188.35,185.25,186.49,188.35,197.65,196.1,191.14,190.21,187.11,188.97,193.93,193.62,197.34,200.43,206.63,207.87,210.04,204.46,205.7,204.46,204.15,218.09,218.71,224.91,221.19,213.44,215.92,216.54,213.14,218.4,222.43,219.95,220.26,222.74,221.81,221.81,216.85,216.85,218.4,218.71,221.19,221.5,217.78,218.71,215.61,215.92,209.42,214.06,216.23,217.16,215.3,217.16,221.5,224.91,227.39,233.58,236.99,245.97,242.26,248.76,248.76,258.67,262.39,264.56,266.73,258.05,260.84,259.91,266.42,278.04,278.04,278.04,278.04,278.04,278.04,292.44,289.03,283.77,294.3,302.66,303.28,303.9,302.04,305.45,298.95,306.07,315.99,308.24,311.34,322.49,333.02,344.18,324.97,311.65,307.31,303.28,311.65,320.63,319.39,318.46,301.12,311.65,302.97,298.95,311.65,293.68,299.57,307.62,318.46,320.63,311.34,312.27,320.32,323.73,325.59,335.81,339.22,335.81,334.57,332.4,337.36,324.66,318.46,334.26,333.33,329.31,342.32,345.42,344.18,344.18,362.45,370.2,371.44,371.44,398.08,427.82,430.3,436.8,429.99,430.61,429.99,426.27,434.63,445.79,461.28,462.52,449.81,463.14,471.81,471.19,471.19,494.11,503.1,497.83,497.21,465.92,518.9,523.85,493.49,491.33,515.49,513.63,519.83,553.28,561.34,561.34,561.34,561.34,588.6,588.91,597.89,619.58,630.42,675.34,670.69,670.69,604.4,533.46,593.56,583.02,537.48,582.09,588.6,582.09,568.46,584.57,600.68,645.91,621.13,617.72,577.14,587.67,585.5,557.93,557.93,546.16,517.97,587.52,552.66,576.83,598.2,608.74,652.11,631.97,638.17,622.68,639.71,653.66,673.79,669.14,664.5,678.44,673.79,695.48,679.99,695.48,687.73,700.12,683.09,683.09,720.26,720.26,824.04,841.08,831.78,884.45,864.31,879.8,916.98,837.98,870.51,853.47,855.02,927.82,906.13,906.13,926.27,951.05,927.82,982.03,1081.16,1116.79,1116.79,1088.91,1019.21,915.43,997.52,937.11,926.27,999.07,1043.99,1062.58,1073.42,1122.99,1096.65,1095.11,960.35,1054.83,1110.59,1051.73,1000.62,1034.7,974.29,886,958.8,985.13,916.98,859.67,861.21,882.9,788.41,814.75,865.86,789.96,789.96,755.89,802.35,807,836.43,772.92,786.86,681.54,645.91,641.26,813.2,741.95,743.49,762.08,714.06,715.61,712.52,741.95,791.51,830.24,850.37,850.37,831.78,766.73,839.53,872.06,796.16,796.16,810.1,824.04,796.16,805.45,808.55,776.02,774.47,791.51,836.43,834.88,834.88,833.33,803.9,771.38,769.83,785.32,782.22,808.55,848.82,856.57,884.45,884.45,884.45,836.43,844.18,831.78,855.02,855.02],"어플라이드 머티어리얼즈":[100,98.96,100.07,99.9,99.43,98.2,95.72,95.72,93.11,93.82,92.91,93.65,94.65,94.85,95.02,97.43,96.46,96.42,96.46,95.79,97.19,96.59,95.55,94.49,94.32,98.03,98.63,97.36,94.18,96.32,96.89,98.96,100.33,102.71,102.74,104.78,105.85,106.55,106.55,106.55,106.42,107.49,107.62,100.6,105.08,105.38,105.65,108.66,109.32,108.12,106.95,107.05,107.42,110.49,108.66,108.42,108.99,108.89,110.33,109.96,109.96,111.4,109.96,109.16,107.85,107.85,106.75,107.75,107.29,107.09,109.56,110.73,111.86,111.33,112.93,112.93,111.3,112.6,112.8,113.1,112.8,113.74,115.04,113.57,117.11,114.77,114.47,117.08,116.78,118.01,117.58,118.78,118.98,118.35,118.05,118.52,117.75,118.62,117.58,119.22,119.22,122.26,122.03,120.86,121.32,121.76,121.06,123.16,121.96,123.23,123.2,123.56,124.3,124.93,127.41,128.48,127.91,130.08,130.51,131.28,132.25,128.94,129.75,129.85,130.25,129.88,129.75,129.91,129.98,130.01,129.98,130.35,128.28,128.94,130.11,129.88,127.67,126.24,125.4,125.4,127.07,127.17,131.18,133.32,132.99,135.16,136.33,136.06,138.14,135.73,139.37,139.41,138.87,139.1,139.81,138.84,140.51,143.28,145.32,145.19,148.13,150.64,142.91,146.76,147.33,149.5,150.1,149.16,150.47,152.07,152.07,152.27,153.34,153.74,156.42,156.15,155.65,157.95,158.52,149.53,148.2,149.9,146.99,144.25,144.08,148.03,144.92,145.79,144.85,147.36,144.55,140.01,142.68,138.5,138.07,137.07,137.07,140.78,140.74,145.52,147.76,151.74,151.34,151.4,154.14,154.24,155.82,157.69,157.92,156.45,156.35,155.08,158.59,153.88,151.24,148.09,147.39,142.81,142.71,143.11,146.93,146.72,146.42,140.47,143.98,146.32,146.66,148.6,144.12,148.06,144.75,148.56,147.13,146.12,144.75,145.82,147.13,151.97,150.8,150.74,150.74,148.66,149.5,151.14,148.23,152.34,152.57,154.14,157.25,157.55,160.59,161.3,158.02,157.59,159.66,154.85,153.48,163.24,169.18,174.1,174.06,173.26,172.46,171.89,175.13,176.1,175.77,177.91,178.18,180.28,183.96,184.26,184.96,184.93,187.47,188.4,188.44,184.83,186.93,189.47,186.83,188.6,186.2,188.03,189,188.27,188.74,190.24,185.43,188.37,190.61,188.57,186.4,193.32,188.8,192.58,196.52,192.78,192.78,193.55,190.31,191.61,176.84,176.37,173.5,166.34,167.38,170.49,174.8,171.89,172.53,168.68,169.65,171.49,175.6,178.48,177.01,178.11,173.43,174,174,170.62,172.73,172.86,170.86,177.27,180.41,181.45,182.49,186.9,183.36,178.14,177.81,178.64,178.64,182.15,191.64,191.84,191.84,192.05,193.15,190.11,186.36,190.91,184.93,178.41,179.24,178.07,169.39,161.46,167.95,162.73,152.91,160.7,165.44,165.61,173.66,180.45,183.92,183.92,189.37,187.6,187.4,190.54,196.56,192.65,192.48,190.74,193.95,192.61,200.5,198.6,198.43,205.92,203.78,199.5,201.3,201.47,198.66,195.52,197.96,203.14,197.06,185.09,195.42,185.29,180.68,185.86,185.86,176.77,180.41,185.7,181.45,174.93,177.21,183.16,183.66,188.6,187.4,190.07,193.38,182.92,171.09,170.76,167.71,162.83,164.24,168.75,165.11,166.01,170.15,168.88,169.49,175.67,175.77,178.64,180.92,185.59,183.29,184.69,180.78,184.39,180.35,165.47,167.11,167.95,168.25,169.69,169.95,169.95,173.86,172.43,169.72,174.6,174.77,176.84,175.57,171.29,170.96,166.74,169.99,170.39,166.08,164.81,161.5,162.27,162.37,163.74,160.29,156.12,155.98,151.24,151.37,154.38,152.67,149.73,149.73,151.87,154.18,155.48,156.22,151.07,152.67,154.18,154.78,158.09,161.36,155.98,156.28,155.18,153.44,153.61,157.65,161.43,160.13,162.53,160.33,160.8,163.24,165.37,165.88,167.71,164.3,160.86,161.26,161.7,158.79,158.52,146.29,145.49,146.26,143.68,143.01,142.81,146.22,145.05,144.05,144.18,143.78,143.78,142.45,142.05,134.59,133.19,132.35,130.95,128.31,129.98,130.68,129.34,130.98,130.48,131.65,132.45,130.68,128.94,127.87,128.18,129.18,128.14,130.01,130.08,126.64,124.47,122.29,119.39,115.07,109.59,112.6,111.73,116.18,116.84,113.37,114.61,112.07,112.03,106.32,109.09,108.16,104.01,108.36,109.89,118.15,117.88,114.71,116.54,117.81,116.78,114.57,109.02,111.93,112.23,117.05,118.32,115.04,119.55,117.61,117.61,117.15,120.35,120.32,124.03,122.13,124.6,128.14,118.42,118.42,115.94,112.43,114.2,113.7,114.3,112.67,109.12,109.19,111.23,105.38,103.28,101.3,96.89,96.89,102.41,105.45,108.22,109.43,111.9,105.41,112.63,114.64,109.99,114.64,116.18,116.24,113.17,112.8,112.43,115.44,119.35,119.35,115.11,114.67,126.4,130.98,129.34,127.67,132.35,130.61,131.38,130.01,130.75,134.63,133.42,132.95,133.36,136,136.53,136.06,130.68,130.68,131.35,130.35,129.78,131.78,132.55,132.29,129.61,128.14,128.88,130.61,130.11,127.24,125.57,126.14,128.71,129.38,129.01,130.11,134.99,133.69,134.93,132.25,138.14,133.22,131.68,132.45,130.11,128.71,132.55,137.47,137,141.81,142.45,143.85,143.45,140.41,140.94,141.95,143.68,142.75,146.12,146.69,146.89,146.89,146.36,146.49,148.6,148.56,149.26,147.86,147.29,144.99,146.06,146.93,144.08,140.54,138.97,136.83,136.36,130.65,133.72,138.7,139.24,142.71,134.86,137.93,135.33,133.49,132.02,132.02,130.38,131.58,132.85,129.31,129.61,135.09,135.66,138.3,138.74,144.18,146.22,138.7,139.2,137.8,135.36,141.41,142.15,144.42,143.58,141.48,140.31,145.66,149.36,150.1,152.67,149.26,149.3,149.3,146.99,145.22,146.96,149.47,151.34,155.45,154.68,153.78,154.48,161,159.79,169.55,170.55,174.26,169.85,169.59,169.35,169.55,165.01,162,158.92,151.94,154.85,156.02,159.96,157.59,155.28,160.63,156.12,157.62,155.85,157.42,156.18,156.52,157.19,150.8,152.44,152.11,153.41,158.12,160.49,160.49,159.12,165.47,168.28,167.45,169.32,167.75,172.33,171.29,171.62,170.19,171.12,174.1,172.73,170.32,172.99,170.99,173.56,174.3,165.21,166.78,167.18,165.31,165.91,170.05,169.28,164.81,169.92,170.49,172.96,173.6,176.84,172.33,174.26,172.73,175.94,173.73,168.88,184.06,186.23,190.34,185.56,184.53,181.35,185.36,186.3,186.76,186.56,186.97,187.27,189.14,188.57,190.91,190.37,207.42,208.39,203.68,199.36,188.64,186.97,194.79,192.41,194.82,194.82,193.52,189.51,184.96,187.47,186.63,189.17,189.17,189.24,197.33,201.74,200.1,200.4,203.18,201.8,202.77,206.58,204.14,205.55,205.55,204.91,204.45,203.64,204.01,207.89,204.58,200.17,205.95,205.82,207.12,205.45,206.58,208.39,206.99,211.26,210.06,210.06,211.23,213.54,213.54,207.22,197.36,201.17,199.93,201.37,193.82,199.6,210.59,213.24,211.2,206.25,210.29,215.41,218.48,225.17,223.43,223.43,217.78,225.3,221.93,214.81,204.14,196.72,199.9,190.51,194.25,201.07,193.98,202.27,197.63,193.15,174.03,187.73,175.43,150.77,170.09,135.46,149.93,130.95,134.32,126.97,134.26,150.87,149.5,164.44,150.57,158.09,153.14,144.72,144.52,141.31,154.24,158.96,171.99,165.74,165.74,166.71,175.37,168.35,174.57,177.81,169.22,161.53,174.16,170.12,172.93,170.55,168.52,181.62,166.04,156.72,159.02,163.27,168.78,171.29,179.85,180.51,174.9,172.09,181.92,173.93,181.68,185.39,190.11,183.89,181.78,181.78,184.29,188.5,182.72,187.77,186.13,186.46,193.22,194.28,201.17,200.2,199.83,200.07,185.19,189,190.68,195.66,200.53,201.8,203.71,204.78,203.34,200.43,200.47,195.12,197.39,202.04,199.47,203.88,203.88,212.1,207.82,209.79,212.2,209.19,205.58,209.02,207.55,208.36,208.22,213,213.27,214.64,212.67,202.61,210.59,208.22,211.4,215.31,215.01,217.28,216.74,216.81,212.6,212.47,218.05,215.44,222.26,217.48,226,223.73,222.03,220.15,213.2,208.12,213.03,214.07,213.1,207.32,210.8,205.88,206.85,217.51,205.41,203.74,203.74,185.93,184.49,184.22,183.82,188.7,191.18,188.74,188.3,187.67,191.58,193.48,191.34,193.15,194.62,198.4,199.36,198.7,202.71,194.55,202.54,201.87,204.28,209.22,211.53,216.18,216.21,213.84,212.27,210.56,207.39,208.09,207.59,206.22,203.71,198.9,196.62,191.58,198.86,197.96,201.64,206.65,216.78,233.79,235.73,238.3,231.92,237.83,233.29,243.35,248.93,248.56,253.04,258.19,256.42,269.05,277.24,271.19,271.19,276.27,275.67,281.65,285.06,287.77,296.93,297.93,299.97,293.52,293.75,295.12,295.79,295.69,295.96,292.45,287.73,288.8,286.23,280.85,285.19,285.19,283.66,281.65,290.71,288.44,290.34,299.47,303.58,316.04,319.39,327.41,334.26,327.71,353.61,344.72,344.72,365.04,360.43,360.86,355.38,361.36,352.71,329.48,338.07,323.13,338.27,346.22,333.79,345.05,336.6,354.91,352.21,353.88,377.67,390.04,390.04,395.55,386.73,379.11,399.26,385.13,388.17,410.46,380.78,395.02,408.59,392.71,385.83,361.76,379.18,353.21,381.75,376.6,391.68,381.99,383.96,396.06,400.74,381.95,383.89,398.83,388.97,404.75,400.13,429.95,420.15,423.66,446.52,472.99,472.99,478.11,466.38,465.04,465.74,464.27,451.2,451.54,448.33,449.23,446.96,437.47,429.78,451.37,440.34,450.74,458.89,457.15,453.51,452.51,443.55,444.02,430.21,435.46,440.27,444.35,416.74,412.93,383.96,400.8,417.21,413,407.12,417.11,435.53,430.01,449.8,459.56,457.55,460.63,461.66,461.66,461.93,464.61,455.82,467.41,464.47,454.08,450.03,458.42,457.29,464.67,463.37,457.82,458.96,438.6,444.69,445.99,452.87,462.1,455.18,471.22,474.33,475.94,461.06,461.76,461.76,457.15,450.77,442.95,450.87,457.22,455.51,453.38,445.19,428.41,429.88,441.08,461.23,458.49,462.67,462.83,450.87,458.59,459.56,467.68,474.63,475.13,477.14,475.5,476.77,474.6,461.43,450.6,431.89,434.16,440.14,430.48,425.7,431.82,425.13,439.47,439.3,443.92,442.81,456.38,454.71,451.64,446.06,449.36,453.98,453.98,456.18,446.39,451.2,457.35,466.04,468.38,472.03,481.58,470.59,452.97,451.8,461.56,471.62,474.33,477.07,444.15,428.71,430.25,431.58,418.45,428.04,422.86,427.41,421.86,426.14,423.66,428.51,441.41,439.81,445.45,449.87,447.79,445.66,454.31,453.74,441.18,441.71,454.61,456.72,466.28,471.96,477.11,501.77,512.33,511.23,522.36,502.67,514.37,524.13,522.29,527.61,521.32,530.55,501.44,493.15,497.73,498.03,498.03,478.91,505.41,491.95,506.92,489.61,487.4,492.58,524.36,525.7,510.19,510.46,491.64,493.75,513.57,490.31,488.47,484.66,506.08,509.09,519.69,519.69,543.85,533.56,538.03,528.01,525.94,534.53,529.28,513.84,522.53,504.04,499.97,509.53,533.26,525.33,558.16,558.16,509.22,478.18,465.07,451.4,465.54,444.49,453.14,434.99,442.68,461.83,463.27,470.45,456.25,453.11,454.98,463.74,481.95,467.15,442.81,440.71,467.38,471.12,456.12,445.69,445.69,435.36,427.34,445.92,453.61,448.53,433.19,445.12,436.63,420.25,398.46,414.94,429.88,417.68,413.24,401.5,415.81,436.1,441.14,451.67,448.53,452.81,439.24,463.2,458.09,460.09,472.73,453.88,440.51,425.84,432.62,406.78,398.83,409.09,400.94,388.5,382.89,390.57,378.88,378.88,383.92,391.24,394.02,386.66,377.01,382.59,364.04,363.67,383.12,368.82,377.57,380.35,397.09,379.24,376,353.44,358.22,347.33,356.82,373.86,369.25,390.51,372.13,370.12,355.82,367.41,356.25,362.73,384.59,399.33,399.33,392.01,382.55,392.15,384.22,384.36,386.6,375.87,358.42,340.51,321.93,322.93,325.6,299.43,300.23,300.23,318.08,313.97,311.76,325.4,326.24,317.58,307.29,304.08,288.34,288.34,287.43,289.3,303.31,304.78,296.19,296.56,297.73,306.38,315.74,311.3,328.31,341.68,347.06,339.81,337.57,330.58,345.79,351.47,354.21,355.61,350.9,364.34,371.19,366.38,360.39,333.09,351.1,352.71,368.92,366.91,362.6,354.28,361.86,349.7,336.93,340.68,339.17,350.94,330.21,322.66,315.91,314.41,306.85,304.95,304.95,301.77,307.29,313.47,322.56,321.86,302.11,302.94,297.19,297.03,299.87,294.52,291.08,284.22,281.72,277.21,281.25,287.43,282.15,273.83,288.27,298.83,298.2,294.52,276.07,264.67,255.01,254.04,265.44,250.07,248.7,251.44,258.22,262.9,275.47,283.89,292.55,294.59,289.24,299.87,295.09,300.1,293.32,288.44,306.48,317.65,325.74,315.44,350.23,369.42,359.66,369.18,348.33,349.1,349.93,351.4,357.75,359.86,359.86,353.68,345.82,345.09,366.31,357.65,356.65,355.72,349.97,354.65,363,358.76,365.54,373.9,366.44,349.47,350.03,347.56,345.92,353.94,326.2,324.93,324.93,318.65,314.94,324.67,325.47,325.47,323.3,331.92,327.27,348.5,355.92,361.1,367.85,368.32,367.55,367.55,365.68,366.64,354.81,366.48,381.55,377.64,380.85,386.3,376,361.63,372.63,397.76,415.31,401,393.35,402.81,387.53,387.97,383.59,389.47,395.86,399.26,385.66,385.83,385.83,371.93,369.02,377.37,372.03,374.57,388.2,391.91,395.89,397.59,396.19,388.94,396.56,391.18,382.32,387.17,402.21,395.99,410.53,409.76,414.57,402.41,397.26,410.36,399.5,397.29,389.04,400.57,408.12,410.53,408.82,401.47,392.11,382.52,382.52,389.37,388.97,378.21,379.24,377.34,373.63,371.89,368.78,382.32,379.21,379.71,369.69,368.68,373.26,377.77,377.51,374.87,378.64,375.84,387.9,386.86,380.48,385.73,385.9,388,404.78,404.14,420.12,434.22,424.3,422.96,416.08,406.85,436.06,454.75,454.75,456.45,445.52,450.64,449.97,446.96,447.66,451.24,455.21,454.95,467.95,473.9,471.82,468.28,464.34,464.34,462.97,456.78,464.3,454.78,467.25,489.81,481.38,482.05,483.09,486.2,486.2,475.47,469.18,466.48,469.79,459.76,464.2,476.77,477.07,486.3,482.99,473.86,447.99,455.88,462.4,468.11,464.64,488.44,507.79,506.65,510.13,492.41,494.02,486.83,502.61,494.69,485.16,483.32,464,474.23,468.18,462.07,459.86,476.8,497.23,494.15,494.65,476.34,482.49,486.03,501.27,504.51,510.56,514.67,514.67,513.4,511.97,495.42,493.08,490.34,481.18,483.22,483.19,462.07,468.82,460.26,457.79,451.84,455.11,456.52,448.13,451.4,461.97,462.73,466.28,456.95,465.57,465.51,468.88,468.42,472.59,475.2,484.63,471.72,471.26,477.01,472.76,449.3,448.26,448.63,450.87,434.86,437.3,438.84,437.93,442.35,452.17,462.93,467.08,469.12,473.73,482.05,478.51,503.61,500.47,514.97,519.28,517.41,496.62,509.93,498.83,499.6,499.6,502.47,504.04,494.85,499.2,500.6,506.65,495.55,488.47,483.62,495.96,493.72,518.52,525.47,524.7,540.57,541.28,535.96,542.55,524.47,539.41,541.61,541.61,549.06,548.83,545.19,541.68,515.94,506.18,499.03,497.99,506.55,504.78,500.7,507.85,505.51,505.51,513.9,512.6,535.9,561.3,562.5,558.32,582.02,576.97,557.82,563.1,555.61,549.13,558.05,562.1,571.82,563.84,571.19,581.18,621.12,620.12,602.64,622.29,627.21,667.01,667.01,632.15,636.13,667.55,658.96,680.31,678.01,660.23,673.86,702.71,700.17,693.15,709.12,710.59,687.03,673.03,684.96,670.32,670.96,663.94,670.89,672.93,685.36,704.55,702.71,696.72,690.74,695.19,689.27,689.27,697.49,688.87,693.11,679.78,694.69,698.66,703.24,699.36,711.83,694.72,687.43,700.13,668.08,649.47,634.26,633.22,645.86,655.28,660.09,679.75,686.03,663.94,648.36,661.46,682.12,698.06,692.91,693.05,689.61,700.97,690.61,701.27,726.91,715.34,708.82,735.13,734.63,729.11,728.44,738.27,738.27,739.71,732.12,723.73,718.85,715.94,709.29,746.56,741.14,741.08,762.57,768.62,794.28,793.95,792.21,811.7,828.31,828.31,802.11,786.8,768.18,782.99,775.97,777.17,788.74,793.48,805.01,813.2,813.2,810.8,823.16,840.47,852.17,806.35,813.5,820.69,821.66,735.53,727.44,702.74,746.89,734.12,690.27,676.2,690.07,687.07,657.55,709.22,656.08,607.65,607.92,612.67,596.62,636.86,638.97,645.35,671.12,673.9,707.99,694.85,705.01,689.04,698.93,669.12,677.37,655.85,654.31,644.69,644.99,659.29,659.29,612.87,609.56,602.41,584.06,593.42,595.09,621.46,612.33,629.91,626.94,630.31,622.13,657.45,642.25,648.53,657.69,659.46,700.57,684.89,675.3,659.09,672.29,667.08,675.03,668.88,671.39,685.36,681.68,685.36,714.87,638.44,616.95,612.43,622.86,616.51,611.63,610.63,614.14,623.4,619.45,635.43,619.32,606.89,612.9,607.69,623.26,626.74,648.7,641.81,630.21,623.7,610.93,621.66,564.44,570.62,565.88,569.82,587.4,584.49,583.39,578.88,572.59,572.59,583.92,612.53,612.17,605.48,574.97,578.28,574.4,562.07,571.96,565.11,566.01,566.21,569.32,552.97,539.57,546.76,559.69,562.73,562.73,559.99,557.59,546.93,543.55,547.69,568.38,593.18,594.32,591.54,591.54,573.7,571.06,580.38,596.19,623.26,641.88,641.88,644.62,653.44,637.37,624.16,583.46,577.71,585.83,607.35,602.77,597.59,596.79,603.84,610.96,601.6,613.84,612.3,604.58,615.88,565.51,565.51,574.87,581.75,588.27,574.8,563.4,553.28,563.2,523.53,528.31,508.46,510.93,519.12,506.48,520.32,501.3,491.28,498.2,501.17,520.25,519.59,513.07,516.24,515.98,508.42,517.88,513.5,503.61,493.58,484.83,485.03,486.83,493.82,452.91,424.3,444.02,431.02,500.43,462.03,484.43,483.05,486.13,461.86,459.43,459.43,453.07,462.23,479.88,501.91,506.52,503.98,499.83,503.71,497.86,518.38,516.74,511.46,520.76,521.39,520.09,561.46,578.31,582.02,584.06,553.38,554.61,553.91,542.21,536.5,526.44,526.44,540.88,540.07,533.02,523.9,525.64,540.57,541.21,548.76,557.29,567.48,580.78,577.51,584.89,570.15,590.07,581.85,577.67,577.67,566.38,574.73,602.21,611.86,613.37,612.33,611.86,614.17,635.06,638.54,638.54,637.63,651.7,653.04,661.86,661.53,658.76,666.08,651.1,643.45,636.5,643.75,625.47,625.03,628.74,620.62,635.93,629.71,632.99,601.8,601.57,611.03,598.76,595.39,612.13,617.88,616.24,629.85,635.13,629.14,540.64,546.56,542.18,537.97,534.22,543.08,541.41,549.83,549.43,552.37,537.3,537.3,526.64,522.23,528.88,543.95,541.61,546.46,546.19,568.68,560.83,571.29,580.01,595.35,634.22,635.36,670.19,671.36,673.26,667.11,681.55,684.99,684.29,727.74,747.29,727.04,748.36,707.09,726.97,736.3,701.7,733.56,729.24,760.63,761.1,751.97,762.47,755.35,737.17,763.6,764.54,773.16,760.83,787.93,777.24,779.08,794.49,769.35,805.11,780.51,768.95,785.7,764.27,771.16,746.09,755.38,764.41,752.41,785.86,736.06,748.7,771.76,810.36,835.46,835.46,843.08,851.44,886.8,897.83,900.53,895.72,896.26,892.85,919.62,902.77,866.34,873.23,865.11,829.78,847.26,856.99,865.68,869.75,871.59,871.59,875.33,879.18,868.88,858.92,898.63,950.27,989.34,976.6,941.31,1006.62,1026.87,1018.95,1008.99,1066.44,1092.95,1092.95,1063.6,1087.03,1065.47,1077.47,1067.71,1112,1125.5,1140.84,1077.27,1097.59,1065.07,994.65,1016.01,1077.91,1104.85,1099.83,1135.96,1097.56,1186.2,1186.2,1200.3,1234.29,1236.06,1254.61,1248.5,1263.13,1320.02,1255.75,1244.32,1243.92,1174.2,1195.72,1158.19,1085.36,1132.82,1156.02,1173.36,1127.24,1141.48,1157.02,1178.01,1168.01,1193.88,1193.38,1209.19,1249.97,1234.43,1131.52,1126.91,1079.95,1142.35,1182.49,1164.67,1164.67,1178.54,1184.19,1289.17,1329.58,1335.19,1322.63,1322.33,1317.71,1303.14,1326.67,1308.89,1317.95,1348.53,1349.97,1393.85,1353.14,1273.76,1278.71,1318.48,1300.4,1308.09,1373.06,1432.55,1372.46,1455.35,1482.69,1441.18,1459.26,1472.46,1459.29,1382.25,1359.99,1426.64,1428.34,1444.39,1444.39,1520.35,1498.16,1502.94,1504.21,1531.32,1637.87,1673.7,1676.8,1514.07,1644.95,1668.48,1661.13,1847.06,1895.89,1957.82,1899.16,1981.68,2062.53,2062.53,2139.64,1958.16,1968.48,2232.62,2095.05,2321.66,2416.44,2175.5,2015.51,2015.51,1981.25,1853.28,1906.75,1967.45,2013.7,1923.09,1990.98,1936.6,1874.77,1770.25,1757.02,1886.86,1851.34,1881.02,1792.28,1727.57,1592.45,1458.72,1677.04,1696.76,1731.99,1826.94,1785.56,1762.97,1801.94,1745.05,1756.72,1832.05,1786.56,1695.12,1789.14,1719.02,1658.32,1658.46,1645.45,1618.28,1604.41,1603.48,1612.17,1543.01,1532.05,1476.77,1465.44,1456.92,1519.75,1519.75,1580.18,1567.01,1517.41,1525.7,1417.81,1407.65,1388.3,1395.05,1485.86,1551.6,1579.08,1585.49,1585.06,1620.99,1626.87,1711.26,1709.16,1769.05,1804.95],"테슬라":[100,98.93,97.55,94.06,92,94.03,93.64,94.3,93.7,91.96,90.76,93.17,95.26,93.17,93.63,94.88,94.68,94.64,95.47,93.58,92.53,89.28,87.98,87.7,89.17,90.41,91.22,88.94,86.73,88.24,84.91,85.99,86.07,88.28,86.58,86.35,89.46,90.38,90.38,92.02,91.77,88.71,88.63,85.11,84.92,87.41,86.97,90.38,89.98,89.93,90.05,92.72,92.98,92.46,94.75,94.87,97.7,97.19,97.54,99.83,99.83,102.73,102.83,100.46,100,100,101.54,106.22,106.11,107.16,108.23,107.57,107.5,107.44,111.25,111.25,110.24,111.54,114.07,114.52,116.48,119.14,119.08,118.16,118.37,117.28,117.89,116.63,117.71,117.61,120.62,120.49,122.64,125.97,125.99,131.31,131.48,130.91,125.85,127.39,127.39,129.8,127.99,119.79,120.26,115.22,116.98,117,117.21,117.72,117.55,116.33,115.52,114.6,114.03,115.19,120.73,119.67,122.63,122.37,122.56,117.3,119.33,119.22,123.14,126.45,129.83,129.8,130.05,130.23,139.69,142.12,138.04,139.78,141.57,146.18,144.46,138.91,142.26,142.26,141.06,140.5,142.97,141.56,143,144.14,146.84,145.14,144.42,146.97,151.07,149.22,145.54,138.26,144.29,143.75,150.33,152.19,151.19,151.99,147.81,148.34,143.24,146.5,145.45,145.23,142.19,145.17,148.26,152.15,152.15,156.81,159.57,159.27,159.03,162.53,165.11,168.3,173.14,167.21,168,175.92,178.13,175.64,173.8,173.05,174.19,176.13,179.04,179.43,176.64,169.57,173.72,168.81,169.21,165.01,165.01,153.06,144.52,146.57,147.89,153.12,154.2,151.34,153.38,149.54,153.6,152.2,154.38,153.67,160.28,158.91,160.9,156.51,156.79,151.37,149.54,152.5,162.42,167.01,166.2,170.9,170.11,166.31,167.46,170.24,169.55,169.82,164.68,162.59,158.1,159.73,165.08,165.15,162.87,161.75,162.55,165.27,166.54,166.31,166.31,163.59,161.22,164.07,160.69,170.19,169.75,171.38,176.72,177.73,180.16,175.53,174.97,171.49,164.29,161.44,161.56,159.56,158.91,159.62,159.82,162.91,166.13,166.28,167,160.48,166.4,165.93,166.44,166.39,164.06,166.47,168.3,164.63,161.49,157.71,157.86,152.48,152.63,150.15,149.78,155.14,150.25,140.04,143.23,141.68,143.21,142.44,141.78,141.78,147.59,144.45,145.67,146.23,147.43,144.47,148.72,146.28,146.28,147.66,148.25,148.6,143.91,144.53,143.44,142.82,142.12,146.59,145.64,147.46,153.91,159.58,158.65,158.11,160.72,158.57,154.94,153.94,155.2,152.18,152.18,148.47,145.83,147.57,145.69,149.99,148.46,147.23,148.14,157.42,156.15,156.67,158.14,157.33,157.33,159.13,162.45,161.24,163.79,164.51,165.09,161.86,158,160.44,163.56,161.82,165.8,163.43,160.86,155.89,156.28,161.44,147.51,145.26,147.74,151.46,150.82,156.33,156.99,156.99,156.65,155.97,161.99,164.74,167.25,164.24,160.53,154.86,156.82,155.99,153.58,155.5,154,153.1,161.68,159.96,152.85,152.36,150.37,146.73,145.32,148.12,144.64,141.1,142.34,130.64,120.63,124.53,124.53,118.15,125.19,134.27,143.06,140.06,135.55,142.58,140.82,137.61,140.54,136.27,134.62,137.27,140.42,135.82,132.6,132.64,131.35,133.59,137.61,137.53,140.35,140.92,133.11,137.62,141.68,141.31,143.59,142.73,140.88,136.63,132.98,134.06,133.15,129.54,133.13,128.69,130.59,130.02,130.49,130.49,132.78,136.51,133.24,136.56,138.86,136.23,149.51,147.91,148.65,155.4,160.4,161.34,167.39,167.6,173.53,164.97,169.5,162.62,156.12,155.83,160.04,161.21,163.75,160.48,156.79,145.47,145.47,144.67,144.55,149.05,150.9,149.26,148.2,149.21,145.11,151,151.54,149.85,146.74,141.88,139.18,144.47,143.5,139.06,135.78,139.51,140.78,163.57,162.92,160.03,177.62,173.3,164.93,166.35,166.78,162.68,158.49,156.97,142.96,144.33,150.63,150.51,149.79,151.06,149.4,145.93,142.73,141.86,141.16,141.16,135.21,131.37,131.47,123.18,133.6,130.76,135.96,135.45,138.14,137.97,133.35,139.93,139.6,139.96,140.23,140.85,144.87,143.9,123.9,145.39,140.86,137.95,131.88,122.58,117.25,122.98,120.21,118.03,121.09,121.47,129.43,127.18,123.5,121.67,122.11,137.64,135,147.34,154.84,156.69,154.38,157.85,161.1,162.1,159.76,159.6,162.92,164.44,164.02,155.02,158.51,160.97,163.05,165.8,165.4,162.61,158.25,158.25,152.47,161.91,160.94,162.78,159.65,164.01,167.75,168.32,168.32,169.89,167.51,170.87,171.62,171.55,176.32,171.13,163.04,157.71,155.81,147.58,149.64,138.23,138.23,152.59,147.93,156.23,155.73,145.12,140.55,148.66,156.74,156.93,158.41,161.43,162.5,156.48,161.17,161.93,162.52,141.44,141.44,139.88,134.58,136.41,139,138.69,139.2,144.49,143.67,146.1,146.42,150.37,148.44,143.9,143.1,146.39,145.91,144.21,142.15,144.07,144.07,143.02,141.58,136.28,137.91,139.81,139.38,147.28,149.69,137.95,133.53,129.41,129.27,129.43,132.96,136.13,132.6,135.22,135.69,128.89,126.11,125.16,128.03,128.23,123.79,121.86,125.3,128.61,130.38,130.96,135.32,133.78,136.55,125.31,128.67,127.84,127.43,129.18,125.61,125.27,124.65,127.92,126.92,127.87,127.87,122.95,123.49,121.04,115.88,110.03,112.99,111.69,109.5,114.23,119.34,119.49,115.61,114.57,113.23,112.08,106.23,108.71,108.54,106.85,98.75,96.1,95.97,90.19,91.48,89.2,89.2,88.3,88.84,88.08,86.64,83.75,90.59,91.99,96.37,95.69,99.62,101.59,97.92,100.1,100.57,105.3,105.17,105.96,102.77,103.82,104.65,102.84,102.61,104.28,104.57,106.3,105.08,109.92,109.92,109.08,107.79,107.66,111.8,111.65,114.68,118.62,118.1,119.26,118.64,120.81,119.64,121.75,123.95,107.08,106.71,110.33,113.36,113.06,109.43,109.66,106.84,107.98,109.23,111.51,109.97,107.16,109.97,102.77,100.91,102.92,106.14,105.69,103.34,103.95,98.92,100.61,100.18,100.88,103.75,105.57,105.57,105.29,103.27,107.43,106.43,108.47,110.22,115.63,115.05,114.74,113.62,114.55,113.94,115.4,112.6,112.88,104.45,107.02,113.5,113.3,112.71,114.5,113.77,109.05,108.3,111.24,112.33,114.43,114.53,116,120.24,120.68,121.55,122.59,120.24,118.62,119.6,119.18,140.23,153.55,153.35,147.97,147.41,147.37,146.61,148.56,148.44,152.82,157.01,157.76,161.48,163.75,161.96,163.48,164.8,163.78,168.24,164.82,166.04,155.84,157.39,153.92,155.03,155.03,154.39,156.7,157.32,155.84,154.6,157.18,158.88,163.24,165.04,168.31,167.71,178.52,177.35,183.97,189.07,189.79,196.17,198.99,198.99,201.66,201.39,194.06,195.76,201.34,207.3,211.3,219.49,230.29,225.24,223.75,245.61,251.72,242.63,240.29,238.89,238.89,256.06,266.52,267.76,264.31,261.12,265.28,271.87,299.86,304.43,365,415.1,343.8,350.47,350.06,360.92,362.37,359.05,376.23,374.37,374.37,401.68,429.3,420.88,421.62,390.17,374.31,364.44,317.74,312.58,347.97,348.86,350.73,339.05,329.19,284.51,301.98,296.79,262.31,255.79,208.27,201.31,169.03,200.11,200.06,203.22,236.31,252.34,247.15,240.69,234.97,245.2,225.34,212.67,224.62,241.57,255.24,256.83,268.13,268.13,304.61,332.19,341.52,348.72,352.78,349.26,321.35,342.59,330.2,339.33,373.77,359.91,374.6,365.88,328.18,356.2,359.48,366.2,365.02,383.44,379.64,378.76,370.13,375.91,373.97,380.73,378.1,381.64,387.27,382.26,382.26,383.19,383.82,377.08,390.73,420.26,412.52,413.18,404.48,414.44,444.51,440.18,479.67,455.24,437.66,463.69,459.58,464.1,469.8,468.37,465.29,468.78,449.63,461.39,449.11,472.32,505.29,523.93,565.59,565.59,641.82,650.38,639.16,652.45,722.81,700.54,709.78,723.45,702.22,702.31,768.83,733.91,745.12,708.03,663.08,720.45,690.92,701.5,696.06,669.52,694.9,695.84,694.91,697.04,679.79,663.81,643.14,727.54,758.54,772.44,858.98,883.06,879.05,936.75,959.28,942.54,946.81,1007.57,1047.61,1035.75,1165.93,1111.49,1046.72,952.27,978.76,978.76,772.6,857,868.83,872.06,981.8,1052.32,1033.6,990.71,1034.51,1051.45,992.58,889.94,907.32,953.07,985.49,980.51,1003.77,1048.57,971.2,995.98,968.6,995.09,996.54,1015.44,1034.86,1045.04,1079.32,1050.26,1028.71,1008.03,987.23,988.86,996.23,984.16,983.34,993.64,949.98,961.23,907.91,937.08,991.81,984.98,1025.01,1005.97,985.63,960.13,975.97,963.41,955.78,954.82,1033.25,1138.61,1168.16,1145.55,1220.99,1299.44,1343,1343,1370.52,1328.03,1368.18,1330.88,1388.35,1401.59,1501.54,1520.54,1414.32,1467.17,1427.21,1497.03,1481.63,1457.11,1534.63,1626.11,1520.5,1498.22,1511.42,1548.36,1548.36,1552.85,1558.24,1625.6,1651.08,1707.46,1719.96,1768.79,1909.31,2059.01,1897.96,1987.46,1999.09,1977.07,1932.99,1932.99,1976.02,1989.82,1977.05,1980.91,2060.83,2066.19,2021.9,1954.68,1856.64,1964.93,2042.09,1999.74,1988.75,1993.99,2020.17,1987.51,1883.06,1899.06,1909.5,1909.5,1862.94,1867.45,1842.26,1828.03,1671.74,1635.1,1736.13,1596.21,1580.49,1680.93,1606.08,1528.31,1454,1399.04,1317.27,1575.99,1563.08,1636.87,1623.14,1656.39,1583.72,1642.04,1528.22,1532.22,1567.62,1549.27,1474.66,1498.34,1447.61,1430.25,1487.18,1562.77,1548.32,1548.32,1616.87,1618.2,1569.89,1599.91,1584.04,1642.44,1783.62,1713.22,1728.71,1730.88,1672.04,1682.24,1741.04,1683.88,1706.6,1727.19,1648.9,1624.71,1584,1659.9,1602.48,1576.04,1569.82,1552.5,1573.16,1471.78,1444.08,1380.18,1337.6,1379.83,1349.63,1352.06,1318.34,1372.91,1359.1,1418.9,1414.81,1448.6,1476.02,1462.85,1462.85,1459.76,1415.82,1340.29,1401.61,1415.84,1412.24,1400.98,1427.52,1426.98,1445.23,1402.34,1415.23,1442.68,1458.38,1452.57,1459.31,1536.2,1590.59,1571.99,1611.42,1592.79,1590.31,1586.15,1588.44,1588.44,1543.24,1508.31,1527.4,1537.08,1604.35,1564.2,1528.73,1522.23,1507.3,1511.98,1545.39,1533.2,1519.09,1505.33,1538.65,1508.61,1513.76,1584.82,1607.86,1660.44,1660.6,1663.36,1672.04,1635.7,1670,1661.18,1656.11,1689.87,1677.98,1605.45,1557.58,1612.05,1575.74,1591.62,1652.55,1657.67,1664.01,1640.52,1665.7,1710.13,1721.39,1717.57,1713.59,1716.35,1716.35,1761.63,1763.85,1766.17,1722.67,1738.42,1741.9,1768.44,1771.15,1777,1708.4,1729.95,1759.34,1763.31,1811.86,1851.57,1819.28,1828.05,1814.41,1813.8,1828.57,1826.37,1831.42,1856.83,1837.83,1852.92,1885.17,1897.71,1914.65,1972.46,2035.82,2022.16,2025.74,2091.72,2128.4,2397.89,2382.85,2428.31,2519.98,2606.46,2827.77,2742.16,2840.1,2877.66,2859.36,2720.96,2394.71,2498.71,2488.32,2417.92,2371.06,2467.78,2547.99,2565.23,2660.41,2706.76,2594.83,2611.14,2611.14,2531.4,2660.25,2678.43,2562,2537.67,2374.75,2360.81,2460.81,2501.08,2348.62,2379.57,2261.14,2242.65,2283.55,2168.74,2181.96,2105.62,2195.91,2360.48,2496.49,2496.49,2559.52,2546.72,2541.39,2504.31,2472.58,2807.16,2689.73,2545.91,2491.11,2402.81,2475.71,2490.41,2588.25,2413.57,2455.8,2455.8,2411.11,2329.55,2331,2208.47,2175.95,2148.81,2193.28,1939.87,1980.23,2191.67,2178.87,2119,2085.03,2160.32,2122.93,2157.23,2180.63,2116.4,2012.17,2049.04,2158.24,2160.48,2050.42,2005.1,2005.1,1922.16,1787.65,1873.58,1894.88,2036.57,2022.39,2058.7,1963.71,1961.37,1882.5,1928.87,2009.76,1961.39,1860.9,1793.1,1876.2,1965.91,2039.31,2118.37,2155.26,2325.64,2337.65,2372.3,2364.62,2554.61,2572.7,2559.64,2521.29,2537.65,2680.04,2553.25,2446.79,2473.7,2399.37,2283.41,2309.2,2392.07,2304.63,2304.63,2349.77,2405.59,2286.38,2360.27,2351.54,2335.1,2050.59,2062.49,2053.14,2037.34,2112.63,2127.4,2228.87,2043.24,2025.39,1841.62,1871.88,1717.36,1703.32,1800.63,1694.83,1781.96,1660.76,1659.85,1553.35,1579.08,1469.72,1541.41,1655.9,1777.33,1777.33,1774.12,1732.26,1813.29,1646.12,1672.53,1676.79,1697.71,1682.55,1630.07,1514.3,1550.47,1635.47,1495.79,1521.48,1521.48,1663.8,1657.14,1650,1724.66,1719.14,1633.11,1603.81,1575.62,1595.2,1595.2,1635.94,1626.58,1716.5,1760.15,1644.9,1635.96,1663.83,1672.77,1685.07,1688.44,1723.42,1737.25,1907.16,1910.93,1884.18,1816.99,1929.01,1971.69,2085.75,2086.64,2109.87,2157.67,2166.35,2022.72,2038.54,1988.77,2066.14,2011.91,2105.97,2171.17,2151.82,2133.81,2125.9,2082.36,2034.96,2080.86,2085.38,2078.17,2022.16,1999.2,1949.23,1934.56,1945.44,1896.65,1896.65,1926.21,1991.34,2030.37,2103.51,2136.78,2050.51,2124.08,2132.08,2129.27,2169.42,2167.03,2111.37,2025.67,1932.59,1937.37,1986.01,2020.19,1882.62,1861.84,1701.45,1750.87,1690.29,1671.48,1565.77,1565,1519.65,1524.85,1556.29,1438.86,1539.66,1545.55,1558.54,1454.94,1505.19,1482.8,1561.21,1576.79,1579.95,1604.02,1597.15,1599.11,1508.98,1511.3,1456.27,1383.34,1342.77,1246.54,1338.7,1375.55,1340.31,1364.67,1312.03,1285.7,1264.79,1178.31,1192.63,1285.91,1285.91,1283.53,1283.95,1269.28,1366.64,1366.64,1367.76,1280.65,1262.19,1221.62,1217.41,1256.79,1177.96,1129.74,1100.61,1106.71,1054.49,1051.97,967.24,965.63,879.85,864.41,864.41,765.79,791.13,855.08,864.62,864.62,758.77,797.66,774.5,793.59,840.69,834.23,864.9,867.29,859.15,859.15,922.95,903.93,892.63,936.5,1009.01,1009.99,1013.78,1124.96,1248.71,1169.82,1215.86,1273.35,1321.5,1333.5,1367.06,1381.45,1412.89,1455.22,1382.01,1366.21,1468.76,1503.79,1418.16,1462.17,1462.17,1385.38,1409.87,1418.37,1381.94,1457.39,1443.92,1423.28,1339.96,1388.32,1360.39,1317.57,1277.49,1213.76,1217.41,1224.71,1286.34,1266.61,1292.44,1264.37,1286.27,1386.85,1341.72,1349.23,1336.52,1346.35,1327.96,1360.88,1370.71,1456.2,1367.13,1351.75,1302.2,1298.97,1298.97,1295.11,1311.11,1267.24,1304.87,1298.55,1312.87,1293.71,1267.59,1144.06,1158.73,1140.97,1127.77,1079.2,1124.4,1153.32,1135.91,1125.25,1127.35,1131.49,1193.68,1205.83,1187.3,1183.01,1207.86,1179.08,1167.64,1168.83,1220.36,1241.62,1264.44,1325.71,1303.95,1283.81,1294.83,1355.9,1355.9,1411.98,1431.42,1456.62,1501.9,1527.44,1553.42,1576.3,1648.53,1715.49,1753.6,1815.93,1802.46,1796.21,1828.78,1828.78,1926.42,1821.2,1857.35,1801.12,1691.97,1756.27,1798.6,1807.44,1837.41,1964.11,1964.11,1982.78,1941.09,1926.28,1892.44,1893.71,1909.15,1950.63,1975.06,2038.23,2059.01,2044.41,1845.34,1825.13,1888.58,1862.05,1855.52,1794.88,1870.19,1877.14,1832.5,1783.65,1820.22,1781.89,1764.97,1752.69,1699.98,1722.09,1703.21,1682.92,1635.19,1583.53,1538.75,1512.56,1623.4,1636.8,1662.56,1614.69,1674.71,1676.32,1805.19,1803.23,1811.51,1719.77,1719.77,1800.35,1768.27,1765.26,1744.27,1920.31,1877.49,1904.3,1937.58,1925.99,1862.05,1870.61,1843.17,1794.81,1718.86,1733.67,1713.52,1688.11,1729.39,1756.34,1766.03,1730.44,1833.13,1825.34,1828.71,1822.67,1850.4,1845.98,1817.06,1762.66,1782.31,1788.84,1703.42,1544.99,1488,1488.63,1519.79,1491.02,1444.27,1455.08,1385.31,1409.73,1443.57,1533.76,1543.94,1539.1,1559.52,1559.03,1473.89,1506.67,1570.26,1666.42,1704.54,1639.61,1644.6,1653.72,1693.03,1643.96,1643.96,1652.67,1657.09,1731.77,1713.66,1685.17,1676.39,1653.58,1675.62,1680.18,1703.14,1711.56,1682.78,1663.62,1679.62,1762.17,1779.36,1769.4,1805.47,1734.72,1786.38,1772.63,1772.63,1801.19,1835.1,1777.12,1744.13,1743.71,1673.72,1670.07,1666.99,1687.76,1649.23,1642.07,1594.9,1536.43,1536.43,1543.59,1512.99,1487.23,1489.4,1465.61,1467.99,1458.8,1281.91,1286.27,1340.17,1344.81,1314.62,1325.64,1318.98,1270.89,1299.25,1316.66,1330.56,1358.7,1320.52,1291.67,1324.59,1407,1403.49,1403.49,1360.04,1367.13,1385.66,1347.47,1399.63,1401.94,1418.16,1417.03,1422.37,1320.59,1268.65,1239.17,1253.98,1230.74,1247.8,1246.19,1189.61,1140.62,1148.13,1219.93,1202.53,1232.99,1213.06,1199.09,1211.72,1247.1,1262.26,1233.9,1233.9,1229.9,1169.61,1181.89,1201.05,1157.46,1214.18,1241.55,1205.62,1225.55,1200.63,1133.46,1102.78,1091.13,1052.39,1032.17,997.08,1015.54,1138.02,1194.52,1181.26,1362.07,1286.48,1263.38,1263.52,1271.81,1296.86,1248.08,1226.39,1207.09,1182.52,1206.53,1246.26,1221.27,1227.23,1245.62,1228.01,1309.78,1264.23,1219.51,1258.12,1258.12,1240.64,1236.71,1254.96,1249.98,1237.41,1226.74,1228.36,1248.99,1245.77,1219.86,1197.89,1244.43,1280.79,1249.49,1315.68,1297.57,1297.57,1274.47,1284.58,1281.56,1315.04,1378.36,1385.73,1388.96,1473.05,1623.26,1729.46,1729.46,1765.47,1775.43,1841.34,1847.87,1691.83,1742.37,1773.33,1800.84,1744.27,1749.39,1678.99,1765.4,1729.39,1516.07,1545.98,1542.82,1629.15,1562.61,1628.94,1522.18,1457.67,1395.98,1408.33,1346,1395.69,1403.84,1386.22,1458.8,1413.52,1503.09,1516.99,1563.31,1551.94,1567.17,1478.66,1546.47,1496.56,1468.48,1444.2,1447.92,1502.88,1502.88,1478.24,1540.08,1615.61,1479.15,1518.04,1587.53,1601.29,1613.08,1616.45,1591.81,1599.46,1594.76,1712.12,1672.32,1754.8,1784.77,1804.07,1784.42,1828.22,1836.43,1811.09,1747.92,1689.24,1755.36,1690.43,1716.19,1691.97,1675.97,1528.78,1538.32,1541.2,1553.56,1550.47,1549.13,1536.15,1529.97,1499.65,1828.36,1889.49,1842.61,1821.62,1807.79,1753.74,1747.64,1704.54,1764.9,2025.25,2084.07,2254.7,2456.71,2305.73,2318.02,2184.23,2251.19,2377.68,2428.64,2400.77,2384,2474.68,2376.63,2374.1,2336.62,2336.62,2422.74,2506.48,2466.68,2512.38,2593.52,2732.01,2736.01,2814.62,2981.54,2934.72,3061.98,3250.02,3368.23,3089.35,3061.56,2955.5,3022.46,3244.83,3244.83,3187.62,3029.9,2929.88,2834.63,2662.24,2880.95,2885.24,2768.09,2772.16,2772.16,2770.75,2830.91,2782.12,3005.76,2904.68,2993.68,2993.68,2976.63,2913.73,2894.57,2853.86,2787.67,2794.27,2731.17,2809.64,2839.96,2693.12,2752.99,2654.45,2627.42,2538.28,2461.84,2305.8,2362.03,2498.41,2497.71,2497.71,2485.56,2530.84,2487.6,2371.08,2320.05,2125.41,2041.18,1979.06,2056.48,1998.01,1909.5,1959.05,1849.2,1843.73,1559.31,1618.48,1741.39,1689.38,1754.66,1670.64,1581.49,1655.55,1658.35,1745.74,1954.07,2022.51,1909.64,1917.15,1849.91,1819.09,1884.37,1984.75,1876.09,1680.6,1637.51,1557.28,1910.62,1771.64,1771.01,1771.29,1783.65,1695.48,1694.22,1694.22,1596.86,1670.36,1759.99,1821.55,2000.12,2006.64,2049.81,1980.53,1969.02,2015.98,1967.2,1932.73,1938.84,1999.2,2093.54,2234.77,2344.9,2440.43,2406.32,2456.57,2401.19,2413.34,2348.76,2393.82,2381.89,2381.89,2547.19,2505.15,2515.89,2431.87,2405.4,2416.49,2330.72,1998.36,2071.64,2165.98,2288.89,2291.27,2239.89,2283.41,2310.22,2220.52,2260.53,2260.53,2261.3,2447.45,2389.82,2299.13,2286.71,2271.62,2229.71,2110.74,2215.61,2213.5,2213.5,2063.22,2090.38,2076.84,2175.04,2200.58,2224.38,2181.42,2257.86,2242,2313.87,2305.73,2331.14,2334.3,2142.96,2218.48,2285.38,2254.56,2239.4,2163.8,2124.22,2170.75,2166.96,2245.51,2262.07,2313.87,2379.71,2392.42,2382.17,2355.5,2320.26,2352.55,2311.49,2273.51,2246.91,2386.59,2432.85,2468.44,2453.91,2428.5,2343.5,2343.5,2311.84,2345.04,2376.2,2462.61,2431.45,2435.45,2441.2,2588.75,2779.18,2878.15,2959.43,2989.19,2925.95,2990.66,3047.8,2989.12,3108.03,2971.85,3091.25,3110.97,3121.57,3225.03,3060.36,3017.06,3181.45,3039.94,3079.25,3057.14,2902.36,3059.66,3012.92,3054.4,3009.48,3083.6,3140.59,3106.69,3081.21,3151.47,3044.36,3175.62,3232.69,3239.42,3089.14,3204.68,3287.58,3118.34,3243.36,3129.93,3014.88,3125.15,3085.77,3022.46,2821.64,2838.21,2870.29,2816.45,2835.68,2774.19,2745.13,2932.48,2943.85,2994.24,2994.24,3019.44,3019.23,3012.92,3135.75,3190.43,3193.73,3085.49,3124.73,3168.81,3136.8,3221.53,3336.29,3438.56,3279.78,3392.86,3377.63,3430.49,3408.24,3407.11,3407.11,3335.45,3226.3,3189.73,3156.67,3074.89,3170.36,3039.03,3028.15,3058.96,3123.61,3151.33,3138.98,3082.83,3078.4,3070.89,3070.89,2942.79,3028.36,3154.14,3152.04,3054.75,3024.57,3028.5,2923.91,3021.13,2960.76,2961.82,2849.86,2788.09,2885.66,2929.25,2984.63,3006.11,2927.49,2930.09,2930.09,2882.29,2887.13,2889.87,2890.64,2806.48,2873.51,2929.81,2867.9,2825.29,2830.98,2754.54,2849.37,2846.63,2784.72,2798.41,2802.34,2862.56,2772.65,2745.91,2776.51,2802.55,2757,2669.4,2582.78,2673.26,2688.56,2709.05,2611.91,2539.75,2493.78,2609.38,2676.13,2531.05,2531.05,2476.51,2433.2,2409.34,2425.97,2449.34,2473.7,2556.39,2751.17,2729.76,2812.03,2755.03,2712.35,2720,2623.21,2641.32,2657.96,2639.35,2616.75,2678.73,2743.24,2755.1,2733.06,2798.76,2890.43,3006.67,3123.54,3042.47,3125.43,3111.6,2963.78,2877.8,2836.52,2928.83,2932.97,2990.24,2990.24,3043.45,3090.97,3103.18,3058.89,2919.14,2974.31,2974.03,2937.18,2744.5,2870.5,2784.37,2678.45,2801.71,2852.81,2885.94,2840.38,2782.26,2811.11,2811.11,2843.12,2678.59,2635.91,2633.04,2665.25,2890.78,2952.27,2985.26,2761.7,2761.7,2946.44,2828.03,2765.98,2853.65,2862.14,2770.89,2780.86,2768.79,2744.92,2673.19,2594.08,2659.78,2625.25,2243.96,2197.22,2170.47,2157.98,2093.96,2167.88,2184.44,2260.74,2297.73,2257.02,2242.84,2306.36,2322.51,2336.06,2298.85,2386.24,2402.46,2381.61,2364.55,2464.58,2422.53,2546.98,2449.34,2458.47,2427.37,2490.48,2447.94,2582.71,2499.46,2505.92,2641.81,2485.35,2485.35,2584.18,2581.73,2551.9,2565.09,2519.68,2502.9,2513.43,2570.43,2556.88,2634.3,2659.57,2668.13,2652.83,2611.91,2509.01,2476.65,2490.48,2485.56,2601.24],"팔란티어 테크":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,100,99.58,96.84,95.05,104.21,105.26,105.26,104.74,104.11,99.68,98.32,104.32,102.21,100.74,97.58,96.84,101.89,99.89,104.74,115.26,114.21,113.16,106.63,110.95,110.53,112.84,125.05,145.58,154.42,147.37,168,153.47,166.32,167.68,187.89,188.42,199.79,191.05,221.47,250.74,305.79,305.79,291.16,285.37,270.21,236.95,252.95,251.05,304.63,300.95,280.32,284.63,286.32,286.74,278.21,272.84,286.63,273.37,300.11,295.16,302,292.11,292.11,269.79,259.58,264.21,247.89,246,258.95,247.79,263.16,265.26,272.95,275.58,268.42,262.32,269.89,269.89,280.21,277.26,273.47,342.95,381.37,372.32,410.53,375.37,370.32,357.47,326.53,334.32,337.37,358.42,379.47,401.79,375.79,348.53,335.89,335.89,293.05,285.05,264.95,305.26,294.74,281.58,277.79,252.21,251.58,261.16,257.68,248.32,260.32,252.11,237.05,255.37,260.53,281.37,283.37,282,269.58,265.37,252.42,256,254.95,244.84,230.32,237.68,237.68,228.74,232,245.16,242.84,242.84,246.74,244.95,241.05,246.42,253.05,245.68,267.58,249.47,243.68,236.53,230.95,229.26,238.21,240.63,246.42,253.79,251.37,251.05,246,242.53,234.74,227.79,222.63,211.47,207.89,194.42,212.74,198.84,193.37,211.37,215.37,223.58,217.58,216.95,218.42,223.37,226.11,232.84,238.95,241.58,241.58,242.74,257.37,248.74,252.95,257.47,256.63,254.42,254.11,259.68,263.16,256.95,261.05,267.89,267.05,267.58,267.37,276.53,279.26,281.89,288.21,280.32,277.47,260.21,257.26,257.26,259.79,240.95,242.95,245.16,241.58,236.32,226.95,226,224.95,226.74,233.47,237.05,232.32,229.58,232.95,228.21,237.47,233.47,228.53,232.63,234.11,234.74,237.05,229.68,241.37,241.26,235.26,262,262.11,257.89,252.32,266.11,254.32,252.74,261.26,264.21,256.32,261.79,270.63,271.16,277.26,275.79,279.05,280.42,280.42,281.05,269.26,275.05,276.63,271.89,276.42,285.05,301.37,302.21,279.47,280.21,288.74,302.84,300.63,289.16,266.74,258.11,253.05,256.11,243.89,244.32,248.21,249.79,247.37,247.68,249.37,254,256.32,252.63,255.37,259.89,254.95,260.84,257.16,267.47,268.63,263.79,269.89,272.42,279.58,272.84,274.95,278.63,273.68,281.58,255.26,237.05,242,240.32,246.42,243.47,236.74,226.32,225.37,217.37,216.74,222.21,222.21,221.37,221.79,217.37,204,207.26,199.79,197.89,204.84,208.63,202.21,199.37,193.68,196.21,198.53,193.05,200.63,189.05,198.95,198.74,199.26,199.26,199.37,195.47,191.26,196.74,191.68,195.05,191.26,178.53,176.21,174.32,173.68,177.79,176,168.53,168.53,168.53,157.58,153.26,153.89,142.42,141.05,137.47,134.21,129.26,133.79,144.32,149.47,140.21,131.05,136.21,136.63,138.42,146,142.74,138.21,139.58,149.16,147.05,123.89,116,116,110.32,109.79,124.53,120.74,124.74,128.21,126.95,119.37,115.37,116.95,116.21,122.63,124.95,119.89,110.53,113.37,124.11,129.68,134.95,132.53,139.68,138.74,140.95,136.53,141.26,149.47,146.11,144.53,145.58,154,146.21,136.84,135.16,133.68,133.26,131.16,135.79,130.74,130.74,127.89,135.89,134.63,129.79,125.89,127.47,117.05,111.16,115.26,109.47,113.05,111.05,115.58,106.53,99.79,78.53,76.74,70.63,77.26,87.79,84.63,88,84.32,87.47,85.05,84.32,79.47,83.79,88,93.16,93.16,91.37,89.05,97.89,94.11,94.53,96.11,96.63,91.37,86.95,80.42,82.32,85.47,80.74,86.74,86.74,91.68,94.84,99.58,107.26,101.26,98,97.16,95.47,97.58,97.58,106,103.16,107.16,107.05,100.63,99.89,97.68,93.68,95.16,95.05,98.32,106.42,110.42,103.58,101.89,98.95,105.47,106.63,108.95,110.21,114.95,117.89,119.16,120.53,103.37,97.37,100.95,99.16,104.32,104.32,102.53,99.26,96.32,89.58,84.95,84.32,85.26,88.63,83.58,82.21,82,81.26,78.84,77.89,77.89,76.63,77.79,79.26,82,84.32,78.74,80.32,84.32,81.89,82.74,80.21,80.95,77.58,77.89,79.26,80.32,83.58,85.05,85.58,86.74,89.05,88.63,89.16,85.79,84.84,84.63,84.95,85.05,79.26,83.58,85.89,83.26,84.63,87.26,87.05,91.16,90.21,90.53,90.95,92.53,91.05,86.53,85.05,83.47,73.89,75.89,73.47,80.42,88.53,85.26,87.79,84.84,80.21,77.79,75.68,76,77.58,77.58,76.63,75.37,74.53,78.95,82.74,80.63,75.68,73.58,74.42,74.95,74.84,76.74,78.95,77.37,73.79,72.63,66.84,66.42,68.42,66.53,66.21,66.21,63.16,63.89,67.37,67.58,67.58,67.26,69.26,66.53,67.37,68.42,70.53,73.47,73.79,73.26,73.26,74.42,72.63,70.84,73.89,77.68,73.89,76,76.21,79.47,77.58,81.89,86.32,94.63,88.53,87.47,87.68,86.53,83.68,79.05,80.11,97.05,106.42,102.21,96.84,96.84,89.16,88,86,85.16,84.53,82.53,80.95,83.89,87.68,87.16,87.16,85.58,80.95,77.37,82.84,83.05,83.16,84,82.95,85.05,88.95,86.42,87.68,86.32,84.63,84.21,86.53,85.79,88.95,88.21,87.89,84,85.16,85.16,88.32,90.63,87.68,90.32,92.74,92.63,91.89,89.37,85.79,86.11,85.26,81.47,81.47,82.32,81.58,81.89,79.89,79.58,77.68,78,81.47,100.53,104.63,104,100,100.21,99.68,107.89,123.58,123.26,124.63,133.05,128.74,135.16,143.68,143.68,154.84,154.84,153.05,152.84,160.42,162.74,154.63,159.89,158.11,164.74,168.42,167.47,174.74,171.58,171.58,166.21,154.11,147.89,147.68,146.74,153.79,160.84,160,161.37,163.37,163.37,165.26,159.26,161.47,171.58,173.58,174.63,176.21,172.63,183.16,190.32,190,180.32,172.95,171.79,174.21,172.95,170,187.47,208.84,210.42,199.68,196.95,191.58,189.37,179.37,160.53,162.21,162.21,165.47,161.79,162.63,148.95,151.58,152.63,154.42,161.05,148.84,152.95,154.11,162.11,171.89,157.68,159.79,159.79,160.11,161.05,160.11,159.26,166.21,164.11,164.21,166.63,161.37,162.74,159.47,155.16,147.37,148.74,149.68,146.95,156.32,166,168.42,167.16,156.84,165.58,166.42,174.84,185.37,187.37,188.63,188.84,182.74,182.74,187.79,181.05,179.58,169.58,170.53,175.16,164.11,160.95,158.63,154.63,155.79,157.05,189.16,198.84,195.16,197.89,194.63,192.32,207.05,207.47,209.89,210,208.11,215.68,224.63,208.42,207.26,207.26,202.11,200.84,207.47,208.84,211.05,213.37,193.68,192.63,180.32,181.26,187.05,187.05,184.21,188.11,191.68,191.58,187.79,188.95,181.58,185.16,183.26,183.26,186.11,183.89,184.84,180.74,174.53,169.37,171.05,168.21,175.47,172.53,176.74,175.58,176.42,176.42,174,172.53,172.63,176.63,185.26,182.42,176.32,173.26,172.11,179.89,176.21,169.37,171.89,179.16,176,230.21,248.42,258,256.63,263.68,252.74,265.16,267.47,257.26,257.26,246.32,239.37,248.32,241.79,248,258.21,257.05,264,262.42,253.05,250.63,275.37,278.53,274.11,266.84,260,263.16,257.16,247.26,252.63,250.53,258.63,257.79,254.53,258,262,258,242.21,242.21,240.63,239.16,238.95,236.63,241.68,242.11,240.11,236,240.42,238.63,230.53,230.32,224.32,222.42,215.47,220.74,227.79,227.26,228.53,237.05,240.32,231.26,232.84,237.37,245.58,265.37,225.26,226.95,222.53,216.84,220.42,225.68,228.11,227.89,229.05,227.58,223.58,222.84,218.11,221.16,221.16,221.58,220.42,228.74,228.21,224.42,232.63,241.68,250.42,245.37,243.47,251.05,250.21,244.95,248.11,263.37,271.79,271.79,269.05,250.95,254.32,258.53,253.68,265.47,266.63,272.42,271.89,272.11,272.11,286.63,291.58,288.32,299.16,290.95,295.47,301.79,301.79,297.05,301.47,300.84,299.58,303.26,280,280.32,286.11,285.05,277.58,283.05,274.53,260.42,253.58,279.89,277.05,308.21,315.89,309.26,319.89,326.32,328.63,337.68,342.11,340.21,342.53,336,334.53,324.74,324.63,319.58,326.32,331.37,331.37,321.16,322,317.47,319.26,364.21,365.89,366.84,367.47,374.63,382.21,383.68,382.95,387.68,391.58,399.47,388.42,390.74,390.53,387.79,391.58,383.79,394.63,413.05,421.16,409.37,436.32,454,458.11,458,456.84,446.63,441.37,442.11,452.32,449.47,452,448.32,458.53,472.21,473.37,472.95,459.89,437.47,441.26,435.89,538.21,584.53,588.21,614.63,634.11,630,638.95,622.95,692.32,644.84,662.95,653.89,645.89,677.37,680.53,692,695.26,695.26,706.11,698.84,746.95,735.26,756.53,803.58,762.74,746.21,763.26,770.53,800.74,797.37,783.05,752.74,781.16,847.89,849.37,867.16,867.16,864.63,832.42,812.42,796.11,791.47,840.95,799.16,736.74,718.21,718.21,708,684,693.79,717.26,728.84,755.47,755.47,769.16,809.16,831.37,831.37,794.11,844.53,839.58,854.95,868.32,881.47,1092.95,1066.95,1171.37,1166.84,1227.89,1185.47,1235.68,1241.16,1254.32,1254.32,1311.79,1179.58,1118.63,1066.84,954.53,924.63,940.11,892.32,893.89,878.11,888.42,948.74,846.95,893.79,804,821.58,880.53,838.11,907.79,919.47,883.05,906.32,919.89,957.47,1018.42,1015.79,971.37,948.32,903.68,888.42,891.37,920.53,880,779.05,819.37,813.89,968.53,932.53,932.11,974.95,1035.79,975.89,987.16,987.16,955.79,989.37,1061.26,1134.53,1187.16,1206.84,1221.89,1246.74,1223.16,1308.21,1302.84,1145.89,1162.95,1254.21,1234.74,1246.95,1348.42,1370.32,1348.63,1363.37,1329.79,1322,1269.26,1287.26,1298,1298,1298.84,1302.74,1287.58,1387.16,1389.89,1401.79,1368.53,1262.21,1344.42,1390.11,1398,1435.68,1423.05,1446.32,1488.53,1454.74,1473.26,1473.26,1445.26,1472.84,1507.68,1504.21,1518.42,1376.21,1434.95,1375.58,1390.74,1414.32,1414.32,1464.42,1470.63,1506.63,1500,1495.79,1570,1564,1588.53,1620.95,1616,1597.79,1569.16,1627.68,1630.11,1671.58,1661.89,1644.63,1669.58,1666.84,1623.89,1691.16,1823.89,1889.89,1917.89,1968,1922.95,1968.11,1940.74,1905.47,1864.95,1831.89,1660.53,1642.21,1644,1670.95,1654.42,1693.37,1649.68,1664.42,1649.58,1649.58,1653.58,1630.53,1643.58,1611.68,1643.16,1709.05,1755.16,1730.11,1804.53,1802.21,1792.21,1771.89,1862.84,1919.89,1887.68,1921.58,1890.11,1885.47,1869.16,1882.74,1920.21,1946.84,1968.95,1821.79,1889.79,1917.58,1932.21,1952.32,1846.74,1865.37,1892,1890.74,1874.95,1875.26,1911.47,1910.63,1847.26,1899.79,1943.47,1991.37,1995.79,2092.74,2047.89,2110.21,2180.84,2007.79,1977.89,1842.63,1872.95,2038,2010.11,1938.63,1812,1831.68,1802.63,1761.37,1741.26,1639.42,1630,1707.89,1721.58,1744.95,1744.95,1773.16,1763.05,1796.74,1853.47,1872.84,1913.26,1910.42,1914.11,1978,1974.11,1932.32,1928.95,1976.32,1866.21,1954.63,2035.58,2041.89,2043.47,2043.89,2043.89,1986.42,1938.74,1903.58,1871.05,1766.95,1832,1891.68,1912.42,1861.68,1868.32,1888.53,1883.79,1877.89,1863.89,1799.58,1799.58,1774,1740.32,1746.32,1785.26,1762.84,1744.21,1656.32,1598.53,1543.05,1555.37,1661.89,1468.84,1368.53,1430.53,1504.32,1468.53,1428.21,1359.26,1383.26,1383.26,1400.21,1425.05,1419.89,1423.58,1374.74,1356.21,1412.53,1430.95,1444.11,1528.11,1549.68,1612.53,1607.05,1654.32,1646.63,1590.95,1595.79,1615.79,1588.95,1607.58,1632.42,1608.11,1638.74,1586.11,1693.05,1629.26,1631.16,1553.26,1505.89,1447.89,1539.79,1542,1562.74,1562.74,1557.16,1579.68,1481.68,1373.58,1348,1393.37,1428.42,1496.32,1502.74,1540.95,1535.68,1536.53,1606.53,1490.21,1506.21,1506.32,1486.11,1452.32,1464.32,1516.53,1537.16,1430.63,1408.32,1442.63,1450.53,1440.95,1431.58,1368.95,1407.68,1410.42,1422.53,1423.79,1443.68,1446.47,1440.84,1440.84,1437.89,1394.84,1508.84,1647.79,1691.05,1601.79,1496.84,1491.58,1426.63,1436.53,1390.21,1370.63,1379.79,1347.26,1418,1402.63,1375.05,1352.32,1352.32,1257.89,1228.42,1194.74,1129.16,1188.74,1217.89,1228.11,1323.47,1361.05,1361.05,1395.16,1414.42,1391.79,1358.32,1334.63,1368.84,1407.58,1408,1415.16,1393.47,1419.47,1396.42,1311.26,1298.63,1293.89,1384.53,1300.32,1294.74,1286.95,1295.37,1322.63,1712.21,1667.68,1641.26,1810.63,1844.53,1841.47,1800.42,1884.32,1832,1816.32,1805.68,1844.11,1831.16,1894.11,1851.47,1818.21,1868.42,1957.16,1960.95,1961.89,1893.89,1783.79,1921.37,1835.05,1835.05,1792.63,1784.53,1745.89,1760.32,1824.32,1816.42,1835.16,1855.16,1869.89,1927.26,1947.26,2018.84,2027.26,1996.53,1973.47,1968.11,1968.95,2000.42,1986.84]},"symbols":{"AMD":"AMD","EuroStoxx50":"^STOXX50E","HSCEI":"^HSCE","KOSPI200":"^KS200","Nikkei225":"^N225","S&P500":"^GSPC","SK하이닉스":"000660.KS","마이크론 테크놀로지":"MU","삼성전자":"005930.KS","어플라이드 머티어리얼즈":"AMAT","테슬라":"TSLA","팔란티어 테크":"PLTR"},"missing":[]}
 };

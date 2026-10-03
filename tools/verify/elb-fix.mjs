@@ -14,10 +14,15 @@ await pg.selectOption('#selSheet', els.v);
 await pg.waitForTimeout(400);
 const opts = await pg.$$eval('#selProduct option', o => o.map(x => ({ v: x.value, t: x.textContent.trim() })));
 
+/* 종목 코드를 박아 두면 상품이 갈릴 때마다 검사가 깨진다 (ELS·ELB 는 수시로 바뀐다).
+   목록에서 갈래별로 집어 쓰고, 한 갈래라도 비면 그렇다고 말한다. */
+const byKind = (re) => opts.filter(x => re.test(x.t));
 const picks = [];
-for (const want of ['(ELB)4076', '(ELB)4063', '(ELS)38108', '(ELS)38104']) {
-  const o = opts.find(x => x.t.includes(want));
-  if (o) picks.push({ want, ...o }); else console.log('  ! 목록에 없음 ' + want);
+for (const [kind, re, n] of [['ELB', /\(ELB\)/, 2], ['ELS', /\(ELS\)/, 2], ['DLS·DLB', /\(DL[SB]\)/, 1]]) {
+  const found = byKind(re);
+  if (!found.length) { console.log('  ! 목록에 ' + kind + ' 가 없습니다 — 이 갈래는 확인하지 못했습니다'); continue; }
+  found.slice(0, n).forEach(o => picks.push({ kind, ...o }));
+  console.log('  ' + kind + ' ' + found.length + '종목 중 ' + Math.min(n, found.length) + '개를 봅니다');
 }
 
 for (const o of picks) {
