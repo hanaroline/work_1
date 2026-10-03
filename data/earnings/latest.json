@@ -1,5 +1,6 @@
 {
  "asOf": "2026-10-01",
+ "checked": "2026-10-03",
  "generated": "scripts/build_earnings.py",
  "season": {
   "prev": "2026년 2분기(캘린더) 실적 시즌",
@@ -542,8 +543,8 @@
   {
    "scope": "밸류에이션 · 시세",
    "scope_en": "Valuation and market data",
-   "ko": "2026-10-01 에 25개 종목을 다시 조회해 기준일을 하루로 맞추려 했으나 중단했다. 같은 페이지를 두 번 물었을 때 서로 다른 스냅숏이 돌아왔고(코스트코 선행 P/E 39.46 / 43.25, 세일즈포스 15.65 / 17.45), 홈디포·인텔·존슨앤드존슨·골드만삭스는 2026-09-17 값 그대로였다. 일부만 새 값으로 바꾸면 '한 제공사 · 한 날짜'라는 전제가 깨져 섹터 중앙값과 순위가 뒤틀린다. 밸류에이션 블록은 2026-09-17 스냅숏을 그대로 둔다 — 화면 상단의 작성일(2026-10-01)과 다르다.",
-   "en": "A refresh of all 25 tickers on 2026-10-01 was abandoned. Asking for the same page twice returned different snapshots (Costco forward P/E 39.46 / 43.25; Salesforce 15.65 / 17.45), while Home Depot, Intel, Johnson & Johnson and Goldman Sachs came back identical to 2026-09-17. Refreshing only part of the set would break the one-provider-one-date rule and reorder the sector medians. The valuation block stays on the 2026-09-17 snapshot — which is not the compilation date (2026-10-01) shown at the top of the page."
+   "ko": "두 번(2026-10-01 · 2026-10-03) 다시 받으려 했으나 모두 중단했다. 같은 페이지를 거듭 물으면 서로 다른 스냅숏이 돌아온다 — 세일즈포스 시가총액이 세 번의 조회에서 210.40 / 188.94 / 191.55십억달러로, 코스트코 선행 P/E 가 39.46 / 43.25 로 갈렸고, 어떤 값에는 제공사가 9월 22일 같은 옛 기준일을 찍어 두었다. 일부만 새 값으로 바꾸면 '한 제공사 · 한 날짜'라는 전제가 깨져 섹터 중앙값과 순위가 뒤틀린다. 밸류에이션 블록은 2026-09-17 스냅숏을 그대로 둔다 — 화면 상단의 작성일(2026-10-01)과 다르다.",
+   "en": "Refresh attempts on 2026-10-01 and 2026-10-03 were both abandoned. Asking for the same page repeatedly returns different snapshots — Salesforce market cap came back as $210.40B / $188.94B / $191.55B across three retrievals, Costco forward P/E as 39.46 / 43.25, and some figures carried a stale provider date such as September 22. Refreshing only part of the set would break the one-provider-one-date rule and reorder the sector medians. The valuation block stays on the 2026-09-17 snapshot — which is not the compilation date (2026-10-01) shown at the top of the page."
   }
  ],
  "facts": {

@@ -16,7 +16,12 @@ import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "data" / "earnings"
+# ASOF 는 **내용이 마지막으로 바뀐 날**이다. CHECKED 는 **마지막으로 다시 확인한 날**.
+# 둘을 갈라 두는 이유는, 바뀐 것이 없는데 날짜만 올리면 화면이 실제보다 최신인
+# 것처럼 읽히기 때문이다. 다시 봤는데 그대로였다는 것도 정보다 — 그것은 CHECKED 가
+# 말한다. 둘이 같으면 화면에 CHECKED 를 띄우지 않는다.
 ASOF = "2026-10-01"
+CHECKED = "2026-10-03"
 
 # 컨센서스는 제공사마다 다르다(LSEG · Zacks · StreetAccount · Visible Alpha).
 # 한 기업 안에서는 한 출처를 쓰고, 기업 간 비교는 "서프라이즈율"로만 한다.
@@ -1101,19 +1106,22 @@ for _s in sectors:
 # 맨 위에 그대로 싣는다 — 빌드 때마다 손으로 적지 않게 여기 한 곳에만 둔다.
 LIMITS = [
  dict(scope="밸류에이션 · 시세", scope_en="Valuation and market data",
-      ko=("%s 에 25개 종목을 다시 조회해 기준일을 하루로 맞추려 했으나 중단했다. 같은 페이지를 "
-          "두 번 물었을 때 서로 다른 스냅숏이 돌아왔고(코스트코 선행 P/E 39.46 / 43.25, "
-          "세일즈포스 15.65 / 17.45), 홈디포·인텔·존슨앤드존슨·골드만삭스는 %s 값 그대로였다. "
-          "일부만 새 값으로 바꾸면 '한 제공사 · 한 날짜'라는 전제가 깨져 섹터 중앙값과 순위가 "
-          "뒤틀린다. 밸류에이션 블록은 %s 스냅숏을 그대로 둔다 — 화면 상단의 작성일(%s)과 다르다.")
-         % (ASOF, VAL_ASOF, VAL_ASOF, ASOF),
-      en=("A refresh of all 25 tickers on %s was abandoned. Asking for the same page twice returned "
-          "different snapshots (Costco forward P/E 39.46 / 43.25; Salesforce 15.65 / 17.45), while "
-          "Home Depot, Intel, Johnson & Johnson and Goldman Sachs came back identical to %s. "
-          "Refreshing only part of the set would break the one-provider-one-date rule and reorder "
-          "the sector medians. The valuation block stays on the %s snapshot — which is not the "
-          "compilation date (%s) shown at the top of the page.")
-         % (ASOF, VAL_ASOF, VAL_ASOF, ASOF)),
+      ko=("두 번(%s · %s) 다시 받으려 했으나 모두 중단했다. 같은 페이지를 거듭 물으면 "
+          "서로 다른 스냅숏이 돌아온다 — 세일즈포스 시가총액이 세 번의 조회에서 "
+          "210.40 / 188.94 / 191.55십억달러로, 코스트코 선행 P/E 가 39.46 / 43.25 로 "
+          "갈렸고, 어떤 값에는 제공사가 9월 22일 같은 옛 기준일을 찍어 두었다. "
+          "일부만 새 값으로 바꾸면 '한 제공사 · 한 날짜'라는 전제가 깨져 섹터 중앙값과 "
+          "순위가 뒤틀린다. 밸류에이션 블록은 %s 스냅숏을 그대로 둔다 — 화면 상단의 "
+          "작성일(%s)과 다르다.")
+         % (ASOF, CHECKED, VAL_ASOF, ASOF),
+      en=("Refresh attempts on %s and %s were both abandoned. Asking for the same page "
+          "repeatedly returns different snapshots — Salesforce market cap came back as "
+          "$210.40B / $188.94B / $191.55B across three retrievals, Costco forward P/E as "
+          "39.46 / 43.25, and some figures carried a stale provider date such as September 22. "
+          "Refreshing only part of the set would break the one-provider-one-date rule and "
+          "reorder the sector medians. The valuation block stays on the %s snapshot — which "
+          "is not the compilation date (%s) shown at the top of the page.")
+         % (ASOF, CHECKED, VAL_ASOF, ASOF)),
 ]
 
 ledger = dict(
@@ -1153,6 +1161,7 @@ keys = ("t ko en sec sub per pend rep repapprox rev cons consderived surprise yo
         "ltm ltmg accel accelhold trend ltmnote gnext gnexttxt gnextper gnexten gnextqoq").split()
 payload = dict(
     asOf=ASOF,
+    checked=CHECKED,
     generated="scripts/build_earnings.py",
     season=dict(prev="2026년 2분기(캘린더) 실적 시즌", nextq="2026년 3분기(캘린더) 실적 시즌"),
     weights=W, bands=BANDS, minCoverage=MIN_COVERAGE, seriesPolicy=SERIES,
