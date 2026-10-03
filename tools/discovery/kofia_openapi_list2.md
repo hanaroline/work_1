@@ -1,6 +1,6 @@
 # 탐침 — 금투협 오픈API 목록 (https 로 한 번 더)
 
-받은 때: 2026-08-30T05:05:44.893Z
+받은 때: 2026-10-03T09:18:05.455Z
 
 `https://openapi.kofia.or.kr/apiStut/OPENAPISvcStut.jsp`
 
