@@ -64,17 +64,28 @@ artifact-design, artifact-diagramming, artifact-capabilities, dataviz,
 code-review, security-review, simplify, init, run, loop, claude-api,
 update-config, keybindings-help, workflow-authoring, session-start-hook
 
-**이 계정에만 있던 것으로 보이는 스킬** — 새 계정에는 없습니다:
+**이 계정에만 있던 스킬** — 2026-10-01 21:30 에 **백업 완료**했습니다:
 
-| 스킬 | 역할 | 소실 시 영향 |
-|---|---|---|
-| **mas-design** | 미래에셋 브랜드 디자인 기준(오렌지/블루, 승인 폰트, 표·차트 스타일, 한/영 UI 규칙, 품질 점검) | 브리핑·제안서의 브랜드 일관성이 깨짐 |
-| **fin-data-integrity** | 금융 수치 검증 절차(주장 대장 등록 → 산술·단위·계열 검산 → 빌드) | 시황·전망 자료의 수치 검증 절차가 사라짐 |
-| **morning** | 모닝 브리프 렌더링·주간 작업 등록 | 모닝 브리프 자동화에 영향 |
+| 스킬 | 출처 | 역할 | 백업 위치 |
+|---|---|---|---|
+| **mas-design** | `plugin` | 미래에셋 브랜드 디자인 기준(오렌지/블루, 승인 폰트, 표·차트 스타일, 한/영 UI 규칙, AI Slop 블랙리스트) | `skills/mas-design/SKILL.md` |
+| **fin-data-integrity** | `plugin` | 금융 수치 검증 절차(주장 대장 등록 → 산술·단위·계열 검산 → 빌드) | `skills/fin-data-integrity/` (5개 파일) |
 
-> **계정 종료 전에 해야 할 일**: 이 세 스킬의 본문(SKILL.md와 참조 파일)을 저장소로 내보내
-> `docs/claude-handoff/skills/` 에 커밋해 두면, 새 계정에서 그대로 다시 만들 수 있습니다.
-> 지금 대화에서 "스킬 본문도 백업해줘"라고 요청하시면 추출해 드립니다.
+> **앞선 판의 분류가 한 건 틀렸습니다.** `morning` 을 "이 계정에만 있던 스킬"로
+> 적어 두었으나, 실제로는 `anthropic-example` 출처로 **새 계정에도 기본 제공**됩니다.
+> 따로 백업할 필요가 없습니다.
+
+**확인한 방법** — 세션 컨테이너의
+`~/.claude/skills/synced/<id>/manifest.json` 에 스킬마다 `source` 가 적혀 있습니다.
+`plugin` 인 것만 사용자·조직이 설치한 것이고, `anthropic` / `anthropic-example` 은
+어느 계정에서나 제공됩니다. 이 기준으로 11개를 전부 다시 분류했습니다.
+
+**새 계정에서 되살리는 법**
+claude.ai 설정 → 스킬 → 스킬 만들기 에서 백업해 둔 `SKILL.md` 내용을 그대로 넣습니다.
+`fin-data-integrity` 는 `references/` 2개와 `scripts/` 2개까지 같이 올려야 검산
+스크립트(`check_claims.py`)가 돕니다.
+스킬을 다시 만들기 전이라도, **"`docs/claude-handoff/skills/mas-design/SKILL.md` 를
+읽고 그 기준대로 만들어 줘"** 라고 일러 주면 같은 결과를 얻습니다.
 
 ---
 
@@ -124,12 +135,24 @@ update-config, keybindings-help, workflow-authoring, session-start-hook
 
 ## 6. 복원 체크리스트
 
+**옛 계정을 닫기 전에** (지금 안 하면 되돌릴 수 없습니다)
+
+- [x] 사용자 스킬 2종 본문 백업 → `skills/` (2026-10-01 21:30 완료)
+- [x] Routine 19건 프롬프트 원문 백업 → `ROUTINES.md` · `routines.json`
+- [ ] 남기고 싶은 대화가 있으면 따로 내려받기 — 닫은 뒤에는 되찾을 수 없습니다
+- [ ] 아티팩트 82건 중 계속 쓸 링크가 있으면 내용을 저장소로 옮기기
+      (HTML 자체는 `docs/briefings/` 에 이미 있습니다. 잃는 것은 주소뿐입니다)
+
+**새 계정에서**
+
 - [ ] 새 계정 GitHub 커넥터 연결 · `hanaroline/work_1` 접근 확인
 - [ ] 새 대화에서 `docs/claude-handoff/` 읽히기 (README의 부팅 프롬프트)
 - [ ] Gmail 커넥터 재연결
 - [ ] Gamma 커넥터 재연결
-- [ ] 사용자 지정 스킬 3종 재등록 (계정 종료 전에 본문 백업 필수)
+- [ ] 사용자 스킬 **2종** 재등록 — `skills/` 의 백업본으로 (morning 은 불필요)
 - [ ] Routine 재등록 — 모닝 07:30, 장마감 16:10 **먼저**
 - [ ] Routine 재등록 — 리포트 배포, ELS 점검 2건, 펀드·ETF·자료실 갱신
+      (활성 13건만. `[폐기]` 6건은 다시 만들 필요 없습니다)
 - [ ] 다음 날 아침 브리핑이 정상 생성되는지 확인
+- [ ] 10/5(월) 수집 시각 점검을 다시 걸기 (`HANDOFF.md` 5~6절)
 - [ ] 엑셀 산식 원장 5종을 다시 발행할지 결정 (파일은 저장소에 있음)

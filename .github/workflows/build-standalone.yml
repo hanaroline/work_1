@@ -1,0 +1,127 @@
+name: 배포본 재빌드 (단일 파일)
+
+# 창구가 여는 것은 sales-script-expl-standalone.html **한 파일**이다.
+# 데이터(data/*.js)가 아무리 새것이어도 이 파일을 다시 만들지 않으면 갱신은
+# 창구에 닿지 않는다. 그 마지막 한 칸이 여기다.
+#
+# 왜 수집 워크플로마다 넣지 않나
+#   다섯이 저마다 8MB 짜리 산출물을 만들어 같은 브랜치에 밀면 리베이스가 부딪힌다.
+#   데이터가 다 갱신된 뒤 하루 한 번, 한 곳에서만 만든다.
+
+on:
+  workflow_dispatch:
+  # 월요일 일괄 갱신(weekly-refresh.yml)의 마지막 단계로도 불린다
+  workflow_call:
+  schedule:
+    # 매일 10:30 KST (01:30 UTC) — 그날 마지막 수집인 펀드 설명서 판독(10:10) 뒤.
+    # 먼저 돌면 어제 데이터로 만든 파일을 올리게 된다.
+    - cron: '30 1 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-standalone-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 껍데기는 sales-script.html 한 벌만 고치는 규칙이다. 누가 전용판을
+      # 직접 손대 두 벌이 어긋났으면 여기서 원래대로 돌아온다.
+      - name: 전용판 화면 다시 만들기
+        run: node scripts/make_expl_source.mjs
+
+      - name: 배포본 빌드
+        run: node scripts/build_sales_script.mjs sales-script-expl-standalone.html --src sales-script-expl.html
+
+      # 테스트판 — 교부자료 쪽 표시를 시험하는 한 벌. 배포본은 건드리지 않는다.
+      # 손으로만 만들면 데이터가 갱신될 때마다 뒤처져, 창구가 낡은 쪽 번호를 짚게
+      # 된다. 배포본과 같은 데이터로 함께 다시 만든다.
+      - name: 테스트판 다시 만들기
+        run: |
+          node scripts/make_test_source.mjs
+          node scripts/build_sales_script.mjs sales-script-expl-test-standalone.html --src sales-script-expl-test.html
+
+      # 데이터가 통째로 들어가는 파일이다. 빈 파일이나 반쪽짜리를 커밋하면
+      # 창구가 아침에 빈 화면을 연다 — 크기와 내용으로 먼저 걸러 낸다.
+      - name: 산출물 점검
+        run: |
+          f=sales-script-expl-standalone.html
+          sz=$(wc -c < "$f")
+          echo "크기: $((sz / 1024 / 1024)) MB ($sz 바이트)"
+          if [ "$sz" -lt 3000000 ]; then
+            echo "::error::배포본이 $sz 바이트뿐입니다 — 데이터가 빠졌습니다. 커밋하지 않습니다."
+            exit 1
+          fi
+          for k in FUND_CATALOG ELS_DATA FUND_PROSPECTUS; do
+            grep -q "$k" "$f" || { echo "::error::$k 가 안 들어갔습니다"; exit 1; }
+          done
+
+          t=sales-script-expl-test-standalone.html
+          tsz=$(wc -c < "$t")
+          echo "테스트판 크기: $((tsz / 1024 / 1024)) MB ($tsz 바이트)"
+          if [ "$tsz" -lt 3000000 ]; then
+            echo "::error::테스트판이 $tsz 바이트뿐입니다 — 데이터가 빠졌습니다."
+            exit 1
+          fi
+          # 쪽 표시는 이제 **배포본에도** 들어간다 (시험을 마치고 옮겼다).
+          # 지도가 안 실리면 창구가 「왜 쪽이 안 나오지」 를 하므로 두 파일을 다 본다.
+          #
+          # 다만 「아직 안 만들어진 지도」 와 「만들었는데 안 실린 지도」 는 다르다.
+          # 앞의 것은 기다리면 되는 일이라 빌드를 세우지 않는다 — 세우면 ELS 쪽
+          # 표시까지 배포가 막힌다. 뒤의 것만 실패시킨다.
+          check_map() {
+            [ -f "$1" ] || { echo "::warning::$1 이 아직 없습니다 — 그 상품군은 쪽 표시 없이 나갑니다"; return 0; }
+            for target in "$f" "$t"; do
+              grep -qE "$3" "$target" || { echo "::error::$1 은 있는데 $target 에 $2 가 안 들어갔습니다"; exit 1; }
+            done
+            echo "  $2 실림 (배포본·테스트판)"
+          }
+          # FUND_DOC_PAGES 도 DOC_PAGES 를 품고 있어, 그냥 찾으면 ELS 지도가 빠져도
+          # 통과한다. 앞 글자로 갈라 본다.
+          check_map data/doc-pages.js DOC_PAGES '[^_]DOC_PAGES'
+          check_map data/fund-doc-pages.js FUND_DOC_PAGES 'FUND_DOC_PAGES'
+
+      - name: 결과 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A sales-script-expl.html sales-script-expl-standalone.html \
+                     sales-script-expl-test.html sales-script-expl-test-standalone.html
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo '변경 없음 — 데이터가 그대로라 배포본도 그대로입니다'; exit 0
+          fi
+          git commit -m "chore(script): 갱신된 데이터로 배포본 재빌드 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+            git pull --rebase --autostash origin "${{ github.ref_name }}" || exit 1
+          done
+          echo '5회 시도 후에도 push 실패'; exit 1
+
+      - name: 담긴 값 적기
+        if: always()
+        run: |
+          {
+            echo "### 배포본에 담긴 값"
+            echo ""
+            node -e '
+              const g = {};
+              const load = (p) => new Function("window", require("fs").readFileSync(p, "utf8"))(g);
+              load("data/els.js"); load("data/fund-catalog.js"); load("data/fund-prospectus.js");
+              console.log("- ELS·DLS 상품 " + g.ELS_DATA.products.length + "건 (기준 " + (g.ELS_DATA.updatedAt || "?") + ")");
+              console.log("- 펀드 " + g.FUND_CATALOG.items.length + "건 (기준 " + (g.FUND_CATALOG.updatedAt || "?") + ")");
+              console.log("- 펀드 설명서 판독 " + Object.keys(g.FUND_PROSPECTUS.items).length + "건");
+            ' || echo '- (건수 집계 실패)'
+          } >> "$GITHUB_STEP_SUMMARY"

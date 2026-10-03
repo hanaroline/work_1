@@ -1,0 +1,63 @@
+name: ELS 교부문서 원문 조사 (읽기만)
+
+# 제목 정규식을 원문 없이 고치면 반드시 또 틀린다 — 펀드 과세 자리를 두 번
+# 헛고치고 나서야 원문을 보고 한 번에 끝냈다. 그래서 고치기 전에 문서가 실제로
+# 뭐라고 쓰는지 여기서 찍어 본다.
+#
+# 이 저장소의 세션은 이그레스 정책 때문에 securities.miraeasset.com 에 직접
+# 못 붙는다(CONNECT 403). 러너는 그 정책 밖이라 여기서 대신 읽는다.
+#
+# ★ 아무것도 커밋하지 않는다 ★
+
+on:
+  workflow_dispatch:
+    inputs:
+      names:
+        description: '볼 회차 (띄어쓰기로 여럿 · 예: 38165e 38158)'
+        type: string
+        default: '38165e 38158'
+
+  # 새로 만든 워크플로는 workflow_dispatch 가 API 로 바로 안 불린다(404).
+  # 등록이 늦는 것이라 기다리면 되지만, 기다리는 동안에도 조사는 돌아야 한다.
+  # 그래서 푸시로도 도는 길을 함께 둔다 — fund-probe.yml 이 같은 이유로 쓰는 방식이다.
+  # 이때는 조사 대본에 적힌 기본 회차를 본다.
+  push:
+    branches:
+      - 'claude/els-**'
+    paths:
+      - 'scripts/probe_doc_midredeem.mjs'
+      - '.github/workflows/els-doc-probe.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: els-doc-probe-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Playwright 설치
+        run: npm i --no-save playwright@1.56.1 && npx playwright install --with-deps chromium
+
+      # 입력을 명령줄에 바로 끼우지 않는다. 회차 이름은 영숫자뿐이므로 그 밖의
+      # 글자를 털어 내고 넘긴다.
+      - name: 원문 찍기
+        env:
+          NAMES: ${{ inputs.names }}
+        run: |
+          clean=$(printf '%s' "$NAMES" | tr -c 'A-Za-z0-9' ' ')
+          if [ -z "$(printf '%s' "$clean" | tr -d ' ')" ]; then
+            node scripts/probe_doc_midredeem.mjs --try-fix
+            exit 0
+          fi
+          node scripts/probe_doc_midredeem.mjs --name $clean
