@@ -1,9 +1,9 @@
 {
- "builtAt": "2026-10-02 23:02 KST",
- "builtAtUtc": "2026-10-02T14:02:16Z",
+ "builtAt": "2026-10-03 17:28 KST",
+ "builtAtUtc": "2026-10-03T08:28:49Z",
  "window": {
-  "from": "2026-08-18",
-  "to": "2028-02-14"
+  "from": "2026-08-19",
+  "to": "2028-02-15"
  },
  "note": "증시 일정 캘린더. confirmed 는 official(공식 확인) · websearch(검색 교차 확인) · tentative(기관이 잠정으로 공표) · estimate(제공사 추정 구간) · rule(규칙으로 만든 날짜) 다. 확정이 아닌 것은 화면에서 배지로 구분한다.",
  "confirmed_legend": {
@@ -22,19 +22,19 @@
  },
  "counts": {
   "policy": 52,
-  "indicator": 170,
+  "indicator": 171,
   "earnings": 266,
   "conference": 9,
   "supply": 36,
   "holiday": 103,
   "other": 3,
-  "total": 639,
+  "total": 640,
   "confirmed": {
    "official": 394,
    "websearch": 22,
    "tentative": 0,
    "estimate": 0,
-   "rule": 223
+   "rule": 224
   }
  },
  "sources": {
@@ -189,7 +189,7 @@
     }
    }
   },
-  "asof_kst": "2026-10-02 22:41:58"
+  "asof_kst": "2026-10-03 10:03:51"
  },
  "holidays": [
   {
@@ -3077,7 +3077,7 @@
    "source_en": "Federal Reserve — FOMC meeting calendars",
    "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local",
    "meetings_per_year": 8,
-   "fetched_at": "2026-10-02"
+   "fetched_at": "2026-10-03"
   },
   {
    "key": "bok",
@@ -3150,7 +3150,7 @@
    "source_en": "Bank of England — Upcoming MPC dates",
    "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-10-02"
+   "fetched_at": "2026-10-03"
   },
   {
    "key": "pboc",
@@ -3554,31 +3554,6 @@
   }
  ],
  "events": [
-  {
-   "id": "indicator-us-retail-2026-08-18",
-   "date": "2026-08-18",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 2,
-   "title_ko": "미국 소매판매",
-   "title_en": "US Advance Retail Sales",
-   "org": "美 인구조사국 (Census)",
-   "org_en": "Census Bureau",
-   "detail_ko": "통상 매월 중순 08:30 ET",
-   "detail_en": "Usually mid-month, 08:30 ET",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2026-08-18 21:30",
-   "url": "https://www.census.gov/economic-indicators/",
-   "source": "美 인구조사국 (Census)",
-   "source_en": "Census Bureau",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-retail"
-   ]
-  },
   {
    "id": "pboc-lpr-2026-08-20",
    "date": "2026-08-20",
@@ -5116,32 +5091,6 @@
    "tags": [
     "indicator",
     "us-claims"
-   ]
-  },
-  {
-   "id": "earnings-ACN-2026-10-01",
-   "date": "2026-10-01",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "액센츄어 실적발표",
-   "title_en": "Accenture earnings",
-   "org": "ACN",
-   "org_en": "ACN",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "http://investor.accenture.com/phoenix.zhtml?c=129731&p=irol-irhome",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "ACN"
    ]
   },
   {
@@ -7335,32 +7284,6 @@
    ]
   },
   {
-   "id": "earnings-FCX-2026-10-22",
-   "date": "2026-10-22",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "프리포트맥모란 실적발표",
-   "title_en": "Freeport-McMoRan earnings",
-   "org": "FCX",
-   "org_en": "FCX",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "http://www.fcx.com/ir/index.htm",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "FCX"
-   ]
-  },
-  {
    "id": "earnings-HON-2026-10-22",
    "date": "2026-10-22",
    "end_date": null,
@@ -8347,6 +8270,32 @@
    ]
   },
   {
+   "id": "earnings-FCX-2026-10-27",
+   "date": "2026-10-27",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "프리포트맥모란 실적발표",
+   "title_en": "Freeport-McMoRan earnings",
+   "org": "FCX",
+   "org_en": "FCX",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "http://www.fcx.com/ir/index.htm",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "FCX"
+   ]
+  },
+  {
    "id": "earnings-HLT-2026-10-27",
    "date": "2026-10-27",
    "end_date": null,
@@ -8967,6 +8916,32 @@
     "earnings",
     "us",
     "FDX"
+   ]
+  },
+  {
+   "id": "earnings-FTNT-2026-10-28",
+   "date": "2026-10-28",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "포티넷 실적발표",
+   "title_en": "Fortinet earnings",
+   "org": "FTNT",
+   "org_en": "FTNT",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/FTNT",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "FTNT"
    ]
   },
   {
@@ -11192,32 +11167,6 @@
     "earnings",
     "us",
     "QCOM"
-   ]
-  },
-  {
-   "id": "earnings-FTNT-2026-11-04",
-   "date": "2026-11-04",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "포티넷 실적발표",
-   "title_en": "Fortinet earnings",
-   "org": "FTNT",
-   "org_en": "FTNT",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/FTNT",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "FTNT"
    ]
   },
   {
@@ -14272,6 +14221,32 @@
     "earnings",
     "us",
     "CTAS"
+   ]
+  },
+  {
+   "id": "earnings-ACN-2026-12-17",
+   "date": "2026-12-17",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "액센츄어 실적발표",
+   "title_en": "Accenture earnings",
+   "org": "ACN",
+   "org_en": "ACN",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "http://investor.accenture.com/phoenix.zhtml?c=129731&p=irol-irhome",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "ACN"
    ]
   },
   {
@@ -17615,6 +17590,56 @@
    "tags": [
     "indicator",
     "cn-pmi"
+   ]
+  },
+  {
+   "id": "indicator-kr-trade-2027-04-01",
+   "date": "2027-04-01",
+   "end_date": null,
+   "country": "kr",
+   "category": "indicator",
+   "importance": 3,
+   "title_ko": "한국 수출입 동향",
+   "title_en": "Korea Exports and Imports",
+   "org": "산업통상자원부 · 관세청",
+   "org_en": "MOTIE / Korea Customs Service",
+   "detail_ko": "월간 확정치는 매월 1일 전후, 잠정치는 매월 1·11·21일에 '10일간 수출입' 으로 나온다",
+   "detail_en": "Monthly final around the 1st; a ten-day provisional lands on the 1st, 11th and 21st",
+   "time_local": "09:00",
+   "tz": "Asia/Seoul",
+   "time_kst": "2027-04-01 09:00",
+   "url": "https://unipass.customs.go.kr/ets/",
+   "source": "산업통상자원부 · 관세청",
+   "source_en": "MOTIE / Korea Customs Service",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "kr-trade"
+   ]
+  },
+  {
+   "id": "indicator-us-ism-mfg-2027-04-01",
+   "date": "2027-04-01",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 2,
+   "title_ko": "미국 ISM 제조업 PMI",
+   "title_en": "US ISM Manufacturing PMI",
+   "org": "美 공급관리협회 (ISM)",
+   "org_en": "Institute for Supply Management",
+   "detail_ko": "통상 매월 첫 영업일 10:00 ET",
+   "detail_en": "Usually the first business day of the month, 10:00 ET",
+   "time_local": "10:00",
+   "tz": "America/New_York",
+   "time_kst": "2027-04-01 23:00",
+   "url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/",
+   "source": "美 공급관리협회 (ISM)",
+   "source_en": "Institute for Supply Management",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "us-ism-mfg"
    ]
   },
   {
