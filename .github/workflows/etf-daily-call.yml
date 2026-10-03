@@ -127,6 +127,19 @@ jobs:
           echo "status=$STATUS"     >> "$GITHUB_OUTPUT"
           echo "conclusion=$CONCL"  >> "$GITHUB_OUTPUT"
 
+          # 불린 쪽에는 장중 관문이 있다. 장이 열려 있는 시간에 떨어지면
+          # collect 잡을 건너뛰고 초록으로 끝낸다 — 그것은 고장이 아니다.
+          # 다만 그대로 두면 아래 요약이 "원천이 어제 것을 그대로 준 날"
+          # 이라고 엉뚱하게 적으므로, 건너뛴 것인지를 따로 집어 온다.
+          SKIPPED=no
+          if [ "$STATUS" = completed ]; then
+            J=$(gh api "repos/$REPO/actions/runs/$ID/jobs" \
+                  --jq '[.jobs[] | select(.name=="collect")][0].conclusion // ""' || echo "")
+            echo "collect 잡: ${J:-(없음)}"
+            if [ "$J" = skipped ]; then SKIPPED=yes; fi
+          fi
+          echo "skipped=$SKIPPED" >> "$GITHUB_OUTPUT"
+
       # 불린 쪽이 초록이어도 커밋이 없을 수 있다(원천이 어제 것을 그대로
       # 주면 "변경 없음" 으로 끝난다). 초록 불만 보고 "갱신됐다" 고 말하지
       # 않으려고 자료가 실제로 움직였는지를 따로 본다.
@@ -157,7 +170,11 @@ jobs:
           fi
           echo "fresh=$FRESH" >> "$GITHUB_OUTPUT"
           if [ "$FRESH" = no ]; then
-            echo "::warning::이번 실행으로 data/etf.js 가 바뀌지 않았습니다 (마지막 갱신 $WHEN). 원천이 어제 것을 그대로 준 날일 수 있습니다."
+            if [ '${{ steps.wait.outputs.skipped }}' = yes ]; then
+              echo "::notice::장중이라 수집을 건너뛰었습니다. data/etf.js 는 그대로입니다 (마지막 갱신 $WHEN)."
+            else
+              echo "::warning::이번 실행으로 data/etf.js 가 바뀌지 않았습니다 (마지막 갱신 $WHEN). 원천이 어제 것을 그대로 준 날일 수 있습니다."
+            fi
           fi
 
       - name: 결과 요약
@@ -173,12 +190,17 @@ jobs:
             else
               echo "- 수집: **부르지 못했습니다**"
             fi
-            if [ '${{ steps.landed.outputs.fresh }}' = yes ]; then
+            if [ '${{ steps.wait.outputs.skipped }}' = yes ]; then
+              echo "- 자료: **건너뜀** — 한국장이 열려 있는 시간(08:30~16:00 KST)이라 받지 않았습니다"
+              echo "  - 끝나지 않은 값이 섞이면 감사가 그날 자료를 막습니다. 다음 예약(평일 16:34 KST)이 챙깁니다."
+              echo "  - \`data/etf.js\` 마지막 갱신: \`${{ steps.landed.outputs.sha }}\` (${{ steps.landed.outputs.when }})"
+            elif [ '${{ steps.landed.outputs.fresh }}' = yes ]; then
               echo "- 자료: **갱신됨** — \`data/etf.js\` \`${{ steps.landed.outputs.sha }}\` (${{ steps.landed.outputs.when }})"
+              echo "  - ${{ steps.landed.outputs.msg }}"
             else
               echo "- 자료: **안 바뀜** — \`data/etf.js\` 마지막 갱신은 ${{ steps.landed.outputs.when }} 입니다"
+              echo "  - ${{ steps.landed.outputs.msg }}"
             fi
-            echo "  - ${{ steps.landed.outputs.msg }}"
             echo ""
             echo "자료는 불려 간 쪽이 \`$BRANCH\` 에 커밋합니다. 이 잡은 부르기만 합니다."
             echo "화면에 반영하려면 그 가지를 \`main\` 에 합치십시오."
@@ -203,5 +225,9 @@ jobs:
           if [ "$C" != success ]; then
             echo "::error::수집이 $C 로 끝났습니다. data/etf.js 는 직전 자료를 유지합니다."
             exit 1
+          fi
+          if [ '${{ steps.wait.outputs.skipped }}' = yes ]; then
+            echo "장중이라 수집을 건너뛰었습니다 — 고장이 아닙니다. 다음 예약이 챙깁니다."
+            exit 0
           fi
           echo "수집 성공."
