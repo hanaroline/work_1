@@ -222,7 +222,16 @@ function couponStudy(items, best) {
         if (hi.currency !== lo.currency) continue;                 // 통화가 다르면 ③ 통화 이야기가 된다
         if (!ok(hi, lo)) continue;
         const d = hi.annualRate - lo.annualRate;
-        if (d > 0 && (!best || d > best.d)) best = { hi, lo, d, gap: Math.abs(hi.mcLoss - lo.mcLoss) };
+        /**
+         * gap 은 **절대값**이다 — hi 는 수익률이 높은 쪽일 뿐, 손실 확률까지 높다는
+         * 보장이 없다. 2026-10-02 회차의 짝이 그랬다(hi 14.3% vs lo 14.7%). 그래서
+         * "누가 더 위험한가" 를 따로 들고 다닌다. 이게 없으면 대장 검산이 lo+gap=hi
+         * 로 잘못 서고(실제로 D_TWIN_LOSS_D 가 터졌다), 문장도 "손실 확률은 더 집니다"
+         * 로 사실과 반대로 나간다.
+         */
+        if (d > 0 && (!best || d > best.d)) {
+          best = { hi, lo, d, gap: Math.abs(hi.mcLoss - lo.mcLoss), hiRiskier: hi.mcLoss >= lo.mcLoss };
+        }
       }
     }
     return best;

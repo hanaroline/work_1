@@ -470,7 +470,9 @@ if (A.plan.hasCooling) {
         + `제${T.lo.no}회 손실 확률 ${f1(T.lo.mcLoss)}% · 연 ${f1(T.lo.annualRate)}%\n\n`
         + (CW2.twin
           ? `손실 확률은 ${f1(T.gap)}%p 차인데 수익률은 ${f1(T.d)}%p 차입니다. `
-          : `수익률은 ${f1(T.d)}%p 더 주지만 손실 확률은 ${f1(T.gap)}%p나 더 집니다 — 손실 확률 1%당 받는 돈으로 바꾸면 ${f1(CE.ratio(T.lo), 2)}%에서 ${f1(CE.ratio(T.hi), 2)}%로 오히려 줄어듭니다. `)
+          : T.hiRiskier
+            ? `수익률은 ${f1(T.d)}%p 더 주지만 손실 확률은 ${f1(T.gap)}%p나 더 집니다 — 손실 확률 1%당 받는 돈으로 바꾸면 ${f1(CE.ratio(T.lo), 2)}%에서 ${f1(CE.ratio(T.hi), 2)}%로 오히려 줄어듭니다. `
+            : `수익률은 ${f1(T.d)}%p 더 주면서 손실 확률은 오히려 ${f1(T.gap)}%p 더 낮습니다 — 손실 확률 1%당 받는 돈으로 바꾸면 ${f1(CE.ratio(T.lo), 2)}%에서 ${f1(CE.ratio(T.hi), 2)}%로 올라갑니다. `)
         + twinWhy(T) },
     { n: '②', k: '값어치가 깎여서', c: BAD,
       t: `제${CW2.priced.no}회는 연 ${f1(CW2.priced.annualRate)}%인데 손실 확률이 ${f1(CW2.priced.mcLoss)}%나 됩니다 — 손실 확률 1%당 ${f1(CE.ratio(CW2.priced), 2)}%로 이번 회차 꼴찌입니다. 넣는 순간의 값어치가 제값보다 ${f1(Math.abs(CW2.priced.fairValueGap))}%나 깎여 있기 때문입니다.\n\n`

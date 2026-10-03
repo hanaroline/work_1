@@ -609,9 +609,12 @@ if (STALE.length) {
     });
     computed('TWIN_LOSS_D', '손실 확률 차이',
       `제${T.hi.no}회와 제${T.lo.no}회의 손실 확률 차이`, +T.gap.toFixed(1), '%p', ['h-why']);
+    // gap 은 절대값이다. "덜 위험한 쪽 + 차이 = 더 위험한 쪽" 으로 세워야 검산이 선다
+    // — hi(수익률이 높은 쪽)가 늘 더 위험한 것은 아니다.
+    const [risky, safe] = T.hiRiskier ? [T.hi, T.lo] : [T.lo, T.hi];
     derived.push({
       id: 'D_TWIN_LOSS_D', kind: 'sum',
-      terms: [`R${T.lo.no}_MCLOSS`, 'TWIN_LOSS_D'], printed: +T.hi.mcLoss.toFixed(1), tolerance: 0.11,
+      terms: [`R${safe.no}_MCLOSS`, 'TWIN_LOSS_D'], printed: +risky.mcLoss.toFixed(1), tolerance: 0.11,
     });
   }
 
