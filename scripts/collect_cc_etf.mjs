@@ -59,6 +59,10 @@ const RULES = {
   minTurnover: 500_000_000,    // 60일 평균 거래대금 5억원
   maxVol: 35,                  // 1년 일간수익률 연환산 변동성 35%
   minTrackMonths: 12,          // 상장 후 12개월
+  // 연 분배율을 ETFCHECK 값과 맞댈 때의 허용 폭. 둘 중 **느슨한 쪽**을 쓴다.
+  // 까닭은 쓰는 자리(아래 '분배율 대조')에 적어 두었다.
+  mismatchAbs: 0.15,           // 절대 0.15%p
+  mismatchRel: 0.02,           // 또는 원천 값의 2%
 };
 
 // 12개월을 요구하는 이유: 연 분배율을 "최근 12개월 분배금 합계 ÷ 현재가" 로
@@ -86,6 +90,60 @@ function annualVolatility(closes) {
   const mean = rets.reduce((s, x) => s + x, 0) / rets.length;
   const varr = rets.reduce((s, x) => s + (x - mean) ** 2, 0) / (rets.length - 1);
   return Math.sqrt(varr * 252) * 100;
+}
+
+// ── 수익률 ──────────────────────────────────────────────────────────────
+// 변동성을 내려고 이미 받아 둔 **같은 시세 이력**에서 낸다. 원천을 더 부르지
+// 않는다 — getSimpleEtpHist 한 통에 250거래일치 기준가가 들어 있고, 지금까지는
+// 거기서 변동성만 뽑고 나머지를 버리고 있었다.
+//
+// 기준가(NAV)로 낸다. 종가로 내면 괴리율이 섞여, 그날 거래가 적었던 것이
+// 수익률로 둔갑한다. 변동성을 NAV 로 내는 것과 같은 까닭이다.
+const TD = { '1년': 250, '6개월': 123, '3개월': 62 }; // 거래일수(대략)
+
+// 곳간에 담긴 모양({'1년': {...}|{note}, …})에서 쓰는 칸만 꺼낸다. 곳간에는
+// 되짚을 수 있게 창의 양 끝과 못 낸 까닭을 다 담아 두고, 산출물에는 비율만 싣는다.
+const retField = (rs, k) =>
+  rs && rs[k] && rs[k].pct != null ? Number(rs[k].pct.toFixed(2)) : null;
+const retWindow = (rs, k) =>
+  rs && rs[k] && rs[k].pct != null ? `${rs[k].from}~${rs[k].to}` : null;
+const retNote = (rs, k) => (rs && rs[k] && rs[k].note) || null;
+
+/**
+ * chron: 오래된 것 → 최근 순. [{date, nav}]
+ * jumps: 급변일 목록. **창 안에 하나라도 들면 그 창은 내지 않는다.**
+ */
+function navReturn(chron, wantDays, jumps) {
+  // 창을 다 못 채우면 **내지 않는다.** 상장 8개월짜리의 8개월 수익률을
+  // '1년 수익률' 칸에 적으면 기간이 다른 값끼리 한 줄에 서게 된다.
+  // 하루이틀 모자란 것까지 버리지는 않는다(원천이 며칠을 주는지는 원천 마음).
+  const need = Math.round(wantDays * 0.95);
+  const pts = chron.filter((d) => d.nav > 0);
+  if (pts.length < need) {
+    return { note: `기준가 ${pts.length}일치뿐 — 창(${wantDays}거래일)을 못 채움` };
+  }
+  const from = pts[pts.length - wantDays] || pts[0];
+  const to = pts[pts.length - 1];
+  if (!(from.nav > 0) || !(to.nav > 0)) return { note: '창 양 끝 기준가가 없음' };
+  // 급변일은 **창별로** 본다. ±15% 짜리 하루는 커버드콜에서 시장이 아니라
+  // 액면분할이거나 원천의 오기인 일이 많은데, 그런 날이 창 안에 들면 수익률이
+  // 몇 백 %가 된다. 변동성은 그 하루가 한 해치 평균에 묻히지만, 수익률은 양 끝
+  // 두 점만 보므로 통째로 틀린다.
+  //
+  // 창을 가리지 않고 한 종목을 통째로 비우지는 않는다. 작년 3월의 급변일은
+  // 3개월 수익률과 아무 상관이 없는데, 그것까지 비우면 조회표 592종목 가운데
+  // 148종목이 수익률 없이 남는다(창별로 보면 1년 145 · 6개월 96 · 3개월 93).
+  const inWin = (jumps || []).filter((j) => j.date > from.date && j.date <= to.date);
+  if (inWin.length) {
+    return { note: `창 안 급변일 ${inWin.length}일(${inWin.map((j) => j.date).join(',')}) — 내지 않음` };
+  }
+  // 기준가 두 끝을 함께 돌려준다. 총수익률은 여기에 분배금을 얹어 내는데,
+  // 비율만 받으면 분모(창 첫날 기준가)를 되살릴 길이 없다.
+  return {
+    pct: (to.nav / from.nav - 1) * 100,
+    from: from.date, to: to.date, days: wantDays,
+    navFrom: from.nav, navTo: to.nav,
+  };
 }
 
 // ── 지급주기와 "최근 12개월" ────────────────────────────────────────────
@@ -435,7 +493,10 @@ const CACHE_V = 2;
 // 판 번호를 같이 쓰면 안 된다. 시세 칸이 바뀌었다고 CACHE_V 를 올리면 분배 이력까지
 // 통째로 버려져, 종목당 두 통이면 될 판이 여섯 통이 된다. 지난 판에서 실제로
 // 그렇게 벽에 부딪혔다. 무효화는 무효로 만들 것에만 걸어야 한다.
-const MKT_V = 1;
+// 2 판: 수익률(navRets)을 함께 담는다. 1 판 곳간에는 그 칸이 없어 되살려도
+// 수익률이 빈칸이 되므로, 시세 쪽만 한 번 다시 받는다. 분배 쪽(CACHE_V)은
+// 그대로여서 종목당 네 통이 아니라 **두 통**만 다시 낸다.
+const MKT_V = 2;
 // 30일. 7일로 두었더니 매월 1일 정기 갱신은 늘 곳간 밖이라 시세 1,326통을
 // 그대로 냈다(수집 14분). 30일이면 그 판도 곳간 안에 들어와 3분에 끝난다.
 //
@@ -789,8 +850,9 @@ for (const [i, row] of universe.entries()) {
   let jumps;
   let turnover60;
   let day0;
+  let navRets;
   if (mktOk) {
-    ({ navVol, pxVol, volDays, jumps, turnover60, day0 } = mktCached);
+    ({ navVol, pxVol, volDays, jumps, turnover60, day0, navRets } = mktCached);
     // JSON 에는 undefined 가 없어 없는 칸은 null 로 온다. 아래 판정은 null 을
     // "못 구했다" 로 읽으므로 그대로 두어도 맞다. 다만 jumps 는 배열이어야 한다.
     if (!Array.isArray(jumps)) jumps = [];
@@ -818,6 +880,12 @@ for (const [i, row] of universe.entries()) {
       }
     }
 
+    // 기준가 수익률 1년·6개월·3개월. 위 chron 과 jumps 를 그대로 쓴다.
+    // 창마다 따로 판정한다 — 못 낸 창에는 까닭(note)이 남는다.
+    navRets = Object.fromEntries(
+      Object.entries(TD).map(([label, d]) => [label, navReturn(chron, d, jumps)]),
+    );
+
     // 60일 평균 거래대금. 거래량은 시세 이력(getEtpTermHist)에만 있다.
     const tdays = (term || []).map((d) => ({ close: num(d.F15001), volume: num(d.F15015) }));
     const last60 = tdays.slice(0, 60);
@@ -829,7 +897,9 @@ for (const [i, row] of universe.entries()) {
     day0 = days[0] ? { date: days[0].date, close: days[0].close, nav: days[0].nav } : null;
 
     cache[code] = cache[code] || {};
-    cache[code].mkt = { v: MKT_V, at: TODAY, navVol, pxVol, volDays, jumps, turnover60, day0 };
+    cache[code].mkt = {
+      v: MKT_V, at: TODAY, navVol, pxVol, volDays, jumps, turnover60, day0, navRets,
+    };
   }
   const vol = navVol ?? pxVol;
   // 며칠치로 낸 값인지 함께 적는다. limit=250 을 달라고 해도 원천이 몇 개를
@@ -999,10 +1069,64 @@ for (const [i, row] of universe.entries()) {
   // 두 기준이 크게 갈리므로, 기준이 다른 값끼리 견주어 멀쩡한 종목을 떨어뜨릴
   // 수 있다. 그래서 차이는 반드시 적어 두되(사람이 볼 수 있게) 제외는 하지
   // 않는다. 모르는 것을 근거로 버리는 것도 모르는 것을 사실로 적는 것만큼 나쁘다.
+  // 허용 폭은 **절대 0.15%p 와 상대 2% 중 느슨한 쪽**이다.
+  //
+  // 처음에는 절대 0.15%p 만 썼다. 그러면 분배율이 높은 쪽에서 지나치게 빡빡하다 —
+  // 연 20% 짜리에게 0.15%p 는 상대 0.75% 이고, 그 정도 차이는 두 곳이 반올림을
+  // 어디서 하느냐만으로도 난다. 실제로 그 자리에서 멀쩡한 종목 여섯이 떨어졌다.
+  //
+  // 그렇다고 상대값으로 **갈아타면 안 된다.** 전량 668종목에 미리 재 봤더니
+  // 순수 상대 2% 는 여섯을 새로 채우는 대신 **다섯을 잃었다** — 연 2~3% 짜리
+  // 저분배 종목에서는 상대 2% 가 0.06%p 라 0.15%p 보다 훨씬 빡빡해지기 때문이다
+  // (예: 489250 KODEX 미국배당다우존스, 우리 3.0376% vs 원천 2.8885%, 상대 5.16%).
+  // 그래서 둘 중 **느슨한 쪽**을 쓴다. 잃는 것 없이 여섯을 되찾는다.
+  //
+  // 분모는 원천 값으로 잡는다. 우리 계산값을 분모로 쓰면 우리가 틀렸을 때
+  // 허용 폭까지 같이 틀어져, 틀릴수록 너그러워지는 자를 쓰게 된다.
   let mismatch = null;
-  if (ttmRate !== null && theirRate !== null && Math.abs(ttmRate - theirRate) > 0.15) {
-    mismatch = `연분배율 계산 ${ttmRate.toFixed(4)}% vs ETFCHECK ${theirRate.toFixed(4)}%`;
+  const tol =
+    theirRate === null
+      ? null
+      : Math.max(RULES.mismatchAbs, Math.abs(theirRate) * RULES.mismatchRel);
+  if (ttmRate !== null && theirRate !== null && Math.abs(ttmRate - theirRate) > tol) {
+    // 허용 폭을 함께 적는다. "얼마나 어긋났나" 만 있고 "얼마까지 봐줬나" 가
+    // 없으면, 이 줄을 읽는 사람이 판정을 되짚어 볼 수 없다.
+    mismatch =
+      `연분배율 계산 ${ttmRate.toFixed(4)}% vs ETFCHECK ${theirRate.toFixed(4)}%`
+      + ` (차 ${Math.abs(ttmRate - theirRate).toFixed(4)}%p > 허용 ${tol.toFixed(4)}%p)`;
     if (payoutFreq === '월배당' || payoutFreq === '주배당') why.push(`분배율 대조 불일치(${mismatch})`);
+  }
+
+  // ── 총수익률 ────────────────────────────────────────────────────────────
+  // (창 끝 기준가 − 창 첫날 기준가 + 그 사이 분배금) ÷ 창 첫날 기준가.
+  //
+  // 재투자를 가정하지 않는다. 받은 분배금을 그대로 더할 뿐이다. 창구에서
+  // 설명하는 것은 "1년 들고 있었으면 얼마가 되었나" 이지 "분배금을 매달 같은
+  // 종목에 다시 넣었으면" 이 아니다. 재투자를 가정하면 실제로 하지 않은 매매를
+  // 수익률에 넣는 것이 된다.
+  //
+  // 두 창이 어긋나면 내지 않는다. 분배금 창(TTM, 1년 전 오늘부터)과 기준가
+  // 창(최근 250거래일)은 **같은 1년이 아닐 수 있다** — 상장 직후거나 원천이
+  // 250일을 덜 주면 기준가 창이 짧아진다. 짧은 기준가 변동에 1년치 분배금을
+  // 얹으면 수익률이 부풀려진다. 창이 어긋나는 쪽이 드물고, 드문 쪽을 틀리게
+  // 적느니 비우는 편이 낫다.
+  let totalReturn1y = null;
+  let returnNote = null;
+  const r1y = navRets && navRets['1년'];
+  if (!r1y || r1y.pct == null) {
+    // 기준가 1년 수익률을 못 낸 까닭을 그대로 물려받는다. 여기서 말을 새로
+    // 지어내면, 같은 사정이 칸마다 다른 문장으로 적혀 읽는 사람이 헷갈린다.
+    returnNote = (r1y && r1y.note) || '기준가 1년 창이 없어 수익률 내지 않음';
+  } else if (ttmSum === null || !ttmWindowFull) {
+    returnNote = '기준가 수익률은 냈으나 최근 12개월 분배금 합계가 없어 총수익률은 내지 않음';
+  } else if (!(r1y.navFrom > 0)) {
+    returnNote = '창 첫날 기준가가 없어 총수익률을 내지 않음';
+  } else if (r1y.from > String(TTM_FROM)) {
+    // 기준가 창이 분배 창보다 **늦게** 시작한다 = 기준가 쪽이 1년이 안 된다.
+    returnNote =
+      `기준가 창(${r1y.from}~)이 분배 창(${TTM_FROM}~)보다 짧아 총수익률을 내지 않음`;
+  } else {
+    totalReturn1y = Number((((r1y.navTo - r1y.navFrom + ttmSum) / r1y.navFrom) * 100).toFixed(2));
   }
 
   items.push({
@@ -1038,6 +1162,27 @@ for (const [i, row] of universe.entries()) {
     volatilityDays: volDays,
     volatilityWindow: volWindow,
     priceJumps: jumps,
+    // ── 수익률 ───────────────────────────────────────────────────────────
+    // 기준가 수익률(분배금 제외)과 총수익률(분배금 포함)을 **함께** 싣는다.
+    // 하나만 실으면 반드시 오해를 산다 —
+    //   · 기준가만: 연 20% 를 꼬박 내준 커버드콜이 '-15%' 로 읽힌다. 분배로
+    //     빠져나간 돈이 손실처럼 보이는 것인데, 그 돈은 고객 계좌에 들어갔다.
+    //   · 총수익률만: 기준가가 깎여 나가고 있다는 사실이 분배금에 가려진다.
+    //     원금을 헐어 분배하는 종목과 그렇지 않은 종목이 한 줄로 보인다.
+    // 창구에서 읽히는 숫자다. 두 개를 나란히 두는 것 말고는 길이 없다.
+    returnNav: retField(navRets, '1년'),
+    returnNav6m: retField(navRets, '6개월'),
+    returnNav3m: retField(navRets, '3개월'),
+    returnTotal: totalReturn1y,
+    // 어느 창으로 냈는지. '1년 수익률' 이라 적으려면 정말 한 해치인지
+    // 말할 수 있어야 한다. 못 낸 경우에는 왜 못 냈는지가 여기 남는다.
+    returnWindow: retWindow(navRets, '1년'),
+    returnNote: returnNote,
+    // 짧은 창도 못 내는 일이 있다(그 창 안에 급변일이 들었거나 상장이 얼마 안
+    // 됐거나). 빈칸만 두고 까닭을 안 적으면 "자료가 없는 것" 과 "일부러 비운
+    // 것" 이 구분되지 않는다.
+    returnNote6m: retNote(navRets, '6개월'),
+    returnNote3m: retNote(navRets, '3개월'),
     // 변동성·거래대금을 **언제 받은 시세로** 냈나. 곳간에서 꺼내 쓰면 오늘이
     // 아니다. 값만 적고 날짜를 안 적으면 묵은 자료가 새 자료인 척한다.
     marketAsOf: mktOk ? mktCached.at : TODAY,
