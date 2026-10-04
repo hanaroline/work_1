@@ -52,7 +52,7 @@
 - PR 은 **명시적으로 요청받았을 때만** 만듭니다.
 - 커밋 메시지는 한국어로, 무엇을 왜 바꿨는지 적습니다.
 
-## 실적 어닝스 인텔리전스 (`earnings-intel.html`)
+## 실적 어닝스 인텔리전스 (`us-earnings.html`)
 
 ```bash
 python3 scripts/build_earnings.py                        # 대장 + 화면 데이터 생성

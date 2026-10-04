@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """미국 주요기업 실적 어닝스 인텔리전스 — 주장 대장 + 화면 데이터 생성.
 
-이 파일이 수치의 단일 출처다. 화면(earnings-intel.html)이 읽는 JSON 과
+이 파일이 수치의 단일 출처다. 화면(us-earnings.html)이 읽는 JSON 과
 검산용 주장 대장(claims.json)이 모두 여기서 나온다. 화면에 손으로 숫자를
 적지 않는 것이 이 구조의 전부다.
 
@@ -1125,7 +1125,7 @@ LIMITS = [
 ]
 
 ledger = dict(
-    deliverable="미국 주요기업 실적 어닝스 인텔리전스 대시보드 (earnings-intel.html)",
+    deliverable="미국 주요기업 실적 어닝스 인텔리전스 대시보드 (us-earnings.html)",
     as_of=ASOF, series_policy=SERIES, claims=claims, derived=derived,
     unit_policy={"분기 매출": "USD bn", "매출 컨센서스": "USD bn",
                  "가이던스": "방향(+1/0/-1)", "선행 P/E": "배", "PEG": "배", "섹터 기준배수": "배",
@@ -1180,18 +1180,18 @@ payload = dict(
 (OUT / "latest.json").write_text(json.dumps(payload, ensure_ascii=False, indent=1), "utf-8")
 
 # 화면은 인터넷·서버 없이 파일 하나로 열려야 한다 — 데이터를 HTML 안에 박는다.
-PAGE = ROOT / "earnings-intel.html"
+PAGE = ROOT / "us-earnings.html"
 if PAGE.exists():
     html = PAGE.read_text("utf-8")
     a = '<script id="earnings-data" type="application/json">'
     b = "</script>"
     i = html.find(a)
     if i < 0:
-        raise SystemExit("earnings-intel.html 에 데이터 자리(#earnings-data)가 없다")
+        raise SystemExit("us-earnings.html 에 데이터 자리(#earnings-data)가 없다")
     j = html.find(b, i)
     blob = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     PAGE.write_text(html[:i + len(a)] + "\n" + blob + "\n" + html[j:], "utf-8")
-    print("earnings-intel.html 에 데이터 주입 (%.0f KB)" % (len(blob) / 1024))
+    print("us-earnings.html 에 데이터 주입 (%.0f KB)" % (len(blob) / 1024))
 
 print("기업 %d사 · claim %d건 · derived %d건" % (len(C), len(claims), len(derived)))
 print("컨센서스 확인 %d/%d · YoY 확인 %d/%d · 가이던스 확인 %d/%d · EPS 서프라이즈 %d/%d"

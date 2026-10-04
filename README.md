@@ -1589,11 +1589,11 @@ python scripts/check_calendar.py --only data
 
 # 미국 주요기업 실적 어닝스 인텔리전스
 
-`earnings-intel.html` — 미국 주요 25개사의 **실적 발표일 · 매출 컨센서스 · 실제치 · 회사
+`us-earnings.html` — 미국 주요 25개사의 **실적 발표일 · 매출 컨센서스 · 실제치 · 회사
 가이던스**를 한 화면에 모아, 실적 시즌 하나를 기업별로 흩어 찾지 않고 통째로 훑는 화면입니다.
 파일 하나만 열면 동작합니다(데이터가 HTML 안에 들어 있어 서버·인터넷이 필요 없습니다).
 
-    earnings-intel.html   ← 더블클릭
+    us-earnings.html   ← 더블클릭
 
 ## 화면 구성
 
@@ -1869,7 +1869,7 @@ LTM 은 집계사이트가 분기 실적을 합산한 값이라 **회사 발표 
 scripts/build_earnings.py
    ├─ data/earnings/claims.json   주장 대장 — 인쇄되는 모든 수치가 한 줄씩
    ├─ data/earnings/latest.json   화면 데이터
-   └─ earnings-intel.html 안에 데이터를 직접 주입
+   └─ us-earnings.html 안에 데이터를 직접 주입
 ```
 
 **HTML 에 손으로 적은 숫자는 없습니다.** 표·차트·타일은 물론이고 카드 문장과 섹션
