@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""us-top100.html 의 대상 100개 목록을 안전하게 갈아 끼우는 도구.
+"""us-top200.html 의 대상 100개 목록을 안전하게 갈아 끼우는 도구.
 
 왜 스크립트인가
-  목록은 `us-top100.html` 한 곳에만 있고(수집기도 이 배열을 읽는다), 종목 하나를
+  목록은 `us-top200.html` 한 곳에만 있고(수집기도 이 배열을 읽는다), 종목 하나를
   바꾸려면 네 곳을 함께 고쳐야 한다 — COMPANIES · PROFILE_KO · KEYWORDS · FOREIGN.
   한 곳이라도 빠지면 화면에서 그 종목만 이름이 비거나 "기업 한눈에"가 빈 채로 나온다.
   주마다 자동으로 도는 작업이 손으로 고치는 것과 같은 실수를 하지 않도록,
@@ -47,7 +47,7 @@ import sys
 import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PAGE = os.path.join(ROOT, "us-top100.html")
+PAGE = os.path.join(ROOT, "us-top200.html")
 RANKING = os.path.join(ROOT, "data", "us100", "ranking.json")
 
 # **이 셋은 check_us100_ranking.py 에서 끌어온다 — 손으로 적지 않는다.**

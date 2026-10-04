@@ -505,7 +505,7 @@ def add_holidays(hol, events, start, end):
 
 
 def read_company_names(page_path, market, sources):
-    """화면 파일(kr-top100.html · us-top100.html)의 COMPANIES 에서 종목명을 읽는다.
+    """화면 파일(kr-top100.html · us-top200.html)의 COMPANIES 에서 종목명을 읽는다.
 
     실적발표일은 데이터 브랜치에 있어 이 빌더가 못 읽는 날이 많다. 그때 브라우저가 직접
     받아 그리는데, 종목명이 없으면 티커만 나온다. 그래서 이름 표는 스냅샷과 무관하게
@@ -650,7 +650,7 @@ def main(argv=None):
     add_holidays(hol, events, start, end)
     names = {}
     names.update(read_company_names(os.path.join(ROOT, "kr-top100.html"), "kr", sources))
-    names.update(read_company_names(os.path.join(ROOT, "us-top100.html"), "us", sources))
+    names.update(read_company_names(os.path.join(ROOT, "us-top200.html"), "us", sources))
     kr_n = add_earnings(kr, names, "kr", events, start, end)
     us_n = add_earnings(us, names, "us", events, start, end)
 

@@ -48,7 +48,7 @@ def kst_now():
 
 import re
 
-# 종목 이름표는 화면(kr-top100.html / us-top100.html)의 COMPANIES 배열이 갖고 있다.
+# 종목 이름표는 화면(kr-top100.html / us-top200.html)의 COMPANIES 배열이 갖고 있다.
 # 거기 말고는 이 저장소에 한글명을 온전히 담은 자리가 없다 — kr100-data 가지의
 # latest.json·quotes.json 에는 시세만 있고 이름이 없다. 같은 표를 여기 또 적어 두면
 # 목록이 바뀔 때 한쪽만 고쳐져 어긋나므로, **있는 것을 읽어 쓴다.**
@@ -66,7 +66,7 @@ def load_names(market, strict=False):
     — 이름표가 없어도 신호는 나와야 하기 때문이다. 대신 자체시험이 strict 로 본다.
     """
     out = {}
-    page = 'kr-top100.html' if market == 'KR' else 'us-top100.html'
+    page = 'kr-top100.html' if market == 'KR' else 'us-top200.html'
     p = os.path.join(ROOT, page)
     if not os.path.exists(p):
         return out
@@ -379,7 +379,7 @@ def selftest():
     (Lowe's · McDonald's · Moody's · O'Reilly)이 그렇게 조용히 빠져 있었다.
     """
     fails = []
-    for mk, page in (('KR', 'kr-top100.html'), ('US', 'us-top100.html')):
+    for mk, page in (('KR', 'kr-top100.html'), ('US', 'us-top200.html')):
         p = os.path.join(ROOT, page)
         if not os.path.exists(p):
             continue

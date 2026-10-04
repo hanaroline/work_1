@@ -1,6 +1,6 @@
 name: 미국 100대 기업 시세 수집
 
-# `us-top100.html` 은 브라우저에서 야후에 직접 붙지만, 사내망·CORS 로 막히는 곳이
+# `us-top200.html` 은 브라우저에서 야후에 직접 붙지만, 사내망·CORS 로 막히는 곳이
 # 많다. Claude 세션도 이그레스 정책 때문에 야후에 못 붙는다. GitHub 러너는 그
 # 정책 밖에서 돌므로 여기서 대신 받아 data/us100/ 에 커밋하고, 화면은 그 스냅샷을
 # 먼저 그린 뒤 브라우저가 실시간으로 받아오면 그 위에 덮어쓴다.
@@ -89,7 +89,12 @@ jobs:
         # 인터넷이 막힌 업무용 PC 용. 데이터를 HTML 안에 넣어 파일 하나로 만든다
         # (file:// 로 열린 페이지는 옆에 있는 json 도 CORS 로 못 읽는다).
         run: |
-          python scripts/make_offline_html.py --out us-top100-offline.html
+          python scripts/make_offline_html.py --out us-top200-offline.html
+          cp us-top200-offline.html data/us100/
+          # 옛 이름으로도 함께 올린다 — 인터넷 없는 PC 쪽에 알려 둔 주소가
+          # us-top100-offline.html 이다. 그 주소를 적어 둔 사람이 404 를 만나지
+          # 않게 한동안 같이 둔다. 다 옮겨 간 것이 확인되면 이 두 줄을 지운다.
+          cp us-top200-offline.html us-top100-offline.html
           cp us-top100-offline.html data/us100/
 
       - name: 데이터 브랜치에 올리기
@@ -102,13 +107,13 @@ jobs:
         # 가장 새 판을 받을 수 있다.
         env:
           COMMIT_LABEL: 전체수집
-          PUBLISH_FILES: latest.json chart us-top100-offline.html
+          PUBLISH_FILES: latest.json chart us-top200-offline.html us-top100-offline.html
         run: bash scripts/publish_us100_data.sh
 
       - uses: actions/upload-artifact@v4
         with:
-          name: us-top100-offline
-          path: us-top100-offline.html
+          name: us-top200-offline
+          path: us-top200-offline.html
           retention-days: 14
           if-no-files-found: warn
 

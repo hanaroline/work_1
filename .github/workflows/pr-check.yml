@@ -281,7 +281,7 @@ jobs:
 
       - name: 화면과 수집기가 같은 비율을 내는가
         # 같은 규칙이 두 곳에 산다 — fetch_us100.reconcile_ratios(스냅숏을 만들 때)
-        # 와 us-top100.html 의 reconcileRatios(브라우저가 야후에 직접 붙을 때).
+        # 와 us-top200.html 의 reconcileRatios(브라우저가 야후에 직접 붙을 때).
         # 한 곳만 고치면 절반만 고친 것이고, 따로 두면 언젠가 갈라진다.
         # 시험 자료를 한 곳에 두고 두 구현에 같은 것을 먹여 맞대어 본다.
         run: node scripts/check_us100_ratios.mjs

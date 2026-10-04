@@ -1,6 +1,6 @@
 # data/us100 — 이 폴더에는 데이터가 없습니다
 
-미국 100대 기업 화면(`us-top100.html`)이 쓰는 데이터는 **히스토리를 남기지 않는
+미국 200대 기업 화면(`us-top200.html`)이 쓰는 데이터는 **히스토리를 남기지 않는
 데이터 전용 브랜치**에 있습니다.
 
     https://github.com/hanaroline/work_1/tree/us100-data/data/us100
@@ -25,11 +25,15 @@
 | `quotes.json` | 가격만 (약 20 KB, 장중 갱신) |
 | `chart/{티커}.json` | 종목별 일봉 2년 + 월봉 10년 (100개, 약 3 MB) |
 | `ranking.json` | 대상 목록 점검 결과 (화면이 읽습니다) |
-| **`us-top100-offline.html`** | **인터넷 없이 열리는 오프라인 판** (약 4.3 MB) — 위 데이터를 HTML 안에 넣어 만든 파일 하나 |
+| **`us-top200-offline.html`** | **인터넷 없이 열리는 오프라인 판** (약 4.3 MB) — 위 데이터를 HTML 안에 넣어 만든 파일 하나 |
+| `us-top100-offline.html` | 위와 **똑같은 파일**의 옛 이름. 주소를 적어 두신 분을 위해 한동안 함께 올립니다 |
 
 오프라인 판은 이 주소에서 바로 받습니다(열고 **다른 이름으로 저장**):
 
-    https://raw.githubusercontent.com/hanaroline/work_1/us100-data/data/us100/us-top100-offline.html
+    https://raw.githubusercontent.com/hanaroline/work_1/us100-data/data/us100/us-top200-offline.html
+
+옛 주소(`…/us-top100-offline.html`)도 당분간 같은 파일을 내려 줍니다. 적어 두신 주소가
+있다면 위 새 주소로 바꿔 두십시오 — 옛 이름은 언젠가 거둡니다.
 
 Actions 실행 페이지의 **Artifacts** 에도 같은 파일이 올라가지만, 그쪽은 로그인해서 zip 을
 풀어야 하고 14일 뒤 사라집니다. 위 주소는 늘 가장 새 판입니다.
@@ -45,7 +49,7 @@ Actions 실행 페이지의 **Artifacts** 에도 같은 파일이 올라가지�
 ```bash
 git fetch origin us100-data
 git checkout origin/us100-data -- data/us100      # 안내 파일이 실제 데이터로 덮인다
-python3 -m http.server 8000                        # http://localhost:8000/us-top100.html
+python3 -m http.server 8000                        # http://localhost:8000/us-top200.html
 ```
 
 사내 웹서버에 올려 두고 화면 ⑨ 섹션 **데이터 경로 설정**에 그 주소를 넣어도 됩니다.

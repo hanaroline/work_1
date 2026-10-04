@@ -289,7 +289,7 @@ def _load_etfs():
 
 
 # ─────────────────────────────────────────────────────────────────────
-# 이름표 — 화면(kr-top100.html / us-top100.html)의 COMPANIES 배열을 읽어 쓴다.
+# 이름표 — 화면(kr-top100.html / us-top200.html)의 COMPANIES 배열을 읽어 쓴다.
 # 같은 표를 여기 또 적어 두면 목록이 바뀔 때 한쪽만 고쳐져 어긋난다.
 # ─────────────────────────────────────────────────────────────────────
 
@@ -300,7 +300,7 @@ _COMPANY_ROW = re.compile(r"\['([^']+)','([^']*)','([^']*)'")
 
 def load_names(region):
     out = {}
-    page = 'kr-top100.html' if region == 'KR' else 'us-top100.html'
+    page = 'kr-top100.html' if region == 'KR' else 'us-top200.html'
     p = os.path.join(ROOT, page)
     if not os.path.exists(p):
         return out

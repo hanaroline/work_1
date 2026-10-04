@@ -18,7 +18,10 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # KEEP_FILES 에서 빠뜨리면 그 순간 지워지고, 다음 수집까지 매매 타이밍이
 # 화면용 2해치로 돌아간다 — 조용히 짧아지는 길이라 반드시 여기 둔다.
 # ranking-top.json 은 목록을 넓힐 때 쓰는 줄 세운 판이다(한 번짜리지만 30KB 라 싸다).
-KEEP_FILES="${KEEP_FILES:-quotes.json latest.json chart ranking.json us-top100-offline.html bars8y ranking-top.json}" \
+# 오프라인 판은 두 이름으로 올라간다 — 새 이름(us-top200-offline.html)과, 알려 둔 주소를
+# 적어 둔 사람을 위해 한동안 함께 두는 옛 이름(us-top100-offline.html). 둘 다 여기 있어야
+# 가격 갱신 판이 올릴 때 지워지지 않는다. 옛 이름을 거둘 때 이 줄에서도 함께 지운다.
+KEEP_FILES="${KEEP_FILES:-quotes.json latest.json chart ranking.json us-top200-offline.html us-top100-offline.html bars8y ranking-top.json}" \
 DATA_DIR="data/us100" \
 DATA_BRANCH="${US100_DATA_BRANCH:-us100-data}" \
 COMMIT_TITLE="미국 100대 기업 데이터" \

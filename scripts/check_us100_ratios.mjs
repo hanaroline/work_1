@@ -6,7 +6,7 @@
  * **왜 견주는가.** 같은 규칙이 두 곳에 산다.
  *
  *   scripts/fetch_us100.py   reconcile_ratios   러너가 스냅숏을 만들 때
- *   us-top100.html           reconcileRatios    브라우저가 야후에 직접 붙을 때
+ *   us-top200.html           reconcileRatios    브라우저가 야후에 직접 붙을 때
  *
  * 한 곳만 고치면 절반만 고친 것이다. 화면은 스냅숏을 먼저 그린 뒤 실시간 값으로
  * 덮어쓰므로, 화면 쪽에 잣대가 없으면 **덮어쓰는 순간 다시 틀린 값이 찍힌다.**
@@ -26,7 +26,7 @@ import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
-const PAGE = resolve(join(ROOT, 'us-top100.html'));
+const PAGE = resolve(join(ROOT, 'us-top200.html'));
 const FIX = resolve(join(ROOT, 'data', 'fixtures', 'ratio_cases.json'));
 
 const fails = [];

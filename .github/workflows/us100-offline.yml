@@ -1,6 +1,6 @@
 name: 미국 100대 기업 오프라인 판 다시 만들기
 
-# 오프라인 판(us-top100-offline.html)은 **화면 파일 + 수집 데이터**를 합친 것이다.
+# 오프라인 판(us-top200-offline.html)은 **화면 파일 + 수집 데이터**를 합친 것이다.
 # 전체 수집(us100-data.yml)이 하루 한 번 다시 만들지만, 화면만 고친 날에는 오프라인 판이
 # 하루 동안 낡은 화면을 담고 있게 된다. 그 사이를 메우려고 이 워크플로를 둔다.
 #
@@ -10,7 +10,7 @@ name: 미국 100대 기업 오프라인 판 다시 만들기
 on:
   push:
     paths:
-      - 'us-top100.html'
+      - 'us-top200.html'
       - 'scripts/make_offline_html.py'
       - '.github/workflows/us100-offline.yml'
 
@@ -55,7 +55,12 @@ jobs:
       - name: 오프라인 판 만들기
         if: steps.data.outputs.ok == 'true'
         run: |
-          python scripts/make_offline_html.py --out us-top100-offline.html
+          python scripts/make_offline_html.py --out us-top200-offline.html
+          cp us-top200-offline.html data/us100/
+          # 옛 이름으로도 함께 올린다 — 인터넷 없는 PC 쪽에 알려 둔 주소가
+          # us-top100-offline.html 이다. 그 주소를 적어 둔 사람이 404 를 만나지
+          # 않게 한동안 같이 둔다. 다 옮겨 간 것이 확인되면 이 두 줄을 지운다.
+          cp us-top200-offline.html us-top100-offline.html
           cp us-top100-offline.html data/us100/
 
       - name: 데이터 브랜치에 올리기
@@ -64,13 +69,13 @@ jobs:
         # 스크립트가 브랜치에서 받아 그대로 보존한다.
         env:
           COMMIT_LABEL: 오프라인판
-          PUBLISH_FILES: us-top100-offline.html
+          PUBLISH_FILES: us-top200-offline.html us-top100-offline.html
         run: bash scripts/publish_us100_data.sh
 
       - uses: actions/upload-artifact@v4
         if: steps.data.outputs.ok == 'true'
         with:
-          name: us-top100-offline
-          path: us-top100-offline.html
+          name: us-top200-offline
+          path: us-top200-offline.html
           retention-days: 14
           if-no-files-found: warn
