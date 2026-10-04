@@ -114,7 +114,87 @@ if (other === null) {
   problems.push('월배당이 아닌 종목을 담았는데 주기 경고가 뜨지 않았습니다.');
 }
 
-// 8. 배분 칸에 **여러 자리를 칠 수 있는가.**
+// 8. 수익률 넉 칸이 **원천과 같은가.**
+//
+// 엑셀 쪽은 파이썬 검사기가 원천과 맞춰 본다. 여기서 HTML 도 같은 원천과
+// 맞으면 두 벌이 서로 맞는 셈이다. 화면에 찍힌 글자를 읽는 것이 핵심이다 —
+// 칸 차례가 한 칸 밀리면 총수익 자리에 3개월치가 찍히는데, 값 자체는 모두
+// '원천에 있는 수'라서 숫자만 보는 검사로는 절대 안 잡힌다. 그래서 머리글
+// 자리부터 확인하고, 줄마다 종목명으로 원천을 찾아 넉 칸을 맞춰 본다.
+const RET_HEAD = ['총수익(1년)', '기준가(1년)', '기준가(6개월)', '기준가(3개월)'];
+const RET_KEY = ['returnTotal', 'returnNav', 'returnNav6m', 'returnNav3m'];
+const SRC = process.argv[4] || 'data/cc_etf.json';
+if (!fs.existsSync(SRC)) {
+  problems.push(`${SRC} 가 없어 수익률을 원천과 맞춰 보지 못했습니다.`);
+} else {
+  const srcBy = new Map(JSON.parse(fs.readFileSync(SRC, 'utf8')).items.map((x) => [x.name, x]));
+  const table = await page.evaluate(() => {
+    const tb = document.getElementById('qBody');
+    const heads = [...tb.closest('table').querySelectorAll('thead th')].map((th) =>
+      th.textContent.replace(/[▲▼↕\s]+$/u, '').trim(),
+    );
+    const rows = [...tb.querySelectorAll('tr')].map((tr) => {
+      const td = [...tr.children];
+      return {
+        name: td[0]?.textContent.replace(/기준 미달/, '').trim() || '',
+        rets: [7, 8, 9, 10].map((i) => ({
+          text: td[i]?.textContent.trim() ?? '',
+          title: td[i]?.querySelector('[title]')?.getAttribute('title') || '',
+        })),
+      };
+    });
+    return { heads, rows };
+  });
+  // 머리글 자리가 밀렸는지부터 본다. 밀렸으면 아래 대조는 뜻이 없다.
+  const headBad = RET_HEAD.filter((h, i) => table.heads[7 + i] !== h);
+  if (headBad.length) {
+    problems.push(
+      `조회표 머리글 8~11번째가 ${JSON.stringify(table.heads.slice(7, 11))} 입니다 — ` +
+        `${JSON.stringify(RET_HEAD)} 이어야 합니다. 칸 차례가 바뀌었다면 이 검사기도 함께 고치십시오.`,
+    );
+  } else {
+    const fmt = (v) => (v > 0 ? '+' : '') + v.toFixed(2) + '%';
+    let seen = 0;
+    let filled = 0;
+    let noTip = 0;
+    for (const row of table.rows) {
+      const src = srcBy.get(row.name);
+      if (!src) continue; // 이름으로 못 찾은 줄은 건너뛴다(원천이 더 최신일 수 있다)
+      seen += 1;
+      for (let i = 0; i < 4; i += 1) {
+        const v = src[RET_KEY[i]];
+        const cell = row.rets[i];
+        if (v == null) {
+          // 빈칸이어야 한다. 0 이나 숫자가 찍히면 '본전' 으로 읽힌다.
+          if (cell.text !== '—') {
+            problems.push(
+              `'${row.name}' ${RET_HEAD[i]} 에 "${cell.text}" 가 찍혔는데 원천에는 그 창의 수익률이 없습니다.`,
+            );
+          } else if (!cell.title) {
+            noTip += 1; // 왜 비었는지 설명이 안 붙었다
+          }
+          continue;
+        }
+        if (cell.text !== fmt(v)) {
+          problems.push(`'${row.name}' ${RET_HEAD[i]} 이 "${cell.text}" 인데 원천은 "${fmt(v)}" 입니다.`);
+        } else {
+          filled += 1;
+        }
+      }
+      if (problems.length > 12) break; // 같은 까닭이면 몇 개만 봐도 안다
+    }
+    if (noTip) problems.push(`빈 수익률 ${noTip}칸에 까닭 설명(title)이 안 붙었습니다.`);
+    if (seen < 20) {
+      problems.push(`조회표에서 원천과 이름이 맞는 줄이 ${seen}줄뿐이라 수익률을 제대로 못 맞춰 봤습니다.`);
+    } else if (filled < 20) {
+      problems.push(`조회표에 실린 수익률이 ${filled}칸뿐입니다 — 거의 다 비어 있습니다.`);
+    } else {
+      console.log(`  · 조회표 ${seen}줄의 수익률 넉 칸을 원천과 맞췄습니다 (실린 칸 ${filled}).`);
+    }
+  }
+}
+
+// 9. 배분 칸에 **여러 자리를 칠 수 있는가.**
 //
 // 한동안 한 자리밖에 못 넣었다. 글자 하나마다 표를 통째로 다시 그려서,
 // 치고 있던 input 이 지워지고 새로 만들어지는 바람에 커서가 날아갔다.

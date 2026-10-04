@@ -63,6 +63,11 @@ WON_PLAIN = "#,##0"
 PCT = "0.00%"
 PCT3 = "0.000%"
 QTY = '#,##0"주"'
+# 수익률. 부호를 늘 붙이고, 한국 증시 관례대로 오름 빨강 · 내림 파랑으로 칠한다.
+# ('5.00%' 와 '+5.00%' 는 읽는 속도가 다르고, 거꾸로 칠한 표를 창구에 내주면
+#  고객이 숫자를 읽기 전에 색부터 거꾸로 읽는다.)
+# 구획은 양수;음수;0 순이고, 빈칸은 어느 구획에도 걸리지 않아 그대로 빈칸이다.
+PCT_SIGN = '[Red]+0.00%;[Blue]-0.00%;0.00%'
 # 순자산·거래대금은 원 단위로 적으면 자릿수를 세어야 읽힌다.
 #
 # **이 서식은 글자만 붙인다. 나누지 않는다.** 엑셀의 표시 서식으로는 1억을
@@ -227,6 +232,21 @@ def build_data_sheet(wb, data):
         # 과세비율도 **맨 뒤에** 붙인다. 가운데 끼우면 제안서 쪽 수식의 열
         # 글자가 한 칸씩 밀려 조용히 엉뚱한 칸을 가리킨다(기초지수 때와 같다).
         ("과세비율", 11),
+        # 수익률도 **맨 뒤에** 붙인다(기초지수·과세비율 때와 같은 까닭).
+        # 총수익은 분배금을 포함한 값이고, 기준가는 분배금을 뺀 기준가(NAV)
+        # 만의 값이다. 둘을 함께 싣지 않으면 반드시 오해를 산다 — 기준가만
+        # 보면 연 20% 를 꼬박 내준 커버드콜이 '-15%' 로 읽히고(그 돈은 고객
+        # 계좌에 들어갔다), 총수익만 보면 원금을 헐어 분배하는 종목이 그렇지
+        # 않은 종목과 한 줄로 보인다.
+        #
+        # 6개월·3개월은 기준가뿐이다. 수집기가 분배금 합계를 12개월 창으로만
+        # 내므로 그 두 창의 총수익은 낼 수가 없다. 칸 이름에 '기준가' 라고 못
+        # 박아 두고, 없는 값을 지어내지 않는다.
+        ("총수익 1년", 12), ("기준가 1년", 12), ("기준가 6개월", 12), ("기준가 3개월", 12),
+        # 수익률을 못 낸 까닭. 빈칸만 두면 '원천에 자료가 없는 것' 과
+        # '급변일이 끼어 일부러 비운 것' 이 구분되지 않아, 담당자가 "왜 이
+        # 종목만 비었냐" 는 물음에 답할 길이 없다.
+        ("수익률 창", 20), ("수익률 비고", 44),
     ]
     ws.cell(row=1, column=1, value="ETFCHECK 수집 원본 — 이 장의 값은 손으로 고치지 마십시오. 매월 1일 수집기가 덮어씁니다.")
     ws.cell(row=1, column=1).font = f(10, bold=True, color=ORANGE)
@@ -288,9 +308,26 @@ def build_data_sheet(wb, data):
             # 보여, 모르는 것이 사실로 둔갑한다. 계산 쪽에서는 빈칸을 1 로 읽어
             # 전액 과세로 셈한다(세금을 적게 매기는 쪽으로 기울지 않는다).
             x.get("taxableRatio"),
+            # 수익률은 **백분율 값을 100 으로 나눠** 적는다. 엑셀의 0.00%
+            # 서식은 글자만 붙이는 것이 아니라 100을 곱해 보여 주므로,
+            # 5.0 을 그대로 넣으면 500% 가 된다(위 분배율들과 같은 처리).
+            # 못 낸 칸은 0 이 아니라 **빈칸**으로 둔다 — 0% 는 '본전'이라는
+            # 뜻이 되어, 모르는 것이 아는 것 행세를 한다.
+            None if x.get("returnTotal") is None else x["returnTotal"] / 100,
+            None if x.get("returnNav") is None else x["returnNav"] / 100,
+            None if x.get("returnNav6m") is None else x["returnNav6m"] / 100,
+            None if x.get("returnNav3m") is None else x["returnNav3m"] / 100,
+            x.get("returnWindow") or "",
+            # 1년 칸을 왜 비웠는지가 먼저고, 짧은 창의 까닭은 뒤에 덧붙인다.
+            " / ".join(t for t in (
+                x.get("returnNote"),
+                None if not x.get("returnNote6m") else f'6개월: {x["returnNote6m"]}',
+                None if not x.get("returnNote3m") else f'3개월: {x["returnNote3m"]}',
+            ) if t),
         ]
         fmts = [None, None, None, WON_PLAIN, WON_PLAIN, WON_PLAIN, PCT, PCT, PCT, PCT,
-                "#,##0", DATE8, None, None, None, None, None, None, "#,##0", PCT]
+                "#,##0", DATE8, None, None, None, None, None, None, "#,##0", PCT,
+                PCT_SIGN, PCT_SIGN, PCT_SIGN, PCT_SIGN, None, None]
         for i, (v, fmt) in enumerate(zip(vals, fmts), start=1):
             c = ws.cell(row=r, column=i, value=v)
             c.font = f(10, color=INK if ok else MUTED)
@@ -397,8 +434,13 @@ def build_data_sheet(wb, data):
     ws.auto_filter.ref = f"A{hr}:{get_column_letter(len(cols))}{r - 1}"
     # 검색용 칸의 글자를 그대로 돌려준다. 여기 글자를 main 에 박아 두면 칸을
     # 하나 늘리는 순간 이름이 조용히 엉뚱한 칸을 가리킨다.
+    # 수익률 넉 칸의 글자도 **이름으로 찾아** 넘긴다. [종목조회] 쪽에 글자를
+    # 박아 두면 이 장에 칸이 하나 붙는 순간 조용히 옆 칸을 집어 온다.
+    col_rets = tuple(col_of(t) for t in
+                     ("총수익 1년", "기준가 1년", "기준가 6개월", "기준가 3개월"))
     return (ws, first_adopted, last_adopted, last_sel,
-            len(adopted), len(usable_rejected), len(unusable), vl, xl, tl2, col_tax)
+            len(adopted), len(usable_rejected), len(unusable), vl, xl, tl, tl2,
+            col_tax, col_rets)
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -482,7 +524,7 @@ def header_band(ws, last_col, title, subtitle, asof_line):
 LOOKUP_ROWS = 60
 
 
-def build_lookup_sheet(wb, data, first_sel, last_sel, rank_col="U"):
+def build_lookup_sheet(wb, data, first_sel, last_sel, rank_col, match_col, ret_cols):
     """지급주기·연 분배율로 종목을 골라 보는 장.
 
     왜 [제안서] 의 콤보박스를 줄이지 않고 장을 따로 두나
@@ -497,8 +539,19 @@ def build_lookup_sheet(wb, data, first_sel, last_sel, rank_col="U"):
     고르면 된다.
     """
     ws = wb.create_sheet("종목조회", 1)
-    LAST = 9
-    widths = [2.5, 34, 13, 14, 14, 13, 15, 13, 9]
+    # 수익률 넉 칸(총수익 1년 · 기준가 1년/6개월/3개월)이 순자산과 채택 사이에
+    # 들어가면서 표가 A..M 으로 넓어졌다. 담기는 N, 숨긴 계산 칸은 O..R 이다.
+    # 아래의 칸 번호·글자를 손으로 적지 않고 여기서 한 번만 센다 — 예전에
+    # '담기' 칸이 늘면서 J 가 K 로 밀렸을 때 수식 하나가 따라오지 못한 적이
+    # 있다. 다시 그러지 않게 이름을 붙여 둔다.
+    LAST = 13                       # A..M — 표의 오른쪽 끝(채택)
+    C_MARK = 14                     # N  담기
+    C_IDX = 15                      # O  몇 번째 줄인가(숨김)
+    C_ON, C_ORD, C_NAME = 16, 17, 18    # P 담겼나 · Q 담긴 차례 · R 그 차례의 종목명
+    K = get_column_letter(C_IDX)
+    MARK = get_column_letter(C_MARK)
+    L_ON, L_ORD, L_NAME = (get_column_letter(c) for c in (C_ON, C_ORD, C_NAME))
+    widths = [2.5, 34, 13, 14, 14, 13, 15, 13, 12, 12, 12, 12, 9]
     for i, w in enumerate(widths, start=1):
         ws.column_dimensions[get_column_letter(i)].width = w
     ws.sheet_view.showGridLines = False
@@ -545,7 +598,13 @@ def build_lookup_sheet(wb, data, first_sel, last_sel, rank_col="U"):
     cnt_row = r
     label(ws, r, 2, "조건에 맞는 종목", bold=True)
     hit = ws.cell(row=r, column=3)
-    hit.value = f"=COUNTIF('{D}'!$T${first_sel}:$T${last_sel},1)"
+    # 걸린 종목 수. 칸 글자를 **받아 쓴다.** 예전에는 여기에 'T' 가 박혀
+    # 있었는데, [ETF데이터] 에 과세비율 칸이 붙으면서 조건 칸이 T 에서 U 로
+    # 밀렸고, 이 수식은 그대로 T(= 과세비율)를 세고 있었다. 그래서 이 숫자가
+    # '조건에 걸린 종목 수' 가 아니라 '과세비율이 100% 인 종목 수' 였고,
+    # 조회 조건을 바꿔도 꿈쩍하지 않았다. 아래 MATCH 가 쓰는 차례 칸은
+    # 처음부터 받아 쓰고 있어서 결과 목록 자체는 맞았다 — 머릿수만 틀렸다.
+    hit.value = f"=COUNTIF('{D}'!${match_col}${first_sel}:${match_col}${last_sel},1)"
     hit.font = f(14, bold=True, color=ORANGE)
     hit.number_format = '#,##0"종목"'
     hit.alignment = Alignment(horizontal="right", vertical="center")
@@ -558,37 +617,57 @@ def build_lookup_sheet(wb, data, first_sel, last_sel, rank_col="U"):
 
     # ── 2. 조회 결과 ──
     r = section(ws, r, "2", f"조회 결과 (최대 {LOOKUP_ROWS}종목)", LAST)
-    head = ["종목명", "지급주기", "연 분배율", "월 환산", "현재가", "변동성", "순자산", "채택", "담기"]
+    # 수익률은 순자산 **뒤, 채택 앞**에 넣는다. 담당자가 왼쪽에서 오른쪽으로
+    # '얼마를 주나(분배율) → 얼마나 크고 안전한가(순자산·변동성) → 그래서
+    # 얼마를 벌었나(수익률) → 우리가 채택했나' 순으로 읽게 된다.
+    head = ["종목명", "지급주기", "연 분배율", "월 환산", "현재가", "변동성", "순자산",
+            "총수익 1년", "기준가 1년", "기준가 6개월", "기준가 3개월", "채택", "담기"]
     table_head(ws, r, head, 2)
     r += 1
     first_row = r
 
-    # 숨긴 칸 K 에 "몇 번째 줄인가" 를 담고, 나머지 칸은 그 값으로 집어 온다.
-    # 줄마다 MATCH 를 여덟 번 돌리지 않으려는 것이기도 하고, 집어 오는 칸이
+    # 숨긴 칸 하나에 "몇 번째 줄인가" 를 담고, 나머지 칸은 그 값으로 집어 온다.
+    # 줄마다 MATCH 를 열두 번 돌리지 않으려는 것이기도 하고, 집어 오는 칸이
     # 늘어나도 한 군데만 고치면 되기 때문이기도 하다.
-    # (J 였는데 '담기' 칸이 10번 자리를 쓰게 되어 K 로 옮겼다.)
+    # (J → K → O 로 두 번 밀렸다. 그래서 글자를 박지 않고 위에서 한 번 센다.)
     def pick(col, rr):
         return (
-            f'=IF($K{rr}=0,"",'
-            f"INDEX('{D}'!${col}${first_sel}:${col}${last_sel},$K{rr}))"
+            f'=IF(${K}{rr}=0,"",'
+            f"INDEX('{D}'!${col}${first_sel}:${col}${last_sel},${K}{rr}))"
         )
 
+    # 수익률 칸은 pick 과 한 가지가 다르다. [ETF데이터] 에서 수익률을 내지
+    # 못한 종목은 그 칸이 **빈칸**인데, INDEX 는 빈칸을 0 으로 돌려준다.
+    # 그대로 두면 '수익률 0%(본전)' 로 읽혀, 모르는 것이 아는 것 행세를 한다.
+    # 그래서 집어 온 값이 빈칸이면 빈칸으로 되돌린다.
+    def ret_pick(col, rr):
+        idx = f"INDEX('{D}'!${col}${first_sel}:${col}${last_sel},${K}{rr})"
+        return f'=IF(${K}{rr}=0,"",IF({idx}="","",{idx}))'
+
+    rt1, rn1, rn6, rn3 = ret_cols
     for k in range(LOOKUP_ROWS):
         rr = first_row + k
-        ws.cell(row=rr, column=11).value = (
+        ws.cell(row=rr, column=C_IDX).value = (
             f"=IFERROR(MATCH({k + 1},'{D}'!${rank_col}${first_sel}:${rank_col}${last_sel},0),0)"
         )
         cells = [
             (2, pick("A", rr), None),                    # 종목명
             (3, pick("R", rr), None),                    # 지급주기
             (4, pick("J", rr), PCT),                     # 연 분배율
-            (5, f'=IF($K{rr}=0,"",$D{rr}/12)', PCT3),    # 월 환산
+            (5, f'=IF(${K}{rr}=0,"",$D{rr}/12)', PCT3),  # 월 환산
             (6, pick("D", rr), WON),                     # 현재가
             (7, pick("H", rr), PCT),                     # 변동성
             # 순자산. 억원으로 적으므로 여기서 1억을 나눈다 — 서식은 글자만
             # 붙일 뿐 나누지 못한다(EOK 주석 참고).
-            (8, f'=IF($K{rr}=0,"",INDEX(\'{D}\'!$E${first_sel}:$E${last_sel},$K{rr})/{EOK_DIV})', EOK),
-            (9, pick("M", rr), None),                    # 채택
+            (8, f'=IF(${K}{rr}=0,"",INDEX(\'{D}\'!$E${first_sel}:$E${last_sel},${K}{rr})/{EOK_DIV})', EOK),
+            # 수익률 넉 칸. [ETF데이터] 에서 못 낸 칸은 거기서도 빈칸이라
+            # INDEX 가 0 을 돌려준다 — 그대로 두면 '본전'으로 읽히므로
+            # 빈칸이면 빈칸으로 되돌린다. 0% 와 '모름' 은 다른 말이다.
+            (9, ret_pick(rt1, rr), PCT_SIGN),            # 총수익 1년
+            (10, ret_pick(rn1, rr), PCT_SIGN),           # 기준가 1년
+            (11, ret_pick(rn6, rr), PCT_SIGN),           # 기준가 6개월
+            (12, ret_pick(rn3, rr), PCT_SIGN),           # 기준가 3개월
+            (13, pick("M", rr), None),                   # 채택
         ]
         for c, v, fmt in cells:
             cell = ws.cell(row=rr, column=c, value=v)
@@ -599,7 +678,7 @@ def build_lookup_sheet(wb, data, first_sel, last_sel, rank_col="U"):
                 cell.alignment = Alignment(horizontal="right")
             else:
                 cell.alignment = Alignment(
-                    horizontal="center" if c in (3, 9) else "left", vertical="center"
+                    horizontal="center" if c in (3, 13) else "left", vertical="center"
                 )
             if k % 2:
                 cell.fill = fill(SURFACE)
@@ -610,7 +689,7 @@ def build_lookup_sheet(wb, data, first_sel, last_sel, rank_col="U"):
         # 그건 매크로(VBA)가 하는 일이고, 매크로 파일은 사내 배포에서 막힌다.
         # 그래서 '누르는' 대신 '표시하는' 방식으로 같은 일을 한다. 콤보박스를
         # 달아 두었으므로 ▼ 를 눌러 O 를 고르면 된다.
-        mk = put(ws, rr, 10, None, None, kind="input")
+        mk = put(ws, rr, C_MARK, None, None, kind="input")
         mk.alignment = Alignment(horizontal="center", vertical="center")
 
     # 담기 칸의 콤보박스. 아무 글자나 넣어도 담기지만, 고를 수 있게 해 두면
@@ -619,23 +698,23 @@ def build_lookup_sheet(wb, data, first_sel, last_sel, rank_col="U"):
     dv_mark.prompt = "▼ 를 눌러 O 를 고르면 [제안서] 포트폴리오에 올라갑니다. 지우면 내려갑니다."
     dv_mark.promptTitle = "담기"
     ws.add_data_validation(dv_mark)
-    dv_mark.sqref = f"J{first_row}:J{first_row + LOOKUP_ROWS - 1}"
+    dv_mark.sqref = f"{MARK}{first_row}:{MARK}{first_row + LOOKUP_ROWS - 1}"
 
     # ── 담은 종목을 차례대로 뽑아 두는 숨긴 칸 ─────────────────────────
-    # [ETF데이터] 의 조회 칸과 같은 방식이다. L 은 담겼는지, M 은 몇 번째로
-    # 담겼는지, N 은 그 차례의 종목명이다. [제안서] 는 N 만 본다.
+    # [ETF데이터] 의 조회 칸과 같은 방식이다. P 는 담겼는지, Q 는 몇 번째로
+    # 담겼는지, R 은 그 차례의 종목명이다. [제안서] 는 R 만 본다.
     for k in range(LOOKUP_ROWS):
         rr = first_row + k
-        ws.cell(row=rr, column=12).value = f'=IF(AND($B{rr}<>"",$J{rr}<>""),1,0)'
-        prev = "0" if k == 0 else f"$M{rr - 1}"
-        ws.cell(row=rr, column=13).value = f"=IF($L{rr}=1,{prev}+1,{prev})"
-        ws.cell(row=rr, column=14).value = (
+        ws.cell(row=rr, column=C_ON).value = f'=IF(AND($B{rr}<>"",${MARK}{rr}<>""),1,0)'
+        prev = "0" if k == 0 else f"${L_ORD}{rr - 1}"
+        ws.cell(row=rr, column=C_ORD).value = f"=IF(${L_ON}{rr}=1,{prev}+1,{prev})"
+        ws.cell(row=rr, column=C_NAME).value = (
             f"=IFERROR(INDEX($B${first_row}:$B${first_row + LOOKUP_ROWS - 1},"
-            f"MATCH({k + 1},$M${first_row}:$M${first_row + LOOKUP_ROWS - 1},0)),\"\")"
+            f"MATCH({k + 1},${L_ORD}${first_row}:${L_ORD}${first_row + LOOKUP_ROWS - 1},0)),\"\")"
         )
-    for _h in ("K", "L", "M", "N"):
+    for _h in (K, L_ON, L_ORD, L_NAME):
         ws.column_dimensions[_h].hidden = True
-    box(ws, first_row - 1, 2, first_row + LOOKUP_ROWS - 1, 10)
+    box(ws, first_row - 1, 2, first_row + LOOKUP_ROWS - 1, C_MARK)
     last_row = first_row + LOOKUP_ROWS - 1
 
     r = last_row + 2
@@ -659,7 +738,7 @@ def build_lookup_sheet(wb, data, first_sel, last_sel, rank_col="U"):
           size=9, color=MUTED)
 
     ws.freeze_panes = f"A{first_row}"
-    return ws, first_cond, first_row, last_row
+    return ws, first_cond, first_row, last_row, L_ORD, L_NAME
 
 
 def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted, tax_col="T"):
@@ -1319,7 +1398,8 @@ def main():
     wb.remove(wb.active)
 
     (ds, first_adopted, last_adopted, last_sel,
-     n_ok, n_rej, n_bad, col_smatch, col_slist, col_rank, col_tax) = build_data_sheet(wb, data)
+     n_ok, n_rej, n_bad, col_smatch, col_slist, col_match, col_rank,
+     col_tax, col_rets) = build_data_sheet(wb, data)
     # 드롭다운이 가리킬 이름. 채택 + 기준 미달(값이 온전한 것)까지 담는다.
     # 수집 실패 종목은 그 뒤에 있어 이 구간에 들어오지 않는다.
     #
@@ -1330,7 +1410,8 @@ def main():
     )
     ws, p_first, p_last, search_cell = build_proposal(
         wb, data, first_adopted, last_sel, first_adopted, last_adopted, col_tax)
-    lk, cond_row, lk_first, lk_last = build_lookup_sheet(wb, data, first_adopted, last_sel, col_rank)
+    lk, cond_row, lk_first, lk_last, lk_ord, lk_name = build_lookup_sheet(
+        wb, data, first_adopted, last_sel, col_rank, col_match, col_rets)
 
     # 검색 칸과, 그 검색에 걸린 종목만 담은 목록.
     #
@@ -1349,9 +1430,9 @@ def main():
     )))
     # [종목조회] 에서 'O' 로 담은 종목을 차례대로 담은 목록과 그 개수.
     wb.defined_names.add(
-        DefinedName("담긴목록", attr_text=f"'종목조회'!$N${lk_first}:$N${lk_last}"))
+        DefinedName("담긴목록", attr_text=f"'종목조회'!${lk_name}${lk_first}:${lk_name}${lk_last}"))
     wb.defined_names.add(
-        DefinedName("담긴수", attr_text=f"'종목조회'!$M${lk_last}"))
+        DefinedName("담긴수", attr_text=f"'종목조회'!${lk_ord}${lk_last}"))
     # 조회 조건 세 칸에 이름을 붙인다. [ETF데이터] 장의 숨긴 계산 칸이 이
     # 이름들을 본다 — 칸 주소를 그대로 박아 두면 줄이 하나 밀리는 순간
     # 조회가 엉뚱한 칸을 조건으로 읽는다.

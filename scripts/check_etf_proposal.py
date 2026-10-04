@@ -46,11 +46,30 @@ DATA_COLS = {
     "F": "60일 평균거래대금", "G": "총보수", "H": "변동성", "I": "최근 월분배율",
     "J": "연환산 분배율", "K": "분배 기록수", "L": "최근 분배기준일", "M": "채택", "N": "제외 사유", "O": "기초지수", "P": "유형", "Q": "자산군",
     "R": "지급주기", "S": "연 지급횟수", "T": "과세비율",
+    "U": "총수익 1년", "V": "기준가 1년", "W": "기준가 6개월", "X": "기준가 3개월",
+    "Y": "수익률 창", "Z": "수익률 비고",
 }
 
 # 빈칸이 정상인 칸. 그 자체가 "모른다" 는 뜻을 담는다.
-BLANK_OK_COLS = {"T"}
+#
+# 과세비율은 빈칸 = 과세표준을 확인하지 못함. 수익률 넉 칸은 빈칸 = 그 창의
+# 수익률을 낼 수 없었음(상장이 짧거나, 기준가가 하루에 15% 넘게 튄 날이
+# 창 안에 있음). 0 으로 채우면 '본전인 종목' 과 구분이 사라진다. 까닭은
+# Y·Z 에 글자로 남고, Z 가 비어 있는 것도 정상이다(까닭 없이 성한 종목).
+BLANK_OK_COLS = {"T", "U", "V", "W", "X", "Y", "Z"}
 INPUT_FILL = "FFF7E6"   # 노란 입력칸 (build_etf_proposal.py 와 같아야 한다)
+
+# [종목조회] 결과 표의 수익률 넉 칸. 이 장의 칸 차례는 build_etf_proposal.py 의
+# head 와 같아야 한다 (종목명 B · 지급주기 C · 연 분배율 D · 월 환산 E ·
+# 현재가 F · 변동성 G · 순자산 H · 수익률 I~L · 채택 M · 담기 N).
+LOOKUP_RET_COLS = {"I": "총수익 1년", "J": "기준가 1년",
+                   "K": "기준가 6개월", "L": "기준가 3개월"}
+
+# [종목조회] 결과 표의 첫 줄을 찾는 수식 생김새. 숨긴 '몇 번째 줄인가' 칸의
+# 글자를 **박아 두지 않는다** — 그 칸은 J → K → O 로 두 번 밀렸고, 그때마다
+# 이 검사가 표를 못 찾아 "결과 표를 못 찾아 …" 로 조용히 넘어갈 뻔했다.
+# 검사기가 못 찾고 넘어가는 것은 통과가 아니라 **검사를 안 한 것**이다.
+LOOKUP_NAME_RE = re.compile(r"""^=IF\(\$[A-Z]+\d+=0,"",INDEX\('ETF데이터'!\$A\$""")
 
 problems: list[str] = []
 notes: list[str] = []
@@ -200,7 +219,7 @@ def main() -> int:  # noqa: PLR0915
     ref_own = re.compile(r"(?<![!\w$])\$?([A-H])\$?(\d+)\b")
     # 범위 끝(`:$B$6`)까지 한 덩어리로 잡는다. 앞쪽만 떼어 내면 남은
     # `:$B$6` 가 제안서 자기 칸 참조처럼 보여 없는 문제를 만든다.
-    ref_data = re.compile(r"'ETF데이터'!\$([A-T])\$(\d+)(?::\$([A-T])\$(\d+))?")
+    ref_data = re.compile(r"'ETF데이터'!\$([A-Z])\$(\d+)(?::\$([A-Z])\$(\d+))?")
     n_formula = 0
     for row in ws.iter_rows():
         for c in row:
@@ -264,9 +283,18 @@ def main() -> int:  # noqa: PLR0915
             ("D", "price", 1), ("E", "aum", 1), ("F", "turnover60", 1),
             ("G", "expenseRatio", 100), ("H", "volatility", 100),
             ("I", "distMonthlyRate", 100), ("J", "distTtmRate", 100),
+            # 수익률 넉 칸도 분배율과 같은 방식으로 담긴다(값/100). 여기서
+            # 보는 것이 중요한 까닭은 단위다 — 5.0% 를 5.0 으로 담으면 화면에
+            # 500% 로 찍히고, 그 수가 그대로 고객 앞에 나간다.
+            ("U", "returnTotal", 100), ("V", "returnNav", 100),
+            ("W", "returnNav6m", 100), ("X", "returnNav3m", 100),
         ]:
             got, want = ds[f"{col}{rw}"].value, item.get(key)
             if want is None:
+                # 원천에 없으면 시트도 **비어 있어야** 한다. 0 이 들어가면
+                # '수익률 0%(본전)' 으로 읽혀 모르는 것이 아는 것 행세를 한다.
+                if col in ("U", "V", "W", "X") and got not in (None, ""):
+                    fail(f"ETF데이터 {col}{rw} ({DATA_COLS[col]}): 원천에 없는데 시트에 {got} 이 있습니다.")
                 continue
             if div:
                 if got is None or abs(got - want / div) > 1e-9:
@@ -470,7 +498,7 @@ def check_lookup_units(v, lk, selectable) -> None:
     first = None
     for row in lk.iter_rows(min_col=2, max_col=2):
         for c in row:
-            if isinstance(c.value, str) and c.value.startswith("=IF($K"):
+            if isinstance(c.value, str) and LOOKUP_NAME_RE.match(c.value):
                 first = c.row
                 break
         if first:
@@ -479,8 +507,20 @@ def check_lookup_units(v, lk, selectable) -> None:
         fail("[종목조회] 결과 표를 못 찾아 단위를 못 봤습니다.")
         return
 
+    # 아래에서 칸 글자로 값을 집어 오므로, 머리글이 정말 그 자리에 있는지
+    # 먼저 본다. 칸이 하나 끼어들면 조용히 옆 칸을 원천과 견주게 되고,
+    # 그러면 '맞다' 는 보고가 거짓이 된다.
+    WANT_HEAD = {"B": "종목명", "D": "연 분배율", "F": "현재가", "H": "순자산",
+                 **LOOKUP_RET_COLS, "M": "채택", "N": "담기"}
+    for cl, title in WANT_HEAD.items():
+        got = lk[f"{cl}{first - 1}"].value
+        if got != title:
+            fail(f"[종목조회] 머리글 {cl}{first - 1} 이 '{got}' 입니다 — '{title}' 이어야 합니다. "
+                 "표의 칸 차례가 바뀌었다면 이 검사기의 칸 글자도 함께 고치십시오.")
+            return
+
     by_name = {x["name"]: x for x in selectable}
-    n = 0
+    n = n_ret = 0
     for i in range(LOOKUP_ROWS_MAX):
         rr = first + i
         name = v.get(("종목조회", f"B{rr}"))
@@ -510,8 +550,30 @@ def check_lookup_units(v, lk, selectable) -> None:
         if not near(gr, wr, 0.0002):
             fail(f"[종목조회] {rr}행 '{name}' 연 분배율이 {gr} 인데 원천은 {wr:.4f} 입니다.")
             return
+        # 수익률 넉 칸. 분배율과 같은 담김새(값/100)여야 하고, 원천에 없는
+        # 칸은 **빈칸이어야 한다.** 여기서 0 이 나오면 INDEX 가 빈칸을 0 으로
+        # 돌려준 것을 되돌리지 못한 것이고, 화면에는 '0.00%' 즉 '본전' 으로
+        # 찍힌다 — 모르는 것이 아는 것 행세를 하는, 이 갈래에서 제일 나쁜 꼴이다.
+        for cl, key in (("I", "returnTotal"), ("J", "returnNav"),
+                        ("K", "returnNav6m"), ("L", "returnNav3m")):
+            gv = v.get(("종목조회", f"{cl}{rr}"))
+            src = it.get(key)
+            if src is None:
+                # 0 은 여기서 **틀린 값**이다 — 빈칸이 아니라 '본전' 이라는 뜻이 된다.
+                if gv not in (None, ""):
+                    fail(f"[종목조회] {rr}행 '{name}' {LOOKUP_RET_COLS[cl]} 이 {gv!r} 인데 "
+                         f"원천에는 그 창의 수익률이 없습니다 — 빈칸이어야 합니다.")
+                    return
+                continue
+            if not near(gv, src / 100, 0.0002):
+                fail(f"[종목조회] {rr}행 '{name}' {LOOKUP_RET_COLS[cl]} 이 {gv} 인데 "
+                     f"원천은 {src / 100:.4f} 입니다.")
+                return
+            n_ret += 1
     if n:
-        notes.append(f"[종목조회] {n}줄의 순자산·현재가·분배율을 원천과 단위까지 맞췄습니다.")
+        notes.append(
+            f"[종목조회] {n}줄의 순자산·현재가·분배율과 수익률 넉 칸을 "
+            f"원천과 단위까지 맞췄습니다 (수익률이 실린 줄 {n_ret}).")
 
 
 def check_protection(wb) -> None:
@@ -572,7 +634,7 @@ def check_pick_and_search(selectable, wb=None) -> None:
     first = None
     for row in lk.iter_rows(min_col=2, max_col=2):
         for c in row:
-            if isinstance(c.value, str) and c.value.startswith("=IF($K"):
+            if isinstance(c.value, str) and LOOKUP_NAME_RE.match(c.value):
                 first = c.row
                 break
         if first:
@@ -601,9 +663,22 @@ def check_pick_and_search(selectable, wb=None) -> None:
     # 러너에서는 이 검사가 두 번 도는데(검사 단계·커밋 단계), 시험마다 판을
     # 늘리면 갱신이 몇 십 분씩 길어진다. 그리고 둘을 같이 걸면 공짜로 얻는
     # 것이 있다 — 검색어가 켜진 채로 담긴 종목의 수치가 성한지 볼 수 있다.
+    # '담기' 칸 번호도 박아 두지 않는다 — 결과 표에 수익률 넉 칸이 붙으면서
+    # J 에서 N 으로 밀렸다. 콤보박스(데이터 유효성)가 걸린 구간이 곧 담기 칸이니
+    # 거기서 읽는다. 못 찾으면 멈춘다 — 엉뚱한 칸에 O 를 넣어 두고 "담기가
+    # 안 된다" 고 보고하면 고치는 사람을 엉뚱한 데로 보낸다.
+    mark_col = None
+    for dv in lk.data_validations.dataValidation:
+        if (dv.formula1 or "").strip('"') == "O":
+            mark_col = lk[str(dv.sqref).split()[0].split(":")[0]].column
+            break
+    if mark_col is None:
+        fail("[종목조회] 에서 '담기' 칸(O 를 고르는 콤보박스)을 못 찾았습니다.")
+        return
+
     PICKS = (0, 2, 6, 11)
     for p in PICKS:
-        lk.cell(first + p, 10).value = "O"
+        lk.cell(first + p, mark_col).value = "O"
     ws[scell] = TERM = "커버드콜"
     with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tf:
         tmp = Path(tf.name)
@@ -801,10 +876,19 @@ def check_lookup(selectable, first_sel, last_sel) -> None:  # noqa: ARG001
     if not cond_row:
         fail("[종목조회] 에서 '지급주기' 조건 칸을 못 찾았습니다.")
         return
+    # 개수 칸('조건에 맞는 종목')은 **이름으로 찾는다.** 전에는 cond_row+3 으로
+    # 세었는데 그 줄은 빈 줄이었고(실제 자리는 +4), 빈 칸은 None 이라 아래
+    # 검사가 통째로 건너뛰어졌다. 그 사이 COUNTIF 가 엉뚱한 칸(과세비율)을
+    # 세고 있었는데도 검사기는 아홉 조합을 '다 맞았다' 고 보고했다.
+    # 검사기가 못 찾고 넘어가는 것은 통과가 아니라 검사를 안 한 것이다.
+    cnt_row, _ = find_label(lk, "조건에 맞는 종목", cols=(2,))
+    if not cnt_row:
+        fail("[종목조회] 에서 '조건에 맞는 종목' 개수 칸을 못 찾았습니다.")
+        return
     first_hit = None
     for row in lk.iter_rows(min_col=2, max_col=2):
         for c in row:
-            if isinstance(c.value, str) and c.value.startswith("=IF($K"):
+            if isinstance(c.value, str) and LOOKUP_NAME_RE.match(c.value):
                 first_hit = c.row
                 break
         if first_hit:
@@ -875,8 +959,11 @@ def check_lookup(selectable, first_sel, last_sel) -> None:  # noqa: ARG001
                 )
                 return
             # 개수 칸도 함께 본다. 표는 60줄에서 잘리지만 개수는 전부 세야 한다.
-            n_cell = cells.get(("종목조회", f"C{cond_row + 3}"))
-            if n_cell is not None and not near(n_cell, len(want), tol=0.5):
+            # 값이 없으면 통과가 아니라 실패다 — 전에는 자리를 잘못 짚어 빈 칸을
+            # 읽고 None 이라고 건너뛰었고, 그동안 COUNTIF 가 엉뚱한 칸을 세고
+            # 있었는데도 아홉 조합이 전부 '맞았다' 고 나왔다.
+            n_cell = cells.get(("종목조회", f"C{cnt_row}"))
+            if n_cell is None or not near(n_cell, len(want), tol=0.5):
                 fail(f"[종목조회] {label}: 개수 칸 {n_cell} ≠ 손계산 {len(want)}")
                 return
             checked += 1

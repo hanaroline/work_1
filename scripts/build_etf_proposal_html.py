@@ -109,6 +109,26 @@ def main():
                 # 전액 과세' 와 '확인 불가' 가 구분되지 않는다. 계산에서는
                 # null 을 1 로 읽어 전액 과세로 셈한다.
                 "taxR": x.get("taxableRatio"),
+                # 수익률. 총수익(분배금 포함)과 기준가(분배금 제외)를 **함께**
+                # 보낸다. 하나만 보내면 반드시 오해를 산다 — 기준가만 보면 연
+                # 20% 를 꼬박 내준 커버드콜이 '-15%' 로 읽히고(그 돈은 고객
+                # 계좌에 들어갔다), 총수익만 보면 원금을 헐어 분배하는 종목이
+                # 그렇지 않은 종목과 한 줄로 보인다.
+                #
+                # 6개월·3개월은 **기준가뿐**이다. 수집기가 분배금 합계를 12개월
+                # 창으로만 내므로 그 두 창의 총수익은 낼 수가 없다. 없는 것을
+                # 있는 척 적지 않고, 칸 이름에 '기준가' 라고 못 박아 둔다.
+                "rT": x.get("returnTotal"),
+                "rN": x.get("returnNav"),
+                "rN6": x.get("returnNav6m"),
+                "rN3": x.get("returnNav3m"),
+                # 어느 창으로 냈는지와, 못 낸 칸의 까닭. 빈칸에 마우스를 올리면
+                # 뜬다 — 까닭을 안 적으면 '자료가 없는 것' 과 '일부러 비운 것'
+                # 이 구분되지 않는다.
+                "rW": x.get("returnWindow") or "",
+                "rNote": x.get("returnNote") or "",
+                "rNote6": x.get("returnNote6m") or "",
+                "rNote3": x.get("returnNote3m") or "",
             }
             for x in selectable
         ],
@@ -281,6 +301,15 @@ th[data-k]{cursor:pointer; user-select:none}
 th[data-k]:hover{text-decoration:underline}
 th[data-k].sorted{background:var(--orange); color:#fff}
 th .arw{margin-left:4px; font-size:11px}
+/* 수익률 — 한국 증시 관례대로 오름 빨강, 내림 파랑(브랜드 네이비). 거꾸로
+   칠한 표를 창구에 내주면 고객이 숫자를 읽기 전에 색부터 거꾸로 읽는다. */
+.ret-up{color:var(--error); font-weight:600}
+.ret-dn{color:var(--blue); font-weight:600}
+/* 수익률 넉 칸이 어디서 시작하는지 세로줄로 표시한다. 바탕색으로 가르면
+   줄무늬(nth-child(even))와 부딪쳐 오히려 지저분해진다. */
+th.rt, td.rt{border-left:2px solid var(--orange)}
+/* 못 낸 칸. 까닭이 마우스 설명으로 붙어 있다는 것을 점선으로 알린다. */
+.nover{color:var(--muted-soft); border-bottom:1px dotted var(--muted-soft); cursor:help}
 .btns{display:flex; gap:9px; flex-wrap:wrap; margin-top:14px}
 
 /* ── 수치 카드 ──────────────────────────────────────── */
@@ -458,11 +487,25 @@ ul.notice li{margin:5px 0}
         <th class="r" data-k="price" onclick="sortQuery('price')">현재가<span class="arw"></span></th>
         <th class="r" data-k="vol" onclick="sortQuery('vol')">변동성(__VOLNOTE__)<span class="arw"></span></th>
         <th class="r" data-k="aum" onclick="sortQuery('aum')">순자산<span class="arw"></span></th>
+        <th class="r rt" data-k="rT" onclick="sortQuery('rT')" title="분배금을 포함한 1년 수익률">총수익(1년)<span class="arw"></span></th>
+        <th class="r" data-k="rN" onclick="sortQuery('rN')" title="분배금을 뺀 기준가(NAV)만의 수익률">기준가(1년)<span class="arw"></span></th>
+        <th class="r" data-k="rN6" onclick="sortQuery('rN6')" title="분배금을 뺀 기준가(NAV)만의 수익률">기준가(6개월)<span class="arw"></span></th>
+        <th class="r" data-k="rN3" onclick="sortQuery('rN3')" title="분배금을 뺀 기준가(NAV)만의 수익률">기준가(3개월)<span class="arw"></span></th>
         <th class="c" data-k="adopted" onclick="sortQuery('adopted')">채택<span class="arw"></span></th>
         <th class="c noprint">담기</th></tr></thead>
       <tbody id="qBody"></tbody>
     </table></div>
     <div class="note">'판정 불가' 는 상장 1년이 안 돼 지급주기를 말할 수 없는 종목입니다. 빼지 않고 그대로 담았습니다.</div>
+    <div class="note"><b>총수익(1년)</b>은 분배금을 <b>포함한</b> 수익률이고, <b>기준가</b>는 분배금을 <b>뺀</b>
+      기준가(NAV)만의 수익률입니다. 커버드콜은 분배로 돈이 빠져나가는 만큼 기준가가 내려가므로,
+      기준가만 보면 분배를 꼬박 내준 종목이 손실처럼 읽힙니다. 두 칸을 <b>함께</b> 보십시오 —
+      총수익이 양(+)인데 기준가가 음(−)이면 분배 재원이 원금이 아니라는 뜻이고, 둘 다 음이면
+      분배금으로도 기준가 하락을 메우지 못했다는 뜻입니다.
+      6개월·3개월에는 총수익 칸이 없습니다 — 분배금 합계를 12개월 창으로만 집계해, 그 두 창의
+      총수익은 낼 수 없습니다. 없는 값을 지어내지 않고 비워 둡니다.
+      '—' 에 마우스를 올리면 그 칸을 왜 비웠는지 나옵니다.
+      수익률은 시장가가 아니라 <b>기준가(NAV)</b>로 냅니다. 시장가로 내면 괴리율이 섞여,
+      그날 거래가 적었던 것이 수익률로 둔갑합니다. <b>과거 수익률은 미래를 보장하지 않습니다.</b></div>
   </section>
 
   <!-- 6. 비교 -->
@@ -510,6 +553,26 @@ const F = new Map(DATA.items.map(x => [x.code, x]));
 const won = n => (Math.round(n)).toLocaleString('ko-KR') + '원';
 const pct = (n, d = 2) => (n).toFixed(d) + '%';
 const numOf = s => { const v = parseFloat(String(s).replace(/[^0-9.\-]/g, '')); return isFinite(v) ? v : 0; };
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+/* 수익률 한 칸.
+   ──────────────────────────────────────────────────────────────────────
+   값이 있으면 부호를 붙여 적는다. '5.00%' 와 '+5.00%' 는 읽는 속도가 다르다.
+   빛깔은 한국 증시 관례를 따른다 — 오름 빨강, 내림 파랑. 창구에서 그 반대로
+   칠한 표를 들이밀면 고객이 숫자를 읽기 전에 색부터 거꾸로 읽는다.
+
+   값이 없으면 '—' 를 두고 **까닭을 마우스 설명으로 붙인다.** 빈칸만 두면
+   '원천에 자료가 없는 것' 과 '급변일이 끼어 일부러 비운 것' 이 구분되지 않아,
+   담당자가 "왜 이 종목만 비었냐" 는 물음에 답할 길이 없다. */
+function ret(v, note, win) {
+  if (v == null) {
+    const t = note || '수익률을 내지 않았습니다';
+    return `<span class="nover" title="${esc(t)}">—</span>`;
+  }
+  const s = (v > 0 ? '+' : '') + v.toFixed(2) + '%';
+  const cls = v > 0 ? 'ret-up' : (v < 0 ? 'ret-dn' : '');
+  return win ? `<span class="${cls}" title="${esc(win)}">${s}</span>` : `<span class="${cls}">${s}</span>`;
+}
 
 /* CALC — 엑셀판과 같은 식이다. 둘이 어긋나면 안 되므로 여기 한 군데에만 둔다.
      배정금액   = 비율 ? 총액 × 배분/100 : 배분(입력한 금액)
@@ -658,6 +721,10 @@ const SORT_VAL = {
   name: x => x.name || '', freq: x => x.freq || '',
   ttm: x => x.ttm, ttm12: x => x.ttm, price: x => x.price,
   vol: x => x.vol, aum: x => x.aum, adopted: x => (x.adopted ? 1 : 0),
+  // 수익률. 못 낸 칸은 null 로 와서 위 규칙대로 방향과 상관없이 뒤로 간다.
+  // 0 으로 바꿔 넣지 않는다 — 수익률을 못 낸 종목이 '본전인 종목' 틈에
+  // 끼어 버리면, 모르는 것이 아는 것 행세를 한다.
+  rT: x => x.rT, rN: x => x.rN, rN6: x => x.rN6, rN3: x => x.rN3,
 };
 const SORT_TEXT = new Set(['name', 'freq']);
 
@@ -711,9 +778,13 @@ function renderQuery() {
     <td class="r num">${x.price ? x.price.toLocaleString('ko-KR') : '—'}</td>
     <td class="r num">${x.vol != null ? pct(x.vol, 1) : '—'}</td>
     <td class="r num">${x.aum ? (x.aum / 1e8).toLocaleString('ko-KR', { maximumFractionDigits: 0 }) + '억' : '—'}</td>
+    <td class="r num rt">${ret(x.rT, x.rNote, x.rW)}</td>
+    <td class="r num">${ret(x.rN, x.rNote, x.rW)}</td>
+    <td class="r num">${ret(x.rN6, x.rNote6)}</td>
+    <td class="r num">${ret(x.rN3, x.rNote3)}</td>
     <td class="c">${x.adopted ? '채택' : '제외'}</td>
     <td class="c noprint"><button class="icon" onclick="pick('${x.code}', this)">담기</button></td>
-  </tr>`).join('') || '<tr><td colspan="9" class="c">조건에 맞는 종목이 없습니다.</td></tr>';
+  </tr>`).join('') || '<tr><td colspan="13" class="c">조건에 맞는 종목이 없습니다.</td></tr>';
 }
 /* 담기.
    ──────────────────────────────────────────────────────────────────────
