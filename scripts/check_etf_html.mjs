@@ -157,6 +157,7 @@ if (!fs.existsSync(SRC)) {
     let seen = 0;
     let filled = 0;
     let noTip = 0;
+    let cut = false;
     for (const row of table.rows) {
       const src = srcBy.get(row.name);
       if (!src) continue; // 이름으로 못 찾은 줄은 건너뛴다(원천이 더 최신일 수 있다)
@@ -181,10 +182,17 @@ if (!fs.existsSync(SRC)) {
           filled += 1;
         }
       }
-      if (problems.length > 12) break; // 같은 까닭이면 몇 개만 봐도 안다
+      if (problems.length > 12) {
+        cut = true; // 같은 까닭이면 몇 개만 봐도 안다
+        break;
+      }
     }
     if (noTip) problems.push(`빈 수익률 ${noTip}칸에 까닭 설명(title)이 안 붙었습니다.`);
-    if (seen < 20) {
+    // 위에서 중간에 끊었으면 '본 줄이 적다' 는 당연한 소리다. 그 말을 덧붙이면
+    // 진짜 까닭(바로 위의 틀린 값들)이 묻힌다.
+    if (cut) {
+      // 아무 말도 더 보태지 않는다 — 이미 문제를 열 건 넘게 적어 두었다.
+    } else if (seen < 20) {
       problems.push(`조회표에서 원천과 이름이 맞는 줄이 ${seen}줄뿐이라 수익률을 제대로 못 맞춰 봤습니다.`);
     } else if (filled < 20) {
       problems.push(`조회표에 실린 수익률이 ${filled}칸뿐입니다 — 거의 다 비어 있습니다.`);
