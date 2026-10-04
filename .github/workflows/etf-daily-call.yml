@@ -47,10 +47,12 @@ on:
         default: claude/etf-holdings-lookup-tool-wwtz57
 
 permissions:
-  # 다른 워크플로우를 부르는 데 필요하다. 자료는 불려 간 쪽이 자기 가지에
-  # 커밋하므로 여기서는 저장소를 읽기만 한다.
+  # actions: 다른 워크플로우를 부르는 데 필요하다.
+  # contents: 수집이 끝난 뒤 **화면 자료만** main 에 옮겨 싣는다(아래
+  #   "화면 자료를 main 으로" 단계). 수집·빌드 산출물 전체는 여전히 불려
+  #   간 쪽이 자기 가지에만 커밋한다.
   actions: write
-  contents: read
+  contents: write
 
 concurrency:
   group: etf-daily-call
@@ -177,6 +179,77 @@ jobs:
             fi
           fi
 
+      # 화면 자료를 main 으로.
+      #
+      # 자동갱신은 가지만 최신으로 둔다 — 수집기가 만드는 산출물 11개를
+      # 통째로 main 에 쌓으면 한 번에 10.06MB(압축 후 실측)이고, 평일 하루
+      # 두 번이면 한 해 5GB 다. publish_data_branch.sh 머리말이 경고하는
+      # "한 해 1GB" 의 다섯 배다.
+      #
+      # 그렇다고 main 을 그냥 두면 가지만 새것이고 main 화면은 조용히
+      # 낡는다. 실제로 2026-09-13 수집본이 3주를 그대로 있었다.
+      #
+      # 가운데를 잡는다 — **화면이 읽는 자료와 감사 결과만** 옮겨 싣는다.
+      # 한 번에 1.48MB 다. 무거운 쪽(단일 파일 2.07MB · 사용법 그림
+      # 3.87MB · PDF 0.71MB)은 날마다 갈아 끼우지 않는다. 그쪽은 자료가
+      # 아니라 배포물이고, CLAUDE.md 가 "오프라인 단일 파일" 을 데이터
+      # 브랜치로 보내라고 못박아 둔 종류다.
+      #
+      # ⚠ 그래서 main 의 etf-holdings-search.html 은 main 의 data/etf.js
+      #   보다 뒤처진다. 받아 가는 사람에게는 그 파일 안에 박힌 수집본
+      #   시각이 기준이다 — 최신이 필요하면 가지 것을 받아야 한다.
+      #
+      # 되밀기는 옮겨 싣지 않고 **다시 만든다.** 이 커밋이 하는 일은
+      # "이 다섯 파일을 가지 것과 같게 맞춘다" 는 상태 선언이지 남의 변경
+      # 위에 얹을 차분이 아니다. 그래서 다툼이 나면 최신 main 을 새로
+      # 받아 그 위에서 다시 집어 오는 편이 rebase 보다 맞고, 얕은 복제에서
+      # rebase 가 말썽을 부리는 것도 피한다.
+      - name: 화면 자료를 main 으로
+        id: promote
+        if: steps.wait.outputs.conclusion == 'success' && steps.wait.outputs.skipped != 'yes'
+        run: |
+          FILES="data/etf.js data/etf-kr.js data/etf-global.js \
+                 tools/discovery/etf_audit.md tools/discovery/etf_audit.json"
+
+          git clone --depth=1 --branch main \
+            "https://x-access-token:$GH_TOKEN@github.com/$REPO.git" /tmp/mainwt
+          cd /tmp/mainwt
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          for i in 1 2 3 4 5; do
+            # 늘 최신 main 위에서 다시 만든다.
+            git fetch --depth=1 origin main
+            git reset --hard FETCH_HEAD
+            git fetch --depth=1 origin "$BRANCH"
+            git checkout FETCH_HEAD -- $FILES
+
+            if git diff --cached --quiet; then
+              echo "main 이 이미 가지와 같습니다 — 올릴 것이 없습니다."
+              echo "moved=no" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            # data/etf.js 는 둘째 줄이 수 MB 짜리 한 줄이다. 첫 줄만 보고 끊는다.
+            ASOF=$(sed -n '1{s/.*수집본 \([0-9TZ:.-]*\).*/\1/p;q}' data/etf.js)
+            git commit -q \
+              -m "chore(etf): 화면 자료 갱신 (${ASOF:-수집본})" \
+              -m "수집은 $BRANCH 에서 돌고, 화면이 읽는 자료만 여기로 옮겨 싣는다." \
+              -m "단일 파일·사용법 산출물은 용량 때문에 날마다 옮기지 않는다 — etf-daily-call.yml 의 '화면 자료를 main 으로' 참고."
+
+            if git push origin HEAD:main; then
+              echo "올렸습니다 (시도 $i) — $(git rev-parse --short HEAD)"
+              echo "moved=yes" >> "$GITHUB_OUTPUT"
+              echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+              echo "asof=$ASOF" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "그 사이 main 이 움직였습니다 — 다시 만듭니다 ($i/5)"
+            sleep $((i * 5))
+          done
+          echo "::error::다섯 번 시도했는데도 main 에 올리지 못했습니다."
+          exit 1
+
       - name: 결과 요약
         if: always()
         run: |
@@ -201,9 +274,15 @@ jobs:
               echo "- 자료: **안 바뀜** — \`data/etf.js\` 마지막 갱신은 ${{ steps.landed.outputs.when }} 입니다"
               echo "  - ${{ steps.landed.outputs.msg }}"
             fi
+            case '${{ steps.promote.outputs.moved }}' in
+              yes) echo "- main 화면: **갱신됨** — \`${{ steps.promote.outputs.sha }}\` (수집본 ${{ steps.promote.outputs.asof }})" ;;
+              no)  echo "- main 화면: 이미 같아 올릴 것이 없었습니다" ;;
+              *)   echo "- main 화면: 옮기지 않았습니다 (수집이 성공하지 않았거나 건너뛴 실행)" ;;
+            esac
             echo ""
-            echo "자료는 불려 간 쪽이 \`$BRANCH\` 에 커밋합니다. 이 잡은 부르기만 합니다."
-            echo "화면에 반영하려면 그 가지를 \`main\` 에 합치십시오."
+            echo "수집 산출물 전체는 \`$BRANCH\` 에 있습니다. \`main\` 에는 화면이 읽는"
+            echo "자료(\`data/etf*.js\`)와 감사 결과만 옮겨 싣습니다 — 용량 때문입니다."
+            echo "단일 파일 \`etf-holdings-search.html\` 과 사용법 산출물은 가지 것이 최신입니다."
           } >> "$GITHUB_STEP_SUMMARY"
 
       # 수집이 제때 안 끝났거나 실패했으면 이 잡도 빨간불로 남긴다.
