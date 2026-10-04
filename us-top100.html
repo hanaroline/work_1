@@ -417,8 +417,8 @@ footer .disc p{margin:0 0 12px;}
   <div class="page">
     <span class="tag" data-ko="사내 참고자료" data-en="Internal reference">사내 참고자료</span>
     <h1 data-ko="미국 200대 기업 시세 조회" data-en="US Top 200 Companies">미국 200대 기업 시세 조회</h1>
-    <p class="sub" data-ko="시가총액 상위 미국 상장 기업 100곳의 주가·밸류에이션·실적·컨센서스·일정·뉴스를 한 화면에서 조회합니다(두 곳은 미국에 상장한 외국 기업입니다)."
-       data-en="Price, valuation, results, consensus, calendar and news for 100 of the largest US-listed companies — on one screen (two are non-US issuers listed in the US).">시가총액 상위 미국 상장 기업 100곳의 주가·밸류에이션·실적·컨센서스·일정·뉴스를 한 화면에서 조회합니다(두 곳은 미국에 상장한 외국 기업입니다).</p>
+    <p class="sub" data-ko="시가총액 상위 미국 상장 기업 200곳의 주가·밸류에이션·실적·컨센서스·일정·뉴스를 한 화면에서 조회합니다(열한 곳은 미국에 상장한 외국 기업입니다)."
+       data-en="Price, valuation, results, consensus, calendar and news for 200 of the largest US-listed companies — on one screen (eleven are non-US issuers listed in the US).">시가총액 상위 미국 상장 기업 200곳의 주가·밸류에이션·실적·컨센서스·일정·뉴스를 한 화면에서 조회합니다(열한 곳은 미국에 상장한 외국 기업입니다).</p>
     <div class="meta">
       <span id="hero-asof">—</span>
       <span id="hero-src">—</span>
@@ -1771,7 +1771,7 @@ var PROFILE_KO = {
    "처음"의 기준은 판 문자열 + 파일 경로다. 새로 내려받은 파일은 판이 다르거나
    (같은 판이어도) 이름이 "us-top100 (1).html" 처럼 달라지므로 처음 상태로 열린다.
    ------------------------------------------------------------ */
-var BUILD = '2026-10-04.1';
+var BUILD = '2026-10-04.2';
 var STORE_KEYS = ['mas-us100-lang', 'mas-us100-favs', 'mas-us100-sel', 'mas-us100-auto',
   'mas-us100-ind', 'mas-us100-cmp', 'mas-us100-cmp-range', 'mas-us100-cmp-sets',
   'mas-us100-proxy', 'mas-us100-base', 'mas-us100-stream'];
@@ -5116,7 +5116,7 @@ function groupWeekly(rows) {
 /* ------------------------------------------------------------
    대상 목록 점검 (ranking.json)
    목록은 사람이 관리한다 — 새 종목의 한글명·기업 개요를 함께 채워야 화면이 비지 않기
-   때문이다. 대신 수집기가 매일 "지금 시가총액 상위 100"과 견주어 차이를 적어 두고
+   때문이다. 대신 수집기가 매일 "지금 시가총액 상위 N"(ranking.json 의 top)과 견주어 차이를 적어 두고
    (scripts/check_us100_ranking.py), 화면은 그 결과를 여기서 그대로 보여 준다.
    ------------------------------------------------------------ */
 var RANK = null;
@@ -5154,9 +5154,9 @@ function renderRankNote() {
   };
   if (!add.length && !drop.length) {
     box.innerHTML = '<b>' + esc(t('대상 목록 점검', 'Coverage check')) + '</b> — ' +
-      esc(t('지금 시가총액 상위 ' + (RANK.top || 100) + '과 목록이 일치합니다 (' + when + ' 점검, 기준 ' +
+      esc(t('지금 시가총액 상위 ' + (RANK.top || COMPANIES.length) + '과 목록이 일치합니다 (' + when + ' 점검, 기준 ' +
             (RANK.source === 'screener' ? '야후 스크리너' : 'S&P 500 + 시총 조회') + ').',
-            'the list matches the current top ' + (RANK.top || 100) + ' by market cap (checked ' + when + ').'));
+            'the list matches the current top ' + (RANK.top || COMPANIES.length) + ' by market cap (checked ' + when + ').'));
     box.hidden = false;
     return;
   }
@@ -5172,7 +5172,7 @@ function renderRankNote() {
     esc(t(when + ' 점검 결과입니다. 목록은 자동으로 바뀌지 않습니다 — 새 종목의 한글명·기업 개요를 함께 채워야 하기 때문입니다.',
           'checked ' + when + '. The list does not change automatically — a new symbol needs its Korean name and company overview written first.')) +
     (add.length ? '<br>' + esc(t('목록에 없는 상위 종목 ' + add.length + '개: ',
-      add.length + ' in the top 100 but not listed: ')) + listOf(add, true) : '') +
+      add.length + ' in the top ' + (RANK.top || COMPANIES.length) + ' but not listed: ')) + listOf(add, true) : '') +
     (drop.length ? '<br>' + esc(t('목록에 있으나 ' + (RANK.dropRank || 150) + '위 밖으로 밀린 종목 ' + drop.length + '개: ',
       drop.length + ' listed but now below rank ' + (RANK.dropRank || 150) + ': ')) + listOf(drop, false) : '');
   box.hidden = false;
@@ -5969,10 +5969,14 @@ function buildControls() {
     renderList();
   });
 
-  buildSelect('f-limit', [
-    { v: 20, label: t('20개', '20 rows') }, { v: 30, label: t('30개', '30 rows') },
-    { v: 50, label: t('50개', '50 rows') }, { v: 100, label: t('100개 전체', 'All 100') }
-  ], state.limit, function (v) { state.limit = +v; renderList(); });
+  /* 마지막 칸은 목록 크기에서 받아 온다 — 여기를 100 으로 적어 두었더니 목록이 200개가
+     된 뒤 표가 절반만 나오면서도 "100개 전체" 라고 적혀 있었다. 숫자를 또 적지 않는다. */
+  var limits = [20, 30, 50, 100].filter(function (n) { return n < COMPANIES.length; });
+  buildSelect('f-limit',
+    limits.map(function (n) { return { v: n, label: t(n + '개', n + ' rows') }; })
+      .concat([{ v: COMPANIES.length,
+                 label: t(COMPANIES.length + '개 전체', 'All ' + COMPANIES.length) }]),
+    state.limit, function (v) { state.limit = +v; renderList(); });
 
   buildSelect('f-move', [
     { v: '', label: t('전체', 'All') },
