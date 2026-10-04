@@ -1,0 +1,295 @@
+name: ETF 편입종목 수집 (매일)
+
+# 브리핑 세션은 사내 이그레스 정책 때문에 네이버·야후에 직접 못 붙는다
+# (CONNECT 403). 러너는 그 정책 밖이므로 여기서 대신 받아 저장소에 커밋한다.
+#
+# 수집은 두 갈래로 나눠 둔다. 한쪽이 실패해도 다른 쪽 데이터는 그대로
+# 유지되어야 하기 때문이다 — 국내가 막힌 날 해외까지 지워질 이유가 없다.
+
+# ⚠ 예약(schedule)은 **기본 브랜치에서만** 돈다.
+#
+# 이 작업은 claude/etf-** 브랜치에 있어서 아래 cron 이 한 번도 발동한 적이
+# 없다 — 실행 기록이 전부 push 뿐이다. 그래서 밀어 넣을 때만 자료가 갱신되고,
+# 안 밀면 조용히 낡는다. 실제로 8/31 부터 9/7 까지 이레를 그대로 있었다.
+#
+# 감사의 신선도 관문이 그것을 오류로 잡아 주지만(자료-낡음), 관문은 알려 줄
+# 뿐 고쳐 주지는 않는다. **이 브랜치를 기본 브랜치에 합쳐야 예약이 산다.**
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '장중이라도 그냥 받는다 (관문 넘기기)'
+        type: boolean
+        default: false
+  # 시각표를 여기에 **되살리지 마십시오.**
+  #
+  # 깃허브는 기본 가지(main)에 놓인 워크플로우만 schedule 로 부른다. 이 파일이
+  # claude/etf-** 에만 있던 동안 아래 두 줄은 한 번도 돈 적이 없다 —
+  #     - cron: '30 7 * * 1-5'    (16:30 KST)
+  #     - cron: '40 21 * * 1-5'   (06:40 KST)
+  # 그런데 이 잡은 ref: ${{ github.ref_name }} 로 받아서 그 가지에 그대로
+  # 되민다. main 에 합쳐진 뒤 시각표가 살아 있으면 **ETF 자료 25MB 짜리
+  # 커밋이 하루 두 번 main 에 쌓인다.** 여태 없던 일이 합치기 때문에 생기는
+  # 것이므로, 합치면서 시각표를 뺀다. 지금 동작은 합치기 전과 똑같다.
+  #
+  # 날마다 도는 일은 **부르는 쪽만** main 에 따로 두어 해결했다 —
+  # .github/workflows/etf-daily-call.yml 이 평일 16:34·06:43 KST 에 이
+  # 파일을 가지 위에서 workflow_dispatch 로 부른다. 그러니 여기 시각표가
+  # 없어도 날마다 돈다. 일의 내용을 main 에 베껴 두면 두 벌이 되어 언젠가
+  # 조용히 어긋난다.
+  # 수집기를 고쳤을 때 바로 검증되도록
+  push:
+    branches:
+      - 'claude/etf-**'
+    paths:
+      - 'scripts/collect_etf_*.mjs'
+      - 'scripts/etf_lib.mjs'
+      - 'scripts/etf_universe.mjs'
+      - 'scripts/build_etf_data.mjs'
+      - 'scripts/audit_etf_data.mjs'
+      - '.github/workflows/etf-daily.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: etf-daily-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  # 장중 관문.
+  #
+  # 예약은 제시각에 오지 않는다. 2026-10-03 아침치가 그 증거다 — cron 은
+  # 21:43 UTC(06:43 KST)인데 실제로 뜬 것은 00:44 UTC, 즉 **09:44 KST**
+  # 였다. 3시간 1분이 밀렸다. 아침 자리는 미국장 마감(06:00 KST 무렵)과
+  # 한국장 개장(09:00 KST) 사이 세 시간밖에 안 되므로, 2시간 17분만 밀려도
+  # 장중에 떨어진다. 그날은 네이버가 아직 10/03 봉을 열지 않아 10/02 종가가
+  # 그대로 와서 운 좋게 넘어갔을 뿐이다.
+  #
+  # 장중에 받으면 끝나지 않은 값이 섞여 감사가 자료-장중값섞임 ·
+  # 자료-기준일제각각 으로 그날 치를 통째로 막는다. 그러니 받기 전에
+  # 시계를 보고 장중이면 **아예 받지 않고 조용히 끝낸다.** 빨간불을 켜지
+  # 않는 것은 일부러다 — 밀린 것은 고장이 아니고, 저녁 예약(16:34 KST)이
+  # 그날 자료를 다시 챙긴다.
+  #
+  # 창은 08:30~16:00 KST 로 잡았다. CLAUDE.md 의 "15:30 이후"보다 앞뒤로
+  # 넓다 — 장 전 동시호가가 08:30 에 시작하고, 종가는 15:30 직후에야
+  # 자리를 잡기 때문이다. 예약 두 자리(16:34 · 06:43 KST)는 둘 다 이 창
+  # 밖이다. 주말은 장이 없으니 창을 적용하지 않는다.
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.clock.outputs.skip }}
+      now: ${{ steps.clock.outputs.now }}
+    steps:
+      - name: 한국 시각 확인
+        id: clock
+        run: |
+          # 08·09 는 앞의 0 때문에 8진수로 읽혀 문법 오류가 난다. 10# 로 못박는다.
+          H=$(TZ=Asia/Seoul date +%H)
+          M=$(TZ=Asia/Seoul date +%M)
+          MIN=$(( 10#$H * 60 + 10#$M ))
+          DOW=$(TZ=Asia/Seoul date +%u)          # 1=월 … 7=일
+          NOW=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST (%a)')
+          echo "now=$NOW" >> "$GITHUB_OUTPUT"
+          echo "지금 $NOW"
+
+          SKIP=no
+          if [ "$DOW" -le 5 ] && [ "$MIN" -ge 510 ] && [ "$MIN" -lt 960 ]; then
+            SKIP=yes
+          fi
+
+          # 사람이 일부러 부른 경우에는 넘어간다. push·schedule 에서는 이
+          # 값이 빈 문자열이라 자연히 거짓이 된다.
+          if [ '${{ inputs.force }}' = 'true' ]; then
+            if [ "$SKIP" = yes ]; then
+              echo "::warning::장중($NOW)이지만 force 로 불렀으므로 그대로 받습니다. 끝나지 않은 값이 섞일 수 있습니다."
+            fi
+            SKIP=no
+          fi
+
+          echo "skip=$SKIP" >> "$GITHUB_OUTPUT"
+          if [ "$SKIP" = yes ]; then
+            echo "### 장중이라 건너뜁니다" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "$NOW — 한국장이 열려 있는 시간(08:30~16:00 KST)입니다." >> "$GITHUB_STEP_SUMMARY"
+            echo "끝나지 않은 값이 섞이면 감사가 그날 자료를 막으므로 받지 않았습니다." >> "$GITHUB_STEP_SUMMARY"
+            echo "다음 예약(평일 16:34 KST)이 그날 자료를 챙깁니다." >> "$GITHUB_STEP_SUMMARY"
+            echo "장중이라 건너뜁니다 — $NOW"
+          else
+            echo "장이 닫혀 있습니다. 받습니다."
+          fi
+
+  collect:
+    needs: gate
+    if: needs.gate.outputs.skip != 'yes'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 수집 실패는 잡을 실패시키지 않는다. 실패하면 그 데이터 파일을
+      # 건드리지 않고 끝나므로 직전 수집분이 그대로 남는다.
+      - name: 국내 ETF 수집 (네이버)
+        id: kr
+        continue-on-error: true
+        run: node scripts/collect_etf_kr.mjs
+
+      - name: 해외 ETF 수집 (야후)
+        id: global
+        continue-on-error: true
+        run: node scripts/collect_etf_global.mjs
+
+      # 분류 태깅과 병합. 수집이 둘 다 실패해도 기존 파일로 다시 만든다.
+      - name: 데이터 병합 · 분류
+        run: node scripts/build_etf_data.mjs
+
+      - name: 분류 사전 회귀 시험
+        run: node scripts/test_etf_taxonomy.mjs
+
+      # 수익률 두 계열이 라벨대로인지 검산한다. 원천이 산출 방식을 바꾸면
+      # (예: 네이버가 기준가 수익률에 분배금을 반영하기 시작하면) 여기서 걸린다.
+      # ret.tr 은 국내·해외 모두 분배금을 재투자한 총수익률이어야 한다.
+      # 여기서 걸리면 화면의 기본 기준이 거짓이 되므로 잡을 실패시킨다.
+      - name: 수익률 계열 검산
+        run: node scripts/check_etf_return_basis.mjs
+
+      # 화면에 실리는 모든 숫자를 전수 감사한다. 계열 검산(위)이 "라벨이
+      # 맞나" 를 보는 것이라면, 이쪽은 "값이 서로 앞뒤가 맞나" 를 본다.
+      #
+      # 이걸 만든 이유: HANARO Fn전기&수소차의 6개월 총수익률이 +1837% 로
+      # 화면까지 나갔다. 야후가 18,475원 ETF 에 주당 287,320원 분배금을
+      # 기록해 둔 것이 원인이었는데, 사람이 볼 때까지 아무 시험도 걸리지
+      # 않았다. 값 하나가 이러면 나머지도 못 믿는다.
+      #
+      # 감사가 오류를 찾으면 잡을 실패시킨다. 오류가 있는 채로 커밋하면
+      # 다음 사람이 또 눈으로 찾아야 한다.
+      - name: 자료 전수 감사
+        run: node scripts/audit_etf_data.mjs
+
+      - name: 수익률 계산기 방어선 시험
+        run: node scripts/test_etf_returns.mjs
+
+      # 순위·유형평균은 데이터가 아니라 화면이 그 자리에서 만드는 값이라
+      # 위의 감사에 걸리지 않는다. 그래서 같은 규칙을 **다른 방식으로** 다시
+      # 계산해 로그에 남긴다(이분 탐색 대신 그냥 세기). 두 답이 다르면
+      # 둘 중 하나가 틀린 것이고, 모집단에 섞이면 안 되는 것이 섞였는지도
+      # 여기서 보인다. 판정은 페이지 시험이 하므로 이 단계는 기록만 한다.
+      - name: 순위·유형평균 재계산 (기록)
+        continue-on-error: true
+        run: node scripts/audit_etf_rank.mjs 091230 069500 360750
+
+      - name: 브라우저 설치
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      # 사용법 산출물(HTML·PDF·PNG)을 다시 만든다.
+      #
+      # 안 만들면 PDF 안의 "자료 기준일" 이 만들던 날에 멈춘다 — 도구는 오늘
+      # 것인데 딸려 나가는 PDF 는 지난달 것이 된다. 이 화면에서 계속 경계해 온
+      # 바로 그 종류의 거짓말이다.
+      #
+      # 한글 폰트가 없으면 두부(ㅁ)만 박히므로 먼저 깐다. 이 단계는 데이터와
+      # 무관한 곁가지라 실패해도 수집·빌드를 막지 않는다. 대신 아래 요약에
+      # 결과를 남겨 조용히 지나가지 않게 한다.
+      - name: 사용법 산출물 (HTML · PDF · 이미지)
+        id: howto
+        continue-on-error: true
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-nanum
+          fc-cache -f
+          node scripts/make_etf_howto.mjs
+
+      - name: 단일 파일 빌드
+        run: node scripts/build_etf_page.mjs
+
+      # 실제 데이터를 넣은 화면이 열리는지 브라우저로 확인한다.
+      # 여기서 걸리면 커밋하지 않는다 — 깨진 화면을 배포하지 않으려는 것이다.
+      - name: 페이지 연기 시험
+        run: |
+          node scripts/test_etf_page.mjs
+          node scripts/test_etf_page.mjs --built
+          node scripts/test_etf_offline.mjs
+
+      - name: 진단 자료 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: etf-collect-debug
+          path: |
+            tools/discovery/etf_audit.md
+            tools/discovery/etf_audit.json
+            tools/discovery/etf_page.png
+            tools/discovery/etf_offline.png
+            data/etf-kr.js
+            data/etf-global.js
+          retention-days: 7
+
+      # 되밀기는 한 번에 성공한다고 보지 않는다.
+      #
+      # 이 가지에는 ETF 수집기만 커밋하는 것이 아니다 — 증시 일정도, 리포트도
+      # 같은 가지에 올린다. 2026-10-02 23:10 KST 실행이 그래서 막혔다. 감사도
+      # 시험도 다 통과하고 커밋(22,934줄)까지 만들어 놓고, 그 사이 40초 전에
+      # 올라온 "증시 일정 수집 23:11 KST" 때문에 push 가 거절돼 그날 ETF
+      # 자료가 통째로 버려졌다. 예약으로 날마다 돌리면 이 다툼은 어쩌다가
+      # 아니라 **늘** 일어난다.
+      #
+      # 받아서 그 위로 옮겨 싣고 다시 민다. 우리 커밋은 방금 만든 것이라
+      # 남의 역사를 고쳐 쓰는 일이 아니다 — 남이 올린 것은 그대로 두고 우리
+      # 것만 그 위로 올라간다. 겹치는 파일이 없으므로(저쪽은 일정·리포트,
+      # 이쪽은 ETF) 보통은 그대로 얹힌다. 정말 겹쳐서 충돌하면 손대지 않고
+      # 빨간불로 남긴다 — 자동으로 고를 수 있는 종류가 아니다.
+      - name: 커밋
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/etf-kr.js data/etf-global.js data/etf.js etf-holdings-search.html 2>/dev/null || true
+          git add tools/discovery/etf_audit.md tools/discovery/etf_audit.json 2>/dev/null || true
+          git add data/etf-howto-pdf.js docs/etf-howto.html docs/etf-howto-en.html \
+                  docs/etf-howto.pdf docs/etf-howto.png 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "변경 없음"
+            exit 0
+          fi
+          git commit -m "chore(etf): 편입종목 데이터 갱신 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
+
+          BR='${{ github.ref_name }}'
+          for i in 1 2 3 4 5; do
+            git fetch origin "$BR"
+            # --autostash 는 수집 중에 생긴 추적 파일의 자잘한 변경(진단용
+            # 그림 따위)이 옮겨 싣기를 막지 않게 하려는 것이다.
+            if ! git rebase --autostash "origin/$BR"; then
+              git rebase --abort || true
+              echo "::error::그 사이 올라온 커밋과 같은 파일이 충돌합니다. 사람이 봐야 합니다."
+              exit 1
+            fi
+            if git push; then
+              echo "올렸습니다 (시도 $i)"
+              exit 0
+            fi
+            echo "되밀기가 막혔습니다 — 다시 받아서 올려 싣습니다 ($i/5)"
+            sleep $((i * 5))
+          done
+          echo "::error::다섯 번 시도했는데도 올리지 못했습니다. 이 가지에 커밋이 너무 자주 올라옵니다."
+          exit 1
+
+      - name: 사용법 산출 결과 알림
+        if: steps.howto.outcome == 'failure'
+        run: |
+          echo "::warning::사용법 산출물(PDF·이미지) 생성에 실패했습니다. \
+          도구와 데이터는 갱신됐지만 딸려 나가는 PDF 는 직전 것이 남습니다."
+
+      # 수집이 둘 다 실패했으면 잡을 빨간불로 남긴다. 데이터는 지키되,
+      # 며칠씩 조용히 낡아 가는 것은 막아야 한다.
+      - name: 수집 실패 여부 확인
+        if: steps.kr.outcome == 'failure' && steps.global.outcome == 'failure'
+        run: |
+          echo "국내·해외 수집이 모두 실패했습니다. 원천이 바뀌었는지 확인이 필요합니다."
+          exit 1

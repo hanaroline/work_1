@@ -2,6 +2,8 @@ name: ELS 상품 수집 (매일)
 
 on:
   workflow_dispatch:
+  # 월요일 일괄 갱신(weekly-refresh.yml)이 순서를 지켜 부른다
+  workflow_call:
   schedule:
     # 매일 08:00 KST (23:00 UTC). ELS 청약기간은 보통 1주일이라 주 1회로는
     # 이미 마감된 상품이 며칠씩 "청약중"으로 남는다.

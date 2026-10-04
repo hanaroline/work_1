@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""us-top100.html 의 대상 100개 목록을 안전하게 갈아 끼우는 도구.
+"""us-top200.html 의 대상 100개 목록을 안전하게 갈아 끼우는 도구.
 
 왜 스크립트인가
-  목록은 `us-top100.html` 한 곳에만 있고(수집기도 이 배열을 읽는다), 종목 하나를
+  목록은 `us-top200.html` 한 곳에만 있고(수집기도 이 배열을 읽는다), 종목 하나를
   바꾸려면 네 곳을 함께 고쳐야 한다 — COMPANIES · PROFILE_KO · KEYWORDS · FOREIGN.
   한 곳이라도 빠지면 화면에서 그 종목만 이름이 비거나 "기업 한눈에"가 빈 채로 나온다.
   주마다 자동으로 도는 작업이 손으로 고치는 것과 같은 실수를 하지 않도록,
@@ -47,7 +47,7 @@ import sys
 import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PAGE = os.path.join(ROOT, "us-top100.html")
+PAGE = os.path.join(ROOT, "us-top200.html")
 RANKING = os.path.join(ROOT, "data", "us100", "ranking.json")
 
 # **이 셋은 check_us100_ranking.py 에서 끌어온다 — 손으로 적지 않는다.**
@@ -192,6 +192,16 @@ def js_str(s):
     return "'" + str(s).replace("\\", "\\\\").replace("'", "\\'").replace("\n", " ") + "'"
 
 
+def js_name(s):
+    """COMPANIES 한 줄에 들어갈 이름. 아포스트로피가 든 영문명(Moody's, O'Reilly)은
+    큰따옴표로 감싼다 — 작은따옴표로 escape 하면 JS 는 멀쩡해도 ROW_RE 가 그 줄을
+    읽지 못해, 고치고 나면 목록이 두 개 줄어든 것으로 보인다."""
+    s = str(s).replace("\n", " ")
+    if "'" in s and '"' not in s:
+        return '"' + s.replace("\\", "\\\\") + '"'
+    return js_str(s)
+
+
 def drop_from_companies(src, syms):
     a, b = block(src, "var COMPANIES = [", "];")
     body = src[a:b]
@@ -209,7 +219,7 @@ def add_to_companies(src, adds):
     body = comma_ready(src[a:b])
     lines = [body, "  /* 주간 목록 점검으로 편입한 종목(scripts/us100_list_tool.py) */"]
     for c in adds:
-        lines.append("  [%s,%s,%s,%s]," % (js_str(c["sym"]), js_str(c["en"]), js_str(c["ko"]), js_str(c["sector"])))
+        lines.append("  [%s,%s,%s,%s]," % (js_str(c["sym"]), js_name(c["en"]), js_str(c["ko"]), js_str(c["sector"])))
     return src[:a] + "\n".join(lines) + "\n" + src[b:]
 
 
@@ -270,8 +280,17 @@ def bump_build(src):
 
 # ---------------------------------------------------------------- 검사
 
-def validate(src, verbose=True):
+def validate(src, verbose=True, before=None):
+    """고친 결과가 쓸 만한지 본다.
+
+    before 를 주면 «고치기 전» 파일과 견준다. 개요가 없는 종목은 그때 **늘어났을
+    때만** 실패로 친다 — 우주를 200종으로 넓히면서(#80) 한글 개요는 100종만
+    남았고, 그 뒤로는 «모든 종목에 개요가 있어야 한다» 가 참이 될 수 없다.
+    그대로 두면 이 도구로는 한 글자도 못 고치게 되므로, 절대 수가 아니라
+    **나빠졌는가**를 본다. 늘지 않았으면 경고로만 적는다.
+    """
     errs = []
+    warns = []
     rows = companies(src)
     codes = sector_codes(src)
     syms = [c["sym"] for c in rows]
@@ -288,7 +307,18 @@ def validate(src, verbose=True):
     have = profile_syms(src)
     missing = [s for s in syms if s not in have]
     if missing:
-        errs.append("기업 개요(PROFILE_KO)가 없는 종목: %s" % ", ".join(missing))
+        was = None
+        if before is not None:
+            had = profile_syms(before)
+            was = {s["sym"] for s in companies(before) if s["sym"] not in had}
+        line = "기업 개요(PROFILE_KO)가 없는 종목 %d개: %s" % (
+            len(missing), ", ".join(missing[:12]) + (" 외" if len(missing) > 12 else ""))
+        if was is not None and not (set(missing) - was):
+            warns.append(line + " — 고치기 전과 같다(늘지 않았다)")
+        else:
+            if was is not None:
+                line += " · 이번에 늘어난 것: %s" % ", ".join(sorted(set(missing) - was))
+            errs.append(line)
     stray = [s for s in sorted(have) if s not in syms]
     if stray:
         errs.append("목록에 없는데 개요만 남은 종목: %s" % ", ".join(stray))
@@ -307,6 +337,8 @@ def validate(src, verbose=True):
         print("  (node 가 없어 문법 검사는 건너뛴다)")
 
     if verbose:
+        for w in warns:
+            print("  경고: " + w)
         if errs:
             print("검사 실패:")
             for e in errs:
@@ -397,6 +429,7 @@ def cmd_apply(a):
     drops = plan.get("drop") or []
 
     src = read_page()
+    orig = src          # 검사에서 «나빠졌는가»를 보려면 고치기 전이 필요하다
     rows = companies(src)
     ours = {c["sym"] for c in rows}
 
@@ -455,7 +488,7 @@ def cmd_apply(a):
                     for c in adds if c.get("foreign")])
     src = bump_build(src)
 
-    errs = validate(src, verbose=False)
+    errs = validate(src, verbose=False, before=orig)
     if errs:
         print("고친 결과가 검사를 통과하지 못해 **쓰지 않았다**:")
         for e in errs:
@@ -470,7 +503,7 @@ def cmd_apply(a):
     build = re.search(r"var BUILD = '([^']+)';", src)
     print("반영했다 — 편입 %s / 제외 %s · 판 %s"
           % (", ".join(c["sym"] for c in adds), ", ".join(drops), build.group(1) if build else "?"))
-    validate(src)
+    validate(src, before=orig)   # 쓴 뒤 한 번 더 보여 준다 — 기준은 고치기 전이다
     return 0
 
 
@@ -490,6 +523,7 @@ def cmd_edit(a):
         return 2
 
     src = read_page()
+    orig = src          # 검사에서 «나빠졌는가»를 보려면 고치기 전이 필요하다
     rows = {c["sym"]: c for c in companies(src)}
     errs = []
     for c in edits:
@@ -544,7 +578,7 @@ def cmd_edit(a):
                     for c in full if c.get("foreign")])
     src = bump_build(src)
 
-    errs = validate(src, verbose=False)
+    errs = validate(src, verbose=False, before=orig)
     if errs:
         print("고친 결과가 검사를 통과하지 못해 **쓰지 않았다**:")
         for e in errs:
@@ -557,12 +591,16 @@ def cmd_edit(a):
         f.write(src)
     build = re.search(r"var BUILD = '([^']+)';", src)
     print("고쳤다 — %s · 판 %s" % (", ".join(sorted(syms)), build.group(1) if build else "?"))
-    validate(src)
+    validate(src, before=orig)   # 쓴 뒤 한 번 더 보여 준다 — 기준은 고치기 전이다
     return 0
 
 
 def cmd_validate(a):
-    return 1 if validate(read_page()) else 0
+    # 자기 자신을 «고치기 전» 으로 준다 — 고친 것이 없으니 개요가 없는 종목도
+    # «늘지 않은» 것이고, 경고로만 적힌다. 지금 상태를 보려고 부르는 명령이지
+    # 우주를 200종으로 넓힌 결정을 되묻는 자리가 아니다.
+    src = read_page()
+    return 1 if validate(src, before=src) else 0
 
 
 def main():

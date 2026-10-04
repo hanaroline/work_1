@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """화면 파일 + 수집한 데이터 → 파일 하나로 (인터넷 불필요).
 
-미국 화면(us-top100.html)과 국내 화면(kr-top100.html)에 모두 쓴다 — `--market kr` 로 고른다.
+미국 화면(us-top200.html)과 국내 화면(kr-top100.html)에 모두 쓴다 — `--market kr` 로 고른다.
 
 왜 이런 파일이 필요한가
   인터넷이 막힌 업무용 PC 에서는 화면이 어떤 경로로도 데이터를 못 받는다.
@@ -37,7 +37,7 @@ ANCHOR = "<body>"
 
 # 시장별 기본값 — 화면 파일 · 데이터 폴더 · 내장 블록 id · 출력 파일 · 데이터 브랜치
 MARKETS = {
-    "us": {"page": "us-top100.html", "data": "us100", "out": "us-top100-offline.html"},
+    "us": {"page": "us-top200.html", "data": "us100", "out": "us-top200-offline.html"},
     "kr": {"page": "kr-top100.html", "data": "kr100", "out": "kr-top100-offline.html"},
 }
 

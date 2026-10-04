@@ -44,7 +44,7 @@
 | 세션 시작 준비 | `.claude/settings.json`, `.claude/hooks/session-start.sh` |
 | **예약 프롬프트 원문** | `docs/routine-prompts.md`(모닝·ELS·시스템 설정) 와 **`docs/routine-prompt-close.md`**(장마감 원문 통째로) |
 | ② **매매 타이밍 성적·신호** | `data/kis_timing/latest.json` · `verdict.json` |
-| ② **대상 종목 목록(우주)** | `kr-top100.html` · `us-top100.html` 의 `COMPANIES` — **이것이 유일한 원본입니다** |
+| ② **대상 종목 목록(우주)** | `kr-top100.html` · `us-top200.html` 의 `COMPANIES` — **이것이 유일한 원본입니다** |
 | ② **종목 일봉·시세** | 데이터 가지 `kr100-data` · `us100-data` (`bars8y` 포함) |
 | ② **증권사 리포트 원본** | `data/reports/` — 우주 밖 종목도 들어옵니다 |
 

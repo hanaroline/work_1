@@ -231,7 +231,7 @@ def load_funds(min_aum):
 
 
 # 업종코드 → 한글. 화면에 `equity` 나 `semi` 가 그대로 나가면 고객 자료가 아니다.
-# 두 화면(kr-top100·us-top100)에서 실제로 쓰이는 23 개를 모두 덮는다.
+# 두 화면(kr-top100·us-top200)에서 실제로 쓰이는 23 개를 모두 덮는다.
 SECTOR_KO = {
     "fin": "금융", "it": "IT", "semi": "반도체", "heavy": "중공업",
     "hc": "헬스케어", "bio": "바이오", "hold": "지주", "ind": "산업재",
@@ -935,7 +935,7 @@ def main():
             meta=load_stock_meta("kr-top100.html", KR_BRANCH, "data/kr100"))),
         ("해외주식", lambda: load_branch_bars(
             US_BRANCH, "data/us100/chart", "해외주식", "주식", args.us_limit,
-            meta=load_stock_meta("us-top100.html", US_BRANCH, "data/us100"))),
+            meta=load_stock_meta("us-top200.html", US_BRANCH, "data/us100"))),
         ("국내ETF", load_kr_etf),
         ("해외ETF", load_overseas_etf),
     ):

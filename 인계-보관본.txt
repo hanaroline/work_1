@@ -2,7 +2,7 @@
  미래에셋증권 마포WM — Claude 작업 보관본
  프롬프트 · 프로젝트 지침 · 시스템 설정
 ================================================================================
- 작성 2026-10-01 · 갱신 2026-10-01 23:40 KST   ← 이 판이 최신입니다
+ 작성 2026-10-03 · 갱신 2026-10-03 (ETF 제안서 인계 문서 추가)   ← 이 판이 최신입니다
  저장소 hanaroline/work_1   기준 main (기본 가지)
  용도 : Claude 유료 계정을 옮길 때, 저장소 밖에서도 그대로 쓸 수 있는 사본.
         이 파일 하나만 있으면 새 계정에서 처음부터 다시 세울 수 있습니다.
@@ -158,11 +158,14 @@
    2  증권사 리포트 다이제스트 (예약)     docs/reports/                  ★운영
    3  종목 통합 리포트 대시보드          index.html, standalone.html
    4  ELS 상품 조회                      els.html, els-product-search.html
-   5  미국 100대 기업 시세               us-top100.html
+   5  미국 200대 기업 시세               us-top200.html
    6  국내 100대 기업 시세               kr-top100.html
    7  마포 WM 모바일 창구                mapo-wm.html
    8  증시 일정 캘린더                   market-calendar.html
    9  월배당 커버드콜 ETF 제안서         docs/etf-proposal.html
+                                         고객제안서_월배당ETF.xlsx
+                                         매월 1일 10:00 KST 자동 갱신
+                                         (GitHub Actions cron — 계정과 무관)
   10  시장 변동성 경보                   docs/volatility/
   11  타이밍 신호 / 전략빌더 / 종목판정  docs/signal/, kis-timing/, kis-verdict/
   12  자산배분 제안서 · 퇴직급여 설계    proposal.html, retire-payout.html
@@ -337,6 +340,12 @@
 
   [마포 WM 링크 페이지]
   docs/handover/마포WM-링크페이지-인계.md     공개 범위까지 — 손대기 전 필독
+
+  [월배당 커버드콜 ETF 제안서]
+  docs/handover/월배당ETF제안서-운영인계.md   상세 (왜 그렇게 정했는가)
+  docs/handover/월배당ETF제안서-프롬프트.md   프롬프트 · 설정 사본
+                        ★ 갱신은 GitHub Actions cron 이 한다 — Claude 예약이
+                          아니므로 계정이 바뀌어도 그대로 돈다.
 
   [기능 가지에만 있는 갈래]
   docs/handover/데이터센터-밸류체인맵-인계.md

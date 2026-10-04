@@ -1,0 +1,179 @@
+name: 펀드 투자설명서 판독 — 표본
+
+# 추출 규칙을 고쳤을 때, 전량(3,000건 · 3시간) 을 돌리기 전에 실제 PDF 몇십 건으로
+# 먼저 확인한다. 결과를 커밋하지 않으므로 안심하고 돌릴 수 있다 —
+# 판독 결과와 원문 텍스트를 아티팩트로 올려 규칙을 그 원문에 맞춰 다듬는다.
+#
+# ★ 이 워크플로는 data/fund-prospectus.js 를 건드리지 않는다.
+#   전량 판독(fund-prospectus.yml) 은 --limit 을 주면 결과 파일을 그만큼으로 잘라
+#   덮으므로, 표본을 볼 때 그것을 쓰면 안 된다.
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: '표본 건수'
+        type: string
+        default: '60'
+      every:
+        description: 'N건마다 하나씩 골라 운용사가 골고루 섞이게 한다'
+        type: string
+        default: '50'
+      codes:
+        description: '표준코드를 지목해 보고 싶을 때 (쉼표로 구분) — 주면 limit·every 는 보지 않는다'
+        type: string
+        default: ''
+      fields:
+        description: '추출률을 특히 보고 싶은 항목 (쉼표로 구분)'
+        type: string
+        default: 'clsA,clsAExp,redeemFee,liqRisk'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fund-prospectus-sample
+  cancel-in-progress: true
+
+jobs:
+  sample:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: pdfjs 설치
+        run: npm install --no-save pdfjs-dist@3.11.174
+
+      - name: 표본 판독
+        env:
+          LIMIT: ${{ inputs.limit || '60' }}
+          EVERY: ${{ inputs.every || '50' }}
+          CODES: ${{ inputs.codes || '' }}
+        run: |
+          mkdir -p /tmp/sample/text
+          if [ -n "$CODES" ]; then
+            # --codes 는 「기존 결과에 그 종목만 다시 읽어 끼워 넣는」 방식이라
+            # 읽을 기존 결과가 있어야 한다. --out 이 빈 자리를 가리키면 그대로 죽는다.
+            # 담긴 결과를 씨앗으로 깔아 준다 (data/ 는 건드리지 않는다).
+            cp data/fund-prospectus.js /tmp/sample/fund-prospectus.js
+            set -- --codes "$CODES" --limit 0
+          else
+            set -- --limit "$LIMIT" --every "$EVERY"
+          fi
+          # --out 으로 돌려 data/ 를 건드리지 않는다
+          set -- "$@" --out /tmp/sample/fund-prospectus.js --dump /tmp/sample/text
+          echo "인자: $*"
+          node scripts/fetch_fund_prospectus.mjs "$@"
+
+      # 아티팩트(Azure blob)를 못 내려받는 자리에서도 원문을 볼 수 있어야 한다.
+      # 규칙을 고치려면 「문서가 실제로 뭐라고 적었나」 를 봐야 하는데, 그것을 못 보면
+      # 추측으로 정규식을 고치게 된다. 수수료 대목만 잘라 로그에 찍는다.
+      - name: 원문 발췌 — 보수·수수료 대목
+        if: always()
+        run: |
+          node -e "
+          const fs=require('fs'), path='/tmp/sample/text';
+          if(!fs.existsSync(path)){ console.log('(받아 둔 원문 없음)'); process.exit(0); }
+          const files=fs.readdirSync(path).filter(f=>f.endsWith('.txt'));
+          for(const f of files){
+            const t=fs.readFileSync(path+'/'+f,'utf8');
+            console.log('');
+            console.log('════════ '+f+' ════════');
+            console.log(t.split('\n')[0].slice(0,90));
+            const hits=[...t.matchAll(/선취\s*판매\s*수수료|판매수수료|보수 및 수수료|종류형|클래스/g)].map(m=>m.index);
+            const shown=[]; let n=0;
+            for(const at of hits){
+              if(shown.some(x=>Math.abs(x-at)<400)) continue;
+              shown.push(at); n++; if(n>7) break;
+              const seg=t.slice(Math.max(0,at-260), at+420).replace(/\t/g,' | ').replace(/\n{2,}/g,'\n');
+              console.log('  ── @'+at+' ──');
+              seg.split('\n').map(l=>l.trim()).filter(Boolean).slice(0,14).forEach(l=>console.log('     '+l.slice(0,150)));
+            }
+          }
+          "
+
+      - name: 추출률
+        env:
+          FIELDS: ${{ inputs.fields || 'clsA,clsAExp,redeemFee,liqRisk' }}
+          CODES: ${{ inputs.codes || '' }}
+        run: |
+          node -e "
+          const g={}; new Function('window', require('fs').readFileSync('/tmp/sample/fund-prospectus.js','utf8'))(g);
+          const P=g.FUND_PROSPECTUS, I=P.items;
+          /* --codes 는 담긴 결과를 씨앗으로 깔고 그 위에 끼워 넣는다 —
+             보고는 지목한 종목만 해야 3,000건에 파묻히지 않는다 */
+          const onlyCodes=(process.env.CODES||'').split(',').map(s=>s.trim()).filter(Boolean);
+          const K=onlyCodes.length?onlyCodes.filter(k=>I[k]):Object.keys(I);
+          console.log('표본 ' + K.length + '건\n');
+          const cnt={};
+          K.forEach(k=>Object.keys(I[k]).forEach(f=>cnt[f]=(cnt[f]||0)+1));
+          console.log('── 항목별 추출률 ──');
+          Object.entries(cnt).sort((a,b)=>b[1]-a[1])
+            .forEach(([f,n])=>console.log('  '+f.padEnd(14)+String(n).padStart(4)+'건  '+(100*n/K.length).toFixed(0)+'%'));
+          /* 종목을 지목했으면 종목별로 무엇을 읽었는지 한 줄씩 — 이것이 확인의 핵심이다 */
+          if (onlyCodes.length) {
+            console.log('\n── 종목별 읽어 낸 값 ──');
+            for (const k of K) {
+              const row = Object.keys(I[k]).sort().map(f => f + '=' + JSON.stringify(String(P.pool[I[k][f]]).slice(0,44)));
+              console.log('  ' + k);
+              console.log('     ' + (row.length ? row.join('  ') : '(아무것도 못 읽음)'));
+            }
+            const missed = onlyCodes.filter(k => !I[k]);
+            if (missed.length) console.log('  판독 실패: ' + missed.join(', '));
+          }
+          const want=(process.env.FIELDS||'').split(',').map(s=>s.trim()).filter(Boolean);
+          for (const f of want) {
+            console.log('\n── ' + f + ' 읽어 낸 값 (중복 제거, 최대 25종) ──');
+            const seen={};
+            K.forEach(k=>{ if(I[k][f]===undefined) return; const v=P.pool[I[k][f]]; seen[v]=(seen[v]||0)+1; });
+            const rows=Object.entries(seen).sort((a,b)=>b[1]-a[1]);
+            if(!rows.length){ console.log('  (한 건도 못 읽음)'); continue; }
+            rows.slice(0,25).forEach(([v,n])=>console.log('  '+String(n).padStart(3)+'x  '+JSON.stringify(String(v).slice(0,90))));
+            if(rows.length>25) console.log('  … 외 '+(rows.length-25)+'종');
+          }
+          "
+
+      - name: 값처럼 생기지 않은 것 (규칙이 잘못 읽은 것)
+        env:
+          CODES: ${{ inputs.codes || '' }}
+        run: |
+          node -e "
+          const g={}; new Function('window', require('fs').readFileSync('/tmp/sample/fund-prospectus.js','utf8'))(g);
+          const P=g.FUND_PROSPECTUS, I=P.items;
+          const want=(process.env.CODES||'').split(',').map(s=>s.trim()).filter(Boolean);
+          const K=want.length?want.filter(k=>I[k]):Object.keys(I);
+          const feeRateLike=v=>{const t=String(v==null?'':v).trim(); if(!t) return false;
+            if(/없음|면제|해당\s*없|미징구|징구하지\s*않/.test(t)&&t.length<=30) return true;
+            return /\d+(?:\.\d+)?\s*%/.test(t)&&t.length<=40;};
+          const rateNumLike=v=>{const t=String(v==null?'':v).trim();
+            return /^\d+(?:\.\d+)?\s*%?\$/.test(t)&&parseFloat(t)<=20;};
+          let bad=0;
+          for(const k of K){
+            const chk=[['clsA',feeRateLike],['clsAExp',rateNumLike],['clsCExp',rateNumLike]];
+            for(const [f,ok] of chk){
+              if(I[k][f]===undefined) continue;
+              const v=P.pool[I[k][f]];
+              if(!ok(v)){ bad++; console.log('  '+k+' '+f+' = '+JSON.stringify(String(v).slice(0,80))); }
+            }
+            if(I[k].liqRisk!==undefined && /환매수수료 부과/.test(P.pool[I[k].liqRisk]) && I[k].redeemFee===undefined){
+              bad++; console.log('  '+k+' liqRisk 가 근거 없이 「환매수수료 부과」 (환매수수료 값 없음)');
+            }
+          }
+          console.log(bad ? '\n잘못 읽은 것 '+bad+'건 — 규칙을 더 손봐야 합니다.' : '\n잘못 읽은 것 없음.');
+          if(bad) process.exit(1);
+          "
+
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fund-prospectus-sample
+          path: /tmp/sample
+          retention-days: 7

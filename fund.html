@@ -1,0 +1,3431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>국내 설정 공모펀드 조회</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   미래에셋증권 디자인 시스템
+   Orange #F58220 / Blue #043B72 / 1px 섹션 룰 / FAB072 테이블 헤더
+   ============================================================ */
+:root{
+  --orange:#F58220; --orange-active:#CB6015; --orange-soft:#FAB072;
+  --blue:#043B72; --blue-soft:#0086B8; --cyan:#00A9CE;
+  --gray-hl:#D7D7D7; --tan:#F0B26B; --terracotta:#AD624E; --neutral:#84888B;
+  --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA;
+  --hairline:#CDCECB; --hairline-soft:#E5E4E1;
+  --line-dark:#49535B; --line-mid:#84888B; --line-soft:#A0A6A8;
+  --ink:#1A1A1A; --body-strong:#2C2C2C; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --success:#2E8540; --warning:#D4A017; --error:#C62828;
+
+  --font-kr:'Spoqa Han Sans Neo','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --font-en:'Inter','Aptos','Segoe UI',system-ui,-apple-system,sans-serif;
+  --font-num:'Inter','SF Mono',ui-monospace,monospace;
+
+  --space-section:80px; --space-block:48px; --space-content:24px; --space-tight:14px;
+}
+@media (max-width:768px){ :root{ --space-section:56px; --space-block:32px; } }
+
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  margin:0; background:var(--canvas); color:var(--body);
+  font-family:var(--font-kr); font-size:17px; line-height:1.6;
+  font-variant-numeric:tabular-nums;
+}
+html[lang="en"] body{font-family:var(--font-en);}
+h1,h2,h3,h4{color:var(--ink); margin:0;}
+p{margin:0 0 var(--space-content);}
+a{color:var(--blue);}
+:focus-visible{outline:2px solid var(--orange); outline-offset:2px;}
+
+.page{max-width:1280px; margin:0 auto; padding:0 32px;}
+@media (max-width:768px){ .page{padding:0 18px;} }
+
+/* ---------- 툴바 ---------- */
+.toolbar{
+  max-width:1280px; margin:0 auto; padding:18px 32px 0;
+  display:flex; justify-content:flex-end; gap:10px; align-items:center;
+}
+@media (max-width:768px){ .toolbar{padding:14px 18px 0;} }
+.lang-toggle{
+  display:inline-flex; border:1px solid var(--hairline); border-radius:2px;
+  overflow:hidden; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.lang-toggle button{
+  font-family:var(--font-en); font-size:14px; font-weight:500; letter-spacing:.5px;
+  padding:9px 16px; border:0; background:#fff; color:var(--muted); cursor:pointer;
+}
+.lang-toggle button + button{border-left:1px solid var(--hairline);}
+.lang-toggle button[aria-checked="true"]{background:var(--orange); color:#fff;}
+.lang-toggle button[aria-checked="false"]:hover{background:var(--surface-subtle); color:var(--ink);}
+.btn-print{
+  font-size:14px; padding:9px 15px; border:1px solid var(--hairline); border-radius:2px;
+  background:#fff; color:var(--muted); cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.btn-print:hover{background:var(--surface-subtle); color:var(--ink);}
+.help-dl{display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center; margin:18px 0 26px;}
+.help-dl .dim{font-size:13px; line-height:1.5;}
+/* PDF 를 못 내주는 이유는 옅은 회색으로 흘리지 않는다. 단추가 사라진 자리에
+   설명이 없으면 "고장" 으로 읽힌다. */
+.help-dl .warn-note{color:#8a6a0a; background:#FDF6E3; border:1px solid var(--warning);
+  border-radius:4px; padding:6px 10px;}
+
+/* ---------- Hero ---------- */
+.hero{background:var(--orange); color:#fff; padding:52px 0 56px; margin-top:18px;}
+.hero .tag{
+  display:inline-block; font-size:13px; letter-spacing:.6px; font-weight:500;
+  border:1px solid rgba(255,255,255,.6); padding:4px 10px; border-radius:2px; margin-bottom:22px;
+}
+.hero h1{font-size:56px; font-weight:700; line-height:1.1; letter-spacing:-1px; color:#fff;}
+.hero .sub{font-size:21px; line-height:1.5; margin-top:16px; max-width:820px; color:rgba(255,255,255,.94);}
+.hero .meta{margin-top:30px; font-size:15px; color:rgba(255,255,255,.9); display:flex; flex-wrap:wrap; gap:8px 26px; align-items:center;}
+/* .dim 은 흰 바탕에 쓰라고 만든 옅은 회색이라, 주황 머리말에 그대로 얹으면
+   글자가 배경에 묻혀 사라진다. 실제로 "수집 2026-08-31" 이 안 보였다.
+   덜 중요하다는 뜻은 살리되 읽을 수는 있게 흰색을 옅게 쓴다. */
+.hero .meta .dim{color:rgba(255,255,255,.78);}
+@media (max-width:768px){ .hero h1{font-size:38px;} .hero .sub{font-size:18px;} .hero{padding:36px 0 42px;} }
+
+/* ---------- 탭 ---------- */
+.tabs{
+  display:flex; gap:0; border-bottom:1px solid var(--hairline);
+  margin-top:var(--space-block); overflow-x:auto;
+}
+.tabs button{
+  font-family:inherit; font-size:17px; font-weight:500; padding:14px 22px; cursor:pointer;
+  border:0; border-bottom:3px solid transparent; background:none; color:var(--muted);
+  white-space:nowrap;
+}
+.tabs button:hover{color:var(--ink);}
+.tabs button[aria-selected="true"]{color:var(--orange-active); border-bottom-color:var(--orange); font-weight:700;}
+
+/* ---------- 섹션 ---------- */
+.section{padding-top:var(--space-block);}
+.section[hidden]{display:none;}
+.section-rule{height:1px; background:var(--orange); margin-bottom:18px;}
+.section-eyebrow{font-size:15px; font-weight:500; letter-spacing:.6px; color:var(--orange); margin-bottom:6px;}
+.section-title{font-size:30px; font-weight:700; line-height:1.25; letter-spacing:-.3px;}
+@media (max-width:768px){ .section-title{font-size:24px;} }
+.section-lead{font-size:17px; color:var(--body); margin-top:12px; max-width:880px;}
+h3{font-size:21px; font-weight:600; margin:var(--space-block) 0 var(--space-tight);}
+h4{font-size:17px; font-weight:600; margin:var(--space-content) 0 10px;}
+
+/* ---------- 카드 ---------- */
+.grid{display:grid; gap:16px;}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+.grid-2{grid-template-columns:repeat(2,1fr);}
+@media (max-width:1000px){ .grid-4{grid-template-columns:repeat(2,1fr);} }
+@media (max-width:900px){ .grid-3{grid-template-columns:repeat(2,1fr);} }
+@media (max-width:680px){ .grid-4,.grid-3,.grid-2{grid-template-columns:1fr;} }
+
+.card{border:1px solid var(--hairline); border-radius:4px; padding:22px; background:#fff;}
+.card .label{font-size:14px; font-weight:500; letter-spacing:.5px; color:var(--muted); margin-bottom:6px;}
+.card .stat{font-size:36px; font-weight:700; line-height:1.05; color:var(--blue); font-family:var(--font-num);}
+.card .stat.orange{color:var(--orange);}
+.card .stat.sm{font-size:26px;}
+.card .note{font-size:15px; color:var(--muted); margin-top:10px; line-height:1.5;}
+.tint{background:var(--surface-soft); border-radius:4px; padding:22px;}
+
+/* ---------- 표 ---------- */
+/* min-width:0 이 없으면 그리드·플렉스 안에서 표가 상자를 밀어낸다. */
+.table-wrap{overflow-x:auto; border:1px solid var(--hairline); border-radius:4px; min-width:0;}
+.ret-table thead th{white-space:normal; line-height:1.3;}
+.callout{background:var(--orange); color:#fff; border-radius:4px;
+  padding:26px 30px; margin:0 0 28px;}
+.callout h3{color:#fff; font-size:21px; font-weight:700; margin:0 0 12px;}
+.callout p{margin:0 0 10px; color:rgba(255,255,255,.95); line-height:1.6;}
+.callout p:last-child{margin-bottom:0;}
+.callout b{color:#fff;}
+.sub-head{font-size:18px; font-weight:700; color:var(--ink); margin:32px 0 8px;}
+.sub-lead{color:var(--muted); line-height:1.6; margin:0 0 14px;}
+.sub-lead code{background:var(--surface-subtle); padding:2px 6px; border-radius:2px;
+  font-size:13px; color:var(--ink);}
+td.hl{background:var(--gray-hl);}
+/* 순위 칸은 두 줄이다 — 읽는 값(백분율 순위)이 위, 모집단 크기가 아래. */
+.ret-table .rank-pct{display:block; font-weight:600; color:var(--ink);}
+.ret-table .rank-pct.low{color:var(--muted);}
+.ret-table .rank-raw{display:block; font-size:11px; color:var(--muted-soft);
+  font-variant-numeric:tabular-nums;}
+/* 겹침 표에도 같은 두 줄짜리 칸을 쓴다. 위 규칙이 .ret-table 안으로만 걸려
+   있어서 여기서는 아무 모양도 못 받았고, "21.3%19종목" 처럼 비율과 종목 수가
+   한 덩어리로 붙어 나왔다 — 21.3%19 라는 숫자로 읽힌다. */
+.overlap-cell .rank-raw{display:block; font-size:11px; color:var(--muted-soft);
+  font-variant-numeric:tabular-nums; font-weight:400;}
+/* 겹침 표의 줄 이름. 담은 것이 다섯 개를 넘으면 칸이 밀려 이름이 한 글자씩
+   세로로 떨어졌다. 가로로 넘치더라도(표는 옆으로 밀린다) 이름은 읽혀야 한다. */
+.ov-row{min-width:150px;}
+.ret-table .th-sub{display:block; font-size:11px; font-weight:400;
+  color:var(--ink); opacity:.72;}
+/* 검산에서 비운 칸. 빈칸이 왜 빈칸인지 그 자리에서 말한다. */
+.ret-table td.blanked{color:var(--muted-soft);}
+.ret-table td.blanked .why{display:block; font-size:11px; color:var(--orange-active);}
+table{border-collapse:collapse; width:100%; font-size:16px; background:#fff;}
+thead th{
+  background:var(--orange-soft); color:var(--ink); font-weight:700; font-size:15px;
+  text-align:left; padding:11px 13px; border-bottom:1px solid var(--hairline); white-space:nowrap;
+}
+thead th.sortable{cursor:pointer; user-select:none;}
+thead th.sortable:hover{background:var(--tan);}
+thead th .arrow{opacity:.4; font-size:12px;}
+thead th[aria-sort] .arrow{opacity:1;}
+tbody td{padding:10px 13px; border-bottom:1px solid var(--hairline-soft); vertical-align:middle;}
+tbody tr:last-child td{border-bottom:0;}
+tbody tr:hover{background:var(--surface-subtle);}
+tbody tr.clickable{cursor:pointer;}
+tbody tr.selected{background:#FFF3E8;}
+/* 검색어가 이 클래스에 걸려 펀드가 나온 것이다. 어느 줄인지 짚어 준다. */
+tbody tr.hit{background:#FFF3E8;box-shadow:inset 3px 0 0 var(--brand-orange,#FF6C0C);}
+td.num,th.num{text-align:right; font-family:var(--font-num); font-variant-numeric:tabular-nums;}
+.pos{color:var(--error);}   /* 국내 관행: 상승 빨강 */
+.neg{color:var(--blue-soft);}
+.dim{color:var(--muted-soft);}
+
+/* ---------- 비교에 담는 칸 ---------- */
+/* 이 칸은 "눌러서 상세를 여는 줄" 안에서 **혼자 다른 일을 하는 칸**이다.
+   여기에 ⊕ 하나만 놓아 두면 세 가지가 안 보인다 — 그것이 고르는 표시라는
+   것, 애초에 눌러야 하는 것인지, 누르면 무엇이 되는지. 실제로 헷갈린다는
+   말을 들었다.
+   그래서 그림글자를 흉내 내지 않고 **진짜 체크상자**를 쓴다. 브라우저가
+   그리는 체크상자는 설명이 필요 없다 — 누구나 이미 안다. 크기는 22px 로
+   키우고, 누를 수 있는 자리는 **칸 전체**로 넓혀 손가락으로도 빗나가지
+   않게 한다.
+   높이를 44px 로 못 박아 봤다가 죽은 자리를 만들었다 — 이름이 두 줄인 줄은
+   72px 이라 아래 28px 이 아무 데도 안 걸렸다. 눌러도 아무 일이 없는 자리는
+   "눌러야 하는 건지 모르겠다" 를 정확히 되풀이한다. 그래서 칸에 딱 맞춰
+   깔고(inset:0), 44px 은 상한이 아니라 **하한**으로만 둔다. */
+th.pick-head{text-align:center; padding-left:6px; padding-right:6px; width:66px;}
+th.pick-head .th-sub{display:block; font-size:11px; font-weight:400; opacity:.8;}
+td.pick-cell{padding:0; width:66px; text-align:center; position:relative; min-height:44px;}
+.pick{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  min-height:44px; margin:0; cursor:pointer;
+}
+.pick input{width:22px; height:22px; margin:0; cursor:pointer; accent-color:var(--orange);}
+.pick:hover input:not(:disabled){outline:2px solid var(--orange-soft); outline-offset:2px;}
+.pick input:focus-visible{outline:2px solid var(--orange); outline-offset:2px;}
+/* 다 찼을 때. 아무 일도 안 일어나는 단추를 그대로 두면 고장으로 읽힌다.
+   흐리게 만들어 "지금은 못 담는다" 를 눈으로 먼저 알리고, 까닭은 칸에
+   손을 얹으면 뜨는 설명과 표 위의 띠가 말한다. */
+.pick input:disabled{cursor:not-allowed; opacity:.3;}
+/* 담긴 줄은 왼쪽에 주황 띠로 표시한다. 줄 배경을 칠하면 이미 쓰고 있는
+   '선택된 줄'·'검색어가 걸린 줄' 과 섞여 셋 다 무슨 뜻인지 없어진다. */
+tbody tr.picked td.pick-cell{box-shadow:inset 4px 0 0 var(--orange);}
+/* 표 바로 위에서 이 칸이 무엇인지 말하는 띠 */
+.pick-bar{margin:0 0 8px; padding:9px 12px; border:1px solid var(--hairline-soft);
+  border-left:3px solid var(--orange-soft); background:var(--surface-subtle);}
+.pick-bar.on{border-left-color:var(--orange); background:#FFF7EF;}
+.pick-bar .box{display:inline-block; width:13px; height:13px; border:2px solid var(--muted);
+  border-radius:3px; vertical-align:-2px; margin:0 1px;}
+/* 비교 탭에서 담긴 것을 늘어놓는 이름표. × 를 누르면 그 하나만 빠진다.
+   × 는 44px 짜리 손가락 자리를 갖게 한다 — 작은 × 는 옆의 것을 빼게 만든다. */
+.cmp-chips{display:flex; flex-wrap:wrap; gap:6px; margin:0 0 10px;}
+.cmp-chip{display:inline-flex; align-items:center; gap:2px; max-width:100%;
+  border:1px solid var(--hairline); border-left:3px solid var(--orange);
+  background:#fff; font-size:13px; color:var(--ink);}
+.cmp-chip-name{padding:6px 2px 6px 9px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.cmp-chip-x{
+  flex:none; width:30px; min-height:30px; padding:0; margin:0; cursor:pointer;
+  font-family:inherit; font-size:17px; line-height:1; color:var(--muted);
+  background:none; border:none; border-left:1px solid var(--hairline-soft);
+}
+.cmp-chip-x:hover{color:#fff; background:var(--orange);}
+.cmp-chip-x:focus-visible{outline:2px solid var(--orange); outline-offset:-2px;}
+
+/* ---------- 배지 ---------- */
+.badge{
+  display:inline-block; font-size:12px; font-weight:600; letter-spacing:.3px;
+  padding:2px 7px; border-radius:2px; border:1px solid var(--hairline); color:var(--muted);
+  background:#fff; vertical-align:middle; white-space:nowrap;
+}
+.badge + .badge{margin-left:4px;}
+.badge.live{border-color:var(--success); color:var(--success);}
+.badge.sample{border-color:var(--warning); color:#8a6a0a; background:#FDF6E3;}
+.badge.orange{border-color:var(--orange); color:var(--orange-active);}
+.badge.blue{border-color:var(--blue); color:var(--blue);}
+.badge.warn{border-color:var(--error); color:var(--error);}
+
+/* ---------- 검색 · 필터 ---------- */
+.finder-search{position:relative; margin-top:var(--space-content);}
+.finder-search input{
+  width:100%; font-family:inherit; font-size:18px;
+  padding:15px 17px 15px 46px; color:var(--ink); background:#fff;
+  border:1px solid var(--hairline); border-radius:4px;
+}
+.finder-search input:focus{outline:2px solid var(--orange); outline-offset:-1px; border-color:var(--orange);}
+.finder-search svg{position:absolute; left:16px; top:50%; transform:translateY(-50%); pointer-events:none;}
+
+.finder-filters{
+  display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px;
+  margin-top:14px; align-items:end;
+}
+@media (max-width:900px){ .finder-filters{grid-template-columns:repeat(2, minmax(0,1fr));} }
+@media (max-width:520px){ .finder-filters{grid-template-columns:1fr;} }
+.finder-filters .f{display:flex; flex-direction:column; gap:5px; min-width:0;}
+.finder-filters .f > span{font-size:13px; font-weight:500; letter-spacing:.4px; color:var(--muted);}
+.finder-filters select{
+  font-family:inherit; font-size:15px; padding:10px 12px; width:100%;
+  border:1px solid var(--hairline); border-radius:2px; background:#fff; color:var(--body-strong);
+  cursor:pointer; appearance:none;
+  background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23666' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 12px center;
+}
+.finder-filters select:focus{outline:2px solid var(--orange); outline-offset:-1px;}
+.finder-filters select.on{border-color:var(--orange); color:var(--orange-active); font-weight:600;}
+
+.finder-bar{
+  display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px;
+  margin:16px 0 10px; font-size:15px; color:var(--muted);
+}
+.finder-bar .count{color:var(--ink); font-weight:600;}
+.finder-bar button{
+  font-family:inherit; font-size:14px; padding:7px 13px; cursor:pointer;
+  border:1px solid var(--hairline); border-radius:2px; background:#fff; color:var(--muted);
+}
+.finder-bar button:hover{background:var(--surface-subtle); color:var(--ink);}
+.finder-bar select{
+  font-family:inherit; font-size:14px; padding:6px 10px;
+  border:1px solid var(--hairline); border-radius:2px; background:#fff; color:var(--body-strong);
+}
+.chk{display:inline-flex; align-items:center; gap:6px; font-size:14px; cursor:pointer; color:var(--muted);}
+.chk input{accent-color:var(--orange);}
+
+/* ---------- 비중 막대 ---------- */
+.hold-row{
+  position:relative; display:grid; grid-template-columns:24px minmax(0,1fr) auto;
+  gap:8px; align-items:baseline;
+  padding:8px 0 10px; border-bottom:1px solid var(--hairline-soft); font-size:16px;
+}
+.hold-row:last-child{border-bottom:0;}
+.hold-row .seq{color:var(--muted-soft); font-family:var(--font-num); font-size:14px;}
+.hold-row .nm{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.hold-row .wt{text-align:right; font-family:var(--font-num); font-weight:600; white-space:nowrap;}
+.hold-row .hbar{
+  position:absolute; left:0; bottom:0; height:3px;
+  background:var(--orange); border-radius:2px; max-width:100%;
+}
+.hold-row.is-cash{opacity:.62;}
+.hold-row.is-cash .hbar{background:var(--neutral);}
+.hold-more{margin-top:12px;}
+
+/* 종목 × 펀드 매트릭스 */
+.matrix{max-height:70vh; overflow:auto;}
+.matrix table{min-width:520px;}
+.matrix thead th{position:sticky; top:0; z-index:2;}
+.matrix th.stock{
+  text-align:left; background:var(--surface-subtle); font-weight:600;
+  position:sticky; left:0; z-index:1; min-width:180px;
+}
+.matrix thead th.stock{z-index:3;}
+.matrix td.held{font-weight:700; color:var(--ink); background:#FFF6EE;}
+.matrix td.miss{color:var(--gray-hl);}
+.matrix td.unw{color:var(--orange); font-weight:400;}
+.matrix th.fund{font-family:var(--font-num); font-size:14px;}
+
+/* ---------- 상세 ---------- */
+.detail-head{display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 16px; margin-bottom:6px;}
+.detail-head h3{margin:0; font-size:26px;}
+.kv{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:2px 20px; margin-top:14px;}
+.kv .k{font-size:13px; color:var(--muted); letter-spacing:.4px;}
+.kv .v{font-size:17px; color:var(--ink); font-weight:600; font-family:var(--font-num); margin-bottom:12px;}
+.kv .v.txt{font-family:inherit; font-weight:500;}
+
+.donut-wrap{display:flex; gap:20px; align-items:center; flex-wrap:wrap;}
+.legend{font-size:14px; line-height:1.9;}
+.legend i{display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:7px;}
+
+/* ---------- 비교 ---------- */
+.cmp-grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));}
+.fund-link{cursor:pointer;}
+.fund-link:hover{color:var(--orange-active); text-decoration:underline;}
+.cmp-grid .cmp-title{
+  margin:0; font-size:17px; line-height:1.35; font-weight:600; color:var(--ink);
+  min-height:calc(1.35em * 2);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.cmp-grid .cmp-meta{
+  font-size:14px; line-height:1.5; height:1.5em; margin:4px 0 10px;
+  color:var(--muted-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.overlap-cell{font-family:var(--font-num); font-weight:600;}
+
+/* ---------- 안내 ---------- */
+.empty{padding:44px 20px; text-align:center; color:var(--muted); border:1px dashed var(--hairline); border-radius:4px;}
+.notice{
+  border-left:3px solid var(--orange); background:var(--surface-subtle);
+  padding:14px 18px; font-size:15px; color:var(--body); margin:16px 0; border-radius:0 4px 4px 0;
+}
+.notice strong{color:var(--ink);}
+.notice.warn{border-left-color:var(--error);}
+
+/* ---------- 푸터 ---------- */
+footer{margin-top:var(--space-section); border-top:1px solid var(--hairline); padding:32px 0 64px;}
+footer .disc{font-size:14px; color:var(--muted); line-height:1.7; max-width:980px;}
+footer .disc strong{color:var(--body-strong);}
+footer .disc + .disc{margin-top:12px;}
+
+/* ---------- 인쇄 ---------- */
+@media print{
+  .toolbar,.tabs,.finder-search,.finder-filters,.finder-bar,.btn-print{display:none !important;}
+  body{font-size:11pt; line-height:1.4;}
+  .page{max-width:100%; padding:0;}
+  .hero{background:#fff !important; color:var(--ink); padding:0 0 18px; border-bottom:2px solid var(--orange); margin:0;}
+  .hero h1,.hero .sub,.hero .meta{color:var(--ink) !important;}
+  .hero .tag{border-color:var(--hairline); color:var(--muted);}
+  /* 인쇄하면 머리말이 흰 바탕이 되므로 흰 글씨를 되돌린다. */
+  .hero .meta .dim{color:var(--muted) !important;}
+  .section{padding-top:24px;}
+  /* 인쇄는 **지금 열어 놓은 탭 하나**만 찍는다.
+     여기에는 한동안 `.section[hidden]{display:block !important}` 가 있었다.
+     인쇄하면 여섯 절을 전부 펼치겠다는 뜻이었는데, 화면에서 비교 · 중복도를
+     보다가 인쇄를 누른 사람은 그 화면을 원한 것이지 펀드 3,194행과 사용법
+     16장까지 원한 것이 아니다. 종이 수백 장을 버리고서야 알게 되는 종류의
+     친절이라 걷어냈다. 숨긴 절은 숨긴 채로 둔다 — 위 .section[hidden] 규칙이
+     이미 그렇게 하고 있으므로 인쇄에서 따로 손댈 것이 없다. */
+  /* "사용법만 인쇄" 는 다른 탭을 보고 있어도 사용법을 뽑아 준다. */
+  body.print-help .section{display:none !important;}
+  body.print-help #tab-help{display:block !important;}
+  .help-dl{display:none !important;}
+  /* 담은 것을 빼는 이름표는 화면에서 누르는 것이라 종이에서는 할 일이 없다.
+     이름은 바로 아래 겹침 표의 줄 이름으로 다시 나온다. */
+  .cmp-chips,.cmp-chips-hint{display:none !important;}
+  table,.card,.hold-row{page-break-inside:avoid;}
+  /* 사용법의 "숫자를 읽는 법" 은 7행짜리 한 덩어리라 위의 "표는 쪼개지 않는다"
+     규칙에 걸려 통째로 다음 장으로 밀렸다 — 앞 장이 카드 하나만 남고 텅 비었다.
+     여기서는 줄 단위로 끊고, 줄 자체만 쪼개지지 않게 한다. */
+  #tab-help table{page-break-inside:auto;}
+  #tab-help tr{page-break-inside:avoid;}
+  .section-title,h3,h4{page-break-after:avoid;}
+  .table-wrap{overflow:visible;}
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="btn-print" onclick="window.print()" data-ko="인쇄 · PDF 저장" data-en="Print / PDF">인쇄 · PDF 저장</button>
+  <div class="lang-toggle" role="radiogroup" aria-label="Language">
+    <button type="button" role="radio" data-lang="ko" aria-checked="true">KO</button>
+    <button type="button" role="radio" data-lang="en" aria-checked="false">EN</button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="page">
+    <span class="tag" data-ko="국내 설정 공모펀드 조회" data-en="Korean Public Funds">국내 설정 공모펀드 조회</span>
+    <h1 data-ko="이 펀드는 무엇을 담고 있나" data-en="What does this fund hold?">이 펀드는 무엇을 담고 있나</h1>
+    <p class="sub" data-ko="국내에 설정된 공모펀드를 투자 지역(국내·해외)으로 갈라 봅니다. 유형·운용사·설정액·수익률로 걸러 보고, 보유종목 전체와 벤치마크 대비 성과를 한 화면에서 확인할 수 있습니다."
+       data-en="Public funds domiciled in Korea, split by where they invest (domestic or overseas). Filter by category, manager, AUM and return; see the full holdings list and performance against each fund's benchmark.">국내에 설정된 공모펀드를 투자 지역(국내·해외)으로 갈라 봅니다.</p>
+    <div class="meta" id="hero-meta"></div>
+  </div>
+</header>
+
+<main class="page">
+
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" data-tab="browse" aria-selected="true" data-ko="펀드 찾기" data-en="Browse">펀드 찾기</button>
+    <button type="button" role="tab" data-tab="compare" aria-selected="false" data-ko="비교 · 중복도" data-en="Compare">비교 · 중복도</button>
+    <button type="button" role="tab" data-tab="reverse" aria-selected="false" data-ko="종목 → 펀드" data-en="Stock → Fund">종목 → 펀드</button>
+    <button type="button" role="tab" data-tab="rank" aria-selected="false" data-ko="랭킹" data-en="Rankings">랭킹</button>
+    <button type="button" role="tab" data-tab="basis" aria-selected="false" data-ko="수익률 검산" data-en="Return Audit">수익률 검산</button>
+    <button type="button" role="tab" data-tab="help" aria-selected="false" data-ko="사용법" data-en="How to use">사용법</button>
+  </div>
+
+  <!-- ══════════════════ 1. 펀드 찾기 ══════════════════ -->
+  <section class="section" id="tab-browse">
+    <div class="section-rule"></div>
+    <div class="section-eyebrow" data-ko="찾기" data-en="Browse">찾기</div>
+    <h2 class="section-title" data-ko="조건으로 좁히고, 눌러서 보유종목을 봅니다" data-en="Narrow down, then click to see holdings">조건으로 좁히고, 눌러서 보유종목을 봅니다</h2>
+
+    <div class="finder-search">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <circle cx="9" cy="9" r="6.5" stroke="#84888B" stroke-width="1.8"/>
+        <path d="M14 14l4 4" stroke="#84888B" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <input type="search" id="q" autocomplete="off"
+             data-ko-ph="펀드 이름 · 표준코드 · 클래스 코드 · 운용사 · 보유종목으로 검색 (예: 배당, K55207BJ1791, 삼성전자)"
+             data-en-ph="Search by fund name, code, share-class code, manager or holding">
+    </div>
+
+    <div class="finder-filters">
+      <label class="f"><span data-ko="투자 지역" data-en="Invests in">투자 지역</span><select id="f-region"></select></label>
+      <label class="f"><span data-ko="자산군" data-en="Asset class">자산군</span><select id="f-asset"></select></label>
+      <label class="f"><span data-ko="유형" data-en="Category">유형</span><select id="f-type"></select></label>
+      <label class="f"><span data-ko="운용사" data-en="Manager">운용사</span><select id="f-company"></select></label>
+      <label class="f"><span data-ko="설정액" data-en="AUM">설정액</span><select id="f-aum"></select></label>
+      <label class="f"><span data-ko="위험등급" data-en="Risk grade">위험등급</span><select id="f-risk"></select></label>
+      <label class="f"><span data-ko="총보수 (최저 클래스)" data-en="Fee (cheapest class)">총보수 (최저 클래스)</span><select id="f-fee"></select></label>
+    </div>
+
+    <div class="finder-bar">
+      <span data-ko="수익률 기간" data-en="Return period">수익률 기간</span>
+      <select id="f-period"></select>
+      <label class="chk"><input type="checkbox" id="f-hold"> <span data-ko="보유종목 있는 것만" data-en="With holdings only">보유종목 있는 것만</span></label>
+      <span style="flex:1"></span>
+      <span class="count" id="result-count"></span>
+      <button type="button" id="f-reset" data-ko="조건 초기화" data-en="Reset">조건 초기화</button>
+    </div>
+
+    <div id="scope-note"></div>
+
+    <!-- 표 왼쪽 첫 칸이 무엇인지 말하는 자리. 늘 보인다 — 아무것도 안 담은
+         사람에게야말로 "저 칸은 뭐지" 라는 질문이 생기기 때문이다. -->
+    <div class="pick-bar" id="pick-bar"></div>
+
+    <div class="table-wrap">
+      <table id="list-table">
+        <thead><tr id="list-head"></tr></thead>
+        <tbody id="list-body"></tbody>
+      </table>
+    </div>
+    <div class="finder-bar" style="margin-top:10px">
+      <span id="list-more-note" class="dim"></span>
+      <span style="flex:1"></span>
+      <button type="button" id="list-more" hidden data-ko="더 보기" data-en="Show more">더 보기</button>
+    </div>
+
+    <div id="detail"></div>
+  </section>
+
+  <!-- ══════════════════ 2. 비교 · 중복도 ══════════════════ -->
+  <section class="section" id="tab-compare" hidden>
+    <div class="section-rule"></div>
+    <div class="section-eyebrow" data-ko="비교" data-en="Compare">비교</div>
+    <h2 class="section-title" data-ko="같이 담으면 얼마나 겹치나" data-en="How much do they overlap?">같이 담으면 얼마나 겹치나</h2>
+    <p class="section-lead" data-ko="펀드 찾기 탭에서 줄 맨 왼쪽 체크상자에 표시해 최대 8개까지 담습니다. 펀드는 ETF 와 달리 원천이 보유종목 전체를 주므로, 겹침 비율은 하한이 아니라 실제 포트폴리오 중복에 가깝습니다. 다만 채권형·MMF 처럼 보유종목이 오지 않는 유형은 비교할 수 없습니다."
+       data-en="Tick the checkbox at the left of a row in Browse to add up to eight funds. Unlike ETFs, the source gives full holdings, so overlap here is close to true portfolio overlap rather than a lower bound. Bond funds and MMFs publish no holdings and cannot be compared.">펀드 찾기 탭에서 줄 맨 왼쪽 체크상자에 표시해 최대 8개까지 담습니다.</p>
+    <div id="compare-body"></div>
+  </section>
+
+  <!-- ══════════════════ 3. 종목 → 펀드 ══════════════════ -->
+  <section class="section" id="tab-reverse" hidden>
+    <div class="section-rule"></div>
+    <div class="section-eyebrow" data-ko="역조회" data-en="Reverse">역조회</div>
+    <h2 class="section-title" data-ko="이 종목을 담은 펀드" data-en="Funds holding this stock">이 종목을 담은 펀드</h2>
+    <p class="section-lead" data-ko="개별 종목 이름으로 찾으면, 그 종목을 담고 있는 펀드를 비중 순으로 보여 줍니다."
+       data-en="Find which funds hold a given stock, ranked by weight.">개별 종목 이름으로 찾으면, 그 종목을 담고 있는 펀드를 비중 순으로 보여 줍니다.</p>
+    <div class="finder-search">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <circle cx="9" cy="9" r="6.5" stroke="#84888B" stroke-width="1.8"/>
+        <path d="M14 14l4 4" stroke="#84888B" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <input type="search" id="rq" autocomplete="off"
+             data-ko-ph="종목 이름 (예: 삼성전자, NVIDIA, HDFC BANK)" data-en-ph="Stock name (e.g. NVIDIA)">
+    </div>
+    <div id="reverse-body"></div>
+  </section>
+
+  <!-- ══════════════════ 4. 랭킹 ══════════════════ -->
+  <section class="section" id="tab-rank" hidden>
+    <div class="section-rule"></div>
+    <div class="section-eyebrow" data-ko="랭킹" data-en="Rankings">랭킹</div>
+    <h2 class="section-title" data-ko="기간 수익률 · 설정액" data-en="Returns and AUM">기간 수익률 · 설정액</h2>
+    <div class="finder-bar">
+      <span data-ko="대상" data-en="Scope">대상</span>
+      <select id="r-type"></select>
+      <span data-ko="기간" data-en="Period">기간</span>
+      <select id="r-period"></select>
+    </div>
+    <div id="rank-body"></div>
+  </section>
+
+  <!-- ══════════════════ 5. 수익률 검산 ══════════════════ -->
+  <section class="section" id="tab-basis" hidden>
+    <div class="section-rule"></div>
+    <div class="section-eyebrow" data-ko="수익률 검산" data-en="Return audit">수익률 검산</div>
+    <h2 class="section-title" data-ko="빈칸은 왜 빈칸인가" data-en="Why some cells are blank">빈칸은 왜 빈칸인가</h2>
+    <p class="section-lead" data-ko="원천의 기간수익률을 그대로 싣지 않고, 기준가 시계열로 한 번 검산한 뒤 통과한 것만 싣습니다. 여기에는 무엇을 왜 비웠는지가 남습니다."
+       data-en="Source returns are not passed through blindly — each is checked against the fund's own base-price series, and only those that pass are shown. This tab records what was withheld and why.">원천의 기간수익률을 그대로 싣지 않고, 기준가 시계열로 한 번 검산한 뒤 통과한 것만 싣습니다.</p>
+    <div id="basis-body"></div>
+  </section>
+
+  <!-- ══════════════════ 6. 사용법 ══════════════════ -->
+  <!--
+    이 탭의 숫자는 글로 박아 두지 않고 자료에서 읽어 그린다. 사용법 문서가
+    본문보다 먼저 낡는 것이 흔한 일이라, 낡을 수 있는 것은 아예 적지 않는다.
+  -->
+  <section class="section" id="tab-help" hidden>
+    <div class="section-rule"></div>
+    <div class="section-eyebrow" data-ko="사용법" data-en="How to use">사용법</div>
+    <h2 class="section-title" data-ko="화면마다 어떻게 쓰고, 숫자를 어떻게 읽나" data-en="How to use each screen, and how to read its numbers">화면마다 어떻게 쓰고, 숫자를 어떻게 읽나</h2>
+    <p class="section-lead" data-ko="화면마다 하는 일이 다릅니다. 아래에 먼저 여섯 화면이 각각 무엇을 위한 것인지 한눈에 적고, 이어서 화면별로 쓰는 순서 · 조작 항목이 하는 일 · 해보기 · 주의를 적었습니다. 끝에는 이 화면의 숫자를 읽을 때 반드시 알아야 할 것들이 나옵니다."
+       data-en="Each screen does a different job. Below: first what all six are for, then for each one the steps, what every control does, a worked example and its caution — and finally what you must know to read these numbers correctly.">화면마다 하는 일이 다릅니다.</p>
+    <!--
+      사용법은 화면을 못 여는 자리(메신저·메일·사내 공유)에 따로 붙일 일이
+      많다. 그래서 이 절만 따로 내려받을 수 있게 둔다. 21MB 짜리 본 화면을
+      통째로 보내지 않아도 되고, 받는 쪽은 브라우저만 있으면 열린다.
+    -->
+    <div class="help-dl" id="help-dl">
+      <button type="button" class="btn-print" id="help-dl-html"
+              data-ko="사용법 내려받기 (HTML)" data-en="Download (HTML)">사용법 내려받기 (HTML)</button>
+      <!--
+        PDF 는 브라우저의 인쇄창을 거치지 않고 **완성된 파일**을 바로 내려준다.
+        받는 쪽이 인쇄 설정을 만질 필요도, 여백·배경이 사람마다 달라질 일도 없다.
+        그래서 이 파일은 화면 안에 미리 실어 둔다(빌드 때 만들어 넣는다).
+
+        미리 실은 파일은 낡을 수 있다 — 자료가 갱신되면 사용법의 수도 바뀐다.
+        그래서 실을 때 자료의 표시를 같이 넣어 두고, 화면이 지금 세는 수와
+        다르면 이 단추를 **감춘다**. 낡은 PDF 를 내주느니 안 내주는 편이 낫다.
+      -->
+      <button type="button" class="btn-print" id="help-dl-pdf" hidden
+              data-ko="사용법 내려받기 (PDF · 화면 그림)" data-en="Download (PDF, with screenshots)">사용법 내려받기 (PDF · 화면 그림)</button>
+      <button type="button" class="btn-print" id="help-dl-print"
+              data-ko="사용법만 인쇄 · PDF 저장" data-en="Print this page only / PDF">사용법만 인쇄 · PDF 저장</button>
+      <span class="dim" id="help-dl-note"></span>
+      <span class="dim warn-note" id="help-dl-why" hidden></span>
+    </div>
+    <div id="help-body"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="page">
+    <p class="disc" id="disc-source"></p>
+    <p class="disc" id="disc-scope"></p>
+    <p class="disc" id="disc-fee"></p>
+    <p class="disc" id="disc-returns"></p>
+    <p class="disc" id="disc-verify"></p>
+    <p class="disc" data-ko="<strong>유의사항.</strong> 본 화면은 정보 제공 목적의 참고 자료이며 투자 권유가 아닙니다. 투자 판단과 그 결과에 대한 책임은 이용자에게 있습니다. 실제 상품 내용은 각 펀드의 투자설명서와 운용사 공시가 우선합니다. 사내에서 고객 대상으로 활용할 경우 금융투자협회 광고 심의 및 준법감시 부서 확인을 권장합니다."
+       data-en="<strong>Disclaimer.</strong> For information only; not investment advice. Fund prospectuses and manager disclosures prevail."></p>
+  </div>
+</footer>
+
+<script src="data/fund.js"></script>
+<!--
+  미리 만들어 둔 사용법 PDF(base64). 빌드가 만들어 넣으므로 없을 수도 있다 —
+  없으면 PDF 단추가 그냥 나오지 않는다. 여기서 404 가 나도 화면은 멀쩡히 뜬다.
+-->
+<script src="data/fund-help-pdf.js"></script>
+<!--
+  실제 화면을 찍어 넣은 사용법 문서(그림 포함). 같은 빌드가 PDF 와 함께
+  만들어 넣는다. 없으면 사용법 탭이 그림 없는 글로 물러선다.
+-->
+<script src="data/fund-help-doc.js"></script>
+<script>
+'use strict';
+
+var DATA = window.FUND_DATA || { funds: [], labels: {}, source: 'sample' };
+var FUNDS = DATA.funds || [];
+var L = DATA.labels || {};
+var lang = 'ko';
+
+// 기간은 데이터가 준 것을 그대로 쓴다. 수집기·빌드·화면이 같은 이름을 쓰게
+// 하려는 것이다 — 이름을 옮겨 적으면 그 자리에서 어긋난다.
+var PERIODS = DATA.periods || [
+  ['1d', '1일', '1D'], ['1w', '1주', '1W'], ['1m', '1개월', '1M'],
+  ['3m', '3개월', '3M'], ['6m', '6개월', '6M'], ['9m', '9개월', '9M'],
+  ['ytd', '연초이후', 'YTD'], ['1y', '1년', '1Y'], ['2y', '2년', '2Y'],
+  ['3y', '3년', '3Y'], ['5y', '5년', '5Y'],
+];
+
+var DONUT_COLOR = ['#F58220', '#043B72', '#00A9CE', '#F0B26B', '#AD624E',
+                   '#84888B', '#0086B8', '#D7D7D7', '#CB6015', '#49535B'];
+
+// ───────────────────────── 잔손 ─────────────────────────
+function t(pair) { return pair ? (pair[lang] || pair.ko) : ''; }
+function el(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+/** 원 단위 금액을 조·억으로. */
+function fmtAmount(v) {
+  if (v == null || !isFinite(v)) return '–';
+  var n = Number(v);
+  var sign = n < 0 ? '-' : '';
+  n = Math.abs(n);
+  if (lang === 'en') {
+    if (n >= 1e12) return sign + (n / 1e12).toFixed(2) + 'T KRW';
+    if (n >= 1e8) return sign + (n / 1e8).toFixed(0) + '00M KRW';
+    return sign + Math.round(n).toLocaleString() + ' KRW';
+  }
+  if (n >= 1e12) {
+    var jo = Math.floor(n / 1e12);
+    var eok = Math.round((n - jo * 1e12) / 1e8);
+    return sign + jo + '조' + (eok ? ' ' + eok.toLocaleString() + '억' : '');
+  }
+  if (n >= 1e8) return sign + Math.round(n / 1e8).toLocaleString() + '억';
+  if (n >= 1e4) return sign + Math.round(n / 1e4).toLocaleString() + '만';
+  return sign + Math.round(n).toLocaleString();
+}
+
+function fmtPct(v, digits) {
+  if (v == null || !isFinite(v)) return '–';
+  return (v > 0 ? '+' : '') + Number(v).toFixed(digits == null ? 2 : digits) + '%';
+}
+function signClass(v) { return v == null ? 'dim' : (v > 0 ? 'pos' : (v < 0 ? 'neg' : '')); }
+function fmtNum(v) { return v == null || !isFinite(v) ? '–' : Math.round(v).toLocaleString(); }
+
+/**
+ * 총보수 — **범위**로 찍는다.
+ *
+ * 국내 공모펀드의 보수는 클래스마다 다르다. 신한골드증권투자신탁 1 은
+ * 클래스가 18개이고 종류C-pe 가 1.04%, 종류C-p 가 1.39% 다. 표본 3,196개
+ * 중 2,885개가 클래스마다 보수가 다르다.
+ *
+ * 그래서 **하나의 숫자로 줄이지 않는다.** 하나를 고르면 그 클래스를 사지
+ * 않은 사람 모두에게 거짓이 된다. 범위로 적고 클래스별 표를 함께 둔다.
+ */
+function fmtFee(f) {
+  if (f.feeMin == null) return null;
+  if (f.feeMax == null || f.feeMax === f.feeMin) return f.feeMin.toFixed(2) + '%';
+  return f.feeMin.toFixed(2) + '~' + f.feeMax.toFixed(2) + '%';
+}
+
+/**
+ * 보유 비중.
+ *
+ * 소수 둘째 자리까지 찍으면 아주 작은 비중이 "0.00%" 가 된다. 그건
+ * **담지 않았다**는 뜻으로 읽히므로 거짓이다. 원천에는 0.000000045 처럼
+ * 아주 작은 진짜 비중이 실제로 있다(KB이머징유럽의 PETKIM PETROKIMYA).
+ *
+ * 그래서 0 이 아닌데 0.00% 로 반올림될 값은 "<0.01%" 로 찍는다.
+ * 원천이 정말 0 을 준 경우에만 "0.00%" 다.
+ */
+function fmtWeight(w) {
+  if (w == null || !isFinite(w)) return '<span class="dim">–</span>';
+  if (w === 0) return '0.00%';
+  if (Math.abs(w) < 0.005) return (w < 0 ? '>-0.01%' : '&lt;0.01%');
+  return w.toFixed(2) + '%';
+}
+
+/**
+ * 한 펀드의 한 기간 수익률.
+ *
+ * **없는 것과 0 을 구별한다.** `Number(null)` 은 `0` 이고 `Number.isFinite(0)`
+ * 은 `true` 다. 이 함정으로 ETF 화면 731종목이 거짓을 말했다. 여기서는
+ * null 여부를 먼저 보고, 없으면 null 을 그대로 돌려준다 — 화면은 그걸 "–" 로
+ * 찍는다. 빈칸은 모른다는 뜻이지만 0.00% 는 안다는 뜻이다.
+ */
+function retOf(f, period) {
+  if (!f.ret) return null;
+  var v = f.ret[period];
+  if (v == null) return null;
+  var n = Number(v);
+  return isFinite(n) ? n : null;
+}
+function benchOf(f, period) {
+  if (!f.retBenchmark) return null;
+  var v = f.retBenchmark[period];
+  if (v == null) return null;
+  var n = Number(v);
+  return isFinite(n) ? n : null;
+}
+/** 그 기간이 검산에서 버려졌으면 왜 버려졌는지. */
+function dropReasonOf(f, period) {
+  var d = f.retDropped;
+  if (!d) return null;
+  for (var i = 0; i < d.length; i += 1) if (d[i].period === period) return d[i];
+  return null;
+}
+
+function labelOf(group, key) {
+  if (!key) return null;
+  var m = L[group];
+  return m && m[key] ? t(m[key]) : key;
+}
+function regionLabel(f) {
+  if (f.region) return labelOf('region', f.region);
+  // 1차 출처에서 못 받은 것과, 아직 안 받은 것을 구별해 말한다.
+  return lang === 'ko' ? '미상' : 'Unknown';
+}
+function assetLabel(f) { return f.assetClass ? labelOf('assetClass', f.assetClass) : '–'; }
+
+function aumSortValue(f) {
+  var v = Number(f.aum);
+  return isFinite(v) ? v : -1;
+}
+
+// ───────────────────────── 상태 ─────────────────────────
+var MAX_COMPARE = 8;
+var PAGE = 60;
+
+var state = {
+  q: '', region: '', asset: '', type: '', company: '', aum: '', risk: '', fee: '',
+  period: '1y', holdOnly: false,
+  sort: 'aum', dir: -1,
+  limit: PAGE,
+  selected: null,
+  picks: [],
+  rq: '',
+  rType: '', rPeriod: '1y',
+  tab: 'browse',
+};
+
+// 총보수 구간. **최저 클래스** 기준이다 — 같은 펀드라도 클래스마다 보수가
+// 달라서, 어느 하나를 고르지 않으면 구간에 넣을 수가 없다. 화면 머리말에
+// "최저 클래스" 라고 밝힌다.
+var FEE_BUCKETS = [
+  ['lt03', function (v) { return v < 0.3; }, { ko: '0.3% 미만', en: '< 0.3%' }],
+  ['03to07', function (v) { return v >= 0.3 && v < 0.7; }, { ko: '0.3 ~ 0.7%', en: '0.3 – 0.7%' }],
+  ['07to12', function (v) { return v >= 0.7 && v < 1.2; }, { ko: '0.7 ~ 1.2%', en: '0.7 – 1.2%' }],
+  ['gte12', function (v) { return v >= 1.2; }, { ko: '1.2% 이상', en: '≥ 1.2%' }],
+];
+
+var AUM_BUCKETS = [
+  ['1t', function (v) { return v >= 1e12; }, { ko: '1조 이상', en: '≥ 1T' }],
+  ['3000e', function (v) { return v >= 3e11 && v < 1e12; }, { ko: '3,000억 ~ 1조', en: '300B – 1T' }],
+  ['1000e', function (v) { return v >= 1e11 && v < 3e11; }, { ko: '1,000억 ~ 3,000억', en: '100B – 300B' }],
+  ['100e', function (v) { return v >= 1e10 && v < 1e11; }, { ko: '100억 ~ 1,000억', en: '10B – 100B' }],
+  ['lt100e', function (v) { return v < 1e10; }, { ko: '100억 미만', en: '< 10B' }],
+];
+
+function matches(f) {
+  if (state.region && (f.region || '') !== state.region) return false;
+  if (state.asset && (f.assetClass || '') !== state.asset) return false;
+  if (state.type && (f.type || '') !== state.type) return false;
+  if (state.company && (f.company || '') !== state.company) return false;
+  if (state.risk && String(f.riskGrade == null ? '' : f.riskGrade) !== state.risk) return false;
+  if (state.holdOnly && !(f.holdingCount > 0)) return false;
+  if (state.fee) {
+    // 보수를 모르는 펀드는 구간에 넣지 않는다. 모르는 것을 "싸다" 나
+    // "비싸다" 어느 쪽에도 넣으면 거짓이 된다.
+    if (f.feeMin == null) return false;
+    var fb = null;
+    for (var k = 0; k < FEE_BUCKETS.length; k += 1) if (FEE_BUCKETS[k][0] === state.fee) fb = FEE_BUCKETS[k];
+    if (fb && !fb[1](f.feeMin)) return false;
+  }
+  if (state.aum) {
+    var v = Number(f.aum);
+    if (!isFinite(v)) return false;
+    var b = null;
+    for (var i = 0; i < AUM_BUCKETS.length; i += 1) if (AUM_BUCKETS[i][0] === state.aum) b = AUM_BUCKETS[i];
+    if (b && !b[1](v)) return false;
+  }
+  if (state.q) {
+    var q = state.q.toLowerCase();
+    var hay = (f.name || '') + ' ' + (f.code || '') + ' ' + (f.company || '') + ' ' +
+              (f.type || '') + ' ' + (f.benchmarkName || '');
+    if (hay.toLowerCase().indexOf(q) < 0) {
+      var hit = false;
+      // **클래스를 먼저 훑는다.** 사람이 손에 든 코드는 대개 클래스 코드다 —
+      // 통장·HTS·판매사 화면에 찍히는 것이 그것이고, 네이버도 클래스 코드로
+      // 화면을 연다. 여기를 안 훑는 동안 K55207BJ1791 을 붙여넣으면 결과가
+      // 0건이었다. 그 코드는 우리 자료에 분명히 있다 — 교보악사파워인덱스
+      // 증권자투자신탁 2 의 ClassAe 로, 다만 classes[] 안에 있었다.
+      if (matchClass(f, q)) hit = true;
+      var hs = hit ? [] : (f.holdings || []);
+      for (var j = 0; j < hs.length; j += 1) {
+        if ((hs[j].name || '').toLowerCase().indexOf(q) >= 0) { hit = true; break; }
+      }
+      if (!hit) return false;
+    }
+  }
+  return true;
+}
+/**
+ * 검색어가 펀드 자신이 아니라 클래스에 걸렸을 때, 목록에서 그 사실을 밝힌다.
+ *
+ * 사용자가 손에 든 코드(예 K55207BJ1791)를 쳤는데 목록에는 그 코드가 아니라
+ * 부모 펀드 코드(KR5207698899)가 찍힌다. 왜 이게 나왔는지 말해 주지 않으면
+ * 엉뚱한 펀드가 나온 것으로 읽힌다.
+ */
+function classHint(f) {
+  var q = (state.q || '').trim().toLowerCase();
+  if (!q) return '';
+  var self = (f.name || '') + ' ' + (f.code || '') + ' ' + (f.company || '') + ' ' +
+             (f.type || '') + ' ' + (f.benchmarkName || '');
+  if (self.toLowerCase().indexOf(q) >= 0) return '';       // 펀드 자신이 걸렸다
+  var cs = f.classes || [];
+  for (var i = 0; i < cs.length; i += 1) {
+    var c = cs[i];
+    if ((c.code || '').toLowerCase().indexOf(q) < 0 &&
+        (c.name || '').toLowerCase().indexOf(q) < 0) continue;
+    return '<div class="dim" style="font-size:12px;margin-top:2px">' +
+      esc(lang === 'ko' ? '클래스에서 일치 · ' : 'matched a share class · ') +
+      '<strong>' + esc(c.code || '') + '</strong> ' + esc(c.name || '') + '</div>';
+  }
+  return '';
+}
+
+/** 검색어가 이 펀드의 클래스(코드·이름)에 걸리는가. */
+function matchClass(f, q) {
+  var cs = f.classes || [];
+  for (var i = 0; i < cs.length; i += 1) {
+    if ((cs[i].code || '').toLowerCase().indexOf(q) >= 0) return true;
+    if ((cs[i].name || '').toLowerCase().indexOf(q) >= 0) return true;
+  }
+  return false;
+}
+function filtered() { return FUNDS.filter(matches); }
+
+var SORTERS = {
+  name: function (f) { return (f.name || '').toLowerCase(); },
+  company: function (f) { return (f.company || '').toLowerCase(); },
+  type: function (f) { return (f.type || '').toLowerCase(); },
+  aum: aumSortValue,
+  ret: function (f) { var v = retOf(f, state.period); return v == null ? -1e9 : v; },
+  holdings: function (f) { return f.holdingCount || 0; },
+  // 보수는 **최저 클래스** 기준으로 세운다. 범위를 하나로 줄여 세워야
+  // 하는데, 사는 쪽에서 고를 수 있는 가장 싼 값이 견주기에 맞다.
+  fee: function (f) { return f.feeMin == null ? 1e9 : f.feeMin; },
+  risk: function (f) {
+    // 위험이 높은 것부터. 모르는 것은 맨 뒤로.
+    var order = DATA.riskOrder || [];
+    var at = order.indexOf(f.riskGrade);
+    return at < 0 ? 99 : at;
+  },
+};
+function sorted(list) {
+  var key = SORTERS[state.sort] || SORTERS.aum;
+  var dir = state.dir;
+  return list.slice().sort(function (a, b) {
+    var x = key(a), y = key(b);
+    if (x === y) return (a.name || '').localeCompare(b.name || '');
+    if (typeof x === 'string') return dir * x.localeCompare(y);
+    return dir * (x - y);
+  });
+}
+
+// ───────────────────────── 필터 UI ─────────────────────────
+function fillSelect(node, options, current, allLabel) {
+  if (!node) return;
+  var html = '<option value="">' + esc(allLabel) + '</option>';
+  for (var i = 0; i < options.length; i += 1) {
+    html += '<option value="' + esc(options[i][0]) + '"' +
+      (String(current) === String(options[i][0]) ? ' selected' : '') + '>' +
+      esc(options[i][1]) + '</option>';
+  }
+  node.innerHTML = html;
+  node.classList.toggle('on', !!current);
+}
+
+function countsBy(list, pick) {
+  var m = {};
+  for (var i = 0; i < list.length; i += 1) {
+    var k = pick(list[i]);
+    if (k == null || k === '') continue;
+    m[k] = (m[k] || 0) + 1;
+  }
+  return m;
+}
+
+function renderFilters() {
+  var all = FUNDS;
+  var allLabel = lang === 'ko' ? '전체' : 'All';
+
+  // 투자지역은 1차 출처(금투협)가 국내·해외·혼합 셋으로 나눈다.
+  // 알파벳순이 아니라 이 차례로 세운다.
+  var regionCounts = countsBy(all, function (f) { return f.region; });
+  var REGION_ORDER = ['domestic', 'overseas', 'mixed'];
+  var regionKeys = REGION_ORDER.filter(function (k) { return regionCounts[k]; });
+  for (var rgk in regionCounts) if (regionKeys.indexOf(rgk) < 0) regionKeys.push(rgk);
+  fillSelect(el('f-region'),
+    regionKeys.map(function (k) {
+      return [k, labelOf('region', k) + ' (' + regionCounts[k].toLocaleString() + ')'];
+    }), state.region, allLabel);
+
+  var assetCounts = countsBy(all, function (f) { return f.assetClass; });
+  fillSelect(el('f-asset'),
+    Object.keys(assetCounts).sort(function (a, b) { return assetCounts[b] - assetCounts[a]; })
+      .map(function (k) { return [k, labelOf('assetClass', k) + ' (' + assetCounts[k].toLocaleString() + ')']; }),
+    state.asset, allLabel);
+
+  // 유형은 원천이 준 이름 그대로다. 우리가 분류를 지어내지 않았다는 것이
+  // 화면에서도 보여야 하므로 이름을 손대지 않는다.
+  var typeCounts = countsBy(all, function (f) { return f.type; });
+  fillSelect(el('f-type'),
+    (DATA.typeOrder || Object.keys(typeCounts)).filter(function (k) { return typeCounts[k]; })
+      .map(function (k) { return [k, k + ' (' + typeCounts[k].toLocaleString() + ')']; }),
+    state.type, allLabel);
+
+  var companyCounts = countsBy(all, function (f) { return f.company; });
+  fillSelect(el('f-company'),
+    Object.keys(companyCounts).sort(function (a, b) { return companyCounts[b] - companyCounts[a]; })
+      .map(function (k) { return [k, k + ' (' + companyCounts[k].toLocaleString() + ')']; }),
+    state.company, allLabel);
+
+  fillSelect(el('f-aum'), AUM_BUCKETS.map(function (b) { return [b[0], t(b[2])]; }),
+    state.aum, allLabel);
+
+  fillSelect(el('f-fee'), FEE_BUCKETS.map(function (b) {
+    var n = 0;
+    for (var i = 0; i < all.length; i += 1) if (all[i].feeMin != null && b[1](all[i].feeMin)) n += 1;
+    return [b[0], t(b[2]) + ' (' + n.toLocaleString() + ')'];
+  }), state.fee, allLabel);
+
+  // 위험등급은 원천이 문자열로 준다(veryHighRisk 등). 그대로 찍으면 영어
+  // 열거값이 화면에 나오므로 이름표를 붙이고, **위험이 높은 것부터** 세운다 —
+  // 알파벳순으로 두면 "낮은 위험" 이 "높은 위험" 앞에 와서 읽히지 않는다.
+  // 등급 번호(1~6)는 원천이 주지 않으므로 붙이지 않는다.
+  var riskCounts = countsBy(all, function (f) { return f.riskGrade; });
+  var riskKeys = (DATA.riskOrder || Object.keys(riskCounts))
+    .filter(function (k) { return riskCounts[k]; });
+  for (var rk in riskCounts) {
+    if (riskKeys.indexOf(rk) < 0) riskKeys.push(rk);   // 모르는 값도 빠뜨리지 않는다
+  }
+  fillSelect(el('f-risk'),
+    riskKeys.map(function (k) {
+      return [k, labelOf('riskGrade', k) + ' (' + riskCounts[k].toLocaleString() + ')'];
+    }), state.risk, allLabel);
+
+  var periodOpts = PERIODS.map(function (p) { return '<option value="' + p[0] + '"' +
+    (state.period === p[0] ? ' selected' : '') + '>' + esc(lang === 'ko' ? p[1] : p[2]) + '</option>'; }).join('');
+  if (el('f-period')) el('f-period').innerHTML = periodOpts;
+  if (el('r-period')) {
+    el('r-period').innerHTML = PERIODS.map(function (p) { return '<option value="' + p[0] + '"' +
+      (state.rPeriod === p[0] ? ' selected' : '') + '>' + esc(lang === 'ko' ? p[1] : p[2]) + '</option>'; }).join('');
+  }
+  if (el('r-type')) {
+    var opts = '<option value="">' + esc(lang === 'ko' ? '전체 유형' : 'All categories') + '</option>';
+    var tc = countsBy(all, function (f) { return f.type; });
+    var keys = (DATA.typeOrder || Object.keys(tc)).filter(function (k) { return tc[k]; });
+    for (var i = 0; i < keys.length; i += 1) {
+      opts += '<option value="' + esc(keys[i]) + '"' + (state.rType === keys[i] ? ' selected' : '') +
+        '>' + esc(keys[i]) + ' (' + tc[keys[i]].toLocaleString() + ')</option>';
+    }
+    el('r-type').innerHTML = opts;
+  }
+}
+
+// ───────────────────────── 목록 ─────────────────────────
+var COLUMNS = [
+  ['pick', '', '', false],
+  ['name', '펀드', 'Fund', true],
+  ['type', '유형', 'Category', true],
+  ['company', '운용사', 'Manager', true],
+  ['risk', '위험등급', 'Risk', true],   // 숫자가 아니라 문자열 등급이다
+  ['aum', '설정액', 'AUM', true],
+  ['fee', '총보수', 'Fee', true],
+  ['ret', '수익률', 'Return', true],
+  ['holdings', '보유종목', 'Holdings', true],
+];
+
+function renderHead() {
+  var html = '';
+  for (var i = 0; i < COLUMNS.length; i += 1) {
+    var c = COLUMNS[i];
+    // 담는 칸의 머리는 여태 비어 있었다. 이름이 없는 칸은 누른 뒤에야
+    // 무슨 칸인지 알게 되고, 그전까지는 눌러도 되는 것인지조차 모른다.
+    if (c[0] === 'pick') { html += pickHead(); continue; }
+    var label = c[0] === 'ret'
+      ? (lang === 'ko' ? periodLabel(state.period) + ' 수익률' : periodLabel(state.period) + ' return')
+      : (lang === 'ko' ? c[1] : c[2]);
+    var isNum = c[0] === 'aum' || c[0] === 'ret' || c[0] === 'holdings' || c[0] === 'fee';
+    html += '<th' + (isNum ? ' class="num' + (c[3] ? ' sortable' : '') + '"' : (c[3] ? ' class="sortable"' : '')) +
+      (c[3] ? ' data-sort="' + c[0] + '"' : '') +
+      (state.sort === c[0] ? ' aria-sort="' + (state.dir < 0 ? 'descending' : 'ascending') + '"' : '') +
+      '>' + esc(label) +
+      (c[3] ? ' <span class="arrow">' + (state.sort === c[0] ? (state.dir < 0 ? '▼' : '▲') : '▽') + '</span>' : '') +
+      '</th>';
+  }
+  el('list-head').innerHTML = html;
+}
+
+function periodLabel(key) {
+  for (var i = 0; i < PERIODS.length; i += 1) if (PERIODS[i][0] === key) return lang === 'ko' ? PERIODS[i][1] : PERIODS[i][2];
+  return key;
+}
+
+// 담는 칸은 목록에도 랭킹에도 똑같이 나온다. 두 곳에 같은 뜻의 칸을 각각
+// 적어 두면 한쪽만 고쳐지는 날이 오므로, 칸을 만드는 자리는 하나만 둔다.
+function isPicked(f) { return state.picks.indexOf(f.id) >= 0; }
+
+function pickCell(f) {
+  var picked = isPicked(f);
+  // 다 찼는데 안 담긴 줄. 여태는 눌러도 아무 일이 안 일어났고 까닭도
+  // 말하지 않았다 — 그것은 조용한 고장이다. 흐리게 잠가서 눈으로 먼저
+  // 알리고, 손을 얹으면 까닭이 뜬다.
+  var atMax = !picked && state.picks.length >= MAX_COMPARE;
+  var title = atMax
+    ? (lang === 'ko' ? MAX_COMPARE + '개까지만 담깁니다 — 하나 빼고 담으세요'
+                     : 'Basket is full (' + MAX_COMPARE + ') — remove one first')
+    : (lang === 'ko' ? (picked ? '비교에서 빼기' : '비교에 담기')
+                     : (picked ? 'Remove from comparison' : 'Add to comparison'));
+  return '<td class="pick-cell"><label class="pick" title="' + esc(title) + '">' +
+    '<input type="checkbox" data-pick="' + esc(f.id) + '"' +
+    (picked ? ' checked' : '') + (atMax ? ' disabled' : '') +
+    ' aria-label="' + esc(title + ' — ' + (f.name || f.code)) + '"></label></td>';
+}
+
+// 표 머리의 담는 칸. 목록·랭킹이 같은 말을 쓰게 한다.
+function pickHead() {
+  return '<th class="pick-head" scope="col">' + esc(lang === 'ko' ? '비교' : 'Compare') +
+    '<span class="th-sub">' + esc(lang === 'ko' ? '담기' : 'add') + '</span></th>';
+}
+
+// 담은 것이 바뀌면 지금 보이는 화면을 전부 다시 그린다. 목록에서 담고
+// 랭킹으로 갔더니 표시가 안 되어 있다거나, 랭킹에서 담았는데 비교 탭이
+// 그대로면 "담긴 게 맞나" 를 다시 묻게 된다.
+function repaintPicks() {
+  renderList();
+  if (state.tab === 'rank') renderRank();
+  if (state.tab === 'compare') renderCompare();
+}
+
+function renderList() {
+  var list = sorted(filtered());
+  var shown = list.slice(0, state.limit);
+  var html = '';
+  for (var i = 0; i < shown.length; i += 1) {
+    var f = shown[i];
+    var v = retOf(f, state.period);
+    var drop = v == null ? dropReasonOf(f, state.period) : null;
+    html += '<tr class="clickable' + (state.selected === f.id ? ' selected' : '') +
+      (isPicked(f) ? ' picked' : '') + '" data-id="' + esc(f.id) + '">' +
+      pickCell(f) +
+      '<td><div style="font-weight:600;color:var(--ink)">' + esc(f.name || f.code) + '</div>' +
+        '<div class="dim" style="font-size:13px">' + esc(f.code) +
+        (f.region ? ' · ' + esc(regionLabel(f)) : '') + '</div>' +
+        // 검색어가 펀드가 아니라 **클래스**에 걸린 것이면 그렇게 말한다.
+        // 안 말하면 "내가 친 코드는 어디 갔지" 가 된다.
+        classHint(f) + '</td>' +
+      '<td>' + esc(f.type || '–') + '</td>' +
+      '<td>' + esc(f.company || '–') + '</td>' +
+      '<td>' + (f.riskGrade == null ? '<span class="dim">–</span>' : esc(labelOf('riskGrade', f.riskGrade))) + '</td>' +
+      '<td class="num">' + esc(fmtAmount(f.aum)) + '</td>' +
+      '<td class="num">' + (fmtFee(f) == null
+        ? '<span class="dim">–</span>'
+        : '<span title="' + esc(lang === 'ko'
+            ? '클래스 ' + (f.feeCount || 0) + '개의 총보수 범위'
+            : 'range across ' + (f.feeCount || 0) + ' share classes') + '">' +
+          esc(fmtFee(f)) + '</span>') + '</td>' +
+      '<td class="num ' + (v == null ? 'blanked' : signClass(v)) + '">' +
+        (v == null
+          ? '–' + (drop ? '<span class="why">' + esc(shortReason(drop)) + '</span>' : '')
+          : fmtPct(v)) + '</td>' +
+      '<td class="num">' + (f.holdingCount ? fmtNum(f.holdingCount) : '<span class="dim">–</span>') + '</td>' +
+      '</tr>';
+  }
+  el('list-body').innerHTML = html || '<tr><td colspan="' + COLUMNS.length +
+    '"><div class="empty">' + esc(lang === 'ko' ? '조건에 맞는 펀드가 없습니다.' : 'No funds match.') + '</div></td></tr>';
+
+  el('result-count').textContent = lang === 'ko'
+    ? list.length.toLocaleString() + '개'
+    : list.length.toLocaleString() + ' funds';
+  el('list-more').hidden = list.length <= state.limit;
+  el('list-more-note').textContent = list.length > state.limit
+    ? (lang === 'ko' ? shown.length.toLocaleString() + ' / ' + list.length.toLocaleString() + '개 표시 중'
+                     : 'Showing ' + shown.length.toLocaleString() + ' of ' + list.length.toLocaleString())
+    : '';
+  renderPickBar();
+}
+
+// 표 첫 칸이 무엇인지 말하는 띠.
+//
+// 아무것도 안 담았을 때야말로 이 말이 필요하다 — 그때가 "이 칸은 눌러야
+// 하는 건가" 를 묻게 되는 순간이기 때문이다. 그래서 0개일 때도 감추지
+// 않고, 대신 무엇을 하는 칸인지를 적는다. 담기 시작하면 같은 자리가
+// 몇 개를 담았는지와 다음에 갈 곳으로 바뀐다.
+function renderPickBar(hostId) {
+  var node = el(hostId || 'pick-bar');
+  if (!node) return;
+  var n = state.picks.length;
+  var box = '<span class="box"></span>';
+  node.className = 'pick-bar' + (n ? ' on' : '');
+  if (!n) {
+    node.innerHTML = lang === 'ko'
+      ? '<strong>맨 왼쪽 ' + box + ' 는 비교할 펀드를 담는 칸입니다.</strong> '
+        + '눌러서 <strong>2개 이상</strong> 담으면 <strong>비교 · 중복도</strong> 탭에서 '
+        + '서로 겹치는 종목을 봅니다. 담지 않아도 목록은 그대로 쓸 수 있습니다 — '
+        + '줄 아무 데나 누르면 그 펀드의 보유종목이 열립니다. 최대 ' + fmtNum(MAX_COMPARE) + '개.'
+      : '<strong>The ' + box + ' column on the left picks funds to compare.</strong> '
+        + 'Tick <strong>two or more</strong> and the <strong>Compare</strong> tab shows which holdings they share. '
+        + 'You do not have to tick anything to use the list — click any row to open its holdings. '
+        + 'Up to ' + fmtNum(MAX_COMPARE) + '.';
+    return;
+  }
+  var full = n >= MAX_COMPARE;
+  node.innerHTML =
+    '<strong>' + esc(lang === 'ko' ? n + '개 담음' : n + ' selected') + '</strong>'
+    + ' <span class="dim">' + esc(lang === 'ko' ? '(최대 ' + fmtNum(MAX_COMPARE) + '개'
+        + (full ? ' · 다 찼습니다. 빼야 더 담깁니다' : '') + ')'
+        : '(max ' + fmtNum(MAX_COMPARE) + (full ? ' — full; untick one to add another' : '') + ')') + '</span> '
+    + (n < 2
+        ? '<span>' + esc(lang === 'ko' ? '— 하나만으로는 비교가 안 됩니다. 하나 더 담아 주세요.'
+                                       : '— one fund is not a comparison; tick one more.') + '</span> '
+        : '')
+    // 목록과 랭킹에 띠가 하나씩 있으므로 단추는 id 가 아니라 class 로
+    // 가른다. 같은 id 가 문서에 둘 있으면 안 된다.
+    + '<button type="button" class="pick-go" style="margin-left:6px">'
+    + esc(lang === 'ko' ? '비교 탭에서 보기' : 'Open Compare') + '</button> '
+    + '<button type="button" class="pick-clear">'
+    + esc(lang === 'ko' ? '담은 것 비우기' : 'Clear') + '</button>';
+}
+
+function shortReason(drop) {
+  if (!drop) return '';
+  if (drop.reason === 'step') {
+    return lang === 'ko' ? '기준가 재산정' : 'restated';
+  }
+  return lang === 'ko' ? '검산 불일치' : 'unverified';
+}
+
+// ───────────────────────── 보유종목 ─────────────────────────
+function holdingsBlock(f) {
+  var hs = f.holdings || [];
+  if (!hs.length) {
+    // 왜 없는지 말한다. 채권형·MMF 는 원천이 아예 주지 않는다 — 그걸 밝히지
+    // 않으면 "이 펀드만 자료가 없나" 로 읽힌다.
+    var why = (f.assetClass === 'bond' || f.assetClass === 'mmf')
+      ? (lang === 'ko'
+          ? '채권형·MMF 는 원천(네이버 Npay 증권)이 보유종목을 제공하지 않습니다.'
+          : 'The source publishes no holdings for bond funds and MMFs.')
+      : (lang === 'ko'
+          ? '이 펀드의 보유종목은 원천에 없습니다. 재간접형은 다른 펀드를 담으므로 개별 종목이 오지 않습니다.'
+          : 'No holdings at the source. Fund-of-funds hold other funds, not individual securities.');
+    return '<div class="empty">' + esc(why) + '</div>';
+  }
+
+  var known = hs.filter(function (h) { return h.weight != null && isFinite(Number(h.weight)); });
+  var maxWeight = 0;
+  for (var i = 0; i < known.length; i += 1) maxWeight = Math.max(maxWeight, Number(known[i].weight));
+
+  var rows = hs.slice().sort(function (a, b) {
+    var x = a.weight == null ? -1 : Number(a.weight);
+    var y = b.weight == null ? -1 : Number(b.weight);
+    return y - x;
+  });
+
+  var html = '';
+  for (var j = 0; j < rows.length; j += 1) {
+    var h = rows[j];
+    var w = h.weight == null ? null : Number(h.weight);
+    var bar = (w != null && maxWeight > 0) ? Math.max(0, (w / maxWeight) * 100) : 0;
+    html += '<div class="hold-row' + (h.cash ? ' is-cash' : '') + '"' +
+      (j >= 12 ? ' data-extra="1" hidden' : '') + '>' +
+      '<span class="seq">' + (j + 1) + '</span>' +
+      '<span class="nm" title="' + esc(h.name || h.code || '') + '">' + esc(h.name || h.code || '–') + '</span>' +
+      // 비중이 없으면 "–" 다. 0.00% 로 찍으면 "안 담았다" 는 거짓말이 된다.
+      '<span class="wt">' + fmtWeight(w) + '</span>' +
+      (bar > 0 ? '<span class="hbar" style="width:' + bar.toFixed(1) + '%"></span>' : '') +
+      '</div>';
+  }
+
+  var foot = '';
+  if (rows.length > 12) {
+    foot = '<div class="hold-more"><button type="button" class="hold-toggle" style="font-family:inherit;' +
+      'font-size:14px;padding:7px 13px;border:1px solid var(--hairline);border-radius:2px;background:#fff;' +
+      'color:var(--muted);cursor:pointer">' +
+      esc(lang === 'ko' ? '나머지 ' + (rows.length - 12) + '종목 보기' : 'Show ' + (rows.length - 12) + ' more') +
+      '</button></div>';
+  }
+  // 합이 100% 를 넘어 비중을 통째로 비운 펀드. 왜 빈칸인지 먼저 말한다 —
+  // 아래의 "원천에 비중이 없다" 로 적으면 거짓이 된다. 원천은 주었고,
+  // 우리가 믿을 수 없어서 싣지 않은 것이다.
+  if (f.weightsDropped) {
+    foot += '<div class="notice warn">' + (lang === 'ko'
+      ? '<strong>이 펀드의 비중은 싣지 않았습니다.</strong> 원천이 준 ' +
+        f.weightsDropped.known + '종목의 비중을 더하면 ' + f.weightsDropped.sum +
+        '% 로, 100% 를 넘습니다. 줄마다는 비중일 수 있는 값이라 어느 줄이 ' +
+        '틀렸는지 가려낼 수 없어, 하나를 골라 고치는 대신 <strong>비중 전체를 ' +
+        '비우고 종목 이름과 순서만</strong> 남겼습니다. 틀린 숫자를 보여 ' +
+        '드리느니 빈칸이 낫습니다. 정확한 비중은 아래 <strong>운용보고서</strong>에서 ' +
+        '확인하십시오.'
+      : '<strong>Weights are withheld for this fund.</strong> The source\'s ' +
+        f.weightsDropped.known + ' weights sum to ' + f.weightsDropped.sum +
+        '%, above 100%. Each row on its own looks like a valid weight, so there is no ' +
+        'way to tell which one is wrong — rather than pick one, all weights are left ' +
+        'blank and only the names and their order are shown. See the asset report below.') +
+      '</div>';
+  } else if (!known.length) {
+    foot += '<div class="notice">' + esc(lang === 'ko'
+      ? '이 펀드는 원천에 비중이 없어 종목 이름만 보여 줍니다. 순서는 뜻이 없습니다.'
+      : 'The source gives no weights for this fund — names only, in no meaningful order.') + '</div>';
+  } else if (known.length < hs.length) {
+    foot += '<div class="notice">' + esc(lang === 'ko'
+      ? hs.length + '종목 중 ' + (hs.length - known.length) + '종목은 비중이 원천에 없어 비워 두었습니다.'
+      : (hs.length - known.length) + ' of ' + hs.length + ' holdings have no weight at the source.') + '</div>';
+  }
+  // 비중일 수 없는 값이 와서 싣지 않은 레코드. 빈칸이 왜 빈칸인지 말한다.
+  if (f.badWeights && f.badWeights.length) {
+    foot += '<div class="notice warn">' + (lang === 'ko'
+      ? '<strong>비중을 싣지 않은 종목이 ' + f.badWeights.length + '개 있습니다.</strong> ' +
+        '원천이 비중 자리에 비중일 수 없는 값을 주었습니다(' +
+        esc(f.badWeights.map(function (b) { return b.name + ' = ' + b.weight; }).slice(0, 2).join(', ')) +
+        '). 0 으로 바꾸지 않고 비워 두었습니다 — 없는 것을 0 이라고 하면 ' +
+        '"안 담았다" 는 거짓이 됩니다.'
+      : '<strong>' + f.badWeights.length + ' holding(s) have no weight shown.</strong> ' +
+        'The source returned a value that cannot be a weight. Left blank rather than ' +
+        'zeroed — a zero would falsely read as "not held".') + '</div>';
+  }
+  return html + foot;
+}
+
+// ─────────────── 순위·유형평균 (상용 화면 관행) ───────────────
+/**
+ * 모집단은 **같은 유형** 안에서 잡는다.
+ *
+ * 상용(모닝스타 기반) 화면이 기간마다 이렇게 적는다.
+ *
+ *   동일 유형 내 백분율 순위%   41  42  48  26  19  14  13
+ *   동일 유형 펀드 수개      2,262 ... 2,106
+ *
+ * 곧 (가) 모집단은 동일 유형이고 (나) 등수가 아니라 백분율이며
+ * (다) 그 수를 기간마다 따로 적는다. 세 가지를 그대로 따른다.
+ *
+ * **유형은 우리가 만들지 않는다.** ETF 에서는 이름과 기초지수를 읽어 분류를
+ * 지어내야 했고, 그 분류가 맞는지 따로 점검 탭까지 두어야 했다. 펀드는
+ * 원천이 `parentPeerGroupName`(국내주식형·해외채권형 …)을 준다. 그것을
+ * 그대로 쓴다 — 지어낸 분류로 남의 펀드와 견주게 하는 것보다 낫다.
+ *
+ * 순위와 유형평균은 **같은 무리**를 본다. 다른 무리를 보면 한 표 안에서
+ * 두 칸이 서로 다른 상대를 말하게 된다.
+ */
+function peerKey(f) { return f.type || '(미상)'; }
+function peerLabel(f) { return f.type || (lang === 'ko' ? '미상' : 'Unknown'); }
+
+var PEER_CACHE = {};
+function peersOf(f) {
+  var key = peerKey(f);
+  if (!PEER_CACHE[key]) {
+    PEER_CACHE[key] = FUNDS.filter(function (x) { return peerKey(x) === key; });
+  }
+  return PEER_CACHE[key];
+}
+
+var RANK_CACHE = {};
+function peerSorted(f, period) {
+  var key = peerKey(f) + '|' + period;
+  if (!RANK_CACHE[key]) {
+    var pool = peersOf(f);
+    var arr = [];
+    for (var i = 0; i < pool.length; i += 1) {
+      var v = retOf(pool[i], period);
+      if (v != null) arr.push(v);
+    }
+    arr.sort(function (a, b) { return b - a; });
+    RANK_CACHE[key] = arr;
+  }
+  return RANK_CACHE[key];
+}
+
+/** 내림차순 배열에서 v 보다 큰 값의 개수 — 곧 v 의 등수 − 1. */
+function betterCount(arr, v) {
+  var lo = 0, hi = arr.length;
+  while (lo < hi) {
+    var mid = (lo + hi) >> 1;
+    if (arr[mid] > v) lo = mid + 1; else hi = mid;
+  }
+  return lo;
+}
+
+var PEER_AVG_CACHE = {};
+function peerAvg(f, period) {
+  var key = peerKey(f) + '|' + period;
+  if (!(key in PEER_AVG_CACHE)) {
+    var pool = peersOf(f);
+    var sum = 0, n = 0;
+    for (var i = 0; i < pool.length; i += 1) {
+      var v = retOf(pool[i], period);
+      if (v != null) { sum += v; n += 1; }
+    }
+    // 유형 평균은 **산술평균 하나**다. 중앙값을 같이 내는 상용 화면은 없다.
+    PEER_AVG_CACHE[key] = n >= 5 ? { avg: sum / n, n: n } : null;
+  }
+  return PEER_AVG_CACHE[key];
+}
+
+/**
+ * 기간 수익률 표.
+ *
+ * 펀드는 ETF 에 없던 칸이 하나 있다 — **벤치마크 대비**. 원천이 기간마다
+ * 펀드·벤치마크를 짝으로 주므로, 지수를 얼마나 이겼는지 바로 말할 수 있다.
+ * 수익률 하나만으로는 좋은지 나쁜지 알 수 없고, 사람은 결국 그 둘을 따로
+ * 찾아본다.
+ */
+function returnTable(f) {
+  var rows = '';
+  var any = false;
+  var blanked = 0;
+
+  for (var i = 0; i < PERIODS.length; i += 1) {
+    var p = PERIODS[i];
+    var v = retOf(f, p[0]);
+    var drop = dropReasonOf(f, p[0]);
+    if (v == null && !drop) continue;      // 원천에도 없는 기간은 줄을 만들지 않는다
+
+    if (v == null) {
+      // 검산에서 비운 칸. 왜 비웠는지 그 자리에서 말한다 — 말하지 않으면
+      // "자료가 없나 보다" 로 읽히고, 그건 사실과 다르다.
+      blanked += 1;
+      rows += '<tr><td>' + esc(lang === 'ko' ? p[1] : p[2]) + '</td>' +
+        '<td class="num blanked" colspan="4">–<span class="why">' +
+        esc(dropText(drop)) + '</span></td></tr>';
+      continue;
+    }
+    any = true;
+
+    var b = benchOf(f, p[0]);
+    var benchCell = b == null ? '<td class="num dim">–</td>'
+      : '<td class="num ' + signClass(v - b) + '">' +
+        ((v - b) > 0 ? '+' : '') + (v - b).toFixed(2) + '%p' +
+        '<span class="rank-raw">' + esc(lang === 'ko' ? '지수 ' + b.toFixed(2) + '%' : 'index ' + b.toFixed(2) + '%') +
+        '</span></td>';
+
+    var rankCell = '<td class="num dim">–</td>';
+    var arr = peerSorted(f, p[0]);
+    if (arr.length >= 20) {
+      var rank = betterCount(arr, v) + 1;
+      // 등수가 아니라 **백분율 순위** 하나다. 1 이 가장 좋고 100 이 가장 나쁘다.
+      var pct = Math.max(1, Math.round((rank / arr.length) * 100));
+      rankCell = '<td class="num"><span class="rank-pct' + (pct <= 50 ? '' : ' low') + '">' + pct + '%</span>' +
+        '<span class="rank-raw">' + esc(lang === 'ko'
+          ? '동일 유형 ' + arr.length.toLocaleString() + '개'
+          : 'of ' + arr.length.toLocaleString()) + '</span></td>';
+    }
+
+    var peerCell = '<td class="num dim">–</td>';
+    var pa = peerAvg(f, p[0]);
+    if (pa) {
+      var diff = v - pa.avg;
+      // 무리의 **전체 크기**가 아니라 그 기간에 실제로 평균에 쓴 수를 적는다.
+      peerCell = '<td class="num ' + signClass(diff) + '">' +
+        (diff > 0 ? '+' : '') + diff.toFixed(2) + '%p' +
+        '<span class="rank-raw">' + esc(lang === 'ko'
+          ? '평균 ' + pa.avg.toFixed(2) + '% · ' + pa.n.toLocaleString() + '개'
+          : 'avg ' + pa.avg.toFixed(2) + '% · n=' + pa.n.toLocaleString()) + '</span></td>';
+    }
+
+    rows += '<tr><td>' + esc(lang === 'ko' ? p[1] : p[2]) + '</td>' +
+      '<td class="num ' + signClass(v) + '">' + fmtPct(v) + '</td>' +
+      benchCell + rankCell + peerCell + '</tr>';
+  }
+
+  if (!rows) {
+    return '<div class="empty">' + esc(lang === 'ko' ? '기간 수익률 자료가 없습니다.' : 'No return data.') + '</div>';
+  }
+
+  var head = '<th>' + esc(lang === 'ko' ? '기간' : 'Period') + '</th>' +
+    '<th class="num">' + esc(lang === 'ko' ? '수익률' : 'Return') + '</th>' +
+    '<th class="num">' + (lang === 'ko'
+      ? '벤치마크 대비<span class="th-sub">' + esc(f.benchmarkName || '지수 미상') + '</span>'
+      : 'vs benchmark<span class="th-sub">' + esc(f.benchmarkName || 'n/a') + '</span>') + '</th>' +
+    '<th class="num">' + (lang === 'ko'
+      ? '동일 유형 내<br>백분율 순위<span class="th-sub">1 이 가장 좋음</span>'
+      : 'Percentile rank<br>in category<span class="th-sub">1 = best</span>') + '</th>' +
+    '<th class="num">' + (lang === 'ko'
+      ? '동일 유형 평균 대비<span class="th-sub">' + esc(peerLabel(f)) + '</span>'
+      : 'vs category avg<span class="th-sub">' + esc(peerLabel(f)) + '</span>') + '</th>';
+
+  // 상용 화면이 표 밑에 각주로 밝히는 것 — 무엇을 기준으로 잰 값이고,
+  // 유형 평균이 어떻게 만들어졌는지.
+  var notes = '<div class="dim" style="font-size:13px;margin-top:8px;line-height:1.6">' + (lang === 'ko'
+    ? '※ 수익률은 기준가 기준의 <strong>누적</strong> 수익률입니다(연율 환산 아님). 원천이 주는 값을 ' +
+      '기준가 시계열로 검산해 통과한 것만 싣습니다.<br>' +
+      '※ 동일 유형은 <strong>' + esc(peerLabel(f)) + '</strong> 이며, 이는 원천이 부여한 유형입니다 — ' +
+      '이 화면이 지어낸 분류가 아닙니다. 유형 평균은 그 무리의 산술평균입니다.<br>' +
+      '※ 백분율 순위는 1이 가장 좋고 100이 가장 나쁩니다. 개수는 그 기간에 값이 있는 것만 셉니다.'
+    : '※ Returns are <strong>cumulative</strong> on a base-price (NAV) basis, not annualised, and are ' +
+      'shown only where they pass a check against the fund’s own base-price series.<br>' +
+      '※ Category is <strong>' + esc(peerLabel(f)) + '</strong> — assigned by the source, not derived here. ' +
+      'The average is the arithmetic mean of that group.<br>' +
+      '※ Percentile rank: 1 = best, 100 = worst. Counts include only funds with data for that period.')
+    + '</div>';
+
+  if (blanked) {
+    notes += '<div class="notice warn">' + (lang === 'ko'
+      ? '<strong>비운 칸이 ' + blanked + '개 있습니다.</strong> 원천의 값이 기준가 시계열과 앞뒤가 ' +
+        '맞지 않아 싣지 않았습니다. 틀린 숫자를 내보내느니 빈칸이 낫습니다 — ' +
+        '자세한 것은 <u>수익률 검산</u> 탭에 있습니다.'
+      : '<strong>' + blanked + ' cell(s) withheld.</strong> The source value disagreed with the fund’s ' +
+        'own base-price series. A blank is better than a wrong number — see the <u>Return Audit</u> tab.') +
+      '</div>';
+  }
+
+  return '<div class="table-wrap ret-table"><table><thead><tr>' + head +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>' + notes;
+}
+
+function dropText(drop) {
+  if (!drop) return '';
+  if (drop.reason === 'step') {
+    return lang === 'ko'
+      ? '기준가 재산정(' + esc(drop.at || '') + ') 구간이라 비움'
+      : 'spans a base-price restatement (' + esc(drop.at || '') + ')';
+  }
+  return lang === 'ko'
+    ? '기준가로 다시 계산한 값과 달라 비움'
+    : 'disagrees with recomputation from base prices';
+}
+
+// ───────────────────────── 위험지표 ─────────────────────────
+
+/**
+ * 자릿수가 깨진 위험지표인가.
+ *
+ * 원천이 주는 위험지표 중 일부가 계산이 깨진 채로 온다 — 샤프 −2049.22
+ * (베어링글로벌하이일드[USD]), 베타 +95.88(골든브릿지스마트단기채) 같은
+ * 것들이다. 그대로 찍으면 화면이 그 숫자를 보증하는 꼴이 된다. 틀린 숫자를
+ * 싣느니 빈칸이 낫다. 다만 **왜 비었는지는 적는다** — 말없이 지우면 원천에
+ * 값이 아예 없는 것과 구별되지 않는다.
+ *
+ * 한도는 저장소 감사(scripts/audit_fund_data.mjs)가 쓰는 것과 같은
+ * "자릿수 밖" 기준이다. **여기를 느슨하게 잡으면 안 된다.** |샤프|>5 로
+ * 잡으면 72건이 걸리는데 대부분이 MMF·초단기채이고, 변동성이 거의 0인
+ * MMF 의 샤프 5~6 은 정상이다(분모가 작다). 그건 자료가 틀린 게 아니라
+ * 규칙이 틀린 것이다. (→ tools/discovery/fund_verify_verdict.md 7절)
+ *
+ * 젠센알파·정보비율에는 감사가 한도를 두지 않는다. 없는 기준을 여기서
+ * 지어내지 않는다.
+ */
+function metricOutOfRange(key, v) {
+  if (key === 'standardDeviation' || key === 'trackingError') return v < 0;
+  if (key === 'beta') return Math.abs(v) > 10;
+  if (key === 'sharpe') return Math.abs(v) > 20;
+  return false;
+}
+
+function metricsBlock(f) {
+  var m = f.metrics;
+  if (!m) return '';
+  var ROWS = [
+    ['standardDeviation', '표준편차', 'Std. deviation', '%'],
+    ['sharpe', '샤프지수', 'Sharpe ratio', ''],
+    ['beta', '베타', 'Beta', ''],
+    ['jensenAlpha', '젠센알파', "Jensen's alpha", '%'],
+    ['informationRatio', '정보비율', 'Information ratio', ''],
+    ['trackingError', '추적오차', 'Tracking error', '%'],
+  ];
+  // 유형평균은 **원천이 준 값**이다. 우리가 같은 유형의 펀드를 평균 내서
+  // 만든 것이 아니다 — 표 아래에 그 사실을 적는다. 둘을 섞으면 무엇과
+  // 견준 것인지 알 수 없게 된다.
+  var p = f.metricsPeer || null;
+  var rows = '';
+  var n = 0;
+  var held = [];        // 자릿수 밖이라 비운 지표 이름
+  var heldPeer = false; // 유형평균 쪽에서 비운 것이 있는가
+  for (var i = 0; i < ROWS.length; i += 1) {
+    var r = ROWS[i];
+    var v = m[r[0]];
+    if (v == null || !isFinite(Number(v))) continue;   // 없는 것은 칸을 만들지 않는다
+    var vBad = metricOutOfRange(r[0], Number(v));
+    if (vBad) held.push(lang === 'ko' ? r[1] : r[2]);
+    var pv = p ? p[r[0]] : null;
+    var pvOk = pv != null && isFinite(Number(pv));
+    var pvBad = pvOk && metricOutOfRange(r[0], Number(pv));
+    if (pvBad) heldPeer = true;
+    // 자기 값과 유형평균이 둘 다 못 쓸 값이면 줄 자체를 만들지 않는다.
+    if (vBad && (!pvOk || pvBad)) continue;
+    n += 1;
+    rows += '<tr><td>' + esc(lang === 'ko' ? r[1] : r[2]) + '</td>' +
+      '<td class="num">' + (vBad
+        ? '<span class="dim" title="' + esc(lang === 'ko' ? '원천 값이 자릿수 밖이라 비웠습니다'
+                                                          : 'source value out of range; withheld') + '">–</span>'
+        : Number(v).toFixed(2) + esc(r[3])) + '</td>' +
+      '<td class="num">' + (!pvOk || pvBad
+        ? '<span class="dim">–</span>'
+        : Number(pv).toFixed(2) + esc(r[3])) + '</td></tr>';
+  }
+  if (!n && !held.length) return '';
+  var weeks = Number(f.metricsWeeks);
+  var basis = isFinite(weeks) && weeks > 0
+    ? (lang === 'ko' ? weeks + '주(약 ' + Math.round(weeks / 52 * 12) + '개월) · 연환산'
+                     : weeks + ' weeks, annualised')
+    : (lang === 'ko' ? '1년 · 연환산' : '1Y, annualised');
+
+  // 비운 것을 밝히는 줄. 비운 사실을 안 적으면 원천에 값이 없는 것과 같아 보인다.
+  var heldNote = '';
+  if (held.length || heldPeer) {
+    // 조사(을/를·은/는)가 지표 이름의 받침에 따라 갈리므로 이름 뒤에 조사를
+    // 붙이지 않는 문장으로 쓴다. "샤프지수 은(는)" 같은 자국을 남기지 않는다.
+    var whatKo = [], whatEn = [];
+    if (held.length) {
+      whatKo.push('이 펀드의 <u>' + esc(held.join(' · ')) + '</u>');
+      whatEn.push('this fund’s <u>' + esc(held.join(' · ')) + '</u>');
+    }
+    if (heldPeer) { whatKo.push('유형평균'); whatEn.push('the category average'); }
+    heldNote = '<div class="notice warn" style="margin-top:10px">' + (lang === 'ko'
+      ? '<strong>비운 칸이 있습니다.</strong> 원천이 준 값 자체가 자릿수 밖' +
+        '(|샤프|&gt;20 · |베타|&gt;10 · 표준편차·추적오차 음수)이라 싣지 않았습니다 — ' +
+        whatKo.join(' · ') + '. 계산이 깨진 값을 그대로 찍는 대신 비웠습니다. ' +
+        '값이 필요하시면 아래 원천 링크에서 직접 확인하십시오.'
+      : '<strong>Some cells are withheld.</strong> The source’s own figures for ' +
+        whatEn.join(' and ') + ' are out of range (|Sharpe|&gt;20, |beta|&gt;10, negative ' +
+        'std. deviation or tracking error), so they are not shown. Rather than print a broken ' +
+        'calculation, the cell is left blank — use the source link below if you need the value.') +
+      '</div>';
+  }
+  if (!n) {
+    return '<h4>' + esc(lang === 'ko' ? '위험 · 성과 지표' : 'Risk metrics') + '</h4>' + heldNote;
+  }
+
+  return '<h4>' + esc(lang === 'ko' ? '위험 · 성과 지표' : 'Risk metrics') +
+    ' <span class="dim" style="font-weight:400;font-size:15px">(' + esc(basis) + ')</span></h4>' +
+    '<div class="table-wrap"><table><thead><tr>' +
+    '<th>' + esc(lang === 'ko' ? '지표' : 'Metric') + '</th>' +
+    '<th class="num">' + esc(lang === 'ko' ? '이 펀드' : 'This fund') + '</th>' +
+    '<th class="num">' + esc(lang === 'ko' ? '유형평균' : 'Category avg') + '</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
+    '<div class="dim" style="font-size:13px;margin-top:8px;line-height:1.6">' +
+    (lang === 'ko'
+      ? '※ 유형평균은 <strong>원천(네이버 증권)이 준 값</strong>입니다. 우리가 같은 유형의 ' +
+        '펀드를 평균 내서 만든 값이 아닙니다 — 아래 수익률 표의 “유형 평균 대비” 는 ' +
+        '우리가 낸 값이므로 서로 다른 기준입니다.'
+      : '※ The category average comes <strong>from the source</strong> (Naver), not from ' +
+        'averaging our own universe. The “vs category avg” column in the returns table above ' +
+        'is ours, so the two are on different bases.') + '</div>' + heldNote;
+}
+
+/** 이 펀드를 원천에서 직접 여는 링크. 값을 옮겨 적는 것과 확인할 길을 주는 것은 다르다. */
+function sourceLinks(f) {
+  var code = f.code || '';
+  if (!code) return '';
+  var naver = 'https://stock.naver.com/domestic/fund/' + encodeURIComponent(code) + '/total';
+  var kofia = 'https://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/com/popup/' +
+              'DISComFundSmryInfo.xml&standardCd=' + encodeURIComponent(code);
+  function a(href, label, tag) {
+    return '<a href="' + esc(href) + '" target="_blank" rel="noopener noreferrer">' +
+      esc(label) + '</a> <span class="dim">' + esc(tag) + '</span>';
+  }
+  var links = [
+    a(naver, lang === 'ko' ? '네이버 증권' : 'Naver', lang === 'ko' ? '2차 출처 · 이 화면의 값이 온 곳' : 'secondary'),
+    a(kofia, lang === 'ko' ? '금융투자협회 전자공시' : 'KOFIA', lang === 'ko' ? '1차 출처 · 투자지역의 근거' : 'primary'),
+  ];
+  // 운용보고서·투자설명서는 운용사가 법정 서식으로 낸 **1차 출처**다.
+  // 재검증 보고에서 "보유종목은 운용보고서에서, 보수는 투자설명서에서
+  // 직접 확인하시라" 고 적어 놓고 정작 링크는 안 걸어 두었다. 그 주소가
+  // 우리가 이미 받고 있던 응답 안에 있었다.
+  var docs = f.documents || [];
+  for (var i = 0; i < docs.length; i += 1) {
+    if (!docs[i].url) continue;
+    links.push(a(docs[i].url, docs[i].name || '문서',
+      (docs[i].receivedAt ? docs[i].receivedAt + ' · ' : '') + (lang === 'ko' ? '1차 출처' : 'primary')));
+  }
+  return '<h4>' + esc(lang === 'ko' ? '원천에서 직접 보기' : 'Check at the source') + '</h4>' +
+    '<div class="dim" style="font-size:14px;line-height:2">' + links.join('<br>') + '</div>';
+}
+
+/** 투자목적. 원천의 문장을 그대로 옮긴다 — 요약하면 우리 말이 된다. */
+function objectiveBlock(f) {
+  if (!f.objective) return '';
+  return '<div class="dim" style="font-size:14px;line-height:1.7;margin-top:12px">' +
+    esc(f.objective) + '</div>';
+}
+
+/** 매매 기준일. 환매 대금이 며칠 뒤에 나오는지는 고를 때 실제로 갈리는 조건이다. */
+function termsBlock(f) {
+  var t = f.terms;
+  if (!t) return '';
+  var time = t.standardTime ? String(t.standardTime) : null;
+  function day(n) {
+    if (n == null || !isFinite(Number(n))) return null;
+    return lang === 'ko' ? '제' + (Number(n) + 1) + '영업일' : 'T+' + (Number(n) + 1);
+  }
+  var rows = '';
+  function row(k, before, after) {
+    if (before == null && after == null) return;
+    rows += '<tr><td>' + esc(k) + '</td><td>' + (before == null ? '<span class="dim">–</span>' : esc(before)) +
+      '</td><td>' + (after == null ? '<span class="dim">–</span>' : esc(after)) + '</td></tr>';
+  }
+  row(lang === 'ko' ? '매수 (기준가 적용)' : 'Buy (NAV applied)', day(t.buyBefore), day(t.buyAfter));
+  row(lang === 'ko' ? '환매 (기준가 적용)' : 'Redeem (NAV applied)', day(t.redeemBefore), day(t.redeemAfter));
+  row(lang === 'ko' ? '환매 대금 지급' : 'Redemption paid', day(t.payBefore), day(t.payAfter));
+  if (!rows) return '';
+  return '<h4>' + esc(lang === 'ko' ? '매매 기준일' : 'Dealing terms') + '</h4>' +
+    '<div class="table-wrap"><table><thead><tr>' +
+    '<th>' + esc(lang === 'ko' ? '구분' : '') + '</th>' +
+    '<th>' + esc(time ? (lang === 'ko' ? time + ' 이전 주문' : 'before ' + time) : (lang === 'ko' ? '이른 주문' : 'early')) + '</th>' +
+    '<th>' + esc(time ? (lang === 'ko' ? time + ' 이후 주문' : 'after ' + time) : (lang === 'ko' ? '늦은 주문' : 'late')) + '</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+
+// ───────────────────────── 상세 ─────────────────────────
+function detailHtml(f) {
+  var kv = '';
+  function add(k, v, txt) {
+    kv += '<div><div class="k">' + esc(k) + '</div><div class="v' + (txt ? ' txt' : '') + '">' +
+      (v == null || v === '' ? '<span class="dim">–</span>' : v) + '</div></div>';
+  }
+  add(lang === 'ko' ? '표준코드' : 'Code', esc(f.code), true);
+  add(lang === 'ko' ? '유형' : 'Category', esc(f.type || ''), true);
+  add(lang === 'ko' ? '투자 지역' : 'Invests in', esc(regionLabel(f)), true);
+  add(lang === 'ko' ? '운용사' : 'Manager', esc(f.company || ''), true);
+  add(lang === 'ko' ? '기준가' : 'Base price',
+      f.basePrice == null ? null : Number(f.basePrice).toLocaleString(undefined, { minimumFractionDigits: 2 }));
+  add(lang === 'ko' ? '설정액' : 'AUM', esc(fmtAmount(f.aum)));
+  add(lang === 'ko' ? '순자산' : 'Net assets', esc(fmtAmount(f.nav)));
+  add(lang === 'ko' ? '설정일' : 'Inception', esc(f.inceptionDate || ''), true);
+  add(lang === 'ko' ? '위험등급' : 'Risk grade',
+      f.riskGrade == null ? null : esc(labelOf('riskGrade', f.riskGrade)), true);
+  add(lang === 'ko' ? '보유종목 수' : 'Holdings', f.holdingCount ? fmtNum(f.holdingCount) : null);
+  add(lang === 'ko' ? '상위 10종목 비중' : 'Top 10 weight',
+      f.top10Weight == null ? null : Number(f.top10Weight).toFixed(2) + '%');
+  add(lang === 'ko' ? '총보수 (클래스별 범위)' : 'Fee (range across classes)',
+      fmtFee(f) == null ? null : esc(fmtFee(f)));
+  add(lang === 'ko' ? '벤치마크' : 'Benchmark', esc(f.benchmarkName || ''), true);
+
+  var head = '<div class="detail-head"><h3>' + esc(f.name || f.code) + '</h3>' +
+    (f.region ? '<span class="badge orange">' + esc(regionLabel(f)) + '</span>' : '') +
+    (f.type ? '<span class="badge blue">' + esc(f.type) + '</span>' : '') +
+    (f.hasStep ? '<span class="badge warn">' + esc(lang === 'ko' ? '기준가 재산정 있음' : 'base price restated') + '</span>' : '') +
+    '</div>';
+
+  var classes = '';
+  if (f.classes && f.classes.length) {
+    var crows = '';
+    // 검색어가 클래스에 걸려 이 펀드가 나온 것이라면 그 줄을 짚어 준다.
+    // 사람이 손에 든 코드로 찾아왔는데 어느 줄이 자기 것인지 안 보이면
+    // 찾아 준 보람이 없다.
+    var cq = (state.q || '').trim().toLowerCase();
+    for (var i = 0; i < f.classes.length; i += 1) {
+      var c = f.classes[i];
+      var hitC = cq && ((c.code || '').toLowerCase().indexOf(cq) >= 0 ||
+                        (c.name || '').toLowerCase().indexOf(cq) >= 0);
+      var cUrl = c.code
+        ? 'https://stock.naver.com/domestic/fund/' + encodeURIComponent(c.code) + '/total' : null;
+      crows += '<tr' + (hitC ? ' class="hit"' : '') + '><td>' + esc(c.name || c.code) +
+        // **클래스의 표준코드를 찍는다.** 통장·HTS·판매사 화면에 찍히는
+        // 코드가 이것이고, 원천도 이 코드로 화면을 연다.
+        (c.code ? '<br><span class="dim" style="font-size:12px">' +
+          (cUrl ? '<a href="' + esc(cUrl) + '" target="_blank" rel="noopener noreferrer">' +
+                  esc(c.code) + '</a>' : esc(c.code)) + '</span>' : '') + '</td>' +
+        '<td class="num ' + signClass(c.ret && c.ret['1m']) + '">' + fmtPct(c.ret && c.ret['1m']) + '</td>' +
+        '<td class="num ' + signClass(c.ret && c.ret['1y']) + '">' + fmtPct(c.ret && c.ret['1y']) + '</td>' +
+        '<td class="num">' + (c.totalFee == null ? '<span class="dim">–</span>' : Number(c.totalFee).toFixed(3) + '%') + '</td></tr>';
+    }
+    var feeNote = '<div class="dim" style="font-size:13px;margin-top:8px;line-height:1.6">' +
+      (lang === 'ko'
+        ? '※ 총보수는 <strong>클래스마다 다릅니다.</strong> 위의 범위는 이 표의 최저~최고이며, ' +
+          '실제로 내는 보수는 어느 클래스를 사느냐에 따라 달라집니다.<br>' +
+          '※ 펀드 단위의 총보수는 원천에 없습니다. 이 값들은 클래스별로 온 것입니다.<br>' +
+          '※ <strong>이 화면의 기준가·설정액·설정일은 위 펀드(모·운용) 단위 값입니다.</strong> ' +
+          '클래스마다 기준가와 설정일이 다릅니다 — 예를 들어 한 클래스가 펀드보다 10년 늦게 ' +
+          '설정되기도 합니다. 클래스 단위 값은 위 코드를 눌러 원천에서 확인하십시오. ' +
+          '수익률과 총보수만 클래스별로 실었습니다.'
+        : '※ Fees <strong>differ by share class.</strong> The range above is the lowest and ' +
+          'highest in this table; what you actually pay depends on the class you buy.<br>' +
+          '※ The source gives no fund-level fee — these are per-class figures.<br>' +
+          '※ <strong>Base price, AUM and inception on this page are the parent fund’s.</strong> ' +
+          'Each class has its own base price and inception date — click a class code to see ' +
+          'them at the source. Only returns and fees are carried per class.') + '</div>';
+    classes = '<h4>' + esc(lang === 'ko' ? '클래스별' : 'Share classes') + '</h4>' +
+      '<div class="table-wrap"><table><thead><tr>' +
+      '<th>' + esc(lang === 'ko' ? '클래스 · 표준코드' : 'Class · code') + '</th>' +
+      '<th class="num">' + esc(lang === 'ko' ? '1개월' : '1M') + '</th>' +
+      '<th class="num">' + esc(lang === 'ko' ? '1년' : '1Y') + '</th>' +
+      '<th class="num">' + esc(lang === 'ko' ? '총보수' : 'TER') + '</th>' +
+      '</tr></thead><tbody>' + crows + '</tbody></table></div>' + feeNote;
+  }
+
+  // 설정액·순자산을 싣지 않은 펀드는 왜 빈칸인지 그 자리에서 말한다.
+  var aumNote = '';
+  if (f.aumDropped) {
+    aumNote = '<div class="notice warn">' + (lang === 'ko'
+      ? '<strong>설정액·순자산을 싣지 않았습니다.</strong> 원천의 두 값이 이 펀드의 ' +
+        '기준가와 앞뒤가 맞지 않습니다 — 순자산/설정액은 기준가/1000 과 같아야 하는데(' +
+        '407종목 중 393종목이 상대오차 1% 안) 이 펀드는 ' +
+        (f.aumDropped.relErr * 100).toFixed(0) + '% 어긋납니다(설정액 ' +
+        esc(fmtAmount(f.aumDropped.aum)) + ' · 순자산 ' + esc(fmtAmount(f.aumDropped.nav)) +
+        ' · 기준가 ' + esc(f.aumDropped.basePrice) + '). 틀린 값을 실으면 설정액 ' +
+        '필터와 랭킹까지 틀리므로 비워 두었습니다.'
+      : '<strong>AUM and net assets are not shown.</strong> The source’s two values do not ' +
+        'agree with this fund’s base price — net assets ÷ AUM should equal base price ÷ 1000 ' +
+        '(393 of 407 funds agree within 1%), but this one is off by ' +
+        (f.aumDropped.relErr * 100).toFixed(0) + '%. Withheld rather than shown, since a wrong ' +
+        'figure would also corrupt the AUM filter and rankings.') + '</div>';
+  }
+  // 분배가 잦은 펀드는 누적수익률이 클 수밖에 없다. 그 사실을 밝혀 둔다.
+  var resetNote = '';
+  if (Number(f.resets) >= 2) {
+    resetNote = '<div class="notice">' + (lang === 'ko'
+      ? '<strong>결산·분배가 잦은 펀드입니다.</strong> 5년 기준가 계열에 분배로 기준가가 ' +
+        '내려앉은 자리가 ' + f.resets + '번 있습니다. 위 수익률은 분배금을 재투자한 기준이라 ' +
+        '기준가 등락만 본 것보다 훨씬 큽니다.'
+      : '<strong>This fund distributes regularly</strong> — the 5-year base-price series shows ' +
+        f.resets + ' payout resets. The returns above reinvest distributions and are therefore ' +
+        'far larger than the bare base-price change.') + '</div>';
+  }
+
+  // 원천이 보유종목의 기준일을 주지 않는다. 그 사실을 표 위에 적는다 —
+  // 안 적으면 바로 위의 기준가(오늘)와 같은 날 것으로 읽힌다. 보유종목은
+  // 분기 공시라 실제로는 몇 달 묵어 있을 수 있다.
+  var holdNote = f.holdingCount
+    ? '<div class="notice">' + (lang === 'ko'
+        ? '<strong>이 보유종목이 언제 기준인지 원천이 알려 주지 않습니다.</strong> ' +
+          '기준가·수익률은 ' + esc(f.tradeDate || '') + ' 기준이지만, 보유종목에는 날짜가 ' +
+          '함께 오지 않습니다. 공모펀드의 보유종목은 분기 단위로 공시되므로 몇 달 앞선 ' +
+          '것일 수 있습니다. 정확한 기준일은 아래 <strong>운용보고서</strong>에서 ' +
+          '확인하십시오.'
+        : '<strong>The source does not say when these holdings were measured.</strong> ' +
+          'Prices and returns are as of ' + esc(f.tradeDate || '') + ', but holdings arrive ' +
+          'without a date. Korean fund holdings are disclosed quarterly, so these may be ' +
+          'months older. See the <strong>asset report</strong> below for the actual date.') +
+      '</div>'
+    : '';
+
+  return '<div class="tint" style="margin-top:var(--space-block)">' + head +
+    '<div class="kv">' + kv + '</div>' + aumNote + objectiveBlock(f) +
+    '<h4>' + esc(lang === 'ko' ? '기간 수익률' : 'Returns') + '</h4>' + returnTable(f) + resetNote +
+    metricsBlock(f) +
+    '<h4>' + esc(lang === 'ko' ? '보유종목' : 'Holdings') +
+      (f.holdingCount ? ' <span class="dim" style="font-weight:400;font-size:15px">(' +
+        fmtNum(f.holdingCount) + (lang === 'ko' ? '종목' : '') + ')</span>' : '') + '</h4>' +
+    holdNote + holdingsBlock(f) + sectorBlock(f) +
+    classes + termsBlock(f) + sourceLinks(f) + '</div>';
+}
+
+/**
+ * 업종구성.
+ *
+ * 원천이 `{sectorName, weight}` 로 주고 비중은 **순자산 대비 소수**다
+ * (표본 25개에서 합이 1.00·0.99·0.97). 수집기가 100 을 곱해 넣는다.
+ *
+ * **합을 100 으로 맞추지 않는다.** 합이 10% 나 1% 인 펀드가 있는데 그것은
+ * 자료가 모자란 것이 아니라 분류되는 업종에 그만큼만 들어 있다는 뜻이다
+ * (나머지는 채권·유동성). 100 으로 늘리면 없는 비중을 지어내는 것이 된다.
+ * 대신 합을 그대로 적어 얼마가 업종으로 분류됐는지 보이게 한다.
+ *
+ * 바로 옆의 자산구성(assets)은 **싣지 않는다.** 같은 응답에서 오지만 그
+ * 비중의 분모를 우리가 모른다 — 3,106개 중 합이 100 근처인 것이 21.9%,
+ * 기준가로 나눠야 100 근처인 것이 5.9%, 나머지 72.2%는 어느 쪽도 아니다.
+ */
+function sectorBlock(f) {
+  var s = f.sectors;
+  if (!s) return '';
+  var names = Object.keys(s);
+  if (!names.length) return '';
+  names.sort(function (a, b) { return s[b] - s[a]; });
+
+  var sum = 0;
+  var rows = '';
+  for (var i = 0; i < names.length; i += 1) {
+    var w = Number(s[names[i]]);
+    if (!isFinite(w)) continue;                        // 없는 것은 칸을 만들지 않는다
+    sum += w;
+    rows += '<tr><td>' + esc(names[i]) + '</td>' +
+      '<td class="num">' + fmtWeight(w) + '</td></tr>';
+  }
+  if (!rows) return '';
+
+  return '<h4>' + esc(lang === 'ko' ? '업종구성' : 'Sectors') + '</h4>' +
+    '<div class="table-wrap"><table><thead><tr>' +
+    '<th>' + esc(lang === 'ko' ? '업종' : 'Sector') + '</th>' +
+    '<th class="num">' + esc(lang === 'ko' ? '순자산 대비' : 'Share of NAV') + '</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
+    '<div class="dim" style="font-size:13px;margin-top:8px;line-height:1.6">' +
+    (lang === 'ko'
+      ? '※ 순자산 대비 비중입니다. 합이 ' + fmtWeight(sum) + ' 인 것은 나머지가 업종으로 ' +
+        '분류되지 않는 자산(채권·유동성 등)에 들어 있다는 뜻이며 <strong>빠진 자료가 ' +
+        '아닙니다</strong>. 기준일은 보유종목과 마찬가지로 원천이 알려 주지 않습니다.'
+      : '※ Share of net assets. The total of ' + fmtWeight(sum) + ' means the remainder sits in ' +
+        'assets that carry no sector (bonds, cash) — <strong>nothing is missing</strong>. ' +
+        'As with holdings, the source gives no as-of date.') + '</div>';
+}
+
+function byId(id) {
+  for (var i = 0; i < FUNDS.length; i += 1) if (FUNDS[i].id === id) return FUNDS[i];
+  return null;
+}
+
+function renderDetail() {
+  var f = state.selected ? byId(state.selected) : null;
+  el('detail').innerHTML = f ? detailHtml(f) : '';
+}
+
+// ───────────────────────── 비교 ─────────────────────────
+/**
+ * 두 펀드의 겹침.
+ *
+ * **비중을 모르는 종목이 있으면 겹침 비율을 내지 않는다.** `Number(null)` 이
+ * 0 이 되어 "0% 겹친다" 로 둔갑하면, 실제로는 크게 겹치는 두 펀드를 두고
+ * "겹치지 않는다" 는 거짓 진술을 하게 된다. 종목 수만으로 세는 값은 따로 낸다.
+ */
+function overlap(a, b) {
+  var ah = (a.holdings || []).filter(function (h) { return !h.cash; });
+  var bh = (b.holdings || []).filter(function (h) { return !h.cash; });
+  if (!ah.length || !bh.length) return null;
+
+  var bmap = {};
+  for (var i = 0; i < bh.length; i += 1) {
+    var k = bh[i].code || ('n:' + (bh[i].name || '').toLowerCase());
+    bmap[k] = bh[i];
+  }
+  var shared = [];
+  for (var j = 0; j < ah.length; j += 1) {
+    var key = ah[j].code || ('n:' + (ah[j].name || '').toLowerCase());
+    if (bmap[key]) shared.push({ a: ah[j], b: bmap[key] });
+  }
+
+  var known = function (h) { return h.weight != null && isFinite(Number(h.weight)); };
+  var allKnown = ah.every(known) && bh.every(known);
+  var weight = null;
+  if (allKnown) {
+    // 겹치는 부분의 크기 = 두 비중 중 작은 쪽의 합. 흔히 쓰는 정의다.
+    var w = 0;
+    for (var k2 = 0; k2 < shared.length; k2 += 1) {
+      w += Math.min(Number(shared[k2].a.weight), Number(shared[k2].b.weight));
+    }
+    weight = +w.toFixed(2);
+  }
+  return { count: shared.length, weight: weight, weightsKnown: allKnown,
+           denom: Math.min(ah.length, bh.length), shared: shared };
+}
+
+function renderCompare() {
+  var picks = [];
+  for (var i = 0; i < state.picks.length; i += 1) {
+    var f = byId(state.picks[i]);
+    if (f) picks.push(f);
+  }
+  var body = el('compare-body');
+
+  // 담긴 펀드를 이름표로 늘어놓고, 각 이름표에 빼는 단추를 단다.
+  //
+  // 여태 이 탭에서 할 수 있는 것은 **전부 비우기** 하나뿐이었다. 여덟 개를
+  // 골라 놓고 그중 하나만 빼고 싶을 때 갈 곳이 없어서, 펀드 찾기로 돌아가
+  // 그 줄을 다시 찾아 체크를 지워야 했다 — 이름이 비슷한 펀드 사이에서
+  // 그것을 하느니 비우고 다시 담는 편이 빠르다. 그래서 뺀다.
+  var chips = function () {
+    var ko = lang === 'ko';
+    var s = '<div class="cmp-chips">';
+    for (var q = 0; q < picks.length; q += 1) {
+      var nm = picks[q].name || picks[q].code || '';
+      s += '<span class="cmp-chip" title="' + esc(nm) + '">' +
+        '<span class="cmp-chip-name">' + esc(nm.length > 28 ? nm.slice(0, 28) + '…' : nm) + '</span>' +
+        '<button type="button" class="cmp-chip-x" data-unpick="' + esc(picks[q].id) + '" title="' +
+        esc(ko ? '비교에서 빼기' : 'Remove from comparison') + '" aria-label="' +
+        esc((ko ? '비교에서 빼기: ' : 'Remove from comparison: ') + nm) + '">×</button></span>';
+    }
+    return s + '</div>';
+  };
+
+  if (picks.length < 2) {
+    // 비어 있는 화면은 "무엇을 하라" 까지 말해야 한다. 여기가 처음 오는
+    // 사람에게는 막다른 자리라, 담는 자리가 어디인지를 그 자리에서 말한다.
+    // 하나가 담겨 있으면 그 하나도 여기서 뺄 수 있어야 한다. 담은 것을
+    // 보여 주면서 빼는 길만 없는 화면은 만들지 않는다.
+    body.innerHTML = (picks.length === 1 ? chips() : '') +
+      '<div class="empty">' + esc(lang === 'ko'
+      ? (picks.length === 1
+          ? '지금 1개만 담겼습니다 — 비교하려면 하나 더 담아 주세요. 펀드 찾기 또는 랭킹 탭에서 줄 맨 왼쪽 체크상자에 표시하면 담깁니다.'
+          : '아직 담은 펀드가 없습니다. 펀드 찾기 또는 랭킹 탭에서 줄 맨 왼쪽 체크상자에 표시해 두 개 이상 담아 주세요.')
+      : (picks.length === 1
+          ? 'Only one fund is selected — tick one more. Use the checkbox at the left of each row in the Browse or Rankings tab.'
+          : 'No funds selected yet. Tick the checkbox at the left of a row in the Browse or Rankings tab to add two or more.')) + '</div>';
+    return;
+  }
+
+  var html = '<div class="finder-bar"><span class="count">' +
+    esc(lang === 'ko' ? picks.length + '개 담음' : picks.length + ' selected') + '</span>' +
+    '<span style="flex:1"></span><button type="button" id="cmp-clear">' +
+    esc(lang === 'ko' ? '전부 비우기' : 'Clear all') + '</button></div>';
+  html += chips();
+  html += '<div class="dim cmp-chips-hint" style="font-size:12.5px;margin:-2px 0 14px">' + esc(lang === 'ko'
+    ? '이름표의 × 를 누르면 그 펀드 하나만 빠집니다.'
+    : 'Click × on a chip to drop that one fund.') + '</div>';
+
+  // 겹침 행렬
+  html += '<h3>' + esc(lang === 'ko' ? '두 펀드씩 겹침' : 'Pairwise overlap') + '</h3>';
+  html += '<div class="table-wrap"><table><thead><tr><th></th>';
+  for (var a = 0; a < picks.length; a += 1) {
+    html += '<th class="num fund fund-link" data-id="' + esc(picks[a].id) + '" title="' +
+      esc(picks[a].name || '') + '">' + esc((picks[a].name || picks[a].code).slice(0, 14)) + '</th>';
+  }
+  html += '</tr></thead><tbody>';
+  for (var r = 0; r < picks.length; r += 1) {
+    html += '<tr><th class="fund-link ov-row" data-id="' + esc(picks[r].id) + '" style="text-align:left;' +
+      'background:var(--surface-subtle);font-weight:600" title="' + esc(picks[r].name || '') + '">' +
+      esc((picks[r].name || picks[r].code).slice(0, 26)) + '</th>';
+    for (var c = 0; c < picks.length; c += 1) {
+      if (r === c) { html += '<td class="num hl">–</td>'; continue; }
+      var o = overlap(picks[r], picks[c]);
+      if (!o) {
+        html += '<td class="num dim" title="' + esc(lang === 'ko'
+          ? '한쪽에 보유종목이 없습니다' : 'One side publishes no holdings') + '">–</td>';
+      } else if (o.weight == null) {
+        // 비중을 모르니 비율을 내지 않는다. 종목 수만 말한다.
+        html += '<td class="num unw" title="' + esc(lang === 'ko'
+          ? '비중이 원천에 없어 비율을 낼 수 없습니다' : 'No weights at the source') + '">' +
+          o.count + esc(lang === 'ko' ? '종목' : '') + '</td>';
+      } else {
+        html += '<td class="num overlap-cell">' + o.weight.toFixed(1) + '%' +
+          '<span class="rank-raw">' + o.count + esc(lang === 'ko' ? '종목' : '') + '</span></td>';
+      }
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table></div>';
+  html += '<div class="dim" style="font-size:13px;margin-top:8px;line-height:1.6">' + (lang === 'ko'
+    ? '※ 겹침 비율은 같이 담은 종목에서 <strong>두 비중 중 작은 쪽</strong>을 더한 값입니다.<br>' +
+      '※ 한쪽이라도 비중이 원천에 없으면 비율을 내지 않고 <strong>겹친 종목 수</strong>만 적습니다 — ' +
+      '없는 비중을 0 으로 세면 "겹치지 않는다" 는 거짓이 됩니다.'
+    : '※ Overlap is the sum of min(weight) over shared holdings.<br>' +
+      '※ Where either side lacks weights, only the shared-holding count is shown — ' +
+      'treating a missing weight as zero would falsely read as "no overlap".') + '</div>';
+
+  // 종목 × 펀드 매트릭스
+  var seen = {};
+  var order = [];
+  for (var p = 0; p < picks.length; p += 1) {
+    var hs = (picks[p].holdings || []).filter(function (h) { return !h.cash; });
+    for (var h2 = 0; h2 < hs.length; h2 += 1) {
+      var kk = hs[h2].code || ('n:' + (hs[h2].name || '').toLowerCase());
+      if (!seen[kk]) { seen[kk] = { key: kk, name: hs[h2].name || hs[h2].code, n: 0 }; order.push(seen[kk]); }
+      seen[kk].n += 1;
+    }
+  }
+  order.sort(function (x, y) { return y.n - x.n; });
+  var top = order.filter(function (o) { return o.n >= 2; }).slice(0, 60);
+  if (top.length) {
+    html += '<h3>' + esc(lang === 'ko' ? '둘 이상이 담은 종목' : 'Held by two or more') + '</h3>';
+    html += '<div class="matrix table-wrap"><table><thead><tr><th class="stock">' +
+      esc(lang === 'ko' ? '종목' : 'Stock') + '</th>';
+    for (var q = 0; q < picks.length; q += 1) {
+      html += '<th class="num fund fund-link" data-id="' + esc(picks[q].id) + '" title="' +
+        esc(picks[q].name || '') + '">' + esc((picks[q].name || picks[q].code).slice(0, 12)) + '</th>';
+    }
+    html += '</tr></thead><tbody>';
+    for (var s = 0; s < top.length; s += 1) {
+      html += '<tr><th class="stock">' + esc(top[s].name) + '</th>';
+      for (var u = 0; u < picks.length; u += 1) {
+        var found = null;
+        var uh = (picks[u].holdings || []);
+        for (var y = 0; y < uh.length; y += 1) {
+          var uk = uh[y].code || ('n:' + (uh[y].name || '').toLowerCase());
+          if (uk === top[s].key) { found = uh[y]; break; }
+        }
+        if (!found) html += '<td class="num miss">·</td>';
+        else if (found.weight == null) html += '<td class="num unw" title="' +
+          esc(lang === 'ko' ? '담았으나 비중이 원천에 없습니다' : 'held; weight not published') + '">○</td>';
+        // 아주 작은 비중을 0.0 으로 뭉개지 않는다 — 담은 것을 안 담았다고 하는 셈이다.
+        else html += '<td class="num held">' +
+          (Number(found.weight) !== 0 && Math.abs(Number(found.weight)) < 0.05
+            ? '&lt;0.1' : Number(found.weight).toFixed(1)) + '</td>';
+      }
+      html += '</tr>';
+    }
+    html += '</tbody></table></div>';
+  }
+
+  html += '<div id="compare-detail"></div>';
+  body.innerHTML = html;
+}
+
+// ───────────────────────── 역조회 ─────────────────────────
+function renderReverse() {
+  var body = el('reverse-body');
+  var q = (state.rq || '').trim().toLowerCase();
+  if (q.length < 2) {
+    body.innerHTML = '<div class="empty">' + esc(lang === 'ko'
+      ? '종목 이름을 두 글자 이상 입력해 주세요.' : 'Type at least two characters.') + '</div>';
+    return;
+  }
+  // 한 펀드가 검색어에 걸리는 종목을 여럿 담고 있을 수 있다("삼성" → 삼성전자·
+  // 삼성SDI·삼성물산). 표에는 그중 하나만 싣는데, **몇 개를 안 보여 주는지
+  // 말하지 않으면 그 하나가 전부라고 읽힌다** — 아래 200행 자르기에 말을
+  // 붙여 둔 것과 같은 이야기다. 그래서 걸린 개수를 함께 센다.
+  //
+  // 싣는 것은 첫 매칭이다. 원천의 보유종목이 이미 비중 내림차순이라 첫 매칭이
+  // 곧 비중이 가장 큰 매칭이다(전수로 확인했다 — "삼성"·"현대"·"SK"·"LG" 어느
+  // 검색어에서도 첫 매칭이 최대가 아닌 펀드는 0개였다). 그러니 따로 고르지
+  // 않는다. 다만 그 값은 **그 한 종목의 비중**이지 검색어에 걸린 종목들의
+  // 합이 아니다. 합을 내지 않는다 — 비중이 없는 종목이 섞이면 합계 자체가
+  // 거짓이 되고, 사용자가 묻지도 않은 "삼성 계열 합계" 를 지어내는 셈이 된다.
+  var hits = [];
+  for (var i = 0; i < FUNDS.length; i += 1) {
+    var hs = FUNDS[i].holdings || [];
+    var first = null;
+    var nMatch = 0;
+    for (var j = 0; j < hs.length; j += 1) {
+      if ((hs[j].name || '').toLowerCase().indexOf(q) >= 0) {
+        if (!first) first = hs[j];
+        nMatch += 1;
+      }
+    }
+    if (first) hits.push({ fund: FUNDS[i], h: first, more: nMatch - 1 });
+  }
+  if (!hits.length) {
+    body.innerHTML = '<div class="empty">' + esc(lang === 'ko'
+      ? '그 종목을 담은 펀드를 찾지 못했습니다.' : 'No fund holds that stock.') + '</div>';
+    return;
+  }
+  // 비중이 없는 것은 뒤로 보낸다. 0 으로 세어 섞으면 순서가 거짓이 된다.
+  hits.sort(function (a, b) {
+    var x = a.h.weight == null ? -1 : Number(a.h.weight);
+    var y = b.h.weight == null ? -1 : Number(b.h.weight);
+    return y - x;
+  });
+
+  var html = '<div class="finder-bar"><span class="count">' + esc(lang === 'ko'
+    ? hits.length.toLocaleString() + '개 펀드' : hits.length.toLocaleString() + ' funds') + '</span></div>';
+
+  // 상세에는 적어 두고 **이 탭에는 빠져 있던** 고지다. 여기가 보유종목을
+  // 보러 오는 자리인데, 표는 날짜 없는 비중 옆에 오늘 기준의 설정액을
+  // 나란히 놓는다. 날짜를 안 적으면 둘 다 오늘 것으로 읽힌다 — 틀린 숫자를
+  // 쓴 것이 아니라 날짜를 안 적어서 생기는 거짓이고, 이 저장소가 이미 상세
+  // 화면에서 같은 이유로 고쳐 둔 것이다.
+  html += '<div class="notice">' + (lang === 'ko'
+    ? '<strong>이 비중이 언제 기준인지 원천이 알려 주지 않습니다.</strong> ' +
+      '공모펀드의 보유종목은 분기 단위로 공시되므로 몇 달 앞선 것일 수 있습니다. ' +
+      '표 오른쪽의 설정액은 오늘 기준이라 <strong>두 열의 기준일이 서로 다릅니다.</strong> ' +
+      '정확한 기준일은 펀드를 눌러 상세의 운용보고서에서 확인하십시오.'
+    : '<strong>The source does not say when these weights were measured.</strong> ' +
+      'Korean fund holdings are disclosed quarterly, so they may be months old. ' +
+      'The AUM column on the right is as of today — <strong>the two columns have ' +
+      'different as-of dates.</strong> Open a fund and see its asset report for the actual date.') +
+    '</div>';
+
+  html += '<div class="table-wrap"><table><thead><tr>' +
+    '<th>' + esc(lang === 'ko' ? '펀드' : 'Fund') + '</th>' +
+    '<th>' + esc(lang === 'ko' ? '유형' : 'Category') + '</th>' +
+    '<th>' + esc(lang === 'ko' ? '담은 종목' : 'Holding') + '</th>' +
+    '<th class="num">' + esc(lang === 'ko' ? '비중' : 'Weight') + '</th>' +
+    '<th class="num">' + esc(lang === 'ko' ? '설정액' : 'AUM') + '</th>' +
+    '</tr></thead><tbody>';
+  for (var k = 0; k < Math.min(hits.length, 200); k += 1) {
+    var r = hits[k];
+    html += '<tr class="clickable" data-id="' + esc(r.fund.id) + '">' +
+      '<td><div style="font-weight:600;color:var(--ink)">' + esc(r.fund.name || r.fund.code) + '</div>' +
+      '<div class="dim" style="font-size:13px">' + esc(r.fund.company || '') + '</div></td>' +
+      '<td>' + esc(r.fund.type || '–') + '</td>' +
+      '<td>' + esc(r.h.name || '') +
+        (r.more > 0
+          ? ' <span class="dim" style="font-size:13px" title="' + esc(lang === 'ko'
+              ? '이 펀드는 검색어에 걸리는 종목을 ' + (r.more + 1) + '개 담고 있습니다. ' +
+                '표에는 비중이 가장 큰 하나만 실었습니다 — 옆의 비중은 그 한 종목의 것입니다.'
+              : 'This fund holds ' + (r.more + 1) + ' matching securities; only the largest is shown. ' +
+                'The weight beside it is that one security’s.') + '">+' +
+            esc(lang === 'ko' ? r.more + '개 더' : r.more) + '</span>'
+          : '') + '</td>' +
+      '<td class="num">' + (r.h.weight == null
+        ? '<span class="dim" title="' + esc(lang === 'ko' ? '비중이 원천에 없습니다' : 'not published') + '">–</span>'
+        : fmtWeight(Number(r.h.weight))) + '</td>' +
+      '<td class="num">' + esc(fmtAmount(r.fund.aum)) + '</td></tr>';
+  }
+  html += '</tbody></table></div>';
+  // 200개까지만 그린다. **잘렸다는 것을 말하지 않으면** 위의 "1,105개 펀드" 를
+  // 보고 표가 그 전부라고 읽게 된다. 목록 탭은 "60 / 3,196개 표시 중" 이라고
+  // 밝히는데 여기만 빠져 있었다(재검증에서 드러났다).
+  if (hits.length > 200) {
+    html += '<div class="dim" style="font-size:13px;margin-top:8px">' + esc(lang === 'ko'
+      ? hits.length.toLocaleString() + '개 중 비중이 큰 200개만 표시했습니다. ' +
+        '조건을 좁히려면 종목 이름을 더 정확히 적어 주세요.'
+      : 'Showing the 200 largest weights of ' + hits.length.toLocaleString() + '. ' +
+        'Narrow the search to see fewer.') + '</div>';
+  }
+  html += '<div id="reverse-detail"></div>';
+  body.innerHTML = html;
+}
+
+// ───────────────────────── 랭킹 ─────────────────────────
+// 랭킹 표에도 담는 칸을 둔다. 순위를 보다가 "이 둘을 견줘 보고 싶다" 가
+// 되는 것이 자연스러운데, 여태는 이름을 외워 목록 탭으로 돌아가 다시
+// 찾아야 했다. 칸의 생김새·자리·동작은 목록과 똑같이 간다 — 같은 일을
+// 하는 칸이 화면마다 다르게 생기면 그게 또 하나의 배울 거리가 된다.
+function rankTable(title, rows, valueFn, valueLabel) {
+  var html = '<h3>' + esc(title) + '</h3><div class="table-wrap"><table><thead><tr>' +
+    pickHead() +
+    '<th class="num" style="width:56px">#</th>' +
+    '<th>' + esc(lang === 'ko' ? '펀드' : 'Fund') + '</th>' +
+    '<th>' + esc(lang === 'ko' ? '유형' : 'Category') + '</th>' +
+    '<th class="num">' + esc(valueLabel) + '</th></tr></thead><tbody>';
+  for (var i = 0; i < rows.length; i += 1) {
+    var f = rows[i];
+    html += '<tr class="clickable' + (state.selected === f.id ? ' selected' : '') +
+      (isPicked(f) ? ' picked' : '') + '" data-id="' + esc(f.id) + '">' +
+      pickCell(f) +
+      '<td class="num dim">' + (i + 1) + '</td>' +
+      '<td><div style="font-weight:600;color:var(--ink)">' + esc(f.name || f.code) + '</div>' +
+      '<div class="dim" style="font-size:13px">' + esc(f.company || '') + '</div></td>' +
+      '<td>' + esc(f.type || '–') + '</td>' +
+      '<td class="num">' + valueFn(f) + '</td></tr>';
+  }
+  return html + '</tbody></table></div>';
+}
+
+function renderRank() {
+  var pool = FUNDS.filter(function (f) { return !state.rType || f.type === state.rType; });
+  var withRet = pool.filter(function (f) { return retOf(f, state.rPeriod) != null; });
+  withRet.sort(function (a, b) { return retOf(b, state.rPeriod) - retOf(a, state.rPeriod); });
+
+  var body = el('rank-body');
+  if (!pool.length) { body.innerHTML = '<div class="empty">–</div>'; return; }
+
+  var plabel = periodLabel(state.rPeriod);
+  var retCell = function (f) {
+    var v = retOf(f, state.rPeriod);
+    return '<span class="' + signClass(v) + '">' + fmtPct(v) + '</span>';
+  };
+
+  var html = '';
+  html += '<div class="pick-bar" id="rank-pick-bar"></div>';
+  html += '<div class="notice">' + (lang === 'ko'
+    ? '<strong>' + (state.rType || '전체 유형') + '</strong> ' + pool.length.toLocaleString() + '개 중 ' +
+      plabel + ' 수익률이 있는 것은 ' + withRet.length.toLocaleString() + '개입니다. ' +
+      '검산에서 비운 칸은 순위에 넣지 않습니다.'
+    : '<strong>' + (state.rType || 'All categories') + '</strong>: ' + withRet.length.toLocaleString() +
+      ' of ' + pool.length.toLocaleString() + ' funds have a ' + plabel + ' return. ' +
+      'Withheld cells are excluded from the ranking.') + '</div>';
+
+  html += rankTable(lang === 'ko' ? plabel + ' 수익률 상위 20' : 'Top 20 by ' + plabel,
+    withRet.slice(0, 20), retCell, plabel);
+  html += rankTable(lang === 'ko' ? plabel + ' 수익률 하위 20' : 'Bottom 20 by ' + plabel,
+    withRet.slice(-20).reverse(), retCell, plabel);
+
+  var byAum = pool.filter(function (f) { return Number(f.aum) > 0; })
+    .sort(function (a, b) { return Number(b.aum) - Number(a.aum); });
+  html += rankTable(lang === 'ko' ? '설정액 상위 20' : 'Top 20 by AUM',
+    byAum.slice(0, 20), function (f) { return esc(fmtAmount(f.aum)); },
+    lang === 'ko' ? '설정액' : 'AUM');
+
+  // ── 자금 유입·유출 ────────────────────────────────────────────────────
+  //
+  // 원천은 펀드에 유입액을 주지 않는다(ETF 에는 준다). 여기 숫자는 우리가
+  // **설정원본의 차이**로 낸 것이다 — 설정원본은 좌수 × 1,000 이라 설정·해지
+  // 로만 움직인다. 순자산 차이를 쓰면 값이 오른 것과 돈이 들어온 것이
+  // 섞여서, 아무도 안 산 펀드가 "유입 상위" 에 오른다.
+  //
+  // 이력이 모자라면 표를 만들지 않는다. 하루치 차이에 "3개월" 이라는 이름을
+  // 붙이지 않는다.
+  var withFlow = pool.filter(function (f) {
+    return f.flow && f.flow.m3 != null && isFinite(f.flow.m3);
+  });
+  var histSrc = (DATA.sources && DATA.sources.history) || null;
+
+  if (withFlow.length) {
+    withFlow.sort(function (a, b) { return Number(b.flow.m3) - Number(a.flow.m3); });
+    // 기준일은 펀드마다 같지만, 화면이 아는 척하지 않도록 실제 값에서 읽는다.
+    var flowAsOf = (withFlow[0].flowAsOf && withFlow[0].flowAsOf.m3) || null;
+    var flowCell = function (f) {
+      var v = Number(f.flow.m3);
+      // fmtAmount 가 음수에는 '-' 를 붙인다. 양수에만 '+' 를 더한다.
+      return '<span class="' + signClass(v) + '">' + (v > 0 ? '+' : '') +
+             esc(fmtAmount(v)) + '</span>';
+    };
+
+    html += '<div class="notice">' + (lang === 'ko'
+      ? '아래 두 표의 <strong>자금 유입</strong>은 원천이 준 값이 아니라 ' +
+        '<strong>설정원본의 차이</strong>입니다' +
+        (flowAsOf ? ' (' + esc(flowAsOf) + ' 대비)' : '') + '. ' +
+        '설정원본은 좌수 × 1,000 이라 설정·해지로만 움직입니다 — ' +
+        '순자산 차이를 쓰면 수익률이 섞여 값이 오른 펀드가 유입 상위로 올라옵니다. ' +
+        '설정원본을 모르는 펀드와 그날 자료가 없는 펀드는 순위에 넣지 않습니다 (' +
+        withFlow.length.toLocaleString() + '개 대상).'
+      : 'Net flow below is <strong>not</strong> given by the source — it is the change in ' +
+        'units-at-par (설정원본)' + (flowAsOf ? ' vs ' + esc(flowAsOf) : '') + ', which moves only on ' +
+        'creations and redemptions. Using net-asset differences would mix in performance. ' +
+        'Funds without a known figure on either date are excluded (' +
+        withFlow.length.toLocaleString() + ' ranked).') + '</div>';
+
+    html += rankTable(lang === 'ko' ? '3개월 자금 유입 상위 20' : 'Top 20 by 3M net inflow',
+      withFlow.slice(0, 20), flowCell, lang === 'ko' ? '3개월 순유입' : '3M net inflow');
+    html += rankTable(lang === 'ko' ? '3개월 자금 유출 상위 20' : 'Top 20 by 3M net outflow',
+      withFlow.slice(-20).reverse(), flowCell, lang === 'ko' ? '3개월 순유입' : '3M net inflow');
+  } else {
+    // 왜 없는지 말한다. 조용히 빼면 "왜 ETF 에는 있고 펀드에는 없나" 를
+    // 다시 묻게 된다.
+    html += '<div class="notice">' + (lang === 'ko'
+      ? '<strong>3개월 자금 유입</strong>은 아직 낼 수 없습니다. 원천이 펀드에는 ' +
+        '유입액을 주지 않아(ETF 에는 줍니다) 설정원본의 차이로 내야 하는데, ' +
+        '설정원본 이력이 ' + (histSrc ? histSrc.dates + '일치' : '아직 없') + '이라 ' +
+        '3개월 전과 견줄 수가 없습니다. 하루치 차이에 "3개월" 이라는 이름을 붙이지 않습니다.'
+      : '<strong>3-month net flow</strong> is not available yet. The source does not provide ' +
+        'fund-level flows (it does for ETFs), so it must be derived from changes in units-at-par, ' +
+        'and only ' + (histSrc ? histSrc.dates + ' day(s)' : 'no') + ' of history has been ' +
+        'accumulated so far.') + '</div>';
+  }
+
+  html += '<div id="rank-detail"></div>';
+  body.innerHTML = html;
+  renderPickBar('rank-pick-bar');
+  // 담을 때마다 이 표를 통째로 다시 그리므로, 열려 있던 상세는 직접
+  // 되살린다. 안 그러면 "담으면 보던 게 닫힌다" 가 된다.
+  var open = state.selected ? byId(state.selected) : null;
+  if (open) el('rank-detail').innerHTML = detailHtml(open);
+}
+
+// ───────────────────────── 수익률 검산 탭 ─────────────────────────
+function renderBasis() {
+  var body = el('basis-body');
+  var dropped = FUNDS.filter(function (f) { return f.retDropped && f.retDropped.length; });
+  var stepped = FUNDS.filter(function (f) { return f.hasStep; });
+  var cells = 0;
+  for (var i = 0; i < dropped.length; i += 1) cells += dropped[i].retDropped.length;
+
+  var html = '<div class="callout"><h3>' + esc(lang === 'ko'
+    ? '원천 값을 그대로 싣지 않습니다' : 'Source figures are not passed through') + '</h3>' +
+    '<p>' + (lang === 'ko'
+      ? '이 화면의 수익률은 원천(네이버 Npay 증권)이 주는 값입니다. 다만 <b>그대로</b> 싣지 않고, ' +
+        '같은 원천의 <b>기준가 시계열</b>로 한 번 검산한 뒤 통과한 것만 싣습니다.'
+      : 'Returns come from the source (Naver Npay). They are not passed through: each is first checked ' +
+        'against that same source’s <b>base-price series</b>, and only those that agree are shown.') + '</p>' +
+    '<p>' + (lang === 'ko'
+      ? '검산이 필요한 이유가 있습니다. 어떤 펀드는 기준가 계열에 <b>재산정 계단</b>이 있고, 원천이 그 ' +
+        '계단을 수익률로 계산해 내보냅니다. 실제로 한 단기채권 펀드의 1개월 수익률이 <b>+244.94%</b> 로 ' +
+        '옵니다 — 하루 0.002% 씩 움직이던 펀드의 기준가가 2026-08-03 에 974.57 에서 3,356.48 로 ' +
+        '3.44배가 된 것이 그대로 수익률이 된 값입니다.'
+      : 'This matters. Some funds carry a <b>restatement step</b> in their base-price series, and the source ' +
+        'turns that step into a return. One short-term bond fund reports a 1-month return of <b>+244.94%</b> — ' +
+        'its base price went from 974.57 to 3,356.48 on 2026-08-03 after moving 0.002% a day.') + '</p>' +
+    '<p>' + (lang === 'ko'
+      ? '계단을 가로지르는 구간은 <b>비웁니다</b>. 계단 앞뒤의 기준가는 같은 자로 잰 것이 아니므로 ' +
+        '나누어도 수익률이 아닙니다. <b>틀린 숫자를 내보내느니 빈칸이 낫습니다</b> — 빈칸은 모른다는 ' +
+        '뜻이지만 틀린 숫자는 거짓말입니다.'
+      : 'Periods spanning a step are <b>left blank</b>. Prices either side of a step are not measured on the ' +
+        'same scale, so their ratio is not a return. <b>A blank beats a wrong number</b> — a blank says ' +
+        '"unknown", a wrong number lies.') + '</p></div>';
+
+  html += '<div class="grid grid-3">' +
+    '<div class="card"><div class="label">' + esc(lang === 'ko' ? '검산한 펀드' : 'Funds checked') +
+      '</div><div class="stat">' + FUNDS.length.toLocaleString() + '</div></div>' +
+    '<div class="card"><div class="label">' + esc(lang === 'ko' ? '기준가 계단이 있는 펀드' : 'With a base-price step') +
+      '</div><div class="stat orange">' + stepped.length.toLocaleString() + '</div></div>' +
+    '<div class="card"><div class="label">' + esc(lang === 'ko' ? '비운 칸' : 'Cells withheld') +
+      '</div><div class="stat orange">' + cells.toLocaleString() + '</div>' +
+      '<div class="note">' + esc(lang === 'ko' ? dropped.length.toLocaleString() + '개 펀드에서'
+        : 'across ' + dropped.length.toLocaleString() + ' funds') + '</div></div>' +
+    '</div>';
+
+  if (!dropped.length) {
+    html += '<div class="notice">' + esc(lang === 'ko'
+      ? '이번 자료에서는 비운 칸이 없습니다. 원천 값이 모두 기준가 시계열과 앞뒤가 맞았습니다.'
+      : 'Nothing was withheld in this dataset — every source figure agreed with the base-price series.') +
+      '</div>';
+  } else {
+    html += '<h3>' + esc(lang === 'ko' ? '무엇을 왜 비웠나' : 'What was withheld, and why') + '</h3>';
+    html += '<div class="table-wrap"><table><thead><tr>' +
+      '<th>' + esc(lang === 'ko' ? '펀드' : 'Fund') + '</th>' +
+      '<th>' + esc(lang === 'ko' ? '유형' : 'Category') + '</th>' +
+      '<th>' + esc(lang === 'ko' ? '비운 기간' : 'Periods') + '</th>' +
+      '<th>' + esc(lang === 'ko' ? '까닭' : 'Reason') + '</th>' +
+      '<th class="num">' + esc(lang === 'ko' ? '원천이 준 값' : 'Source said') + '</th>' +
+      '</tr></thead><tbody>';
+    var rows = dropped.slice(0, 200);
+    for (var k = 0; k < rows.length; k += 1) {
+      var f = rows[k];
+      var periods = f.retDropped.map(function (d) { return d.period; }).join(', ');
+      var d0 = f.retDropped[0];
+      var worst = f.retDropped.reduce(function (a, b) {
+        return Math.abs(Number(b.source) || 0) > Math.abs(Number(a.source) || 0) ? b : a;
+      }, f.retDropped[0]);
+      html += '<tr class="clickable" data-id="' + esc(f.id) + '">' +
+        '<td><div style="font-weight:600;color:var(--ink)">' + esc(f.name || f.code) + '</div>' +
+        '<div class="dim" style="font-size:13px">' + esc(f.code) + '</div></td>' +
+        '<td>' + esc(f.type || '–') + '</td>' +
+        '<td>' + esc(periods) + '</td>' +
+        '<td>' + esc(d0.reason === 'step'
+          ? (lang === 'ko' ? '기준가 재산정 ' + (d0.at || '') : 'restated ' + (d0.at || ''))
+          : (lang === 'ko' ? '기준가 재계산과 불일치' : 'disagrees with recomputation')) + '</td>' +
+        '<td class="num ' + signClass(Number(worst.source)) + '">' + fmtPct(Number(worst.source)) + '</td>' +
+        '</tr>';
+    }
+    html += '</tbody></table></div>';
+    if (dropped.length > 200) {
+      html += '<div class="dim" style="font-size:13px;margin-top:8px">' + esc(lang === 'ko'
+        ? dropped.length.toLocaleString() + '개 중 200개만 표시했습니다.'
+        : 'Showing 200 of ' + dropped.length.toLocaleString() + '.') + '</div>';
+    }
+  }
+
+  // 수익률 말고도 비운 것이 있다. 한자리에 모아 둔다 — 흩어 두면
+  // "이 화면은 무엇을 숨겼나" 를 읽는 사람이 알 수 없다.
+  var aumHeld = FUNDS.filter(function (x) { return x.aumDropped; });
+  var wHeld = FUNDS.filter(function (x) { return x.badWeights && x.badWeights.length; });
+  var sumHeld = FUNDS.filter(function (x) { return x.weightsDropped; });
+  if (aumHeld.length || wHeld.length || sumHeld.length) {
+    html += '<h3>' + esc(lang === 'ko' ? '수익률 말고 비운 것' : 'Other withheld figures') + '</h3>';
+    if (aumHeld.length) {
+      html += '<div class="notice warn">' + (lang === 'ko'
+        ? '<strong>설정액·순자산을 비운 펀드 ' + aumHeld.length + '개.</strong> ' +
+          '순자산/설정액은 기준가/1000 과 같아야 합니다(407종목 중 393종목이 상대오차 1% 안). ' +
+          '이 항등식이 20% 넘게 깨진 펀드는 두 값을 싣지 않았습니다 — 틀린 설정액은 ' +
+          '그 펀드만이 아니라 설정액 필터와 랭킹 전체를 틀리게 합니다.'
+        : '<strong>' + aumHeld.length + ' fund(s) have AUM and net assets withheld.</strong> ' +
+          'Net assets ÷ AUM must equal base price ÷ 1000 (393 of 407 agree within 1%). Where ' +
+          'that identity breaks by more than 20%, neither figure is shown — a wrong AUM would ' +
+          'corrupt the AUM filter and rankings, not just that one fund.') + '</div>';
+      html += '<div class="table-wrap"><table><thead><tr>' +
+        '<th>' + esc(lang === 'ko' ? '펀드' : 'Fund') + '</th>' +
+        '<th class="num">' + esc(lang === 'ko' ? '원천 설정액' : 'Source AUM') + '</th>' +
+        '<th class="num">' + esc(lang === 'ko' ? '원천 순자산' : 'Source net assets') + '</th>' +
+        '<th class="num">' + esc(lang === 'ko' ? '기준가' : 'Base price') + '</th>' +
+        '<th class="num">' + esc(lang === 'ko' ? '상대오차' : 'Rel. error') + '</th>' +
+        '</tr></thead><tbody>';
+      for (var a = 0; a < Math.min(aumHeld.length, 50); a += 1) {
+        var x = aumHeld[a];
+        html += '<tr class="clickable" data-id="' + esc(x.id) + '">' +
+          '<td>' + esc(x.name || x.code) + '</td>' +
+          '<td class="num">' + esc(fmtAmount(x.aumDropped.aum)) + '</td>' +
+          '<td class="num">' + esc(fmtAmount(x.aumDropped.nav)) + '</td>' +
+          '<td class="num">' + esc(x.aumDropped.basePrice) + '</td>' +
+          '<td class="num">' + (x.aumDropped.relErr * 100).toFixed(0) + '%</td></tr>';
+      }
+      html += '</tbody></table></div>';
+    }
+    if (wHeld.length) {
+      html += '<div class="notice warn">' + (lang === 'ko'
+        ? '<strong>비중을 비운 종목이 있는 펀드 ' + wHeld.length + '개.</strong> ' +
+          '원천이 비중 자리에 비중일 수 없는 값을 준 경우입니다. 0 으로 바꾸지 않고 ' +
+          '비워 두었습니다 — 없는 것을 0 이라고 하면 "안 담았다" 는 거짓이 됩니다.'
+        : '<strong>' + wHeld.length + ' fund(s) have a holding whose weight is withheld</strong> ' +
+          'because the source returned a value that cannot be a weight. Left blank, not zeroed.') +
+        '</div>';
+    }
+    if (sumHeld.length) {
+      html += '<div class="notice warn">' + (lang === 'ko'
+        ? '<strong>비중을 통째로 비운 펀드 ' + sumHeld.length + '개.</strong> ' +
+          '줄마다는 비중일 수 있는 값인데 <strong>합이 100% 를 넘는</strong> 경우입니다. ' +
+          '어느 줄이 틀렸는지 가려낼 방법이 없어, 하나를 골라 고치는 대신 그 펀드의 ' +
+          '비중을 전부 비우고 종목 이름과 순서만 남겼습니다. ' +
+          esc(sumHeld.slice(0, 3).map(function (x) {
+            return x.name + ' ' + x.weightsDropped.sum + '%'; }).join(' · ')) +
+          (sumHeld.length > 3 ? ' 외 ' + (sumHeld.length - 3) + '개' : '') + '.'
+        : '<strong>' + sumHeld.length + ' fund(s) have all weights withheld</strong> ' +
+          'because the rows each look valid but sum above 100%. There is no way to tell ' +
+          'which row is wrong, so none is shown — names and order only.') +
+        '</div>';
+    }
+  }
+
+  html += '<h3>' + esc(lang === 'ko' ? '총보수는 어디까지 되나' : 'How far the fee data goes') + '</h3>';
+  var feeFunds = FUNDS.filter(function (x) { return x.feeMin != null; }).length;
+  var feeSpread = FUNDS.filter(function (x) {
+    return x.feeMin != null && x.feeMax != null && x.feeMax > x.feeMin; }).length;
+  html += '<div class="notice">' + (lang === 'ko'
+    ? '<strong>펀드 단위로는 없고, 클래스별로는 있습니다.</strong> ' +
+      '이 화면을 만들 때 넘겨받은 인수인계 문서는 "총보수를 못 받는다" 고 적었고 ' +
+      '실제로 <code>detail.totalFee</code> 는 거의 다 비어 있습니다. 그런데 ' +
+      '<code>left-panel.returns.classes[]</code> 의 클래스별 총보수는 채워져 있었습니다 — ' +
+      '이 자료에서 <strong>' + feeFunds.toLocaleString() + ' / ' + FUNDS.length.toLocaleString() +
+      '개 펀드</strong>에 보수가 있습니다.<br><br>' +
+      '다만 <strong>하나의 숫자로 줄이지 않았습니다.</strong> ' + feeSpread.toLocaleString() +
+      '개 펀드가 클래스마다 보수가 다릅니다(예: 신한골드증권투자신탁 1 은 클래스 18개, ' +
+      '1.04% ~ 1.39%). 하나를 고르면 그 클래스를 사지 않은 사람 모두에게 거짓이 되므로 ' +
+      '범위로 싣고 클래스별 표를 함께 둡니다.'
+    : '<strong>Not per fund, but per share class.</strong> The handoff for this screen said ' +
+      'expense ratios were unavailable, and <code>detail.totalFee</code> is indeed almost always ' +
+      'null — but <code>left-panel.returns.classes[]</code> carries per-class fees. ' +
+      '<strong>' + feeFunds.toLocaleString() + ' of ' + FUNDS.length.toLocaleString() +
+      ' funds</strong> here have them.<br><br>' +
+      'They are <strong>not reduced to one number</strong>: ' + feeSpread.toLocaleString() +
+      ' funds charge different fees by class. A single figure would be wrong for every class ' +
+      'but one, so the range is shown with the per-class table.') + '</div>';
+
+  body.innerHTML = html;
+}
+
+// ───────────────────────── Hero · 안내문 ─────────────────────────
+// 머리말이 계산한 기준일·수집일. 사용법을 파일로 내려받을 때 같이 적어야 해서
+// 밖에서도 읽을 수 있게 남긴다 — 내려받은 파일에 날짜가 없으면, 그 파일은
+// 언제 것인지 알 수 없는 숫자 뭉치가 된다.
+var DATES = { asOf: '', got: '' };
+
+// 사용법이 지금 무슨 자료를 세고 있는지를 한 줄로 적은 것. 미리 실어 둔 PDF 가
+// 그 자료로 만든 것인지 가릴 때 쓴다.
+//
+// 화면 글자가 아니라 **수**로 만든다. 사용법 본문은 한국어와 영어가 다르지만
+// 자료가 바뀌었는지는 언어와 상관없는 사실이기 때문이다.
+var HELP_STAMP = '';
+
+function renderHero() {
+  var live = DATA.source === 'live';
+  var src = DATA.sources && DATA.sources.kr;
+  var when = (src && src.updatedAt) || DATA.updatedAt;
+
+  // 여기서 두 가지를 섞어 쓰고 있었다. 값은 **수집 시각**인데 이름은
+  // "기준일" 이었고, 게다가 ISO 문자열을 그대로 잘라 **UTC 날짜**를 찍었다.
+  // 일일 수집이 23:30 UTC(= 다음날 08:30 KST)에 도는 탓에, 한국 시간으로
+  // 08-31 아침에 걷은 자료가 화면에는 늘 08-30 으로 나왔다 — 매일 하루씩
+  // 밀린 날짜를 보여 주고 있었다.
+  //
+  // 진짜 기준일은 자료 안에 있다. 펀드마다 tradeDate 를 갖고 있고 오늘
+  // 수집본은 3,192개가 전부 2026-08-28 이다(29·30 은 주말이라 그 앞
+  // 영업일이다). 곧 화면이 찍던 08-30 은 기준일도 수집일도 아닌 날짜였다.
+  //
+  // 그러니 짐작하지 않고 자료에서 읽는다. 펀드마다 다르면 하나로 줄이지
+  // 않고 다르다고 적는다 — 모르는 것을 아는 척하지 않는다.
+  var days = {};
+  for (var d = 0; d < FUNDS.length; d += 1) {
+    if (FUNDS[d].tradeDate) days[FUNDS[d].tradeDate] = (days[FUNDS[d].tradeDate] || 0) + 1;
+  }
+  var dayKeys = Object.keys(days).sort();
+  var asOf = dayKeys.length === 1 ? dayKeys[0]
+    : (dayKeys.length > 1 ? dayKeys[0] + '~' + dayKeys[dayKeys.length - 1] : '');
+
+  // 수집 시각은 한국 시간으로 적는다. 한국 자료이고 읽는 사람도 한국 시간을 쓴다.
+  var got = '';
+  if (when) {
+    var t = new Date(when);
+    got = isFinite(t.getTime())
+      ? new Date(t.getTime() + 9 * 3600 * 1000).toISOString().slice(0, 10)
+      : String(when).slice(0, 10);
+  }
+  DATES.asOf = asOf;
+  DATES.got = got;
+
+  var withHold = 0, withRet = 0;
+  for (var i = 0; i < FUNDS.length; i += 1) {
+    if (FUNDS[i].holdingCount) withHold += 1;
+    if (FUNDS[i].retCount) withRet += 1;
+  }
+  el('hero-meta').innerHTML =
+    '<span class="badge ' + (live ? 'live' : 'sample') + '">' +
+      esc(live ? (lang === 'ko' ? '수집 데이터' : 'Live data') : (lang === 'ko' ? '예시 데이터' : 'Sample data')) +
+    '</span>' +
+    '<span>' + esc(lang === 'ko' ? '펀드 ' + FUNDS.length.toLocaleString() + '개'
+                                 : FUNDS.length.toLocaleString() + ' funds') + '</span>' +
+    '<span>' + esc(lang === 'ko' ? '보유종목 ' + withHold.toLocaleString() + '개'
+                                 : withHold.toLocaleString() + ' with holdings') + '</span>' +
+    (asOf ? '<span title="' + esc(lang === 'ko'
+        ? '원천이 이 자료에 붙여 둔 기준일입니다. 주말·공휴일 다음에는 그 앞 영업일이 됩니다.'
+        : 'The as-of date the source attaches to this data; after a weekend it is the previous business day.') +
+      '">' + esc(lang === 'ko' ? '기준일 ' + asOf : 'As of ' + asOf) + '</span>' : '') +
+    (got ? '<span class="dim" title="' + esc(lang === 'ko'
+        ? '자료를 걷어 온 날(한국 시간)입니다. 위의 기준일과 다릅니다 — 오늘 걷었다고 자료가 오늘 것이 되지는 않습니다.'
+        : 'The day the data was collected (KST). This differs from the as-of date above.') +
+      '">' + esc(lang === 'ko' ? '수집 ' + got : 'Collected ' + got) + '</span>' : '');
+
+  var srcText = live
+    ? (lang === 'ko'
+        ? '<strong>자료 출처.</strong> 네이버 Npay 증권(stock.naver.com) 펀드 API 에서 ' + got +
+          '(한국 시간)에 수집했습니다. 자료 자체의 기준일은 ' + (asOf || '원천 미상') +
+          ' 이라 <u>수집일과 기준일이 다릅니다</u>. 대상은 <u>국내에 설정된 공모펀드</u> ' +
+          FUNDS.length.toLocaleString() +
+          '개이며, 해외에 설정된 뮤추얼펀드는 포함하지 않습니다.'
+        : '<strong>Source.</strong> Naver Npay (stock.naver.com) fund API, collected ' + got +
+          ' (KST). The data itself is as of ' + (asOf || 'an unstated date') +
+          ', so <u>the collection date and the as-of date differ</u>. Scope is ' +
+          FUNDS.length.toLocaleString() + ' <u>public funds domiciled in Korea</u>; ' +
+          'funds domiciled abroad are not included.')
+    : (lang === 'ko'
+        ? '<strong>예시 데이터입니다.</strong> 아직 수집이 돌지 않아 화면 확인용 임의 값이 들어 있습니다. ' +
+          '실제 수치가 아닙니다.'
+        : '<strong>Sample data.</strong> No collection has run yet; these are placeholder values, not real figures.');
+  el('disc-source').innerHTML = srcText;
+
+  var regionSrc = (DATA.sources && DATA.sources.region) || null;
+  el('disc-scope').innerHTML = lang === 'ko'
+    ? '<strong>범위.</strong> 이 화면은 국내에 설정된 공모펀드를 <u>투자 지역</u>으로 가릅니다. ' +
+      '투자 지역은 <u>금융투자협회 전자공시(1차 출처)</u>에서 직접 받으며 <u>국내·해외·혼합</u> ' +
+      '셋으로 나뉩니다' +
+      (regionSrc ? ' (' + (regionSrc.count || 0).toLocaleString() + ' / ' +
+        (regionSrc.total || 0).toLocaleString() + '개 확보)' : '') + '. ' +
+      '처음에는 네이버 유형명의 앞머리에서 읽었는데(“해외주식형” → 해외), 재검증에서 표본 318개 중 ' +
+      '<u>34개(10.7%)</u>가 1차 출처와 어긋났습니다 — 네이버 유형명의 “혼합”은 자산(주식+채권)을 ' +
+      '뜻해서 지역의 혼합을 표현할 수 없기 때문입니다. 자산군은 여전히 유형 이름에서 읽습니다.'
+    : '<strong>Scope.</strong> Korean-domiciled public funds, split by where they invest. The investment ' +
+      'region comes directly from <u>KOFIA electronic disclosure (primary source)</u> and has three ' +
+      'values: domestic, overseas and <u>mixed</u>' +
+      (regionSrc ? ` (${(regionSrc.count || 0).toLocaleString()} of ${(regionSrc.total || 0).toLocaleString()})` : '') +
+      '. It was previously read from the head of Naver’s category name, which disagreed with the ' +
+      'primary source in 34 of 318 sampled funds (10.7%). Asset class is still read from the category name.';
+
+  // 이 문단의 수는 **세어서 넣는다.**
+  //
+  // 전에는 "클래스 19,092개 중 18,712개", "3,196개 중 2,885개" 라고 박아 두었다.
+  // 자료는 날마다 다시 걷히므로 그 수는 다음 날 아침에 바로 틀린 수가 된다 —
+  // 아무도 고치라고 알려 주지 않고, 화면은 태연히 옛날 수를 계속 말한다.
+  // 위의 교차 검증 문단은 그래서 상수와 실제 수를 맞춰 보는 장치를 달았는데,
+  // 여기는 애초에 지금 자료에서 셀 수 있는 수다. 세는 편이 낫다.
+  var clsAll = 0;
+  var clsFee = 0;
+  var feeVariesN = 0;
+  for (var ci = 0; ci < FUNDS.length; ci += 1) {
+    var ccs = FUNDS[ci].classes || [];
+    clsAll += ccs.length;
+    var seen = {};
+    var nSeen = 0;
+    for (var cj = 0; cj < ccs.length; cj += 1) {
+      if (ccs[cj].totalFee == null) continue;
+      clsFee += 1;
+      if (!seen[ccs[cj].totalFee]) { seen[ccs[cj].totalFee] = 1; nSeen += 1; }
+    }
+    if (nSeen > 1) feeVariesN += 1;
+  }
+  el('disc-fee').innerHTML = lang === 'ko'
+    ? '<strong>총보수는 클래스별입니다.</strong> 펀드 단위의 총보수는 원천에 없지만 ' +
+      '<u>클래스별 총보수</u>는 있습니다(클래스 ' + clsAll.toLocaleString() + '개 중 ' +
+      clsFee.toLocaleString() + '개). 국내 공모펀드의 보수는 원래 클래스마다 다르고, ' +
+      '이 자료에서도 ' + FUNDS.length.toLocaleString() + '개 중 ' + feeVariesN.toLocaleString() +
+      '개가 클래스마다 다릅니다. ' +
+      '그래서 하나의 숫자로 줄이지 않고 <u>최저~최고 범위</u>로 싣고 클래스별 표를 함께 둡니다. ' +
+      '목록의 총보수 열과 필터는 <u>최저 클래스</u> 기준입니다.'
+    : '<strong>Fees are per share class.</strong> The source has no fund-level fee, but ' +
+      'per-class fees are present (' + clsFee.toLocaleString() + ' of ' + clsAll.toLocaleString() +
+      ' classes). Korean fund fees differ by class — ' + feeVariesN.toLocaleString() + ' of ' +
+      FUNDS.length.toLocaleString() + ' funds here do. Rather than reduce that to one number, the range ' +
+      '(lowest–highest) is shown with the per-class table. The list column and filter use the ' +
+      'cheapest class.';
+
+  el('disc-returns').innerHTML = lang === 'ko'
+    ? '<strong>수익률 기준.</strong> 기준가(NAV) 기준의 <u>누적</u> 수익률입니다 — 3년·5년도 연율로 ' +
+      '환산하지 않았습니다. 원천이 주는 값을 같은 원천의 기준가 시계열로 검산해 통과한 것만 싣고, ' +
+      '통과하지 못한 칸은 비운 뒤 <u>수익률 검산</u> 탭에 무엇을 왜 비웠는지 남깁니다. ' +
+      '분배금 재투자 여부는 원천이 밝히지 않으므로 이 화면도 단정하지 않습니다.'
+    : '<strong>Return basis.</strong> Cumulative returns on a base-price (NAV) basis — 3Y and 5Y are ' +
+      'not annualised. Source figures are checked against the same source’s base-price series; those ' +
+      'that fail are withheld and listed in the <u>Return Audit</u> tab. The source does not state whether ' +
+      'distributions are reinvested, so neither does this screen.';
+
+  // 교차 검증 결과. **확인된 것과 확인되지 않은 것을 나눠 적는다** — 확인 못 한
+  // 구간을 말하지 않고 넘어가면 확인된 것처럼 전달된다.
+  // (근거: tools/discovery/fund_verify_verdict.md)
+  //
+  // 이 문단은 대조를 돌린 날의 결과를 적은 **고정된 글**이다. 그런데 자료는
+  // 매일 다시 걷히고 펀드 수도 바뀐다(3,196 → 3,192). 그러면 "이 화면의
+  // 3,196개를 전수 대조했다" 는 문장이 어느 날부터 조용히 거짓이 된다 —
+  // 대조한 3,196개와 지금 화면의 3,192개는 같은 집합이 아니다.
+  // 그래서 대조 당시의 수를 상수로 두고 지금 화면과 맞춰 본 뒤, 어긋나면
+  // 어긋난다고 화면이 스스로 적게 한다. 사람이 날짜를 갱신하는 것을 잊어도
+  // 문장이 거짓말은 하지 않도록 하는 것이 목적이다.
+  var VERIFIED_ON = '2026-08-31';
+  var VERIFIED_N = 3192;
+  var staleNote = FUNDS.length === VERIFIED_N ? '' : (lang === 'ko'
+    ? ' <strong>이 대조는 ' + VERIFIED_ON + ' 수집본(' + VERIFIED_N.toLocaleString() +
+      '개) 기준이고, 지금 화면은 ' + FUNDS.length.toLocaleString() + '개입니다.</strong> ' +
+      '그 사이 설정·해지된 펀드는 이 대조에 포함되지 않았습니다.'
+    : ' <strong>This cross-check covers the ' + VERIFIED_ON + ' collection (' +
+      VERIFIED_N.toLocaleString() + ' funds); this screen now shows ' +
+      FUNDS.length.toLocaleString() + '.</strong> Funds launched or closed since then were not in it.');
+  el('disc-verify').innerHTML = (lang === 'ko'
+    ? '<strong>교차 검증(2026-08-31).</strong> 수집본 3,192개를 계보가 다른 1차 출처인 ' +
+      '<u>금융투자협회 전자공시</u>에 전수 다시 물었습니다(응답 3,192건 · 실패 0건). ' +
+      '이번에는 <strong>양쪽 기준일이 2026-08-28 로 같아</strong> 기준가를 그대로 맞댈 수 있었습니다 ' +
+      '— <u>기준가</u> 3,192건 중 <u>3,131건(98.1%)</u>이 0.1% 안에서 일치했고, 어긋난 61건 중 ' +
+      '53건은 원화환산과 현지통화 표시의 차이(배율이 원/달러 환율대에 그대로 들어맞습니다)이며 ' +
+      '<strong>나머지 8건(외화표시)은 어느 쪽이 옳은지 가리지 못했습니다.</strong> ' +
+      '<u>투자지역</u>(3,192건)과 <u>공모 여부</u>(3,192건)는 전건 일치, <u>설정액</u>은 3,116건 중 ' +
+      '3,112건, <u>순자산</u>은 3,118건 중 3,111건이 일치했습니다. <u>설정일</u>은 13건이 다릅니다. ' +
+      '반면 <strong>1개월 이상 9개 구간(1M·3M·6M·9M·YTD·1Y·2Y·3Y·5Y)의 수익률은 금투협이 주지 않아 ' +
+      '외부 원천으로 확인되지 않았습니다</strong> — 그 값들에 대한 검증은 원천 자체의 기준가 ' +
+      '시계열로 검산한 데까지입니다. 금투협이 함께 주는 1주 등락률은 3,188건 중 3%p 넘게 ' +
+      '벌어진 것이 없었습니다.'
+    : '<strong>Cross-check (2026-08-31).</strong> All 3,192 collected funds were re-queried against an ' +
+      'independent primary source, <u>KOFIA electronic disclosure</u> (3,192 responses, 0 failures). ' +
+      'This time <strong>both sides carry the same as-of date (2026-08-28)</strong>, so base prices could ' +
+      'be compared directly — <u>3,131 of 3,192 (98.1%)</u> agree within 0.1%. Of the 61 that differ, 53 ' +
+      'are a won-converted vs. local-currency difference (the ratios land squarely on the KRW/USD rate); ' +
+      '<strong>the remaining 8 (foreign-currency funds) could not be adjudicated.</strong> ' +
+      '<u>Investment region</u> and <u>public-offering status</u> matched on all 3,192; <u>fund size</u> on ' +
+      '3,112 of 3,116 and <u>net assets</u> on 3,111 of 3,118. <u>Inception dates</u> differ on 13. ' +
+      'However, <strong>the nine return windows of one month and longer (1M–5Y) are not covered by KOFIA ' +
+      'and therefore remain unverified against any outside source</strong> — they are checked only ' +
+      'against the originating source’s own base-price series. Of the one-week changes KOFIA does serve, ' +
+      'none of the 3,188 comparable funds diverged by more than 3pp.') +
+    staleNote;
+}
+
+function renderScopeNote() {
+  var node = el('scope-note');
+  if (DATA.source === 'live') { node.innerHTML = ''; return; }
+  node.innerHTML = '<div class="notice warn"><strong>' +
+    esc(lang === 'ko' ? '예시 데이터입니다.' : 'Sample data.') + '</strong> ' +
+    esc(lang === 'ko'
+      ? '아직 수집이 돌지 않았습니다. 아래 숫자는 화면 확인용 임의 값이며 실제 수치가 아닙니다.'
+      : 'No collection has run yet; the figures below are placeholders, not real data.') + '</div>';
+}
+
+// ───────────────────────── 언어 ─────────────────────────
+function applyLang() {
+  document.documentElement.lang = lang;
+  var nodes = document.querySelectorAll('[data-ko]');
+  for (var i = 0; i < nodes.length; i += 1) {
+    var v = nodes[i].getAttribute('data-' + lang);
+    if (v != null) nodes[i].innerHTML = v;
+  }
+  var phs = document.querySelectorAll('[data-ko-ph]');
+  for (var j = 0; j < phs.length; j += 1) {
+    var p = phs[j].getAttribute('data-' + lang + '-ph');
+    if (p != null) phs[j].setAttribute('placeholder', p);
+  }
+  var btns = document.querySelectorAll('.lang-toggle button');
+  for (var k = 0; k < btns.length; k += 1) {
+    btns[k].setAttribute('aria-checked', btns[k].getAttribute('data-lang') === lang ? 'true' : 'false');
+  }
+}
+
+// ───────────────────────── 사용법 ─────────────────────────
+//
+// 사용법 문서는 본문보다 먼저 낡는다. 그래서 여기 나오는 수는 하나도 글로
+// 박아 두지 않고 **그 자리에서 자료를 세어** 그린다. 자료가 바뀌면 사용법도
+// 같이 바뀌고, 사람이 갱신을 잊어서 생기는 거짓이 아예 생기지 않는다.
+function renderHelp() {
+  var node = el('help-body');
+  if (!node) return;
+  var ko = lang === 'ko';
+  var n = function (p) { var c = 0; for (var i = 0; i < FUNDS.length; i += 1) if (p(FUNDS[i])) c += 1; return c; };
+  var fmtN = function (v) { return Number(v).toLocaleString(); };
+
+  var withHold = n(function (f) { return f.holdingCount > 0; });
+  var noAum = n(function (f) { return f.aum == null; });
+  var feeVaries = n(function (f) { return f.feeMin != null && f.feeMax != null && f.feeMax > f.feeMin; });
+  var noFee = n(function (f) { return f.feeMin == null; });
+  var mixed = n(function (f) { return f.region === 'mixed'; });
+  var dropped = n(function (f) { return f.retDropped && Object.keys(f.retDropped).length > 0; });
+  var datedHold = n(function (f) { return f.holdingsAsOfKnown; });
+
+  var secs = new Set();
+  for (var i = 0; i < FUNDS.length; i += 1) {
+    var hs = FUNDS[i].holdings || [];
+    for (var j = 0; j < hs.length; j += 1) if (hs[j].name) secs.add(hs[j].name);
+  }
+
+  // 화면별 사용법에 찍히는 수. 이것도 세어서 넣는다 — "운용사 60개사" 처럼
+  // 박아 두면 운용사가 하나 늘어난 날 아침에 조용히 거짓이 된다.
+  var comps = new Set();
+  var types = new Set();
+  for (var ci = 0; ci < FUNDS.length; ci += 1) {
+    if (FUNDS[ci].company) comps.add(FUNDS[ci].company);
+    if (FUNDS[ci].type) types.add(FUNDS[ci].type);
+  }
+  var stepped = n(function (f) { return !!f.hasStep; });
+  var withFlow = n(function (f) { return f.flow && f.flow.m3 != null && isFinite(Number(f.flow.m3)); });
+  // 랭킹 탭의 자금 유입 표는 설정원본 이력이 3개월치 쌓여야 나온다. 아직
+  // 없는 날에는 화면에도 표 대신 "왜 아직 없나" 가 뜬다. 사용법이 "나옵니다"
+  // 라고 적어 두면 사람은 없는 표를 찾다가 자기가 잘못 보고 있다고 여긴다.
+  var flowOn = withFlow > 0;
+
+  // 사용법에 찍히는 수를 그대로 이어 붙인다. 이 줄이 달라졌다는 것은
+  // 사용법 본문이 달라졌다는 것이고, 미리 실어 둔 PDF 는 그 순간 낡은 것이 된다.
+  // **사용법에 수를 하나 더 찍게 되면 여기에도 반드시 더한다.** 빠뜨리면
+  // 본문은 바뀌었는데 표시는 그대로라 낡은 PDF 가 최신인 척 내려간다.
+  HELP_STAMP = [FUNDS.length, withHold, noAum, feeVaries, noFee, mixed, dropped,
+                datedHold, secs.size, comps.size, types.size, stepped, withFlow,
+                DATES.asOf, DATES.got].join('|');
+
+  // ── 그림이 붙은 사용법을 화면 안에서 그대로 보여 준다.
+  //
+  // 여태 이 탭은 글만 있었고, 그림이 붙은 것은 따로 받아 가는 PDF 뿐이었다.
+  // 그런데 "어느 칸이 그 칸인가" 는 화면을 보고 있는 그 순간에 묻는 것이다 —
+  // 받아야만 보이는 그림은 필요한 때에 없는 그림이다. 빌드가 실제 화면을 찍어
+  // 만든 문서(data/fund-help-doc.js)가 실려 있으면 여기에 그대로 그린다.
+  //
+  // 사용법이 두 벌이면 반드시 어긋난다. 실제로 랭킹에 담는 칸을 붙인 날
+  // 문서에는 적었는데 아래 글에는 못 적어, 화면이 자기가 방금 붙인 칸을
+  // 설명하지 못했다. 한 벌을 두 곳에서 쓰면 그 어긋남이 생기지 않는다.
+  //
+  // 다만 **수가 다르면 안 그린다.** 낡은 그림에는 그때의 수가 찍혀 있고 보는
+  // 사람은 그것이 낡았다는 것을 알 길이 없다. 그럴 때는 아래 글로 물러선다 —
+  // 글에 찍히는 수는 방금 자료에서 센 값이라 언제 봐도 지금 것이다.
+  var doc = window.HELP_DOC;
+  if (ko && doc && doc.html && doc.stamp && doc.stamp === HELP_STAMP) {
+    installHowtoCss(doc.css);
+    // 그림을 눌러 키우는 것은 종이에서는 뜻이 없어 문서 본문에 넣지 않았다.
+    // 화면에서만 머리말 바로 아래에 한 줄 얹는다.
+    var hint = '<div class="note"><b>그림은 누르면 원래 크기로 커집니다.</b> ' +
+      '아래 그림은 모두 이 화면을 실제로 찍은 것입니다 — 손으로 그린 예시가 아닙니다.</div>';
+    var cut = doc.html.indexOf('</header>');
+    var inner = cut >= 0
+      ? doc.html.slice(0, cut + 9) + hint + doc.html.slice(cut + 9)
+      : hint + doc.html;
+    node.innerHTML = '<div class="howto"><div class="wrap">' + inner + '</div></div>';
+    finishHelp(true);
+    return;
+  }
+
+  // ── 화면별 사용법.
+  //
+  // 전에는 탭당 한 문단짜리 요약 카드였다. 요약은 "무슨 화면인가" 는 알려
+  // 주지만 "어떻게 쓰나" 는 알려 주지 않는다 — 어느 칸을 먼저 건드리는지,
+  // 저 단추가 무엇을 하는지, 안 나올 때 무엇을 바꿔 보는지가 빠져 있었다.
+  // 그래서 화면마다 **순서 · 조작 항목 · 해보기 · 주의** 넷을 적는다.
+  //
+  // 여기 나오는 조작 항목 이름은 화면에 실제로 있는 것만 쓴다. 없는 단추를
+  // 사용법에 적으면 사람은 그것을 찾다가 자기가 잘못 보고 있다고 생각한다.
+  var screens = ko ? [
+    {
+      tab: '펀드 찾기',
+      when: '조건에 맞는 펀드를 추리고, 한 펀드가 <strong>무엇을 담고 있는지</strong>를 볼 때 씁니다. 이 화면의 출발점입니다.',
+      steps: [
+        '검색창에 <strong>아는 것</strong>을 넣습니다 — 펀드 이름, 표준코드(KR…), 통장·HTS 에 찍히는 <strong>클래스 코드(K55…)</strong>, 운용사, 또는 담고 있을 법한 <strong>종목 이름</strong>. 네 가지가 모두 걸립니다.',
+        '아래 일곱 칸(투자 지역 · 자산군 · 유형 · 운용사 · 설정액 · 위험등급 · 총보수)으로 좁힙니다. 고른 조건은 <strong>동시에</strong> 걸립니다. 칸 안에 적힌 괄호 수는 <strong>전체 ' + fmtN(FUNDS.length) + '개 기준</strong>으로 그 값에 해당하는 펀드 수이며, 다른 조건을 함께 건 뒤의 수가 아닙니다 — 지금 몇 개가 남았는지는 표 위의 <strong>건수</strong>에서 보십시오.',
+        '<strong>수익률 기간</strong>을 바꾸면 목록의 수익률 열이 그 기간 값으로 바뀝니다(1일부터 5년까지 ' + fmtN(PERIODS.length) + '가지).',
+        '열 제목의 <strong>▽</strong> 를 누르면 그 열로 정렬하고, 한 번 더 누르면 반대 방향으로 정렬합니다.',
+        '<strong>줄을 누르면</strong> 바로 아래에 상세가 펼쳐집니다 — 기준가 · 설정액 · 설정일 · 위험등급, 기간 수익률, 위험지표, 보유종목 전체, 업종구성, <strong>클래스별 보수와 코드</strong>, 매매 기준일, 그리고 원천으로 바로 가는 링크.',
+        '비교하고 싶은 것은 줄 맨 왼쪽 <strong>비교</strong> 칸의 <strong>체크상자</strong>에 표시해 담습니다. 표시하지 않아도 목록은 그대로 쓸 수 있고, 담은 것은 다음 탭에서 봅니다.',
+      ],
+      controls: [
+        ['비교 칸 (맨 왼쪽 체크상자)', '비교할 펀드를 담는 칸입니다. <strong>표시하지 않아도 목록은 그대로 쓸 수 있습니다</strong> — 줄 아무 데나 누르면 상세가 열립니다. 두 개 이상 표시하면 <strong>비교 · 중복도</strong> 탭에서 겹침을 봅니다. 최대 ' + fmtN(MAX_COMPARE) + '개이고, 다 차면 남은 체크상자가 흐려집니다.'],
+        ['검색창', '한 군데가 아니라 <strong>네 군데</strong>를 훑습니다 — 펀드 본체(이름 · 표준코드 · 운용사 · 유형 · 벤치마크), <strong>클래스 코드</strong>, <strong>클래스 이름</strong>, 그리고 <strong>보유종목 이름</strong>.'],
+        ['투자 지역', '돈이 <strong>어디에</strong> 투자되는지입니다(국내 · 해외 · 혼합). 유형 이름에 나오는 "혼합" 은 주식+채권이라는 <strong>자산</strong> 이야기라 서로 다른 말입니다.'],
+        ['자산군 · 유형', '유형은 원천이 준 이름을 <strong>그대로</strong> 씁니다(지금 ' + fmtN(types.size) + '가지). 이 화면이 지어낸 분류가 아닙니다.'],
+        ['운용사', '지금 ' + fmtN(comps.size) + '개 운용사가 실려 있습니다.'],
+        ['설정액 · 위험등급 · 총보수', '총보수 칸은 <strong>가장 싼 클래스</strong> 기준으로 거릅니다. 위험등급은 숫자가 아니라 원천이 준 문자열 등급입니다.'],
+        ['수익률 기간', '목록의 수익률 열을 바꿉니다. 수익률로 정렬해 두었다면 정렬 기준도 같이 바뀝니다.'],
+        ['보유종목 있는 것만', '체크하면 보유종목이 실제로 온 ' + fmtN(withHold) + '개만 남습니다. 채권형 · MMF 는 대개 여기서 빠집니다.'],
+        ['조건 초기화', '검색어와 모든 칸을 한 번에 되돌립니다.'],
+        ['더 보기', '목록은 ' + fmtN(PAGE) + '개씩 그립니다. 위에 적힌 건수는 <strong>조건에 맞는 전체</strong> 수라서 표에 보이는 줄 수와 다릅니다.'],
+      ],
+      example: '통장에 <strong>K55301…</strong> 만 찍혀 있다면 그 코드를 그대로 검색창에 넣으십시오 — 그 클래스를 가진 펀드가 나오고, 줄을 펼치면 <strong>클래스별</strong> 표에서 해당 줄이 표시됩니다. 반대로 <strong>삼성전자</strong> 를 넣으면 그 종목을 담은 펀드가 나옵니다.',
+      caution: '목록의 <strong>총보수 열과 필터는 최저 클래스 기준</strong>입니다. 실제로 가입하는 클래스의 보수는 더 높은 경우가 많으니(지금 ' + fmtN(feeVaries) + '개 펀드가 클래스마다 다릅니다), 줄을 펼쳐 클래스별 표를 보고 고르십시오.',
+    },
+    {
+      tab: '비교 · 중복도',
+      when: '여러 펀드를 <strong>같이 담아도 분산이 되는지</strong>를 볼 때 씁니다. 분산이라고 생각한 조합이 실은 같은 것을 두 번 산 것인지가 여기서 갈립니다.',
+      steps: [
+        '<strong>펀드 찾기</strong> 또는 <strong>랭킹</strong> 탭에서 줄 맨 왼쪽 <strong>비교</strong> 칸의 체크상자에 표시해 담습니다. 두 화면의 칸은 같은 것이라 섞어 담아도 됩니다. <strong>두 개 이상</strong>부터 비교가 되고, 최대 ' + fmtN(MAX_COMPARE) + '개까지 담깁니다.',
+        '이 탭으로 옮겨 옵니다. 담은 수가 위에 적혀 있고, 그 아래에 담긴 펀드가 <strong>이름표</strong>로 늘어섭니다. 이름표의 <strong>×</strong> 를 누르면 <strong>그 하나만</strong> 빠지고, <strong>전부 비우기</strong> 는 한 번에 지웁니다.',
+        '<strong>두 펀드씩 겹침</strong> 표에서 짝마다 겹침 비율과 겹친 종목 수를 봅니다.',
+        '<strong>둘 이상이 담은 종목</strong> 표에서 어느 종목이 여러 펀드에 동시에 들어 있는지, 펀드마다 몇 %씩 줬는지 봅니다.',
+      ],
+      controls: [
+        ['비교 칸 체크상자 (펀드 찾기 · 랭킹에서)', '표시하면 담기고, 표시를 지우면 빠집니다. 담긴 줄은 왼쪽에 주황 띠가 생깁니다. 이 탭에는 <strong>담는</strong> 칸이 없습니다 — 담는 일은 펀드 찾기와 랭킹에서 합니다.'],
+        ['이름표의 ×', '담긴 것을 <strong>하나씩 뺍니다.</strong> 여덟 개를 담아 놓고 하나만 마음에 안 들 때, 그것 하나 빼자고 펀드 찾기로 돌아가 그 줄을 다시 찾을 필요가 없습니다.'],
+        ['겹침 비율', '두 펀드가 <strong>같은 종목에 준 비중 중 작은 쪽</strong>을 모두 더한 값입니다. 40% 라면 두 펀드의 40% 가 사실상 같은 자리에 있다는 뜻입니다.'],
+        ['겹친 종목 수', '한쪽이라도 비중이 오지 않은 종목이 있으면 비율을 내지 않고 <strong>겹친 종목 수만</strong> 싣습니다.'],
+        ['○ 표시', '담고는 있으나 <strong>비중이 원천에 없어</strong> 숫자를 쓸 수 없는 자리입니다. 0 이 아닙니다.'],
+      ],
+      example: '국내 대형주 펀드 둘을 담아 보면 겹침이 절반을 넘는 일이 흔합니다. 둘을 다 사도 분산은 생각만큼 늘지 않습니다.',
+      caution: '보유종목이 오지 않는 펀드(채권형 · MMF 등)는 겹침을 <strong>계산하지 않고 비웁니다</strong> — 겹치는 것이 없다는 뜻이 아닙니다. 보유종목이 실린 것은 ' + fmtN(FUNDS.length) + '개 중 ' + fmtN(withHold) + '개입니다.',
+    },
+    {
+      tab: '종목 → 펀드',
+      when: '특정 종목을 <strong>어느 펀드가 담고 있는지</strong> 거꾸로 찾을 때 씁니다.',
+      steps: [
+        '검색창에 <strong>종목 이름</strong>을 넣습니다(예: 삼성전자, NVIDIA). 지금 이 화면에 실린 종목은 ' + fmtN(secs.size) + '가지입니다.',
+        '그 종목을 담은 펀드가 <strong>비중이 큰 순서</strong>로 나옵니다.',
+        '표에서 펀드 · 유형 · 담은 종목 · 비중 · 설정액을 봅니다. <strong>줄을 누르면</strong> 표 아래에 그 펀드의 상세가 펼쳐집니다(펀드 찾기의 상세와 같은 내용).',
+      ],
+      controls: [
+        ['검색창', '<strong>종목 이름만</strong> 찾습니다. 펀드 이름 · 운용사로 찾을 때는 <strong>펀드 찾기</strong> 탭을 쓰십시오.'],
+        ['+N개 더', '한 펀드가 검색어에 걸리는 종목을 여럿 담고 있으면 <strong>비중이 가장 큰 하나</strong>만 줄에 싣고, 나머지가 몇 개인지를 이렇게 밝힙니다.'],
+        ['위의 건수 줄', '표는 200행까지만 그립니다. 그럴 때 <strong>몇 개 중 몇 개를 보여 주는지</strong>를 위에 적습니다.'],
+      ],
+      example: '<strong>엔비디아</strong> 와 <strong>NVIDIA</strong> 는 다른 글자입니다. 원천이 준 이름 그대로 찾으므로, 안 나오면 <strong>한글 · 영문을 바꿔서</strong> 한 번 더 넣어 보십시오.',
+      caution: '보유종목은 대개 <strong>분기 공시</strong>라 몇 달 전 기준일 수 있는데, 원천이 그 기준일을 주지 않습니다(' + fmtN(FUNDS.length) + '개 중 기준일이 붙은 것 ' + fmtN(datedHold) + '개). "지금 담고 있다" 가 아니라 <strong>"마지막 공시에 있었다"</strong> 로 읽으십시오.',
+    },
+    {
+      tab: '랭킹',
+      when: '어떤 펀드가 <strong>많이 올랐는지 · 크게 모였는지</strong>' + (flowOn ? ' · <strong>돈이 들어왔는지</strong>' : '') + '를 훑을 때 씁니다.',
+      steps: [
+        '<strong>대상</strong> 에서 유형을 고릅니다(전체, 또는 ' + fmtN(types.size) + '가지 유형 중 하나).',
+        '<strong>기간</strong> 을 고릅니다(1일 ~ 5년).',
+        '아래로 그 기간 수익률 <strong>상위 20 · 하위 20</strong> 과 <strong>설정액 상위 20</strong> 이 차례로 나옵니다'
+          + (flowOn ? ', 이어서 <strong>3개월 자금 유입 · 유출 상위 20</strong> 도 나옵니다.' : '.'),
+        '눈에 띄는 것은 줄 맨 왼쪽 <strong>비교</strong> 칸의 체크상자에 표시해 <strong>여기서 바로 담습니다</strong> — 이름을 외워 두었다가 펀드 찾기에서 다시 찾을 필요가 없습니다. 표 위 띠의 <strong>비교 탭에서 보기</strong> 로 바로 넘어갑니다.',
+      ],
+      controls: [
+        ['대상', '유형 하나로 좁혀 <strong>같은 것끼리</strong> 비교합니다. 채권형과 주식형을 한 표에 놓으면 순위는 뜻이 없습니다.'],
+        ['기간', '3년 · 5년도 <strong>연 환산하지 않은 누적</strong> 수익률입니다. 3년 30% 를 연 30% 로 읽으면 안 됩니다.'],
+        ['순위표의 줄', '누르면 표 아래에 그 펀드의 상세가 펼쳐집니다 — 랭킹에서 본 이름을 다시 찾으러 갈 필요가 없습니다.'],
+        ['비교 칸 (맨 왼쪽 체크상자)', '<strong>펀드 찾기와 같은 칸</strong>입니다. 여기서 표시한 것과 펀드 찾기에서 표시한 것이 한 곳에 담기므로 섞어 담아도 됩니다. 최대 ' + fmtN(MAX_COMPARE) + '개이고, 다 차면 남은 체크상자가 흐려집니다. 담긴 것을 하나씩 빼는 일은 <strong>비교 · 중복도</strong> 탭의 이름표에서 합니다.'],
+        flowOn
+          ? ['3개월 자금 유입', '원천이 펀드에는 유입액을 주지 않아서, <strong>설정원본의 3개월 차이</strong>로 냅니다(지금 ' + fmtN(withFlow) + '개 대상). 순자산 차이를 쓰면 값이 올라 커진 펀드가 유입 상위로 올라오기 때문입니다.']
+          : ['3개월 자금 유입 (아직 없음)', '이 표는 <strong>아직 나오지 않습니다.</strong> 원천이 펀드에는 유입액을 주지 않아(ETF 에는 줍니다) <strong>설정원본의 차이</strong>로 내야 하는데, 그 이력이 3개월치가 안 쌓였습니다. 하루치 차이에 "3개월" 이라는 이름을 붙이지 않습니다 — 탭에 가시면 표 대신 그 사정이 적혀 있습니다.'],
+      ],
+      example: '3년 수익률 상위만 보고 고르면 <strong>그 3년에 맞았던 유형</strong>을 사는 것이 되기 쉽습니다. 대상을 유형으로 좁혀 같은 무대에서 비교하십시오.',
+      caution: '순위는 저장된 값이 아니라 화면이 그 자리에서 매깁니다. <strong>값이 빈 펀드는 순위에서 빼며 0 위로 놓지 않습니다</strong> — 그래서 줄 세운 모수가 표마다 다릅니다.',
+    },
+    {
+      tab: '수익률 검산',
+      when: '이 화면의 수익률을 <strong>믿어도 되는지</strong>, 그리고 어떤 칸이 왜 비었는지 확인할 때 봅니다.',
+      steps: [
+        '이 탭에는 조작할 것이 없습니다. <strong>읽는 화면</strong>입니다.',
+        '위 카드에서 검산한 펀드 수, <strong>기준가 계단이 있는 펀드</strong> 수(지금 ' + fmtN(stepped) + '개), 비운 칸 수를 봅니다.',
+        '<strong>무엇을 왜 비웠나</strong> 표에서 펀드별로 어느 기간을 무슨 까닭으로 비웠는지, 그리고 <strong>원천이 준 값은 얼마였는지</strong>를 봅니다.',
+      ],
+      controls: [
+        ['기준가 재산정(계단)', '분할 · 병합 등으로 기준가가 하루 만에 크게 뛴 자리입니다. 그 구간을 지나는 기간수익률은 기준가만으로 검산할 수 없어 비웁니다.'],
+        ['비운 칸', '원천이 준 값이 기준가로 다시 계산한 값과 어긋난 자리입니다. <strong>고쳐 쓰지 않고 비웁니다.</strong> 지금 ' + fmtN(dropped) + '개 펀드에 그런 칸이 있습니다.'],
+        ['원천이 준 값', '비운 자리에 원천이 무엇을 말했는지 그대로 남겨 둡니다 — 다른 화면에서 그 수를 보고 오신 분이 대조할 수 있게.'],
+      ],
+      example: '어떤 펀드의 3년 수익률이 비어 있다면 이 탭에서 그 펀드 이름을 찾아 보십시오. 값이 <strong>없어서</strong>가 아니라 <strong>검산을 통과하지 못해서</strong> 비운 것일 수 있습니다.',
+      caution: '검산은 <strong>같은 원천의 기준가 시계열</strong>로 한 것입니다. 원천이 통째로 틀렸다면 이 검산은 잡지 못합니다 — 1개월 이상 기간수익률은 아직 <strong>외부 원천으로 확인되지 않았습니다</strong>.',
+    },
+    {
+      tab: '사용법 (이 화면)',
+      when: '지금 보고 계신 화면입니다. 화면을 열 수 없는 사람에게 <strong>사용법만 따로</strong> 보낼 때도 씁니다.',
+      steps: [
+        '<strong>사용법 내려받기 (HTML)</strong> — 이 절만 담은 파일 하나를 받습니다. 브라우저만 있으면 열립니다.',
+        '<strong>사용법 내려받기 (PDF)</strong> — 미리 만들어 화면 안에 실어 둔 완성본을 그대로 받습니다.',
+        '<strong>사용법만 인쇄 · PDF 저장</strong> — 브라우저의 인쇄창으로 직접 뽑습니다. 인쇄 설정에서 <strong>배경 그래픽</strong>을 켜야 주황 머리말이 나옵니다.',
+        '오른쪽 위 <strong>KO / EN</strong> 으로 화면 전체의 언어를 바꿉니다. 사용법도 같이 바뀝니다.',
+        '오른쪽 위 <strong>인쇄 · PDF 저장</strong> 은 <strong>지금 열어 놓은 탭 하나만</strong> 찍습니다. 비교 · 중복도를 보다가 누르면 그 화면만 나옵니다 — 여섯 탭이 통째로 딸려 나오지 않습니다. 검색창 · 거르개처럼 눌러야 하는 것들은 종이에서 할 일이 없어 빠집니다.',
+      ],
+      controls: [
+        ['PDF 단추가 안 보일 때', '실어 둔 PDF 는 만든 날의 자료를 담습니다. 화면이 <strong>지금 세는 수</strong>와 PDF 에 적힌 수가 다르면 낡은 것이므로, 화면이 스스로 단추를 감추고 <strong>왜 없는지를 적습니다.</strong> 그때는 옆의 인쇄 단추로 직접 뽑으십시오.'],
+      ],
+      example: '사용법만 필요한 사람에게는 ' + fmtN(FUNDS.length) + '개 펀드가 통째로 든 이 화면 대신 <strong>내려받은 사용법 파일</strong>만 보내면 됩니다.',
+      caution: '내려받은 파일은 <strong>받은 날의 자료</strong>를 말합니다(지금 기준일 ' + esc(DATES.asOf || '미상') + '). 자료는 날마다 다시 걷히므로 기준일이 바뀌면 다시 받으십시오.',
+    },
+  ] : [
+    {
+      tab: 'Browse',
+      when: 'Narrow a list down to the funds you care about, then see <strong>what one fund actually holds</strong>. This is the starting point.',
+      steps: [
+        'Type <strong>whatever you know</strong> into the search box — fund name, fund code (KR…), the <strong>share-class code (K55…)</strong> printed on your statement, the manager, or a <strong>security</strong> the fund might hold. All four are searched.',
+        'Narrow with the seven selects (region, asset class, category, manager, size, risk grade, fee). They apply <strong>together</strong>. The number in each option counts funds <strong>across all ' + fmtN(FUNDS.length) + '</strong>, not what is left after your other filters — for that, read the <strong>match count</strong> above the table.',
+        'Changing <strong>Return period</strong> switches the return column to that period (' + fmtN(PERIODS.length) + ' periods, 1D to 5Y).',
+        'Click a column header <strong>▽</strong> to sort by it; click again to reverse.',
+        '<strong>Click a row</strong> to expand the detail — base price, size, inception, risk grade, returns, risk metrics, the full holdings list, sector mix, <strong>per-class fees and codes</strong>, dealing terms, and links straight to the sources.',
+        'To compare funds, tick the <strong>checkbox</strong> in the <strong>Compare</strong> column at the left of a row. You do not have to tick anything to use the list; what you tick is read on the next tab.',
+      ],
+      controls: [
+        ['Compare column (checkbox on the left)', 'Picks funds to compare. <strong>Ticking is optional</strong> — click any row to open its detail. Tick two or more and the <strong>Compare</strong> tab shows their overlap. Up to ' + fmtN(MAX_COMPARE) + '; once full, the remaining checkboxes dim.'],
+        ['Search box', 'Searches <strong>four</strong> places, not one: the fund body (name, code, manager, category, benchmark), <strong>share-class codes</strong>, <strong>share-class names</strong>, and <strong>holding names</strong>.'],
+        ['Invests in', 'Where the money goes (domestic, overseas, mixed). The word "mixed" inside a category name means <strong>equity + bond</strong> — a different thing.'],
+        ['Asset class · Category', 'Categories are the source’s own names, used <strong>verbatim</strong> (' + fmtN(types.size) + ' of them). Nothing here is invented.'],
+        ['Manager', fmtN(comps.size) + ' managers are represented.'],
+        ['AUM · Risk · Fee', 'The fee filter uses the <strong>cheapest class</strong>. Risk grade is a text grade from the source, not a number.'],
+        ['Return period', 'Switches the return column; if you are sorting by return, the sort follows.'],
+        ['With holdings only', 'Keeps the ' + fmtN(withHold) + ' funds whose holdings actually arrived. Bond funds and MMFs usually drop out here.'],
+        ['Reset', 'Clears the query and every select at once.'],
+        ['Show more', 'The table draws ' + fmtN(PAGE) + ' rows at a time. The count above is the <strong>full match count</strong>, not the number of rows drawn.'],
+      ],
+      example: 'If your statement only shows <strong>K55301…</strong>, paste that code in: the fund holding that class appears, and expanding the row highlights that line in the <strong>share class</strong> table. Typing a stock name instead finds every fund holding it.',
+      caution: 'The <strong>fee column and fee filter use the cheapest class</strong>. The class you can actually buy often costs more — ' + fmtN(feeVaries) + ' funds here charge different fees by class — so expand the row and read the per-class table before deciding.',
+    },
+    {
+      tab: 'Compare',
+      when: 'Check whether holding several funds together actually diversifies — or is the same bet twice.',
+      steps: [
+        'In <strong>Browse</strong> or <strong>Rankings</strong>, tick the checkbox in the <strong>Compare</strong> column at the left of a row. Both tabs feed the same basket, so you can mix them. Comparison starts at <strong>two</strong> funds and holds up to ' + fmtN(MAX_COMPARE) + '.',
+        'Switch to this tab. The count of selected funds is shown, and below it each selected fund appears as a <strong>chip</strong>. Click the <strong>×</strong> on a chip to drop <strong>that one fund</strong>; <strong>Clear all</strong> empties the basket.',
+        'Read <strong>Pairwise overlap</strong> for each pair: the overlap share and the number of shared securities.',
+        'Read <strong>Held by two or more</strong> to see which securities appear in several funds at once, and at what weight in each.',
+      ],
+      controls: [
+        ['Compare checkbox (in Browse and Rankings)', 'Ticking adds a fund, unticking removes it. A selected row gets an orange bar on its left edge. There is no <strong>add</strong> control on this tab — picking happens in Browse and Rankings.'],
+        ['× on a chip', 'Drops funds <strong>one at a time</strong>. With eight picked and one you no longer want, you do not have to go back to Browse and hunt for that row again.'],
+        ['Overlap share', 'The sum of the <strong>smaller of the two weights</strong> on each shared security. 40% means 40% of both funds sits in the same place.'],
+        ['Shared count', 'If either side has a security with no published weight, the share is withheld and only the <strong>count</strong> of shared securities is shown.'],
+        ['○', 'Held, but the <strong>weight is not published</strong> by the source. It is not a zero.'],
+      ],
+      example: 'Two Korean large-cap funds routinely overlap by more than half. Buying both adds far less diversification than it looks.',
+      caution: 'Funds that publish no holdings (bond funds, MMFs) are <strong>left blank rather than computed</strong> — that is not a statement that they do not overlap. ' + fmtN(withHold) + ' of ' + fmtN(FUNDS.length) + ' funds carry holdings.',
+    },
+    {
+      tab: 'Stock → Fund',
+      when: 'The reverse lookup: find out <strong>which funds hold a given security</strong>.',
+      steps: [
+        'Type a <strong>security name</strong> (e.g. NVIDIA, 삼성전자). ' + fmtN(secs.size) + ' distinct securities are carried here.',
+        'Funds holding it are listed <strong>by weight, largest first</strong>.',
+        'The table gives fund, category, the matched holding, its weight and the fund’s size. <strong>Click a row</strong> to expand that fund’s detail below the table — the same detail as in Browse.',
+      ],
+      controls: [
+        ['Search box', 'Searches <strong>security names only</strong>. Use the <strong>Browse</strong> tab to search by fund or manager.'],
+        ['+N', 'When a fund holds several matching securities, only the <strong>largest</strong> is shown on the row and this states how many more there are.'],
+        ['Count line', 'The table draws at most 200 rows and states <strong>how many of the total</strong> are shown.'],
+      ],
+      example: 'Korean holdings arrive under Korean names and foreign ones under Latin names — if a search comes back empty, <strong>try the other script</strong>.',
+      caution: 'Holdings are typically <strong>quarterly disclosures</strong> and may be months old, and the source does not say as of when (' + fmtN(datedHold) + ' of ' + fmtN(FUNDS.length) + ' funds carry a date). Read the result as <strong>"was in the last disclosure"</strong>, not "holds right now".',
+    },
+    {
+      tab: 'Rankings',
+      when: 'Scan which funds rose most and grew largest' + (flowOn ? ', and which took in the most money' : '') + '.',
+      steps: [
+        'Pick a <strong>Scope</strong> — all funds, or one of ' + fmtN(types.size) + ' categories.',
+        'Pick a <strong>Period</strong> (1D to 5Y).',
+        'Below appear top 20 and bottom 20 by that return and <strong>top 20 by size</strong>'
+          + (flowOn ? ', followed by <strong>top 20 net inflow / outflow over 3 months</strong>.' : '.'),
+        'Tick the checkbox in the <strong>Compare</strong> column at the left of a row to pick a fund <strong>right here</strong> — no need to memorise the name and find it again in Browse. The bar above the table takes you straight to the <strong>Compare</strong> tab.',
+      ],
+      controls: [
+        ['Scope', 'Narrow to one category so you compare <strong>like with like</strong>. Ranking bond funds against equity funds in one table means nothing.'],
+        ['Period', '3Y and 5Y are <strong>cumulative, not annualised</strong>. 30% over three years is not 30% a year.'],
+        ['A ranking row', 'Click it to expand that fund’s detail below the table — no need to go back and search for the name.'],
+        ['Compare column (checkbox on the left)', 'The <strong>same basket as Browse</strong> — what you tick here and what you ticked there land together, so you can mix them. Up to ' + fmtN(MAX_COMPARE) + '; once full, the remaining checkboxes dim. To drop one pick at a time, use the chips on the <strong>Compare</strong> tab.'],
+        flowOn
+          ? ['3M net inflow', 'The source publishes no flow for funds, so this is the <strong>3-month change in units-at-par</strong> (' + fmtN(withFlow) + ' funds qualify). Using net-asset differences would let a fund that merely went up rank as an inflow leader.']
+          : ['3M net inflow (not yet)', 'These tables are <strong>not shown yet.</strong> The source publishes no fund-level flow (it does for ETFs), so it has to be derived from changes in units-at-par, and less than three months of that history has accumulated. A one-day difference is not labelled "3 months" — the tab explains this in place of the tables.'],
+      ],
+      example: 'Picking from the 3Y leaderboard alone mostly buys <strong>whichever category worked over those three years</strong>. Narrow the scope and compare within it.',
+      caution: 'Ranks are computed in the browser, not stored. <strong>Funds with a blank value are excluded, never ranked as zero</strong> — which is why the ranked population differs from table to table.',
+    },
+    {
+      tab: 'Return Audit',
+      when: 'Decide whether to trust the returns on this screen, and find out why a particular cell is blank.',
+      steps: [
+        'Nothing to operate here — this tab is <strong>read-only</strong>.',
+        'The cards at the top give the number of funds checked, the number <strong>with a base-price step</strong> (' + fmtN(stepped) + ' now), and the number of cells withheld.',
+        '<strong>What was withheld, and why</strong> lists, per fund, which periods were withheld, for what reason, and <strong>what the source had said</strong>.',
+      ],
+      controls: [
+        ['Base-price step', 'A day where the base price jumped from a split or merger. Period returns spanning it cannot be checked from base prices alone, so they are withheld.'],
+        ['Withheld cell', 'A figure from the source that disagreed with the recomputation. It is <strong>withheld, not corrected</strong> — ' + fmtN(dropped) + ' funds have at least one.'],
+        ['Source said', 'What the source published for a withheld cell, kept verbatim so you can reconcile it against another screen.'],
+      ],
+      example: 'If a fund’s 3Y return is blank, look it up here: it may be blank because the figure <strong>failed the check</strong>, not because it was missing.',
+      caution: 'The check uses the <strong>same source’s base-price series</strong>. If the source were wrong throughout, this would not catch it — returns of one month and longer remain <strong>unverified against any outside source</strong>.',
+    },
+    {
+      tab: 'How to use (this tab)',
+      when: 'The tab you are reading. Also how to send <strong>just the instructions</strong> to someone who cannot open the screen.',
+      steps: [
+        '<strong>Download (HTML)</strong> — a single file containing this section only. It opens in any browser.',
+        '<strong>Download (PDF)</strong> — the finished PDF bundled inside this page, handed over as-is.',
+        '<strong>Print this page only / PDF</strong> — print through the browser. Enable <strong>background graphics</strong> or the orange headings disappear.',
+        '<strong>KO / EN</strong> at the top right switches the whole screen, this guide included.',
+        '<strong>Print / PDF</strong> at the top right prints <strong>only the tab you have open</strong> — press it while looking at Compare and you get that screen, not all six tabs. Controls you would have to click (search box, filters) are left out; they do nothing on paper.',
+      ],
+      controls: [
+        ['When the PDF button is missing', 'The bundled PDF describes the data as of the day it was built. If the counts on this screen no longer match the ones recorded in that PDF, it is stale — so the screen <strong>hides the button and says why</strong>. Use the print button instead.'],
+      ],
+      example: 'Someone who only needs the instructions does not need this ' + fmtN(FUNDS.length) + '-fund page — send them the downloaded guide instead.',
+      caution: 'A downloaded file describes <strong>the data of the day you downloaded it</strong> (as of ' + esc(DATES.asOf || 'an unstated date') + '). The data is re-collected daily; download again when the as-of date moves.',
+    },
+  ];
+
+  // 먼저 한눈에. 어느 탭으로 가야 하는지만 고르는 자리다.
+  var html = '<div class="grid grid-2" style="margin-top:20px">';
+  for (var t = 0; t < screens.length; t += 1) {
+    html += '<div class="card"><div class="label">' + esc((t + 1) + '. ' + screens[t].tab) + '</div>' +
+      '<div class="note" style="margin-top:8px;font-size:15px;color:var(--ink)">' + screens[t].when + '</div></div>';
+  }
+  html += '</div>';
+
+  // 그 다음 화면마다 자세히.
+  html += '<h3 style="margin-top:34px">' + esc(ko ? '화면별 사용법' : 'Screen by screen') + '</h3>';
+  html += '<div class="dim" style="font-size:14px;margin-top:-6px;line-height:1.7">' + esc(ko
+    ? '화면마다 순서 · 조작 항목 · 해보기 · 주의를 적었습니다. 탭 순서와 같은 차례입니다.'
+    : 'For each screen: the steps, what every control does, one worked example, and the caution specific to it. In tab order.') + '</div>';
+
+  for (var s = 0; s < screens.length; s += 1) {
+    var sc = screens[s];
+    html += '<h4 style="margin-top:26px;font-size:19px">' + esc((s + 1) + '. ' + sc.tab) + '</h4>';
+
+    html += '<ol style="margin:10px 0 0;padding-left:22px;line-height:1.8;font-size:15px">';
+    for (var st = 0; st < sc.steps.length; st += 1) html += '<li style="margin-bottom:4px">' + sc.steps[st] + '</li>';
+    html += '</ol>';
+
+    if (sc.controls && sc.controls.length) {
+      html += '<div class="table-wrap" style="margin-top:14px"><table><thead><tr>' +
+        '<th style="width:26%">' + esc(ko ? '조작 항목' : 'Control') + '</th>' +
+        '<th>' + esc(ko ? '하는 일' : 'What it does') + '</th></tr></thead><tbody>';
+      for (var cn = 0; cn < sc.controls.length; cn += 1) {
+        html += '<tr><td style="font-weight:600;color:var(--ink)">' + esc(sc.controls[cn][0]) + '</td>' +
+          '<td style="line-height:1.6">' + sc.controls[cn][1] + '</td></tr>';
+      }
+      html += '</tbody></table></div>';
+    }
+
+    html += '<div class="grid grid-2" style="margin-top:14px">' +
+      '<div class="card"><div class="label">' + esc(ko ? '해보기' : 'Try this') + '</div>' +
+        '<div class="note" style="margin-top:8px;font-size:15px;color:var(--ink)">' + sc.example + '</div></div>' +
+      '<div class="card"><div class="label">' + esc(ko ? '주의' : 'Watch out') + '</div>' +
+        '<div class="note" style="margin-top:8px;font-size:15px;color:var(--ink)">' + sc.caution + '</div></div>' +
+      '</div>';
+  }
+
+  // ── 숫자를 읽는 법. 이 화면이 조용히 오해를 부를 수 있는 지점만 모았다.
+  html += '<h3 style="margin-top:34px">' + esc(ko ? '숫자를 읽는 법' : 'How to read the numbers') + '</h3>';
+
+  var rules = ko ? [
+    ['빈칸은 0이 아닙니다',
+     '값이 없어서 비운 칸과 값이 0인 칸은 다릅니다. 이 화면은 <strong>확인하지 못한 값을 0으로 채우지 않고 비웁니다.</strong> ' +
+     '지금 설정액이 빈 펀드가 ' + fmtN(noAum) + '개, 총보수가 빈 펀드가 ' + fmtN(noFee) + '개이며, ' +
+     '수익률에서 한 칸이라도 비운 펀드가 ' + fmtN(dropped) + '개입니다. 빈칸을 0으로 읽으면 순위와 평균이 전부 틀어집니다.'],
+    ['기준일과 수집일은 다릅니다',
+     '머리말에 <strong>기준일</strong>과 <strong>수집</strong>을 따로 적어 둔 이유입니다. 자료를 오늘 걷어 왔다고 해서 ' +
+     '그 안의 값이 오늘 것이 되지는 않습니다 — 주말·공휴일 다음에는 그 앞 영업일 값입니다.'],
+    ['보유종목에는 기준일이 없습니다',
+     '원천이 종목명과 비중만 주고 <strong>언제 기준인지는 알려 주지 않습니다</strong>(' + fmtN(FUNDS.length) + '개 중 기준일이 붙은 것 ' +
+     fmtN(datedHold) + '개). 공모펀드 보유종목은 분기 공시라 몇 달 앞선 것일 수 있습니다. ' +
+     '설정액 같은 값은 최근 영업일 기준이므로 <strong>한 표 안에서 열마다 기준일이 다릅니다.</strong> ' +
+     '정확한 기준일은 펀드 상세의 운용보고서에서 확인하십시오.'],
+    ['총보수는 하나의 숫자가 아니라 범위입니다',
+     '국내 공모펀드의 보수는 클래스마다 다릅니다. 이 자료에서도 ' + fmtN(feeVaries) + '개 펀드가 그렇습니다. ' +
+     '그래서 <strong>최저~최고 범위</strong>로 싣고 클래스별 표를 함께 둡니다. 목록의 총보수 열과 필터는 ' +
+     '<strong>최저 클래스</strong> 기준이므로, 실제로 가입하는 클래스의 보수는 더 높을 수 있습니다.'],
+    ['수익률은 누적이며 연율이 아닙니다',
+     '3년·5년도 <strong>연 환산하지 않은 누적</strong> 수익률입니다. 3년 30%를 연 30%로 읽으면 안 됩니다. ' +
+     '분배금 재투자 여부는 원천이 밝히지 않으므로 이 화면도 단정하지 않습니다.'],
+    ['투자지역의 "혼합" 은 자산이 아니라 지역입니다',
+     '투자지역은 1차 출처인 금융투자협회 전자공시에서 직접 받아 국내·해외·<strong>혼합</strong> 셋으로 가릅니다' +
+     '(지금 혼합 ' + fmtN(mixed) + '개). 유형 이름에 나오는 "혼합" 은 <strong>주식+채권</strong>이라는 자산 이야기라 ' +
+     '서로 다른 말입니다.'],
+    ['표가 잘릴 때는 잘렸다고 적습니다',
+     '역조회 결과는 200행까지만 그립니다. 그럴 때 위에 <strong>몇 개 중 몇 개를 보여 주는지</strong> 적어 둡니다. ' +
+     '표에 보이는 것이 전부가 아닐 수 있다는 뜻입니다.'],
+  ] : [
+    ['A blank is not a zero',
+     'A cell left blank means the value could not be established — it is <strong>never filled with 0</strong>. ' +
+     'Right now ' + fmtN(noAum) + ' funds have no size, ' + fmtN(noFee) + ' have no fee, and ' + fmtN(dropped) +
+     ' had at least one return cell withheld. Reading blanks as zero corrupts every ranking and average.'],
+    ['The as-of date is not the collection date',
+     'The header states both. Collecting data today does not make the data today’s — after a weekend or ' +
+     'holiday it is the previous business day’s.'],
+    ['Holdings carry no as-of date',
+     'The source gives security names and weights but <strong>never says when they were measured</strong> (' +
+     fmtN(datedHold) + ' of ' + fmtN(FUNDS.length) + ' funds carry one). Korean fund holdings are disclosed ' +
+     'quarterly and may be months old, while fund size is current — so <strong>columns in one table can have ' +
+     'different as-of dates.</strong>'],
+    ['Fees are a range, not a number',
+     'Korean fund fees differ by share class — ' + fmtN(feeVaries) + ' funds here do. The <strong>lowest–highest ' +
+     'range</strong> is shown with a per-class table. The list column and filter use the <strong>cheapest ' +
+     'class</strong>, so the class you can actually buy may cost more.'],
+    ['Returns are cumulative, not annualised',
+     '3Y and 5Y figures are <strong>cumulative</strong>. The source does not state whether distributions are ' +
+     'reinvested, so neither does this screen.'],
+    ['"Mixed" region means geography, not assets',
+     'Investment region comes from KOFIA electronic disclosure (a primary source) as domestic, overseas or ' +
+     '<strong>mixed</strong> (' + fmtN(mixed) + ' now). The word "mixed" inside a category name means ' +
+     '<strong>equity + bond</strong> — a different thing entirely.'],
+    ['When a table is truncated, it says so',
+     'The reverse lookup draws at most 200 rows and states how many of the total are shown.'],
+  ];
+
+  html += '<div class="table-wrap"><table><thead><tr>' +
+    '<th style="width:26%">' + esc(ko ? '알아야 할 것' : 'What to know') + '</th>' +
+    '<th>' + esc(ko ? '왜' : 'Why') + '</th></tr></thead><tbody>';
+  for (var r = 0; r < rules.length; r += 1) {
+    html += '<tr><td style="font-weight:600;color:var(--ink)">' + esc(rules[r][0]) + '</td>' +
+      '<td style="line-height:1.6">' + rules[r][1] + '</td></tr>';
+  }
+  html += '</tbody></table></div>';
+
+  // ── 어디까지 확인됐나. 확인된 것과 확인 안 된 것을 나눠 적는다 —
+  //    확인 못 한 것을 말하지 않고 넘어가면 확인된 것처럼 전달된다.
+  html += '<h3 style="margin-top:34px">' + esc(ko ? '어디까지 확인됐나' : 'How far this has been verified') + '</h3>';
+  html += '<div class="notice">' + (ko
+    ? '이 화면의 값은 <strong>2차 출처(네이버 Npay 증권)</strong>에서 걷은 뒤, 계보가 다른 <strong>1차 출처' +
+      '(금융투자협회 전자공시)</strong>에 다시 물어 맞대 봅니다. <u>투자지역</u>과 <u>공모 여부</u>는 전건 일치했고 ' +
+      '<u>설정액</u>도 대부분 일치했습니다. 반면 <strong>1개월 이상 기간수익률·보유종목·위험지표는 금투협이 주지 않아 ' +
+      '외부 원천으로 확인되지 않았습니다</strong> — 그 셋은 2차 출처 단독 근거이며, 원천 자체의 기준가 시계열로 ' +
+      '검산한 데까지입니다. 자세한 것은 화면 맨 아래 <strong>교차 검증</strong> 문단과 <strong>수익률 검산</strong> 탭에 있습니다. ' +
+      '실제 상품 내용은 각 펀드의 <strong>투자설명서와 운용사 공시가 우선</strong>합니다.'
+    : 'Values are collected from a <strong>secondary source (Naver Npay)</strong> and cross-checked against an ' +
+      'independent <strong>primary source (KOFIA electronic disclosure)</strong>. <u>Region</u> and ' +
+      '<u>public-offering status</u> matched on every fund, and <u>size</u> matched on nearly all. However ' +
+      '<strong>returns of one month and longer, holdings and risk metrics are not covered by KOFIA and remain ' +
+      'unverified against any outside source</strong> — they rest on the secondary source alone, checked only ' +
+      'against its own base-price series. See the <strong>cross-check</strong> note in the footer and the ' +
+      '<strong>Return Audit</strong> tab. Fund prospectuses and manager disclosures prevail.') +
+    '</div>';
+
+  html += '<div class="kv" style="margin-top:26px">' +
+    '<div><div class="k">' + esc(ko ? '펀드' : 'Funds') + '</div><div class="v">' + esc(fmtN(FUNDS.length)) + '</div></div>' +
+    '<div><div class="k">' + esc(ko ? '보유종목이 있는 펀드' : 'With holdings') + '</div><div class="v">' + esc(fmtN(withHold)) + '</div></div>' +
+    '<div><div class="k">' + esc(ko ? '실린 종목 수' : 'Distinct securities') + '</div><div class="v">' + esc(fmtN(secs.size)) + '</div></div>' +
+    '<div><div class="k">' + esc(ko ? '클래스' : 'Share classes') + '</div><div class="v">' +
+      esc(fmtN(FUNDS.reduce(function (a, f) { return a + (f.classCount || 0); }, 0))) + '</div></div>' +
+    '</div>';
+
+  node.innerHTML = html;
+  finishHelp(false);
+}
+
+// 그림이 붙은 사용법 문서의 모양새를 화면에 들인다.
+//
+// 이 CSS 는 빌드가 만들어 넣은 것으로, 선택자마다 `.howto` 가 앞에 붙어 있어
+// 사용법 탭 안에서만 듣는다(가두는 일은 build_fund_howto.mjs 의 scopeCss 가
+// 한다). 그래서 사용법을 한 번 열어도 다른 탭의 카드가 이 문서 모양으로
+// 물들지 않는다. 한 번만 들이면 되니 두 번째부터는 그냥 돌아간다.
+var howtoCssOn = false;
+function installHowtoCss(css) {
+  if (howtoCssOn || !css) return;
+  var s = document.createElement('style');
+  s.id = 'howto-css';
+  // 뒤의 네 줄은 **종이에는 없고 화면에만 필요한 것**이다. 종이는 폭이 정해져
+  // 있지만 화면은 넓어질 수 있고, 종이 위의 그림은 눌러도 커지지 않는다.
+  s.textContent = css + '\n' +
+    '.howto .wrap{max-width:900px;margin:0 auto}' +
+    '.howto figure img{cursor:zoom-in}' +
+    '.howto figure.zoom{overflow-x:auto}' +
+    '.howto figure.zoom img{width:auto;max-width:none;cursor:zoom-out}';
+  document.head.appendChild(s);
+  howtoCssOn = true;
+}
+
+// 사용법을 다 그린 뒤 내려받기 줄의 설명을 맞춘다.
+//
+// `withFigs` 는 지금 화면에 **그림이 붙은 문서**를 그렸는지다. 그렸다면 받아
+// 가는 PDF 는 화면과 같은 것이고, 글로 물러섰다면 PDF 쪽에만 그림이 있다.
+// 둘을 같은 말로 적어 두면 어느 쪽이든 한쪽 사람은 속는다.
+function finishHelp(withFigs) {
+  var note = el('help-dl-note');
+  if (note) {
+    var ko = lang === 'ko';
+    note.textContent = ko
+      ? (withFigs
+          ? '이 화면의 사용법과 PDF 는 같은 문서입니다 — 그림도 같습니다. HTML 로 받으면 그림까지 같이 담깁니다. '
+          : 'HTML 은 이 절의 글 그대로이고, PDF 에는 각 단계마다 실제 화면을 찍은 그림이 붙습니다. ') +
+        '기준일 ' + (DATES.asOf || '미상') + ' 자료로 만든 사용법이며, 자료가 바뀌면 다시 받아야 합니다.'
+      : 'The HTML file is this section as text; the PDF adds a screenshot of the real screen at each step ' +
+        '(the illustrated version is Korean only). ' +
+        'It describes the data as of ' + (DATES.asOf || 'an unstated date') + '; download again when the data changes.';
+  }
+  syncHelpPdf();
+}
+
+// 미리 실어 둔 PDF 를 내줄지 말지 여기서 가른다.
+//
+// 실은 PDF 는 빌드 때 만든 것이라 자료가 갱신되면 낡는다. 낡은 것을 그대로
+// 내주면 받은 사람은 그것이 낡았다는 사실을 알 길이 없다 — 파일에는 그때의
+// 기준일이 적혀 있고, 그 날짜가 맞다고 믿을 것이기 때문이다. 그래서 화면이
+// 지금 센 수와 PDF 에 적힌 수가 다르면 단추를 감추고 **왜 없는지를 적는다.**
+function syncHelpPdf() {
+  var btn = el('help-dl-pdf');
+  var why = el('help-dl-why');
+  if (!btn) return;
+  var ko = lang === 'ko';
+  var pdf = window.HELP_PDF;
+  var ok = !!(pdf && pdf.b64 && pdf.stamp && pdf.stamp === HELP_STAMP);
+
+  btn.hidden = !ok;
+  if (!why) return;
+  why.hidden = ok;
+  if (ok) { why.textContent = ''; return; }
+  why.textContent = !pdf || !pdf.b64
+    ? (ko ? 'PDF 는 이 화면에 실려 있지 않습니다. 옆의 “사용법만 인쇄”로 PDF 로 저장하십시오.'
+          : 'No PDF is bundled with this page. Use “Print this page only” to save one.')
+    : (ko ? 'PDF 는 다른 기준일 자료로 만든 것이라 내려받기를 열지 않았습니다'
+            + (pdf.asOf ? ' (실린 PDF 기준일 ' + pdf.asOf + ')' : '')
+            + '. 옆의 “사용법만 인쇄”로 지금 자료 그대로 저장하십시오.'
+          : 'The bundled PDF was built from a different data date'
+            + (pdf.asOf ? ' (' + pdf.asOf + ')' : '')
+            + ', so it is withheld. Use “Print this page only” to save the current one.');
+}
+
+// 사용법 절만 따로 파일로 만든다.
+//
+// 화면의 <style> 을 그대로 가져다 붙이므로 받은 파일도 같은 모습으로 열린다.
+// 사용법에 적힌 수는 이 화면이 방금 자료에서 센 값이라, 글로 옮겨 적는 것이
+// 아니라 **그려진 것을 그대로 뜬다** — 옮겨 적는 순간 화면과 어긋날 수 있다.
+function helpDoc() {
+  var ko = lang === 'ko';
+  var css = '';
+  var styles = document.querySelectorAll('style');
+  for (var i = 0; i < styles.length; i += 1) css += styles[i].textContent + '\n';
+
+  var sec = el('tab-help').cloneNode(true);
+  sec.removeAttribute('hidden');
+  // 내려받기 단추는 뺀다. 받은 파일 안에서는 누를 것이 없다.
+  var dl = sec.querySelector('#help-dl');
+  if (dl) dl.parentNode.removeChild(dl);
+
+  // 날짜와 출처를 같이 싣는다. 이것이 빠지면 언제 것인지 모르는 숫자가 된다.
+  var head = '<div class="hero"><div class="page">' +
+    '<div class="tag">' + esc(ko ? '국내 설정 공모펀드 조회' : 'Korea-domiciled public funds') + '</div>' +
+    '<h1>' + esc(ko ? '사용법' : 'How to use') + '</h1>' +
+    '<div class="meta">' +
+      '<span>' + esc(ko ? '펀드 ' + FUNDS.length.toLocaleString() + '개'
+                        : FUNDS.length.toLocaleString() + ' funds') + '</span>' +
+      (DATES.asOf ? '<span>' + esc(ko ? '기준일 ' + DATES.asOf : 'As of ' + DATES.asOf) + '</span>' : '') +
+      (DATES.got ? '<span class="dim">' + esc(ko ? '수집 ' + DATES.got : 'Collected ' + DATES.got) + '</span>' : '') +
+    '</div></div></div>';
+
+  var foot = '<footer><div class="page"><p class="disc">' +
+    (el('disc-source') ? el('disc-source').innerHTML : '') + '</p><p class="disc">' +
+    (el('disc-scope') ? el('disc-scope').innerHTML : '') + '</p></div></footer>';
+
+  return '<!doctype html><html lang="' + (ko ? 'ko' : 'en') + '"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+    '<title>' + esc(ko ? '공모펀드 조회 사용법' : 'Fund search — how to use') + '</title>' +
+    '<style>' + css + '</style></head><body>' +
+    head + '<main class="page">' + sec.outerHTML + '</main>' + foot +
+    '</body></html>';
+}
+
+function bindHelpDownload() {
+  var a = el('help-dl-html');
+  if (a) a.onclick = function () {
+    // 파일 이름은 한글을 쓰지 않는다. 한글 이름을 주면 브라우저·환경에 따라
+    // 통째로 버리고 확장자 없는 "download" 로 떨어뜨린다(이 저장소의 크로미움에서
+    // 실제로 그랬다). 그러면 받은 사람은 열 수도 없다. 문서 안의 제목은 한글이니
+    // 열면 무엇인지 바로 보인다 — 이름만 로마자로 둔다.
+    var name = 'fund-search-how-to-use' + (DATES.got ? '-' + DATES.got : '') + '.html';
+    var url = URL.createObjectURL(new Blob([helpDoc()], { type: 'text/html;charset=utf-8' }));
+    var link = document.createElement('a');
+    link.href = url; link.download = name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    // 바로 거두면 브라우저가 아직 못 읽은 채로 사라지는 일이 있다.
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  };
+
+  var d = el('help-dl-pdf');
+  if (d) d.onclick = function () {
+    var pdf = window.HELP_PDF;
+    // 감춰 둔 단추가 눌릴 일은 없지만, 없는 것을 있는 척 내려주지는 않는다.
+    if (!pdf || !pdf.b64 || pdf.stamp !== HELP_STAMP) return;
+    // base64 를 바이트로 되돌린다. Blob 에 문자열을 그대로 주면 UTF-8 로
+    // 다시 부호화되어 PDF 가 깨진다 — 반드시 바이트 배열로 넘긴다.
+    var bin = atob(pdf.b64);
+    var buf = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i += 1) buf[i] = bin.charCodeAt(i);
+    var name = 'fund-search-how-to-use' + (pdf.got ? '-' + pdf.got : '') + '.pdf';
+    var url = URL.createObjectURL(new Blob([buf], { type: 'application/pdf' }));
+    var link = document.createElement('a');
+    link.href = url; link.download = name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  };
+
+  var p = el('help-dl-print');
+  if (p) p.onclick = function () {
+    document.body.classList.add('print-help');
+    window.print();
+    // 인쇄창이 닫힌 뒤에 되돌린다. onafterprint 를 안 부르는 브라우저가 있어
+    // 시간으로도 한 번 더 되돌려 둔다 — 화면이 사용법만 남은 채로 잠기면 안 된다.
+    var back = function () { document.body.classList.remove('print-help'); };
+    window.addEventListener('afterprint', back, { once: true });
+    setTimeout(back, 3000);
+  };
+}
+
+// ───────────────────────── 그리기 ─────────────────────────
+function renderAll() {
+  applyLang();
+  renderHero();
+  renderScopeNote();
+  renderFilters();
+  renderHead();
+  renderList();
+  renderDetail();
+  if (state.tab === 'compare') renderCompare();
+  if (state.tab === 'reverse') renderReverse();
+  if (state.tab === 'rank') renderRank();
+  if (state.tab === 'basis') renderBasis();
+  if (state.tab === 'help') renderHelp();
+}
+
+function showTab(name) {
+  state.tab = name;
+  var secs = document.querySelectorAll('main .section');
+  for (var i = 0; i < secs.length; i += 1) secs[i].hidden = secs[i].id !== 'tab-' + name;
+  var tabs = document.querySelectorAll('.tabs button');
+  for (var j = 0; j < tabs.length; j += 1) {
+    tabs[j].setAttribute('aria-selected', tabs[j].getAttribute('data-tab') === name ? 'true' : 'false');
+  }
+  renderAll();
+}
+
+function bind() {
+  document.querySelector('.tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-tab]');
+    if (b) showTab(b.getAttribute('data-tab'));
+  });
+  document.querySelector('.lang-toggle').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-lang]');
+    if (!b) return;
+    lang = b.getAttribute('data-lang');
+    renderAll();
+  });
+
+  el('q').addEventListener('input', function () {
+    state.q = this.value; state.limit = PAGE; renderList();
+  });
+  el('rq').addEventListener('input', function () {
+    state.rq = this.value; renderReverse();
+  });
+
+  var FILTER_IDS = [['f-region', 'region'], ['f-asset', 'asset'], ['f-type', 'type'],
+                    ['f-company', 'company'], ['f-aum', 'aum'], ['f-risk', 'risk'],
+                    ['f-fee', 'fee']];
+  for (var i = 0; i < FILTER_IDS.length; i += 1) {
+    (function (pair) {
+      el(pair[0]).addEventListener('change', function () {
+        state[pair[1]] = this.value; state.limit = PAGE;
+        renderFilters(); renderList();
+      });
+    })(FILTER_IDS[i]);
+  }
+  el('f-period').addEventListener('change', function () {
+    state.period = this.value; renderHead(); renderList(); renderDetail();
+  });
+  el('f-hold').addEventListener('change', function () {
+    state.holdOnly = this.checked; state.limit = PAGE; renderList();
+  });
+  el('f-reset').addEventListener('click', function () {
+    state.q = ''; state.region = ''; state.asset = ''; state.type = '';
+    state.company = ''; state.aum = ''; state.risk = ''; state.fee = ''; state.holdOnly = false;
+    state.limit = PAGE;
+    el('q').value = ''; el('f-hold').checked = false;
+    renderFilters(); renderList();
+  });
+  el('list-more').addEventListener('click', function () {
+    state.limit += PAGE; renderList();
+  });
+
+  el('list-head').addEventListener('click', function (e) {
+    var th = e.target.closest('th[data-sort]');
+    if (!th) return;
+    var key = th.getAttribute('data-sort');
+    if (state.sort === key) state.dir = -state.dir;
+    else { state.sort = key; state.dir = (key === 'name' || key === 'company' || key === 'type') ? 1 : -1; }
+    renderHead(); renderList();
+  });
+
+  // 목록·역조회·랭킹·검산 어디서 눌러도 같은 상세가 열린다.
+  document.addEventListener('click', function (e) {
+    // 담는 칸은 줄 안에 있지만 줄과 다른 일을 한다. 그래서 이 칸에서 시작한
+    // 누름은 **무슨 일이 있어도** 상세를 열지 않는다. 여태는 체크상자를 살짝
+    // 빗나가면 그대로 아래로 흘러 상세가 열렸다 — 고르려다 다른 것이 열리는
+    // 이 어긋남이 "체크를 해야 하는 건지 헷갈린다" 는 말의 실체다.
+    var cell = e.target.closest('.pick-cell');
+    if (cell) {
+      // 이 칸에서 시작한 누름은 전부 여기서 끝낸다.
+      //   stopPropagation — 아래로 흘러 상세를 열지 않게
+      //   preventDefault  — 라벨이 체크상자에 누름을 한 번 더 보내는 것과
+      //                     브라우저가 제 손으로 표시를 바꾸는 것을 둘 다 막는다.
+      // 둘을 막아야 **어디를 눌렀든 한 번만** 세어진다. 표시는 브라우저가
+      // 아니라 state.picks 가 정하고, 다시 그릴 때 그대로 찍힌다.
+      e.stopPropagation();
+      e.preventDefault();
+      var box = cell.querySelector('input[data-pick]');
+      if (!box || box.disabled) return;
+      var id = box.getAttribute('data-pick');
+      var at = state.picks.indexOf(id);
+      if (at >= 0) state.picks.splice(at, 1);
+      else if (state.picks.length < MAX_COMPARE) state.picks.push(id);
+      repaintPicks();
+      return;
+    }
+    if (e.target.closest('#cmp-clear')) { state.picks = []; renderCompare(); renderList(); return; }
+    // 담긴 것 하나만 빼기. 비교 화면 안에서 바로 뺄 수 있어야 한다 — 여덟
+    // 개를 담아 놓고 하나가 마음에 안 들 때, 그것 하나 빼자고 펀드 찾기로
+    // 돌아가 그 줄을 다시 찾아내게 하면 대개는 그냥 "비우기" 를 누르고 만다.
+    var drop = e.target.closest('[data-unpick]');
+    if (drop) {
+      var did = drop.getAttribute('data-unpick');
+      var dat = state.picks.indexOf(did);
+      if (dat >= 0) state.picks.splice(dat, 1);
+      renderCompare();
+      renderList();
+      return;
+    }
+    // 사용법의 그림 누르기. 문서에 실린 그림은 화면 폭에 맞춰 줄여 놓았는데,
+    // 작은 글씨가 든 화면 사진은 줄이면 읽히지 않는다. 누르면 찍은 크기
+    // 그대로 펴고, 한 번 더 누르면 접는다.
+    var fig = e.target.closest('#help-body figure');
+    if (fig && e.target.tagName === 'IMG') {
+      fig.classList.toggle('zoom');
+      return;
+    }
+    // 표 위 띠의 두 단추. 담은 뒤 "그래서 어디로 가야 하나" 를 화면이
+    // 직접 답한다 — 탭 이름을 외워 두었다가 찾아가게 하지 않는다.
+    if (e.target.closest('.pick-go')) { showTab('compare'); return; }
+    if (e.target.closest('.pick-clear')) { state.picks = []; repaintPicks(); return; }
+    var toggle = e.target.closest('.hold-toggle');
+    if (toggle) {
+      var extras = document.querySelectorAll('[data-extra]');
+      var nowHidden = extras.length && extras[0].hidden;
+      for (var i = 0; i < extras.length; i += 1) extras[i].hidden = !nowHidden;
+      toggle.textContent = nowHidden
+        ? (lang === 'ko' ? '접기' : 'Show less')
+        : (lang === 'ko' ? '나머지 ' + extras.length + '종목 보기' : 'Show ' + extras.length + ' more');
+      return;
+    }
+    var row = e.target.closest('[data-id]');
+    if (!row) return;
+    var fid = row.getAttribute('data-id');
+    state.selected = state.selected === fid ? null : fid;
+    if (state.tab === 'browse') { renderList(); renderDetail(); }
+    else {
+      var f = state.selected ? byId(state.selected) : null;
+      var host = el(state.tab === 'compare' ? 'compare-detail'
+                : state.tab === 'reverse' ? 'reverse-detail' : 'rank-detail');
+      if (host) host.innerHTML = f ? detailHtml(f) : '';
+      // 랭킹은 표가 넷이고 같은 펀드가 둘 이상에 나온다. 어느 줄을 눌러
+      // 상세가 열렸는지 표시를 맞춰 준다 — 표를 통째로 다시 그리면
+      // 보던 자리가 튀므로 줄 표시만 손으로 옮긴다.
+      var rows = document.querySelectorAll('#rank-body tr[data-id]');
+      for (var r = 0; r < rows.length; r += 1) {
+        rows[r].classList.toggle('selected', rows[r].getAttribute('data-id') === state.selected);
+      }
+    }
+  });
+
+  el('r-type').addEventListener('change', function () { state.rType = this.value; renderRank(); });
+  el('r-period').addEventListener('change', function () { state.rPeriod = this.value; renderRank(); });
+}
+
+bind();
+bindHelpDownload();
+renderAll();
+</script>
+</body>
+</html>

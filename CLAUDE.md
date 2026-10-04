@@ -21,6 +21,7 @@
 | 계정 설정(커넥터·스킬) 복원 절차 | [docs/claude-handoff/ACCOUNT-SETUP.md](docs/claude-handoff/ACCOUNT-SETUP.md) |
 | 예약 프롬프트 원문 (활성 12건) | [docs/handover/예약-전체목록.md](docs/handover/예약-전체목록.md) · [docs/claude-handoff/ROUTINES.md](docs/claude-handoff/ROUTINES.md) · 기계 판독용 [routines.json](docs/claude-handoff/routines.json) |
 | 저장소 **밖에서** 볼 한 파일 사본 | [인계-보관본.txt](인계-보관본.txt) |
+| **상품설명의무 완전판매 스크립트** 갈래 | [docs/인수인계/01_작업-인수인계.md](docs/인수인계/01_작업-인수인계.md) · [02_예약-프롬프트-및-설정.txt](docs/인수인계/02_예약-프롬프트-및-설정.txt) |
 | 옛 계정 세션 72건 각각의 새 계정용 첫 프롬프트 | [docs/handover/세션별-프롬프트.md](docs/handover/세션별-프롬프트.md) (·`.html`·`.txt`, 원천 `session-prompts.json` → `python3 scripts/build_session_prompts.py`) |
 | 위 프롬프트를 새 계정에서 쓸 때 유의사항 (가지·예약·공개 저장소, 10/2 점검) | [docs/handover/세션별-프롬프트-유의사항.txt](docs/handover/세션별-프롬프트-유의사항.txt) (·`.html` 체크리스트) |
 
@@ -38,6 +39,39 @@
 예약 프롬프트와 설정은 **[docs/routine-prompts.md](docs/routine-prompts.md)**,
 작업 규칙 전체는 **[docs/briefing-playbook.md](docs/briefing-playbook.md)**(2,024줄)
 입니다. 브리핑 일을 맡았다면 playbook 을 **처음부터 끝까지** 읽고 시작하십시오.
+
+**퇴직급여 상담 도구**(`retire-payout.html`) — 맥락과 결정 사항은
+**[docs/인수인계-퇴직급여도구.md](docs/인수인계-퇴직급여도구.md)**, 자주 쓰는 프롬프트는
+**[docs/프롬프트-퇴직급여도구.md](docs/프롬프트-퇴직급여도구.md)**, 작업 규칙은
+**[tools/retire-payout/CLAUDE.md](tools/retire-payout/CLAUDE.md)** 입니다(그 갈래의 파일을
+열면 저절로 따라 읽힙니다). **커밋된 HTML 이 소스에서 지은 것과 바이트까지 같은지 CI 가
+봅니다** — 소스만 고치고 `node scripts/build-retire-payout.js` 를 잊으면 거기서 끊깁니다.
+
+**상품설명의무 완전판매 스크립트** — 창구가 고객 앞에서 그대로 읽는 문장과 **교부문서
+쪽 번호**를 만듭니다. 맥락·결정사항·막힌 것은
+**[docs/인수인계/01_작업-인수인계.md](docs/인수인계/01_작업-인수인계.md)**,
+예약 프롬프트 원문은
+**[docs/인수인계/02_예약-프롬프트-및-설정.txt](docs/인수인계/02_예약-프롬프트-및-설정.txt)**
+에 있습니다(예약 전체 목록은 위 `docs/handover/` 쪽이 기준입니다).
+설치와 계정 이관은 **[docs/인수인계/00_설치와-계정이관-안내.md](docs/인수인계/00_설치와-계정이관-안내.md)**.
+
+이 갈래에서 반드시 지키는 것 — **틀린 값보다 빈칸이 낫습니다.** 빈칸은 직원을 설명서로
+보낼 뿐이지만, 틀린 값은 고객에게 그대로 읽히고 틀린 쪽 번호는 고객 앞에서 엉뚱한
+자리를 짚게 합니다. 판독 규칙을 고칠 때는 **원문부터 보고**(`scripts/probe_*.mjs`),
+전량에 미리 재 보고, **늘어난 것과 줄어든 것을 함께 셉니다**(「그대로 N · 새로 채움 N ·
+잃음 N」). 잃은 것이 하나라도 있으면 올리지 말고 그 사실부터 보고합니다.
+
+**ETF 편입종목 조회** — 맥락·규칙·겪은 사고는
+**[docs/handover/ETF-편입종목조회.md](docs/handover/ETF-편입종목조회.md)**,
+재현용 프롬프트는 **[etf-prompt.txt](etf-prompt.txt)**(자세한 판)와
+**[etf-prompt-simple.txt](etf-prompt-simple.txt)**(평범한 말 판)입니다.
+수집은 한국장 마감(15:30 KST) 뒤에 돌리십시오 — 장중값이 섞이면 감사가 막습니다.
+
+**월배당 커버드콜 ETF 제안서** — 맥락과 규칙은
+**[docs/handover/월배당ETF제안서-운영인계.md](docs/handover/월배당ETF제안서-운영인계.md)**,
+프롬프트와 설정 사본은
+**[docs/handover/월배당ETF제안서-프롬프트.md](docs/handover/월배당ETF제안서-프롬프트.md)**.
+갱신은 **매월 1일 10:00 KST GitHub Actions cron** 이 저절로 합니다(Claude 예약 아님).
 
 그 밖의 갈래(증권사 리포트 · 매매 타이밍 · 100대 기업 대시보드 · 마포 WM ·
 데이터센터 밸류체인 맵)는 `docs/handover/` 의 해당 문서를, 문서가 없는 갈래는

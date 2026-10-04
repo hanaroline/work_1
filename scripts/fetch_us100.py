@@ -3,10 +3,10 @@
 
 이 스크립트는 **GitHub Actions 러너에서 돈다.** 사내(그리고 Claude 세션) 이그레스
 정책 때문에 야후에 직접 붙지 못하므로, 러너가 대신 받아 저장소에 커밋하고
-`us-top100.html` 은 커밋된 스냅샷을 읽는다. 브라우저에서 야후에 바로 붙을 수 있는
+`us-top200.html` 은 커밋된 스냅샷을 읽는다. 브라우저에서 야후에 바로 붙을 수 있는
 환경이면 화면이 그 위에 실시간 값을 덮어쓴다.
 
-종목 목록은 `us-top100.html` 의 COMPANIES 배열을 그대로 읽는다 — 목록을 두 곳에
+종목 목록은 `us-top200.html` 의 COMPANIES 배열을 그대로 읽는다 — 목록을 두 곳에
 두면 반드시 어긋나므로 화면 파일을 유일한 원본으로 삼는다.
 
 산출물
@@ -45,7 +45,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # ---------------------------------------------------------------- 시장 프로필
 # 기본값은 미국이다. 국내 수집기(scripts/fetch_kr100.py)가 configure() 로 갈아 끼운다.
 MARKET = "us"
-PAGE = os.path.join(ROOT, "us-top100.html")
+PAGE = os.path.join(ROOT, "us-top200.html")
 OUT_DIR = os.path.join(ROOT, "data", "us100")
 CHART_DIR = os.path.join(OUT_DIR, "chart")
 CURRENCY = "USD"
@@ -53,7 +53,7 @@ STOOQ_SUFFIX = ".us"                 # Stooq 심볼 접미사 — 야후 차트�
 # 심볼을 회사명으로 다시 찾을 때 받아들일 거래소 코드(야후 search 의 exchange 값).
 # 이 목록을 두는 이유는 OTC·해외 중복 티커를 엉뚱하게 집어오지 않으려는 것이다.
 EXCHANGES = ("NMS", "NYQ", "NGM", "NCM", "ASE", "PCX", "BTS")
-NOTE = "GitHub Actions 러너가 수집한 스냅샷. us-top100.html 이 읽는다."
+NOTE = "GitHub Actions 러너가 수집한 스냅샷. us-top200.html 이 읽는다."
 
 
 def configure(market, page, out_dir, currency, stooq_suffix, exchanges, note):
@@ -558,7 +558,7 @@ def reconcile_ratios(q):
 def shape_summary(m, meta):
     """quoteSummary 응답을 화면 모델과 같은 모양으로 접는다.
 
-    화면(us-top100.html)의 normalizeSummary 와 키를 일치시킨다. 두 쪽이 어긋나면
+    화면(us-top200.html)의 normalizeSummary 와 키를 일치시킨다. 두 쪽이 어긋나면
     스냅샷은 실시간 경로와 다른 값을 보여주게 된다.
     """
     p = m.get("price") or {}
@@ -1049,7 +1049,7 @@ def main():
 def selftest():
     """망 없이 **비율 맞대기**만 시험한다.
 
-    시험 자료는 data/fixtures/ratio_cases.json 에 있고 **화면(us-top100.html)도
+    시험 자료는 data/fixtures/ratio_cases.json 에 있고 **화면(us-top200.html)도
     같은 파일을 읽는다.** 두 곳에 따로 두면 언젠가 갈라지고, 갈라진 뒤에는 어느
     쪽이 맞는지 알 수 없다 — 화면은 브라우저에서 야후에 직접 붙으므로 여기서
     막아도 그쪽은 그대로 틀릴 수 있다.

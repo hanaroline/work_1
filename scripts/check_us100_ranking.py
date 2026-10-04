@@ -52,7 +52,7 @@ OK_EXCHANGES = ("NMS", "NYQ", "NGM", "ASE", "NCM", "NYS")   # 정규 거래소 �
 SP500_CSV = "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
 OUT = os.path.join(OUT_DIR, "ranking.json")
 
-# GICS 섹터 → 화면(us-top100.html)이 쓰는 코드. 목록을 넓힐 때 새 종목의 섹터를
+# GICS 섹터 → 화면(us-top200.html)이 쓰는 코드. 목록을 넓힐 때 새 종목의 섹터를
 # 손으로 찍지 않으려고 둔다 — 화면의 SECTORS 와 같은 열한 가지다.
 GICS_TO_CODE = {
     "Information Technology": "it", "Financials": "fin", "Health Care": "hc",
@@ -386,7 +386,7 @@ def main(argv=None):
 
     # **줄 세운 것을 그대로 내어 준다.** 목록을 넓힐 때(100 → 200) 어느 종목이
     # 어느 자리인지 손으로 옮겨 적을 일이 아니다. 여기서 낸 파일을 보고 한글명을
-    # 채운 뒤 us-top100.html 의 COMPANIES 를 고친다 — 자동으로 갈아치우지 않는
+    # 채운 뒤 us-top200.html 의 COMPANIES 를 고친다 — 자동으로 갈아치우지 않는
     # 까닭은 이 대본 머리말에 적어 두었다(한글이 빈 종목이 조용히 섞인다).
     if emit_top:
         emit = [{"rank": i + 1, "sym": sym, "name": rec.get("name") or sym,
@@ -481,7 +481,7 @@ def main(argv=None):
                 "(미국에 상장한 외국 기업과 같은 회사의 중복 티커는 제외).\n\n"
                 + "\n".join(lines)
                 + "\n\n교체는 자동으로 하지 않습니다 — 새 종목의 **한글명·검색 키워드·기업 개요**를 "
-                  "함께 채워야 화면이 비지 않기 때문입니다. 바꾸려면 `us-top100.html` 의 "
+                  "함께 채워야 화면이 비지 않기 때문입니다. 바꾸려면 `us-top200.html` 의 "
                   "`COMPANIES`·`KEYWORDS`·`PROFILE_KO` 를 함께 고치면 됩니다.\n\n"
                   "이 글은 매일 수집 때 자동으로 갱신됩니다.")
 
