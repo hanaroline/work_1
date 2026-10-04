@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-10-03 10:03:51",
-  "generated_at_utc": "2026-10-03 01:03:51",
+  "generated_at_kst": "2026-10-04 09:29:39",
+  "generated_at_utc": "2026-10-04 00:29:39",
   "sources": {
     "yahoo:kospi": {
       "ok": true
@@ -631,15 +631,13 @@
     },
     "derived:sector_issues": {
       "ok": true,
-      "count": 1
+      "count": 4
     },
     "derived:ib_mentions": {
       "ok": true,
-      "count": 3,
+      "count": 1,
       "names": [
-        "UBS",
-        "뱅가드",
-        "웰스파고"
+        "뱅가드"
       ]
     },
     "krx:openapi": {
@@ -677,23 +675,22 @@
     },
     "derived:earnings": {
       "ok": true,
-      "found": 3
+      "found": 1
     }
   },
   "indices": {
     "kospi": {
       "symbol": "^KS11",
       "date": "2026-10-02",
-      "close": 7003.74,
+      "close": 7003.7402,
       "open": 6938.27,
       "high": 7011.04,
       "low": 6927.8799,
-      "volume": 239009,
+      "volume": 239000,
       "prev_close": 6971.3501,
-      "change": 32.3899,
+      "change": 32.3901,
       "change_pct": 0.4646,
       "currency": "KRW",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -1.09,
         "m1": 6.72,
@@ -712,12 +709,11 @@
       "open": 893.22,
       "high": 903.88,
       "low": 885.65,
-      "volume": 556961,
+      "volume": 557000,
       "prev_close": 894.29,
       "change": -1.0,
       "change_pct": -0.1118,
       "currency": "KRW",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 5.78,
         "m1": 11.11,
@@ -759,7 +755,7 @@
       "open": 7726.2402,
       "high": 7754.6699,
       "low": 7700.5098,
-      "volume": 3130028000,
+      "volume": 5277430000,
       "prev_close": 7666.4502,
       "change": 56.27,
       "change_pct": 0.734,
@@ -778,13 +774,13 @@
     "nasdaq": {
       "symbol": "^IXIC",
       "date": "2026-10-02",
-      "close": 27190.8633,
-      "open": 27216.9062,
+      "close": 27190.8594,
+      "open": 27216.9102,
       "high": 27353.6797,
       "low": 27112.2402,
-      "volume": 6857506000,
+      "volume": 7954430000,
       "prev_close": 26871.5996,
-      "change": 319.2637,
+      "change": 319.2598,
       "change_pct": 1.1881,
       "currency": "USD",
       "perf": {
@@ -805,7 +801,7 @@
       "open": 51241.1797,
       "high": 51382.8789,
       "low": 50950.6094,
-      "volume": 548953568,
+      "volume": 548950000,
       "prev_close": 50926.5586,
       "change": 250.4023,
       "change_pct": 0.4917,
@@ -824,14 +820,14 @@
     "sox": {
       "symbol": "^SOX",
       "date": "2026-10-02",
-      "close": 13136.6748,
-      "open": 13130.7588,
-      "high": 13269.334,
-      "low": 13082.0059,
+      "close": 13136.6699,
+      "open": 13130.7598,
+      "high": 13269.3301,
+      "low": 13082.0098,
       "volume": 0,
       "prev_close": 12829.0,
-      "change": 307.6748,
-      "change_pct": 2.3983,
+      "change": 307.6699,
+      "change_pct": 2.3982,
       "currency": "USD",
       "perf": {
         "w1": 3.69,
@@ -870,29 +866,29 @@
     "dxy": {
       "symbol": "DX-Y.NYB",
       "date": "2026-10-02",
-      "close": 101.924,
-      "open": 102.016,
-      "high": 102.132,
-      "low": 101.668,
+      "close": 101.93,
+      "open": 102.02,
+      "high": 102.13,
+      "low": 101.67,
       "volume": 0,
       "prev_close": 102.1,
-      "change": -0.176,
-      "change_pct": -0.1724,
+      "change": -0.17,
+      "change_pct": -0.1665,
       "currency": "USD",
       "perf": {
-        "w1": 0.94,
-        "m1": 2.37,
-        "m3": 1.05,
-        "m6": 1.89,
-        "y1": 4.16,
+        "w1": 0.95,
+        "m1": 2.38,
+        "m3": 1.06,
+        "m6": 1.9,
+        "y1": 4.17,
         "ytd": 3.71,
         "unit": "%",
-        "from": "2024-10-02"
+        "from": "2024-10-03"
       }
     },
     "usdjpy": {
       "symbol": "JPY=X",
-      "date": "2026-10-03",
+      "date": "2026-10-04",
       "close": 157.83,
       "open": 157.83,
       "high": 157.83,
@@ -916,70 +912,70 @@
     "wti": {
       "symbol": "CL=F",
       "date": "2026-10-02",
-      "close": 91.26,
+      "close": 91.11,
       "open": 93.46,
       "high": 93.51,
       "low": 88.06,
-      "volume": 326828,
+      "volume": 337181,
       "prev_close": 92.87,
-      "change": -1.61,
-      "change_pct": -1.7336,
+      "change": -1.76,
+      "change_pct": -1.8951,
       "currency": "USD",
       "perf": {
-        "w1": -1.24,
-        "m1": 0.27,
-        "m3": 32.86,
-        "m6": -18.18,
-        "y1": 50.89,
-        "ytd": 58.93,
+        "w1": -1.41,
+        "m1": 0.11,
+        "m3": 32.64,
+        "m6": -18.32,
+        "y1": 50.64,
+        "ytd": 58.67,
         "unit": "%",
-        "from": "2024-10-02"
+        "from": "2024-10-03"
       }
     },
     "brent": {
       "symbol": "BZ=F",
       "date": "2026-10-02",
-      "close": 102.7,
+      "close": 102.25,
       "open": 102.75,
       "high": 103.05,
       "low": 98.43,
-      "volume": 52249,
+      "volume": 54607,
       "prev_close": 102.31,
-      "change": 0.39,
-      "change_pct": 0.3812,
+      "change": -0.06,
+      "change_pct": -0.0586,
       "currency": "USD",
       "perf": {
-        "w1": -1.55,
-        "m1": 7.39,
-        "m3": 43.04,
-        "m6": -5.81,
-        "y1": 60.19,
-        "ytd": 68.78,
+        "w1": -1.98,
+        "m1": 6.92,
+        "m3": 42.41,
+        "m6": -6.22,
+        "y1": 59.49,
+        "ytd": 68.04,
         "unit": "%",
-        "from": "2024-10-02"
+        "from": "2024-10-03"
       }
     },
     "gold": {
       "symbol": "GC=F",
       "date": "2026-10-02",
-      "close": 4172.1001,
+      "close": 4162.2998,
       "open": 4204.6001,
       "high": 4259.0,
       "low": 4153.7998,
-      "volume": 164881,
+      "volume": 130846,
       "prev_close": 4202.2998,
-      "change": -30.1997,
-      "change_pct": -0.7186,
+      "change": -40.0,
+      "change_pct": -0.9519,
       "currency": "USD",
       "perf": {
-        "w1": -3.45,
-        "m1": -5.49,
-        "m3": 1.12,
-        "m6": -10.85,
-        "y1": 7.86,
-        "ytd": -3.89,
+        "w1": -3.68,
+        "m1": -5.72,
+        "m3": 0.89,
+        "m6": -11.06,
+        "y1": 7.61,
+        "ytd": -4.12,
         "unit": "%",
-        "from": "2024-10-02"
+        "from": "2024-10-03"
       }
     },
     "ust10y": {
@@ -1085,14 +1081,14 @@
     "russell": {
       "symbol": "^RUT",
       "date": "2026-10-02",
-      "close": 2832.8948,
-      "open": 2825.2288,
-      "high": 2852.5022,
-      "low": 2825.2288,
-      "volume": 0,
+      "close": 2832.8999,
+      "open": 2825.23,
+      "high": 2852.5,
+      "low": 2825.23,
+      "volume": 5277430000,
       "prev_close": 2806.6299,
-      "change": 26.2649,
-      "change_pct": 0.9358,
+      "change": 26.27,
+      "change_pct": 0.936,
       "currency": "USD",
       "perf": {
         "w1": -0.16,
@@ -1108,85 +1104,84 @@
     "silver": {
       "symbol": "SI=F",
       "date": "2026-10-02",
-      "close": 60.71,
-      "open": 61.36,
-      "high": 62.455,
-      "low": 59.985,
-      "volume": 38696,
+      "close": 59.977,
+      "open": 61.555,
+      "high": 61.555,
+      "low": 59.977,
+      "volume": 229,
       "prev_close": 60.725,
-      "change": -0.015,
-      "change_pct": -0.0247,
+      "change": -0.748,
+      "change_pct": -1.2318,
       "currency": "USD",
       "perf": {
-        "w1": -5.5,
-        "m1": -6.2,
-        "m3": 0.11,
-        "m6": -16.53,
-        "y1": 31.98,
-        "ytd": -13.44,
+        "w1": -6.64,
+        "m1": -7.33,
+        "m3": -1.1,
+        "m6": -17.54,
+        "y1": 30.38,
+        "ytd": -14.48,
         "unit": "%",
-        "from": "2024-10-02"
+        "from": "2024-10-03"
       }
     },
     "copper": {
       "symbol": "HG=F",
       "date": "2026-10-02",
-      "close": 6.579,
-      "open": 6.575,
-      "high": 6.6325,
-      "low": 6.52,
-      "volume": 34321,
+      "close": 6.492,
+      "open": 6.4995,
+      "high": 6.535,
+      "low": 6.4915,
+      "volume": 1453,
       "prev_close": 6.482,
-      "change": 0.097,
-      "change_pct": 1.4965,
+      "change": 0.01,
+      "change_pct": 0.1543,
       "currency": "USD",
       "perf": {
-        "w1": -1.74,
-        "m1": 1.2,
-        "m3": 7.6,
-        "m6": 18.26,
-        "y1": 34.32,
-        "ytd": 16.86,
+        "w1": -3.04,
+        "m1": -0.14,
+        "m3": 6.17,
+        "m6": 16.7,
+        "y1": 32.54,
+        "ytd": 15.31,
         "unit": "%",
-        "from": "2024-10-02"
+        "from": "2024-10-03"
       }
     },
     "natgas": {
       "symbol": "NG=F",
       "date": "2026-10-02",
-      "close": 3.039,
+      "close": 3.035,
       "open": 2.953,
       "high": 3.051,
       "low": 2.912,
-      "volume": 178518,
+      "volume": 153083,
       "prev_close": 2.967,
-      "change": 0.072,
-      "change_pct": 2.4267,
+      "change": 0.068,
+      "change_pct": 2.2919,
       "currency": "USD",
       "perf": {
-        "w1": -4.91,
-        "m1": 2.81,
-        "m3": -4.91,
-        "m6": 8.54,
-        "y1": -11.71,
-        "ytd": -17.55,
+        "w1": -5.04,
+        "m1": 2.67,
+        "m3": -5.04,
+        "m6": 8.39,
+        "y1": -11.82,
+        "ytd": -17.66,
         "unit": "%",
-        "from": "2024-10-02"
+        "from": "2024-10-03"
       }
     },
     "nikkei": {
       "symbol": "^N225",
       "date": "2026-10-02",
-      "close": 68309.46,
+      "close": 68309.4609,
       "open": 68313.4609,
       "high": 68741.4922,
       "low": 68132.1562,
-      "volume": 0,
+      "volume": 179400000,
       "prev_close": 68956.7188,
-      "change": -647.2587,
+      "change": -647.2578,
       "change_pct": -0.9386,
       "currency": "JPY",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 2.93,
         "m1": 6.19,
@@ -1201,16 +1196,15 @@
     "hangseng": {
       "symbol": "^HSI",
       "date": "2026-10-02",
-      "close": 23972.29,
+      "close": 23972.2891,
       "open": 24099.7305,
       "high": 24099.7305,
       "low": 23865.3301,
-      "volume": 0,
+      "volume": 1987400000,
       "prev_close": 24613.2695,
-      "change": -640.9795,
+      "change": -640.9805,
       "change_pct": -2.6042,
       "currency": "HKD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -2.19,
         "m1": -5.29,
@@ -1248,16 +1242,15 @@
     "taiwan": {
       "symbol": "^TWII",
       "date": "2026-10-02",
-      "close": 48475.74,
+      "close": 48475.7383,
       "open": 48390.6484,
       "high": 48491.6211,
       "low": 48205.8086,
-      "volume": 0,
+      "volume": 4714000,
       "prev_close": 48353.4883,
-      "change": 122.2517,
+      "change": 122.25,
       "change_pct": 0.2528,
       "currency": "TWD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 0.94,
         "m1": 5.01,
@@ -1276,12 +1269,11 @@
       "open": 6192.5801,
       "high": 6259.2998,
       "low": 6183.3999,
-      "volume": 0,
+      "volume": 26189200,
       "prev_close": 6175.4502,
       "change": 63.0498,
       "change_pct": 1.021,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -1.02,
         "m1": -1.94,
@@ -1296,16 +1288,15 @@
     "dax": {
       "symbol": "^GDAXI",
       "date": "2026-10-02",
-      "close": 25231.2,
+      "close": 25231.1992,
       "open": 24995.2891,
       "high": 25303.5996,
       "low": 24970.9102,
-      "volume": 0,
+      "volume": 56407400,
       "prev_close": 24939.3496,
-      "change": 291.8504,
+      "change": 291.8496,
       "change_pct": 1.1702,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -0.7,
         "m1": -2.35,
@@ -1320,16 +1311,15 @@
     "ftse": {
       "symbol": "^FTSE",
       "date": "2026-10-02",
-      "close": 10461.95,
-      "open": 10428.2305,
-      "high": 10503.1504,
-      "low": 10413.3701,
-      "volume": 0,
+      "close": 10462.0,
+      "open": 10428.2002,
+      "high": 10503.2002,
+      "low": 10413.4004,
+      "volume": 689426700,
       "prev_close": 10428.2998,
-      "change": 33.6502,
-      "change_pct": 0.3227,
+      "change": 33.7002,
+      "change_pct": 0.3232,
       "currency": "GBP",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -2.18,
         "m1": -2.74,
@@ -1366,9 +1356,9 @@
     },
     "usdcny": {
       "symbol": "CNY=X",
-      "date": "2026-10-03",
+      "date": "2026-10-04",
       "close": 6.6987,
-      "open": 6.6987,
+      "open": 6.7048,
       "high": 6.7048,
       "low": 6.6987,
       "volume": 0,
@@ -1378,9 +1368,9 @@
       "currency": "CNY",
       "perf": {
         "w1": -0.18,
-        "m1": -0.32,
-        "m3": -1.41,
-        "m6": -2.5,
+        "m1": -0.3,
+        "m3": -1.32,
+        "m6": -2.71,
         "y1": -5.9,
         "ytd": -4.25,
         "unit": "%",
@@ -1389,25 +1379,25 @@
     },
     "btc": {
       "symbol": "BTC-USD",
-      "date": "2026-10-03",
-      "close": 84614.6406,
-      "open": 84506.3359,
-      "high": 84648.1328,
-      "low": 84434.4531,
-      "volume": 45997326336,
-      "prev_close": 84853.1016,
-      "change": -238.4609,
-      "change_pct": -0.281,
+      "date": "2026-10-04",
+      "close": 84793.6719,
+      "open": 84742.4688,
+      "high": 84832.7344,
+      "low": 84742.4688,
+      "volume": 12628622336,
+      "prev_close": 84497.2109,
+      "change": 296.4609,
+      "change_pct": 0.3509,
       "currency": "USD",
       "perf": {
-        "w1": 0.25,
-        "m1": 4.11,
-        "m3": 35.29,
-        "m6": 26.42,
-        "y1": -30.79,
-        "ytd": -3.31,
+        "w1": 0.4,
+        "m1": 6.43,
+        "m3": 34.4,
+        "m6": 26.01,
+        "y1": -30.74,
+        "ytd": -3.1,
         "unit": "%",
-        "from": "2024-10-03"
+        "from": "2024-10-04"
       }
     },
     "stoxx600": {
@@ -1417,12 +1407,11 @@
       "open": 628.23,
       "high": 633.49,
       "low": 627.49,
-      "volume": 0,
+      "volume": 175280400,
       "prev_close": 626.65,
       "change": 4.7,
       "change_pct": 0.75,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -1.14,
         "m1": -2.25,
@@ -1437,16 +1426,15 @@
     "cac": {
       "symbol": "^FCHI",
       "date": "2026-10-02",
-      "close": 7897.19,
+      "close": 7897.1899,
       "open": 7847.96,
       "high": 7927.8799,
       "low": 7836.27,
-      "volume": 0,
+      "volume": 71580700,
       "prev_close": 7835.3101,
       "change": 61.8799,
       "change_pct": 0.7898,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -2.24,
         "m1": -4.63,
@@ -1461,16 +1449,15 @@
     "ftsemib": {
       "symbol": "FTSEMIB.MI",
       "date": "2026-10-02",
-      "close": 50483.21,
-      "open": 50364.0898,
-      "high": 50694.6602,
-      "low": 49972.2891,
-      "volume": 0,
+      "close": 50483.0,
+      "open": 50364.0,
+      "high": 50695.0,
+      "low": 49972.0,
+      "volume": 338834800,
       "prev_close": 50238.0,
-      "change": 245.21,
-      "change_pct": 0.4881,
+      "change": 245.0,
+      "change_pct": 0.4877,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -2.67,
         "m1": -2.53,
@@ -1485,16 +1472,15 @@
     "ibex": {
       "symbol": "^IBEX",
       "date": "2026-10-02",
-      "close": 19085.3,
+      "close": 19085.3008,
       "open": 19055.3008,
       "high": 19216.5996,
       "low": 18942.9004,
-      "volume": 107858866,
+      "volume": 0,
       "prev_close": 19005.3008,
-      "change": 79.9992,
+      "change": 80.0,
       "change_pct": 0.4209,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -3.12,
         "m1": -3.51,
@@ -1509,16 +1495,15 @@
     "smi": {
       "symbol": "^SSMI",
       "date": "2026-10-02",
-      "close": 13660.92,
+      "close": 13660.9199,
       "open": 13610.5898,
       "high": 13751.6699,
       "low": 13578.54,
-      "volume": 0,
+      "volume": 19338500,
       "prev_close": 13622.8496,
-      "change": 38.0704,
+      "change": 38.0703,
       "change_pct": 0.2795,
       "currency": "CHF",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -2.04,
         "m1": -4.89,
@@ -1537,12 +1522,11 @@
       "open": 1107.45,
       "high": 1121.4399,
       "low": 1105.76,
-      "volume": 0,
+      "volume": 57462300,
       "prev_close": 1102.63,
       "change": 14.08,
       "change_pct": 1.2769,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 0.42,
         "m1": 1.18,
@@ -1580,16 +1564,15 @@
     "asx200": {
       "symbol": "^AXJO",
       "date": "2026-10-02",
-      "close": 8682.1,
+      "close": 8682.0996,
       "open": 8614.4004,
       "high": 8682.0996,
       "low": 8614.4004,
-      "volume": 0,
+      "volume": 637300,
       "prev_close": 8614.4004,
-      "change": 67.6996,
+      "change": 67.6992,
       "change_pct": 0.7859,
       "currency": "AUD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 0.2,
         "m1": -3.3,
@@ -1603,48 +1586,48 @@
     },
     "eth": {
       "symbol": "ETH-USD",
-      "date": "2026-10-03",
-      "close": 2674.45,
-      "open": 2668.2031,
-      "high": 2676.613,
-      "low": 2665.54,
-      "volume": 19759667200,
-      "prev_close": 2705.5371,
-      "change": -31.0872,
-      "change_pct": -1.149,
+      "date": "2026-10-04",
+      "close": 2690.48,
+      "open": 2686.8359,
+      "high": 2692.7659,
+      "low": 2686.8359,
+      "volume": 4821778432,
+      "prev_close": 2668.1511,
+      "change": 22.3289,
+      "change_pct": 0.8369,
       "currency": "USD",
       "perf": {
-        "w1": -0.77,
-        "m1": 6.64,
-        "m3": 52.26,
-        "m6": 30.25,
-        "y1": -40.76,
-        "ytd": -9.86,
+        "w1": 0.13,
+        "m1": 9.54,
+        "m3": 51.23,
+        "m6": 30.27,
+        "y1": -40.07,
+        "ytd": -9.32,
         "unit": "%",
-        "from": "2024-10-03"
+        "from": "2024-10-04"
       }
     },
     "platinum": {
       "symbol": "PL=F",
       "date": "2026-10-02",
-      "close": 1706.8,
-      "open": 1734.8,
-      "high": 1758.8,
-      "low": 1688.9,
-      "volume": 18342,
+      "close": 1683.2,
+      "open": 1744.5,
+      "high": 1744.5,
+      "low": 1683.2,
+      "volume": 9,
       "prev_close": 1705.5,
-      "change": 1.3,
-      "change_pct": 0.0762,
+      "change": -22.3,
+      "change_pct": -1.3075,
       "currency": "USD",
       "perf": {
-        "w1": -3.83,
-        "m1": -3.01,
-        "m3": 5.58,
-        "m6": -13.09,
-        "y1": 9.14,
-        "ytd": -16.11,
+        "w1": -5.16,
+        "m1": -4.35,
+        "m3": 4.12,
+        "m6": -14.29,
+        "y1": 7.64,
+        "ytd": -17.27,
         "unit": "%",
-        "from": "2024-10-02"
+        "from": "2024-10-03"
       }
     },
     "usdtwd": {
@@ -1696,22 +1679,22 @@
     "move": {
       "symbol": "^MOVE",
       "date": "2026-10-02",
-      "close": 107.2868,
-      "open": 110.1149,
-      "high": 110.1149,
-      "low": 105.6618,
+      "close": 107.29,
+      "open": 108.13,
+      "high": 110.11,
+      "low": 105.66,
       "volume": 0,
       "prev_close": 108.13,
-      "change": -0.8432,
-      "change_pct": -0.7798,
+      "change": -0.84,
+      "change_pct": -0.7768,
       "currency": "USD",
       "perf": {
         "w1": 11.76,
         "m1": 34.6,
         "m3": 64.05,
-        "m6": 27.1,
-        "y1": 50.66,
-        "ytd": 67.74,
+        "m6": 27.11,
+        "y1": 50.67,
+        "ytd": 67.75,
         "unit": "%",
         "from": "2024-10-03"
       }
@@ -1719,116 +1702,116 @@
     "sp500_fut": {
       "symbol": "ES=F",
       "date": "2026-10-02",
-      "close": 7776.5,
+      "close": 7777.25,
       "open": 7724.0,
       "high": 7810.25,
       "low": 7723.25,
-      "volume": 1763233,
+      "volume": 2214495,
       "prev_close": 7724.0,
-      "change": 52.5,
-      "change_pct": 0.6797,
+      "change": 53.25,
+      "change_pct": 0.6894,
       "currency": "USD",
       "perf": {
-        "w1": -0.35,
-        "m1": 1.3,
-        "m3": 3.3,
-        "m6": 17.43,
-        "y1": 14.92,
-        "ytd": 12.83,
+        "w1": -0.34,
+        "m1": 1.31,
+        "m3": 3.31,
+        "m6": 17.44,
+        "y1": 14.93,
+        "ytd": 12.84,
         "unit": "%",
-        "from": "2024-10-02"
+        "from": "2024-10-03"
       }
     },
     "nasdaq_fut": {
       "symbol": "NQ=F",
       "date": "2026-10-02",
-      "close": 31049.0,
+      "close": 31061.75,
       "open": 30771.25,
       "high": 31282.5,
       "low": 30760.25,
-      "volume": 573483,
+      "volume": 795240,
       "prev_close": 30760.5,
-      "change": 288.5,
-      "change_pct": 0.9379,
+      "change": 301.25,
+      "change_pct": 0.9793,
       "currency": "USD",
       "perf": {
-        "w1": 0.52,
-        "m1": 6.38,
-        "m3": 5.05,
-        "m6": 28.21,
-        "y1": 23.65,
-        "ytd": 21.97,
+        "w1": 0.56,
+        "m1": 6.43,
+        "m3": 5.09,
+        "m6": 28.26,
+        "y1": 23.7,
+        "ytd": 22.02,
         "unit": "%",
-        "from": "2024-10-02"
+        "from": "2024-10-03"
       }
     },
     "dow_fut": {
       "symbol": "YM=F",
       "date": "2026-10-02",
-      "close": 51485.0,
+      "close": 51477.0,
       "open": 51251.0,
       "high": 51805.0,
       "low": 51208.0,
-      "volume": 84975,
+      "volume": 106025,
       "prev_close": 51241.0,
-      "change": 244.0,
-      "change_pct": 0.4762,
+      "change": 236.0,
+      "change_pct": 0.4606,
       "currency": "USD",
       "perf": {
-        "w1": -1.3,
-        "m1": -3.08,
-        "m3": -3.19,
-        "m6": 10.17,
-        "y1": 10.0,
-        "ytd": 6.51,
+        "w1": -1.32,
+        "m1": -3.09,
+        "m3": -3.21,
+        "m6": 10.15,
+        "y1": 9.98,
+        "ytd": 6.5,
         "unit": "%",
-        "from": "2024-10-02"
+        "from": "2024-10-03"
       }
     },
     "russell_fut": {
       "symbol": "RTY=F",
       "date": "2026-10-02",
-      "close": 2851.8,
+      "close": 2850.8999,
       "open": 2829.0,
       "high": 2875.3,
       "low": 2827.7,
-      "volume": 216050,
+      "volume": 269216,
       "prev_close": 2826.8999,
-      "change": 24.9001,
-      "change_pct": 0.8808,
+      "change": 24.0,
+      "change_pct": 0.849,
       "currency": "USD",
       "perf": {
-        "w1": -0.26,
-        "m1": -3.62,
-        "m3": -5.39,
-        "m6": 12.1,
-        "y1": 15.27,
-        "ytd": 14.16,
+        "w1": -0.29,
+        "m1": -3.65,
+        "m3": -5.42,
+        "m6": 12.06,
+        "y1": 15.23,
+        "ytd": 14.13,
         "unit": "%",
-        "from": "2024-10-02"
+        "from": "2024-10-03"
       }
     },
     "fedfunds_fut": {
       "symbol": "ZQ=F",
       "date": "2026-10-02",
-      "close": 96.07,
-      "open": 96.05,
-      "high": 96.09,
-      "low": 96.05,
-      "volume": 291043,
+      "close": 96.12,
+      "open": 96.1175,
+      "high": 96.12,
+      "low": 96.115,
+      "volume": 158611,
       "prev_close": 96.115,
-      "change": -0.045,
-      "change_pct": -0.0468,
+      "change": 0.005,
+      "change_pct": 0.0052,
       "currency": "USD",
       "perf": {
-        "w1": -0.19,
-        "m1": -0.24,
-        "m3": -0.31,
-        "m6": -0.3,
-        "y1": 0.16,
-        "ytd": -0.22,
+        "w1": -0.14,
+        "m1": -0.18,
+        "m3": -0.26,
+        "m6": -0.25,
+        "y1": 0.21,
+        "ytd": -0.16,
         "unit": "%",
-        "from": "2024-10-02"
+        "from": "2024-10-03"
       }
     },
     "kospi200": {
@@ -3448,9 +3431,9 @@
       "symbol": "BRL=X",
       "date": "2026-10-03",
       "close": 5.2223,
-      "open": 5.2225,
-      "high": 5.2383,
-      "low": 5.1939,
+      "open": 5.2223,
+      "high": 5.2223,
+      "low": 5.2223,
       "volume": 0,
       "prev_close": 5.2226,
       "change": -0.0003,
@@ -3458,10 +3441,10 @@
       "currency": "BRL",
       "perf": {
         "w1": 0.61,
-        "m1": 1.36,
-        "m3": 0.03,
-        "m6": 1.32,
-        "y1": -2.0,
+        "m1": 2.54,
+        "m3": 0.0,
+        "m6": 1.28,
+        "y1": -2.14,
         "ytd": -4.64,
         "unit": "%",
         "from": "2024-10-02"
@@ -3469,11 +3452,11 @@
     },
     "audusd": {
       "symbol": "AUDUSD=X",
-      "date": "2026-10-03",
+      "date": "2026-10-04",
       "close": 0.6957,
-      "open": 0.6931,
-      "high": 0.6976,
-      "low": 0.6917,
+      "open": 0.6957,
+      "high": 0.6957,
+      "low": 0.6957,
       "volume": 0,
       "prev_close": 0.6929,
       "change": 0.0029,
@@ -3481,10 +3464,10 @@
       "currency": "USD",
       "perf": {
         "w1": -0.72,
-        "m1": -2.65,
-        "m3": 0.95,
-        "m6": 0.48,
-        "y1": 5.17,
+        "m1": -2.88,
+        "m3": 0.6,
+        "m6": 0.67,
+        "y1": 5.45,
         "ytd": 3.87,
         "unit": "%",
         "from": "2024-10-02"
@@ -3517,8 +3500,8 @@
       "symbol": "INR=X",
       "date": "2026-10-03",
       "close": 96.3,
-      "open": 96.305,
-      "high": 96.31,
+      "open": 96.3,
+      "high": 96.3,
       "low": 96.3,
       "volume": 0,
       "prev_close": 96.2248,
@@ -3527,10 +3510,10 @@
       "currency": "INR",
       "perf": {
         "w1": 0.14,
-        "m1": 1.42,
-        "m3": 0.92,
-        "m6": 3.95,
-        "y1": 8.59,
+        "m1": 1.92,
+        "m3": 0.81,
+        "m6": 3.58,
+        "y1": 8.54,
         "ytd": 7.27,
         "unit": "%",
         "from": "2024-10-02"
@@ -3867,15 +3850,14 @@
       "symbol": "XLK",
       "date": "2026-10-02",
       "close": 199.81,
-      "open": 201.155,
+      "open": 201.16,
       "high": 201.39,
       "low": 199.35,
-      "volume": 8927877,
+      "volume": 8941200,
       "prev_close": 197.81,
       "change": 2.0,
       "change_pct": 1.0111,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 1.8,
         "m1": 8.83,
@@ -3894,14 +3876,13 @@
       "date": "2026-10-02",
       "close": 53.49,
       "open": 53.54,
-      "high": 53.75,
+      "high": 53.76,
       "low": 53.21,
-      "volume": 30268795,
+      "volume": 30275700,
       "prev_close": 53.46,
       "change": 0.03,
       "change_pct": 0.0561,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -2.46,
         "m1": -7.23,
@@ -3922,12 +3903,11 @@
       "open": 61.86,
       "high": 62.95,
       "low": 61.86,
-      "volume": 29216392,
+      "volume": 29238100,
       "prev_close": 62.7,
       "change": 0.12,
       "change_pct": 0.1914,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 1.26,
         "m1": -3.5,
@@ -3945,15 +3925,14 @@
       "symbol": "XLV",
       "date": "2026-10-02",
       "close": 166.18,
-      "open": 166.545,
+      "open": 166.55,
       "high": 166.85,
       "low": 165.27,
-      "volume": 7141427,
+      "volume": 7148000,
       "prev_close": 166.2,
       "change": -0.02,
       "change_pct": -0.012,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -2.65,
         "m1": -3.91,
@@ -3972,14 +3951,13 @@
       "date": "2026-10-02",
       "close": 110.04,
       "open": 109.89,
-      "high": 110.635,
+      "high": 110.64,
       "low": 109.61,
-      "volume": 8613007,
+      "volume": 8619400,
       "prev_close": 108.81,
       "change": 1.23,
       "change_pct": 1.1304,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -0.47,
         "m1": -4.2,
@@ -4000,12 +3978,11 @@
       "open": 80.47,
       "high": 80.74,
       "low": 80.13,
-      "volume": 9316706,
+      "volume": 9318800,
       "prev_close": 80.33,
       "change": 0.2,
       "change_pct": 0.249,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -1.86,
         "m1": -5.85,
@@ -4026,12 +4003,11 @@
       "open": 170.2,
       "high": 171.0,
       "low": 168.81,
-      "volume": 6115616,
+      "volume": 6115800,
       "prev_close": 168.64,
       "change": 1.31,
       "change_pct": 0.7768,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -0.28,
         "m1": -1.64,
@@ -4050,14 +4026,13 @@
       "date": "2026-10-02",
       "close": 48.86,
       "open": 48.83,
-      "high": 49.355,
+      "high": 49.36,
       "low": 48.8,
-      "volume": 13929013,
+      "volume": 13935700,
       "prev_close": 48.54,
       "change": 0.32,
       "change_pct": 0.6592,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -1.89,
         "m1": -7.72,
@@ -4076,14 +4051,13 @@
       "date": "2026-10-02",
       "close": 39.83,
       "open": 39.88,
-      "high": 40.205,
+      "high": 40.21,
       "low": 39.68,
-      "volume": 63622082,
+      "volume": 63645000,
       "prev_close": 39.68,
       "change": 0.15,
       "change_pct": 0.378,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 0.81,
         "m1": -6.66,
@@ -4103,13 +4077,12 @@
       "close": 40.81,
       "open": 40.96,
       "high": 41.295,
-      "low": 40.7524,
-      "volume": 6344903,
+      "low": 40.752,
+      "volume": 6394600,
       "prev_close": 40.68,
       "change": 0.13,
       "change_pct": 0.3196,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -1.8,
         "m1": -6.68,
@@ -4130,12 +4103,11 @@
       "open": 110.31,
       "high": 111.125,
       "low": 109.96,
-      "volume": 5590050,
+      "volume": 5598000,
       "prev_close": 109.94,
       "change": 0.38,
       "change_pct": 0.3456,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -2.34,
         "m1": -1.87,
@@ -4155,15 +4127,14 @@
       "symbol": "NVDA",
       "date": "2026-10-02",
       "close": 233.95,
-      "open": 236.055,
-      "high": 237.87,
+      "open": 236.06,
+      "high": 237.88,
       "low": 233.6,
-      "volume": 134470648,
+      "volume": 134914600,
       "prev_close": 230.86,
       "change": 3.09,
       "change_pct": 1.3385,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 3.95,
         "m1": 4.25,
@@ -4181,15 +4152,14 @@
       "symbol": "AAPL",
       "date": "2026-10-02",
       "close": 333.69,
-      "open": 333.205,
+      "open": 333.26,
       "high": 334.54,
       "low": 330.61,
-      "volume": 31878433,
+      "volume": 33245500,
       "prev_close": 330.32,
       "change": 3.37,
       "change_pct": 1.0202,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -2.16,
         "m1": 2.69,
@@ -4207,15 +4177,14 @@
       "symbol": "MSFT",
       "date": "2026-10-02",
       "close": 517.53,
-      "open": 519.095,
+      "open": 519.39,
       "high": 522.5,
       "low": 513.66,
-      "volume": 17179496,
+      "volume": 17803300,
       "prev_close": 512.8,
       "change": 4.73,
       "change_pct": 0.9224,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 0.26,
         "m1": 4.17,
@@ -4233,15 +4202,14 @@
       "symbol": "AVGO",
       "date": "2026-10-02",
       "close": 355.14,
-      "open": 349.98,
-      "high": 357.3538,
-      "low": 347.4157,
-      "volume": 24509128,
+      "open": 349.86,
+      "high": 357.35,
+      "low": 347.42,
+      "volume": 24607000,
       "prev_close": 343.64,
       "change": 11.5,
       "change_pct": 3.3465,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 0.66,
         "m1": -3.29,
@@ -4259,15 +4227,14 @@
       "symbol": "AMD",
       "date": "2026-10-02",
       "close": 633.91,
-      "open": 636.45,
-      "high": 645.4599,
+      "open": 635.95,
+      "high": 645.46,
       "low": 628.55,
-      "volume": 19323673,
+      "volume": 19825500,
       "prev_close": 615.73,
       "change": 18.18,
       "change_pct": 2.9526,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 0.52,
         "m1": 38.69,
@@ -4285,15 +4252,14 @@
       "symbol": "MU",
       "date": "2026-10-02",
       "close": 1074.89,
-      "open": 1107.45,
-      "high": 1107.865,
-      "low": 1072.02,
-      "volume": 26523742,
+      "open": 1107.35,
+      "high": 1108.0,
+      "low": 1072.01,
+      "volume": 27224500,
       "prev_close": 1097.39,
       "change": -22.5,
       "change_pct": -2.0503,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -0.68,
         "m1": 12.43,
@@ -4314,12 +4280,11 @@
       "open": 465.64,
       "high": 474.79,
       "low": 464.1,
-      "volume": 9722477,
+      "volume": 9916700,
       "prev_close": 459.2,
       "change": 13.58,
       "change_pct": 2.9573,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 4.92,
         "m1": 13.79,
@@ -4337,15 +4302,14 @@
       "symbol": "GOOGL",
       "date": "2026-10-02",
       "close": 343.5,
-      "open": 341.315,
+      "open": 341.32,
       "high": 345.77,
       "low": 341.16,
-      "volume": 22734069,
+      "volume": 23738200,
       "prev_close": 338.24,
       "change": 5.26,
       "change_pct": 1.5551,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -0.12,
         "m1": 1.89,
@@ -4363,15 +4327,14 @@
       "symbol": "AMZN",
       "date": "2026-10-02",
       "close": 251.52,
-      "open": 251.28,
-      "high": 253.5577,
-      "low": 250.0201,
-      "volume": 33047205,
+      "open": 251.51,
+      "high": 253.56,
+      "low": 250.02,
+      "volume": 33393100,
       "prev_close": 248.23,
       "change": 3.29,
       "change_pct": 1.3254,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 0.74,
         "m1": -1.36,
@@ -4389,15 +4352,14 @@
       "symbol": "META",
       "date": "2026-10-02",
       "close": 728.08,
-      "open": 733.205,
+      "open": 733.25,
       "high": 741.58,
       "low": 726.2,
-      "volume": 12873427,
+      "volume": 12944900,
       "prev_close": 725.93,
       "change": 2.15,
       "change_pct": 0.2962,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -3.14,
         "m1": 22.81,
@@ -4417,13 +4379,12 @@
       "close": 370.59,
       "open": 360.08,
       "high": 374.6,
-      "low": 359.411,
-      "volume": 54147498,
+      "low": 359.41,
+      "volume": 55242800,
       "prev_close": 354.11,
       "change": 16.48,
       "change_pct": 4.6539,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -0.41,
         "m1": 3.8,
@@ -4440,16 +4401,15 @@
     "ASML": {
       "symbol": "ASML",
       "date": "2026-10-02",
-      "close": 1867.31,
-      "open": 1849.7,
+      "close": 1867.3101,
+      "open": 1849.74,
       "high": 1873.5,
       "low": 1842.45,
-      "volume": 1335151,
+      "volume": 1344400,
       "prev_close": 1808.49,
-      "change": 58.82,
+      "change": 58.8201,
       "change_pct": 3.2524,
       "currency": "USD",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 7.07,
         "m1": 11.0,
@@ -4472,12 +4432,11 @@
       "open": 187.82,
       "high": 188.74,
       "low": 183.92,
-      "volume": 1466813,
+      "volume": 1469523,
       "prev_close": 186.74,
       "change": -2.82,
       "change_pct": -1.5101,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -1.08,
         "m1": 1.37,
@@ -4498,12 +4457,11 @@
       "open": 60.8,
       "high": 64.83,
       "low": 60.66,
-      "volume": 5613941,
+      "volume": 5618831,
       "prev_close": 59.42,
       "change": 5.22,
       "change_pct": 8.7849,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 13.98,
         "m1": 15.9,
@@ -4524,12 +4482,11 @@
       "open": 271.9,
       "high": 277.85,
       "low": 271.05,
-      "volume": 1298533,
+      "volume": 1298968,
       "prev_close": 271.9,
       "change": 4.2,
       "change_pct": 1.5447,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -0.79,
         "m1": 0.84,
@@ -4555,7 +4512,6 @@
       "change": 56.0,
       "change_pct": 3.5066,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 8.56,
         "m1": 14.33,
@@ -4581,7 +4537,6 @@
       "change": -0.95,
       "change_pct": -0.2503,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -4.61,
         "m1": -13.77,
@@ -4607,7 +4562,6 @@
       "change": 1.0,
       "change_pct": 0.269,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -2.38,
         "m1": -3.18,
@@ -4628,7 +4582,7 @@
       "open": 74.71,
       "high": 75.19,
       "low": 74.56,
-      "volume": 3307454,
+      "volume": 3307805,
       "prev_close": 74.63,
       "change": 0.15,
       "change_pct": 0.201,
@@ -4653,12 +4607,11 @@
       "open": 246.6,
       "high": 250.5,
       "low": 246.15,
-      "volume": 3928439,
+      "volume": 4293167,
       "prev_close": 250.0,
       "change": -1.25,
       "change_pct": -0.5,
       "currency": "DKK",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -1.68,
         "m1": -17.54,
@@ -4677,14 +4630,13 @@
       "date": "2026-10-02",
       "close": 3596.5,
       "open": 3576.5,
-      "high": 3625.0955,
+      "high": 3625.0959,
       "low": 3565.0,
-      "volume": 9526836,
+      "volume": 9527062,
       "prev_close": 3589.0,
       "change": 7.5,
       "change_pct": 0.209,
       "currency": "GBp",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -0.4,
         "m1": 4.46,
@@ -4705,12 +4657,11 @@
       "open": 11800.0,
       "high": 12094.0,
       "low": 11790.0,
-      "volume": 1624678,
+      "volume": 1659275,
       "prev_close": 12032.0,
       "change": -162.0,
       "change_pct": -1.3464,
       "currency": "GBp",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -5.43,
         "m1": -0.89,
@@ -4730,13 +4681,12 @@
       "close": 1442.2,
       "open": 1437.6,
       "high": 1445.0,
-      "low": 1414.1472,
-      "volume": 19700383,
+      "low": 1414.147,
+      "volume": 19701653,
       "prev_close": 1437.0,
       "change": 5.2,
       "change_pct": 0.3619,
       "currency": "GBp",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -4.63,
         "m1": -6.67,
@@ -4757,7 +4707,7 @@
       "open": 117.5,
       "high": 118.64,
       "low": 116.2,
-      "volume": 2595376,
+      "volume": 2595469,
       "prev_close": 118.06,
       "change": -1.72,
       "change_pct": -1.4569,
@@ -5531,13 +5481,23 @@
     "note": "기대인플레이션(브레이크이븐) = 명목 국채금리 − 물가연동채(TIPS) 실질금리",
     "source_url": "https://home.treasury.gov (명목·실질 곡선 차)",
     "perf": {
-      "ust10y": {
+      "ust20y": {
         "w1": 2.0,
-        "m1": 2.0,
-        "m3": 13.0,
-        "m6": 2.0,
-        "y1": 2.0,
-        "ytd": 11.0,
+        "m1": -1.0,
+        "m3": 9.0,
+        "m6": 3.0,
+        "y1": 4.0,
+        "ytd": 8.0,
+        "unit": "bp",
+        "basis": "명목 기간변화 − 실질 기간변화"
+      },
+      "ust30y": {
+        "w1": 2.0,
+        "m1": 0.0,
+        "m3": 10.0,
+        "m6": 7.0,
+        "y1": 6.0,
+        "ytd": 7.0,
         "unit": "bp",
         "basis": "명목 기간변화 − 실질 기간변화"
       },
@@ -5561,23 +5521,13 @@
         "unit": "bp",
         "basis": "명목 기간변화 − 실질 기간변화"
       },
-      "ust20y": {
+      "ust10y": {
         "w1": 2.0,
-        "m1": -1.0,
-        "m3": 9.0,
-        "m6": 3.0,
-        "y1": 4.0,
-        "ytd": 8.0,
-        "unit": "bp",
-        "basis": "명목 기간변화 − 실질 기간변화"
-      },
-      "ust30y": {
-        "w1": 2.0,
-        "m1": 0.0,
-        "m3": 10.0,
-        "m6": 7.0,
-        "y1": 6.0,
-        "ytd": 7.0,
+        "m1": 2.0,
+        "m3": 13.0,
+        "m6": 2.0,
+        "y1": 2.0,
+        "ytd": 11.0,
         "unit": "bp",
         "basis": "명목 기간변화 − 실질 기간변화"
       }
@@ -6343,20 +6293,20 @@
     }
   },
   "fed_implied": {
-    "contract_price": 96.07,
-    "implied_rate_pct": 3.93,
+    "contract_price": 96.12,
+    "implied_rate_pct": 3.88,
     "quote_date": "2026-10-02",
     "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 — 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
     "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
     "effr_pct": 3.88,
-    "vs_effr_bp": 5,
+    "vs_effr_bp": 0,
     "perf": {
-      "w1": 18.3,
-      "m1": 23.1,
-      "m3": 29.9,
-      "m6": 28.9,
-      "y1": -15.3,
-      "ytd": 21.2,
+      "w1": 13.5,
+      "m1": 17.3,
+      "m3": 25.1,
+      "m6": 24.1,
+      "y1": -20.1,
+      "ytd": 15.4,
       "unit": "bp",
       "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
     }
@@ -7889,7 +7839,7 @@
       "foreign": -1080,
       "institution": 4155,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.10.01",
@@ -7897,7 +7847,7 @@
       "foreign": -5558,
       "institution": 3239,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.30",
@@ -7905,7 +7855,7 @@
       "foreign": -20646,
       "institution": -7993,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.29",
@@ -7913,7 +7863,7 @@
       "foreign": -29922,
       "institution": 1041,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.28",
@@ -7921,7 +7871,7 @@
       "foreign": -32682,
       "institution": -10169,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.23",
@@ -7929,7 +7879,7 @@
       "foreign": -4942,
       "institution": 3189,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.22",
@@ -7937,7 +7887,7 @@
       "foreign": 494,
       "institution": -1295,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.21",
@@ -7945,7 +7895,7 @@
       "foreign": 117,
       "institution": 15162,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.18",
@@ -7953,7 +7903,7 @@
       "foreign": 4486,
       "institution": 15322,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.17",
@@ -7961,7 +7911,7 @@
       "foreign": -22546,
       "institution": 2480,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.16",
@@ -7969,7 +7919,7 @@
       "foreign": -16726,
       "institution": 12251,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.15",
@@ -7977,7 +7927,7 @@
       "foreign": -15458,
       "institution": -9585,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.14",
@@ -7985,7 +7935,7 @@
       "foreign": -33363,
       "institution": -11869,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.11",
@@ -7993,7 +7943,7 @@
       "foreign": -22984,
       "institution": -12184,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.10",
@@ -8001,7 +7951,7 @@
       "foreign": -26217,
       "institution": 5744,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.09",
@@ -8009,7 +7959,7 @@
       "foreign": -4348,
       "institution": 9422,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.08",
@@ -8017,7 +7967,7 @@
       "foreign": 6316,
       "institution": 6427,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.07",
@@ -8025,7 +7975,7 @@
       "foreign": 25532,
       "institution": 26491,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.04",
@@ -8033,7 +7983,7 @@
       "foreign": 4796,
       "institution": 16694,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.03",
@@ -8041,7 +7991,7 @@
       "foreign": 414,
       "institution": 9143,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.02",
@@ -8049,7 +7999,7 @@
       "foreign": -19173,
       "institution": -20361,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.09.01",
@@ -8057,7 +8007,7 @@
       "foreign": -4968,
       "institution": -6286,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.08.31",
@@ -8065,7 +8015,7 @@
       "foreign": -6434,
       "institution": -7891,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.08.28",
@@ -8073,7 +8023,7 @@
       "foreign": -8525,
       "institution": -11876,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.08.27",
@@ -8081,7 +8031,7 @@
       "foreign": 1333,
       "institution": 1835,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.08.26",
@@ -8089,7 +8039,7 @@
       "foreign": -1148,
       "institution": 7615,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.08.25",
@@ -8097,7 +8047,7 @@
       "foreign": -38140,
       "institution": 11711,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.08.24",
@@ -8105,7 +8055,7 @@
       "foreign": -36691,
       "institution": -12901,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.08.21",
@@ -8113,7 +8063,7 @@
       "foreign": -1760,
       "institution": 2481,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     },
     {
       "date": "26.08.20",
@@ -8121,7 +8071,7 @@
       "foreign": 17068,
       "institution": -4895,
       "unit": "억원",
-      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261003&startIdx=0&pageSize=30"
+      "source_url": "https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20261004&startIdx=0&pageSize=30"
     }
   ],
   "market_internals": {
@@ -8281,7 +8231,7 @@
     }
   },
   "usdkrw_naver": {
-    "rate": 1347.0,
+    "rate": 1349.0,
     "source_url": "https://stock.naver.com/api/securityService/marketindex/majors/exchange",
     "note": "매매기준율"
   },
@@ -8292,10 +8242,6 @@
       "item": "국고채(1년)",
       "code": "010190000",
       "series": [
-        {
-          "date": "20260921",
-          "value": 3.676
-        },
         {
           "date": "20260922",
           "value": 3.674
@@ -8326,8 +8272,8 @@
         }
       ],
       "perf": {
-        "m1": 29.3,
-        "m3": 43.6,
+        "m1": 27.6,
+        "m3": 39.4,
         "ytd": 118.4,
         "unit": "bp",
         "basis": "일별 실측 대비 (한국은행 ECOS 817Y002)",
@@ -8340,10 +8286,6 @@
       "item": "국고채(3년)",
       "code": "010200000",
       "series": [
-        {
-          "date": "20260921",
-          "value": 4.056
-        },
         {
           "date": "20260922",
           "value": 4.04
@@ -8374,10 +8316,10 @@
         }
       ],
       "perf": {
-        "m1": 9.9,
-        "m3": 23.4,
-        "m6": 38.5,
-        "y1": 135.5,
+        "m1": 5.9,
+        "m3": 14.6,
+        "m6": 56.7,
+        "y1": 134.1,
         "ytd": 99.8,
         "unit": "bp",
         "basis": "일별 실측 대비 (한국은행 ECOS 817Y002)",
@@ -8390,10 +8332,6 @@
       "item": "국고채(5년)",
       "code": "010200001",
       "series": [
-        {
-          "date": "20260921",
-          "value": 4.275
-        },
         {
           "date": "20260922",
           "value": 4.267
@@ -8424,8 +8362,8 @@
         }
       ],
       "perf": {
-        "m1": 7.6,
-        "m3": 20.4,
+        "m1": 2.3,
+        "m3": 10.1,
         "ytd": 90.3,
         "unit": "bp",
         "basis": "일별 실측 대비 (한국은행 ECOS 817Y002)",
@@ -8438,10 +8376,6 @@
       "item": "국고채(10년)",
       "code": "010210000",
       "series": [
-        {
-          "date": "20260921",
-          "value": 4.457
-        },
         {
           "date": "20260922",
           "value": 4.461
@@ -8472,10 +8406,10 @@
         }
       ],
       "perf": {
-        "m1": 5.2,
-        "m3": 27.4,
-        "m6": 48.6,
-        "y1": 141.4,
+        "m1": -0.6,
+        "m3": 16.0,
+        "m6": 67.6,
+        "y1": 140.5,
         "ytd": 101.1,
         "unit": "bp",
         "basis": "일별 실측 대비 (한국은행 ECOS 817Y002)",
@@ -8488,10 +8422,6 @@
       "item": "회사채(3년, BBB-)",
       "code": "010320000",
       "series": [
-        {
-          "date": "20260921",
-          "value": 10.523
-        },
         {
           "date": "20260922",
           "value": 10.514
@@ -8522,8 +8452,8 @@
         }
       ],
       "perf": {
-        "m1": 11.8,
-        "m3": 24.8,
+        "m1": 8.6,
+        "m3": 15.7,
         "ytd": 113.6,
         "unit": "bp",
         "basis": "일별 실측 대비 (한국은행 ECOS 817Y002)",
@@ -8536,10 +8466,6 @@
       "item": "CD(91일)",
       "code": "010502000",
       "series": [
-        {
-          "date": "20260921",
-          "value": 3.2
-        },
         {
           "date": "20260922",
           "value": 3.21
@@ -8963,260 +8889,255 @@
     }
   },
   "news": {
-    "date": "2026-10-03",
+    "date": "2026-10-04",
     "count": 24,
     "extraction": {
-      "id=\"dic_area\"": 24
+      "id=\"dic_area\"": 23,
+      "fallback": 1
     },
     "articles": [
       {
-        "title": "\"현대차가 일찍 찍었다\"…'2.7조→13조' 몸값 오른 美 AI회사",
-        "url": "https://n.news.naver.com/mnews/article/215/0001268085",
-        "chars": 1173,
+        "title": "세수 늘리려다 코인시장 태울라…22% 과세의 역설",
+        "url": "https://n.news.naver.com/mnews/article/119/0003139328",
+        "chars": 1785,
         "extracted": "id=\"dic_area\"",
-        "body": "베이조스·로린 파월 잡스·코슬라도 투자\n보스턴다이내믹스 로봇 개 '스팟'에 FFM 탑재 \n \n \n \n\n 사진=연합뉴스 \n\n현대자동차그룹이 일찌감치 투자한 미국 인공지능(AI) 스타트업이 1년여 만에 5배 수준의 몸값을 평가받으며 신규 투자 유치에 나섰다. 주인공은 2023년 설립된 미국 피지컬AI 스타트업 '필드AI(FieldAI)'다.\n\n2일(현지시간) 미 경제매체 비즈니스인사이더에 따르면 필드AI는 최근 기업가치 100억달러(약 13조4천억원)를 기준으로 7억달러 규모의 신규 투자 유치를 추진하고 있다.\n\n지난해 8월 4억달러 이상을 투자받을 당시 인정받은 기업가치는 20억달러(약 2조7천억원)였다. 이번 투자 라운드에서 평가받는 기업가치는 1년여 만에 당시의 5배 수준으로 높아진 셈이다. 다만 아직 최종 투자 계약이 체결된 단계는 아니다.\n\n필드AI는 휴머노이드부터 사족보행 로봇, 드론까지 다양한 기계에 적용할 수 있는 범용 AI 모델을 개발한다. 로봇이 주변 환경을 인식하고 판단해 스스로 움직이도록 하는 이른바 '로봇의 뇌'를 만드는 회사다.\n\n현대차그룹은 올해 초 필드AI에 수백만달러를 투자한 것으로 알려졌다.\n\n현대차그룹 계열 로봇기업 보스턴다이내믹스와는 기술 협력도 진행하고 있다. 양사는 보스턴다이내믹스의 사족보행 로봇 '스팟(Spot)'과 필드AI의 '필드 파운데이션 모델(FFM)'을 결합해 복잡하고 변화가 많은 환경에서도 로봇이 자율적으로 움직일 수 있도록 하는 기술을 개발하고 있다.\n\n사업 규모도 빠르게 커지고 있다. 비즈니스인사이더에 따르면 필드AI는 지난 6월 이후 3천500만달러 규모의 매출과 고객 계약을 추가로 확보했다. 2023년 설립 이후 확보한 매출과 고객 계약 규모는 1억3천500만달러를 넘어선 것으로 전해졌다.\n\n투자자 명단에는 제프 베이조스 아마존 창업자의 투자회사와 고(故) 스티브 잡스의 부인 로린 파월 잡스가 설립한 에머슨 컬렉티브, 실리콘밸리 벤처캐피털 코슬라벤처스 등도 이름을 올리고 있다.\n\n최근 스타트업 투자 시장에서는 생성형AI를 넘어 AI가 로봇 등 현실 세계에서 직접 움직이고 작업하도록 하는 '피지컬AI' 분야로 자금이 몰리고 있다.\n\n경쟁사들의 몸값도 치솟고 있다. 피지컬 인텔리전스는 기업가치 약 110억달러, 스킬드AI는 140억달러 수준을 인정받는 등 피지컬AI 시장의 주도권을 둘러싼 경쟁도 치열해지고 있다."
+        "body": "상반기 거래대금 44%·거래소 영업손익 78% 감소\n투자자 69.7% “투자 축소·중단”\n해외 거래 이탈 땐 법인세수·과세정보까지 놓칠 수도 \n \n \n \n\n 거래 감소와 수익 악화에 시달리는 국내 코인시장에 내년 과세까지 더해지면 투자 이탈과 법인세수 감소로 세수 확대 효과마저 제한될 수 있다는 우려가 나온다. 해당 이미지는 AI로 제작됨. [데일리안 = 김민희 기자] 국내 가상자산 사업자들이 거래 감소와 수익 악화에 시달리는 가운데 내년 소득 과세까지 앞두고 있다. 거래가 줄어 수익 기반이 흔들리는 시장에 세금 부담까지 더해지는 셈이다.\n\n취득가액 확인과 손실 처리 등 기존 쟁점이 이어지는 상황에서, 과세가 투자 축소와 거래 이탈을 부추길 수 있다는 우려가 나온다.\n\n투자자 소득에서 새로 세금을 걷더라도 거래소 이익이 줄어 기존 법인세수가 감소한다면 전체 세수 확대 효과도 제한될 수 있다.\n\n4일 금융정보분석원(FIU)과 금융감독원이 최근 발표한 ‘2026년 상반기 가상자산사업자 실태조사’에 따르면 국내 가상자산 거래대금은 지난해 하반기보다 44% 감소했다. 같은 기간 거래소 영업손익은 78% 줄었다.\n\n거래수수료에 의존하는 국내 거래소는 거래가 줄면 수익도 함께 감소한다. 과세 이후 투자 축소나 거래 이탈이 더해지면 사업자들의 실적 회복도 어려워질 수 있다.\n\n금융당국은 주요국 통화정책에 대한 경계감과 수급 여건 악화 등을 상반기 시장 위축의 배경으로 꼽았다.\n\n대외 불확실성에 눌린 시장에 내년부터는 투자자들의 세금 부담까지 더해진다.\n\n현행법상 내년 1월부터 가상자산 양도·대여로 얻은 연간 소득에서 250만원을 공제한 금액에 지방소득세를 포함해 22%의 세율이 적용된다.\n\n시장에서는 과세로 확보할 세수뿐 아니라 국내 거래 기반이 약해질 가능성도 함께 따져봐야 한다는 지적이 나온다.\n\n실제 타이거리서치가 국내 가상자산 투자자 2423명을 대상으로 조사한 결과 응답자의 69.7%는 과세 시행 이후 투자 규모를 줄이거나 투자를 중단하겠다고 답했다.\n\n주식·펀드 등 다른 금융자산으로 투자금을 옮길 가능성이 높다는 응답도 71.8%였다.\n\n타이거리서치는 투자 의향과 기존 과세국의 거래량 변화 등을 반영해 내년 업비트·빗썸·코인원 등 국내 3대 거래소의 연간 거래대금이 올해보다 30% 감소할 것으로 추산했다.\n\n거래 위축은 세수에도 영향을 줄 수 있다.\n\n투자자 소득에 세금을 부과하더라도 거래소 이익이 줄어 법인세수가 감소하면 전체 세수 확대 효과는 제한될 수 있다. 새로 걷을 세금과 함께 줄어들 기존 세수도 따져봐야 하는 것이다.\n\n과세 준비를 둘러싼 쟁점도 해소되지 않았다.\n\n국내외 거래소와 개인지갑을 오간 자산의 취득가액을 확인하고 손익을 계산해야 하는 부담이 대표적이다.\n\n손실을 다음 해로 넘겨 공제하는 이월공제가 허용되지 않는 점도 투자자들이 지속적으로 문제 삼아왔다.\n\n거래가 해외 거래소나 개인지갑으로 이동하면 손익 확인은 더 복잡해질 수 있다.\n\n국내 거래소의 거래대금과 수수료 수익은 줄어드는 반면, 투자자와 과세당국은 여러 경로에 흩어진 거래내역을 확인해야 하는 부담이 커질 수 있다.\n\n안광호 타이거리서치 연구원은 “가상자산 소득에 과세한다는 원칙과 현행안을 2027년부터 그대로 시행하는 문제는 구분해서 봐야 한다”며 “과세기준과 신고체계가 충분히 갖춰지지 않은 상태에서 시행하면 국내 거래가 위축되는 동시에 일부 거래가 해외 거래소와 개인지갑으로 이동할 수 있다”고 말했다.\n\n이어 “이 경우 국내 산업 기반은 약해지는 반면 과세당국이 확인해야 할 거래정보는 더 분산돼 세수 확보와 시장 감독도 함께 어려워질 수 있다”고 덧붙였다."
       },
       {
-        "title": "“메모리, 누가 고점이래? 소부장은 이제 시작”…AI가 투자 판도 바꾼다 [여의도란도란]",
-        "url": "https://n.news.naver.com/mnews/article/009/0005743520",
-        "chars": 2824,
+        "title": "원전 대미투자, 수혜주는 어디?[주末머니]",
+        "url": "https://n.news.naver.com/mnews/article/277/0005824440",
+        "chars": 711,
         "extracted": "id=\"dic_area\"",
-        "body": "김서영 한화자산운용 부장\n소부장 액티브 ETF 운용\n칩가격 상승에 테스트 수요 ‘쑥’\n전공정 중심 공식도 깨져\n“1만피 충분, 조정 때 더 담아야”\n\n \n \n \n \n\n 매일경제와 인터뷰중인 김서영 한화자산운용 부장. [사진제공=한화자산운용] “삼성전자·SK하이닉스도 더 가고, 소부장도 더 간다”\n\n인공지능(AI) 발전 속도가 빨라지고 있다. AI가 학습에서 추론, 에이전트로 진화할수록 메모리 사용량이 늘어날 뿐 아니라 더 비싸고 만들기 어려운 고부가 제품 수요도 커진다. 메모리 반도체에서 물량 증가와 고부가화가 동시에 나타나고 있는 셈이다.\n\n그 가운데 국내 반도체 소재·부품·장비(소부장) 기업들은 메모리 업황 변화의 수혜를 누리는 ‘전성시대’의 초입에 들어섰다.\n\nPLUS AI반도체소부장액티브 상장지수펀드(ETF)를 운용하고 있는 김서영 한화자산운용 부장은 최근 매일경제와 만나 메모리 고점론을 일축하며 “소부장 기업들은 오히려 공급 호황을 맞았다”고 전했다.\n\n이어 김 부장은 AI가 소부장 기업들의 전통 수혜 공식도 바꾸고 있다고 진단했다.\n\n현재까지는 노광·식각·증착 등 전공정 장비 기업이 먼저 수혜를 받고 부품, 소재 기업이 뒤따르는 흐름이 일반적이었다.\n\n하지만 AI 반도체가 고용량·고성능화되면서 패키징과 테스트 등 후공정의 중요성이 커지고 있다는 것이다. 이들의 실적 성장은 2027년부터 본격 가시화될 것으로 보고 있다.\n\n “테스트 수요, D램보다 커질 수도”\n 김 부장이 현재 주목하는 분야는 테스트 장비다.\n\nAI용 반도체의 칩 하나당 가격이 높아진 데다 성능과 수율 관리가 더욱 중요해지면서 검사를 더 꼼꼼하게 해야 하기 때문이다.\n\n실제 과거에는 반도체 불량 여부를 판별할 때 일부만 뽑아 검사하는 표본검사가 일반적이었지만 이제는 전수조사 수요가 늘고 있다.\n\n김 부장은 “예전에는 10% 정도만 샘플로 검사해서 불량이 없으면 괜찮다고 봤지만 지금은 칩 하나하나가 너무 비싸다”며 “불량이 하나라도 나오면 웨이퍼 전체를 버려야 할 수도 있어서 전수조사를 해야 한다”고 전했다.\n\n이어 “그렇기 때문에 D램 수요가 100% 늘 때 테스트 수요는 200% 늘 수도 있다”고 덧붙였다.\n\n삼성전자와 SK하이닉스의 외주 확대도 후공정 업체에는 새로운 기회다.\n\n최근 두 회사는 고대역폭메모리(HBM) 생산에 집중하면서 범용 D램 후공정 물량을 외부 업체에 맡기는 사례가 늘고 있다.\n\n김 부장은 “(후공정) 업체들을 만나면 물량이 너무 많이 들어와 감당하기 어렵다는 분위기”라며 “이들의 증설도 이어지고 있다”고 설명했다.\n\n관련 기업들의 주가와 실적도 이미 움직이고 있다. 반도체 테스트 장비 업체 엑시콘은 전일까지 최근 한 달 주가가 95.8% 뛰었다.\n\n하나마이크론은 2026년 2분기 매출이 전년 동기 대비 101% 급증했다. 후공정 전 과정을 수행하는 외주 반도체 조립 및 테스트(OSAT) 대표 기업이다.\n\nSFA반도체 역시 삼성전자 중심으로 메모리 패키징·테스트를 담당하고 있는데, 27년 영업이익률이 10%대까지 오를 것으로 추정된다.\n\n “삼전닉스보다 이익 더 늘어날 곳 찾는다”\n 이 때문에 향후 반도체 소부장 투자에서는 공정 단위가 아닌 기업 단위의 옥석 가리기가 중요해질 전망이다.\n\n같은 후공정 업체라도 장비·부품·외주 등 사업 영역에 따라 수혜 정도가 상이할 수 있기 때문이다.\n\n김 부장이 제시한 투자 기준은 세 가지다.\n\n삼성전자·SK하이닉스보다 이익이 더 빠르게 늘어나는지, 독보적인 기술력을 갖췄는지, 비싼 외산 장비를 국산화할 수 있는지 여부다.\n\n그는 “삼성전자와 SK하이닉스가 어떤 국산 장비를 써서 수율을 끌어올렸다고 하면 마이크론도 그 장비를 쓸 수밖에 없다”며 “마이크론은 물론 중국 YMTC에도 납품하는 국내 업체가 있다”고 말했다.\n\n원익IPS·유진테크 같은 익숙한 이름이 아닌 새로운 중소 장비사들이 장비를 개발해 삼성전자 등에 납품하는 사례도 늘고 있다고 덧붙였다.\n\n투자자 입장에서 소부장 투자 기회가 넓어지고 있지만 개별 종목을 선별에는 주의가 필요하다는 조언도 내놨다.\n\n김 부장은 “대형 운용사들이 국산화 대표주자라며 믿고 투자했던 한 장비주는 고객사 품질 검증을 계속 통과하지 못하면서 주가가 크게 빠졌다”며 “개인이 본업을 제쳐두고 회사 IR을 일일이 쫓아다니지 않는 한 종목 하나하나에 대응하기는 쉽지 않다”고 설명했다. 한화운용이 소부장 ETF에서 액티브 전략을 택한 배경도 여기에 있다.\n\n김 부장은 “한미반도체는 후공정 장비를 만드는데도 장비주 시가총액 1위에 올랐다”며 “이런 기업은 얼마든지 더 나올 수 있다”고 말했다.\n\n 단기 조정은 매수 기회\n 하지만 최근 소부장 종목들의 주가가 빠르게 오른 만큼 단기적으로 조정은 나타날 수 있다고 봤다. 하반기 펀드들이 대형주 비중을 늘리기 위해 많이 오른 소부장을 먼저 팔 수 있다는 점도 부담이다.\n\n김 부장은 “삼성전자·SK하이닉스의 반등 국면에 소부장이 잠시 쉬어가더라도 절대 쫄지 말자”며 “오히려 더 담아두면 결국 올라간다”고 귀띔했다.\n\n국내 증시 전망도 긍정적으로 보고 있다. 현재의 조정장을 지나면 1만피까지도 가능할 것이라는 낙관론을 내놨다.\n\n김 부장은 “7월의 급락은 글로벌 레버리지 상품과 헤지펀드 청산이 뒤엉킨 수급 탓”이라며 “기초체력(펀더멘털)로만 보면 코스피 9000대도 전혀 부담스럽지 않다. 수급만 없었으면 천천히 1만선까지 갔을 것”이라고 말했다.\n\n증권가 전망에 따르면 코스피 상장사 영업이익은 내년에도 35% 안팎 늘어 글로벌 최고 수준의 성장률을 기록할 것으로 보인다.\n\n김 부장은 이 성장을 반도체·테크 기업이 이끄는 만큼 삼성전자와 SK하이닉스 주가도 연말까지 다시 오름세를 탈 것으로 전망했다. 소부장 역시 대형주와 함께 결국 우상향할 것이라는 판단이다."
+        "body": "두산에너빌리티·건설사 수혜 한국의 대미투자 프로젝트가 발표되면서 원자력 발전소 건설에 따른 한국 기업들의 수혜가 예상된다는 의견이 나왔다.\n\n이민재 NH투자증권 연구원은 \"미국에 건설될 대형 원전 8기 중 웨스팅하우스가 담당하는 AP1000 내 국내 기업 참여 비중이 높아질 것으로 예상된다\"고 말했다.\n\n \n \n \n \n\n \n\n우선 확정된 대미투자 1호 프로젝트는 텍사스 엔시날 복합화력이다. 자금은 약 7년에 걸쳐 투입되고 20년간 최대 454억달러(약 61조6577억4000원)를 회수할 예정이다. 목표 내부수익률(IRR)은 15%대 중반으로 정부는 기자재뿐 아니라 설계·조달·시공(EPC)까지 국내 기업 참여도 최대한 늘릴 계획이다. 두산에너빌리티는 주요 기자재, 국내 건설사는 EPC에 참여가 가능하다는 게 이 연구원의 분석이다.\n\n원전의 경우 산업통상부에 따르면 정부는 미국과 대형 원전 8기를 건설하는 내용의 '한미 원전 프레임워크'에 합의했다. 1단계 웨스팅하우스의 AP1000 2기, 2단계 한국형 원전인 APR1400 2기, AP1000 2기, 3단계 AP1000 2기가 순차적으로 건설된다.\n\nAPR1400 수출의 걸림돌로 작용했던 타협협정 개정도 함께 이뤄질 전망이다. 이에 APR1400을 미국뿐 아니라 제3국에 수출할 기회라고 이 연구원이 설명했다. 한전기술은 설계, 두산에너빌리티는 원자로 포함 핵심 기자재, 국내 건설사는 시공에 참여할 수 있다"
       },
       {
-        "title": "\"금리 올라도 방법은 있다\"...투자 몰린 ETF 꼽아보니",
-        "url": "https://n.news.naver.com/mnews/article/215/0001268083",
-        "chars": 1411,
+        "title": "[코인 슈퍼위크] 발행길 열린 토큰증권, 원장에 갇혔다",
+        "url": "https://n.news.naver.com/mnews/article/119/0003139326",
+        "chars": 2190,
         "extracted": "id=\"dic_area\"",
-        "body": "최근 미국 등 주요국 국채금리가 치솟자 금리나 채권 수익률을 반영하는 금융상품에 투자자들이 몰리고 있다. \n\n추석 연휴 후 첫 영업일인 지난달 28일부터 30일까지 자금 순유입이 가장 많았던 ETF는 'TIGER CD금리투자KIS(합성)' 5천576억원이라고 3일 코스콤 ETF CHECK가 집계했다. \n\n이 ETF는 양도성예금증서(CD) 금리투자 지수를 기초지수로 해 1좌당 순자산가치의 변동률을 기초지수의 변동률과 유사하게 운용한다.\n\n지난달 1일부터 이날까지 해당 ETF의 상승률은 0.32%다. 큰 폭의 상승세는 없었지만 변동성 장세에도 완만하게 오른 점이 눈에 띈다. 지난달 28일부터 이날까지 코스피는 1.20% 하락한 반면 이 상품은 0.07% 상승했다.\n\n'KODEX 단기채권'에도 2천106억원이 순유입돼 5번째로 많았다.\n\n이 상품은 잔존만기 1개월 이상 1년 이하의 국고채, 통화안정증권 등 30개 종목을 편입하고 있다. 듀레이션(자금회수기간)은 0.5년 내외다.\n\n이 외에 자금 순유입 상위권에 'KODEX 단기채권PLUS'(13위·1천183억원), 'RISE 단기채권알파액티브'(14위·972억원), 'TGIER 미국달러단기채권액티브'(17위·766억원), 'KODEX CD1년금리플러스액티브'(18위·664억원) 등이 포함됐다.\n\n미국, 영국 등 주요국 국채금리가 수십 년 만에 최고 수준으로 치솟자 금리 상승을 추종하거나 채권에 투자하는 상품에 매수세가 쏠린 것이다.\n\n미국 10년물 국채 금리는 1일(현지시간) 장중 5.34%까지 올라 전날 기록한 24년 만의 최고치마저 다시 경신했다.\n\n영국 30년물 국채 금리는 장중 6.029%까지 올랐다. 프랑스 10년물 국채 금리도 이날 4.963%까지 올라 5%에 가까워졌다. 각각 1998년, 2002년 이후 최고치다.\n\n이와 연동해 국고채 3년물 금리는 지난달 28일 4.1%를 넘어 2022년 11월 이후 최고치를 기록했다.\n\n신한투자증권 김찬희 연구원은 \"미국의 경우 앞서간 긴축 경계 재정건전성 우려와 경쟁적인 자본 조달 수요, 외국인 투자 수요 약화 등이 중장기 금리의 하방경직성을 높이는 요인으로 잔존하고 있다\"며 \"이런 가운데 국내 크레딧은 연말까지 스프레드의 완만한 확대를 예상하나 캐리(이자 수익) 수요가 약세를 방어할 것\"이라고 분석했다.\n\n이어 상위등급 회사채에 대한 최선호 투자의견을 유지했다.\n\n추석 연휴 이후 증시 대기자금은 횡보했다. '빚투'(빚내서 투자) 자금은 약간 늘었다.\n\n투자자 예탁금은 추석 연휴 직전인 지난달 23일 101조6349억원에서 직후인 28일 104조4천892억원, 29일 107조7천257억원으로 올랐지만 지난 1일 104조6천377억원으로 돌아왔다.\n\n빚투 지표인 신용거래융자 잔고는 지난달 23일 32조7천764억원에서 지난 1일 33조4천808억원으로 2.1% 늘었다.\n\n(사진=연합뉴스)"
+        "body": "증권사별 원장 구축…자산 이전 제한\n이중기재 막지만…유통 확장엔 제약\n거래·담보 활용 넓힐 연결 기준 과제 \n \n \n \n\n 토큰증권 발행 기반은 마련되고 있지만, 원장 간 이전 제한으로 거래·담보 활용을 넓히기 위한 연결 기준이 과제로 남아 있다. 해당 이미지는 AI로 제작됨. [데일리안 = 김민희 기자] 토큰증권 발행을 위한 제도 정비가 이뤄지는 가운데 발행된 토큰증권이 다른 블록체인으로 이동할 수 있느냐가 쟁점으로 부상하고 있다.\n\n가이드라인에 따르면, 증권사들이 각자 구축한 분산원장을 예탁결제원 시스템에 연결하더라도 원장 사이에서 토큰증권을 옮기는 데는 제한이 따를 전망이다.\n\n해외에서 토큰화 자산의 활용이 담보와 결제로 확장되고 있지만 국내에서는 발행 이후의 연결이 과제로 남을 수 있다.\n\n4일 김태림 AXIS Law 대표변호사가 국회 실물자산 토큰화(RWA) 세미나 논의를 반영해 작성한 ‘토큰증권에서 RWA로’ 보고서에 따르면, 국내 토큰증권 분산원장 표준요건 가이드라인은 발행 후 다른 분산원장으로 자산을 이전하는 데 제한을 두고 있다.\n\n지난달 금융위원회 토큰증권 정책방향에 첨부된 가이드라인은 하나의 증권을 하나의 분산원장에서 발행·유통하도록 하고, 발행 후 다른 분산원장으로 일부 또는 전부를 이전하는 것을 금지하는 구조를 제시했다.\n\n분산원장은 증권의 발행량과 보유자, 거래 내역 등을 여러 참여기관이 함께 기록하고 검증하는 장부다. 토큰증권은 이 장부를 활용해 증권의 권리를 관리한다.\n\n국내 인프라는 모든 토큰증권을 하나의 블록체인에 모으는 방식이 아니다.\n\n증권사 등이 분산원장을 구축하고 이를 예탁결제원의 토큰증권 시스템과 연결한다.\n\n여러 원장이 병존하면서 예탁결제원이 발행량과 등록정보가 일치하는지 관리하는 형태다.\n\n여기서 시스템 연결과 자산 이전은 구분된다.\n\n각 원장의 정보를 예탁결제원이 확인할 수 있다고 해서 한 원장에서 발행한 토큰증권을 다른 원장으로 옮길 수 있는 것은 아니다.\n\n예컨대 A 원장에서 발행된 토큰증권을 B 원장으로 이전해 그곳의 금융서비스와 연결하려면 별도의 이전 절차와 허용 기준이 필요하다.\n\n기존 원장 안에서 거래하는 것과 원장을 넘나들며 자산을 활용하는 것은 다른 문제다.\n\n이전 제한은 증권의 권리와 수량을 명확히 관리하기 위한 안전장치다.\n\n같은 증권이 두 원장에 중복 기록되거나 실제 발행량보다 많은 수량이 유통되는 것을 막으려는 취지다.\n\n자산이 이동하는 과정에서도 관리 공백이 생길 수 있다.\n\n출발 원장에서 기록을 지우는 시점과 도착 원장에 다시 기록하는 시점이 어긋나면 해당 수량이 어디에 있는지 확인하기 어려워질 수 있기 때문이다.\n\n다만 이 경계가 장기간 유지될 경우 자산의 활용 범위가 제한될 수 있다.\n\n개별 원장에서 거래가 이뤄지더라도 다른 원장의 자산·서비스와 연결하는 데 제약이 생겨 시장이 나뉠 수 있어서다.\n\n토큰화의 실익은 자산을 블록체인에 기록하는 데서 끝나지 않는다.\n\n보유 자산을 거래하고 담보로 활용하며 대금을 지급하는 과정까지 연결될 때 활용 범위가 넓어진다.\n\n발행 기반이 확대돼도 원장 간 연결이 제한되면 이러한 활용은 개별 원장 안에 머물 수 있다.\n\n해외에서는 토큰화 자산을 결제수단과 연결하고 담보로 활용하려는 움직임이 나타나고 있다.\n\n싱가포르 DBS와 프랭클린템플턴, 리플의 협업이 대표적이다. 이들은 토큰화 머니마켓펀드(MMF)와 달러 스테이블코인을 연결하고, MMF 토큰을 환매조건부채권매매(레포) 등의 담보로 활용하는 방안을 검토하고 있다.\n\n자산을 토큰으로 발행하는 데서 나아가 다른 자산과 교환하고 자금 조달에 활용하는 단계로 논의가 옮겨가는 것이다.\n\n국내에서도 연결 필요성은 정책 과제로 제시돼 있다.\n\n금융위 정책방향은 향후 블록체인상에서 증권과 대금을 결제하기 위해 토큰증권 원장과 스테이블코인 원장을 연계하는 방식을 검토하도록 했다.\n\n다만 증권과 결제수단을 연결하는 문제와 서로 다른 토큰증권 원장 사이에서 자산을 이전하는 문제는 별개다.\n\n결제 연결이 추진되더라도 토큰증권의 원장 간 이전에는 별도의 기준이 필요하다.\n\n김 변호사는 “원장 간 이전을 자유로운 수평 이동이 아니라 허브를 경유하는 통제된 절차로 설계하는 것”을 제안했다.\n\n이어 “이전 대상 수량을 출발 원장에서 동결하고, 예탁결제원의 총량 검증을 거쳐 말소와 재기재를 하나의 완결된 처리로 묶으며, 그 사이의 수량은 허브의 장부에만 존재하게 하면 이동 중 총량 공백의 문제는 제거된다”고 설명했다."
       },
       {
-        "title": "\"삼전닉스보다 더 뜨겁다\"…마이크론 깜짝 실적에 뜨는 소부장[종목e슈]",
-        "url": "https://n.news.naver.com/mnews/article/018/0006380012",
-        "chars": 3062,
+        "title": "“월급날마다 주식 사면 돈 벌까”…변동장서 '적립식 투자' 따져보니",
+        "url": "https://n.news.naver.com/mnews/article/243/0000103839",
+        "chars": 3134,
         "extracted": "id=\"dic_area\"",
-        "body": "마이크론 역대 최대 실적에 메모리 호황 기대 재점화\n삼전닉스 이틀간 상승…리노공업·와이씨 15% 안팎 급등\n소부장으로 번진 투자 열기…실제 장비 발주 확대 관건 [이데일리 신하연 기자] 미국 메모리 반도체 기업 마이크론이 시장 예상을 뛰어넘는 역대 최대 실적을 발표하면서 국내 반도체 관련주에 투자자들의 관심이 쏠리고 있다. 인공지능(AI) 인프라 투자 확대로 고대역폭메모리(HBM)는 물론 범용 메모리까지 수요가 늘면서 반도체 호황이 장기화할 수 있다는 기대감이 커지고 있어서다. 특히 메모리 제조사들의 생산시설 확충 움직임이 본격화하면서 국내 반도체 소재·부품·장비(소부장) 기업으로도 투자심리가 확산되는 모습이다.\n\n3일 금융투자업계에 따르면 삼성전자(005930)는 지난 2일 정규장에서 27만6000원에 거래를 마쳤다. 전날 2.79% 상승한 데 이어 이날은 보합으로 마감했다. SK하이닉스(000660)는 2일 0.44% 오른 184만1000원에 장을 마쳤다. 지난 1일 3.21% 상승한 데 이어 오름세를 이어가면서 이틀간 누적 상승률은 3.66%를 기록했다.\n\n \n \n \n \n\n \n (AI 생성 이미지) \n \n 반도체 소부장 종목의 상승세는 더욱 두드러졌다. 리노공업(058470)은 1일 10.90% 급등한 데 이어 2일에도 3.56% 상승해 8만4300원에 마감했다. 와이씨(232140) 역시 같은 기간 각각 9.51%, 5.56% 오르며 1만6890원에 거래를 마쳤다. 두 종목 모두 이틀간 15% 안팎의 상승률을 기록한 셈이다.\n\n반면 일부 종목에서는 단기 급등에 따른 차익실현 움직임도 나타났다. 유진테크(084370)는 1일 10.92% 급등했지만 2일에는 4.90% 하락했고, 원익IPS(240810)도 같은 기간 9.13% 상승한 뒤 3.69% 내렸다. 피에스케이홀딩스(031980)와 파크시스템스(140860) 역시 1일 각각 8.62%, 9.11% 올랐으나 2일에는 소폭 하락했다. 반도체 업종 전반에 기대감이 확산된 가운데 종목별 주가 흐름은 차별화되는 모습이다.\n\n반도체주에 불을 붙인 것은 지난달 30일(현지시간) 발표된 마이크론의 2026회계연도 4분기 실적이다. 마이크론의 분기 매출은 전년 동기 대비 379% 증가한 542억3000만달러로 사상 최고치를 기록했다. 시장 예상치인 510억달러 수준을 웃도는 실적이다. 조정 주당순이익(EPS)도 33.42달러로 시장 기대치를 넘어섰다.\n\n향후 실적 전망도 긍정적이었다. 마이크론은 2027회계연도 1분기 매출 전망치로 615억달러를 제시했다. 시장 예상치인 약 570억달러를 크게 웃도는 수준이다. AI 데이터센터를 중심으로 메모리 수요가 빠르게 늘어나는 가운데 공급 부족이 향후 수년간 지속될 수 있다는 전망도 내놨다.\n\n특히 마이크론은 늘어나는 수요에 대응하기 위해 생산시설과 기술 투자를 확대하고 있다. 공급 부족이 일시적인 현상에 그치지 않고 중장기적으로 이어질 가능성에 대비하는 것이다. 글로벌 메모리 기업의 호실적과 설비투자 확대 계획이 국내 반도체 제조사와 장비업체에 대한 기대감으로도 이어지는 배경이다.\n\n국내 반도체 수출 지표 역시 이러한 기대감을 뒷받침했다. 산업통상부에 따르면 지난 9월 반도체 수출액은 전년 동기 대비 262.8% 증가한 603억달러로 사상 최고치를 기록했다. 메모리 수요가 지속되는 가운데 수출 물량 확대와 고정가격 상승세가 맞물린 결과다. 글로벌 메모리 업황 개선이 실제 국내 기업들의 수출 실적으로 이어지고 있다는 점이 확인된 셈이다.\n\n시장의 관심은 이제 메모리 제조사의 실적 개선을 넘어 반도체 생산시설 투자 확대로 옮겨가고 있다. 메모리 수요 증가가 지속되면 삼성전자와 SK하이닉스 등 주요 업체들도 생산능력 확충과 공정 고도화에 나설 필요가 있기 때문이다. 이는 반도체 제조에 필요한 장비와 소재, 부품을 공급하는 국내 기업들의 수주 증가로 이어질 수 있다.\n\n특히 AI 반도체 시장이 성장하면서 반도체를 생산하는 전공정뿐 아니라 생산된 반도체를 연결하고 검사하는 후공정의 중요성도 커지고 있다. HBM은 여러 개의 D램을 수직으로 쌓아 만드는 만큼 기존 메모리보다 복잡한 제조·검사 과정을 거친다. AI 반도체 성능이 고도화될수록 정밀한 패키징과 검사 기술에 대한 투자도 확대될 수밖에 없는 구조다.\n\n박준영 한화투자증권 연구원은 지난달 30일 발간한 반도체 산업 보고서에서 후공정 장비업체와 메모리 검사장비 업체들의 성장 가능성에 주목했다. 특히 피에스케이홀딩스(031980)에 주목했다. 글로벌 파운드리 업체들의 첨단 패키징 투자와 메모리 제조사들의 HBM 증설이 동시에 확대되면서 관련 장비 수요가 증가할 수 있다는 분석이다. 이와 함께 HBM 웨이퍼 검사장비를 공급하는 와이씨(232140)와 반도체 검사장비 업체 엑시콘(092870) 등도 관심 대상으로 제시했다.\n\n반도체 제조 공정이 복잡해지면서 정밀 계측 장비를 생산하는 기업에도 관심이 모인다. SK증권 역시 반도체 후공정 투자 확대에 따른 파크시스템스(140860)의 성장 가능성에 주목했다. 이동주 SK증권 연구원은 지난달 30일 보고서에서 “후공정 내 MI(Metrology & Inspection)는 새로운 블루오션”이라고 평가했다. AI 반도체 패키징 고도화에 따라 정밀 계측 장비 수요가 확대될 것으로 전망하면서 목표주가를 기존 35만원에서 39만원으로 상향했다.\n\n실제 파크시스템스의 수주잔고는 올해 1분기 871억원에서 2분기 1125억원으로 증가했다. SK증권은 고부가 신규 장비의 공급이 확대되는 점을 긍정적으로 평가했다. 특히 AI 반도체의 패키징 기술이 고도화되면서 불량 검사뿐 아니라 미세한 오차까지 측정할 수 있는 정밀 계측의 중요성이 커지고 있다는 분석이다.\n\n다만 반도체 업황 개선에 대한 기대감이 모든 소부장 기업의 실적 증가로 직결되는 것은 아니다. 글로벌 메모리 제조사들이 실제 설비투자를 얼마나 확대하는지, 해당 투자가 어떤 제조 공정에 집중되는지에 따라 기업별 수혜 규모는 달라질 수 있다. 최근 주가가 큰 폭으로 상승한 만큼 높아진 실적 기대치를 충족할 수 있을지도 관건이다.\n\n이 연구원은 “반도체 업계 전반의 투자 확대 효과와 후공정의 미세화·대면적화로 내년 수주잔고도 추세 우상향을 그릴 것으로 보인다”고 전망했다."
+        "body": "[송현주의 재.밌.돈]\n급등락 반복에 매수 타이밍 고민…정액·장기투자 관심\nISA·연금 등 절세계좌 비중 70%…장기·분산투자 확산 \n \n \n \n\n 서울 중구 하나은행 본점 딜링룸에서 딜러들이 업무를 보고 있다. [사진 연합뉴스] \n 투자의 방식은 빠르게 다변화하고 있습니다. 과거의 정형화된 재테크 공식을 벗어나, 이제는 각자의 목적과 속도에 맞춘 자산 운용이 중요한 시대입니다. ‘재.밌.돈’은 단기 수익률에만 집중하지 않습니다. 돈을 어떻게 바라보고, 어떤 방향으로 굴릴 것인가에 대한 새로운 관점을 제시합니다. 지금 ‘재밌게 돈 굴리는 법’을 함께 탐색해봅니다. [편집자주] \n\n[이코노미스트 송현주 기자] “오를 때 따라 샀다가 떨어지면 팔기를 반복하느니, 차라리 매달 일정 금액을 꾸준히 투자하는 게 낫지 않을까요.” \n\n코스피가 7000선을 놓고 등락을 거듭한 끝에 장 막판 가까스로 7000선을 넘어섰다. 3분기 급락 이후 4분기 들어 증시가 다시 반등하면서 투자자들의 고민도 커지고 있다. 급락 뒤 반등에 올라타야 할지, 추가 조정에 대비해야 할지 투자 시점을 가늠하기 쉽지 않아서다.\n\n올해 증시는 이 같은 고민을 더욱 키우고 있다. 코스피는 지난 6월 22일 9114.55까지 치솟았다가 지난달 30일 6838.04까지 밀리며 고점 대비 25% 하락했다. 하지만 4분기 첫날인 지난 1일에는 반도체주 강세에 힘입어 1.95% 반등했다.\n\n한국거래소에 따르면 2일 코스피는 전 거래일보다 0.46% 오른 7003.74에 마감했다. 장중 상승과 하락을 반복하다 막판 7000선을 회복했다. 이처럼 단기 방향을 예측하기 어려운 장세가 이어지면서 시장의 고점과 저점을 맞히기보다 일정 금액을 장기간 꾸준히 투자하는 적립식 투자에도 다시 관심이 쏠리고 있다.\n\n적립식 투자의 원리를 간단한 사례로 살펴보면 이해하기 쉽다. 투자할 수 있는 자금이 300만원 있다고 가정할 경우 이를 한꺼번에 투자할 수도 있지만 일정 기간에 걸쳐 100만원씩 나눠 투자할 수도 있다. 투자금이 150만원이라면 50만원씩, 90만원이라면 30만원씩 정기적으로 투자하는 식이다. 실제 적립식 투자는 이 같은 정액 매수를 수개월에서 수년간 꾸준히 이어가는 방식이다.\n\n원리는 단순하다. 주가가 비쌀 때는 적은 수량을 사고 가격이 떨어지면 같은 금액으로 더 많은 수량을 사면서 평균 매입단가를 낮춘다. 이른바 ‘코스트 애버리징(Cost Averaging)’ 효과다. 투자자가 시장의 고점과 저점을 정확하게 맞히지 않아도 매수 시점을 분산할 수 있다는 게 장점이다.\n\n \n \n \n \n\n 서울 중구 하나은행 딜링룸 현황판에 코스피가 표시되고 있다. [사진 연합뉴스] 주가 떨어질수록 더 산다…‘매입단가 평준화’ 효과 \n\n다만 적립식 투자가 일시투자보다 항상 높은 수익률을 내는 것은 아니다. 투자자 교육을 담당하는 전국투자자교육협의회는 적립식 투자의 핵심을 ‘수익률 극대화’보다 ‘매입단가 평준화’에 있다고 설명한다. 같은 금액을 정기적으로 투자하면 주가가 비쌀 때는 적게 사고, 주가가 쌀 때는 더 많이 사게 돼 평균 매입단가를 낮추는 효과를 기대할 수 있다는 것이다.\n\n예를 들어 투자금 300만원을 한꺼번에 넣은 직후 주가가 떨어지면 300만원 전체가 하락의 영향을 받는다. 반면 100만원씩 나눠 투자하면 먼저 넣은 100만원만 하락에 노출되고, 남은 200만원은 떨어진 가격에 더 많은 주식이나 상장지수펀드(ETF)를 사는 데 사용할 수 있다. 반대로 주가가 계속 오른다면 처음부터 300만원을 모두 투자한 쪽이 유리할 수 있다. 적립식 투자는 뒤에 투입되는 자금이 앞선 상승분을 누리지 못하기 때문이다.\n\n투교협 관계자는 “적립식 투자는 상승장에서 수익을 극대화하는 전략이라기보다 매수 시점을 분산해 가격 변동에 따른 위험을 낮추는 데 초점을 둔 투자 방식”이라고 설명했다.\n\n실제 개인투자자의 투자 방식에서도 장기·정기투자 흐름이 나타나고 있다. 적립식 투자가 단순한 소액 투자에서 벗어나 ISA와 연금 등을 활용한 장기투자 수단으로 활용되는 모습이다.\n\n삼성증권이 최근 적립식 투자 서비스 ‘주식모으기’ 출시 2주년을 맞아 이용 현황을 분석한 결과 가입기간이 6개월 이상인 고객 가운데 91%가 서비스를 계속 이용하고 있는 것으로 나타났다. 이용 경험 고객의 67%는 두 건 이상의 모으기를 동시에 운용했다.\n\n절세계좌 활용도 두드러졌다. 전체 모으기 주문금액의 약 3분의 2가 중개형 개인종합자산관리계좌(ISA)와 개인연금, 퇴직연금에서 발생했다. 이용 계좌 수를 기준으로도 약 70%가 이들 절세계좌에 몰렸다. 투자 대상 역시 국내외 대표지수를 추종하는 ETF를 중심으로 배당형 상품과 금 등 장기·분산투자 상품에 집중됐다.\n\n증권사들이 주식과 ETF 자동매수 서비스를 확대하면서 투자 방식도 달라지고 있다. 종목과 투자금액, 날짜를 한 번 설정하면 시장 상황과 관계없이 정해진 주기에 매수가 이뤄져 매번 투자 시점을 판단해야 하는 부담을 덜 수 있어서다.\n\n 변동성 커지자 정부도 ‘장기투자’ 유도 \n\n정부도 개인투자자의 장기투자를 유도하는 방향으로 제도를 손질하고 있다. 금융위원회는 국내 주식과 ETF 등에 장기 투자할 경우 세제 혜택을 주는 ‘생산적 금융 ISA’를 내년 하반기 출시할 예정이다. 이자·배당소득에 비과세 혜택을 제공하고 납입 한도도 기존 ISA보다 1억원 많은 2억원으로 확대하는 것이 골자다.\n\n최근 증시 변동성이 확대된 점도 장기투자의 필요성을 부각시키고 있다. 한국은행에 따르면 올해 1~7월 코스피의 하루 평균 변동성은 4.1%로 미국과 일본 등을 포함한 주요 30개국 가운데 가장 높았다. 자본시장연구원은 국내 주식 장기투자에 대한 세제 혜택이 확대될 경우 가계가 주식 등 금융상품에 투자하는 비중이 2024년 8.5%에서 2034년 20%까지 높아질 것으로 추산했다.\n\n다만 적립식 투자 역시 손실을 피하게 해주는 ‘안전장치’는 아니다. 증시가 장기간 하락하면 평가손실을 피하기 어렵고, 가격이 떨어졌을 때 투자를 중단하면 낮은 가격에서 더 많은 수량을 확보하는 적립식 투자의 효과도 떨어질 수 있다.\n\n업계 관계자는 “젊은 투자자의 가장 큰 위험은 시장 하락이 아닌, 하락 국면에서 적립을 중단하거나 매도해 복리 구조를 스스로 끊는 것”이라며 “매월 적립식 투자를 설정한 뒤 6개월 혹은 1년에 한 번 S&P500과 나스닥100의 비중을 점검하면 된다”고 말했다."
       },
       {
-        "title": "\"김대리, 그때 어떻게 귀신같이 판거야?\" 매수·매도 타이밍의 비밀 [인치범의 주식투자 부트캠프]",
-        "url": "https://n.news.naver.com/mnews/article/014/0005584526",
-        "chars": 5325,
+        "title": "지루한 박스권 장세…삼성전자 3분기 실적에 쏠리는 눈 [주간전망]",
+        "url": "https://n.news.naver.com/mnews/article/015/0005338929",
+        "chars": 1566,
         "extracted": "id=\"dic_area\"",
-        "body": "드라마 '응답하라 1988'의 한 장면 \"운명의 또 다른 이름은 타이밍이다.\" < 드라마 <응답하라 1988> 정환(류준열)의 독백 > \n드라마 <응답하라 1988>에서 성인이 된 정환(류준열)은 덕선(혜리)을 만나기 위해 차를 몰고 서둘러 콘서트장으로 향합니다. 그러나 하필 도로 위 수많은 빨간 신호등에 걸리는 바람에 뒤늦게 도착합니다. 한 발 늦은 타이밍에 도착한 정환. 이미 덕선의 곁에 와있는 택(박보검)을 보며 가슴 아린 독백을 합니다. '운명의 또 다른 이름은 타이밍이다' \n \n드라마에 나온 것처럼 사랑에 타이밍이 중요하다면, 주식 투자에도 타이밍이 중요할 것 같습니다. 문제는 '드라마에 나온 사랑의 타이밍만큼이나 주식시장의 타이밍(매매 타이밍)도 맞히기가 대단히 어렵다'는 점입니다. 그렇다면 초보 투자자는 타이밍을 족집게처럼 맞힐 수 있도록 노력해야할까요? 아니면 타이밍을 놓치더라도 돈을 버는 방법이 있을지 알아봐야할까요? 이번 칼럼은 초보 투자자에게 가장 달콤한 유혹인 주식의 '매매 타이밍'에 대해서 한 번 알아보겠습니다. \n \n \n \n \n \n\n *재판매 및 DB 금지 /사진=뉴시스 초보 투자자에게 가장 달콤한 유혹, '타이밍' \n초보 투자자분들은 한 번쯤 이런 생각을 해보셨나요? 역사적 폭락장이 오면 바닥에서 사고, 가장 높은 천장에서 팔아 큰돈을 벌 수 있지 않을까? 초보 투자자라면 한 번쯤 해봤을 법한 상상입니다. 하지만 조금만 생각해봐도 매매 타이밍을 맞힌다는 게 생각보다 쉽지 않다는 것을 알 수 있습니다. \n \n주식 매매 타이밍이 쉽지 않은 이유는 크게 3가지 입니다. 첫째, 초보 투자자의 상식에 반하는 현상이 많아 매매 타이밍을 잡기 어렵습니다. 예를 들어 좋은 뉴스가 나왔다고 반드시 주가가 오르지는 않습니다. 반면 나쁜 뉴스가 나왔다고 주가가 반드시 떨어지는 것도 아닙니다. 둘째, 초보 투자자의 심리가 타이밍 읽기를 더 어렵게 만듭니다. 주가가 급등하면 더 오를 것 같아 사고 싶거나 떨어질 것 같아 팔고 싶습니다. 주가가 급락하면 더 떨어질 것 같아 팔고 싶거나 다시 오를 것 같아 사고 싶어집니다. 시장을 올바르게 예측하더라도 자신의 감정을 통제하지 못하면 타이밍을 맞히기 힘들어집니다. 셋째, 바닥과 천장은 지난 후엔 명백해 보이지만 당시에는 구분하기 힘듭니다. 이를 사후 과잉 확신 편향(Hindsight Bias)이라고 합니다. 돌이켜 보면 너무나 당연하지만 그때 행동(매매)으로 옮기지 못한 것을 보면 그리 쉬운 문제 같진 않습니다. \n \n결국 시장을 예측하는 문제와 투자자 자신의 감정을 통제하는 문제 등으로 매매 타이밍을 정확하게 잡는 것은 쉽지 않아 보입니다. 응팔(응답하라 1988)의 '정환'과 같은 생각이 듭니다. 투자자분들은 자신의 타이밍 예측력에 대해 직접 테스트해보는 것도 좋습니다. \n \n \n \n \n \n\n 사진=뉴시스 자신의 타이밍 예측력 테스트해 보기 \n예를 들어 세 달 정도 매일 개별종목이나 코스피·나스닥지수 등의 다음 날 움직임을 예상해 보기 바랍니다. \"내일 상승할 것이다\" 또는 \"내일 하락할 것이다\"고 간단히 기록한 뒤, 실제 결과와 비교해보는 겁니다. \n \n실제로 매수했다고 가정했을 때 다음 날 상승한 날과 하락한 날의 비율도 계산해보십시오. 자신의 적중률이 얼마나 되는지 체감해보는 것입니다. 아마 생각보다 낮은 결과를 마주할 가능성이 클 것으로 생각합니다. 다음으로 시장 예측에 대한 흥미로운 두 가지 시뮬레이션 사례를 소개드리겠습니다. (아래 언급하는 사례들은 가정과 전제, 평가 기간을 달리하면 반대의 결과가 도출될 수도 있으므로 시장 타이밍을 이해하는 수준에서 참고 부탁드립니다.) \n \n최고 수익률을 기록한 날을 놓친다면? 100%→47%(10일 놓침)→28.6%(20일 놓침)→18.4%(30일 놓침) \n \n세계에서 가장 큰 규모의 자산운용사 중 하나인 뱅가드(The Vanguard Group)에서 1988~2024년 사이에 S&P 500에 일시에 10만 달러를 투자했다고 가정한 시뮬레이션 결과를 한 번 보겠습니다. 만약 1988년 10만 달러 투자 후 계속 보유했을 경우 2024년에 약 490만 달러(약 67억 9,159만 원)가 된다고 합니다. 다음 내용이 흥미롭습니다. 만약 투자 기간 중 최고 수익률을 기록한 10일의 타이밍에 시장에 투자하지 않았다면, 투자자의 최종 자산은 약 230만 달러(약 31억 8,789만 원)로 줄어듭니다. 이는 계속 보유(Buy & Hold)했을 때의 약 490만 달러와 비교하면 46.9% 수준입니다. 또 최고 수익률이 나왔던 20일간의 기회를 놓쳤을 경우 28.6% 수준인 약 140만 달러(약 19억 4,045만 원)가 된다고 합니다. 만약 30일간을 놓쳤다면 18.4% 수준인 약 90만 달러(약 12억 4,743만 원)가 된다고 합니다. (2026.9.20. 실시간 매매기준율(1달러 = 1,386.04원)로 계산) \n이 같은 결과를 보면 우선 '최고 수익률을 기록한 날들을 절대 놓치고 싶지는 않다'는 생각이 듭니다. 다만 그렇다고 어떤 주식을 37년간이나 들고 있는다는 것이 현실적으로 불가능에 가까울 것 같습니다. 따라서 장기적인 Buy & Hold를 예외로 놓고 생각해보겠습니다. 우선 37년의 거래일을 약 9000일로 가정해보겠습니다. 이 중 약 0.11%에 불과한 단 10일을 어떻게 찾아낼 수 있을까요? 앞서 권해드린 자기만의 예측 실험을 해보신 분들은 이게 절대 쉽지 않다는 것에 공감하실 겁니다. 그렇다면 '매매 타이밍을 놓치더라도 돈을 벌 수 있는 방법이 있을까?'하는 생각이 듭니다. 다음에 말씀드리는 사례가 힌트가 될 것 같습니다. 쉽게 말해, 시장의 바닥을 정확히 맞히는 것이 어렵다면 아예 바닥을 맞히려 하지 않는 것입니다. \n \n 최적의 타이밍을 못 맞혀도 괜찮을까? \n매매 타이밍을 시뮬레이션해본 다른 사례를 보겠습니다. 증권사 슈왑(Schwab)이 발표한 이 자료가 시사점이 있습니다. 슈왑은 각기 다른 투자 전략을 가진 가상의 투자자들이 2005~2024년 20년 동안 S&P 500에 매년 2,000달러씩 투자한다고 가정하고 여러 투자자의 성과를 비교했습니다. \n \n \n \n \n \n\n \n완벽한 타이밍을 잡은 피터 퍼펙트가 당연히 1등입니다. 피터는 그의 '성(姓)'처럼 '퍼펙트'하게 2005년 4월 4일, 그해 S&P 500 지수의 최저가에 투자했습니다. 2006년 6월 13일에도 그해 시장 최저가에 투자했습니다. 피터는 이런 식으로 2024년까지 매년 완벽한 타이밍으로 투자를 이어갔습니다. 이야기만 들어도 가슴이 벅차오릅니다. 다만 매년 시장의 최저점을 딱 집어 진입한다는 것이 현실적으로는 불가능한 경지 같습니다. (피터 퍼펙트의 경우는 가능성과 상관없이 100% 적중 시를 가정한 사례입니다. 이해를 돕기 위한 '사후적 가정'입니다.) \n오히려 매년 최저점을 정확히 맞히지 못했음에도, 꾸준히 투자한 애슐리 액션과 매튜 먼슬리가 상당히 높은 결과를 얻었다는 점이 흥미롭습니다. 매년 최악의 시점에 투자한 로지도 약 15만 달러의 자산을 형성했습니다. 이들 셋은 완벽한 타이밍을 잡은 피터와는 차이가 있지만, 장기간(20년) 자산을 늘릴 수 있었다는 점이 눈에 띕니다. 매년 첫 거래일, 매월, 매년 최악의 시점 등 이들의 공통점은 완벽한 타이밍을 기다리지 않고 정해진 방식대로 꾸준히 투자했다는 것입니다. \n \n그리고 가장 흥미로운 사람은 래리 링거입니다. \"조금 더 떨어지면 사야지.\" \"지금은 너무 비싸.\" \"조정을 기다려야지.\" 하면서 계속 기다리다가 아예 시장에 들어가지 못했습니다. 투자하기에 완벽한 순간을 기다리며 사실상 주식시장에 진입하지 않다가 맞이하는 상대적인 박탈감도 대단히 클 것 같습니다. \n \n이 같은 사례를 보면 초보 투자자에게 중요한 것은 시장의 최저점을 맞히는 능력이 아닌 것 같습니다. 오히려 예측이 틀려도 성공할 때까지 장기간 살아남을 수 있는 구조를 만드는 것이 더 중요하다고 생각합니다. 아까 말씀드린 대로 위 사례 중 망설임에 아예 투자하지 못한 래리 링거를 제외한 투자자들은 격차가 존재함에도 모두 의미 있는 성과를 거뒀습니다. \n \n액션, 먼슬리, 로튼 세 명 모두 장기적으로 우량종목 묶음(*S&P 500)에 투자 하면서 시장의 완벽한 매수 시점을 기다리지 않았다 는 공통점이 있습니다. 이 가운데 먼슬리는 매월 나눠 투자하는 적립식 투자(Dollar-Cost Averaging)를 활용했습니다. 그런 차원에서 보면 타이밍을 맞히는 투자보다, 타이밍에 의존하지 않는 투자가 초보 투자자에게 현실적인 전략일 수 있습니다. (* S&P 500이 미래 수익을 보장한다는 의미는 절대 아닙니다.) \n \n \n \n \n\n 딜링룸 전광판. 출처=연합뉴스 타이밍을 정한 이유도 복기해보자 \n추가로 조언을 드릴 게 있습니다. 아까 타이밍 예측하는 테스트에서 좀 더 나아가 보시기를 권유드립니다. 단순히 상승과 하락을 기록하는 데 그치지 않고, 왜 그렇게 예상했는지도 아주 간략하게 기록해보는 것입니다. 이는 내가 예상한 가정이나 전제, 근거가 무엇이 잘못됐는지 한 번 신중하게 되짚어보는 것(복기!)입니다. 이 과정을 반복하다 보면 나의 판단이 어떤 상황에서 흔들리는지 알 수 있습니다. 동시에 시장은 단순한 원인과 결과로 움직이지 않는다는 사실도 체감하게 됩니다. 이렇게 점차 쌓이는 투자 기록은 결과적으로 자신의 예측력을 조금이라도 성숙하게 할 수 있는 오답노트가 될 수 있을 것입니다. 이런 능력이 쌓이면 감당할 수 있는 위험 수준에 '계산된 모험'을 한 번 감행해봐도 좋지 않을까요? \n응답하라 1988의 정환의 독백 일부와 투자 예측에 대한 전문가들의 격언을 끝으로 마무리하겠습니다. \n \n \"나빴던 건 신호등이 아니라, 타이밍이 아니라 내 수많은 망설임들이었다.\" <응답하라 1988 정환(류준열)의 독백> \n \"백미러로는 미래를 볼 수 없다.\" \n (\"You can't see the future through a rearview mirror.\") 피터 린치<피터 린치의 이기는 투자(Beating the Street)> \n \"비즈니스 세계에서는 언제나 백미러가 앞 유리보다 더 선명하다.\" \n (\"In the business world, the rearview mirror is always clearer than the windshield.\") \n 워런 버핏 < 버크셔 해서웨이 연례 주주서한 > \n\n[필자소개] \n인치범 전무는 금융(삼성생명), IT(안랩, 한글과컴퓨터, SK커뮤니케이션즈), 유통(삼성테스코) 등의 분야에서 30년 간 일관되게 기업 커뮤니케이션 업무(PR·IR·ESG·CSR) 책임자로 근무했다. 현재는 케이피아이투자자문에서 투자와 기업 커뮤니케이션 관련 서적을 집필하는 데 힘쓰고 있다. '주식투자성공은 무엇보다 돈을 다루는 올바른 습관을 자동화하는 과정에서 비롯된다'는 지론을 갖고 있다. \n \n \n \n \n \n\n 케이피아이투자자문 인치범 전무"
+        "body": "NH證 \"코스피 6500~7500\" 예상\n美국채 금리·국제 유가 불안 지속\n8일 삼성전자 실적 발표 예의주시\n원화 강세에 '어닝 쇼크' 가능성도 \n \n \n \n\n 사진=뉴스1 \n증권가에서는 이번주(5~8일) 국내 증시가 글로벌 금리와 유가 등 거시경제(매크로) 변수에 영향을 받아 박스권에서 등락을 지속할 것으로 전망했다. 전문가들은 원화 강세로 이익 추정치가 낮아진 삼성전자의 올 3분기 잠정 실적 발표를 앞두고 경계감도 짙어질 것으로 관측했다.\n\n4일 금융투자업계에 따르면 NH투자증권은 이번주 코스피지수 예상 범위를 6500~7500으로 제시했다. 직전주 마지막 거래일 종가(7003.74) 대비 최대 상승 여력은 약 7.09%포인트다.\n\n미국채 금리 상승 부담이 지수의 상단을 제한할 것으로 분석된다. 글로벌 채권 금리의 벤치마크인 미국채 10년 만기 금리는 최근 연 5.3%를 넘어 2002년 5월 이후 24년 만에 최고치를 기록하기도 했다.\n\n김유미 키움증권 연구원은 \"미국채 금리 상승은 단순히 미 중앙은행(Fed)의 추가 긴축 우려만으로 설명하기 어렵다\"며 \"미국 경제지표의 견조함과 인플레이션 경계, 재정건전성 우려에 따른 장기물 기간 프리미엄 상승이 복합적으로 작용하고 있기 때문\"이라고 설명했다.\n\n그러면서 \"이러한 세 가지 요인이 단기간에 모두 해소되기는 쉽지 않아 금리가 추세적으로 하락하기 위한 여건은 아직 충분하지 않다\"며 \"이번주에도 중동발 지정학적 리스크에 따른 국제 유가 흐름과 Fed 위원들의 발언, 9월 연방공개시장위원회(FOMC) 의사록에 주목할 필요가 있다\"고 말했다.\n\n오는 8일 발표되는 삼성전자의 3분기 실적이 시장의 예상을 충족하지 못할 것이란 우려도 나온다. NH투자증권에 따르면 삼성전자의 3분기 영업이익 컨센서스(증권사 평균 추정치)는 이달 초 113조1000억원에서 현재 109조5000억원으로 하향 조정됐다. 원화 가치가 3분기 들어 가파르게 상승한 영향을 받았다. 원·달러 환율이 하락하면 수출로 벌어들인 달러의 원화 환산 이익이 감소하기 때문이다.\n\n나정환 NH투자증권 연구원은 \"원화 강세에 따른 단기 실적 우려가 있지만 반도체 업종의 추세적 실적 성장 흐름은 유효하다\"며 \"삼성전자의 4분기 영업이익 컨센서스는 120조8000억원으로 전분기 대비 증가 추세가 지속되고, (6세대 고대역폭메모리(HBM)인) HBM4 공급 제약이 확대되고 있어 반도체 가격의 추가 상향 가능성도 존재한다\"고 진단했다.\n \n결국 박스권을 돌파하려면 매크로 불확실성이 완화돼야 한다는 게 증권업계의 공통된 시각이다. 나 연구원은 \"미국과 이란 간 종전 협상 진전에 따른 국제 유가 급락, 혹은 부진한 미 경제지표로 10월 금리 인상 가능성이 낮아지는 게 (박스권 상단 돌파의) 트리거(방아쇠)가 될 수 있다\"며 \"이 경우 반도체 중심의 상승이 예상된다\"고 봤다.\n\n이경민 대신증권 연구원은 \"유가, 금리, 통화정책 등의 매크로와 인공지능(AI), 반도체 업황, 실적 등 마이크로(미시) 간 힘겨루기 싸움이 지속되고 있지만, 마이크로 힘과 영향력이 점차 강해지는 국면\"이라며 \"여기에 매크로 압박까지 완화되면 코스피지수의 상승 탄력은 강해질 것\"이라고 전망했다."
       },
       {
-        "title": "[월간 ETF워치]레버리지 팔고 미국으로…개미, S&P500 담았다",
-        "url": "https://n.news.naver.com/mnews/article/648/0000051292",
-        "chars": 2864,
+        "title": "4분기 IPO 20여 곳 출격…증권사 ‘공모 흥행’ 시험대",
+        "url": "https://n.news.naver.com/mnews/article/243/0000103838",
+        "chars": 2817,
         "extracted": "id=\"dic_area\"",
-        "body": "미국 대표지수 ETF 9월 개인 순매수 상위권\nETF 순자산 7.5조 늘어…삼성·미래가 88% 차지 지난달 국내 ETF 시장은 어땠을까? [월간 ETF워치]가 시장 동향을 한눈에 알려드립니다. 지난 1개월 개인 투자자의 자금이 어디로 향했는지 살펴볼 수 있습니다. 또 시장 점유율을 키우기 위해 각축전을 펼치는 자산운용사 동향과 함께 투자금이 어디로 향하는지도 확인해 볼 수 있습니다. [편집자] \n\n \n \n \n \n\n 최근 국내 상장지수펀드(ETF) 시장에서 개인투자자는 미국 대표지수 ETF를 집중적으로 사들였다. 반면 국내 대표지수와 레버리지 ETF는 순매도 상위권에 올랐다.\n\n운용사별로는 삼성자산운용과 미래에셋자산운용이 전체 ETF 순자산 증가액의 대부분을 차지했다. 상품별로는 반도체 ETF의 순자산 증가가 두드러진 가운데 머니마켓 ETF도 주목 받았다. 개인, 미국 대표지수 ETF 집중 매수 \n\n3일 ETF체크에 따르면 지난 9월 한달 동안 개인투자자가 가장 많이 순매수한 ETF는 미래에셋자산운용의 TIGER 미국S&P500 으로 순매수액은 4733억원을 기록했다. 삼성자산운용의 KODEX 미국나스닥100 과 KODEX 미국S&P500 이 각각 2561억원, 2543억원으로 뒤를 이었다.\n\n \n \n \n \n\n 코스피가 박스권에 갇히자 개인들이 미국 대표지수 ETF로 향한 것이다.\n\n커버드콜 ETF도 순매수 상위권에 이름을 올렸다. 미래에셋운용의 TIGER 배당커버드콜액티브 에 2116억원, 삼성운용의 KODEX 200커버드콜액티브 에 1776억원의 개인 순매수가 들어왔다.\n\n반면 국내 대표지수와 레버리지 상품에서는 개인의 매도세가 나타났다. 개인은 삼성자산운용의 KODEX 200 을 3151억원어치 순매도했고 KODEX 코스닥150레버리지 에서도 2153억원을 순매도했다.\n\n상반기 자금이 대거 몰렸던 단일종목 레버리지 ETF도 순매도 상위권에 올랐다. KODEX SK하이닉스단일종목레버리지 와 KODEX 삼성전자단일종목레버리지 를 각각 1760억원, 1433억원 순매도했다. SOL AI반도체TOP2플러스도 1403억원 순매도했다. ETF 순자산 7.5조 증가…삼성·미래가 88% 차지 \n\n금융투자협회 통계시스템 프리시스에 따르면 국내 ETF 순자산총액은 9월 말 기준 457조7255억원으로 지난 8월 말(450조2412억원)보다 1.7%(7조4843억원) 증가했다.\n\n운용사별로는 삼성운용의 순자산총액이 178조4891억원으로 한 달 전보다 4조4278억원 늘었다. 시장 점유율도 38.7%에서 39.0%로 0.3%포인트 높아졌다.\n\n개별 상품 가운데 KODEX 머니마켓액티브 의 순자산총액이 1조8039억원 늘어 증가폭이 가장 컸다. KODEX 미국나스닥100 은 6419억원, KODEX 반도체 는 4954억원 증가했다. 반면 KODEX 코스닥150 은 1872억원 감소했다.\n\n \n \n \n \n\n 미래에셋운용의 순자산총액은 143조5480억원으로 한 달 전보다 2조1899억원 증가했다. 시장 점유율은 31.4%를 유지했다.\n\n미래에셋에서는 반도체 상품과 미국 지수형 상품의 순자산 증가세가 두드러졌다. TIGER 반도체TOP10 의 순자산총액이 7482억원 늘었고 TIGER 미국나스닥100 과 TIGER 미국필라델피아반도체나스닥 도 각각 5149억원, 4937억원 증가했다. 반면 TIGER 코리아TOP10 은 1329억원 줄었다.\n\n삼성과 미래에셋의 순자산 증가액은 총 6조6177억원으로 전체 증가액의 88.4%를 차지했다. 두 회사의 합산 시장 점유율도 8월 말 70.1%에서 9월 말 70.4%로 높아졌다.\n\n한국투자신탁운용의 순자산총액은 33조2254억원으로 한 달 새 3826억원 증가했다. ACE 머니마켓액티브 가 1862억원, ACE AI반도체TOP3+ 가 1745억원 증가했다. 반면 한국투자신탁운용의 효자 상품으로 꼽히는 ACE KRX금현물 은 2563억원 감소했다.\n\n그 외에도 반도체 ETF의 순자산 증가가 눈에 띄었다. 신한자산운용의 SOL AI반도체소부장 과 SOL AI반도체TOP2플러스 는 각각 1836억원, 1667억원 늘었다. NH아문디자산운용의 HANARO Fn K-반도체 도 2034억원, 한화자산운용의 PLUS 글로벌HBM반도체 는 1105억원 증가했다.\n\nKB자산운용의 전체 ETF 순자산총액은 34조8068억원으로 한 달 새 2233억원 줄었다. 점유율도 7.8%에서 7.6%로 낮아졌다. 하나자산운용은 1057억원, 한화운용은 183억원 감소했다.\n\n반면 우리자산운용의 순자산 증가율이 6.9%로 가장 높았다. AI·반도체 ETF 잇따라 상장…머니마켓도 흥행 \n\n지난달 신규 상장한 ETF는 모두 13개다. AI·반도체 관련 상품과 그룹주, 채권혼합형 상품 등이 새로 시장에 나왔다.\n\n신규 상품 가운데 순자산 규모가 가장 큰 상품은 마이다스에셋자산운용의 MIDAS 머니마켓액티브 다. 국공채와 회사채, 기업어음(CP) 등 단기 금융상품에 투자하는 ETF로 지난달 1일 상장했다. 상장 한 달 만에 순자산 2593억원을 기록했다.\n\n반도체 관련 상품으로는 삼성운용의 KODEX 미국AI메모리TOP2플러스 , 한화운용의 PLUS AI반도체소부장액티브 와 PLUS 코리아HBM반도체 , KB운용의 RISE 글로벌AI낸드메모리반도체 등이 상장했다. 지난달 15일 상장한 KODEX 미국AI메모리TOP2플러스 는 9월 말 순자산 746억원을 기록했다.\n\n삼성과 SK그룹을 함께 담은 상품도 나왔다. 키움투자자산운용은 지난달 1일 KIWOOM 삼성SK그룹TOP4+ , KB운용은 22일 RISE 삼성SK그룹 을 각각 선보였다. 9월 말 순자산은 각각 370억원, 731억원이다.\n\n미래에셋운용은 지난달 8일 미국 S&P500지수와 미국 단기국채를 절반씩 담는 TIGER 미국S&P500미국채혼합50 을 상장했다. 9월 말 순자산은 543억원이다."
+        "body": "10월 15곳 출격…4분기 IPO 시장 달아오른다\n대신은 ‘멜콘’·미래에셋은 ‘엘리스’…엇갈린 주관 전략 \n \n \n \n\n [AI 구글 제미나이] [이코노미스트 송현주 기자] 연말 기업공개(IPO) 시장의 문이 다시 활짝 열린다. 상반기 거래소 심사 단계에서 대기하던 기업들이 속속 공모 절차에 들어가면서 4분기에만 20여곳이 넘는 기업이 증시 입성을 노리고 있다. 공모기업이 늘어나자 이들을 시장에 데뷔시키는 증권사들의 경쟁에도 불이 붙었다. 멜콘을 내세운 대신증권과 기업가치 1조원에 도전하는 엘리스그룹을 맡은 미래에셋증권 등이 4분기 IPO 주관 성적표를 놓고 맞붙는다.\n\n금융투자업계에 따르면 10월부터 연말까지 코스닥 공모 일정을 진행할 예정인 기업은 17곳에 달한다. 예비심사를 통과한 뒤 증권신고서 제출 등을 준비하는 기업까지 포함하면 연내 IPO에 나설 기업은 20곳을 넘어설 것으로 예상된다.\n\n공모 물량이 특정 시기에 몰린 배경에는 상반기 IPO 심사 적체가 있다. 올해 5월까지 예비심사를 통과한 기업은 15곳에 그쳤지만 6월 이후에는 매달 8~11곳이 심사 문턱을 넘었다. 앞서 상장 일정을 미뤘던 기업들이 연말 전에 공모를 마치기 위해 잇달아 시장에 나오면서 4분기가 올해 IPO 시장의 최대 격전지로 떠오른 것이다.\n\n증권사 가운데 대신증권은 중소형 IPO를 연이어 확보하며 주관 실적을 쌓고 있다. 대표 주자는 반도체 장비 기업 멜콘이다. 반도체 업황과 관련 종목에 대한 투자자 관심이 높은 상황에서 시장의 평가를 받게 된다는 점에서 주목된다. 디티에스 등 다른 IPO 일정도 이어지면서 대신증권의 4분기 주관 실적 역시 빠르게 늘어날 전망이다.\n\n중소형 IPO는 개별 공모 규모가 크지 않더라도 꾸준히 상장을 성사시키면 주관사의 트랙레코드를 확보할 수 있다는 장점이 있다. 특히 최근처럼 공모기업이 몰리는 시기에는 기관 수요예측에서 적정 가격을 끌어내고 일반청약까지 투자자를 확보하는 능력이 중요하다.\n\n상장 이후 주가도 무시하기 어렵다. 높은 공모가를 받아내는 것만큼 상장 이후 주가가 공모가를 지켜내느냐가 발행사들의 주관사 선정 과정에서 중요한 판단 요소로 작용할 수 있기 때문이다. 대신증권으로서는 연말 예정된 IPO를 얼마나 안정적으로 소화하느냐가 향후 추가 수임을 위한 시험대가 되는 셈이다.\n\n미래에셋증권의 4분기 성적표에서는 엘리스그룹이 핵심이다. AI 교육·클라우드 기업인 엘리스그룹은 기관투자자를 대상으로 수요예측을 진행하고 있다. 희망 공모가는 7만400원에서 9만500원, 이를 기준으로 한 공모 규모는 1564억~2011억원이다. 상단 기준 예상 시가총액은 약 1조원이다.\n\n시장의 관심은 기관들이 엘리스그룹의 ‘1조원 몸값’을 받아들일지에 쏠린다. 최근 공모주 시장에서 단순한 성장 스토리보다 매출과 수익성, 적정 기업가치를 따지는 분위기가 강해진 만큼 수요예측 결과에 따라 AI 기업을 바라보는 투자자의 눈높이도 확인할 수 있기 때문이다.\n\n미래에셋증권 입장에서도 엘리스그룹의 공모를 안정적으로 마무리하면 성장기업과 대형 기술기업 IPO 분야에서 추가적인 주관 실적을 확보하게 된다. \n\n선유진 LS증권 연구원은 “엘리스그룹은 상장 이후 AI 클라우드 부문의 성장성과 신규 PMDC의 가동률이 주요 투자 포인트가 될 것”이라며 “정부 사업을 통해 확보한 대규모 GPU 운영 레퍼런스를 민간 시장으로 얼마나 빠르게 확장할 수 있느냐가 향후 기업가치를 좌우하는 핵심 변수가 될 것으로 보인다”고 설명했다.\n\n4분기 IPO 경쟁을 달구는 또 다른 축은 AI와 반도체다. AI 인프라 운영 소프트웨어 기업 래블업을 비롯해 영상분석 기술을 보유한 인텔리빅스, 생성형 AI 기업 제논과 페르소나AI 등이 증시 입성을 준비하고 있다.\n\n공모기업의 선택지가 늘어나는 것은 증권사에 기회인 동시에 부담이다. 비슷한 시기에 수요예측과 청약이 몰리면 투자자 자금도 나눠질 수밖에 없다. 같은 AI 기업이라도 실적과 성장성, 밸류에이션에 따라 기관 수요예측 결과가 극명하게 갈릴 가능성이 있다.\n\n이에 따라 IB업계의 경쟁 기준도 ‘얼마나 많은 기업을 맡았느냐’에서 ‘어떤 기업을 흥행시켰느냐’로 옮겨가는 분위기다. 공모가를 공격적으로 높였다가 상장 직후 주가가 밀리면 이후 IPO 영업에서 부담이 될 수 있는 만큼 발행사와 투자자 사이에서 적정 몸값을 찾아내는 주관사의 가격 결정 능력이 중요해지고 있다.\n\n 4분기 성적표가 내년 대어 수임전 ‘명함’ \n\n연말 주관 경쟁의 시선은 벌써 내년으로 향한다. 무신사와 메가존클라우드, 리벨리온 등 시장에서 대형 IPO 후보로 거론되는 기업들이 상장을 준비하고 있어서다. 이들 기업을 확보하려는 증권사 입장에서는 올해 IPO 실적이 향후 수임 경쟁에서 내세울 수 있는 핵심 트랙레코드가 된다.\n\n시장 규모도 다시 커지는 분위기다. 9월 상장 기업 수는 8곳으로 전월 6곳보다 늘었다. 유진투자증권은 9월 IPO 공모금액이 4000억~5000억원 수준을 기록할 것으로 내다봤다. 장기간 공모 일정을 기다렸던 기업까지 4분기에 합류하면 시장에 풀리는 공모 물량은 더욱 증가할 전망이다.\n\n다만 물량 증가가 IPO 시장 전체의 흥행을 의미하는 것은 아니다. 한정된 투자자 자금을 놓고 기업들이 동시에 경쟁해야 하는 만큼 실적과 성장성이 뒷받침되지 않거나 시장 눈높이를 넘어선 몸값을 제시한 기업은 외면받을 가능성도 있다.\n\n강영훈 삼성증권 연구원은 “11월과 12월은 전통적으로 상장 종목이 증가하는 IPO 성수기”라며 “올해 말이나 내년 초 상장을 추진하는 유니콘 기업들도 점차 구체화되면서 공모주에 대한 투자자 관심이 확대될 것”이라고 전망했다. 이어 상장 기업이 늘어나는 만큼 재무상태와 성장성, 밸류에이션을 따져 선별적으로 접근할 필요가 있다고 조언했다."
       },
       {
-        "title": "1000만명 몰린 ISA…증권사 웃지만 ‘속 빈 계좌’ 숙제",
-        "url": "https://n.news.naver.com/mnews/article/243/0000103819",
-        "chars": 2620,
-        "extracted": "id=\"dic_area\"",
-        "body": "10년 만에 1000만명…성인 4명 중 1명 ‘ISA족’\n증권사 WM ‘관문 계좌’로…고객·자산 유치전 격화 \n \n \n \n\n 사진은 서울 한 증권사 지점 앞에 붙은 ISA 광고 모습. [사진 연합뉴스] [이코노미스트 송현주 기자] 개인종합자산관리계좌(ISA)가 가입자 1000만명 시대를 열었다. 국민 4명 중 1명이 가입할 정도로 대중화되면서 증권사에는 고객을 장기간 묶어둘 수 있는 핵심 자산관리(WM) 플랫폼으로 떠올랐다. 다만 계좌 수가 빠르게 늘어난 것과 달리 실제 신규 자금 유입과 장기투자 확대까지 이어지고 있는지를 두고서는 추가적인 점검이 필요하다는 목소리가 나온다.\n\n금융투자협회에 따르면 지난 8월 말 기준 ISA 가입자는 1005만명, 가입금액은 76조5000억원으로 집계됐다. 국가데이터처가 집계한 만 19세 이상 성인 인구 4407만명을 기준으로 하면 성인 4명 가운데 1명가량이 ISA 계좌를 가지고 있는 셈이다. 제도 도입 10년여 만에 대표적인 절세 투자계좌로 자리매김했다는 평가다.\n\nISA는 예·적금부터 펀드, 상장지수펀드(ETF), 국내 상장주식 등을 하나의 계좌에서 운용하면서 세제 혜택을 받을 수 있도록 설계된 상품이다. 시장 확대에 속도가 붙은 것은 2021년 투자중개형 ISA가 도입되면서다. 국내 상장주식을 직접 거래할 수 있게 되면서 은행 중심이던 ISA 시장의 무게중심도 증권사로 이동했다. 최근 국내 증시 강세와 ETF 투자 저변 확대 역시 중개형 ISA 성장에 힘을 보탰다.\n\n가입자가 1000만명을 넘어서면서 증권사들의 고객 유치전도 한층 거세졌다. 신규 계좌 개설 고객에게 투자지원금이나 상품권 등을 제공하는 것은 물론 다른 금융회사에서 ISA를 옮겨오는 고객을 대상으로 별도의 혜택을 내걸며 자산 이전을 적극 유도하고 있다.\n\n증권사들이 ISA 고객 확보에 공을 들이는 이유는 단순히 주식 거래 수수료 때문만은 아니다. 일정 기간 자금을 운용해야 절세 효과를 충분히 누릴 수 있는 ISA의 특성상 한번 확보한 고객과 장기적인 거래 관계를 구축하기 쉽다. ISA를 시작으로 연금저축과 개인형퇴직연금(IRP), 펀드 등으로 거래를 확대할 수 있어 WM 고객을 확보하는 일종의 ‘관문 계좌’ 역할도 한다.\n\n \n \n \n \n\n 서울 한 마트 광고판에서 증권회사 ISA 광고가 나오고 있다. [사진 연합뉴스] 계좌 이동만으론 한계…신규 자금 유입이 관건 \n\n문제는 치열해지는 고객 유치전이 곧바로 ISA 시장 전체의 성장으로 연결되는 것은 아니라는 점이다. 증권사들이 최근 집중하고 있는 ISA 이전 이벤트가 대표적이다. 기존 가입자가 A증권사에서 B증권사로 계좌를 옮기면 B증권사 입장에서는 고객과 자산이 늘어나지만 ISA 시장 전체로 보면 기존 자금의 이동에 불과하다. 금융회사 사이의 ‘고객 쟁탈전’과 시장으로 들어오는 ‘신규 머니무브’를 구분해 볼 필요가 있다는 얘기다.\n\n가입자 수에 걸맞은 자금이 실제로 운용되고 있는지도 중요한 과제다. ISA는 계좌를 개설했다고 해서 자동으로 자산형성 효과가 발생하는 상품이 아니다. 투자자가 지속적으로 자금을 납입하고 주식이나 ETF, 펀드 등 금융상품을 운용해야 세제 혜택과 장기투자 효과를 얻을 수 있다. 가입자 1000만명이라는 숫자와 함께 실제 납입액과 운용자산, 장기 보유 비중 등을 살펴야 하는 이유다.\n\n빠르게 달라진 투자자의 포트폴리오와 ISA의 투자 범위 사이에도 간극이 존재한다. 해외주식 투자가 개인투자자의 핵심 투자처로 자리 잡았지만 현행 ISA에서는 미국 등 해외 증시에 상장된 주식이나 ETF를 직접 거래할 수 없다. 국내 증시에 상장된 해외지수 추종 ETF 등을 활용해야 한다. 투자자의 자산 배분 범위가 국내에서 해외로 빠르게 넓어지는 상황에서 ISA의 투자 선택권 역시 이에 맞춰 확대할 필요가 있다는 지적이 나온다.\n\n최근 불거진 제도 개편 논란은 시장의 또 다른 변수다. 정부는 세제개편 과정에서 ISA 계약기간을 최대 5년으로 제한하고 사용하지 않은 납입한도의 이월을 막는 방안을 검토했지만 최종안에서는 이를 철회했다. 시장에서는 ISA의 장기투자 취지를 약화할 수 있다는 우려가 제기됐다. 특히 장기 고객 확보를 전제로 ISA 사업을 확대해온 증권사에는 계약기간과 납입한도 변경 여부가 상품 전략과 고객 관리에 직접적인 영향을 미치는 사안이다.\n\n해외 주요국은 오히려 세제혜택 계좌의 장기투자 기능을 강화하는 방향으로 제도를 손질하고 있다. 일본은 2024년 NISA 제도를 개편하면서 장기 적립투자를 위한 ‘적립투자 부문’과 개별 주식 등에 투자할 수 있는 ‘성장투자 부문’을 함께 활용하도록 했다. 비과세 보유기간도 무기한으로 바꿨다. 영국 역시 연간 납입한도 안에서 다양한 유형의 ISA를 활용하도록 제도를 운영하고 있다.\n\n일각에선 증권사 간 기존 고객 이동에 머무르지 않고 신규 투자자금이 지속적으로 들어오도록 유도하는 동시에 장기투자에 유리한 세제와 상품 구조를 갖춰야 1000만 계좌 이후의 성장을 이어갈 수 있다는 분석이다.\n\n금융투자업계 관계자는 “ISA가 증권사의 핵심 고객 확보 채널로 자리 잡으면서 금융회사 간 경쟁도 갈수록 치열해지고 있다”며 “앞으로는 단순히 계좌 수를 늘리는 데서 벗어나 실제 납입과 장기 운용을 유도할 수 있도록 세제 혜택과 투자 선택권을 강화하고 제도의 예측 가능성을 높이는 것이 중요하다”고 말했다."
+        "title": "이번주 공모주 청약, 엘리스그룹 1개사",
+        "url": "https://n.news.naver.com/mnews/article/119/0003139324",
+        "chars": 1179,
+        "extracted": "fallback",
+        "body": "이번주 공모주 청약, 엘리스그룹 1개사 \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n 본문 바로가기 \n\n \n \n \n \n \n \n NAVER \n \n 뉴스 \n\n \n \n 엔터 \n \n \n \n \n 스포츠 \n \n \n \n \n 날씨 \n \n \n \n \n 프리미엄 \n \n \n \n\n \n\n \n \n \n\n \n\n \n\n \n 검색 \n \n\n \n\n \n\n \n\n \n\n \n \n \n \n \n 언론사별 \n \n\n \n 정치 \n \n\n \n 경제 \n \n\n \n 사회 \n \n\n \n 생활/문화 \n \n\n \n IT/과학 \n \n\n \n 세계 \n \n\n \n 랭킹 \n \n\n \n 신문보기 \n \n\n \n 오피니언 \n \n\n \n TV \n \n\n \n 팩트체크 \n \n\n \n 알고리즘 안내 \n \n\n \n 정정보도 모음 \n \n\n \n \n \n MY \n \n \n 뉴스 이용 설정을 할 수 있어요\n\n \n\n \n\n \n\n \n\n \n\n \n\n \n \n \n \n \n \n \n \n \n \n '\">\n \n\n 데일리안 \n \n \n 구독 \n \n 데일리안 언론사 구독되었습니다. \n메인 뉴스판에서 주요뉴스를 \n 볼 수 있습니다. \n 보러가기 \n 닫기 \n \n\n \n 데일리안 언론사 구독 해지되었습니다. \n 닫기 \n \n\n \n\n \n\n \n 이번주 공모주 청약, 엘리스그룹 1개사 \n\n \n\n \n \n \n \n \n \n \n 입력 \n 2026.10.04. 오전 8:01 \n \n\n \n\n \n\n 기사 원문 \n \n \n\n \n\n \n \n \n \n \n \n \n \n \n 추천 \n 반응 \n \n \n \n \n 쏠쏠정보 \n 0 \n \n \n\n \n \n 흥미진진 \n 0 \n \n \n\n \n \n 공감백배 \n 0 \n \n \n\n \n \n 분석탁월 \n 0 \n \n \n\n \n \n 후속강추 \n 0 \n \n \n\n \n\n \n \n\n \n \n 댓글 \n 반응 \n \n \n\n \n\n \n \n\n \n \n \n 텍스트 음성 변환 서비스 사용하기 \n \n \n \n 성별 \n 남성 \n 여성 \n \n\n \n 말하기 속도 \n 느림 \n 보통 \n 빠름 \n \n\n 이동 통신망을 이용하여 음성을 재생하면 별도의 데이터 통화료가 부과될 수 있습니다.\n\n 본문듣기 시작 \n \n\n 닫기 \n \n\n \n\n \n \n \n 글자 크기 변경하기 \n \n 글자크기 \n \n \n 가 1단계 \n 작게 \n \n\n \n 가 2단계 \n 보통 \n \n\n \n 가 3단계 \n 크게 \n \n\n \n 가 4단계 \n 아주크게 \n \n\n \n 가 5단계 \n 최대크게 \n \n\n \n 닫기 \n \n\n \n\n \n \n SNS 보내기 \n \n \n\n \n 인쇄하기 \n \n\n \n\n \n\n \n\n \n \n \n AI 풀스택 기업…코스닥 상장 출사표"
       },
       {
-        "title": "[주간코인] 아래엔 ETF, 위엔 금리…비트코인 갇혔다",
-        "url": "https://n.news.naver.com/mnews/article/119/0003139227",
-        "chars": 2479,
+        "title": "[공모주달력]징검다리 휴일 속 빼곡한 일정…엘리스그룹 청약 돌입",
+        "url": "https://n.news.naver.com/mnews/article/648/0000051301",
+        "chars": 3893,
         "extracted": "id=\"dic_area\"",
-        "body": "美 10년물 5.3%가 상승 제동\nPCE 둔화에 부담 완화\n8만2000달러 지지·8만5800달러 저항 힘겨루기\n금리 안정·ETF 순유입이 추가 상승 열쇠 \n \n \n \n\n 이번 주 비트코인은 현물 매수세가 하단을 떠받친 반면 미국 국채금리가 상승세를 가로막으면서 뚜렷한 방향을 잡지 못했다. 해당 이미지는 AI로 제작됨. [데일리안 = 김민희 기자] 이번 주 비트코인은 현물 매수세가 하단을 떠받친 반면 미국 국채금리가 상승세를 가로막으면서 뚜렷한 방향을 잡지 못했다.\n\n미국 현물 상장지수펀드(ETF)를 통한 기관 자금과 거래소 밖으로 빠져나간 비트코인이 가격을 떠받쳤지만, 미국 10년 만기 국채금리가 5.3%까지 오르면서 상승세는 번번이 꺾였다.\n\n다만 주 후반 미국의 물가 상승세가 예상보다 둔화한 것으로 나타나자 추가 금리 인상 우려가 완화됐고 비트코인은 다시 8만4000달러 후반까지 올라섰다.\n\n2일 글로벌 가상자산 시황 플랫폼 코인게코에 따르면 비트코인은 지난달 28일 오전 8만4405달러에서 출발한 뒤 한때 8만2500달러 부근까지 밀렸다.\n\n이후 미국의 8월 개인소비지출(PCE) 물가지수 발표를 계기로 8만5600달러까지 치솟았지만 상승분을 상당 부분 반납하며 8만4000달러대에서 머물고 있다.\n\n비트코인의 상승을 막은 것은 미국 국채금리였다.\n\n미국 10년 만기 국채금리는 중동 지역의 긴장과 국제유가 상승, 연방준비제도(Fed)의 추가 긴축 우려가 겹치면서 2007년 이후 최고 수준인 5.3% 안팎까지 치솟았다.\n\n안정적인 이자를 지급하는 국채의 수익률이 높아지면 이자를 주지 않는 비트코인을 보유하는 데 따른 기회비용도 커진다.\n\n투자자 입장에서는 변동성이 큰 위험자산을 매수할 유인이 상대적으로 줄어드는 셈이다.\n\n국제유가 상승도 부담을 더했다.\n\n이란을 둘러싼 지정학적 긴장이 이어지면서 브렌트유가 배럴당 100달러를 웃돌자 인플레이션이 다시 강해질 수 있다는 우려가 커졌다.\n\n물가 압력이 지속되면 연준의 추가 금리 인상 가능성도 높아질 수 있다.\n\n그럼에도 비트코인은 8만2000달러 아래로 크게 밀리지 않았다.\n\n금과 나스닥 등 주요 자산이 국채금리와 달러 강세에 민감하게 반응한 것과 비교하면 상대적으로 선방했다는 평가가 나온다.\n\n가격을 지탱한 힘은 현물시장에서 나왔다.\n\n미국 현물 비트코인 ETF는 지난달 말까지 5거래일 연속 순유입을 기록했다. 이 기간을 포함한 9월 누적 순유입액은 약 26억9900만 달러로 집계됐다.\n\n지난달 30일에는 약 1억4870만 달러가 빠져나가며 순유입 흐름이 한 차례 꺾였다.\n\n블랙록의 IBIT와 피델리티의 FBTC를 중심으로 자금이 이탈했지만, 앞서 들어온 기관 자금이 비트코인의 하단을 지지한 것으로 풀이된다.\n\n거래소 밖으로 빠져나가는 비트코인도 늘었다. 최근 5일간 거래소에서는 2만4346BTC가 순유출됐다.\n\n일반적으로 비트코인이 개인 지갑이나 수탁 계좌로 이동하면 당장 시장에 매물로 나올 가능성이 작아진다.\n\nETF 흐름은 주춤했지만 보유 물량을 거래소 밖으로 옮기는 중장기 매집 수요는 이어진 셈이다.\n\n옵션시장에서도 급락에 대비한 공포는 뚜렷하지 않았다.\n\n하락에 베팅하는 풋옵션 수요가 늘고 상승에 베팅하는 콜옵션의 인기는 약해졌지만, 풋옵션 가격이 급등할 정도로 투자자들이 폭락 가능성에 베팅하지는 않았다.\n\n강세 기대는 식었지만 시장이 본격적인 하락 전환을 예상하는 단계도 아니라는 의미다.\n\n주 후반에는 금리 부담도 다소 누그러졌다.\n\n미국의 8월 PCE 물가지수는 전년 동월 대비 3.4% 상승해 시장 예상치를 0.3%포인트(p) 밑돌았다.\n\n예상보다 약한 물가 지표가 나오자 연준이 10월 기준금리를 추가로 올릴 가능성은 24.9%까지 낮아졌다.\n\n미국 10년물 국채금리도 5.3%를 웃돈 뒤 상승폭을 일부 반납했다. 이에 비트코인은 8만3000달러대에서 8만5600달러까지 뛰었다.\n\n다만 물가 지표 하나만으로 방향을 완전히 바꾸지는 못했다.\n\nPCE 발표 전후 4시간 동안 약 5500만 달러의 숏 포지션과 2700만 달러의 롱 포지션이 청산되며 가격이 크게 출렁였지만, 비트코인은 8만5000달러 위에 안착하지 못했다.\n\n시장에서는 당분간 8만2000달러와 8만5800달러가 비트코인의 방향을 가를 가격대로 거론된다.\n\n8만2000달러는 최근 조정 때마다 매수세가 들어온 구간이다.\n\n이 가격을 내주고 8만 달러 아래로 밀리면 비트코인이 7만 달러 후반까지 추가 조정을 받을 가능성이 있다.\n\n반대로 8만5000~8만5800달러 구간을 뚜렷하게 돌파하면 지난달 21일 기록한 8만7400달러를 다시 시험할 수 있다.\n\n이후 상승세가 이어지면 9만 달러를 넘어 10만 달러를 향할 가능성도 열릴 전망이다.\n\n결국 이번 주 비트코인은 높은 국채금리에도 버틸 힘은 보여줬지만 이를 뚫고 올라갈 동력까지 증명하지는 못했다.\n\n국채금리가 만든 천장은 주 후반 다소 낮아졌지만 ETF 자금 흐름은 오히려 주춤했다.\n\n현물 ETF가 다시 순유입으로 돌아서고 국채금리까지 안정돼야 팽팽했던 힘겨루기도 상승 쪽으로 기울 전망이다."
+        "body": "다비오·티앤이코리아 7일부터 기관 수요예측\n진코스텍 6일 청약 마감…멜콘 7일·진코스텍 8일 환불\n네오사피엔스·와이즈플래닛 첫 의무보유확약 해제 10월 둘째 주 공모주 시장은 개천절 대체공휴일인 5일, 한글날인 9일을 쉬어가요. 영업일은 사흘뿐이지만 공모가 확정부터 청약과 환불까지 일정이 몰려 있어요.\n\n \n \n \n \n\n '코스닥 도전장' 엘리스그룹 청약 돌입 \n\n먼저 엘리스그룹 은 지난 1일 기관 수요예측을 마치고 6일 공모가를 확정해요. 일반투자자 청약은 7~8일 진행해요. 미래에셋증권이 대표주관사를 맡고 삼성증권이 공동주관사로 참여해요.\n\n엘리스그룹은 인공지능(AI) 교육과 클라우드 서비스를 제공하는 기업이에요. 기업과 공공기관 등이 AI 모델을 개발하고 운영하는 데 필요한 컴퓨팅 자원과 플랫폼을 공급해요. 서버와 전력·냉각설비를 컨테이너에 통합한 모듈형 데이터센터로 사업을 넓히고 있어요.\n\n지난해 연결 기준 영업이익은 약 52억원이었어요. 올해는 상반기에만 약 103억원의 영업이익을 내며 지난해 연간 실적을 넘어섰어요.\n\n총 222만2000주를 전량 신주로 공모해요. 희망공모가는 7만400~9만500원으로 공모금액은 약 1564억~2011억원이에요.\n\n희망공모가 하단 기준 발행비용을 제외한 약 1549억원을 데이터센터 시설 확충에 사용할 계획이에요. 정부의 AI 컴퓨팅 지원사업을 수행하는 수도권 시설과 민간 고객 수요에 대응하는 호남권 시설에 투입해요. 전력·냉각설비 등 기반시설을 구축하는 자금으로 GPU 서버 구매비는 별도로 마련할 예정이에요.\n\n대규모 시설투자를 앞둔 만큼 관련 위험도 증권신고서에 보완했어요. 최초 제출 이후 세 차례 정정했고 최근에는 정부 지원사업과 신규 설비투자 관련 위험 등을 추가로 설명했어요.\n\n 엠에스바이오 는 지난 2일 수요예측을 마치고 7일 공모가를 확정해요. 일반투자자 청약은 다음 주인 12~13일 KB증권에서 진행해요. \n\n엠에스바이오는 인체조직과 생체재료를 기반으로 의료용 제품을 개발·생산하는 기업이에요. 유방 재건과 화상 치료 등에 사용하는 피부이식재와 손상된 힘줄·근육 등의 회복을 돕는 콜라겐 조직보충재가 주요 제품이에요.\n\n총 400만주를 공모하고 희망공모가는 6800~7800원이에요. 공모금액은 272억~312억원이에요. 희망공모가 하단 기준 순조달액 약 268억원 가운데 약 184억원을 오창 신공장 건설에 사용할 계획이에요. 국내외 임상시험에는 약 81억원을 투입해 제품의 활용 범위를 넓히고 해외 인허가를 추진해요.\n\n 멜콘 7일 환불…진코스텍은 6일까지 청약 \n\n코넥스에서 코스닥으로 이전상장을 추진하는 진코스텍 은 6일 일반청약을 마무리해요. 지난 2일 청약을 시작했지만 주말과 개천절 대체공휴일을 사이에 둬 실제 청약일은 2일과 6일 이틀이에요. 주관사는 하나증권이고 증거금 환불일은 8일이에요.\n\n진코스텍은 하이드로겔 마스크팩과 아이패치 등을 개발·생산하는 화장품 제조사예요. 기관 수요예측 경쟁률은 1097.62대 1이었어요. 공모가는 희망범위인 1만9500~2만3500원의 상단으로 정했어요. 총 85만2000주를 공모해 약 200억원을 조달해요.\n\n 멜콘 은 1~2일 대신증권에서 일반투자자 청약을 진행하고 7일 증거금을 돌려줘요. 멜콘은 반도체 제조공정의 온도와 습도를 일정하게 유지하는 장비를 만드는 기업이에요. 삼성전자와 SK하이닉스 등에 장비를 공급하고 있어요.\n\n기관 수요예측에는 2405곳이 참여해 1136.84대 1의 경쟁률을 기록했어요. 공모가는 희망범위인 1만700~1만2300원의 상단으로 확정했어요. 총 250만주를 공모해 307억5000만원을 조달해요.\n\n공모자금은 생산설비 확충과 차세대 제품 개발 등에 사용할 계획이에요. 반도체 미세공정에 대응하는 온·습도 제어장비를 개발하고 제품 성능을 검증할 시험시설도 늘려요. 연구개발 인력 충원과 해외 고객사 확보에도 자금을 투입할 예정이에요.\n\n 다비오·티앤이코리아 7일 수요예측 돌입 \n\n7일부터는 다비오와 티앤이코리아가 나란히 수요예측에 들어가요. 두 기업 모두 14일까지 기관투자자들의 주문을 받아요.\n\n 다비오 는 위성·항공·드론 영상을 AI로 분석하는 기업이에요. 자체 플랫폼 '어스아이'를 통해 영상 속 시설물을 식별하거나 지형의 변화를 찾아내고 3차원 공간정보를 만들어요. 국토 관리와 국방 감시정찰, 산림·농업 모니터링 등에 활용하는 기술이에요.\n\n지난해 연결 매출은 약 93억원으로 직전해보다 약 48억원보다 늘었어요. 다만 지난해 약 44억원의 영업손실을 냈고 올해 상반기에도 약 49억원의 영업손실을 기록했어요.\n\n총 100만주를 공모하며 희망 공모가는 1만2300~1만6600원이에요. 공모금액은 123억~166억원으로 주관사는 대신증권이에요. 희망 공모가 하단 기준 순유입액 약 120억원 중 연구인프라 확충에 45억원을 사용할 계획이에요. 연구개발 인력 인건비에 약 49억원을 쓰고 AI 분석에 필요한 위성영상 데이터 확보에도 23억원을 투입할 예정이에요.\n\n 티앤이코리아 는 공기나 가스를 압축하고 공급하는 고속 터보기계를 개발·생산해요. 미국 연료전지 제조사에 연료전지 작동에 필요한 공기를 불어넣는 발전용 에어블로워를 공급하고 있어요.\n\n총 공모주식은 240만주이고 희망 공모가는 1만2600~1만5300원이에요. 공모금액은 약 302억~367억원으로 주관사는 신한투자증권이에요.\n\n공모자금으로 충북 오송의 제2공장 부지에 생산시설을 증설하고 자동화 설비를 도입할 계획인데요. 희망 공모가 하단 기준으로 시설투자에 89억원을 배정했어요. 연구개발과 제조인력 충원 등에 약 151억원을 사용하고 차입금 상환에도 약 58억원을 투입할 예정이에요.\n\n 디티에스 는 지난 1일 시작한 기관투자자 대상 수요예측을 8일까지 이어가요. 정유·석유화학 공장과 LNG 플랜트 등에 쓰이는 냉각설비를 만드는 기업이에요. 공기로 고온의 유체를 식히는 공랭식 열교환기와 증기를 냉각해 액체로 바꾸는 공랭식 복수기가 주력 제품이에요.\n\n총 222만8917주를 공모하며 희망 공모가는 1만7000~1만8500원이에요. 공모금액은 약 379억~412억원으로 대신증권이 대표주관사를 맡고 유진투자증권이 인수회사로 참여해요.\n\n당초 7일부터 수요예측을 진행하려던 유캐스트 는 일정이 바뀔 수 있어요. 지난 1일 금융감독원으로부터 증권신고서 정정 요구를 받아 기존 신고서의 효력이 정지됐기 때문이에요. 수요예측 진행 여부와 변경 일정은 후속 정정신고서 등을 통해 확인해야 해요.\n\n유캐스트는 산업현장과 국방·재난안전 분야에서 사용하는 전용 이동통신망을 구축하는 기업이에요. 기존 신고서상 공모주식은 80만주이고 희망 공모가는 2만1000~2만6000원이에요. 대표주관사는 유진투자증권이에요.\n\n 네오사피엔스 66만주·와이즈플래닛 54만주 의무보유 해제 \n\n지난달 상장한 기업들의 첫 의무보유확약 해제 일정도 있어요. 기관투자자가 공모주를 배정받으며 일정 기간 팔지 않겠다고 약속했던 물량이 매도 가능해지는 시점이에요.\n\n 네오사피엔스 는 6일에 15일 의무보유확약 물량 66만322주가 풀려요. 기관 배정 물량 150만주의 44.02%에 해당해요. 1개월 이상 확약을 조건으로 배정한 물량은 없어 이번에 기관 의무보유확약 물량이 모두 해제돼요.\n\n 와이즈플래닛컴퍼니 는 8일에 54만3406주의 매도 제한이 풀려요. 기관 배정 물량 120만주의 45.28%예요. 나머지 확약 물량인 1개월 7223주와 3개월 1만2413주, 6개월 10만4252주는 각 확약 기간까지 계속 묶여 있어요.\n\n KB스팩34호 와 한국스팩17호 도 7일이면 상장 후 15일이 지나지만 이날 풀리는 기관 확약 물량은 없어요. 두 회사 모두 15일 확약으로 배정한 주식이 없기 때문이에요. 기관 의무보유확약 물량은 전부 3개월 조건으로 KB스팩34호가 50만848주이고 한국스팩17호는 5000주예요.\n\n *공모주 수요예측 및 청약 일정은 증권신고서 중요내용 정정으로 인한 효력 발생 연기 시 미뤄질 수 있어요."
       },
       {
-        "title": "[IPO챗] 디티에스 등 4개사 수요예측…2개사 공모주 청약",
-        "url": "https://n.news.naver.com/mnews/article/001/0016355086",
-        "chars": 1645,
+        "title": "[이번주 IPO]10월 둘째 주 수요예측·청약 일정",
+        "url": "https://n.news.naver.com/mnews/article/277/0005824435",
+        "chars": 1307,
         "extracted": "id=\"dic_area\"",
-        "body": "한국거래소\n[촬영 임은진] \n\n(서울=연합뉴스) 정회인 기자 = 다음 주 국내 증시는 거래일이 사흘(6∼8일)에 그치지만 기업공개(IPO) 시장에서는 4개 기업이 기관투자자 대상 수요예측을 진행하는 등 공모 일정이 이어진다.\n\n 3일 금융투자업계에 따르면 디티에스는 오는 8일까지 기관 수요예측을 진행한다. 희망 공모가는 1만7천∼1만8천500원이며 오는 12일 공모가를 확정할 예정이다.\n\n 디티에스는 발전소 등에 사용되는 열교환기를 설계·생산하는 기업으로, 배열회수보일러(HRSG)와 공랭식 열교환기 등을 주력으로 한다. 대표주관사는 대신증권이다.\n\n 연휴 직후인 7일에는 티앤이코리아와 다비오, 유캐스트가 나란히 기관투자자들의 평가를 받기 시작한다.\n\n 티앤이코리아는 고속모터와 공기베어링 등을 기반으로 고속 터보기계 시스템을 개발·생산하는 기업이다. 수처리용 터보블로워에서 수소발전·수소차용 제품으로 사업 영역을 넓혀왔다.\n\n 오는 14일까지 수요예측을 진행하며 희망 공모가는 1만2천600∼1만5천300원이다.\n\n 공간정보 인공지능(AI) 기술 기업 다비오도 7∼14일 수요예측에 나선다. 위성·항공사진 등 공간정보를 AI로 분석해 지도 데이터를 구축하는 기술을 보유하고 있으며 희망 공모가는 1만2천300∼1만6천600원이다.\n\n 같은 기간 수요예측을 진행하는 유캐스트는 이동통신 네트워크 장비를 개발하는 기업이다. 희망 공모가는 2만1천∼2만6천원이며 유진투자증권이 대표주관사를 맡았다.\n\n 일반투자자 대상 공모주 청약에서는 진코스텍과 엘리스그룹이 투자자들을 만난다.\n\n 코넥스에서 코스닥으로 이전상장을 추진하는 진코스텍은 연휴를 사이에 두고 2일과 6일 일반청약을 진행한다.\n\n 화장품 소재와 완제품을 개발·생산하는 제조업자개발생산(ODM) 기업으로, 공모가는 희망 밴드 상단인 2만3천500원으로 확정했다.\n\n 인공지능(AI) 교육·인프라 기업 엘리스그룹은 6일 공모가를 확정한 뒤 7∼8일 일반청약에 나설 예정이다.\n\n 희망 공모가는 7만400∼9만500원으로, 미래에셋증권과 삼성증권이 각각 대표·공동주관사를 맡았다.\n\n 엘리스그룹은 당초 지난달 수요예측과 일반청약을 진행할 예정이었으나 금융감독원의 증권신고서 검토 과정에서 보완 의견을 반영하면서 공모 일정을 미룬 바 있다.\n\n 기관 수요예측 ▲디티에스, 코스닥, 공모 희망 밴드 1만7천∼1만8천500원(10월 12일 확정 예정), 10월 1∼8일, 공모주 청약 10월 13∼14일, 대표주관사 대신증권·인수회사 유진투자증권.\n\n ▲티앤이코리아, 코스닥, 1만2천600∼1만5천300원(10월 16일 확정 예정), 7∼14일, 공모주 청약 20∼21일, 대표주관사 신한투자증권\n\n ▲다비오, 코스닥, 1만2천300∼1만6천600원(10월 15일 확정 예정), 7∼14일, 공모주 청약(19∼20일, 대표주관사 대신증권\n\n ▲유캐스트, 코스닥, 2만1천∼2만6천원(10월 16일 확정 예정), 7∼14일, 공모주 청약 19∼20일, 대표주관사 유진투자증권·인수회사 신영증권.\n\n 공모주 청약 ▲진코스텍, 코스닥, 공모주 청약 10월 2∼6일, 대표주관사 하나증권.\n\n ▲엘리스그룹, 코스닥, 공모 희망 밴드 7만400∼9만500원(10월 6일 확정 예정), 공모주 청약 10월 7∼8일, 대표주관사 미래에셋증권·공동주관사 삼성증권.\n\n hihello@yna.co.kr"
+        "body": "이달(10월) 둘째 주에는 유캐스트, 다비오, 티앤이코리아가 기관투자자 대상 수요예측을 진행한다. 엘리스그룹은 일반 청약을 앞두고 있다.\n\n <수요예측> \n\n ◆유캐스트 = 2011년 설립된 유캐스트는 4G·5G 이동통신에 필요한 장비와 시스템을 자체 개발하고, 통신망 구축부터 운영까지 제공하는 무선통신 솔루션 전문기업이다. 특히 기지국과 통신망의 핵심 기능을 하나로 통합한 자체 솔루션을 기반으로 고객 환경에 최적화된 독립형 통신망 구축 역량을 확보하고 있다.\n\n총 공모주식수는 80만주로, 주당 희망 공모가 범위는 2만1000~2만6000원이다. 이에 따른 총 공모 예정금액은 168억~208억원이다. 오는 7~14일 기관투자자 대상 수요예측을 진행하고 오는 19~20일 일반청약을 받는다. 대표주관사는 유진투자증권이다.\n\n ◆다비오 = 다비오의 핵심 플랫폼인 '어스아이(Eartheye)'는 위성, 항공, 드론 영상 데이터를 기반으로 시공간 변화를 자동 판별하는 인공지능 공간정보 솔루션이다. 다비오 GEO AI 모델 기반의 'Sensor-Aware 변화탐지 엔진'을 적용해, 조도나 계절 차이로 인한 가짜 변화(Pseudo Change)를 제거하고 정밀한 분석 결과를 제공한다.\n\n총 100만주를 공모한다. 공모 희망가액은 1만2300~1만6600원이다. 오는 7일부터 14일까지 기관투자자 대상 수요예측을 진행하고 오는 19~20일 공모 청약을 받는다. 주관사는 대신증권이다.\n\n ◆티앤이코리아 = 티앤이코리아는 다양한 산업 현장에서 공기를 압축·공급하는 고속 터보기계 시스템을 개발·생산하는 기업이다. 고속모터, 비접촉식 공기베어링, 고효율 임펠러(회전날개)로 구성된 소형 고속회전 코어를 공용 플랫폼으로 표준화해, 소형 장비로 효율적인 공기 공급을 가능하게 하는 시스템을 확보했다.\n\n총 공모 주식 수는 240만주로 희망 공모가 범위는 1만2600~1만5300원, 총 공모금액은 302억~367억원이다. 오는 7일부터 14일까지 기관투자자 대상 수요예측을 진행하고 오는 20~21일 일반 청약을 받는다. 상장주관사는 신한투자증권이다.\n\n <일반청약> \n\n ◆엘리스그룹 = 희망 공모가는 7만400~9만500원이다. 총 공모 금액은 1564억~2011억원으로 예상된다. 수요예측은 지난 1일까지 진행했고 일반 청약은 오는 7~8일 양일간 진행될 예정이다. 상장 대표 주관사는 미래에셋증권이며 공동주관사는 삼성증권이다.\n\n2015년 설립된 엘리스그룹은 독자 개발한 AI 클라우드 기술을 바탕으로 풀스택 AI 솔루션을 제공할 수 있는 역량을 보유한 기업이다. 주요 사업 영역은 크게 AX(AI 전환)와 AI클라우드로 구분된다."
       },
       {
-        "title": "\"삼전·하닉 80% 담았는데 어쩌죠?\"…목표주가만 믿었다간",
-        "url": "https://n.news.naver.com/mnews/article/015/0005338843",
-        "chars": 1818,
+        "title": "그 많던 개미 증발에 금리 부담까지…불장에 웃던 증권주 '냉골'",
+        "url": "https://n.news.naver.com/mnews/article/008/0005421919",
+        "chars": 1652,
         "extracted": "id=\"dic_area\"",
-        "body": "증권가 평균 목표가, 현 주가보다 삼성전자 80.5%·SK하이닉스 78.5% 높아 \n전문가 \"두 종목 합산 비중 30~40%로 낮춰야…관련주 이동도 분산 아냐\" \n \n \n \n\n 사진=연합뉴스 \n삼성전자와 SK하이닉스에 증권가의 장밋빛 전망이 쏟아지고 있다. 평균 목표주가는 현 주가보다 약 80% 높다. 하지만 증권사별 전망 차이가 큰 만큼 목표가격만 보고 투자금을 두 종목에 집중하는 것은 주의해야 한다는 지적이 나온다.\n\n3일 한경 에픽AI가 최근 150일 동안 나온 증권사 보고서를 분석한 결과 삼성전자 평균 목표주가는 49만8125원으로 집계됐다. 지난 2일 종가인 27만6000원보다 80.5% 높은 수준이다. 삼성전자 보고서 24건 가운데 투자의견은 매수 22건, 강력매수 1건, 중립 1건이었다. 목표주가 중앙값은 50만원이었다.\n\n증권사별 전망에는 상당한 차이가 있었다. 한국투자증권이 65만원으로 가장 높은 목표주가를 제시했다. 유안타증권은 63만원, SK증권은 61만원, KB증권은 60만원을 제시했다. 반면 BNK투자증권은 투자의견을 중립으로 낮추고 목표주가를 27만원으로 잡았다. 최고 전망과 최저 전망의 차이가 38만원에 달한다.\n\nSK하이닉스도 비슷했다. 증권사 24곳이 제시한 평균 목표주가는 328만6250원이었다. 지난 2일 종가인 184만1000원보다 78.5% 높았다. 목표주가 중앙값은 330만원으로 나타났다.\n\n한국투자증권은 SK하이닉스 목표주가를 470만원으로 제시했다. KB증권과 다올투자증권은 각각 420만원을 내놨다. 교보증권과 SK증권, IBK투자증권은 400만원을 제시했다. 가장 보수적인 전망은 BNK투자증권에서 나왔다. 목표주가는 148만원이었다. 한국투자증권 전망과 비교하면 322만원 차이다. 증권사별로 메모리 반도체 호황의 지속 기간과 환율, HBM 수익성 등을 다르게 판단한 결과다.\n\n증권가가 두 회사의 추가 상승 가능성을 높게 보는 배경에는 인공지능(AI) 서버를 중심으로 급증한 HBM 수요가 있다. 범용 메모리 가격 상승과 HBM4 시장 확대도 실적 개선 요인으로 꼽힌다.\n\n삼성전자는 HBM 경쟁력 회복 여부가 기업가치 재평가의 핵심으로 지목된다. SK하이닉스는 HBM 시장 지배력과 주주환원 정책이 주가를 뒷받침할 요인으로 평가된다.\n\n위험 요인도 있다. 원화 강세가 이어지면 수출 대금을 원화로 환산한 실적이 감소할 수 있다. 삼성전자는 파운드리 사업의 적자와 가전·모바일 부문의 수익성 저하가 부담이다. SK하이닉스는 HBM4 품질과 해외 투자 확대에 대한 우려가 제기된다.\n\n전문가들은 특정 목표주가보다 자신의 계좌에서 두 종목이 차지하는 비중을 먼저 확인해야 한다고 조언한다.\n\n이권희 위즈웨이브 대표는 최근 유튜브 채널 '표영호tv'에서 삼성전자 30만~32만원과 SK하이닉스 220만~240만원을 비중 축소 구간으로 제시했다. 두 종목이 전체 계좌의 70~80%를 차지한다면 합산 비중을 30~40% 수준까지 낮추는 방안을 고려할 필요가 있다고 했다.\n\n계좌 평가액이 1억원이고 두 종목의 평가액이 8000만원이라면 4000만~5000만원어치를 매도해야 합산 비중이 30~40%로 낮아진다. 매매 비용과 주가 변동을 제외한 단순 계산이다.\n\n종목 쏠림은 하락장에서 계좌 전체의 손실을 키울 수 있다. 두 종목의 합산 비중이 80%인 상황에서 주가가 각각 10% 떨어지면 계좌 전체 수익률은 8% 하락한다. 합산 비중이 40%라면 같은 조건에서 계좌 손실률은 4%로 줄어든다.\n\n보유 종목을 반도체 소재·부품·장비나 전력기기주로 바꾸는 것만으로는 충분한 분산이 이뤄졌다고 보기 어렵다. 해당 기업들도 AI 데이터센터 투자와 반도체 설비투자에 실적이 좌우될 수 있어서다."
+        "body": "3Q 어닝시즌 관전포인트 \n \n \n \n\n KRX 증권업종 지수/그래픽=이지혜 올 상반기 코스피 랠리 최대 수혜주로 고공행진을 이어가던 증권주가 하반기 들어 위축 장세 직격탄을 맞으며 식어가고 있다. 증권가에선 실적 '상고하저(상반기 호조·하반기 부진)'를 점치는 잿빛 전망이 나온다. 3분기 어닝시즌이 코앞으로 다가오면서 증권사 주가향방이 관심을 모은다.\n\n4일 한국거래소에 따르면 KRX 증권지수는 지난 2일 1790.06으로 장을 마감했다. 하반기 누적 하락률은 18.02%(393.60포인트)다.\n\n시가총액 상위 5종목의 하반기 누적 낙폭은 미래에셋증권 1만1100원(25.96%), 키움증권 8만3500원(24.34%), 한국금융지주 3만9800원(18.01%)이다. 삼성증권은 1만8100원(16.68%), NH투자증권은 2450원(8.33%) 내렸다.\n\n증권주 투자심리가 급랭한 원인으로는 주로 거래위축이 거론된다. 상반기 실적 고공행진을 견인한 원동력인 브로커리지 수익이 하반기 들어 절벽을 마주했다는 풀이다.\n\n3분기 국내증시 일평균 거래대금은 52조4000억원(코스피 44조2000억·코스닥 8조3000억)으로 전분기 대비 42% 급감했다. 지난달 일평균 대금은 40조1000억원(코스피 31조3000억·코스닥 8조8000억)으로 전월 대비 감소폭은 줄였지만, 하락 흐름은 지속됐다.\n\n투심과 더불어 금융사업 전반에 미치는 금리동향 역시 비우호적 국면이 이어지는 추세다.\n\n김성훈 현대차증권 연구원은 \"거래대금 부진 속 금리에 대한 부담감도 높아진 상황으로, 상승압력이 다소 완화됐던 국내 국고채 금리는 미국 시장금리 상승과 함께 재차 상승세를 보였다\"며 \"금리 상승세가 가속화했던 2022년 하반기 수준에 근접했다\"고 밝혔다.\n\n그러면서 \"증권사의 조달비용 부담과 채권 평가손실 확대로 이어질 수 있다는 점에서 3분기 실적 눈높이를 낮출 필요성이 커졌다\"며 \"금리 추가상승 여력은 제한적일 수 있지만, 금리에 대한 증시 민감도가 높아진 만큼 4분기 증권주 향방을 가늠하는 데도 금리흐름을 예의주시할 필요가 있다\"고 했다.\n\n업황 호조 기대감이 잦아든 가운데 일부 전문가들은 연내 누적된 수익에 대한 주주환원 기대감을 투자전략 키워드로 제시했다.\n\n고연수 하나증권 연구원은 \"당분간 현 수준의 거래대금이 이어질 경우 실적 변동성이 상대적으로 낮고 배당 매력도가 높은 종목 중심의 접근이 유효할 것\"이라며 \"하반기 최선호주로는 기대배당수익률이 7% 초반이며 코스닥 거래점유율까지 상승 중인 키움증권\"이라고 밝혔다.\n\n다른쪽에선 실적 부담 대부분이 주가에 반영돼 중장기 성장 가능성에 집중할 필요가 있다는 의견도 나온다.\n\n윤유동 NH투자증권 연구원은 \"지난달 삼성증권과 메리츠증권이 발행어음 인가를 받으며 신규 사업자간 경쟁이 본격화했다\"며 \"기존 사업자도 발행어음·IMA 상품 다변화를 통해 기업금융·운용영역을 확대하려고 시도하고 있다\"고 밝혔다.\n\n윤 연구원은 또 \"주요 증권사들은 가상자산거래소와의 협업·지분투자를 확대하면서 가상자산 시장 진입 준비를 본격화하고 있다\"며 \"AI 개인화 서비스와 커뮤니티 기능을 접목하는 등 MTS 고도화도 활발하고, 장기적으로 토큰증권·RWA 등까지 한 플랫폼에서 거래하는 환경을 구축하는 게 목표로, 독립계·은행계 증권사 모두 자본확충에 적극 나서며 중장기 성장기반을 강화하는 구간\"이라고 했다."
       },
       {
-        "title": "현대차 주가 70만→30만 '뚝'…한달만에 30% 뛴 협력사 있다는데 [대기업 협력사 전수분석]",
-        "url": "https://n.news.naver.com/mnews/article/015/0005338838",
-        "chars": 639,
+        "title": "내 삼성전자도 '토큰'이 된다고?…익숙한 주식도 새옷 입는다",
+        "url": "https://n.news.naver.com/mnews/article/008/0005421918",
+        "chars": 1590,
         "extracted": "id=\"dic_area\"",
-        "body": "대기업 협력사 전수분석 ③현대차\n\n현대차 주가 한달간 8%대 하락\n자동차 전장 분야는 4.81% 상승\nHL만도 현대모비스는 부진\n\n디와이덕양, 주가 30% 급등\n타이어주는 출하 감소에 하락 \n \n \n \n\n 현대차, '디 올 뉴 투싼' 美 뉴욕서 글로벌 무대 첫 선. 현대차 제공 \n현대자동차가 지난 한 달간 주가가 8.33% 하락하며 숨고르기에 들어섰다. 지난 5월 70만원에 육박했던 주가는 30만원대까지 내려간 상황이다. 주요 협력사들역시 전장화·하이브리드(HEV) 및 고부가가치 부품 공급 여부에 따라 주가가 갈린 것으로 나타났다.\n…\n완성차의 경우 전기차(EV) 일시적 수요 정체(캐즘)와 글로벌 재고 조절 영향으로 조정을 받았지만 SDV(소프트웨어 중심 자동차) 전환 및 HEV 라인업 확대에 직접적인 수혜를 입는 전장·내장 및 특수 부품사들로는 온기가 이어졌다. 자동차 전장 뜨고 전통 부품사는 하락 \n3일 에픽파이낸스를 통해 현대차 주요 협력사 68곳의 지난 한 달간 주가를 분석한 결과 가장 주가 상승세가 두드러진 분야는 자동차 전장이다. 해당 섹터 기업은 같은 기간 주가가 평균 4.81% 상승했다. 완성차의 전장화율 상승과 함께 임베디드 소프트웨어, 카메라 모듈, MLCC, HEV용 전장 부품 수요가 꾸준히 이어진 결과다."
+        "body": "주식·채권·펀드도 토큰화 가능…투자상품·거래 방식 넓어질 전망 \n \n \n \n\n 토큰증권 한눈에 보기/그래픽=이지혜 '토큰'이라고 하면 비트코인부터 떠올리기 쉽다. 그런데 내년부터는 삼성전자 같은 주식이나 채권, 펀드에도 '토큰'이라는 말이 붙을 수 있다. 그렇다면 앞으로 주식도 코인처럼 사고파는 시대가 오는 걸까.\n\n답부터 말하면 '반은 맞고 반은 틀리다'. 내년 2월 토큰증권 제도가 본격 시행되면 주식과 채권, 펀드도 블록체인 기술을 이용해 발행하고 관리할 수 있게 된다. 하지만 삼성전자 주식이 갑자기 비트코인처럼 변하는 것은 아니다.\n\n토큰증권을 가장 쉽게 이해하려면 '내용물은 같은데 포장 방식이 달라진다'고 생각하면 된다. 지금도 주식을 사면 종이 주권을 받는 대신 전산상 내 계좌에 몇 주를 가지고 있는지가 기록된다. 토큰증권은 이런 기록을 블록체인을 활용한 장부에 남기는 방식이다.\n\n종이책과 전자책의 차이와 비슷하다. 같은 소설이라도 종이에 찍을 수도 있고 전자파일로 만들 수도 있다. 읽는 내용은 그대로다.\n\n주식도 마찬가지다. 토큰으로 발행됐다고 주식이 가상자산이 되는 것은 아니다. 주식은 여전히 주식이고 채권은 채권이다. 투자자에게 적용되는 자본시장 규제도 그대로 받는다.\n\n그동안 토큰증권 하면 미술품이나 부동산을 여러 사람이 조금씩 나눠 투자하는 '조각투자'가 먼저 떠올랐다. 앞으로는 범위가 훨씬 넓어진다. 주식과 채권, 펀드 같은 익숙한 금융상품도 토큰 형태로 만들 수 있는 길이 열린다.\n\n그렇다고 내년 2월 증권사 앱을 켰을 때 삼성전자 옆에 갑자기 '토큰 삼성전자'가 등장하는 것은 아니다. 제도상 가능해지는 것과 실제 상품이 나오는 것은 다른 문제다. 기업과 금융회사가 어떤 상품을 만들지, 거래할 시장이 어떻게 갖춰질지에 따라 변화는 차근차근 나타날 가능성이 크다.\n\n토큰은 증권을 기록하고 관리하는 방식일 뿐이다. 몇 시부터 몇 시까지 거래할지는 별도의 시장 규칙이 정한다. '토큰증권=24시간 거래'는 아니라는 얘기다.\n\n다만 투자자가 만날 수 있는 시장은 다양해질 수 있다. 금융당국은 토큰증권 제도와 함께 채권 등을 거래할 수 있는 새로운 장외거래시장도 만들 수 있도록 제도를 손질하고 있다.\n\n쉽게 말해 지금까지 증권사 앱에서 보던 투자상품과 거래 방식에 새로운 선택지가 하나씩 추가되는 셈이다. 물론 아무 상품이나 마음대로 만들어 사고팔 수 있는 것은 아니다. 일반투자자 보호를 위한 투자한도와 발행·유통 규제도 함께 적용된다.\n\n토큰증권이 자리 잡으면 지금은 투자하기 어려운 자산도 작은 단위의 증권으로 만들어질 가능성이 커진다. 반대로 익숙한 주식이나 채권도 기존과 다른 방식으로 발행하거나 거래할 수 있다.\n\n예전에는 '증권으로 만들기 어려웠던 것'을 투자상품으로 만들기가 쉬워지고, 이미 증권인 상품도 발행하고 유통하는 방법이 다양해지는 것이다.\n\n하지만 내년 2월 하루아침에 투자 풍경이 완전히 바뀔 가능성은 크지 않다. 실제 어떤 상품이 나오고 개인투자자가 얼마나 이용할지는 시장이 만들어져야 알 수 있다.\n\n그래도 토큰증권을 더 이상 '미술품 몇 천원어치 사는 조각투자' 정도로만 생각할 필요는 없어졌다. 내년부터는 주식도, 채권도, 펀드도 '토큰'이라는 옷을 입을 수 있다."
       },
       {
-        "title": "지금 통과해야 연내 상장…코스닥본부 \"한주에 8곳도 심사\" [여의도는 지금]",
-        "url": "https://n.news.naver.com/mnews/article/014/0005584520",
-        "chars": 967,
+        "title": "달러 약세에 두 배로 웃었다…ETF 수익률 1∼3위 '싹쓸이'",
+        "url": "https://n.news.naver.com/mnews/article/215/0001268123",
+        "chars": 893,
         "extracted": "id=\"dic_area\"",
-        "body": "한국거래소 사옥 전경. 한국거래소 제공 \n[파이낸셜뉴스] 매년 가을이면 한국거래소 코스닥시장본부는 유난히 분주해진다. 연내 상장을 목표로 하는 기업들이 공모 절차에 앞서 상장예비심사를 마쳐야 하는 시기여서다. 심사 안건 검토와 기업 대표이사 면담, 상장위원회 준비까지 맞물리면서 코스닥 상장 심사 인력은 연말 상장 시즌마다 숨 가쁜 일정을 소화한다. \n \n3일 한국거래소 코스닥시장본부 관계자는 \"요즘은 한 주에 8개가량의 상장예비심사 승인 안건을 처리하고 있다\"며 \"상장 승인을 기다리는 회사들이 많다\"고 덧붙였다. \n \n한국거래소 공시시스템 카인드에 따르면 지난달 코스닥 상장예심 청구는 12건으로 집계됐다. 신규상장 청구는 10건이었다. 2024년 9월 전체 청구 7건, 지난해 9월 10건과 비교하면 소폭 늘어난 수준이다. 연말 상장을 앞두고 예심 문을 두드리는 기업들이 이어지면서 거래소 심사부서도 바쁜 시기를 보내고 있다. \n \n기업 입장에서는 통상 9~10월께 예심을 통과해야 증권신고서 제출과 기관투자자 수요예측, 일반청약을 거쳐 연내 상장을 마무리할 수 있다. 연말 안에 상장을 끝내려는 기업과 주관사들이 심사 일정을 서두르는 이유다. \n \n상장 심사는 기업의 재무 상태와 사업 지속성, 경영 투명성, 공시 체계 등을 들여다보는 과정이다. 심사부서는 제출 자료를 검토하는 데 그치지 않고 대표이사 면담 등을 통해 사업계획과 주요 위험 요인도 확인한다. 심사 안건이 한꺼번에 몰리면 기업별 검토와 후속 절차까지 동시에 진행해야 한다. \n \n거래소 안팎에서는 이를 매년 반복되는 '연말 상장 시즌'의 풍경으로 본다. 한국거래소 관계자는 \"9~10월에는 이 시기 심사를 마무리해야 연내 상장이 가능하다\"며 \"통상적으로 심사 건수가 집중되는 때\"라고 설명했다. \n \n연말 상장을 목표로 한 기업들의 발걸음이 이어지는 동안 거래소 코스닥시장본부도 심사 일정표를 빽빽하게 채우며 한 해의 막바지 IPO 시즌을 보내고 있다."
+        "body": "\"대외 불안에 환율 다시 상승\" 전문가 전망 \n \n \n \n\n 사진=연합뉴스 \n올해 3분기 국내 상장 ETF 수익률 상위 1∼3위 종목이 모두 미국 달러 인버스 2배(곱버스) 상품으로 나타났다.\n\n4일 한국거래소에 따르면 지난 6월 1일부터 9월 30일까지 국내 상장된 상장지수펀드(ETF) 중 상승률이 가장 높았던 상품은 'KODEX 미국달러선물인버스2X'로 22.76% 올랐다. \n\n'TIGER 미국달러선물인버스2X'(22.49%)와 'KIWOOM 미국달러선물인버스2X'(22.39%)가 근소한 차이로 뒤를 이었다. 세 상품 모두 미국달러선물지수의 일간 변동률을 -2배수로 추종해, 달러가 떨어질 때 2배로 수익을 내는 구조다.\n\n이런 배경에는 달러 약세가 있었다. 6월 1일 1,685.61이던 미국달러선물지수는 9월 30일 1,518.50으로 9.91% 하락했다. 같은 기간 원·달러 환율도 서울 외환시장 주간 거래 종가(오후 3시 30분) 기준 1,504.3원에서 1,352.8원으로 내려갔다. 9일에는 1,336.10원에 마감하며 서울 정규장 기준 2024년 10월 4일 이후 가장 낮은 수준을 보였다.\n\n다만 달러는 지난달 중순부터 고유가, 미국 국채 금리 상승, 일본은행(BOJ)의 기준금리 인상 등이 겹치며 다시 오름세다. 원·달러 환율은 18일 1,383.3원까지 올랐다. 이 영향으로 KODEX 미국달러선물인버스2X는 9일 5,705원까지 올랐다가 약세로 돌아서 2일 5,575원으로 내려갔다.\n\n전문가들은 당분간 환율이 오를 것으로 본다. IBK투자증권 정용택 연구원은 \"원화 강세 요인과 약세 요인이 서로 뚜렷한 설득력을 가지고 대치 중이지만, 점차 대외 불안 요인이 주를 이루는 약세 요인 쪽으로 무게추가 옮겨지며 환율은 다시 상승하는 흐름으로 전개될 것\"이라고 예상했다."
       },
       {
-        "title": "20대 공무원 \"월급 250만원, 적금·투자 어떻게 나눌까요\"[재테크 Q&A]",
-        "url": "https://n.news.naver.com/mnews/article/014/0005584519",
-        "chars": 2365,
+        "title": "美는 260만원인데 왜 한국에선 180만원?…속타는 SK하이닉스 투자자들의 의문 [증시레이더]",
+        "url": "https://n.news.naver.com/mnews/article/138/0002243606",
+        "chars": 1947,
         "extracted": "id=\"dic_area\"",
-        "body": "비정기지출부터 관리… 3년간 6000만원 마련 목표 \n \n \n \n\n 서울 남산에서 바라본 시내 아파트 모습. 뉴시스 = \nQ. 취업한 지 4개월 된 25세 공무원 A씨는 본격적으로 저축과 투자를 시작하려 한다. 월급은 약 250만원이다. 대중교통으로 출퇴근하기 불편해 가족 차량을 이용하고 있으며 용돈과 유류비, 통신비, 보험료 등으로 매달 약 70만원을 쓴다. \n \n현재 적금과 비상금으로 각각 월 30만원을 모으고 있다. 남는 자금은 적금과 개인종합자산관리계좌(ISA), 연금저축 등에 추가로 납입할 계획이다. 주변에서는 적금보다 투자 비중을 높여야 한다고 하지만 원금 손실이 걱정된다. ISA와 연금저축 가운데 어떤 상품을 먼저 활용해야 할지도 고민이다. \n\n \n \n \n \n\n \nA씨의 월수입은 250만원이다. 고정비로 보험료 9만원이 나간다. 변동비는 용돈·생필품비 30만원, 통신비 6만원, 온라인동영상서비스(OTT) 이용료 2만원, 운동비 7만원, 유류비 20만원 등 총 65만원이다. 적금과 비상금에는 각각 30만원씩 총 60만원을 저축한다. 이를 제외한 116만원은 용처가 정해지지 않은 상태다. \n \n자산은 입출금통장 500만원, 부모님이 지원한 주택청약저축 300만원, 적금 120만원 등 총 920만원이다. 연간 비정기지출 규모는 파악하지 못했다. \n \nA. 금융감독원에 따르면 A씨처럼 안정적인 소득이 생긴 사회초년생은 금융상품을 선택하기에 앞서 지출을 파악하고 예산을 세우는 것이 우선이다. 비정기지출을 고려하지 않고 저축액부터 늘리면 예상하지 못한 지출이 생길 때 적금을 해지하거나 목표한 목돈을 마련하지 못할 수 있어서다. \n \n금감원은 A씨에게 가족 경조사비 50만원, 휴가·여행비 120만원, 의류·미용비 240만원, 자기계발비 20만원, 지인 경조사비 100만원, 차량유지비 20만원 등 연간 550만원을 비정기지출 예산으로 설정할 것을 제안했다. 매달 약 46만원을 별도로 적립하는 방식이다. \n \n지출은 통장 쪼개기로 관리한다. 급여통장은 적금과 연금저축, ISA, 보험료 등 자동이체 용도로 활용한다. 생활비통장에는 매달 30만원을 옮겨 주 단위로 지출하고 체크카드를 연결한다. 비정기지출 통장에는 월 46만원을 적립한 뒤 경조사나 여행 등 관련 지출이 발생할 때 사용한다. \n \n투자도 필요하지만 처음부터 비중을 과도하게 높이는 것은 바람직하지 않다. 투자 경험이 부족한 상태에서 무리하게 투자하면 손실이 발생했을 때 상품을 해지하거나 투자를 중단할 수 있다. 투자 목적과 목표수익률, 자금이 필요한 시점을 정한 뒤 여유자금으로 시작해야 한다. \n \n초보 투자자는 매달 일정 금액을 넣는 적립식 투자를 활용할 수 있다. 가격이 낮을 때는 더 많은 수량을 사고 높을 때는 적은 수량을 사 평균 매입단가를 낮추는 방식이다. 단기간에 수익을 내기보다 소액으로 경험을 쌓고 목표수익률을 달성하거나 자금이 필요한 시점에 수익을 실현하는 것이 적절하다. \n \nISA와 연금저축펀드는 목적이 다르다. ISA는 예·적금과 투자상품을 함께 운용하면서 비과세와 분리과세 혜택을 받을 수 있어 5년 이상 필요한 목적자금 마련에 활용할 수 있다. 연금저축펀드는 연말정산 세액공제 혜택을 받으면서 55세 이후 사용할 노후자금을 준비하는 상품이다. \n \n사회초년생 때부터 노후를 준비할 필요는 있지만 연금저축 비중을 지나치게 높이면 결혼과 주택 구입 등 다른 생애주기 자금을 마련하기 어려워질 수 있다. 중기 자산 증식과 장기 노후 준비 가운데 목적을 구분해 저축액을 배분해야 한다. \n \n금감원은 A씨가 월 130만원을 저축하는 방안을 제시했다. 일반 적금 60만원, 미래청년저축 50만원, ISA 10만원, 연금저축펀드 10만원으로 나누는 방식이다. 현재 비상금으로 적립하던 월 30만원은 적금으로 돌리고 입출금통장에 있는 500만원은 비상예비자금으로 활용한다. \n \n월 130만원을 1년간 모으면 1560만원이다. 여기에 연간 비정기수입 500만원을 전액 저축해 한 해에 약 2000만원을 마련하고 3년간 총 6000만원을 모으는 것이 목표다. 2~5년 안에 사용할 자금은 원금 변동 위험이 낮은 예·적금 위주로 준비한다. ISA 투자는 월 10만원부터 시작해 경험을 쌓은 뒤 금액을 늘리고 연금저축펀드도 노후자금이라는 목적을 분명히 한 상태에서 납입하는 방안이 제시됐다. \n \n금감원 관계자는 \"사회초년생은 금융상품을 고르기 전에 월 지출과 비정기지출을 파악하고 저축 목표를 세우는 것이 우선\"이라며 \"부모님의 지원을 받을 수 있는 시기에 지출관리 습관을 정착시키고 저축 여력을 최대한 활용할 필요가 있다\"고 조언했다. \n \n금융감독원이 운영하는 금융소비자포털 '파인'을 인터넷 검색창에 입력하거나 금감원콜센터 1332(▶7번 금융자문서비스)로 전화하면 무료 맞춤형 금융소비자 상담을 받을 수 있습니다."
+        "body": "SK하이닉스 전경 [사진=연합뉴스] \n\n[디지털데일리 강기훈기자] 같은 SK하이닉스 주식인데 한국과 미국에서 거래되는 가격 차이가 40% 안팎까지 벌어지고 있다. 국내에서는 180만원 안팎인 SK하이닉스가 미국 나스닥에서는 원화로 환산하면 250만원을 웃돈다. 미국 투자자들이 상당한 웃돈을 얹어 사고 있는 셈이다.\n\n4일 금융투자업계에 따르면 지난 2일(현지시간) 마감된 미국 나스닥 시장에서 SK하이닉스 미국예탁주식(ADS)인 SKHY는 전장대비 0.84% 오른 195.13달러로 종료했다. 같은 날 국내 증시에서 SK하이닉스 종가는 184만2000원이었다.\n\nSK하이닉스 ADS 1주는 국내 보통주 0.1주에 해당한다. 미국 ADS 10주가 국내 SK하이닉스 보통주 1주와 같은 가치를 갖는 구조다.\n\n현재 외환시장에서 거래되고 있는 원·달러 환율(1349원)을 적용하면 국내 보통주 1주에 해당하는 미국 가격은 원화 환산 가격은 약 263만원이다. 국내 종가 184만원보다 대략 40% 이상 높게 거래되고 있는 셈이다.\n\n바꿔말하면, 지난 6월 국내 코스피가 9000을 찍을때 SK하이닉스를 250만원대 이상 고점에서 물린 국내 투자자들이 속이 타고 있는 이유이기도 하다.\n\n양국 증시의 거래시간이 다른 만큼 정확히 같은 시점의 가격을 비교한 수치는 아니다. 환율 변동에 따라서도 차이는 달라진다.\n\n그런 차이를 감안하더라도, 미국 ADS가 국내 주식보다 30~40% 비싸게 거래되는 흐름은 지속되고 있는 것은 의문다.\n\n보통 같은 회사 주식이 두 시장에서 서로 다른 가격에 거래되면 차익거래가 발생한다. 싼 시장에서 산 뒤 비싼 시장에서 팔 수 있기 때문이다. 이런 거래가 반복되면 두 시장의 가격 차이도 자연스럽게 줄어든다. 결국 가격차가 거의 소멸되는 흐름으로 간다.\n\n그런데 SK하이닉스는 좀 예외라는 게 전문가들의 견해다.\n\n무엇보다 미국에서 거래되는 SK하이닉스 주식(수량)이 상대적으로 귀하기 때문이라는 분석을 내놓고 있다.\n\n강한 수요의 뒷받침이다. SK하이닉스는 지난 7월 미국에서 ADS 1억7790만주를 주당 149달러에 발행해 265억달러를 조달했다. 당시 공모에는 모집 물량의 7배가 넘는 주문이 들어왔다. 인공지능(AI) 투자 확대의 대표 수혜주인 SK하이닉스를 미국 증시에서 직접 사고 싶은 수요가 강했다.\n\n또한 시장 절차의 제약이 있다. 국내 보통주와 미국 ADS를 자유롭게 바꾸기 어려운 데다 미국에서 거래할 수 있는 ADS 물량도 제한적이라는 것이다. 미국에서 가격이 높아져도 국내 주식을 미국으로 바로 옮겨 팔기가 어려운 만큼 가격차가 쉽게 해소되지 않는 구조라는 것.\n\n이밖에 국내와 미국 증시의 분위기도 다르다는 점이 꼽힌다.\n\n미국 투자자들의 AI 반도체 섹테에 대한 선호는 견고하다는 분석이다. SK하이닉스는 엔비디아 등에 고대역폭메모리(HBM)를 공급하면서 AI 투자 확대의 핵심 수혜주로 꼽힌다. 엔비디아와 마이크론 등 AI·반도체주에 익숙한 미국 투자자 입장에서는 SK하이닉스 역시 AI 대표주 가운데 하나다.\n\n결국 미국 증시에서 40% 비싸게 거래된다고 해서 국내 SK하이닉스 주가에 곧바로 40%의 상승 여력이 생겼다고 보기는 어렵다는 것이다.\n\n향후 미 증시에서 SK하이닉스 ADS 공급이 늘거나 국내 주식과 ADS 간 전환이 쉬워지면 미국 시장에 붙어 있는 웃돈도 줄어들 수 있다는 게 전문가들의 견해다. 반대로 미국 투자자들의 AI 반도체 선호가 이어지고 ADS 물량이 제한된 상태가 유지되면 높은 프리미엄이 장기간 이어질 가능성도 있다.\n\n금융투자업계 한 관계자는 “국내 투자자가 주목할 부분도 단순히 ‘미국에서는 40% 더 비싸다’는 숫자 자체가 아니다”며 “미국 ADS 프리미엄이 계속 커지는지, 아니면 국내 주가 상승이나 미국 ADS 조정으로 격차가 좁혀지는지가 더 중요하다”고 설명했다. 그러면서 “지금부터 격차가 크게 줄 것을 생각하고 국내 하이닉스 주식을 매수하는 것은 신중해야 한다 ”고 덧붙였다."
       },
       {
-        "title": "[머니플로우] 금리 고공행진에 CD·채권 관련 ETF 인기 '쑥'",
-        "url": "https://n.news.naver.com/mnews/article/001/0016355058",
-        "chars": 1596,
+        "title": "“돈은 미장·파킹형 갔는데”… 수익은 코스닥 ‘소부장’서 터졌다 [선데이 머니카페]",
+        "url": "https://n.news.naver.com/mnews/article/011/0004668052",
+        "chars": 1513,
         "extracted": "id=\"dic_area\"",
-        "body": "추석연휴 이후 자금 순유입 상위권 포진…\"이자 수익 수요\"\n투자자 예탁금 '제자리걸음'…'빚투' 자금은 소폭 증가세 \n\n \n \n \n \n\n 국채 금리 상승 (PG)\n[강민지 제작] 일러스트 \n\n(서울=연합뉴스) 고은지 기자 = 최근 미국 등 주요국 국채금리 급등세가 이어지면서 금리나 채권 수익률을 따르는 금융상품이 인기를 끌고 있다.\n\n 3일 코스콤 ETF CHECK에 따르면 추석 연휴 후 첫 영업일인 지난달 28일부터 30일까지 자금 순유입이 가장 많았던 ETF는 'TIGER CD금리투자KIS(합성)' 5천576억원이었다.\n\n 이 ETF는 양도성예금증서(CD) 금리투자 지수를 기초지수로 해 1좌당 순자산가치의 변동률을 기초지수의 변동률과 유사하게 운용하는 상품이다.\n\n 지난달 1일부터 이날까지 해당 ETF의 상승률은 0.32%로 큰 폭의 상승세는 없었으나 변동성 장세에도 완만하게 오름세를 지속해왔다. 특히 지난달 28일부터 이날까지 코스피는 1.20% 하락했지만, 이 상품은 0.07% 상승했다.\n\n 'KODEX 단기채권'에도 5번째로 많은 2천106억원이 순유입됐다.\n\n 이 상품은 잔존만기 1개월 이상 1년 이하의 국고채, 통화안정증권 등 30개 종목을 편입하고 있으며 듀레이션(자금회수기간)은 0.5년 내외다.\n\n 'KODEX 단기채권PLUS'(13위·1천183억원), 'RISE 단기채권알파액티브'(14위·972억원), 'TGIER 미국달러단기채권액티브'(17위·766억원), 'KODEX CD1년금리플러스액티브'(18위·664억원) 등도 자금 순유입 상위권에 포함됐다.\n\n 미국, 영국 등의 국채금리가 수십 년 만에 최고 수준으로 상승하면서 금리 상승을 추종하거나 채권에 투자하는 상품으로 매수세가 쏠린 것으로 풀이된다. \n\n 글로벌 금리의 벤치마크로 여겨지는 미국 10년물 국채 금리는 1일(현지시간) 장중 5.34%까지 올라 전날 기록한 24년 만의 최고치를 다시 경신했다.\n\n 영국 30년물 국채 금리는 장중 6.029%까지 올랐고, 프랑스 10년물 국채 금리도 이날 4.963%까지 올라 5%에 바짝 다가섰다. 각각 1998년, 2002년 이후 최고치다. \n\n 이와 연동해 국고채 3년물 금리는 지난달 28일 4.1%를 넘어서며 2022년 11월 이후 최고치를 기록했다.\n\n 신한투자증권 김찬희 연구원은 \"미국의 경우 앞서간 긴축 경계 재정건전성 우려와 경쟁적인 자본 조달 수요, 외국인 투자 수요 약화 등이 중장기 금리의 하방경직성을 높이는 요인으로 잔존하고 있다\"며 \"이런 가운데 국내 크레딧은 연말까지 스프레드의 완만한 확대를 예상하나 캐리(이자 수익) 수요가 약세를 방어할 것\"이라고 분석했다. \n\n 그러면서 상위등급 회사채에 대한 최선호 투자의견을 유지했다.\n\n 추석 연휴 이후 증시 대기자금은 횡보했고, '빚투'(빚내서 투자) 자금은 소폭 증가했다.\n\n 투자자 예탁금은 추석 연휴 직전인 지난달 23일 101조6349억원에서 직후인 28일 104조4천892억원, 29일 107조7천257억원으로 올랐으나 지난 1일 104조6천377억원으로 돌아왔다.\n\n 빚투의 지표로 여겨지는 신용거래융자 잔고는 지난달 23일 32조7천764억원에서 지난 1일 33조4천808억원으로 2.1% 늘었다.\n\n eun@yna.co.kr"
+        "body": "최근 1개월 국내 ETF 수익률 순위. 코스닥 소부장 관련 상품위 상위권을 휩쓸고 있다. ETF CHECK “국장 탈출은 지능순”이라는 자조 섞인 목소리가 시장을 뒤덮었던 최근 한 달, 투자자들의 자금은 해외 주식과 초단기 안전자산으로 집중됐습니다. 하지만 자금 흐름과 계좌 성적표는 정 반대입니다. 해외 지수형 상품과 초단기 안전자산이 미미한 수익률을 거두거나 손실을 입은 반면, 정작 ‘대박’은 국내 코스닥에서 터졌습니다.\n\n4일 코스콤 ETF CHECK에 따르면 최근 1개월간 국내 상장지수펀드(ETF) 자금 순유입 1위는 KODEX 머니마켓액티브(1조 7894억 원·수익률 0.28%)였습니다. TIGER 미국S&P500(6855억 원·-0.59%), KODEX CD금리액티브(4607억 원·0.28%), KODEX 미국나스닥100(4332억 원·3.85%) 등이 뒤를 이었습니다.\n\n1위부터 10위까지 단 한 종목도 예외 없이 단기 금리·채권형(6종목)과 미국 대표지수(4종목)로 양분 됐다는 점이 흥미롭습니다. 상위 10개 종목에 들어온 약 5조 3500억 원이 미장과 안전자산으로 향한 것입니다. 하지만 자금이 쏠린 상품들의 수익률은 미미합니다. 한달간 자금유입 상위 10위를 차지한 상품의 평균 수익률을 0.83%에 불과했습니다.\n\n정작 최근 1달 수익률 상위 ETF는 코스닥 소부장 관련 상품이 휩쓸었습니다. 레버리지와 인버스를 제외한 전체 ETF 1달 수익률 1위는 32.36%를 기록한 DS 코스닥액티브였습니다. 이어 SOL 우주항공밸류체인(30.86%), TIGER 코스닥150IT(29.50%), SOL 반도체전공정(29.01%), KoAct 광통신&위성네트워크액티브(28.94%), SOL AI반도체소부장(28.34%), KODEX AI반도체핵심장비(27.20%), TIGER 코스닥액티브(26.77%) 등이 뒤를 이었습니다. 10위인 RISE AI반도체TOP10(26.49%)까지 상위 10개 종목 전체가 26~32%대 급등했습니다.\n\n한국거래소에 따르면 코스닥 지수는 최근 한 달간 803.98에서 893.29로 11.11% 반등했습니다. 코스닥 주요 ETF들이 지수 상승률을 2배 이상 뛰어넘는 성과를 낸 셈입니다. 삼성전자 등 반도체 대형주가 실적 피크아웃 우려와 외국인 매도세에 짓눌려 제자리걸음을 걷는 사이, 실질적인 공정 가동률 회복과 공급망 수혜가 가시화된 코스닥 소부장이 주목 받은 영향으로 해석됩니다. 수급이 텅 비어 있던 이른바 ‘빈집’ 상태에서 기술 경쟁력을 갖춘 종목들을 중심으로 ‘핀셋 매수’가 유입된 셈입니다.\n\n결국 대다수 투자자가 손실 회피를 위해 파킹형 상품으로 대피하거나 관성적으로 미국 지수를 분할 매수하는 동안, 모두가 외면하던 국내 기술주의 ‘골목길’에서 고수익률이 터져 나온 모습입니다.\n\n현재 국내 대형 머니마켓액티브(MMA) 두 종목에만 머물러 있는 대기성 현금이 2조 1700억 원에 달합니다. 3분기 실적 시즌을 앞두고 이 막대한 관망 자금이 코스닥 소부장의 온기에 반응해 본격적인 ‘국장 유턴’으로 이어질 수 있을지 기대됩니다."
       },
       {
-        "title": "금리 급등에 주식 매력 '흔들'…구원투수는 '실적'[금리 쇼크①]",
-        "url": "https://n.news.naver.com/mnews/article/003/0014231348",
-        "chars": 2002,
+        "title": "[주간증시전망]코스피, 7000선 안착할까…삼성전자 실적·美 금리 '분수령'",
+        "url": "https://n.news.naver.com/mnews/article/003/0014232404",
+        "chars": 1871,
         "extracted": "id=\"dic_area\"",
-        "body": "3분기 실적 모멘텀으로 고금리발 증시 부담 상쇄\n이란 협상·美 중간선거 변수…금리 안정 여부 촉각 \n \n \n \n\n [서울=뉴시스] 김명년 기자 = 2일 오후 서울 중구 하나은행 딜링룸에서 딜러들이 업무를 보고 있다. 코스피는 0.46% 오른 7003.74에 장을 마쳤다. 코스닥 지수는 1.00포인트(0.11%) 내린 893.29에 거래를 종료했다. 서울 외환시장에서 원·달러 환율은 7.8원 내린 1350.6원 주간 거래를 마감했다. 2026.10.02. kmn@newsis.com [서울=뉴시스] 김경택 기자 = 미국 장기 국채금리가 24년 만에 최고 수준으로 치솟으면서 채권 대비 주식의 투자 매력이 흔들리고 있다. 증권가에서는 실적 모멘텀이 증시 구원투수 역할을 하는 가운데 미국과 이란의 협상에 따른 유가 안정과 11월 미국 중간선거 등이 장기금리 안정의 계기가 될 수 있다는 분석이 나온다. \n\n3일 금융투자업계에 따르면 미국의 장기 국채금리가 지난 2002년 이후 최고치를 경신하고 있지만, 증시 전문가들 사이에서는 현재의 금리 레벨보다는 향후 상승 속도에 주목할 필요가 있다는 의견이 나오고 있다.\n\n앞으로 주식시장이 대내외 메이저급 이벤트와 함께 미국 시장금리 상승 압력에 노출되겠지만, 고금리 장기화는 이제 시장의 베이스 시나리오가 된 만큼 금리 레벨보다는 상승 속도가 중요해졌다는 설명이다.\n\n한지영 키움증권 연구원은 \"이달 중 9월 소비자물가지수(CPI), 고용, 미국과 이란의 협상 과정, 10월 연방공개시장위원회(FOMC) 등 금리 상승 속도를 억제할 만한 이벤트들이 대기하고 있는 만큼, 금리 급등으로 인한 증시 추세 훼손 가능성은 낮게 가져가는 것이 주효할 것\"이라고 설명했다.\n\n고금리가 상수로 자리 잡은 상황에서 실적 모멘텀과 금리 안정 여부가 향후 증시 방향을 결정할 핵심 변수로 평가된다. 한 연구원은 \"매크로발 금리 상승 부담이 증시 변동성을 초래할 수 있겠으나, 3분기 실적시즌 모멘텀이 그 충격을 상쇄해나갈 전망\"이라며 \"지수 하방 경직성도 높아진 만큼, 지난달에 이어 저점을 높여가는 우상향 추세를 유지할 것으로 판단한다\"고 말했다.\n\n특히 다음 달 미국 중간선거가 유가·금리의 추가 상승을 제한할 것이란 분석이 나온다. 민주당이 상·하원을 석권하는 '블루스윕' 가능성이 높아질 경우 도널드 트럼프 미국 행정부의 정치적 부담이 커질 수 있기 때문이다. 이에 트럼프 대통령이 이란과의 협상 재개와 유가 하락 안정에 나설 가능성이 있으며 이는 미 국채금리 안정에 우호적으로 작용할 전망이다.\n\n이경민 대신증권 연구원은 \"유가, 금리, 통화정책 등 매크로와 인공지능(AI), 반도체 업황, 실적 등 마이크로 간 힘겨루기 싸움이 지속되고 있지만, 마이크로 힘과 영향력이 점차 강해지는 국면\"이라면서 \"여기에 매크로 압박까지 완화될 경우 코스피의 상승 탄력은 강화될 전망이다. 마이크로의 견고한 흐름에 유가, 금리 안정 여부에 주목한다\"고 분석했다.\n\n장기 고금리를 기본 시나리오로 볼 필요는 없다는 의견도 나온다. \n\n이재원 유안타증권 연구원은 \"블룸버그 컨센서스 기준 미국 소비자물가는 올해 하반기 3% 중반에서 내년 중 2% 대로 낮아질 것으로 예상되고 있다\"면서 \"미국과 이란도 지난달 하순 이후 협상 채널을 재가동했고, 논의는 호르무즈 해협 재개방과 봉쇄 해제의 이행 순서까지 구체화됐다. 당장의 타결을 단정하기는 여전히 어렵지만 현재의 고유가와 지정학적 충격이 장기간 고물가로 고착될 가능성에 대해서는 시장도 아직 보수적이라는 판단\"이라고 설명했다.\n\n이에 장기금리가 안정된다면 외국인 수급 복귀와 대형 반도체 반등을 위한 우호적인 환경이 조성될 것이란 조언이 나온다. \n\n이 연구원은 \"민주당의 의석 탈환이 추가 재정적자 확대 우려를 불식시키며 장기물 금리 안정에 도움을 줄 수 있을 것\"이라며 \"지정학적 갈등 완화를 통한 유가 하락과 중간선거 이후 주식시장 불확실성 해소 및 장기물 금리 안정이라는 두가지 재료가 현재 외국인 자금 유입을 저해 중인 장기물 금리의 고공행진을 어느정도 누를 수 있을 것이라는 판단\"이라고 덧붙였다．"
+        "body": "반도체 업황 기대 유효하지만 美 장기금리·국제유가가 상단 제약 \n \n \n \n\n [서울=뉴시스] 권창회 기자 = 1일 오후 서울 중구 하나은행 딜링룸에서 딜러들이 업무를 보고 있다. 코스피가 전 거래일보다 133.31포인트(1.95%) 오른 6971.35에 마감했다. 코스닥 지수는 전 거래일보다 38.38포인트(4.48%) 오른 838.41, 원·달러 환율은 전 거래일보다 5.6원 내린 1358.4원에 마감했다. 2026.10.01. kch0523@newsis.com [서울=뉴시스]송혜리 기자 = 이번주 국내 증시는 삼성전자의 3분기 잠정실적과 미국 장기 국채금리, 미국과 이란을 둘러싼 지정학적 리스크에 따라 방향성을 탐색할 전망이다. 코스피가 7000선을 가까스로 넘어선 가운데 반도체 실적 기대가 추가 상승 동력으로 작용할지 주목된다.\n\n4일 한국거래소에 따르면 지난 2일 코스피는 장중 7000선을 놓고 등락을 거듭한 끝에 장 막판 7000선을 넘어섰다. 이날 코스피는 전 거래일보다 0.46% 오른 7003.74에 거래를 마쳤다. 미국 장기 국채금리가 고공행진을 이어간 데다 국제유가와 유럽 금리까지 뛰면서 위험자산에 부담스러운 환경이 이어졌고, 연휴를 앞둔 관망세까지 겹치며 외국인의 매수세도 제한됐다.\n\n이런 가운데 이번주 가장 큰 이벤트는 오는 8일 예정된 삼성전자의 3분기 잠정실적이다. 앞서 마이크론이 시장 기대를 웃도는 실적과 가이던스를 내놓은 데다 국내 반도체 수출도 호조를 보이면서 메모리 업황에 대한 기대는 이어지고 있다.\n\n다만 NH투자증권에 따르면 삼성전자의 3분기 영업이익 컨센서스는 원화 강세 등의 영향으로 9월 초 113조1000억원에서 최근 109조5000억원까지 낮아졌다. 반면 4분기 영업이익 전망치는 120조8000억원으로 높아지고 있어 시장의 관심은 3분기 실적 자체보다 향후 실적 개선세가 이어질 지에 맞춰질 것으로 보인다.\n\n매크로 환경은 여전히 변수다. 미국 10년물 국채금리가 최근 5% 이상 치솟은 가운데 높은 장기금리가 지속될 경우 코스피의 밸류에이션 부담을 키우며 지수 상단을 제한할 수 있다. 반대로 미국 경제지표 둔화나 연방준비제도(Fed)의 신중한 행보로 금리가 안정될 경우 반도체를 중심으로 지수의 추가 상승을 시도할 가능성이 있다.\n\n미국과 이란의 갈등에 따른 국제유가 움직임도 관건이다. 지정학적 긴장이 완화되면서 유가가 하락할 경우 인플레이션과 금리 부담을 동시에 낮출 수 있지만, 갈등이 다시 고조될 경우 유가 상승과 장기금리 부담이 증시에 함께 작용할 수 있다.\n\n나정환 NH투자증권 연구원은 \"코스피 박스권 상단 돌파를 위해서는 매크로 환경 개선이 필요하다\"면서 \"미-이란 협상 진전에 따른 국제유가 급락, 또는 부진한 미 경제지표로 10월 금리 인상 가능성이 낮아지는 경우가 트리거가 될 수 있다\"고 언급했다. 이어 \"이 경우 반도체 중심의 상승이 예상된다는 점에서 반도체, IT를 코어 업종으로 유지한다\"고 덧붙였다. 그러면서 코스피 예상 범위는 6500~7500선을 제시했다.\n\n이경민 대신증권 연구원은 \"매크로(유가·금리·통화정책)와 마이크로(AI·반도체 업황·실적) 간의 힘겨루기 싸움이 지속되고 있지만, 마이크로 힘과 영향력이 점차 강해지는 국면\"이라며 \"여기에 매크로 압박까지 완화될 경우 코스피의 상승 탄력은 강화될 전망\"이라고 내다봤다. 이어 \"마이크로의 견고한 흐름에 유가, 금리 안정 여부에 주목해야 한다\"고 덧붙였다.\n\n◇주요 경제지표 발표 및 이벤트 일정\n\n▲10월5일=(미) 9월 ISM 서비스업지수\n\n▲10월6일=(미)윌리엄스 뉴욕 연은 총재 연설, (유) 8월 소매판매\n\n▲10월7일=(일) 8월 노동자 현금수입\n\n▲10월8일=(미) 9월 FOMC 회의록\n\n▲10월9일=(미) 10월 미시간대학교 소비자심리지수, (일) 9월 공작기계수주"
       },
       {
-        "title": "코스피 지지부진 '박스피' 갇혔는데...\"27% 뛰었다\" 이 종목 급등[김근희의 증시 랩업]",
-        "url": "https://n.news.naver.com/mnews/article/008/0005421812",
-        "chars": 1956,
+        "title": "중동도 반했다…북한 미사일 막는 '하늘의 방패' 짜는 이 기업들",
+        "url": "https://n.news.naver.com/mnews/article/008/0005421909",
+        "chars": 1811,
         "extracted": "id=\"dic_area\"",
-        "body": "10월 첫째 주(9월28일~10월2일) [편집자주] 증시는 살아 있는 생명체와 같아서 늘 시시각각 변합니다. '김근희의 증시 랩업'은 한 주간 상승·하락한 종목들과 증시 주요 이벤트 등을 살펴보며 시장의 흐름을 짚고, 투자자들이 현명한 투자 전략을 짤 수 있도록 돕겠습니다.\n \n \n \n \n\n [서울=뉴시스] 김명년 기자 = 2일 오후 서울 중구 하나은행 딜링룸에서 딜러들이 업무를 보고 있다. 코스피는 0.46% 오른 7003.74에 장을 마쳤다. 코스닥 지수는 1.00포인트(0.11%) 내린 893.29에 거래를 종료했다. 서울 외환시장에서 원·달러 환율은 7.8원 내린 1350.6원 주간 거래를 마감했다. 2026.10.02. kmn@newsis.com /사진=김명년 고금리와 고유가 영향으로 코스피가 7000대 박스피에 갇혔다. 반면 코스닥은 5% 이상 상승했다. 코스피에서는 기판주들이 크게 상승했고, 코스닥 시장에서는 바이오주들이 달렸다. \n\n3일 한국거래소에 따르면 10월 첫째 주(9월28일~10월2일) 국내 증시 두 지수의 희비가 엇갈렸다. 코스피는 전주(7080.92) 대비 77.18포인트(1.09%) 내린 7003.74를 기록했다. 반면 코스닥은 전주(844.48) 대비 48.81포인트(5.78%) 오른 893.29를 나타냈다. \n\n마이크론의 호실적과 반도체를 중심으로 한 한국 수출 호조세에도 불구하고 또다시 100달러를 돌파한 국제유가와 고금리가 코스피 지수를 끌어내렸다. 반면 코스닥 지수는 바이오주 선전에 힘입어 상승했다. \n\n이 기간 코스피에서 가장 많이 상승한 종목(시가총액 1조원 이상, 주간 거래대금 1000억원 이상 기준)은 이수스페셜티케미컬로 상승률 27.12%를 기록했다. \n\n이수스페셜티케미컬은 정밀화학과 전고체전지소재 사업을 펼치는 기업이다. 이수스페셜티케미컬이 다음 달부터 전고체 배터리 핵심 원료인 황화리튬을 생산한다는 보도가 나오면서 주가가 상승했다. 전고체 배터리 산업 성장에 황화리튬 저가화는 핵심 변수로 꼽힌다. \n\n김명주 신한투자증권 연구원은 \"이수스페셜티케미컬의 이익 체력 대비 밸류에이션 부담은 높은 상황\"이라면서도 \" 탄탄한 본업이 하방을 지지하는 가운데 전고체 배터리 양산 확대 국면에서 선점 효과를 감안할 경우 매력적인 종목\"이라고 분석했다. \n\n코리아써키트(등락률 26.57%), 대덕전자(23.79%), SKC(19.13%)등 기판주들은 삼성전기의 증설 소식에 힘입어 상승률 상위에 올랐다. 삼성전기는 지난달 28일 공시를 통해 국내 세종사업장 내 패키지기판 생산시설 증설에 4조2700억원을 투자한다고 밝혔다. 또 베트남 생산법인도 현지 패키지기판 설비 투자에 2조5100억원을 투입한다고 발표했다. \n\n삼성전기가 AI 서버용 반도체 기판인 '플립칩 볼그리드 어레이'(FC-BGA) 생산능력을 늘릴 것이란 기대감에 삼성전기뿐 아니라 기판주 투자심리가 개선됐다. 10월 첫째 주 삼성전기는 4.91% 올랐다. \n\n한화솔루션(23.63%)과 OCI홀딩스(14.81%) 등 태양광 관련 기업 주가는 미국 태양광 가격 상승 기대감에 뛰었다. \n\n코스닥 시장에서는 HLB의 담관암 치료제 '리픽투(성분명 리라푸그라티닙)'가 미국 FDA(식품의약국)의 승인을 획득했다는 소식에 바이오주가 상승했다. \n\n코스닥 종목(시가총액 3000억원 이상, 주간 거래대금 100억원 이상 기준) 중 가장 많이 오른 종목은 앱클론으로 42.35% 상승했다. HLB생명과학(36.45%), 지투지바이오(36.04%), HLB제약(35.27%), HLB(32.41%) 등도 급등했다. \n\nHLB의 미국 자회사 엘레바 테라퓨틱스는 지난 23일(현지 시간) FDA로부터 섬유아세포성장인자수용체2(FGFR2) 유전자 융합 또는 재배열이 확인된 국소 진행성·전이성 담관암 성인 환자의 2차 치료제로 리픽투를 허가받았다. 담관암은 간에서 만들어진 담즙이 이동하는 통로인 담관에 발생하는 희귀암이다.\n \n \n \n \n\n [컷대]김근희의 증시 랩업/그래픽=윤선정"
+        "body": "[서울=뉴시스] 국회사진기자단 = 김민석 더불어민주당 대표가 23일 오후 경기 김포시 공군3미사일방어여단 예하부대를 방문해 천궁Ⅱ 미사일에 대한 설명을 듣고 있다. 2026.09.23. photo@newsis.com /사진= 최근 북한의 미사일 위협에 따라 국내 방공 체계의 면면에 관심이 쏠린다. 미사일을 직접 요격하는 유도탄부터 표적을 탐지·추적하는 레이더와 발사대를 움직이는 부품 생산 과정에는 상장사들도 관여하고 있다. \n\n4일 방위사 산업계에 따르면 따르면 천궁Ⅱ와 장거리 지대공 유도무기(L-SAM) 등 국내 미사일 방어체계 생산에는 LIG디펜스앤에어로스페이스(LIG디앤에이)·한화시스템·한화에어로스페이스·엠앤씨솔루션 등이 참여한다. \n\n천궁Ⅱ는 적 항공기와 탄도미사일을 요격하는 중거리 지대공 유도무기이고 L-SAM은 이보다 높은 고도에서 탄도미사일을 막는 상층 방어체계를 말한다.\n\nLIG디앤에이는 천궁Ⅱ의 체계종합과 유도탄·교전통제소 등을 담당한다. 체계종합은 여러 업체가 만든 장비를 연결해 하나의 무기체계로 작동하도록 통합하는 역할이다. 레이더가 표적을 탐지하면 교전통제소가 관련 정보를 바탕으로 교전을 통제하고 발사대에서 유도탄을 쏘는 구조다.\n\nLIG디앤에이는 천궁Ⅱ의 유도탄 개발에도 참여했다. 유도탄은 목표물을 향해 비행하면서 경로를 조정하는 미사일이다. 천궁Ⅱ에는 여러 표적과 동시에 교전하기 위한 정밀 탐색기와 빠르게 반응하기 위한 유도탄 설계·제어 기술 등이 적용됐다. 천궁Ⅱ는 아랍에미리트와 사우디아라비아·이라크 등으로 수출 계약이 체결된 무기체계이기도 하다. \n\n한화시스템은 천궁Ⅱ와 L-SAM의 다기능레이더를 담당한다. 다기능레이더는 공중의 표적을 탐지하고 움직임을 추적하면서 요격에 필요한 정보를 파악하게 한다. \n\n한화시스템은 천궁과 천궁Ⅱ에 이어 L-SAM의 다기능레이더를 개발·공급했다. 기존 L-SAM보다 높은 고도에서 대응하는 후속 무기체계인 L-SAMⅡ의 다기능레이더 개발도 맡고 있다.\n\n \n \n \n \n\n 국내 무기체계와 관련 상장사/그래픽=이지혜 한화에어로스페이스는 천궁Ⅱ 발사대와 L-SAM의 대탄도탄 유도탄·발사대 등을 담당한다. 발사대는 유도탄을 싣고 이동한 뒤 정해진 위치에서 발사하는 장비다. L-SAM 대탄도탄 유도탄에는 요격 고도까지 도달하기 위한 추진기관과 표적을 맞히도록 자세·방향을 정밀하게 조절하는 기술이 쓰인다.\n\n엠앤씨솔루션은 천궁·L-SAM 발사대의 유압구동장치와 천궁 레이더의 유압장치를 만든다. 유압구동장치는 기름의 압력으로 무거운 장비를 움직이는 장치다. 발사대를 수평으로 고정하고 발사관을 들어 올리며 발사 충격을 지지한다. 레이더에 적용되는 유압장치는 안테나를 올리고 내리거나 받침대를 안정적으로 지탱한다.\n\n방산주 주가는 대체로 지난 3월 미국·이란 전쟁으로 중동 긴장이 높아지면서 함께 올랐다. 2일 종가 기준 LIG디팬스앤에어로스페이스는 76만2000원으로 지난해 말보다 81.0% 올랐다. 한화시스템은 8만2900원으로 52.4% 상승했다. 한화에어로스페이스는 107만2000원으로 13.9% 올랐다.\n\n다만 엠앤씨솔루션은 이달 2일 1만8650원에 마감해 지난해 말보다 60.8%(올해 무상증자 반영 수정주가 기준) 내렸다. KB증권은 이달 엠앤씨솔루션의 목표주가를 3만2000원으로 8000원 하향했다. 매각 실패와 전방산업 수주지연에 따른 상반기 실적 부진으로 주가 부진이 지속되고 있다는 분석이다. 다만 수주환경이 나아지고 있다며 '매수'의견은 유지했다. \n\n엠앤씨솔루션 최대주주인 소시어스프라이빗에쿼티·웰투시인베스트먼트 컨소시엄은 엠앤씨솔루션 지분 73.78%를 한국투자파트너스에 매각하는 협상을 지난 8월 중단한 것으로 알려졌다."
       },
       {
-        "title": "美 고용 급속 냉각에 금리인상 우려 줄어…월가 환호 [뉴욕증시 브리핑]",
-        "url": "https://n.news.naver.com/mnews/article/015/0005338832",
-        "chars": 1279,
+        "title": "외국인, 한달간 20조 폭풍 순매도… 삼전닉스 보유율 ‘뚝’",
+        "url": "https://n.news.naver.com/mnews/article/029/0003051287",
+        "chars": 1272,
         "extracted": "id=\"dic_area\"",
-        "body": "9월 신규 고용 2만9000명…시장 전망 9만명 크게 밑돌아 \n테슬라 4.7%·엔비디아 1.3% 상승…나이키는 3.6% 하락 \n \n \n \n\n 사진=게티이미지뱅크 \n뉴욕증시의 주요 지수가 일제히 상승했다. 미국의 9월 고용 증가 폭이 시장 전망을 크게 밑돌면서 미국 중앙은행(Fed)이 이달 추가로 기준금리를 올릴 가능성이 작아졌다는 기대가 투자심리를 끌어올렸다.\n\n2일(현지시간) 뉴욕증권거래소에서 다우존스30산업평균지수는 전 거래일보다 250.40포인트(0.49%) 오른 51,176.96에 거래를 마쳤다.스탠더드앤드푸어스(S&P)500지수는 56.27포인트(0.73%) 상승한 7722.72, 기술주 중심의 나스닥지수는 319.27포인트(1.19%) 뛴 27,190.86에 마감했다. 중소형주 중심의 러셀2000지수도 0.9% 오르며 한 달 만에 가장 큰 상승 폭을 기록했다.\n\n고용지표가 증시를 밀어 올렸다. 미국 노동부에 따르면 9월 비농업 부문 고용은 2만9000명 증가하는 데 그쳤다. 시장 전망치인 9만명의 3분의 1에도 미치지 못했다. 8월 증가 폭도 기존 16만2000명에서 13만3000명으로 하향 조정됐다.\n\n실업률은 8월 4.1%에서 9월 4.2%로 올랐다. 시간당 평균임금 상승률은 전년 동월 대비 3.0%로 전월의 3.1%보다 둔화했다. 고용과 임금 상승세가 함께 약해지면서 추가 금리 인상 필요성이 줄었다는 해석이 나왔다.\n\n시카고상품거래소(CME) 페드워치에 반영된 이달 0.25%포인트 금리 인상 가능성은 22.7%로 낮아졌다. 일주일 전 64.2%에서 크게 떨어진 수준이다. 미국 국채 10년물 금리는 고용지표 발표 직후 연 5.17% 아래로 내려갔다가 유가가 낙폭을 줄이면서 연 5.28%까지 반등했다.\n\n대형 기술주 가운데 엔비디아가 1.3% 상승하며 S&P500지수 오름세를 이끌었다. 테슬라는 3분기 차량 인도량이 48만6532대로 시장 예상치를 웃돌았다는 소식에 4.7% 뛰었다. 소비재 업종은 테슬라 강세에 힘입어 1.4% 올라 S&P500의 11개 업종 가운데 상승률이 가장 높았다.\n\n반면 나이키는 중국 시장의 수요 부진과 연간 매출 감소 전망 여파로 3.6% 하락했다. 웨스턴디지털과 씨게이트테크놀로지는 일본 도시바가 인공지능(AI) 데이터센터용 하드디스크 생산능력을 확대할 것이라는 소식에 각각 10% 안팎 급락했다.\n\n주간 기준으로는 지수별 흐름이 엇갈렸다. S&P500지수는 0.27%, 다우지수는 1.26% 하락했지만 나스닥지수는 0.45% 상승했다. 다우지수와 S&P500지수는 최근 5주 가운데 네 차례 주간 하락을 기록했다."
+        "body": "SK하이닉스·삼성전자 외국인 보유율 각각 49%·46%대\n마이크론 호실적·삼전 3분기 잠정 실적 앞두고 수급 주목 \n \n \n \n\n [코스피 외국인 ‘셀코리아’ (PG). 연합뉴스 \n\n최근 한 달여 동안 국내 코스피 시장에서 외국인 투자자들이 20조원이 넘는 대규모 매도 우위를 나타냈다. 특히 SK하이닉스와 삼성전자 등 대형 반도체 주식을 중심으로 차익 실현 물량이 쏟아지면서 시가총액에서 외국인이 차지하는 비중도 30%대 후반으로 감소했다.\n\n한국거래소에 따르면 지난달 1일부터 이달 2일까지 22거래일 동안 외국인은 코스피 시장에서 총 20조 3050억원을 순매도했다. 이 기간 외국인이 순매수한 날은 단 7일에 불과했으며, 특히 지난달 28일에는 하루 만에 3조원이 넘는 매도 우위를 기록하기도 했다. 이로 인해 코스피 내 외국인 시가총액 비중은 39.66%까지 축소됐다.\n\n종목별로는 SK하이닉스와 삼성전자에 매물이 집중됐다. 외국인은 SK하이닉스를 12조90억원, 삼성전자를 5조1860억원 규모로 팔아치웠다. 이에 따라 지난 2일 기준 SK하이닉스의 외국인 보유율은 49.76%를 기록해 2023년 5월 이후 약 3년 4개월 만에 최저 수준으로 떨어졌고, 삼성전자 역시 46%대 초반까지 비중이 줄어들었다.\n\n이같은 외국인의 거센 매도 공세는 올해 상반기 반도체 대형주 주가가 크게 상승한 데 따른 차익 실현 욕구와 함께, 미국과 이란 간 지정학적 리스크 장기화, 주요국의 금리 상승 등 거시경제 불안 요인이 복합적으로 작용한 결과로 분석된다.\n\n다만 이달 들어 외국인의 매도세는 다소 진정되는 양상을 보이고 있다. 지난 1일에는 2430억원어치를 순매수했고 이튿날에는 1900억원 순매도에 그쳐 이전과 비교해 매도 압력이 완화됐다.\n\n증권가에서는 다가오는 3분기 실적 시즌을 계기로 반도체 업황의 견조함이 증명되고 이익 가시성이 확보되면 외국인 자금이 다시 유입될 수 있을 것으로 기대하고 있다. 실제로 글로벌 메모리 반도체 시장의 선행 지표 역할을 하는 마이크론테크놀로지가 지난달 말 시장 예상을 웃도는 호실적을 발표하며 긍정적인 신호를 보낸 바 있다. 이어 삼성전자도 3분기 잠정 실적 발표를 앞두고 있다.\n\n한지영 키움증권 연구원은 “이달 중 매크로 불안이 정점을 통과하고 3분기 실적 시즌 이후 이익 가시성 확보 등이 외국인 순매수 유인으로 작용할 것”이라고 전망했다.\n\n이재원 유안타증권 연구원도 “지난 1일처럼 강한 지수 상승에 매도 규모가 축소됐다는 점은 향후 장기 금리 안정 시 수급 정상화 가능성을 확인할 수 있는 첫 번째 변화”라고 평가했다."
       },
       {
-        "title": "코스피는 7000에서 고군분투하는데… 개미는 '이것' 담아 수익률 '쑥'",
-        "url": "https://n.news.naver.com/mnews/article/008/0005421799",
-        "chars": 2218,
+        "title": "삼성전자보다 '2배' 넘게 던졌다…외인 지분율 50% 무너진 ‘이 종목’",
+        "url": "https://n.news.naver.com/mnews/article/215/0001268118",
+        "chars": 1024,
         "extracted": "id=\"dic_area\"",
-        "body": "[제3회 ETF투자왕 대회] 9월28일~10월2일 주간 투자 수익률 TOP5 \n \n \n \n\n 머니투데이 제3회 ETF 투자왕 주간 수익률 TOP5/그래픽=윤선정 머니투데이가 개최한 '제3회 ETF투자왕 대회' 2주차(9월28일~10월2일)의 수익률(평가손익률 기준) TOP5는 닉네임 △경제학과가보자(34.39%) △HSB(22.50%) △QuantBin(16.13%) △깜이유(14.65%) △sungsull(14.31%)가 차지했다. 1주차에 이어 수익률 상위권은 모두 레버리지·인버스 투자가 가능한 '자율형'에서 나왔다. 순위 변동도 있었다. 2주째 1위를 지키고 있는 경제학과가보자를 제외한 기존 상위권 참가자들이 모두 5위 밖으로 벗어났다. 연금투자형과 국내주식형의 수익률 1위 참가자들은 반도체 소부장(소재·부품·장비)에 집중 투자하며 10%대 수익률을 거뒀다.\n\n경제학과가보자는 철저히 레버리지와 곱버스(인버스 2배) ETF만 투자하는 전략을 고수했다. 한 주 간 'KODEX 삼성전자단일종목레버리지'·'KODEX SK하이닉스단일종목레버리지'와 KODEX 200선물인버스2X'를 초단기 투자하며 실현손익을 불렸다. 이번 주는 변동성이 심한 장세는 아니었지만 음전과 양전이 번갈아 나타났고, 이를 이용해 매매한 것으로 풀이된다. \n\n또 'KODEX 2차전지산업레버리지'를 새로 포트폴리오에 편입하며 3.13%의 실현수익률을 올렸다. 주중 정부가 로봇·방산·이차전지 특화단지에 13조원을 투자하겠다고 발표하자 이차전지가 정책 수혜주로 부상하기도 했다. 수익률 2위인 HSB는 전주에 ' TIGER 2차전지TOP10레버리지'에 투자자금 대부분을 붓고 지난 28일 전량 매도하며 큰 수익을 냈다.\n\n수익률 3위인 QuantBin은 레버리지와 인버스·곱버스를 매매하며 손실이 났으나 KODEX 200선물인버스2X을 활용해 손실분을 만회했다. 4위 깜이유는 지난달 29일 단 하루에만 'SOL SK하이닉스선물단일종목인버스2X'와 'PLUS 삼성전자선물단일종목인버스2X', KODEX 코스닥150레버리지' 3종목을 매매하며 차익실현을 얻는 데 성공했다. 5위 sungsull은 'KODEX 반도체레버리지' 하나만 매수-매도를 진행하며 수익을 냈다.\n\n전체 참가자가 가장 많이 담은 보유종목 TOP5(금액 기준)은 반도체 테마가 모두 싹쓸이했다. 시장금리 상승 국면에서도 마이크론의 2026년회계연도 4분기 '깜짝 실적'과 우리나라 9월 수출 호조로 투자자들의 선택을 받은 것으로 보인다. 1위부터 5위까지 순서대로 △KODEX SK하이닉스단일종목레버리지 △SOL SK하이닉스선물단일종목인버스2X △'PLUS 글로벌HBM반도체' △'SOL AI반도체TOP2플러스' △'KODEX AI반도체TOP2플러스'다.\n\n부문별로는 연금투자형 수익률 1등은 닉네임 'juhyeong_risk(11.96%)'가 차지했다. 연금투자형 참가자 중 유일한 두자릿수 대 수익률로, 2위와 6.34%포인트의 수익률 격차를 벌렸다. juhyeong_risk는 'SOL AI반도체소부장'과 'KODEX AI반도체핵심장비, 'SOL 반도체전공정' 등 단 3종목만으로 높은 수익률을 거뒀다. 이들 종목 모두 반도체 소부장(소재·부품·장비) 테마 ETF다. 소부장주는 AI발 메모리 수요 확대로 반도체 기업들의 설비투자(CAPEX) 역시 늘어날 거란 기대감에 주가가 크게 뛰고 있다. 실제로 지난 8월 말 코스닥 시가총액 상위 20개 중 반도체 소부장주는 10개였으나 한 달 만에 13개로 늘었다.\n\n국내주식형 수익률 1등은 닉네임 '치킨팝콘(12.31%)'로 나타났다. 치킨팝콘 역시 SOL AI반도체 소부장에 보유현금 대부분을 투자, 실현수익률로 무려 13.14%를 거두며 해당 부문에서 유일한 두자릿수대 수익률을 거뒀다.\n\n글로벌형 수익률 1등에는 닉네임 '긍정적사고(5.10%)'가 이름을 올렸다. 'TIME 글로벌바이오액티브'와 'SOL 글로벌AI반도체탑픽액티브', 'KODEX 미국S&P500헬스케어, 'KODEX 미국AI광통신네트워크' 4종목에 분산투자했다. 단 1주도 매도하지 않고 보유해 평가수익률을 높였다. 이들 업종들의 이익 전망치에 대한 시장의 눈높이는 점점 높아지고 있어 전문가로부터 매수 추천 업종으로 꼽히고 있다.\n\n이재만 하나증권 연구원은 \"2027년 이익증가율이 높고 최근 이익추정치가 상향 조정되고 있는 S&P500 반도체, 소프트웨어, 하드웨어, 헬스케어 장비·서비스, 코스피 반도체, 전력기기, 이차전지 등과 같은 업종은 관심 있게 볼 필요가 있다\"고 말했다."
+        "body": "외인, 한달간 코스피서 20조 '팔자'\n삼전 비중 46%·닉스 49%대로 내려가 \n \n \n \n\n 삼전닉스=한경DB \n\n외국인 투자자들이 지난 한 달간 국내 증시에서 20조 원이 넘는 매물을 쏟아냈다. 코스피 지수를 강하게 짓누른 이번 매도 공세에서 가장 큰 타깃이 된 곳은 시가총액 1위 삼성전자가 아닌 ‘SK하이닉스’였다.\n\n4일 한국거래소 등에 따르면 지난달 1일부터 이달 2일까지 외국인은 코스피 시장에서 총 20조3050억 원을 순매도했다. 총 22거래일 중 외국인이 매수 우위를 보인 날은 7일에 그쳤고, 지난달 28일 하루에만 3조 원 넘는 매물을 던지기도 했다. 코스피 시가총액 중 외국인 비중도 39.66%까지 내려앉았다.\n\n눈에 띄는 것은 매도세의 쏠림이다. 외국인은 SK하이닉스를 12조90억 원어치 순매도했다. 같은 기간 삼성전자 순매도액(5조1860억 원)과 비교하면 2.3배에 달하는 규모다. \n\n이 여파로 SK하이닉스의 외국인 보유율은 49.76%로 떨어져 50% 선이 무너졌다. 2023년 5월 15일(49.46%) 이후 약 3년 4개월 만에 최저치다. 삼성전자 역시 외국인 지분율이 46.41%까지 줄었다.\n\n외국인의 집중 매도는 상반기 주가 급등에 따른 차익 실현 압력이 누적된 영향으로 풀이된다. 여기에 미국과 이란 간 분쟁 장기화 우려와 주요국 금리 상승 등 거시경제 불안이 겹치며 비중 축소를 부추겼다.\n\n다만 시장 일각에서는 거센 매도 흐름이 진정 국면에 들어설 수 있다는 관측도 제기된다. 메모리 풍향계로 꼽히는 마이크론 테크놀로지가 지난달 30일 호실적을 발표한 데 이어, 오는 8일 삼성전자의 3분기 잠정 실적 발표를 기점으로 실적 장세가 본격화하기 때문이다.\n\n한지영 키움증권 연구원은 “이달 중 매크로 불안이 정점을 통과하고 3분기 실적 시즌 이후 이익 가시성이 확보되면 외국인 순매수 유인으로 작용할 것”이라고 짚었다. 이재원 유안타증권 연구원도 “지수 상승 국면에서 매도 규모가 축소됐다는 점은 향후 장기 금리 안정 시 수급 정상화 가능성을 엿볼 수 있는 첫 변화”라고 평가했다."
       },
       {
-        "title": "중국이 기름 수출 막자 정유주 ‘활짝’…에쓰오일 11%↑ [이런국장 저런주식]",
-        "url": "https://n.news.naver.com/mnews/article/011/0004667906",
-        "chars": 1479,
+        "title": "3분기 약달러에 ETF 상승률 1∼3위 모두 '달러 곱버스' 차지",
+        "url": "https://n.news.naver.com/mnews/article/001/0016356219",
+        "chars": 1302,
         "extracted": "id=\"dic_area\"",
-        "body": "에쓰오일·SK이노 하루 10%대 급등\n中 휘발유·경유 등 수출 중단\n공급 줄며 정제마진 개선 기대\n원유 조달비용·재고손익은 변수 \n \n \n \n\n SK이노베이션 울산콤플렉스(울산CLX) 전경. SK이노베이션 중국이 석유제품 수출을 중단하면서 국내 주요 정유 기업 주가가 10% 넘게 급등했다. 아시아 시장의 휘발유·경유 공급이 줄어들면 정유사들의 정제마진이 개선될 수 있다는 기대가 주가를 끌어올린 것으로 풀이된다.\n\n3일 한국거래소에 따르면 전날 에쓰오일( S-Oil(010950) )은 정규장 기준 직전 거래일 대비 11.69% 상승 마감했다. SK이노베이션(096770) 은 10.32% 오른 15만 4000원에 거래를 마쳤고 GS(078930) 도 4.11% 올랐다. 코스피가 0.46% 오른 7003.74에 마감한 것과 비교하면 정유주 상승 폭이 두드러졌다.\n\n이들 기업의 주가가 상승한 것은 중국이 연료 수출을 제한하는 조치를 단행했다는 소식이 전해진 영향이다. 1일(현지시간) 로이터통신에 따르면 중국 정유업체들은 당국 방침에 따라 홍콩과 마카오를 제외한 지역으로의 이달 휘발유·경유·항공유 수출을 중단했다.\n\n중국산 제품을 공급받던 시장의 경우 대체 물량을 확보해야 하는 만큼 국내 정유사들에는 제품 가격 상승에 따른 반사이익을 기대할 수 있다. 정유사의 수익성을 좌우하는 정제마진은 석유제품 판매가격에서 원유 가격과 운송·가공 비용 등을 뺀 금액이다. 원유 가격이 오르더라도 제품 가격이 그만큼 따라가지 못하면 마진은 줄어들 수 있다.\n\n이번 중국의 조치는 정제된 제품의 수출을 제한한다는 점에서 원유 공급 차질과 구분된다. 세계 최대 원유 수입국인 중국은 이란 전쟁 발발로 중동 지역 원유 공급에 차질이 빚어졌던 3월에도 석유제품 수출을 제한한 적 있다. 7월에 이 규제를 완화했지만 이후 휘발유, 경유, 항공유의 수출 물량은 월 단위로 관리하고 있다.\n\n중동 지역 긴장 고조와 공급 불안에 상승한 국제유가도 호재로 작용했다. 전날 브렌트유 12월물은 전일 대비 4.37% 오른 배럴당 102.31달러, 서부텍사스산원유(WTI) 11월물은 2.71% 상승한 92.87달러에 거래를 마쳤다. 상대적으로 낮은 가격에 확보한 원유를 가공해 판매하는 정유사에는 유가 상승에 따른 재고 관련 이익도 실적 개선 요인이 될 수 있다.\n\n다만 정제마진 개선과 재고 관련 이익이 같은 방향으로 움직이는 것은 아니다. 에쓰오일의 올 2분기 영업이익은 9650억 원으로 직전 분기보다 21.6% 감소했다. 정제마진 강세에도 재고 관련 이익이 1분기 6434억 원에서 2분기 1137억 원으로 줄어든 영향이 컸다.\n\n중국의 수출 중단에 따른 수혜가 실적으로 이어지려면 제품 가격 상승이 원유 조달 비용 증가를 웃돌아야 한다. 로이터에 따르면 지오반니 스타우노보 UBS 애널리스트는 “미국의 경유 수출 금지 가능성, 유럽의 전략 경유 비축분 방출, 러시아 정유시설에 대한 공격 등 다른 공급 요인이 정제마진에 상반된 영향을 줄 수 있다”고 지적했다."
+        "body": "9월 중순 이후 환율 반등하며 '달러 곱버스' 수익률 다시 주춤\n\"위험회피 심리로 상방 압력 우위…환율 재상승 흐름 전개될 듯\" \n\n \n \n \n \n\n 미국 달러\n[촬영 황광모] \n\n(서울=연합뉴스) 고은지 기자 = 올해 3분기 국내 상장된 상장지수펀드(ETF) 상승률 1∼3위 종목이 모두 미국 달러화 하락에 2배로 베팅하는 미 달러 '곱버스' 상품이었다.\n\n 4일 한국거래소에 따르면 지난 6월 1일부터 9월 30일까지 국내 상장된 상장지수펀드(ETF) 중 상승률이 가장 높았던 상품은 'KODEX 미국달러선물인버스2X'(22.76%)로 집계됐다.\n\n 이어 'TIGER 미국달러선물인버스2X'와 'KIWOOM 미국달러선물인버스2X'가 각각 22.49%, 22.39%를 기록해 근소한 차이로 2위와 3위를 차지했다.\n\n 세 상품은 모두 한국거래소에서 거래되는 미국달러선물지수의 일간 변동률을 -2배수로 추종하는 ETF다. 다시 말하면 달러 하락에 2배로 베팅하는 곱버스 상품이다,\n\n 지난 3분기 원/달러 환율 하락 국면에서 달러 약세에 베팅한 상품들이 높은 수익을 낸 것으로 풀이된다.\n\n 미국달러선물지수 지난 6월 1일 1,685.61에서 9월 30일 1,518.50으로 9.91% 하락했다. \n\n 같은 기간 원/달러 환율은 서울 외환시장 주간 거래 종가(오후 3시 30분) 기준 1,504.3원에서 1,352.8원으로 내려갔다.\n\n 지난 9일에는 1,336.10원에 거래를 마치며 서울 정규장 기준 2024년 10월 4일 이후 최저로 떨어지기도 했다.\n\n 다만, 지난달 중순 이후 달러화는 고유가와 미국 국채 금리 상승, 일본은행(BOJ) 기준금리 인상 등이 복합적 요인으로 다시 오르는 추세다. 원/달러 환율은 지난 18일 1,383.3원까지 상승했다.\n\n 이에 따라 KODEX 미국달러선물인버스2X는 지난 9일 5,705원까지 오른 뒤 전반적으로 하락세를 타며 지난 2일 5천575원으로 내려왔다. \n\n 전문가들은 원·달러 환율이 당분간 상승하는 방향성을 보일 것으로 전망한다.\n\n 한 외환 전문가는 \"글로벌 달러 강세와 외국인 국내 증시 순매도 지속으로 원/달러 환율 상방 압력이 우위를 보인다\"며 \"미국·이란 협상 교착 및 지정학적 리스크가 위험 회피 심리를 자극하는 가운데 외국인의 주식 매도 확대 시 상승 압력이 가중될 수 있다\"고 말했다.\n\n IBK투자증권 정용택 연구원은 \"원화 강세 요인과 약세 요인이 서로 뚜렷한 설득력을 가지고 대치 중이지만, 점차 대외 불안 요인이 주를 이루는 약세 요인 쪽으로 무게추가 옮겨지며 환율은 다시 상승하는 흐름으로 전개될 것\"이라고 예상했다.\n\n eun@yna.co.kr"
       },
       {
-        "title": "“손절 엄두 안 나서 가지고 있었는데”…코스닥, 반도체 소부장 타고 랠리",
-        "url": "https://n.news.naver.com/mnews/article/009/0005743483",
-        "chars": 1514,
+        "title": "외인, 한달간 코스피서 20조 '팔자'…삼전 비중 46%·닉스 49%대",
+        "url": "https://n.news.naver.com/mnews/article/001/0016356214",
+        "chars": 1409,
         "extracted": "id=\"dic_area\"",
-        "body": "AI 반도체·HBM 비싼 몸값에\n표본 대신 전수검사 수요 늘어\n후공정 기업 주가 한달새 두배\n\n \n \n \n \n\n [뉴스1] 삼성전자와 SK하이닉스 등 반도체 대장주가 숨 고르기에 들어간 사이 반도체 소재·부품·장비(소부장) 종목에는 온기가 퍼지고 있다. 특히 테스트 수요가 늘어난 후공정 기업들이 주목받는 분위기다. 이에 힘입어 코스닥지수도 2일 석 달 만에 장중 900선을 회복했다.\n\n한국거래소에 따르면 최근 한 달간 SFA반도체(94%)와 엑시콘(89.2%) 주가는 각각 두 배 가까이 올랐다. 이들은 메모리 후공정 외주(OSAT)·테스트 장비 업체로 후공정 시장이 성장할 때 직접적으로 수혜를 받는 업종으로 꼽힌다. 하나마이크론과 두산테스나 등 패키징·테스트 업체 주가도 30% 넘게 올랐다.\n\n상장지수펀드(ETF) 시장에서도 같은 기간 ‘SOL AI반도체소부장’(10.93%), ‘SOL 반도체후공정’(10.03%) 등이 수익률 상위권에 자리를 잡았다.\n\n \n \n \n \n\n 반도체 후공정 기업들이 주목받는 배경에는 테스트 수요 증가가 있다. 반도체 공정에서 테스트는 완성된 반도체가 제대로 작동하는지 최종적으로 불량을 걸러내는 공정이다. 최근 인공지능(AI) 반도체와 고대역폭메모리(HBM) 가격이 치솟으면서 그만큼 해당 공정의 중요도가 높아지고 있다.\n\n김서영 한화자산운용 부장은 “일부만 골라서 확인하던 표본검사 대신 전수검사 수요가 늘고 장비도 고도화되고 있다”며 “칩 가격이 상승했기 때문”이라고 설명했다. 비싼 AI 칩일수록 꼼꼼히 검사해 수율을 끌어올리는 편이 제조사에도 이득이 된다.\n\n박준영 한화투자증권 연구원은 “AI 반도체 투자 확대와 함께 후공정이 설비투자 사이클의 중심으로 이동하고 있다”고 설명했다.\n\n삼성전자와 SK하이닉스가 HBM 생산에 집중하면서 범용 D램 후공정을 외부에 맡기는 사례도 늘어 OSAT 업체들로 낙수효과가 확산되고 있다는 분석이다.\n\n다만 기업별 실적을 따지는 ‘옥석 가리기’ 작업은 더 중요해질 전망이다.\n\n김기범 우리자산운용 ETF팀장은 “과거처럼 전공정 투자가 먼저 진행되고 후공정이 뒤따르는 구조라기보다 패키징과 테스트의 중요성도 함께 커지는 흐름”이라면서도 “같은 소부장 내에서도 실제 수주나 실적 가시성 등에 따라 주가 차별화가 나타나고 있다”고 밀했다.\n\n실제로 수주가 몰린 장비·후공정 기업과 달리 소재 업체들은 상승장에서 상대적으로 소외됐다. 조상현 현대자산운용 주식운용본부장은 “지금처럼 반도체 공급이 부족한 국면에서는 생산량을 무턱대고 확대할 수 없어 소재 수요가 크게 늘지 않는다”고 설명했다.\n\n소부장 강세 속에 코스닥지수는 이날 장중 903.81까지 오르며 900선을 넘어섰다. 오후 들어 상승폭을 줄이면서 893.29에 장을 마쳤지만 지난 7월 30일 644.78까지 밀린 뒤 두 달여 만에 40% 가까이 반등한 셈이다. 다만 조 본부장은 “코스피 대형주가 다시 오르면 코스닥에 있던 자금이 코스피로 돌아갈 수 있다”고 진단했다. 수급 변화에 따라 주가 변동성이 높아질 수 있는 만큼 추격 매수에는 유의해야 한다는 지적이다."
+        "body": "이달 들어 매도세 축소…\"실적 시즌, 이익 가시성 확보시 복귀 가능성\" \n\n \n \n \n \n\n 코스피 외국인 '셀코리아' (PG)\n[정연주 제작] 일러스트 \n\n(서울=연합뉴스) 임은진 기자 = 지난 한 달여 동안 코스피 시장에서 외국인 투자자는 20조원 넘게 매도 우위를 기록했다.\n\n 가장 많이 순매도한 종목은 SK하이닉스와 삼성전자로, 이들 종목의 외국인 비중은 각각 49%대, 46%대로 축소됐다.\n\n 4일 한국거래소와 연합인포맥스에 따르면 지난달 1일부터 이달 2일까지 외국인은 코스피 시장에서 20조3천50억원 순매도했다.\n\n 이는 지난달 15일 개장한 애프터마켓의 거래를 포함한 금액이다.\n\n 외국인이 22거래일 동안 순매수한 날은 7일에 불과했다.\n\n 특히 지난달 28일에는 3조원 넘게 매도 우위를 보이기도 했다.\n\n 이에 코스피 시장에서 시가총액 기준 외국인의 비중은 39.66%로 축소됐다.\n\n 다만 이달 1일에는 2천430억원 순매수했고 이튿날에는 1천900억원 순매도하는 데 그쳐 매도세는 이전 대비 약화했다.\n\n 이 기간 외국인이 코스피 시장에서 금액 기준 가장 많이 순매도한 종목은 SK하이닉스와 삼성전자로, 각각 12조90억원, 5조1천860억원 팔았다.\n\n 이에 이들 종목의 외국인 비중도 축소됐다.\n\n SK하이닉스의 경우 지난 2일 기준 외국인의 보유율은 49.76%로, 지난 2023년 5월 15일 49.46%를 기록한 이후 약 3년 4개월여 만에 최저치다.\n\n 삼성전자에 대한 외국인 보유율은 2일 현재 46.41%이고 지난달 30일에는 46.40%까지 줄어들기도 했다.\n\n 외국인의 매도세는 올해 상반기 반도체 대형주의 주가가 크게 오른 이후 차익 실현 매물이 지속해서 출회하는 데 따른 것으로 보인다.\n\n 여기에 미국과 이란 간 전쟁의 장기화와 미국과 유럽 등 주요국의 금리 상승 등도 영향을 준 것으로 풀이된다.\n\n 다만 증권가는 어닝 시즌을 맞아 견조한 반도체 업황을 확인하고 이익 가시성이 확보되면 관련 업종의 비중이 큰 국내 증시에 외국인 자금이 유입될 가능성이 있다고 내다봤다.\n\n 일단 글로벌 메모리 3사 중 가장 먼저 실적을 발표해 반도체 업계 '풍향계'로 불리는 마이크론 테크놀로지가 지난달 30일 '깜짝 실적'을 내며 순조로운 출발을 알렸다.\n\n 그 바통을 이어받아 삼성전자가 오는 8일께 3분기 잠정 실적을 발표한다.\n\n 한지영 키움증권 연구원은 \"이달 중 매크로 불안이 정점을 통과하고 3분기 실적 시즌 이후 이익 가시성 확보 등이 외국인 순매수 유인으로 작용할 것\"이라고 말했다.\n\n 이재원 유안타증권 연구원은 최근 외국인의 대규모 매도가 지수 상단을 지속해 제약한 가운데 \"지난 1일처럼 강한 지수 상승에 매도 규모가 축소됐다는 점은 향후 장기 금리 안정 시 수급 정상화 가능성을 확인할 수 있는 첫 번째 변화\"라고 말했다.\n\n engine@yna.co.kr"
       },
       {
-        "title": "270조 투자 호재에도 원전주는 시큰둥…먼저 돈 되는 곳 따로 있다고?",
-        "url": "https://n.news.naver.com/mnews/article/009/0005743482",
-        "chars": 1992,
+        "title": "“사라 해서 샀는데, 내 주식 왜 이래?”…증권사 ‘매수’ 리포트만 내놓는 이유",
+        "url": "https://n.news.naver.com/mnews/article/009/0005743634",
+        "chars": 1568,
         "extracted": "id=\"dic_area\"",
-        "body": "대미투자 수혜株 분석\n큰 폭으로 뛰었던 원전·건설\n주가 선반영 발표 후엔 주춤\n수주 규모·세부조건 불확실\n\n美 AI인프라 재건 수요 탄탄\n민간 부문의 수주도 잡아야\n\n \n \n \n \n\n 한미 양국 정부가 대미 전략투자 추진계획을 발표한 이후 원전·가스 복합화력 인프라스트럭처·핵심 기자재 관련 종목들의 주가가 일단 주춤한 양상이다. 익히 알려진 호재인 까닭에 주가가 선반영됐다는 인식이 강한 데다 고금리에 따른 시장 부담감이 여전하기 때문이다. 철강 강관주 일부는 강세를 이어갔지만 대형 원전주와 건설주는 수주 규모와 세부 조건 불확실성 속에 하락세를 이어갔고 건설주도 미온적인 반응에 그쳤다. 하지만 이번 투자를 계기로 국내 원전·인프라 밸류체인이 한 단계 도약할 것이라는 기대감이 퍼지고 있다.\n\n2일 한국거래소에 따르면 세아제강은 전 거래일 대비 4.25% 오른 15만4600원에 거래를 마쳤다. 최근 일주일 새 10.86% 급등한 수준이다. 미국 에너지 개발사 글렌판과 알래스카 LNG 파트너십을 체결한 포스코인터내셔널 역시 2.35% 상승한 5만6600원에 마감했다. 반면 기대가 컸던 원전 대장주 두산에너빌리티는 1.22% 내린 8만1100원을 기록했다.\n\n대미투자 프로젝트의 핵심 축으로 꼽히는 대형 건설업종도 약세를 면치 못했다. 최근 6거래일간 현대건설(-13.51%) GS건설(-12.00%) DL이앤씨(-11.90%) 대우건설(-6.87%) 삼성물산(-5.08%) 등 주요 건설주가 일제히 조정을 받았다. 대미투자 프로젝트에 따른 장기 수혜 기대감보다 당장 직면한 고금리 부담과 미국 측 일방 발표 논란 등이 발목을 잡았다는 분석이다.\n\n다만 증권가에서는 이번 대미투자가 국내 원전·인프라 밸류체인의 중장기 펀더멘털을 한 단계 끌어올릴 분기점이 될 것으로 관측하고 긍정적인 평가를 내놓고 있다. 단기 주가는 불확실성을 반영해 흔들리고 있지만 2000억달러(약 270조원) 규모의 3대 메가프로젝트가 공식화된 만큼 향후 수주 가시성이 대폭 높아졌다는 진단이다. 특히 미국 내 원전·발전 인프라 공급망이 붕괴된 상황에서 풍부한 EPC(설계·조달·시공) 실적과 기자재 제작 역량을 갖춘 국내 기업들의 실질적 낙수효과가 기대된다.\n\n또한 대미투자 모멘텀에 국한하지 않고 미국의 인공지능(AI) 인프라 재건·교체 수요를 감안하면 수혜주들은 새로운 투자 기회를 발견할 수 있다는 평가가 나온다. 도널드 트럼프 미 정부가 주도하는 대미투자 모멘텀이 아니라 민간 AI 기업이 중심인 AI 인프라 구축 경쟁 때문이다.\n\n두산에너빌리티는 원전뿐만 아니라 터빈·발전기와 관련해 여전히 미국 진출 모멘텀이 유효하다. 글로벌 소형모듈원전(SMR)과 대형 원전 건설 프로젝트는 자금조달·이해관계 문제로 지연되고 있을 뿐 취소되거나 축소됐다고 보기 어렵다는 평가다. 특히 가스터빈은 북미 데이터센터용 수요가 급격하게 증가하며 병목현상이 나타남에 따라 신규 수주도 계속 늘어나고 있다.\n\n건설업종들은 대미투자 프로젝트 1·2호에 모두 수혜를 받을 것으로 분석되고 있다. 다만 발전 프로젝트는 실제 최종투자결정(FID)과 EPC 수주까지 상당한 시간이 필요하다. 프로젝트 발표가 곧 FID나 EPC 발주를 의미하지 않는다는 점에서 업체들이 선정된 이후에도 긴 호흡으로 사업 추진 경과를 지켜볼 필요가 있다.\n\n같은 AI 투자 사이클에서 상대적으로 수주·매출 가능성이 높은 데이터센터는 최근 금리 상승기에도 불구하고 대형 건설사 주가를 지탱하고 있다. 고금리에 따른 프로젝트파이낸싱(PF) 비용 부담보다 초과 수요로 임차료가 상승할 조짐이 보이는 상황에서 데이터센터 건설 규모는 늘어나기 때문이다.\n\n김세련 LS증권 연구원은 “데이터센터는 인허가 기간을 제외하고 단순 시공 기준으로 2년 정도의 시간이 소요되기 때문에 언론에 발표된 기업들의 AI 데이터센터가 운영되는 위해서는 올해부터 가시적으로 발주가 나올 것으로 예상된다”면서 “데이터센터 발주 시장 규모는 100조원 정도로 추산되는데 압도적인 시장 지위와 진입장벽을 지닌 대형 건설사들에 기회가 될 것”이라고 말했다."
+        "body": "100% 매수 리포트만 낸 증권사도 4곳\nDS, 미래에셋, 키움만 매도 의견 내\n\n \n \n \n \n\n 2일 서울 중구 하나은행 딜링룸 현황판에 코스피와 코스닥 지수 등이 표시되고 있다.[연합뉴스] 증권사에서는 분명 ‘매수’하라고 했는데 막상 사니 떨어지는 주가에 한숨짓는 투자자들이 많다. 그런데 알고 보니 증권사에서 발간한 리포트의 80% 이상이 투자의견 매수 리포트인 것으로 나타났다. 일부 증권사의 경우 매수 의견 비율이 100%라 사실상 매수의견을 담은 리포트만 발간한 것으로 확인됐다.\n\n4일 안철수 국민의힘 의원실이 금융투자협회로부터 제출받은 올해 2분기 증권사별 투자의견 리포트 현황에 따르면 지난해 7월부터 올해 6월까지 넥스트증권, 부국증권, 유화증권, 한양증권 4곳은 투자등급 매수인 리포트가 100%인 것으로 조사됐다. 즉 증권사가 발간한 리포트의 투자의견이 모두 매수였다는 것이다.\n\n교보증권은 매수의견 비중이 99.3%, 케이프투자증권은 98.4%, DS투자증권은 98.7%에 달했다. 이 외에도 하나증권(97.3%), 유진투자증권(96.8%), 흥국증권(96.6%) 순으로 매수 비중이 높게 나타났다.\n\n반면 삼성증권은 매수 비중이 상대적으로 낮은 85.5%였지만 나머지 14.5%는 모두 중립 의견으로 매도는 없었다. 한국투자증권도 매수 86.0%, 중립 14.0%로 매도 의견은 없었다.\n\n매도 의견을 낸 국내 증권사는 전체 33곳 가운데 DS투자증권, 미래에셋증권, 키움증권 3군데 뿐이었다.\n\n해외 증권사와 비교하면 그 차이가 확연하다. 국내에서 영업중인 해외 증권사 15곳 중 리서치센터 업무가 종료된 3곳을 제외하고 12곳 중 투자의견 매수 비중이 70%를 넘긴 곳은 씨지에스 인터내셔널증권 홍콩 한국지점(76%), 다이와증권캐피탈마켓코리아(72%) 뿐이었다.\n\n반면 맥쿼리증권의 경우 ‘매도’ 의견 리포트 비중이 21.7%에 달했다. 메릴린치인터내셔날엘엘씨증권 서울지점도 매도 의견 비중이 21.4%로 20%가 넘었다. 골드만삭스증권 서울지점(16.3%), 모간스탠리인터내셔날증권 서울지점(15%) 등도 투자의견 매도 리포트 비중이 10% 이상이었다.\n\n금융투자업계에서는 증권사의 리서치보고서가 매수의견으로 편중돼 있어 낮은 신뢰도를 얻고 있다는 점을 꾸준히 문제제기해왔다. 하지만 이름을 걸고 리포트를 발간하는 애널리스트 입장에서는 매도 의견을 제시하기에 부담이 크다.\n\n이와 관련 금융위원회와 금융감독원은 지난달 30일 제2차 ‘금투업권 모험자본 역량강화 협의체’를 개최하고 증권사의 리서치보고서의 독립성과 신뢰성 강화 방안을 논의했다.\n\n먼저 애널리스트의 매도 의견 제시에 따른 부담을 완화하기 위해 성명 기재 여부를 선택할 수 있도록 허용한다. 준법감시인 사전 승인 등 내부 절차를 거치도록 하고, 사전승인 절차·내용 및 리서치 작성자 성명 등 관련 자료를 내부적으로 기록·관리하도록 한다.\n\n또 증권사의 리서치보고서가 스몰캡(중소형주)에 대한 낮은 커버리지 등의 문제점이 지속적으로 지적된 만큼 종합금융투자사업자 지정 및 발행어음 인가 심사 시에 스몰캡 리서치 발간 계획을 평가 항목에 추가하고, 종투사에 대한 스몰캡 커버리지 최소 비율을 도입하기로 했다."
       },
       {
-        "title": "삼전닉스보다 더 뛰었다… 9월 ETF 수익률 상위권의 주인공은?",
-        "url": "https://n.news.naver.com/mnews/article/008/0005421785",
-        "chars": 1800,
+        "title": "막바지 편입 앞둔 WGBI…외국인 공백 이후 연말 채권수급 촉각",
+        "url": "https://n.news.naver.com/mnews/article/001/0016356208",
+        "chars": 2104,
         "extracted": "id=\"dic_area\"",
-        "body": "9월 ETF 수익률 상위 10개 중 관련 상품만 6개\n코스닥 시총 20위 내 소부장 10→13개… 설비투자 확대·수급 개선 영향 \n \n \n \n\n 9월 한 달간 국내 상장 ETF 수익률 TOP10/그래픽=윤선정 삼성전자와 SK하이닉스가 주도하던 반도체 랠리의 바통을 반도체 소부장(소재·부품·장비)주가 이어받았다. AI(인공지능) 투자 확대로 반도체 공정에 대한 설비투자(CAPEX) 역시 늘어날 거란 기대가 커지면서 지난 9월 소부장주의 상승 탄력이 두드러졌다. 증권가에선 소부장주의 실적 개선을 기대, 투자 매력도가 높다고 본다.\n\n3일 코스콤 ETF CHECK 등 금융투자업계에 따르면 지난 9월 한 달간 국내 상장 ETF 중 수익률 상위 10위 내(레버리지·인버스 포함)에 반도체 소부장 테마 ETF 4개가 이름을 올렸다. 소부장 비중이 높은 상품까지 포함하면 6개로 늘어난다.\n\n이 중 DS 코스닥액티브는 23.01%를 기록하며 전체 ETF 중 수익률 2위에 자리 잡았다. 레버리지 종목을 제외하면 가장 우수한 성과를 거뒀다. DS 코스닥액티브는 9월 말 기준 포트폴리오 내 상위 비중 10종목이 47.3%를 차지하며, 이 가운데 반도체 소부장주 8개 종목의 비중이 39.7%에 달한다.\n\n이밖에 △'SOL 반도체전공정'(22.15%) △'HANARO 반도체핵심공정주도주'(19.34%) △'SOL AI반도체소부장'(18.27%) △'TIGER 코스닥150IT'(17.32%) △'KODEX AI반도체핵심장비'(16.63%) 등도 높은 수익률을 나타냈다.\n \n반도체 소부장주의 강세는 코스닥 시가총액의 지형도 바꿨다. 지난 8월 말 시총 상위 20개 중 반도체 소부장주는 10개였으나 한 달 만에 13개로 늘었다. 주성엔지니어링은 시총 5위에서 에코프로비엠을 제치고 3위로 올라서며 거래를 마쳤다. 파두·유진테크·티씨케이·테스는 상위 20위 내에 신규 진입했다.\n\n금융투자업계 전문가들은 주요 고객사인 삼성전자와 SK하이닉스를 비롯한 메모리 반도체 기업들이 설비투자를 늘릴 거란 전망이 소부장주의 상승 동력으로 작용했다고 진단한다. AI발 메모리 수요를 공급이 따라가지 못하면서 증설이 이어지고, 이에 따른 소부장 업체의 수주·실적 개선 기대가 금리 상승 부담까지 압도했다는 설명이다. 지난 30일(현지시간) 마이크론도 2026년회계연도 4분기 실적 발표에서 2027년회계연도 상반기에 약 250억달러를 투자할 계획이라고 밝혔다. 이는 올해 연간 자본지출 규모에 육박한다.\n\n김운호 IBK투자증권 연구원은 \"삼성전자가 천안에 위치한 후공정 라인을 폐쇄하고 HBM(고대역폭메모리) 생산 라인을 짓기로 결정했다\"며 \"삼성전자가 내재화 했던 생산 요소를 외부로 돌릴 거라는 기대감이 형성되면서 후공정을 중심으로 반등 폭이 컸다\"고 분석했다. 이어 \"이후에는 반도체 안에서 후공정, 전공정, 소재 순으로 '키 맞추기' 성격의 순환이 돌았다\"고 덧붙였다.\n\n반도체 대형주보다 상승 탄력이 컸던 데에는 수급도 영향을 미쳤다는 추정이 나온다. 삼성전자와 SK하이닉스의 경우 이른바 '고점에 물린' 투자자들의 차익실현 물량이 이어지면서 상승 여력이 제한됐다는 의미다. 정성인 DS자산운용 이사는 \"소부장주는 그동안 크게 조정을 겪으며 매도하려는 투자자들이 빠져나가 수급 왜곡이 상대적으로 적었다\"고 말했다.\n\n증권가에서는 소부장 업체에 투자 기회가 많다고 판단, 매수 전략이 유효하다고 권고한다. 김록호 하나증권 연구원은 \"반도체 업체들의 대대적인 증설 속에 장비 시장 전망치가 지속 상향됐고 국내 메모리 업체들의 후공정 투자도 본격화되고 있다\"며 \"전공정과 후공정 업체 모두 투자 아이디어가 유효한 구간\"이라고 평가했다."
+        "body": "4월 WGBI 편입 이후 외국인 국고채 순매수 42조원가량\n편입 종료 후 외국인 공백·정부 발행축소 여부가 연말 변수 \n\n \n \n \n \n\n 한국, 2026년 FTSE 러셀 WGBI에 편입\n[출처: FTSE Russell] \n\n(서울=연합뉴스) 강수지 기자 = 한국 국채의 세계국채지수(WGBI) 편입이 11월로 마무리된다. 통상 지수 편입에 따른 패시브 자금이 직전 월말에 집중적으로 집행된다는 점을 고려하면, 이달 말 마지막 대규모 자금 유입을 끝으로 외국인 수급 환경이 새 국면을 맞게 될 전망이다.\n\n 채권시장은 4월부터 이어져 온 WGBI 편입 효과가 종료된 이후, 연말 수급 공백에 어떻게 대비할지 촉각을 곤두세우고 있다.\n\n WGBI 유입 기대에 못 미쳤나…이달 말 주목 4일 장외시장 외국인 채권 전체 거래 잔고 추이를 살펴보면 지난 3월 30일부터 10월 2일까지 외국인의 국고채 누적 순매수는 42조4천억원가량이다. 지난 7월 초까지 들어온 자금 41조원 수준에서 이후 크게 늘지는 못했다.\n\n 한 채권시장 관계자에 따르면 \"매달 말 일본계 패시브 자금을 중심으로 3조원 가량의 기계적 매수세는 꾸준히 유입됐다\"며 \"7∼8월 차익거래 유인의 역전 폭이 커지며 단기물을 중심으로 외국인 매도가 겹쳤고, 9월 만기 상환이 있어 전체 순매수 규모가 크게 늘지 않은 것처럼 보인 것\"이라고 말했다.\n\n 해당 기간 외국인이 가장 많이 순매수한 종목은 8조6천억원어치 사들인 국고 5년 26-3호였다. 그 뒤를 국고 3년 26-1호(8조5천억원)와 국고 30년 26-2호(6조원), 국고 10년 26-6호(5조2천억원), 국고 10년 25-11호(2조7천억원)가 이었다.\n\n 순매도가 가장 많았던 종목은 지난 9월 만기가 도래했거나 오는 12월 만기를 앞둔 종목 중심이었으며, 국고 5년 21-7호가 2조2천억원으로 가장 많이 순매도했다. 상위 3종목은 5년과 3년, 2년물이었다.\n\n KB국민은행 장현상 연구원은 지난 7월부터 재정거래 유인이 마이너스(-)로 전환된 시점과 외국인 초단기물 매도가 본격화한 시점이 겹친다고 분석했다. 그는 \"7월 4조7천억원, 8월 3조8천억원의 외국인 매도가 대부분 1년 이내 초단기물에 집중됐다\"며 \"이를 WGBI 편입 자금 이탈로 해석하기는 어렵다\"고 봤다.\n\n \n \n \n \n\n 장외시장 외인 국채 순매수·순매도 상위 종목(3월30일~10월2일)\n[출처: 연합인포맥스] \n\n다만, 편입 일정의 막바지에 외국인 자금 유입이 급증할 것으로 보기는 어렵다. iM증권에 따르면 WGBI 편입 구간인 잔존만기 1∼30년 국고채의 월말 최종일 순매수는 4∼6월 평균 3조1천700억원에서 7∼9월 평균 2조4천100억원으로 24% 줄었다.\n\n 관건은 총매수 규모보다 만기별 배분이다. \n\n 9월 말 마지막 5거래일을 살펴보면 외국인은 잔존만기 1∼5년 구간을 1조2천500억원 순매수한 반면, 20∼30년 구간은 500억원 순매도로 전환했다.\n\n iM증권 김명실 연구원은 WGBI 편입 자금 매수가 10∼30년물보다 중단기물에 쏠렸다고 전했다. 이는 마지막 편입에서도 초장기물 수혜가 제한될 수 있다는 의미다.\n\n 마지막 편입 이후에는 단계적 편입에 따른 추가 매수 동력이 사라진다. 다만 이를 외국인 보유채권의 매도 전환으로 볼 필요는 없으며, 만기 상환 자금의 재투자와 정기 리밸런싱, 외국인 보유 유지가 이후 수급을 좌우할 전망이다.\n\n 정부의 국고채 발행 축소도 연말 변수다. 정부는 10월 국고채 총발행 규모를 당초 계획보다 5조원 줄였다. \n\n 시장의 가장 큰 관심사인 내년도 국고채 발행 계획은 정기국회에서 예산안이 확정된 이후에 발표될 것으로 보인다. 2024년과 2025년에는 12월 말께 발표된 바 있다.\n\n 월말 패시브 매수가 예상보다 약하거나 중단기물에만 머문다면, 연말 장기물 수급 부담은 정부의 추가 발행 축소와 국내 기관 수요에 더 크게 좌우될 수 있다.\n\n 신한투자증권 김찬희 연구원은 \"8월 금통위 이후 악화된 대외 여건과 WGBI 편입 종료 이후 외국인 수요 둔화 등을 고려하면 11월 금통위 전까지 보수적인 투자 전략을 유지할 필요가 있다\"며 \"11월로 가면서 잔존한 긴축 경계와 외국인 수급 공백이 맞물리는 구간에서 변동성 확대 가능성이 있다\"고 평가했다.\n\n skang@yna.co.kr"
       },
       {
-        "title": "솔리다임 상장설에 흔들린 SK하닉…실적 전망은 '이상 무'[종목현미경]",
-        "url": "https://n.news.naver.com/mnews/article/421/0009207654",
-        "chars": 2053,
+        "title": "달라진 서학개미 장바구니… 美 초단기채·배당 ETF에 뭉칫돈",
+        "url": "https://n.news.naver.com/mnews/article/366/0001196026",
+        "chars": 1751,
         "extracted": "id=\"dic_area\"",
-        "body": "중복상장·지분 희석 우려에 소액주주 반발…하닉 \"주주가치 고려\"\n3분기 눈높이 낮아졌지만…메모리 가격 상승에 중장기 성장 기대 \n \n \n \n\n 경기 이천시 SK하이닉스 본사의 모습. 2026.9.16 ⓒ 뉴스1 김영운 기자 \n\n(서울=뉴스1) 서한샘 기자 = SK하이닉스(000660)는 미국 손자회사 솔리다임(Solidigm)의 상장설로 한 차례 흔들린 주가가 나흘 연속 반등하며 낙폭을 일부 만회했다. 중복상장과 지분 희석에 따른 주주가치 훼손 우려가 불거졌지만 증권가에서는 펀더멘털에 미칠 영향은 제한적이라는 분석이 나온다.\n\n3일 한국거래소에 따르면 전날 SK하이닉스는 지난달 23일 종가 186만 3000원 대비 1.18% 하락한 184만 1000원에 거래를 마쳤다.\n\nSK하이닉스는 지난달 28일 5.42% 급락한 뒤 29일 1.24%, 30일 1.02%, 이달 1일 2.93%, 2일 0.44% 오르며 나흘 연속 반등했다. 다만 지난달 28일 낙폭을 모두 만회하지는 못했다.\n\n28일 급락에는 미국 장기금리 상승과 인공지능(AI) 데이터센터 투자 불확실성 등 반도체 업종 전반의 부담에 더해 솔리다임 미국 상장 검토설에 따른 우려도 작용했다. 정희찬 삼성선물 연구원은 \"솔리다임의 내년 미국 상장 검토 소식이 전해지자 중복상장에 대한 우려가 확대됐다\"고 분석했다.\n\n앞서 로이터통신은 지난달 25일(현지시간) 솔리다임이 이르면 내년 미국 증시 상장을 목표로 주관사 선정 절차를 진행하고 있다고 보도했다. 시장에서는 솔리다임의 기업가치가 최대 1500억 달러, 공모 규모는 약 150억 달러 수준으로 거론됐다.\n\n상장설이 불거지자 소액주주들은 반발하고 나섰다. 소액주주 플랫폼 액트는 솔리다임이 외부 투자자에게 신규 주식을 발행할 경우 SK하이닉스의 지분이 희석될 수 있다고 주장했다.\n\n향후 솔리다임의 성장 가치 일부가 신규 주주에게 돌아가 기존 SK하이닉스 주주가 누릴 경제적 가치가 줄어들 수 있다는 점도 문제 삼았다.\n\n이에 관해 SK하이닉스는 구체적으로 결정된 사안은 없다면서도 외부 자본 활용에 따른 기존 주주의 경제적 영향을 고려하겠다는 입장을 밝혔다.\n\n회사는 \"솔리다임 관련 자본 활용 방안은 회사 전체 투자계획, 재무 상황, 자본 배분 등을 종합적으로 고려해 검토할 사안\"이라며 \"외부 자본 활용 여부를 판단할 때는 각 방안이 회사와 기존 주주에게 미치는 경제적 영향뿐 아니라 자본 활용에 따른 효과와 자금조달의 재무적 영향 등을 종합적으로 고려해야 한다\"고 설명했다.\n\n그러면서 \"어떠한 방안을 검토하더라도 이런 요소들을 중요한 판단 기준으로 삼겠다\"고 했다.\n\n증권가에서는 솔리다임 기업공개(IPO) 논란이 SK하이닉스의 펀더멘털을 훼손할 정도의 악재는 아니라는 평가가 나온다.\n\n류형근 대신증권 연구원은 솔리다임 IPO와 해외 공장 투자에 대한 시장의 경계심리를 주요 리스크로 꼽으면서도 \"해당 리스크가 펀더멘털을 저해할 것으로 보고 있지 않다\"고 평가했다. 이어 \"단기 노이즈보다는 사이클 확장의 선순환에 보다 주목할 필요가 있다\"고 말했다.\n\n실적에 대한 눈높이는 다소 낮아졌지만 중장기 성장 전망은 유지되고 있다.\n\n이수림 DS투자증권 연구원은 환율 하락 등을 반영해 3분기 실적 추정치를 낮추면서도 \"주가의 핵심 변수는 이제 3분기 실적보다 4분기 고부가 제품 믹스 개선과 2027년 이익 추정치의 상향 가능성\"이라고 짚었다.\n\n4분기 HBM4 매출 기여 확대와 메모리 가격 상승이 실적 개선을 이끌고 2027년 HBM 평균판매가격(ASP)의 추가 상승 가능성도 크다고 전망했다.\n\n류영호 NH투자증권 연구원도 단기 실적보다 메모리 수요의 지속 가능성에 무게를 뒀다. 그는 \"추론·AI 에이전트의 확산으로 메모리 수요는 오히려 증가하고 있다\"고 진단했다. 맞춤형 AI 반도체(ASIC) 시장 성장에 따른 HBM 수요 확대도 업황에 긍정적으로 작용할 것으로 예상했다.\n\n향후 발표될 추가 주주환원 정책도 주가를 뒷받침할 요인으로 꼽힌다. 류 연구원은 \"3분기 실적 발표에서 공개될 추가적인 주주환원 정책은 주가에 긍정적인 요소\"라며 \"펀더멘털 변화가 제한적인 상황인 만큼 SK하이닉스에 대한 긍정적인 시각을 유지한다\"고 말했다."
+        "body": "美 30년물 금리 장중 5.6% 돌파\n초단기채 ‘파킹’ 수요 부각\nSOXS도 상위권…안전자산과 고위험 상품 함께 담아\n \n \n \n \n \n\n 조선 DB \n 미국 장기 국채금리가 급등하면서 서학개미의 장바구니에도 변화가 감지된다. 개별 성장주와 지수 추종 상품에 쏠렸던 매수세가 미국 초단기 국채 및 우량 배당주 ETF로 이동하며 순매수 상위권을 바꾼 것이다.\n\n4일 한국예탁결제원 증권정보포털 세이브로에 따르면 지난 9월 한 달(1~30일) 국내 투자자가 가장 많이 순매수한 해외 종목은 ‘아이셰어즈 0-3개월 미 국채 ETF’(SGOV)로 2억9046만달러(약 3958억원)였다.\n\nSGOV 순매수액은 8월 1억6810만달러에서 약 72.8% 늘었고 순위도 9위에서 1위로 뛰었다. ‘슈왑 미국 배당주 ETF’(SCHD)는 2억3097만달러(약 3148억원)로 2위를 차지했다. 지난달 1억9540만달러에서 18.2% 증가하며 순위 역시 6위에서 2위로 올라섰다. 두 상품에만 이달 약 7100억원이 몰린 셈이다.\n\n지난달과는 분위기가 달라졌다. 8월 순매수 상위 5개 종목은 스페이스X, 알파벳, 뱅가드 S&P500 ETF, 인베스코 나스닥100 ETF, 아마존으로 성장주와 지수형 상품이 중심이었다.\n\n윤재홍 미래에셋증권 연구원은 “최근 미국 ETF 시장에서는 고금리 부담으로 위험회피 성향이 강해지고 있다”며 “국내 투자자들도 금리형 상품과 커버드콜 ETF 등 상대적으로 안정적인 상품을 찾고 있다”고 말했다.\n\n초단기채 선호가 커진 배경에는 미국 국채금리 상승과 채권시장 변동성 확대가 영향을 미친 것으로 풀이된다.\n\n지난 1일(현지시각) 미국 30년 만기 국채 금리는 장중 5.6%를 넘어서며 2002년 6월 이후 최고 수준까지 치솟았다. 10년물 금리도 장중 5.34%까지 뛰었다. 앞서 연방준비제도(Fed·연준)는 지난 16일 기준금리를 0.25%포인트 인상해 연 3.75~4.00%로 올렸다.\n\n정성태 삼성증권 연구원은 “미국 장기국채 금리 상승은 AI 투자 붐에 따른 성장률 전망 상향, 중동 지역 전쟁 장기화에 따른 고유가, 미국 정부 부채 및 재정 적자 확대 등이 모두 금리 상승 요인으로 작용했기 때문”이라고 설명했다.\n\n \n \n \n \n\n 그래픽=정서희 \n SGOV는 만기가 3개월 이하인 미국 국채에 투자한다. 만기가 짧아 금리 변화에 따른 가격 움직임이 장기채보다 작고 매달 분배금을 지급한다. 투자처를 정하기 전 자금을 잠시 넣어두는 ‘파킹형 ETF’로 활용되는 이유다.\n\n함께 순매수 상위권에 오른 SCHD는 꾸준히 배당을 지급한 미국 기업 가운데 재무건전성이 높은 100개 종목으로 구성된 ‘다우존스 US 디비던드100 지수’를 추종한다. 분기마다 분배금을 지급하는 대표 배당 ETF로, 최근처럼 증시 변동성이 커지는 구간에서 상대적으로 안정적인 현금흐름을 원하는 투자자들의 수요가 유입된 것으로 보인다.\n\n그렇다고 서학개미가 위험자산에서 완전히 발을 뺀 것은 아니다. 이달 순매수 3위는 알파벳(1억9473만달러), 4위는 뱅가드 S&P500 ETF(1억8190만달러)였다. 5위에는 반도체지수의 하루 하락률을 3배로 추종하는 고위험 인버스 레버리지 상품인 디렉시온 데일리 세미컨덕터 베어 3배 ETF(SOXS)가 1억3883만달러(약 1894억원)로 이름을 올렸다.\n\n변동성이 낮은 초단기채와 배당 ETF를 담는 동시에 레버리지·인버스 등 고위험 상품도 사는 ‘바벨 투자’ 양상을 보이는 것이다. 시장 불확실성에 대비하면서도 적극적인 방향성 베팅을 이어가려는 투자심리가 반영된 것으로 풀이된다."
       },
       {
-        "title": "고용 충격에 나스닥 1.2%↑…10년물 금리 되레 상승[월스트리트in]",
-        "url": "https://n.news.naver.com/mnews/article/018/0006379976",
-        "chars": 3200,
+        "title": "\"삼전닉스 없으면 미칠 것 같았는데\"…고점 대비 최대 38%↓ 불안한 버티기 [개미의 세계]",
+        "url": "https://n.news.naver.com/mnews/article/014/0005584609",
+        "chars": 2815,
         "extracted": "id=\"dic_area\"",
-        "body": "美 9월 고용 증가 2.9만명 그쳐…시장 예상 크게 하회\n10월 금리인상 확률 20%대로…기술주 일제히 강세\n실업률 상승은 노동공급 증가 영향…\"침체 신호 아냐\"\n10년물 금리 다시 5.28%…'5% 뉴노멀'은 여전히 부담 [뉴욕=이데일리 성주원 특파원] 미국의 9월 고용이 시장 예상의 3분의 1에도 못 미치는 ‘쇼크’를 기록하자 뉴욕증시는 오히려 환호했다. 고용시장이 연방준비제도(Fed·연준)의 추가 금리 인상 우려를 낮출 정도로 냉각됐지만 아직 경기침체를 걱정할 만큼 무너진 것은 아니라는 판단에서다. 나스닥지수는 장중 사상 최고치를 갈아치웠다.\n\n하지만 채권시장은 달랐다. 고용 발표 직후 급락했던 미 국채금리는 오후 들어 반등해 10년물이 다시 5.28%까지 올라섰다. 고용 둔화가 당장의 금리 인상 가능성을 낮췄지만 고유가와 재정적자, 인공지능(AI) 투자에 따른 대규모 자금 수요 등 장기금리를 밀어올린 구조적인 요인까지 사라진 것은 아니기 때문이다. ‘고용 안도 랠리’와 ‘고금리 경계’가 공존한 하루였다.\n\n \n \n \n \n\n \n 지난 9월 25일(현지시간) 미국 뉴욕증권거래소(NYSE)에서 트레이더들이 업무를 보고 있다. (사진=로이터) \n \n 2일(현지시간) 뉴욕증권거래소에서 다우존스30산업평균지수는 전 거래일보다 0.49% 오른 5만1176.96에 거래를 마쳤다. 스탠더드앤드푸어스(S&P)500지수는 0.73% 상승한 7722.72에, 나스닥종합지수는 1.19% 오른 2만7190.86에 마감했다. 나스닥은 장중 사상 최고치를 경신한 뒤 국채금리가 반등하면서 상승폭을 일부 반납했다.\n\n 2.9만명 고용쇼크에 월가가 웃은 이유 \n\n이날 시장을 움직인 숫자는 ‘2만9000명’이었다. 미 노동부에 따르면 9월 비농업 일자리는 2만9000개 늘어나는 데 그쳤다. 로이터가 집계한 시장 전망치 9만명을 크게 밑돌았다. 8월 증가폭도 기존 16만2000명에서 13만3000명으로 하향 조정됐다.\n\n그런데 주식시장은 이를 악재보다 호재로 받아들였다. 최근 월가를 짓눌러온 가장 큰 부담 중 하나가 연준의 추가 금리 인상 가능성이었기 때문이다. 고용이 예상보다 크게 둔화하면서 연준이 이달 다시 금리를 올려야 할 필요성이 줄었다는 해석이 힘을 얻었다.\n\n필 블랑카토 오사익 수석 시장전략가는 “노동시장 측면에서 시장이 원했던 바로 그런 숫자”라며 “너무 뜨겁지도, 너무 차갑지도 않다. 지나치게 좋지도 않고, 그렇다고 약화되고 있는 것도 아니다”고 평가했다.\n\n금리선물시장도 즉각 반응했다. 고용 발표 이후 시장이 반영한 10월 연준 금리 인상 가능성은 25% 아래로 떨어졌다.\n\n 실업률 4.2% 상승…그런데 “나쁜 상승 아니다” \n\n고용보고서를 뜯어보면 경기침체 신호로 단정하기도 어렵다. 실업률은 4.2%로 상승했지만 노동시장에 새로 진입한 사람이 늘어난 영향이 일부 작용했다.\n\n제이슨 프라이드 글렌미드 최고투자전략가는 실업률이 “올바른 이유로 상승했다”고 평가했다. 일자리를 잃는 사람이 급증해서라기보다 노동시장 밖에 있던 사람들이 다시 구직에 나선 결과라는 설명이다.\n\n그는 “올해 대부분 완전고용과 부합하는 범위의 낮은 수준에 있었던 만큼 실업률이 조금 오른 것 자체보다 왜 올랐는지가 훨씬 중요하다”며 “노동시장 밖에 있던 사람들이 다시 들어오기로 한 것은 자신의 고용 전망을 긍정적으로 보고 있다는 신호”라고 설명했다.\n\n제니퍼 티머먼 웰스파고 투자연구소 선임 투자전략 애널리스트도 9월 고용보고서가 가을로 접어들면서 고용 증가세가 다시 둔화하고 있음을 보여준다며 “경제활동이 추가 금리 인상을 늦추기에 충분할 정도로 완화될 가능성을 예고한다”고 분석했다.\n\n결국 이날 주식시장이 본 것은 고용 숫자의 절대적인 부진보다 연준의 금리 인상을 막으면서도 경기침체까지 의미하지 않는 ‘적당한 둔화’였다.\n\n \n \n \n \n\n \n 미국 뉴욕 맨해튼에서 시민들이 거리를 걷고 있다. (사진=AFP) \n \n 엔비디아 사상 최고…금리에 민감한 기술주 환호 \n\n이 같은 해석은 기술주 강세로 이어졌다. 엔비디아는 장중 사상 최고치를 기록했고 크라우드스트라이크와 팔로알토네트웍스, AMD 역시 장중 역대 최고가를 갈아치웠다. 엔비디아는 이후 밀려 종가 기준 사상 최고치에는 미치지 못했다.\n\n추가 금리 인상 우려 완화는 미래 이익의 현재가치에 민감한 성장주와 기술주에 특히 유리하게 작용했다. 여기에 본격적인 3분기 실적 시즌을 앞두고 기업 이익에 대한 기대도 증시를 받쳤다.\n\n사이라 말릭 누빈 최고투자책임자(CIO)는 이번 고용보고서가 실적 시즌을 앞둔 시장을 지지할 수 있다며 향후 기업 실적이 “매우 강할 것”으로 내다봤다. 그는 “우리가 기다려온 산타클로스 랠리의 시작이 될 수 있다”고 말했다.\n\n 주식은 웃었지만 채권은 다시 불안…10년물 5.28% \n\n다만 이날 시장의 또 다른 중요한 특징은 주식과 채권의 온도 차였다.\n\n10년물 미 국채금리는 고용보고서 발표 직후 급락했지만 이후 하락폭을 모두 반납하고 전날보다 약 5bp(베이시스포인트, 1bp=0.01%포인트) 오른 5.283%까지 올라갔다. 연준 정책에 민감한 2년물 금리도 약 4.6bp 오른 4.833%를 기록했다.\n\n고용이 약하다고 해서 최근 글로벌 채권시장을 짓누른 문제가 해결된 것은 아니기 때문이다. 미·이스라엘과 이란의 전쟁으로 에너지 가격이 뛰면서 인플레이션 전망이 복잡해졌고 정부 재정 부담도 커지고 있다. 미국 10년물 금리는 9월 한 분기에 1994년 이후 가장 큰 폭으로 상승했다.\n\n이번 주 10년물 금리는 한때 5.34%를 넘어 2002년 이후 최고 수준까지 치솟았다. 최근 국채 매도세의 배경에는 끈질긴 인플레이션과 정부 지출뿐 아니라 AI 인프라 건설을 위한 기업들의 막대한 자금 조달도 자리 잡고 있다.\n\n브렛 켄웰 이토로 미국 투자분석가는 향후 시장에서 ‘10년물 5%’가 핵심 기준선이라고 지적했다. 그는 “10년물 금리 5%가 새로운 바닥이 된다면 시장이 높은 금리를 별다른 충격 없이 계속 흡수할 수 있다는 생각에 도전이 될 수 있다”고 경고했다.\n\n이날 증시 랠리는 고용 둔화로 연준의 추가 인상 위험이 낮아졌다는 안도감이 만들어냈다. 하지만 장기금리가 다시 상승한 것은 시장이 아직 ‘고금리 시대의 종료’를 선언할 단계가 아니라는 점도 보여줬다. 연준의 다음 한 수와 함께 5%를 넘어선 장기금리가 얼마나 오래 지속되느냐가 뉴욕증시의 다음 시험대가 될 가능성이 크다는 해석이 나온다.\n\n \n \n \n \n\n \n 2일(현지시간) 미국 10년물 국채 수익률 추이. (자료: 트레이드웹·CNBC)"
+        "body": "2일 서울 중구 하나은행 딜링룸 현황판에 코스피와 코스닥 지수 등이 표시되고 있다. 이날 코스피는 전장보다 33.08p(0.47%) 내린 6938.27에, 코스닥 지수는 1.07p(0.12%) 내린 893.22로 출발했다. /사진=연합뉴스 \n[파이낸셜뉴스] 직장인 A씨(34)가 삼성전자와 SK하이닉스를 대량 매수한 건 지난 6월 초였다. 코스피가 9000을 넘어 1만을 향해 가던 때였고, 회사 단톡방이나 친구 모임에서도 모두 '삼전닉스' 얘기만 하던 때였다. \n \n\"삼성전자 망하는 날이 우리나라 망하는 날이다\", \"SK하이닉스 가격 이만큼 올라온 거 봐라, 더 올라갈 수 있다\" 같은 말들이 쏟아졌다. 빚이라도 내서 더 사야 한다는 말에 조바심 이 난 A씨는 들고 있던 돈의 대부분을 삼성전자와 SK하이닉스를 사는데 썼다. \n \n그리고 현재 A씨 계좌는 -34%를 기록 중이다. A씨처럼 FOMO(Fear of Missing out·소외공포)를 이겨내지 못하고 고점에서 주식에 투자한 이들에게 하반기 증시는 가혹하기만 하다. 코스피 횡보가 이어지면서 40만전자, 300만닉스의 희망도 함께 희미해졌다. A씨는 \"손절할 자신은 없고, 들고 있자니 답답한 마음뿐이라 요새 주식 뉴스를 잘 안 본다\" 며 \"그래도 삼성이고 SK하이닉스인데, 놔두면 언젠가 오르지 않겠냐\"고 덧붙였다. \n \n \"무조건 삼전닉스\" 외치던 그 주식, 지금은 \n \n6월까지 뜨겁기만 했던 코스피는 7월 한 달간 22.19% 추락하면서 기록적인 급락장을 펼쳤다. 한때 9000선을 넘어서며 1만피까지 목전에 뒀으나 7월 들어 단숨에 5262.77까지 내리기도 했다. \n \n이후 코스피는 저점에서 상당 부분 반등했지만 6000∼7000선 사이를 오가며 좀처럼 뚜렷한 방향성을 잡지 못하고 있다. 특히 국내 증시를 지탱하는 반도체 양대산맥 삼성전자와 SK하이닉스의 부진이 두드러진다. \n \n한때 37만4500원까지 올랐던 삼성전자는 2일 종가 기준 27만6000만원으로 약 26% 내려앉았고, SK하이닉스 역시 184만1000원으로 장을 마감하며 장중 최고 298만7000원까지 올랐던 때에 비해 38% 가까이 빠졌다. 이처럼 주가를 누르는 건 외국인 이다. 외국인은 9월 코스피에서만 21조5108억원을 순매도했고, 최근 5개월 누적 순매도액은 134조9195억원에 달한다. \n \n이중 9월 매도의 76.6%가 SK하이닉스(11조5805억원)와 삼성전자(4조8920억원) 두 종목에 몰렸다. 두 종목의 코스피 시가총액 비중은 9월 말 50.85%로, 외국인이 한국 주식 비중을 줄일 때마다 매물이 두 종목에 집중되기 쉬운 구조 가 형성된 것이다. \n \n 자사주 매입도 끝나가는데 금리 악재까지 \n \n여기에 두 회사의 자사주 매입이 일찌감치 마무리되고 있다는 점도 우려 를 불러일으킨다. 2일 한국거래소 기업공시채널에 따르면 삼성전자는 전날까지 자사주 5380만주를 매입했는데, 이는 앞서 삼성전자가 밝힌 자사주 매입 물량을 초과한 수치다. 삼성전자는 지난 8월 24일부터 11월 21일까지 5328만5968주를 매입하겠다고 공시한 바 있다. \n \nSK하이닉스도 지난 8월 20일부터 자사주 매입 신고 물량인 2407만주 가운데 1835만주를 사들였다. 매입률은 76.24%이고 매입 누적액은 32조514억원으로 집계됐으며, 하루 매입량은 약 60만∼65만주로 추산된다. 이에 따라 남은 기간 같은 규모를 사들인다면 남은 물량 572만주를 약 8∼9거래일 내 매입을 완료할 것으로 보인다. \n \n바깥 사정도 좋지 않다. 미국 30년물 국채금리는 장중 5.62%로 2002년 이후 최고치, 10년물도 5.29%로 2007년 이후 최고 수준 까지 올랐다. 장기금리가 오르면 외국인이 위험자산인 신흥국 주식을 담을 이유가 줄어든다. 외국인 자금이 돌아와야 반등이 이어질 텐데 미국 금리 상승과 유가 강세가 걸림돌로 남아 있다는 게 시장의 진단이다. \n \n다만 삼성전자는 매입 누적액이 15조원에 이를 때까지 자사주 매입을 진행할 방침인 것으로 알려졌다. 최근 주가와 평균 매입 단가 등을 기준으로 계산하면 대략 300만주를 추가 매입할 수 있을 것으로 예상된다. \n \n 증권가 \"급락은 없다…내년엔 메모리 상승 사이클 가속\" \n \n증권가는 당장의 급락 가능성은 낮게 본다. 김재승 현대차증권 연구원은 \"자사주 매입이 끝나면 수급 공백이 생기며 힘이 없는 모습이 나타날 수는 있다\"면서도 \"그렇다고 해서 주가가 확 밀리거나 급락하는 흐름으로 이어지지는 않을 것\"이라고 봤다. \n \n 메모리 반도체 시장이 내년부터 가격과 출하량이 동시에 증가하는 강한 상승 사이클에 진 입 할 거란 전망 도 나왔다. 김동원 KB증권 연구원은 최선호주로 삼성전자, SK하이닉스를 제시하며 \"지난해 HBM, 올해 범용 메모리가 성장을 주도했다면 내년에는 HBM과 범용 메모리의 가격 상승과 출하량 증가가 동시에 전개되는 전방위적인 성장 국면이 예상된다\"고 했다. \n \n이어 \"신규 클린룸과 팹 증설에는 3년 이상의 시간이 필요한 반면, HBM 중심의 생산능력 확대까지 병행되면서 급증하는 메모리 수요에 대응할 수 있는 공급 증가는 극히 제한적 수준에 그칠 것\"이라며 \"내년 메모리 시장은 가격 상승과 출하량 증가가 동시에 나타나는 강력한 상승 사이클의 가속 구간에 진입할 전망\"이라고 덧붙였다. \n \n개인투자자들을 위한 조언도 나왔다. 투자 자문 회사 위즈웨이브의 이권희 대표는 지난달 29일 유튜브 채널 '표영호tv'에서 \"전고점을 뚫기에는 시간이 걸릴 수 있다\" 며 삼성전자와 SK하이닉스의 비중을 줄일 것을 권했다. 두 종목이 계좌의 70~80%를 차지하는 투자자라면 삼성전자 30만~32만원, SK하이닉스 220만~240만원 선에서 비중을 30~40% 수준으로 줄이라는 조언이다."
       }
     ],
     "futures_mentions": [],
-    "credit_mentions": [
-      {
-        "title": "\"금리 올라도 방법은 있다\"...투자 몰린 ETF 꼽아보니",
-        "url": "https://n.news.naver.com/mnews/article/215/0001268083",
-        "sentence": "투자자 예탁금은 추석 연휴 직전인 지난달 23일 101조6349억원에서 직후인 28일 104조4천892억원, 29일 107조7천257억원으로 올랐지만 지난 1일 104조6천377억원으로 돌아왔다"
-      },
-      {
-        "title": "\"금리 올라도 방법은 있다\"...투자 몰린 ETF 꼽아보니",
-        "url": "https://n.news.naver.com/mnews/article/215/0001268083",
-        "sentence": "빚투 지표인 신용거래융자 잔고는 지난달 23일 32조7천764억원에서 지난 1일 33조4천808억원으로 2"
-      },
-      {
-        "title": "금리 고공행진에 CD·채권 관련 ETF 인기 '쑥'[머니플로우]",
-        "url": "https://n.news.naver.com/mnews/article/001/0016355058",
-        "sentence": "투자자 예탁금은 추석 연휴 직전인 지난달 23일 101조6349억원에서 직후인 28일 104조4천892억원, 29일 107조7천257억원으로 올랐으나 지난 1일 104조6천377억원으로 돌아왔다"
-      },
-      {
-        "title": "금리 고공행진에 CD·채권 관련 ETF 인기 '쑥'[머니플로우]",
-        "url": "https://n.news.naver.com/mnews/article/001/0016355058",
-        "sentence": "빚투의 지표로 여겨지는 신용거래융자 잔고는 지난달 23일 32조7천764억원에서 지난 1일 33조4천808억원으로 2"
-      }
-    ]
+    "credit_mentions": []
   },
   "broker_news": {
     "sector_issues": [
       {
-        "title": "1000만명 몰린 ISA…증권사 웃지만 ‘속 빈 계좌’ 숙제",
-        "url": "https://n.news.naver.com/mnews/article/243/0000103819",
+        "title": "“사라 해서 샀는데, 내 주식 왜 이래?”…증권사 ‘매수’ 리포트만 내놓는 이유",
+        "url": "https://n.news.naver.com/mnews/article/009/0005743634",
+        "words": [
+          "발행어음",
+          "종합금융투자사업자",
+          "증권사"
+        ],
+        "in_title": [
+          "증권사"
+        ],
+        "sentence": "또 증권사의 리서치보고서가 스몰캡(중소형주)에 대한 낮은 커버리지 등의 문제점이 지속적으로 지적된 만큼 종합금융투자사업자 지정 및 발행어음 인가 심사 시에 스몰캡 리서치 발간 계획을 평가 항목에 추가하고, 종투사에 대한 스몰캡 커버리지 최소 비율을 도입하기로 했다",
+        "rank": 3
+      },
+      {
+        "title": "그 많던 개미 증발에 금리 부담까지…불장에 웃던 증권주 '냉골'",
+        "url": "https://n.news.naver.com/mnews/article/008/0005421919",
+        "words": [
+          "발행어음",
+          "브로커리지",
+          "증권업"
+        ],
+        "in_title": [],
+        "sentence": "윤유동 NH투자증권 연구원은 \"지난달 삼성증권과 메리츠증권이 발행어음 인가를 받으며 신규 사업자간 경쟁이 본격화했다\"며 \"기존 사업자도 발행어음·IMA 상품 다변화를 통해 기업금융·운용영역을 확대하려고 시도하고 있다\"고 밝혔다",
+        "rank": 2
+      },
+      {
+        "title": "지루한 박스권 장세…삼성전자 3분기 실적에 쏠리는 눈 [주간전망]",
+        "url": "https://n.news.naver.com/mnews/article/015/0005338929",
+        "words": [
+          "증권업",
+          "증권업계"
+        ],
+        "in_title": [],
+        "sentence": "결국 박스권을 돌파하려면 매크로 불확실성이 완화돼야 한다는 게 증권업계의 공통된 시각이다",
+        "rank": 2
+      },
+      {
+        "title": "4분기 IPO 20여 곳 출격…증권사 ‘공모 흥행’ 시험대",
+        "url": "https://n.news.naver.com/mnews/article/243/0000103838",
         "words": [
           "증권사"
         ],
         "in_title": [
           "증권사"
         ],
-        "sentence": "증권사 WM ‘관문 계좌’로…고객·자산 유치전 격화",
+        "sentence": "공모기업이 늘어나자 이들을 시장에 데뷔시키는 증권사들의 경쟁에도 불이 붙었다",
         "rank": 1
       }
     ]
   },
   "ib_mentions": {
-    "count": 3,
+    "count": 1,
     "names": [
-      "UBS",
-      "뱅가드",
-      "웰스파고"
+      "뱅가드"
     ],
     "by_name": {
-      "UBS": [
-        1
-      ],
       "뱅가드": [
         0
-      ],
-      "웰스파고": [
-        2
       ]
     },
     "mentions": [
       {
         "who": "뱅가드",
-        "sentence": "세계에서 가장 큰 규모의 자산운용사 중 하나인 뱅가드(The Vanguard Group)에서 1988~2024년 사이에 S&P 500에 일시에 10만 달러를 투자했다고 가정한 시뮬레이션 결과를 한 번 보겠습니다",
+        "sentence": "이달 순매수 3위는 알파벳(1억9473만달러), 4위는 뱅가드 S&P500 ETF(1억8190만달러)였다",
         "also": [],
-        "title": "\"김대리, 그때 어떻게 귀신같이 판거야?\" 매수·매도 타이밍의 비밀 [인치범의 주식투자 부트캠프]",
-        "url": "https://n.news.naver.com/mnews/article/014/0005584526"
-      },
-      {
-        "who": "UBS",
-        "sentence": "로이터에 따르면 지오반니 스타우노보 UBS 애널리스트는 “미국의 경유 수출 금지 가능성, 유럽의 전략 경유 비축분 방출, 러시아 정유시설에 대한 공격 등 다른 공급 요인이 정제마진에 상반된 영향을 줄 수 있다”고 지적했다",
-        "also": [],
-        "title": "중국이 기름 수출 막자 정유주 ‘활짝’…에쓰오일 11%↑ [이런국장 저런주식]",
-        "url": "https://n.news.naver.com/mnews/article/011/0004667906"
-      },
-      {
-        "who": "웰스파고",
-        "sentence": "제니퍼 티머먼 웰스파고 투자연구소 선임 투자전략 애널리스트도 9월 고용보고서가 가을로 접어들면서 고용 증가세가 다시 둔화하고 있음을 보여준다며 “경제활동이 추가 금리 인상을 늦추기에 충분할 정도로 완화될 가능성을 예고한다”고 분석했다",
-        "also": [],
-        "title": "고용 충격에 나스닥 1.2%↑…10년물 금리 되레 상승[월스트리트in]",
-        "url": "https://n.news.naver.com/mnews/article/018/0006379976"
+        "title": "달라진 서학개미 장바구니… 美 초단기채·배당 ETF에 뭉칫돈",
+        "url": "https://n.news.naver.com/mnews/article/366/0001196026"
       }
     ]
   },
@@ -9330,6 +9251,7 @@
           "unit": "%",
           "from": "2024-10-02"
         },
+        "date_note": "두 다리의 기준일이 다르다: 2026-10-03 / 2026-10-04",
         "scale": 100,
         "scale_note": "국내 고시 관행에 맞춰 100배로 적는다(등락률은 배수와 무관)",
         "note_ko": "엔 대비 원화. 일본 여행·엔화 예금과 수출 경쟁력이 함께 걸린다",
@@ -9348,14 +9270,15 @@
         "basis": "재정환율(USD 경유 계산)",
         "perf": {
           "w1": -1.64,
-          "m1": -1.9,
-          "m3": -12.25,
-          "m6": -8.93,
+          "m1": -1.92,
+          "m3": -12.33,
+          "m6": -8.74,
           "y1": 1.77,
           "ytd": -2.49,
           "unit": "%",
           "from": "2024-10-02"
         },
+        "date_note": "두 다리의 기준일이 다르다: 2026-10-03 / 2026-10-04",
         "note_ko": "중국 경기와 원화가 같이 움직인다. 원화의 대리 통화로 읽힌다",
         "note_en": "Won tracks the yuan; the won trades as a China proxy"
       },
@@ -9396,10 +9319,10 @@
         "basis": "재정환율(USD 경유 계산)",
         "perf": {
           "w1": -2.42,
-          "m1": -3.52,
-          "m3": -13.52,
-          "m6": -12.37,
-          "y1": -2.28,
+          "m1": -4.63,
+          "m3": -13.49,
+          "m6": -12.33,
+          "y1": -2.14,
           "ytd": -2.09,
           "unit": "%",
           "from": "2024-10-02"
@@ -9420,14 +9343,15 @@
         "basis": "재정환율(USD 경유 계산)",
         "perf": {
           "w1": -2.53,
-          "m1": -4.8,
-          "m3": -12.67,
-          "m6": -10.78,
-          "y1": 0.72,
+          "m1": -5.03,
+          "m3": -12.97,
+          "m6": -10.62,
+          "y1": 0.99,
           "ytd": -3.02,
           "unit": "%",
           "from": "2024-10-02"
         },
+        "date_note": "두 다리의 기준일이 다르다: 2026-10-03 / 2026-10-04",
         "note_ko": "호주 자원·배당 상품의 환산 기준. 원자재 값과 같이 간다",
         "note_en": "Conversion base for Australian resource and dividend products; tracks commodities"
       },
@@ -9437,20 +9361,20 @@
         "name_en": "Dollar Index",
         "symbol": "DX-Y.NYB",
         "date": "2026-10-02",
-        "close": 101.924,
+        "close": 101.93,
         "prev_close": 102.1,
-        "change": -0.176,
-        "change_pct": -0.1724,
+        "change": -0.17,
+        "change_pct": -0.1665,
         "basis": "야후 직접",
         "perf": {
-          "w1": 0.94,
-          "m1": 2.37,
-          "m3": 1.05,
-          "m6": 1.89,
-          "y1": 4.16,
+          "w1": 0.95,
+          "m1": 2.38,
+          "m3": 1.06,
+          "m6": 1.9,
+          "y1": 4.17,
           "ytd": 3.71,
           "unit": "%",
-          "from": "2024-10-02"
+          "from": "2024-10-03"
         },
         "note_ko": "주요 6개 통화 대비 달러. 원화가 약해진 것인지 달러가 세진 것인지 가른다",
         "note_en": "Dollar against six majors — separates a weak won from a strong dollar"
@@ -9484,7 +9408,7 @@
         "name_ko": "달러/엔",
         "name_en": "USD/JPY",
         "symbol": "JPY=X",
-        "date": "2026-10-03",
+        "date": "2026-10-04",
         "close": 157.83,
         "prev_close": 157.927,
         "change": -0.097,
@@ -9508,7 +9432,7 @@
         "name_ko": "달러/위안",
         "name_en": "USD/CNY",
         "symbol": "CNY=X",
-        "date": "2026-10-03",
+        "date": "2026-10-04",
         "close": 6.6987,
         "prev_close": 6.7045,
         "change": -0.0058,
@@ -9516,9 +9440,9 @@
         "basis": "야후 직접",
         "perf": {
           "w1": -0.18,
-          "m1": -0.32,
-          "m3": -1.41,
-          "m6": -2.5,
+          "m1": -0.3,
+          "m3": -1.32,
+          "m6": -2.71,
           "y1": -5.9,
           "ytd": -4.25,
           "unit": "%",
@@ -9540,10 +9464,10 @@
         "basis": "야후 직접",
         "perf": {
           "w1": 0.61,
-          "m1": 1.36,
-          "m3": 0.03,
-          "m6": 1.32,
-          "y1": -2.0,
+          "m1": 2.54,
+          "m3": 0.0,
+          "m6": 1.28,
+          "y1": -2.14,
           "ytd": -4.64,
           "unit": "%",
           "from": "2024-10-02"
@@ -9636,10 +9560,10 @@
         "basis": "야후 직접",
         "perf": {
           "w1": 0.14,
-          "m1": 1.42,
-          "m3": 0.92,
-          "m6": 3.95,
-          "y1": 8.59,
+          "m1": 1.92,
+          "m3": 0.81,
+          "m6": 3.58,
+          "y1": 8.54,
           "ytd": 7.27,
           "unit": "%",
           "from": "2024-10-02"
@@ -9796,42 +9720,20 @@
   "earnings": {
     "items": [
       {
-        "company": "SK하이닉스",
-        "title": "솔리다임 상장설에 흔들린 SK하닉…실적 전망은 '이상 무'[종목현미경]",
-        "url": "https://n.news.naver.com/mnews/article/421/0009207654",
-        "quotes": [
-          "류 연구원은 \"3분기 실적 발표에서 공개될 추가적인 주주환원 정책은 주가에 긍정적인 요소\"라며 \"펀더멘털 변화가 제한적인 상황인 만큼 SK하이닉스에 대한 긍정적인 시각을 유지한다\"고 말했다."
-        ],
-        "call_quotes": [],
-        "has_call": false,
-        "verdict": null
-      },
-      {
-        "company": "마이크론",
-        "title": "\"삼전닉스보다 더 뜨겁다\"…마이크론 깜짝 실적에 뜨는 소부장[종목e슈]",
-        "url": "https://n.news.naver.com/mnews/article/018/0006380012",
-        "quotes": [
-          "마이크론 역대 최대 실적에 메모리 호황 기대 재점화",
-          "소부장으로 번진 투자 열기…실제 장비 발주 확대 관건 [이데일리 신하연 기자] 미국 메모리 반도체 기업 마이크론이 시장 예상을 뛰어넘는 역대 최대 실적을 발표하면서 국내 반도체 관련주에 투자자들의 관심이 쏠리고 있다",
-          "반도체주에 불을 붙인 것은 지난달 30일(현지시간) 발표된 마이크론의 2026회계연도 4분기 실적이다"
-        ],
-        "call_quotes": [],
-        "has_call": false,
-        "verdict": null
-      },
-      {
         "company": "삼성전자",
-        "title": "“메모리, 누가 고점이래? 소부장은 이제 시작”…AI가 투자 판도 바꾼다 [여의도란도란]",
-        "url": "https://n.news.naver.com/mnews/article/009/0005743520",
+        "title": "지루한 박스권 장세…삼성전자 3분기 실적에 쏠리는 눈 [주간전망]",
+        "url": "https://n.news.naver.com/mnews/article/015/0005338929",
         "quotes": [
-          "SFA반도체 역시 삼성전자 중심으로 메모리 패키징·테스트를 담당하고 있는데, 27년 영업이익률이 10%대까지 오를 것으로 추정된다"
+          "전문가들은 원화 강세로 이익 추정치가 낮아진 삼성전자의 올 3분기 잠정 실적 발표를 앞두고 경계감도 짙어질 것으로 관측했다",
+          "오는 8일 발표되는 삼성전자의 3분기 실적이 시장의 예상을 충족하지 못할 것이란 우려도 나온다",
+          "NH투자증권에 따르면 삼성전자의 3분기 영업이익 컨센서스(증권사 평균 추정치)는 이달 초 113조1000억원에서 현재 109조5000억원으로 하향 조정됐다"
         ],
         "call_quotes": [],
         "has_call": false,
-        "verdict": null
+        "verdict": "miss"
       }
     ],
-    "count": 3,
+    "count": 1,
     "with_call": 0,
     "basis": "그날 수집한 기사 본문에서 회사 이름과 실적 표현이 같은 문장에 있는 대목만 뽑았다. 문장은 원문 그대로다"
   },

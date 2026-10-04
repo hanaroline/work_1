@@ -1,6 +1,6 @@
 # 펀드 탐색 9차 — 클래스 화면·유형평균·안 싣는 항목
 
-조사 시각: 2026-08-29T08:13:22.447Z
+조사 시각: 2026-10-03T09:09:06.878Z
 
 ## 1. 클래스 화면이 값을 그리는가
 
@@ -14,7 +14,6 @@
 결제
 증권
 부동산
-기존 증권 보기
 홈
 국내
 미국 · 글로벌
@@ -26,18 +25,18 @@
 MY
 새로운 증권 안내
 공지
-8월 해외주식 및 선물 휴장 안내
+한국거래소(KRX) 주식 거래시간 오후 8시까지 확대!
 K55207BJ1791
 교보악사파워인덱스증권자투자신탁 2[주식]ClassAe
 기준가
-3,856.76
+3,922.15
 원
-38.16
-(+0.99%)
+22.84
+(-0.57%)
 수익률
--15.15%
+-20.89%
 3개월
-08. 27.기준
+10. 01.기준
 다른 클래스 보기
 이 투자신탁은 국내 주식에 주로 투자하는 증권(주식형) 모투자신탁을 시행령 제94조제2항제4호에서 규정하는 주된 투자대상자산으로 하여 벤치...
 더보기
@@ -47,11 +46,11 @@ K55207BJ1791
 위험등급
 2등급(높은위험)
 설정액
-208억
+207억
 설정일
 2017. 06. 28.
 순자산
-766억
+777억
 운용사
 교보악사자산운용
 벤치마크
@@ -105,75 +104,75 @@ KOSPI200 TR
 3년
 5년
 펀드수익률
-+1.37%
--15.15%
-+14.17%
-+152.49%
-+246.71%
-+191.19%
++1.71%
+-20.89%
++46.52%
++132.15%
++255.18%
++202.79%
 벤치마크
-+1.56%
--14.89%
-+14.10%
-+152.61%
-+243.68%
-+191.30%
++0.98%
+-20.94%
++45.68%
++130.88%
++250.26%
++200.63%
 자산구성
 구분	투자 비중
 
 주식
-	347.86%
+	346.37%
 
 유동자산
-	8.41%
+	8.55%
 
 파생상품
-	4.62%
+	4.86%
 보유 종목 TOP5
 종목
 투자 비중
 삼성전자
-29.10
+30.01
 %
 SK하이닉스
-28.17
+24.28
 %
 SK스퀘어
-3.02
+2.32
 %
 삼성전기
-2.53
+1.56
 %
-현대차
-1.02
+KB금융
+1.34
 %
 위험분석
 1년, 연환산 기준
 변동성
-41.79%
+41.86%
 트레킹에러
-0.69%
+0.71%
 구분
 지표
 유형평균
 변동성(표준편차%)
-41.79
-41.84
+41.86
+41.91
 샤프지수
-2.22
-2.22
+2.07
+2.06
 정보비율
-0.06
-0.04
+0.13
+0.05
 트레킹에러(%)
-0.69
 0.71
+0.73
 베타
 1.00
 1.00
 젠센알파(%)
 -0.21
--0.34
+-0.36
 관련자료
 운용보고서
 2026. 03. 20.
@@ -188,128 +187,119 @@ PDF 보기
 2026. 08. 07.
 PDF 보기
 코스피
-6,788.88
-123.49
-(-1.79%)
+7,003.74
+32.39
+(+0.46%)
 코스닥
-838.41
-0.76
-(+0.09%)
-코스피 200
-1,065.70
-22.91
-(-2.10%)
-다우존스
-53,559.99
-9.45
-(-0.02%)
-S&P 500
-7,711.76
-19.23
-(-0.25%)
-미국 USD
-1,380.50
-1.50
+893.29
+1.00
 (-0.11%)
+코스피 200
+1,109.05
+4.57
+(+0.41%)
+다우존스
+51,176.96
+250.40
+(+0.49%)
+S&P 500
+7,722.72
+56.27
+(+0.73%)
+미국 USD
+1,347.00
+12.50
+(-0.92%)
 나스닥 종합
-26,402.42
-138.93
-(-0.52%)
+27,190.86
+319.27
+(+1.19%)
 국제 금
-4,529.90
-134.10
-(-2.88%)
+4,162.30
+40.00
+(-0.95%)
 WTI
-83.40
-0.13
-(-0.16%)
+91.11
+1.76
+(-1.90%)
 코스피
-6,788.88
-123.49
-(-1.79%)
+7,003.74
+32.39
+(+0.46%)
 코스닥
-838.41
-0.76
-(+0.09%)
-코스피 200
-1,065.70
-22.91
-(-2.10%)
-다우존스
-53,559.99
-9.45
-(-0.02%)
-S&P 500
-7,711.76
-19.23
-(-0.25%)
-미국 USD
-1,380.50
-1.50
+893.29
+1.00
 (-0.11%)
+코스피 200
+1,109.05
+4.57
+(+0.41%)
+다우존스
+51,176.96
+250.40
+(+0.49%)
+S&P 500
+7,722.72
+56.27
+(+0.73%)
+미국 USD
+1,347.00
+12.50
+(-0.92%)
 나스닥 종합
-26,402.42
-138.93
-(-0.52%)
+27,190.86
+319.27
+(+1.19%)
 국제 금
-4,529.90
-134.10
-(-2.88%)
+4,162.30
+40.00
+(-0.95%)
 WTI
-83.40
-0.13
-(-0.16%)
+91.11
+1.76
+(-1.90%)
 코스피
-6,788.88
-123.49
-(-1.79%)
+7,003.74
+32.39
+(+0.46%)
 코스닥
-838.41
-0.76
-(+0.09%)
-코스피 200
-1,065.70
-22.91
-(-2.10%)
-다우존스
-53,559.99
-9.45
-(-0.02%)
-S&P 500
-7,711.76
-19.23
-(-0.25%)
-미국 USD
-1,380.50
-1.50
+893.29
+1.00
 (-0.11%)
+코스피 200
+1,109.05
+4.57
+(+0.41%)
+다우존스
+51,176.96
+250.40
+(+0.49%)
+S&P 500
+7,722.72
+56.27
+(+0.73%)
+미국 USD
+1,347.00
+12.50
+(-0.92%)
 나스닥 종합
-26,402.42
-138.93
-(-0.52%)
+27,190.86
+319.27
+(+1.19%)
 국제 금
-4,529.90
-134.10
-(-2.88%)
+4,162.30
+40.00
+(-0.95%)
 WTI
-83.40
-0.13
-(-0.16%)
+91.11
+1.76
+(-1.90%)
 최근 본
 보유 종목
 관심 종목
 내 피드
 알림
 캘린더
-관심 종목
-직접 설정한 순
-원화로 보기
-
-로그인해 보세요
-
-관심있는 종목을 간편하게 확인하고 내 피드에서 관련 소식을 받아볼 수 있어요.
-
-로그인하기
 ```
 
 ## 2·3. 응답 원자료
@@ -323,16 +313,16 @@ WTI
  "detail": {
   "fundCode": "KR5207698899",
   "fundName": "교보악사파워인덱스증권자투자신탁 2(주식)(운용)",
-  "basePrice": "4000.71",
-  "changePrice": 39.59,
-  "priceBandType": "RISING",
-  "returnIndex": 0.9994648,
-  "returnRate3m": -15.0923815,
-  "tradeDate": "2026-08-27",
+  "basePrice": "4069.73",
+  "changePrice": -23.66,
+  "priceBandType": "FALLING",
+  "returnIndex": -0.578005,
+  "returnRate3m": -20.8374665,
+  "tradeDate": "2026-10-01",
   "riskGrade": "highRisk",
   "parentPeerGroupName": "국내주식형",
-  "derivedAum": "19187006847",
-  "derivedNav": "76761726785",
+  "derivedAum": "19106741130",
+  "derivedNav": "77759277055",
   "inceptionDate": "2007-06-04",
   "companyCode": "207",
   "companyName": "교보악사자산운용",
@@ -350,38 +340,38 @@ WTI
    "fundCode": "KR5207698899",
    "fundName": "교보악사파워인덱스증권자투자신탁 2(주식)(운용)",
    "totalFee": null,
-   "returnRate1m": 1.392891,
-   "returnRate3m": -15.0923815,
-   "returnRate1y": 153.1142873,
-   "returnRate3y": 249.4690989
+   "returnRate1m": 1.7396894,
+   "returnRate3m": -20.8374665,
+   "returnRate1y": 132.7353125,
+   "returnRate3y": 258.005234
   },
   "classes": [
    {
     "fundCode": "K55207BJ1791",
     "fundName": "교보악사파워인덱스증권자투자신탁 2[주식]ClassAe",
     "totalFee": 0.275,
-    "returnRate1m": 1.3707055,
-    "returnRate3m": -15.1521495,
-    "returnRate1y": 152.4938972,
-    "returnRate3y": 246.7199808
+    "returnRate1m": 1.7139257,
+    "returnRate3m": -20.8995167,
+    "returnRate1y": 132.155311,
+    "returnRate3y": 255.181321
    },
    {
     "fundCode": "K55207BJ1809",
     "fundName": "교보악사파워인덱스증권자투자신탁 2[주식]ClassCe",
     "totalFee": 0.665,
-    "returnRate1m": 1.339487,
-    "returnRate3m": -15.2364159,
-    "returnRate1y": 151.6203301,
-    "returnRate3y": 242.8808206
+    "returnRate1m": 1.6772494,
+    "returnRate3m": -20.9866938,
+    "returnRate1y": 131.3416867,
+    "returnRate3y": 251.2350105
    },
    {
     "fundCode": "K55207BT7598",
     "fundName": "교보악사파워인덱스증권자투자신탁 2[주식]ClassC-R",
     "totalFee": 0.865,
-    "returnRate1m": 1.3233494,
-    "returnRate3m": -15.2798886,
-    "returnRate1y": 151.1915701,
-    "returnRate3y": 240.9312367
+    "returnRate1m": 1.6583249,
+    "returnRate3m": -21.0330698,
+    "returnRate1y": 130.9409598,
+    "returnRate3y": 249.2330118
    },
    "…(총 6개)"
   ]
@@ -415,19 +405,19 @@ WTI
    {
     "itemCode": "KR7005930003",
     "itemName": "삼성전자",
-    "weight": 0.290975817
+    "weight": 0.300067338
    },
    {
     "itemCode": "KR7000660001",
     "itemName": "SK하이닉스",
-    "weight": 0.281715894
+    "weight": 0.242832481
    },
    {
     "itemCode": "KR7402340004",
     "itemName": "SK스퀘어",
-    "weight": 0.030209806
+    "weight": 0.023163089
    },
-   "…(총 208개)"
+   "…(총 206개)"
   ]
  },
  "allocationsAssets": {
@@ -435,43 +425,43 @@ WTI
    {
     "assetType": "STOCK",
     "assetTypeName": "주식",
-    "weight": 3.478552045,
-    "marketEvaluationAmount": 349088017376
+    "weight": 3.463705084,
+    "marketEvaluationAmount": 259454031788
    },
    {
     "assetType": "LIQUID_ASSET",
     "assetTypeName": "유동자산",
-    "weight": 0.084121045,
+    "weight": 0.085481112,
     "marketEvaluationAmount": null
    },
    {
     "assetType": "DERIVATIVE",
     "assetTypeName": "파생상품",
-    "weight": 0.046248004,
+    "weight": 0.048602877,
     "marketEvaluationAmount": null
    }
   ]
  },
  "fundReturns": {
-  "baseDate": "2026-08-27",
+  "baseDate": "2026-10-01",
   "returns": [
    {
     "term": "1d",
-    "fundReturn": 0.9994648,
+    "fundReturn": -0.578005,
     "benchmarkReturn": null,
-    "peerCompanyReturn": 0.9972167
+    "peerCompanyReturn": -0.5788804
    },
    {
     "term": "1w",
-    "fundReturn": 5.8232114,
-    "benchmarkReturn": 5.7959359,
-    "peerCompanyReturn": 5.8164088
+    "fundReturn": -3.4469587,
+    "benchmarkReturn": -3.8885766,
+    "peerCompanyReturn": -3.4535038
    },
    {
     "term": "1m",
-    "fundReturn": 1.392891,
-    "benchmarkReturn": 1.5669114,
-    "peerCompanyReturn": 1.311028
+    "fundReturn": 1.7396894,
+    "benchmarkReturn": 0.9802543,
+    "peerCompanyReturn": 1.6943661
    },
    "…(총 12개)"
   ]
@@ -501,20 +491,20 @@ WTI
   "fundCode": "KR5207698899",
   "termWeeks": 52,
   "fundMetric": {
-   "standardDeviation": 41.778951389,
-   "trackingError": 0.686723407,
-   "sharpRatio": 2.225175208,
-   "informationRatio": 0.415846727,
-   "jensenAlpha": 0.057734043,
-   "beta": 1.002458328
+   "standardDeviation": 41.85188115,
+   "trackingError": 0.705690996,
+   "sharpRatio": 2.073284649,
+   "informationRatio": 0.484322276,
+   "jensenAlpha": 0.063353182,
+   "beta": 1.00322147
   },
   "peerMetric": {
-   "standardDeviation": 41.840270552,
-   "trackingError": 0.707949023,
-   "sharpRatio": 2.215737382,
-   "informationRatio": 0.038330953,
-   "jensenAlpha": -0.336762599,
-   "beta": 1.003926406
+   "standardDeviation": 41.91088037,
+   "trackingError": 0.732316379,
+   "sharpRatio": 2.063059943,
+   "informationRatio": 0.048582299,
+   "jensenAlpha": -0.364659728,
+   "beta": 1.004630818
   }
  }
 }
@@ -525,34 +515,34 @@ WTI
 ```json
 {
  "performance": {
-  "tradeDate": "2026-08-27",
-  "returnRate1m": 1.392891,
-  "returnRate3m": -15.0923815,
-  "returnRate1y": 153.1142873,
-  "standardDeviation": 41.778951389,
-  "trackingError": 0.686723407,
-  "sharpe": 2.225175208
+  "tradeDate": "2026-10-01",
+  "returnRate1m": 1.7396894,
+  "returnRate3m": -20.8374665,
+  "returnRate1y": 132.7353125,
+  "standardDeviation": 41.85188115,
+  "trackingError": 0.705690996,
+  "sharpe": 2.073284649
  },
  "periodReturns": {
-  "baseDate": "2026-08-27",
+  "baseDate": "2026-10-01",
   "returns": [
    {
     "term": "1d",
-    "fundReturn": 0.9994648,
+    "fundReturn": -0.578005,
     "benchmarkReturn": null,
-    "peerCompanyReturn": 0.9972167
+    "peerCompanyReturn": -0.5788804
    },
    {
     "term": "1w",
-    "fundReturn": 5.8232114,
-    "benchmarkReturn": 5.7959359,
-    "peerCompanyReturn": 5.8164088
+    "fundReturn": -3.4469587,
+    "benchmarkReturn": -3.8885766,
+    "peerCompanyReturn": -3.4535038
    },
    {
     "term": "1m",
-    "fundReturn": 1.392891,
-    "benchmarkReturn": 1.5669114,
-    "peerCompanyReturn": 1.311028
+    "fundReturn": 1.7396894,
+    "benchmarkReturn": 0.9802543,
+    "peerCompanyReturn": 1.6943661
    },
    "…(총 12개)"
   ]
@@ -575,20 +565,20 @@ WTI
  "fundCode": "KR5207698899",
  "termWeeks": 52,
  "fundMetric": {
-  "standardDeviation": 41.778951389,
-  "trackingError": 0.686723407,
-  "sharpRatio": 2.225175208,
-  "informationRatio": 0.415846727,
-  "jensenAlpha": 0.057734043,
-  "beta": 1.002458328
+  "standardDeviation": 41.85188115,
+  "trackingError": 0.705690996,
+  "sharpRatio": 2.073284649,
+  "informationRatio": 0.484322276,
+  "jensenAlpha": 0.063353182,
+  "beta": 1.00322147
  },
  "peerMetric": {
-  "standardDeviation": 41.840270552,
-  "trackingError": 0.707949023,
-  "sharpRatio": 2.215737382,
-  "informationRatio": 0.038330953,
-  "jensenAlpha": -0.336762599,
-  "beta": 1.003926406
+  "standardDeviation": 41.91088037,
+  "trackingError": 0.732316379,
+  "sharpRatio": 2.063059943,
+  "informationRatio": 0.048582299,
+  "jensenAlpha": -0.364659728,
+  "beta": 1.004630818
  }
 }
 ```
@@ -601,38 +591,38 @@ WTI
   "fundCode": "KR5207698899",
   "fundName": "교보악사파워인덱스증권자투자신탁 2(주식)(운용)",
   "totalFee": null,
-  "returnRate1m": 1.392891,
-  "returnRate3m": -15.0923815,
-  "returnRate1y": 153.1142873,
-  "returnRate3y": 249.4690989
+  "returnRate1m": 1.7396894,
+  "returnRate3m": -20.8374665,
+  "returnRate1y": 132.7353125,
+  "returnRate3y": 258.005234
  },
  "classes": [
   {
    "fundCode": "K55207BJ1791",
    "fundName": "교보악사파워인덱스증권자투자신탁 2[주식]ClassAe",
    "totalFee": 0.275,
-   "returnRate1m": 1.3707055,
-   "returnRate3m": -15.1521495,
-   "returnRate1y": 152.4938972,
-   "returnRate3y": 246.7199808
+   "returnRate1m": 1.7139257,
+   "returnRate3m": -20.8995167,
+   "returnRate1y": 132.155311,
+   "returnRate3y": 255.181321
   },
   {
    "fundCode": "K55207BJ1809",
    "fundName": "교보악사파워인덱스증권자투자신탁 2[주식]ClassCe",
    "totalFee": 0.665,
-   "returnRate1m": 1.339487,
-   "returnRate3m": -15.2364159,
-   "returnRate1y": 151.6203301,
-   "returnRate3y": 242.8808206
+   "returnRate1m": 1.6772494,
+   "returnRate3m": -20.9866938,
+   "returnRate1y": 131.3416867,
+   "returnRate3y": 251.2350105
   },
   {
    "fundCode": "K55207BT7598",
    "fundName": "교보악사파워인덱스증권자투자신탁 2[주식]ClassC-R",
    "totalFee": 0.865,
-   "returnRate1m": 1.3233494,
-   "returnRate3m": -15.2798886,
-   "returnRate1y": 151.1915701,
-   "returnRate3y": 240.9312367
+   "returnRate1m": 1.6583249,
+   "returnRate3m": -21.0330698,
+   "returnRate1y": 130.9409598,
+   "returnRate3y": 249.2330118
   },
   "…(총 6개)"
  ]
@@ -648,16 +638,16 @@ WTI
  "detail": {
   "fundCode": "K55207BJ1791",
   "fundName": "교보악사파워인덱스증권자투자신탁 2[주식]ClassAe",
-  "basePrice": "3856.76",
-  "changePrice": 38.16,
-  "priceBandType": "RISING",
-  "returnIndex": 0.9993191,
-  "returnRate3m": -15.1521495,
-  "tradeDate": "2026-08-27",
+  "basePrice": "3922.15",
+  "changePrice": -22.84,
+  "priceBandType": "FALLING",
+  "returnIndex": -0.5789622,
+  "returnRate3m": -20.8995167,
+  "tradeDate": "2026-10-01",
   "riskGrade": "highRisk",
   "parentPeerGroupName": "국내주식형",
-  "derivedAum": "20837849073",
-  "derivedNav": "76651129119",
+  "derivedAum": "20783905273",
+  "derivedNav": "77725506973",
   "inceptionDate": "2017-06-28",
   "companyCode": "207",
   "companyName": "교보악사자산운용",
@@ -675,38 +665,38 @@ WTI
    "fundCode": "K55207BJ1791",
    "fundName": "교보악사파워인덱스증권자투자신탁 2[주식]ClassAe",
    "totalFee": 0.275,
-   "returnRate1m": 1.3707055,
-   "returnRate3m": -15.1521495,
-   "returnRate1y": 152.4938972,
-   "returnRate3y": 246.7199808
+   "returnRate1m": 1.7139257,
+   "returnRate3m": -20.8995167,
+   "returnRate1y": 132.155311,
+   "returnRate3y": 255.181321
   },
   "classes": [
    {
     "fundCode": "K55207BJ1809",
     "fundName": "교보악사파워인덱스증권자투자신탁 2[주식]ClassCe",
     "totalFee": 0.665,
-    "returnRate1m": 1.339487,
-    "returnRate3m": -15.2364159,
-    "returnRate1y": 151.6203301,
-    "returnRate3y": 242.8808206
+    "returnRate1m": 1.6772494,
+    "returnRate3m": -20.9866938,
+    "returnRate1y": 131.3416867,
+    "returnRate3y": 251.2350105
    },
    {
     "fundCode": "K55207BT7598",
     "fundName": "교보악사파워인덱스증권자투자신탁 2[주식]ClassC-R",
     "totalFee": 0.865,
-    "returnRate1m": 1.3233494,
-    "returnRate3m": -15.2798886,
-    "returnRate1y": 151.1915701,
-    "returnRate3y": 240.9312367
+    "returnRate1m": 1.6583249,
+    "returnRate3m": -21.0330698,
+    "returnRate1y": 130.9409598,
+    "returnRate3y": 249.2330118
    },
    {
     "fundCode": "K55207BT7606",
     "fundName": "교보악사파워인덱스증권자투자신탁 2[주식]ClassC-Re",
     "totalFee": 0.515,
-    "returnRate1m": 1.3514411,
-    "returnRate3m": -15.2042,
-    "returnRate1y": 151.9538698,
-    "returnRate3y": 244.3312751
+    "returnRate1m": 1.6912018,
+    "returnRate3m": -20.9536648,
+    "returnRate1y": 131.6523658,
+    "returnRate3y": 252.7275797
    },
    "…(총 5개)"
   ]
@@ -740,19 +730,19 @@ WTI
    {
     "itemCode": "KR7005930003",
     "itemName": "삼성전자",
-    "weight": 0.290975817
+    "weight": 0.300067338
    },
    {
     "itemCode": "KR7000660001",
     "itemName": "SK하이닉스",
-    "weight": 0.281715894
+    "weight": 0.242832482
    },
    {
     "itemCode": "KR7402340004",
     "itemName": "SK스퀘어",
-    "weight": 0.030209807
+    "weight": 0.023163089
    },
-   "…(총 208개)"
+   "…(총 206개)"
   ]
  },
  "allocationsAssets": {
@@ -760,43 +750,43 @@ WTI
    {
     "assetType": "STOCK",
     "assetTypeName": "주식",
-    "weight": 3.478552049,
-    "marketEvaluationAmount": 2128072252
+    "weight": 3.463704993,
+    "marketEvaluationAmount": 1623227280
    },
    {
     "assetType": "LIQUID_ASSET",
     "assetTypeName": "유동자산",
-    "weight": 0.084121046,
+    "weight": 0.085481111,
     "marketEvaluationAmount": null
    },
    {
     "assetType": "DERIVATIVE",
     "assetTypeName": "파생상품",
-    "weight": 0.046248004,
+    "weight": 0.048602877,
     "marketEvaluationAmount": null
    }
   ]
  },
  "fundReturns": {
-  "baseDate": "2026-08-27",
+  "baseDate": "2026-10-01",
   "returns": [
    {
     "term": "1d",
-    "fundReturn": 0.9993191,
+    "fundReturn": -0.5789622,
     "benchmarkReturn": null,
-    "peerCompanyReturn": 0.9972167
+    "peerCompanyReturn": -0.5788804
    },
    {
     "term": "1w",
-    "fundReturn": 5.8215053,
-    "benchmarkReturn": 5.7959359,
-    "peerCompanyReturn": 5.8164088
+    "fundReturn": -3.4497783,
+    "benchmarkReturn": -3.8885766,
+    "peerCompanyReturn": -3.4535038
    },
    {
     "term": "1m",
-    "fundReturn": 1.3707055,
-    "benchmarkReturn": 1.5669114,
-    "peerCompanyReturn": 1.311028
+    "fundReturn": 1.7139257,
+    "benchmarkReturn": 0.9802543,
+    "peerCompanyReturn": 1.6943661
    },
    "…(총 12개)"
   ]
@@ -826,20 +816,20 @@ WTI
   "fundCode": "K55207BJ1791",
   "termWeeks": 52,
   "fundMetric": {
-   "standardDeviation": 41.790380276,
-   "trackingError": 0.690060633,
-   "sharpRatio": 2.218737991,
-   "informationRatio": 0.060848524,
-   "jensenAlpha": -0.211209258,
-   "beta": 1.002731967
+   "standardDeviation": 41.863727624,
+   "trackingError": 0.709428979,
+   "sharpRatio": 2.066780868,
+   "informationRatio": 0.132600226,
+   "jensenAlpha": -0.20885669,
+   "beta": 1.003504921
   },
   "peerMetric": {
-   "standardDeviation": 41.840270552,
-   "trackingError": 0.707949023,
-   "sharpRatio": 2.215737382,
-   "informationRatio": 0.038330953,
-   "jensenAlpha": -0.336762599,
-   "beta": 1.003926406
+   "standardDeviation": 41.91088037,
+   "trackingError": 0.732316379,
+   "sharpRatio": 2.063059943,
+   "informationRatio": 0.048582299,
+   "jensenAlpha": -0.364659728,
+   "beta": 1.004630818
   }
  }
 }
@@ -850,34 +840,34 @@ WTI
 ```json
 {
  "performance": {
-  "tradeDate": "2026-08-27",
-  "returnRate1m": 1.3707055,
-  "returnRate3m": -15.1521495,
-  "returnRate1y": 152.4938972,
-  "standardDeviation": 41.790380276,
-  "trackingError": 0.690060633,
-  "sharpe": 2.218737991
+  "tradeDate": "2026-10-01",
+  "returnRate1m": 1.7139257,
+  "returnRate3m": -20.8995167,
+  "returnRate1y": 132.155311,
+  "standardDeviation": 41.863727624,
+  "trackingError": 0.709428979,
+  "sharpe": 2.066780868
  },
  "periodReturns": {
-  "baseDate": "2026-08-27",
+  "baseDate": "2026-10-01",
   "returns": [
    {
     "term": "1d",
-    "fundReturn": 0.9993191,
+    "fundReturn": -0.5789622,
     "benchmarkReturn": null,
-    "peerCompanyReturn": 0.9972167
+    "peerCompanyReturn": -0.5788804
    },
    {
     "term": "1w",
-    "fundReturn": 5.8215053,
-    "benchmarkReturn": 5.7959359,
-    "peerCompanyReturn": 5.8164088
+    "fundReturn": -3.4497783,
+    "benchmarkReturn": -3.8885766,
+    "peerCompanyReturn": -3.4535038
    },
    {
     "term": "1m",
-    "fundReturn": 1.3707055,
-    "benchmarkReturn": 1.5669114,
-    "peerCompanyReturn": 1.311028
+    "fundReturn": 1.7139257,
+    "benchmarkReturn": 0.9802543,
+    "peerCompanyReturn": 1.6943661
    },
    "…(총 12개)"
   ]
@@ -900,20 +890,20 @@ WTI
  "fundCode": "K55207BJ1791",
  "termWeeks": 52,
  "fundMetric": {
-  "standardDeviation": 41.790380276,
-  "trackingError": 0.690060633,
-  "sharpRatio": 2.218737991,
-  "informationRatio": 0.060848524,
-  "jensenAlpha": -0.211209258,
-  "beta": 1.002731967
+  "standardDeviation": 41.863727624,
+  "trackingError": 0.709428979,
+  "sharpRatio": 2.066780868,
+  "informationRatio": 0.132600226,
+  "jensenAlpha": -0.20885669,
+  "beta": 1.003504921
  },
  "peerMetric": {
-  "standardDeviation": 41.840270552,
-  "trackingError": 0.707949023,
-  "sharpRatio": 2.215737382,
-  "informationRatio": 0.038330953,
-  "jensenAlpha": -0.336762599,
-  "beta": 1.003926406
+  "standardDeviation": 41.91088037,
+  "trackingError": 0.732316379,
+  "sharpRatio": 2.063059943,
+  "informationRatio": 0.048582299,
+  "jensenAlpha": -0.364659728,
+  "beta": 1.004630818
  }
 }
 ```
@@ -926,38 +916,38 @@ WTI
   "fundCode": "K55207BJ1791",
   "fundName": "교보악사파워인덱스증권자투자신탁 2[주식]ClassAe",
   "totalFee": 0.275,
-  "returnRate1m": 1.3707055,
-  "returnRate3m": -15.1521495,
-  "returnRate1y": 152.4938972,
-  "returnRate3y": 246.7199808
+  "returnRate1m": 1.7139257,
+  "returnRate3m": -20.8995167,
+  "returnRate1y": 132.155311,
+  "returnRate3y": 255.181321
  },
  "classes": [
   {
    "fundCode": "K55207BJ1809",
    "fundName": "교보악사파워인덱스증권자투자신탁 2[주식]ClassCe",
    "totalFee": 0.665,
-   "returnRate1m": 1.339487,
-   "returnRate3m": -15.2364159,
-   "returnRate1y": 151.6203301,
-   "returnRate3y": 242.8808206
+   "returnRate1m": 1.6772494,
+   "returnRate3m": -20.9866938,
+   "returnRate1y": 131.3416867,
+   "returnRate3y": 251.2350105
   },
   {
    "fundCode": "K55207BT7598",
    "fundName": "교보악사파워인덱스증권자투자신탁 2[주식]ClassC-R",
    "totalFee": 0.865,
-   "returnRate1m": 1.3233494,
-   "returnRate3m": -15.2798886,
-   "returnRate1y": 151.1915701,
-   "returnRate3y": 240.9312367
+   "returnRate1m": 1.6583249,
+   "returnRate3m": -21.0330698,
+   "returnRate1y": 130.9409598,
+   "returnRate3y": 249.2330118
   },
   {
    "fundCode": "K55207BT7606",
    "fundName": "교보악사파워인덱스증권자투자신탁 2[주식]ClassC-Re",
    "totalFee": 0.515,
-   "returnRate1m": 1.3514411,
-   "returnRate3m": -15.2042,
-   "returnRate1y": 151.9538698,
-   "returnRate3y": 244.3312751
+   "returnRate1m": 1.6912018,
+   "returnRate3m": -20.9536648,
+   "returnRate1y": 131.6523658,
+   "returnRate3y": 252.7275797
   },
   "…(총 5개)"
  ]
@@ -976,8 +966,8 @@ WTI
    "fundMetric",
    "peerMetric"
   ],
-  "peer자리": "{\"standardDeviation\":41.840270552,\"trackingError\":0.707949023,\"sharpRatio\":2.215737382,\"informationRatio\":0.038330953,\"jensenAlpha\":-0.336762599,\"beta\":1.003926406}",
-  "fund자리": "{\"standardDeviation\":41.778951389,\"trackingError\":0.686723407,\"sharpRatio\":2.225175208,\"informationRatio\":0.415846727,\"jensenAlpha\":0.057734043,\"beta\":1.002458328}"
+  "peer자리": "{\"standardDeviation\":41.91088037,\"trackingError\":0.732316379,\"sharpRatio\":2.063059943,\"informationRatio\":0.048582299,\"jensenAlpha\":-0.364659728,\"beta\":1.004630818}",
+  "fund자리": "{\"standardDeviation\":41.85188115,\"trackingError\":0.705690996,\"sharpRatio\":2.073284649,\"informationRatio\":0.484322276,\"jensenAlpha\":0.063353182,\"beta\":1.00322147}"
  },
  {
   "물음": "매매 기준일·수수료·위험등급 숫자가 어느 자리인가",
