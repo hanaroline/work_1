@@ -45,23 +45,47 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SEED_DIR = os.path.join(ROOT, "data", "calendar", "seed")
 REPORT_PATH = os.path.join(ROOT, "data", "calendar", "fetch-report.json")
 
-UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
-      "Chrome/124.0 Safari/537.36")
+UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+      "Chrome/129.0.0.0 Safari/537.36")
+
+# 브라우저가 평소에 함께 보내는 머리글. 넣는 이유가 있다 —
+#   bls.gov 는 User-Agent 만 바꿔서는 안 되고, 이 묶음이 있어야 200 을 준다.
+#   2026-10-04 러너 실측: 같은 주소에 예전 머리글은 403 "Access Denied",
+#   이 머리글은 200. 차단은 IP 가 아니라 머리글 때문이었다.
+# 다른 원천에는 아무 해가 없어 전부에 같이 보낸다.
+BROWSERISH = {
+    "Accept-Language": "en-US,en;q=0.9",
+    "Cache-Control": "no-cache",
+    "Pragma": "no-cache",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+    "Upgrade-Insecure-Requests": "1",
+}
 
 MONTHS = {m.lower(): i for i, m in enumerate(
     ["January", "February", "March", "April", "May", "June",
      "July", "August", "September", "October", "November", "December"], 1)}
 MONTHS.update({m[:3].lower(): i for m, i in list(MONTHS.items())})
+# 일본은행은 9월을 'Sept.' 로 적는다. 석 자만 잘라 넣은 위 줄은 'sep' 까지라 못 읽었다.
+MONTHS["sept"] = 9
 
 
 # ------------------------------------------------------------------ 잔심부름
 
-def http(url, timeout=25, tries=3, accept="text/html,application/json"):
+# 브라우저가 보내는 Accept 그대로. bls.gov 는 머리글 묶음을 통째로 봐서, 이것까지
+# 러너에서 200 을 받은 조합이다(2026-10-04). `*/*;q=0.8` 이 있어 ics 도 함께 받는다.
+ACCEPT_HTML = ("text/html,application/xhtml+xml,application/xml;q=0.9,"
+               "image/avif,image/webp,*/*;q=0.8")
+
+
+def http(url, timeout=25, tries=3, accept=ACCEPT_HTML):
     last = None
     for i in range(tries):
         try:
-            req = urllib.request.Request(url, headers={
-                "User-Agent": UA, "Accept": accept, "Accept-Language": "en,ko;q=0.8"})
+            hdrs = dict(BROWSERISH, **{"User-Agent": UA, "Accept": accept})
+            req = urllib.request.Request(url, headers=hdrs)
             with urllib.request.urlopen(req, timeout=timeout) as r:
                 raw = r.read()
             return raw.decode("utf-8", "replace")
@@ -236,10 +260,47 @@ def parse_fomc(html):
     return sorted(out, key=lambda x: x["start"])
 
 
+# ECB 가 해마다 내는 「운영달력」 보도자료 본문의 지급준비금 적립기간 표.
+# 칸 차례가 이렇다:  MP · **Relevant Governing Council meeting** · Start of MP · End of MP · …
+#   8/2026 Thu, 17-Dec-26  Wed, 23-Dec-26  Tue, 09-Feb-27  Oct-26  Sep-26  49
+#   1      Thu, 4-Feb-27   Wed, 10-Feb-27  Tue, 23-Mar-27  Dec-26  Sep-26  42
+# 행 번호가 앞에 붙어 있어 **첫 칸 날짜**만 집어낼 수 있다. 이것이 통화정책회의일이다.
+ECB_MP_ROW = re.compile(
+    r"(?:^|\s)\d{1,2}(?:/20\d{2})?\s+"
+    r"(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),\s*(\d{1,2})-([A-Z][a-z]{2})-(\d{2})\b")
+
+
+def parse_ecb_mp_table(text):
+    """「Relevant Governing Council meeting」 칸을 읽는다. 없으면 빈 목록."""
+    i = text.find("Relevant Governing Council meeting")
+    if i < 0:
+        return []
+    # 표 끝을 모르니 넉넉히 자른다. 뒤에 이어지는 연락처·메뉴에는 이 꼴의 날짜가 없다.
+    out, seen = [], set()
+    for m in ECB_MP_ROW.finditer(text[i:i + 4000]):
+        day, mname, yy = m.groups()
+        mon = MONTHS.get(mname.lower())
+        iso = mk(2000 + int(yy), mon, day) if mon else None
+        if iso and iso not in seen:
+            seen.add(iso)
+            out.append({"start": iso, "end": iso, "sep": mon in (3, 6, 9, 12),
+                        "presser": True, "confirmed": "official"})
+    return out
+
+
 def parse_ecb(html):
-    """'Governing Council monetary policy meeting' 이 붙은 행의 날짜만 읽는다."""
+    """'Governing Council monetary policy meeting' 이 붙은 행의 날짜만 읽는다.
+
+    2026-09-10 에 "일정표가 본문에 없다"고 적어 둔 것은 **상설 달력 페이지**
+    (press/calendars/mgcgc/…) 에 한해 맞는 말이다. 2026-10-04 러너 실측으로
+    다른 길을 찾았다 — 해마다 6월 말에 내는 「운영달력」 보도자료 본문에 지급준비금
+    적립기간 표가 있고, 그 첫 칸이 바로 그 해의 통화정책회의일이다. 그쪽을 먼저 본다.
+    """
     text = strip_tags(html)
-    out = []
+    out = parse_ecb_mp_table(text)
+    if out:
+        need(len(out) >= 6, "적립기간 표에서 회의를 %d개만 읽었다" % len(out))
+        return sorted(out, key=lambda x: x["start"])
     # "29-30 April 2026 … monetary policy meeting" 또는 "10 June 2026 …"
     for m in re.finditer(
             r"(\d{1,2})(?:\s*-\s*(\d{1,2}))?\s+([A-Z][a-z]+)\s+(\d{4})"
@@ -292,36 +353,63 @@ def parse_boe(html):
     return sorted(out, key=lambda x: x["start"])
 
 
-def parse_boj(html):
-    """연도 헤딩(<h2>2026</h2>) 아래의 'January 22 and 23' 꼴.
+# 일본은행이 실제로 쓰는 표기: `Jan. 21 (Thurs.), 22 (Fri.)`.
+# 달 넘김(`Apr. 30 (Thurs.), May 1 (Fri.)`)에 대비해 둘째 칸의 달 이름을 선택으로 둔다.
+# **두 칸 모두 요일 괄호가 있어야** 받는다 — 이것이 회의일 칸을 가르는 열쇠다.
+# 같은 표의 의사록 칸에 `Jan. 27 (Wed.), 2027` 이 있는데, 둘째가 연도라 괄호가 없어
+# 저절로 걸러진다(2026·2027 두 표에서 눈으로 확인).
+BOJ_TWO_DAY = re.compile(
+    r"([A-Z][a-z]{2,8})\.?\s+(\d{1,2})\s*\([A-Za-z]+\.?\)\s*,\s*"
+    r"(?:([A-Z][a-z]{2,8})\.?\s+)?(\d{1,2})\s*\([A-Za-z]+\.?\)")
 
-    이 페이지도 날짜에 연도를 붙이지 않아, 연도까지 요구하던 첫 판은 0건이었다.
-    같은 페이지에 의사록·주요의견 공표일이 하루짜리 날짜로 함께 적혀 있는데,
-    금융정책결정회의는 **언제나 이틀**이므로 이틀 연속만 받아 그 둘을 가른다.
+# 옛 표기도 함께 본다. 페이지가 돌아가도 잃지 않기 위해서다.
+BOJ_AND = re.compile(r"([A-Z][a-z]{2,8})\s+(\d{1,2})\s*(?:and|,|-)\s*(\d{1,2})"
+                     r"(?:\s*,\s*(20\d{2}))?")
+
+
+def parse_boj(html):
+    """연도 구획 아래의 이틀짜리 회의일.
+
+    2026-09-10 에는 "본문에 표가 없다 — 자바스크립트로 그린다"고 적어 두었는데,
+    2026-10-04 러너 실측으로 **틀린 진단**임이 드러났다. 표는 본문에 그대로 있다.
+    못 읽은 것은 파서 쪽이었다 — 일본은행은 `Jan. 21 (Thurs.), 22 (Fri.)` 로 적는데
+    파서는 `January 22 and 23` 만 찾고 있었고, 'Sept.' 도 달 이름으로 몰랐다.
+
+    같은 표에 의사록·주요의견 공표일이 하루짜리로 함께 적혀 있다. 금융정책결정회의는
+    **언제나 이틀**이므로 이틀 연속만 받아 그 둘을 가른다.
     """
     secs = year_sections(html, r"<h[1-4][^>]*>\s*(20\d{2})\s*</h[1-4]>")
     if not secs:                          # 연도 헤딩을 못 찾으면 페이지 전체를 한 구획으로
         secs = [(None, strip_tags(html))]
     out, seen = [], set()
+
+    def take(yr, mname1, d1, mname2, d2, inline_year=None):
+        yr = inline_year or yr
+        mon1 = MONTHS.get((mname1 or "").lower())
+        mon2 = MONTHS.get((mname2 or mname1 or "").lower())
+        if not (mon1 and mon2 and yr):
+            return
+        start, end = mk(yr, mon1, d1), mk(yr, mon2, d2)
+        if not (start and end) or start >= end:
+            return
+        if (date.fromisoformat(end) - date.fromisoformat(start)).days != 1:
+            return                        # 이틀 연속이 아니면 회의 일정이 아니다
+        if start in seen:
+            return
+        seen.add(start)
+        # 전망보고서(Outlook Report)는 1·4·7·10월 회의에 붙는다. 이 표의 바로 옆 칸이
+        # 그 공표일이지만, 칸을 짚어 읽을 만큼 구조가 안정적이지 않아 달로 둔다.
+        out.append({"start": start, "end": end, "sep": mon1 in (1, 4, 7, 10),
+                    "presser": True, "confirmed": "official"})
+
     for year, text in secs:
-        for m in re.finditer(
-                r"([A-Z][a-z]{2,8})\s+(\d{1,2})\s*(?:and|,|-|and\s+)\s*(\d{1,2})"
-                r"(?:\s*,\s*(20\d{2}))?", text):
+        for m in BOJ_TWO_DAY.finditer(text):
+            mname1, d1, mname2, d2 = m.groups()
+            take(year, mname1, d1, mname2, d2)
+        for m in BOJ_AND.finditer(text):
             mname, d1, d2, inline_year = m.groups()
-            mon = MONTHS.get(mname.lower())
-            yr = inline_year or year
-            if not mon or not yr:
-                continue
-            start, end = mk(yr, mon, d1), mk(yr, mon, d2)
-            if not (start and end) or start >= end:
-                continue
-            if (date.fromisoformat(end) - date.fromisoformat(start)).days != 1:
-                continue                  # 이틀 연속이 아니면 회의 일정이 아니다
-            if start in seen:
-                continue
-            seen.add(start)
-            out.append({"start": start, "end": end, "sep": mon in (1, 4, 7, 10),
-                        "presser": True, "confirmed": "official"})
+            take(year, mname, d1, None, d2, inline_year)
+
     need(len(out) >= 6, "이틀짜리 금융정책결정회의를 %d개만 읽었다" % len(out))
     return sorted(out, key=lambda x: x["start"])
 
@@ -364,8 +452,47 @@ def parse_bok(html):
     return out
 
 
-def parse_bls(html):
-    """BLS 발표일정 표 — 'Friday, September 11, 2026' 과 참조 기간을 함께 읽는다."""
+# BLS 가 내주는 달력 구독 파일(bls.ics) 안의 제목. **정확히 같아야** 받는다 —
+# 'Employment Situation' 은 'Employment Situation of Veterans' 와 다른 통계다.
+BLS_ICS_SUMMARY = {
+    "us-cpi": "Consumer Price Index",
+    "us-empsit": "Employment Situation",
+    "us-ppi": "Producer Price Index",
+}
+
+
+def parse_bls_ics(body, indicator):
+    """bls.ics 에서 그 통계의 발표일만 꺼낸다.
+
+    왜 이 길인가 — 발표일정 **표**는 200 을 받아도 본문에 날짜가 없다(자바스크립트로
+    그린다. 2026-10-04 러너 실측). 같은 일정을 BLS 가 ics 로도 내주는데 이쪽은
+    서버가 그려 보내므로 그대로 읽힌다.
+
+        BEGIN:VEVENT
+        DTSTART;TZID=US-Eastern:20261014T083000
+        SUMMARY:Consumer Price Index
+        END:VEVENT
+    """
+    want = BLS_ICS_SUMMARY.get(indicator)
+    need(want, "bls.ics 에서 찾을 제목을 모르는 통계다: %s" % indicator)
+    out = set()
+    for block in re.findall(r"BEGIN:VEVENT(.*?)END:VEVENT", body, re.S):
+        title = re.search(r"^SUMMARY:(.*)$", block, re.M)
+        if not title or title.group(1).strip() != want:
+            continue
+        m = re.search(r"^DTSTART[^:]*:(\d{4})(\d{2})(\d{2})", block, re.M)
+        if m:
+            iso = mk(*m.groups())
+            if iso:
+                out.add(iso)
+    need(len(out) >= 6, "bls.ics 에서 '%s' 발표일을 %d개만 읽었다" % (want, len(out)))
+    return sorted(out)
+
+
+def parse_bls(html, indicator=None):
+    """BLS 발표일정. ics 면 ics 로, HTML 이면 'Friday, September 11, 2026' 꼴로 읽는다."""
+    if "BEGIN:VCALENDAR" in html[:2000]:
+        return parse_bls_ics(html, indicator)
     text = strip_tags(html)
     out, seen = [], set()
     for m in re.finditer(
@@ -504,38 +631,62 @@ def apply_auctions(seed, rows, rep):
 # 아예 없었다(첫 러너 실행에서 확인). 정적으로 내려오는 다른 주소를 뒤에 붙여 둔다.
 SOURCES = [
     ("fomc", ["https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"]),
+    # ECB — 상설 달력 페이지는 지금도 자바스크립트로 그린다(러너 재확인). 뒤의 보도자료가
+    # 실제로 읽히는 길이다. 자세한 내력은 parse_ecb 의 설명을 보라.
+    #
+    #   !! 해마다 손을 대야 하는 주소다 !!  ECB 는 6월 말에 이듬해 운영달력 보도자료를
+    #   내는데 주소에 해시(~9f54a0a4fb)가 붙어 미리 알 수 없다. 2027년치를 받으려면
+    #   ecb.europa.eu 보도자료에서 'indicative operational calendars' 를 찾아 그 주소를
+    #   이 줄 **앞에** 붙이면 된다. 고정 주소를 찾아 보았지만 셋 다 404 이거나
+    #   자바스크립트였다(press/pr/date/YYYY/html/index_include, press/calendars/reserve).
+    #   손대지 않아도 조용히 썩지는 않는다 — 2027년 회의가 다 지나가면 앞으로의 회의가
+    #   세 개 밑으로 떨어져 apply_bank 가 그 자리에서 실패를 적는다.
     ("ecb", ["https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
-             "https://www.ecb.europa.eu/press/calendars/mgcgc/html/mgcgc_2026.en.html",
-             "https://www.ecb.europa.eu/press/calendars/mgcgc/html/mgcgc_2027.en.html"]),
+             "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260630~9f54a0a4fb.en.html"]),
     ("boe", ["https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates"]),
     ("boj", ["https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
              "https://www.boj.or.jp/en/mopo/mpmsche_minu/index_2026.htm"]),
     ("bok", ["https://www.bok.or.kr/portal/singl/crncyPolicyDrcMtg/listYear.do?menuNo=200755&mtgSe=A",
              "https://www.bok.or.kr/portal/main/contents.do?menuNo=200755",
              "https://www.bok.or.kr/portal/bbs/B0000502/view.do?menuNo=201265&nttId=10094300"]),
-    ("bls:us-cpi", ["https://www.bls.gov/schedule/news_release/cpi.htm"]),
-    ("bls:us-empsit", ["https://www.bls.gov/schedule/news_release/empsit.htm"]),
-    ("bls:us-ppi", ["https://www.bls.gov/schedule/news_release/ppi.htm"]),
+    # BLS — ics 를 먼저 본다. 표 쪽은 200 을 받아도 본문에 날짜가 없다(자바스크립트).
+    # ics 는 서버가 그려 보내 그대로 읽힌다. 표 주소는 뒤에 남겨 둔다 — 되돌아가도 잃지 않는다.
+    ("bls:us-cpi", ["https://www.bls.gov/schedule/news_release/bls.ics",
+                    "https://www.bls.gov/schedule/news_release/cpi.htm"]),
+    ("bls:us-empsit", ["https://www.bls.gov/schedule/news_release/bls.ics",
+                       "https://www.bls.gov/schedule/news_release/empsit.htm"]),
+    ("bls:us-ppi", ["https://www.bls.gov/schedule/news_release/bls.ics",
+                    "https://www.bls.gov/schedule/news_release/ppi.htm"]),
     ("treasury", ["https://www.treasurydirect.gov/TA_WS/securities/upcoming?format=json"]),
 ]
 
 # 러너에서 실제로 받아 본 결과, 아래 셋은 이 방식으로 받을 수 없다. 매주 90초를 들여
 # 같은 사실을 다시 알아낼 이유가 없어 요청을 걸지 않는다. 기관이 페이지를 정적으로 바꾸면
 # 다시 되니, `--try-blocked` 로 언제든 시험해 볼 수 있게 주소는 SOURCES 에 남겨 둔다.
+#   2026-10-04 고침. 러너에서 다시 재 보고 셋 중 둘을 풀었다.
+#     ECB — 상설 달력은 여전히 자바스크립트지만, 6월 말 「운영달력」 보도자료 본문의
+#           지급준비금 적립기간 표 첫 칸이 그 해 통화정책회의일이다. 주소를 바꿔 풀었다.
+#     BOJ — "본문에 표가 없다"는 **틀린 진단이었다.** 표는 본문에 그대로 있었고,
+#           못 읽은 것은 파서였다(`Jan. 21 (Thurs.), 22 (Fri.)` 표기를 몰랐다). 풀었다.
+#     BLS — 403 은 IP 가 아니라 **머리글** 때문이었다. 브라우저 머리글이면 200 이다.
+#           다만 표는 200 을 받아도 자바스크립트라, 발표일은 bls.ics 로 받는다.
+#   남은 하나가 한국은행이다. 아래 사유는 실측으로 다시 쓴 것이다.
 BLOCKED = {
-    "ecb": "정책이사회 일정표가 본문에 없다 — 자바스크립트로 그린다"
-           " (2026-09-10 러너 확인: 본문 18,492자에 회의 날짜 0건)",
-    "boj": "회의 일정표가 본문에 없다 — 자바스크립트로 그린다"
-           " (2026-09-10 러너 확인: 연도 헤딩은 있으나 '월 일자' 표기 0건)",
-    "bok": "일정이 보도자료의 첨부파일(hwp·pdf)에만 있다"
-           " (2026-09-10 러너 확인: 본문은 '자세한 내용은 첨부파일을 참고' 뿐이고,"
-           " 목록 페이지의 날짜는 의결사항·보도자료 등록일이라 회의일이 아니다)",
+    "bok": "일정이 첨부파일에만 있고, 그 첨부에서 글자를 꺼낼 수 없다"
+           " (2026-10-04 러너 확인: 목록 페이지는 국·영문 모두 본문이 메뉴뿐이고"
+           " —자바스크립트로 그린다— 날짜 0건. 뷰어로 감싼 첨부의 진짜 주소"
+           " www.bok.or.kr/fileSrc/... 는 200 으로 받아지지만, 글자가 심겨 있지 않아"
+           " 표준 라이브러리로는 한 자도 꺼내지 못한다. 2027년 일정은 아직 공표 전으로 보인다)",
 }
 
-# BLS 는 러너 IP 에 403 을 준다(첫 러너 실행에서 세 경로 모두). 페이지를 아예 못 받으니
-# 파서로는 풀리지 않는다. 같은 통계를 FRED 가 API 로 주므로, 무료 키를 넣으면 그 길로
-# CPI·고용상황까지 채워진다.
-FRED_RELEASES = {"us-cpi": 10, "us-empsit": 50, "us-pce": 54, "us-gdp": 53, "us-retail": 8}
+# BLS 가 403 을 줄 때의 다른 길. 같은 발표일정을 FRED 가 API 로 준다.
+#
+#   2026-10-04 고침: 생산자물가(us-ppi)가 빠져 있었다. FRED 의 release id 는 46 이다.
+#   앞의 다섯은 그대로 두고 하나만 더했다 — 잃은 것 없음, 새로 채움 하나.
+#   (BLS 403 은 머리글 때문이라는 것이 같은 날 밝혀졌다. 아래 BLOCKED 주석을 보라.
+#    그래도 이 길은 남겨 둔다 — 사이트가 막아도 FRED 로 채워지는 편이 낫다.)
+FRED_RELEASES = {"us-cpi": 10, "us-empsit": 50, "us-ppi": 46,
+                 "us-pce": 54, "us-gdp": 53, "us-retail": 8}
 
 
 def describe(e):
@@ -604,7 +755,7 @@ def main(argv=None):
             try:
                 html = http(url)
                 if short == "bls":
-                    dates = parse_bls(html)
+                    dates = parse_bls(html, name.split(":", 1)[1])
                     n, diffs = apply_indicator_dates(ind, name.split(":", 1)[1], dates, rep)
                     touched["ind"] = True
                 else:
