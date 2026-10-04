@@ -1,6 +1,6 @@
 {
  "note": "막힌 원천의 우회로 후보를 받아 본 결과. 정찰 전용이라 seed 는 손대지 않는다. dateHits 가 크면 그 주소에 파서를 붙일 수 있다.",
- "ranAt": "2026-10-04T15:23:43Z",
+ "ranAt": "2026-10-04T15:30:25Z",
  "sources": {
   "bls": {
    "tried": [
@@ -217,7 +217,7 @@
      "dateHits": 0,
      "headers": "plain",
      "kind": "json",
-     "sample": "{\"status\":\"REQUEST_SUCCEEDED\",\"responseTime\":93,\"message\":[],\"Results\":{\n\"series\":\n[{\"seriesID\":\"CUUR0000SA0\",\"data\":[{\"year\":\"2026\",\"period\":\"M08\",\"periodName\":\"August\",\"latest\":\"true\",\"value\":\"334.980\",\"footnotes\":[{}]},{\"year\":\"2026\",\"period\":\"M07\",\"periodName\":\"July\",\"value\":\"333.918\",\"footnotes\":[{}]},{\"year\":\"2026\",\"period\":\"M06\",\"periodName\":\"June\",\"value\":\"333.952\",\"footnotes\":[{}]},{\"year",
+     "sample": "{\"status\":\"REQUEST_SUCCEEDED\",\"responseTime\":82,\"message\":[],\"Results\":{\n\"series\":\n[{\"seriesID\":\"CUUR0000SA0\",\"data\":[{\"year\":\"2026\",\"period\":\"M08\",\"periodName\":\"August\",\"latest\":\"true\",\"value\":\"334.980\",\"footnotes\":[{}]},{\"year\":\"2026\",\"period\":\"M07\",\"periodName\":\"July\",\"value\":\"333.918\",\"footnotes\":[{}]},{\"year\":\"2026\",\"period\":\"M06\",\"periodName\":\"June\",\"value\":\"333.952\",\"footnotes\":[{}]},{\"year",
      "shapes": {},
      "status": 200,
      "textChars": 3023,
@@ -329,7 +329,7 @@
      "dateHits": 0,
      "headers": "plain",
      "kind": "pdf",
-     "pdfStreams": 22,
+     "pdfStreams": 21,
      "sample": "IdentityAdobeIdentityAdobeIdentityAdobe July 31 , 2 02 6 Bank of Japan -- -- -- --",
      "shapes": {},
      "status": 200,
@@ -454,11 +454,11 @@
      "dateHits": 0,
      "headers": "plain",
      "kind": "pdf",
-     "pdfStreams": 255,
-     "sample": "]ð/\u0017äÚv éC-[V%«¢zXr×úzÍ%«\u0002Õ¼ jºfnHå«\u0002Õ µbZ¬1jÀµI-X9ªéÔ\u0011ÈX·9«\u0002ÚVÓ60!yK0ÒãM\u0004Ü\u0014¨´¼©@<\u0001÷¼Ò:KÙ35^\u0006ºÃDå`>\u0000¬]¢N?FHÏ¦ÇÁSåÙ·ÁÉú9JfìI'ò.>p=Þ+\u0019ðr`\u0004É\u0013¸zÇÜ£R³ËXQ:ã­ôË.^å!0=Ä½¶ÿ\u0000ºº¥ËÆzÑjçÉ\u0004DU.\u0011\u0011\u0000UNÔþ²÷#ÞåkZ²LQÂùå8DÒî@\u001bíì À¯\u0015âô­ÏÂ9¤2ÊçÜì\u000fpî\u001bWr¶hÚTXØÉ4-vC©ä¼Yg@/ø®¯\u0015¬æò}\u0015\u0004WCM>\u00071í y<M Áª¿ CØ©SDè'']\u001bMr°iDZ¡pä£Õ±¶¿?¥ü\u000f×xæ;Ý©ý[ ï¹ÊN#r4è§tllZKYÃuCoPo-¶ðQ»Sú¶?ß\u000fsN¶Ñª",
+     "pdfStreams": 250,
+     "sample": "",
      "shapes": {},
      "status": 200,
-     "textChars": 2887,
+     "textChars": 0,
      "url": "https://www.bok.or.kr/fileSrc/portal/f514048c945f4e19ba9688a0a3ecb105/2/700fe0a2c066401a81cde04c70a18336.pdf"
     },
     {
@@ -467,11 +467,11 @@
      "dateHits": 0,
      "headers": "plain",
      "kind": "pdf",
-     "pdfStreams": 411,
-     "sample": "uo3Ð#®E ¦Á\u001a4±á£^e8byeu4RÌìp\u0014\u000eäAªÞ¥¾CÓÖÑ]<M*x«\u0019Ue\u0007\u0004òFO$ \u000fýH 4$\u0012\u0000³-4j¦úým¸4tâ á¤æ!·$¶@ÀÎì Ä ðr\u0005Îº+m¾zéÖF\u0004.Â4,Ä\u000faýÀîp5%H:Þ@`FÃÄ£P,wª\u001bí#ÕPHÏ\u0012JÑ\u0012ÊTä}þ\u0010 C©ú\b4d\b± \u001a ªë~¤©{Éas\u001b¯!Ã\u00032\u0017ß\\ÿ\u0000wý/þtÿ\u0000q/ötý'ÿ\u0000©ÕO\u0018ôis÷Òÿ\u0000çO÷\u0012ÿ\u0000gWVÛ -Ò:ÚÙéãó¼åö:Ê×p¤â7ÛL&7V À\u0003vÐ0sã¶FÒ\u0007 ÚdïRÀûÈÇÛ.ÁH\u0007öZÉ>QfQ_jÅ ^\u001a Ï8ãø£ßJ¬5mpI%¥rYsª×L vp¨U_' §\u00025eÒÓµ=úãsl?PxÕ{ XôÌ&[Õ9ô?L×\u001alµ¡¿ rz«_\"i",
+     "pdfStreams": 403,
+     "sample": "",
      "shapes": {},
      "status": 200,
-     "textChars": 2420,
+     "textChars": 0,
      "url": "https://www.bok.or.kr/fileSrc/portal/f514048c945f4e19ba9688a0a3ecb105/4/ac49e187828c45369f9fda8f4276c744.pdf"
     }
    ],
@@ -701,12 +701,131 @@
      "dateHits": 0,
      "headers": "plain",
      "kind": "pdf",
-     "pdfStreams": 18,
+     "pdfStreams": 15,
      "sample": "ECB-CONFIDENTIAL # January-2027 February-2027 March-2027 April-2027 May-2027 June-2027 01 Fri 01 Mon MRO ann. 01 Mon MRO ann. 01 Thu 01 Sat 01 Tue MRO allot. 02 Sat 02 Tue MRO allot. 02 Tue MRO allot. 02 Fri 02 Sun 02 Wed MRO settl. 03 Sun 03 Wed MRO settl. 03 Wed MRO settl. 03 Sat 03 Mon MRO ann. 03 Thu 04 Mon MRO ann. 04 Thu 04 Thu 04 Sun 04 Tue 04 Fri 05 Tue MRO allot. 05 Fri 05 Fri 05 Mon MRO ",
      "shapes": {},
      "status": 200,
      "textChars": 153855,
      "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260630_annex~d20c0ea013.en.pdf"
+    },
+    {
+     "bytes": 102142,
+     "ctype": "text/html; charset=UTF-8",
+     "dateHits": 5,
+     "headers": "plain",
+     "kind": "html",
+     "sample": "Indicative calendar of reserve maintenance periods Skip to: Skip to navigation Skip to content Skip to footer EN Български Čeština Dansk Deutsch Eλληνικά English Español Eesti keel Suomi Français Gaeilge Hrvatski Magyar Italiano Lietuvių Latviešu Malti Nederlands Polski Português Română Slovenčina Slovenščina Svenska Menu Monetary policy & markets Monetary policy & markets Our monetary policy stra",
+     "shapes": {
+      "D Month YYYY": {
+       "eg": [
+        "10 September 2026",
+        "5 June 2025",
+        "18 April 2024",
+        "13 March 2025"
+       ],
+       "n": 5
+      }
+     },
+     "status": 200,
+     "textChars": 14300,
+     "title": "Indicative calendar of reserve maintenance periods",
+     "url": "https://www.ecb.europa.eu/press/calendars/reserve/html/index.en.html"
+    },
+    {
+     "bytes": 97551,
+     "ctype": "text/html; charset=UTF-8",
+     "dateHits": 5,
+     "error": "HTTP 404 Not Found",
+     "headers": "plain",
+     "kind": "html",
+     "sample": "Sorry, this page does not exist. Skip to: Skip to navigation Skip to content Skip to footer EN Български Čeština Dansk Deutsch Eλληνικά English Español Eesti keel Suomi Français Gaeilge Hrvatski Magyar Italiano Lietuvių Latviešu Malti Nederlands Polski Português Română Slovenčina Slovenščina Svenska Menu Monetary policy & markets Monetary policy & markets Our monetary policy strategy, the tools we",
+     "shapes": {
+      "D Month YYYY": {
+       "eg": [
+        "10 September 2026",
+        "5 June 2025",
+        "18 April 2024",
+        "13 March 2025"
+       ],
+       "n": 5
+      }
+     },
+     "status": 404,
+     "textChars": 13226,
+     "title": "Sorry, this page does not exist.",
+     "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/index_include.en.html"
+    },
+    {
+     "bytes": 97551,
+     "ctype": "text/html; charset=UTF-8",
+     "dateHits": 5,
+     "error": "HTTP 404 Not Found",
+     "headers": "browser",
+     "kind": "html",
+     "sample": "Sorry, this page does not exist. Skip to: Skip to navigation Skip to content Skip to footer EN Български Čeština Dansk Deutsch Eλληνικά English Español Eesti keel Suomi Français Gaeilge Hrvatski Magyar Italiano Lietuvių Latviešu Malti Nederlands Polski Português Română Slovenčina Slovenščina Svenska Menu Monetary policy & markets Monetary policy & markets Our monetary policy strategy, the tools we",
+     "shapes": {
+      "D Month YYYY": {
+       "eg": [
+        "10 September 2026",
+        "5 June 2025",
+        "18 April 2024",
+        "13 March 2025"
+       ],
+       "n": 5
+      }
+     },
+     "status": 404,
+     "textChars": 13226,
+     "title": "Sorry, this page does not exist.",
+     "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/index_include.en.html"
+    },
+    {
+     "bytes": 97551,
+     "ctype": "text/html; charset=UTF-8",
+     "dateHits": 5,
+     "error": "HTTP 404 Not Found",
+     "headers": "plain",
+     "kind": "html",
+     "sample": "Sorry, this page does not exist. Skip to: Skip to navigation Skip to content Skip to footer EN Български Čeština Dansk Deutsch Eλληνικά English Español Eesti keel Suomi Français Gaeilge Hrvatski Magyar Italiano Lietuvių Latviešu Malti Nederlands Polski Português Română Slovenčina Slovenščina Svenska Menu Monetary policy & markets Monetary policy & markets Our monetary policy strategy, the tools we",
+     "shapes": {
+      "D Month YYYY": {
+       "eg": [
+        "10 September 2026",
+        "5 June 2025",
+        "18 April 2024",
+        "13 March 2025"
+       ],
+       "n": 5
+      }
+     },
+     "status": 404,
+     "textChars": 13226,
+     "title": "Sorry, this page does not exist.",
+     "url": "https://www.ecb.europa.eu/press/pr/date/2027/html/index_include.en.html"
+    },
+    {
+     "bytes": 97551,
+     "ctype": "text/html; charset=UTF-8",
+     "dateHits": 5,
+     "error": "HTTP 404 Not Found",
+     "headers": "browser",
+     "kind": "html",
+     "sample": "Sorry, this page does not exist. Skip to: Skip to navigation Skip to content Skip to footer EN Български Čeština Dansk Deutsch Eλληνικά English Español Eesti keel Suomi Français Gaeilge Hrvatski Magyar Italiano Lietuvių Latviešu Malti Nederlands Polski Português Română Slovenčina Slovenščina Svenska Menu Monetary policy & markets Monetary policy & markets Our monetary policy strategy, the tools we",
+     "shapes": {
+      "D Month YYYY": {
+       "eg": [
+        "10 September 2026",
+        "5 June 2025",
+        "18 April 2024",
+        "13 March 2025"
+       ],
+       "n": 5
+      }
+     },
+     "status": 404,
+     "textChars": 13226,
+     "title": "Sorry, this page does not exist.",
+     "url": "https://www.ecb.europa.eu/press/pr/date/2027/html/index_include.en.html"
     }
    ],
    "verdict": "길이 있다 — 날짜가 잡히는 주소를 찾았다"
