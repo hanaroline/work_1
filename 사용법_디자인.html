@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>보유자산 통합 브리핑 사용법</title>
+<style>
+  :root{
+    --orange:#F58220; --blue:#043B72; --soft:#FAB072; --active:#CB6015;
+    --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C;
+    --hair:#CDCECB; --hairsoft:#E5E4E1; --surface:#F7F8FA; --soft2:#ECEFF4;
+    --hl:#D7D7D7; --error:#C62828; --success:#2E8540;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans KR',sans-serif;color:var(--body);background:#fff;
+    font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .page{width:820px;margin:0 auto;padding:0 0 48px}
+  /* hero */
+  .hero{background:var(--orange);color:#fff;padding:34px 40px 30px}
+  .hero .tag{font-size:12px;letter-spacing:.5px;font-weight:500;opacity:.92;margin-bottom:10px}
+  .hero h1{font-size:30px;font-weight:700;line-height:1.2;letter-spacing:-.4px}
+  .hero .sub{font-size:14px;margin-top:10px;opacity:.95}
+  .body{padding:0 40px}
+  /* section */
+  section{margin-top:34px}
+  .rule{height:1px;background:var(--orange);margin-bottom:14px}
+  h2{font-size:19px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+  h2 .n{color:var(--orange);margin-right:8px}
+  p{margin-top:8px}
+  ol,ul{margin:8px 0 0 20px}
+  li{margin-top:5px}
+  b{color:var(--ink)}
+  .mono{font-family:'Inter','SF Mono',monospace;background:var(--soft2);
+    padding:1px 6px;border-radius:2px;color:var(--ink);font-weight:600;font-size:13px}
+  /* table */
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13.5px}
+  th,td{border:1px solid var(--hairsoft);padding:8px 11px;text-align:left;vertical-align:top}
+  table{border:1px solid var(--hair)}
+  th{background:var(--soft);color:var(--ink);font-weight:700}
+  tr:nth-child(even) td{background:var(--surface)}
+  .star{color:var(--orange);font-weight:700}
+  /* callout */
+  .callout{background:var(--orange);color:#fff;border-radius:4px;padding:20px 24px;margin-top:14px}
+  .callout .k{font-size:12px;font-weight:700;letter-spacing:.5px;
+    background:#fff;color:var(--orange);display:inline-block;padding:2px 9px;border-radius:2px;margin-bottom:10px}
+  .callout h3{font-size:16px;font-weight:700;margin-bottom:8px}
+  .callout b{color:#fff}
+  .callout .mono{background:rgba(255,255,255,.22);color:#fff}
+  /* note card */
+  .note{border:1px solid var(--hair);border-left:3px solid var(--blue);
+    background:var(--surface);border-radius:4px;padding:14px 18px;margin-top:12px}
+  .note .lbl{font-size:12px;font-weight:700;color:var(--blue);letter-spacing:.4px;margin-bottom:5px}
+  /* flow */
+  .flow{display:flex;gap:10px;margin-top:14px}
+  .flow .step{flex:1;border:1px solid var(--hair);border-radius:4px;padding:14px;text-align:center;background:#fff}
+  .flow .num{display:inline-block;width:24px;height:24px;line-height:24px;border-radius:2px;
+    background:var(--orange);color:#fff;font-weight:700;font-size:13px;margin-bottom:8px}
+  .flow .step .t{font-weight:700;color:var(--ink);font-size:13px}
+  .flow .step .d{font-size:12px;color:var(--muted);margin-top:4px}
+  .flow .arrow{align-self:center;color:var(--orange);font-weight:700;font-size:18px}
+  .foot{margin-top:40px;border-top:1px solid var(--hair);padding-top:14px;
+    font-size:12px;color:var(--muted);text-align:center}
+  .must{color:var(--error);font-weight:700}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="hero">
+    <div class="tag">미래에셋증권 · 마포WM</div>
+    <h1>보유자산 통합 브리핑 — 사용법 및 유의사항</h1>
+    <div class="sub">검은 창(로컬 서버)을 켜고 브라우저로 시세를 조회하는 대시보드 · 최종 업데이트 2026-10-04</div>
+  </div>
+
+  <div class="body">
+    <!-- 1 -->
+    <section>
+      <div class="rule"></div>
+      <h2><span class="n">1</span>준비 — 한 폴더에 모아두기</h2>
+      <p>아래 <b>핵심 파일 3개</b>가 반드시 <b>같은 폴더 안</b>에 있어야 합니다.</p>
+      <table>
+        <tr><th style="width:38%">파일</th><th style="width:27%">이름 정확도</th><th>역할</th></tr>
+        <tr><td><span class="mono">server.ps1</span></td><td><span class="star">정확히 일치</span></td><td>시세를 받아오는 로컬 서버(엔진)</td></tr>
+        <tr><td><span class="mono">briefing.html</span></td><td><span class="star">정확히 일치</span></td><td>메인 화면(대시보드)</td></tr>
+        <tr><td>서버실행 (브리핑 자동열림).bat</td><td>이름 자유</td><td>실행 버튼</td></tr>
+      </table>
+      <p style="margin-top:10px"><span class="star">★</span> <b>server.ps1 과 briefing.html 두 이름은 글자 하나도 틀리면 안 됩니다.</b> (연금 사용 시 <span class="mono">search2.html</span>도 같은 폴더에)</p>
+    </section>
+
+    <!-- 2 -->
+    <section>
+      <div class="rule"></div>
+      <h2><span class="n">2</span>실행 방법 (평소 사용)</h2>
+      <div class="flow">
+        <div class="step"><div class="num">1</div><div class="t">.bat 더블클릭</div><div class="d">서버실행 (브리핑 자동열림)</div></div>
+        <div class="arrow">›</div>
+        <div class="step"><div class="num">2</div><div class="t">검은 창 자동 최소화</div><div class="d">작업표시줄로 내려감</div></div>
+        <div class="arrow">›</div>
+        <div class="step"><div class="num">3</div><div class="t">브리핑 화면 자동 열림</div><div class="d">브라우저에 표시</div></div>
+      </div>
+      <div class="note"><div class="lbl">참고</div>화면만 다시 열고 싶을 땐(검은 창은 켜진 상태) <b>브리핑 열기</b> 바로가기, 또는 브라우저에 <span class="mono">http://localhost:8899/</span> 직접 입력.</div>
+    </section>
+
+    <!-- 3 -->
+    <section>
+      <div class="rule"></div>
+      <h2><span class="n">3</span>종료 방법</h2>
+      <ul>
+        <li>작업표시줄의 <b>"Mirae local server"</b> 항목 클릭 → 창이 올라오면 <b>닫기(X)</b></li>
+        <li>창을 닫으면 서버가 꺼져 시세 조회가 멈춥니다. (브라우저 화면만 닫는 건 종료가 아님)</li>
+      </ul>
+    </section>
+
+    <!-- 4 -->
+    <section>
+      <div class="rule"></div>
+      <h2><span class="n">4</span>유의사항 (꼭 지키기)</h2>
+
+      <div class="callout">
+        <span class="k">가장 흔한 오류</span>
+        <h3>파일 이름 뒤의 " (2)", " (3)" 주의</h3>
+        <p>같은 파일을 여러 번 내려받으면 윈도우가 이름 뒤에 <b>(2), (3)</b>을 붙입니다. 예) <span class="mono">server (2).ps1</span>, <span class="mono">briefing (3).html</span></p>
+        <p style="margin-top:8px">그러면 실행기가 <span class="mono">server.ps1</span>을 못 찾아 <b>"server.ps1 was NOT found"</b> 오류가 납니다.</p>
+        <p style="margin-top:8px"><b>해결</b> — 파일 우클릭 → 이름 바꾸기(F2)로 뒤의 <b>(숫자)를 지워</b> 정확한 이름으로 맞추기.<br><b>예방</b> — 새로 받기 전에 폴더의 기존 파일을 먼저 지우고 받으면 숫자가 안 붙습니다.</p>
+      </div>
+
+      <table>
+        <tr><th style="width:30%">항목</th><th>내용</th></tr>
+        <tr><td>다운로드 차단 해제(MOTW)</td><td>받은 .bat/.ps1은 회사 PC가 막을 수 있음 → 파일 <b>우클릭 → 속성 → "차단 해제" → 확인</b></td></tr>
+        <tr><td>검은 창은 열어둔 채 사용</td><td>검은 창 = 시세 엔진. 닫으면 시세가 멈춤 → 최소화해서 작업표시줄에 두기</td></tr>
+        <tr><td>시세가 안 나오면</td><td>서버가 꺼졌거나 회사망 문제 → 작업표시줄에서 서버 확인, 없으면 재실행</td></tr>
+        <tr><td class="must">고객정보 입력 금지</td><td>고객 실명·계좌번호는 화면에 입력·저장하지 않음</td></tr>
+      </table>
+    </section>
+
+    <!-- 5 -->
+    <section>
+      <div class="rule"></div>
+      <h2><span class="n">5</span>자주 겪는 문제 → 해결</h2>
+      <table>
+        <tr><th style="width:34%">증상</th><th style="width:28%">원인</th><th>해결</th></tr>
+        <tr><td>"server.ps1 was NOT found"</td><td>이름에 (2)/(3) 붙음</td><td>이름에서 (숫자) 지우기 → server.ps1</td></tr>
+        <tr><td>검은 창이 아예 안 뜸</td><td>다운로드 차단(MOTW)</td><td>우클릭 → 속성 → 차단 해제</td></tr>
+        <tr><td>브라우저 "연결할 수 없음"</td><td>서버가 안 켜짐</td><td>실행기 다시 더블클릭 / 주소 직접 입력</td></tr>
+        <tr><td>화면은 뜨는데 시세 빈칸</td><td>서버 종료·회사망</td><td>작업표시줄에서 서버 확인 후 재실행</td></tr>
+        <tr><td>브라우저가 자동으로 안 열림</td><td>자동열기 지연·차단</td><td>주소창에 http://localhost:8899/ 입력</td></tr>
+      </table>
+    </section>
+
+    <!-- 6 -->
+    <section>
+      <div class="rule"></div>
+      <h2><span class="n">6</span>화면 간단 안내</h2>
+      <ul>
+        <li><b>보유자산·수익률</b>: 한 화면에서 조회</li>
+        <li><b>수익률 상위(스크리너)</b>: 기간별 수익률 상위 종목 조회 — 국내주식 = 시장 전체 실시간 / 국내ETF = 거래소 실시간 + 대표 56종 / 해외·펀드 = 대표 프리셋</li>
+        <li><b>연금 상품조회</b> 버튼: 연금 화면(search2.html)으로 이동</li>
+        <li>화면 상단 버전 표기 예: <span class="mono">v2026.10.03-1</span></li>
+      </ul>
+    </section>
+
+    <!-- 7 -->
+    <section>
+      <div class="rule"></div>
+      <h2><span class="n">7</span>폴더 파일 정리 가이드</h2>
+      <table>
+        <tr><th style="width:24%">구분</th><th>파일</th></tr>
+        <tr><td><b style="color:var(--success)">꼭 필요</b></td><td>server.ps1, briefing.html, 서버실행 (브리핑 자동열림).bat (연금 시 search2.html)</td></tr>
+        <tr><td><b style="color:var(--blue)">있으면 편함</b></td><td>브리핑 열기.url, 연금 상품조회 v2.url, 연금_사용법.pdf</td></tr>
+        <tr><td><b style="color:var(--muted)">없어도 됨</b></td><td>구버전 .bat, server-log.txt(자동생성), 예전 zip, 이름에 (숫자) 붙은 중복 파일</td></tr>
+      </table>
+    </section>
+
+    <div class="foot">미래에셋증권 마포WM · 보유자산 통합 브리핑 사용 안내 · 2026-10-04</div>
+  </div>
+</div>
+</body>
+</html>
