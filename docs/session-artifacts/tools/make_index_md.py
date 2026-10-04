@@ -12,7 +12,7 @@ L.append('클로드 코드 세션이 남긴 **최종 작업본**을 주제별로
          '세션별 브랜치의 마지막 커밋에서 산출물을 뽑았고, 이미 아티팩트가 있던 자료는 '
          '다시 올리지 않고 그 링크를 씁니다.\n')
 L.append('- 색인 아티팩트(한/영) — <%s>' % HUB)
-L.append('- 기준 2026-10-01 · 저장소 `hanaroline/work_1`')
+L.append('- 기준 2026-10-04 · 저장소 `hanaroline/work_1`')
 L.append('- 세션 64개 · 주제 %d개 · 색인 항목 %d개 · 이 자료실에서 만들어 올린 아티팩트 %d개\n'
          % (len(bh.GROUPS), sum(len(g['items']) for g in bh.GROUPS),
             sum(1 for g in bh.GROUPS for i in g['items'] if i[8])))
@@ -96,7 +96,8 @@ L.append('클로드 계정을 바꾸면 **아티팩트 링크는 전부 끊깁�
          '소유물입니다. 저장소의 코드·데이터·생성기는 그대로 남으므로 새 계정에서 '
          '다시 만들어 올릴 수 있습니다. 옮기는 절차와 지켜야 할 규칙은 '
          '[HANDOVER.md](HANDOVER.md), 그때 쓸 프롬프트와 검증 스크립트는 '
-         '[PROMPTS.md](PROMPTS.md) 에 있습니다.\n')
+         '[PROMPTS.md](PROMPTS.md), 아티팩트 70개 전수 목록과 다른 세션들이 남긴 '
+         '인계 문서 지도는 [ARTIFACTS.md](ARTIFACTS.md) 에 있습니다.\n')
 L.append('## 자동 갱신\n')
 L.append('이 색인은 예약 작업(Routine)으로 스스로 갱신됩니다.\n')
 L.append('| 항목 | 값 |')
