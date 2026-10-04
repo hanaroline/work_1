@@ -25,6 +25,14 @@
   python3 scripts/probe_calendar_sources.py                 # 전부
   python3 scripts/probe_calendar_sources.py --only ecb,bls
   python3 scripts/probe_calendar_sources.py --out data/calendar/probe-report.json
+  python3 scripts/probe_calendar_sources.py --dump data/calendar/probe-dump
+
+--dump 이 왜 있나
+  세션은 러너가 올린 artifact 를 내려받지 못한다(블롭 저장소로 넘어가는데 그리로는
+  못 간다). 그래서 파서를 쓰려면 본문을 **가지에 적어** 보내야 한다. 원본 바이트 대신
+  **풀어 놓은 글자**만 적는다 — 작고, 사람이 읽어 확인할 수 있고, 파서를 붙일 때
+  "이 글자에서 이 날짜가 나온다"를 눈으로 맞춰 볼 수 있다. 짐작으로 파서를 쓰지 않기
+  위한 장치다.
 """
 
 import argparse
@@ -34,6 +42,7 @@ import re
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 
@@ -85,6 +94,10 @@ CANDIDATES = {
         "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260630~9f54a0a4fb.en.html",
         # 보도자료 RSS — 정적이고 가볍다
         "https://www.ecb.europa.eu/rss/press.html",
+        # [2차] 1차에서 200 이 뜬 보도자료가 딸고 있던 부속 PDF.
+        # 제목이 'indicative operational calendars for 2027' 이었다 — 회의일이
+        # 여기 들어 있는지 본문을 받아 눈으로 본다.
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260630_annex~d20c0ea013.en.pdf",
     ],
     "boj": [
         "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
@@ -99,6 +112,12 @@ CANDIDATES = {
         # 영문 포털에 같은 일정이 표로 있는지 본다
         "https://www.bok.or.kr/eng/main/contents.do?menuNo=400069",
         "https://www.bok.or.kr/eng/singl/crncyPolicyDrcMtg/listYear.do?menuNo=400069&mtgSe=A",
+        # [2차] 1차에서 목록 페이지가 뷰어로 감싸 내보내던 첨부 PDF 의 진짜 주소.
+        # "일정은 첨부파일에만 있다"고 막아 두었던 바로 그 파일이다 — 받아지는지 본다.
+        ("https://www.bok.or.kr/fileSrc/portal/f514048c945f4e19ba9688a0a3ecb105/2/"
+         "700fe0a2c066401a81cde04c70a18336.pdf"),
+        ("https://www.bok.or.kr/fileSrc/portal/f514048c945f4e19ba9688a0a3ecb105/4/"
+         "ac49e187828c45369f9fda8f4276c744.pdf"),
     ],
     "bls": [
         # 러너 IP 에 403 을 준 주소들 — 머리글을 바꾸면 달라지는지 본다
@@ -117,6 +136,54 @@ CANDIDATES = {
 
 DATA_LINK = re.compile(
     r"""["'(]([^"'()\s]+\.(?:json|ics|xml|pdf|csv)(?:\?[^"'()\s]*)?)["')]""", re.I)
+
+# 한국은행은 첨부 PDF 를 pdf.js 뷰어로 감싸 내보낸다.
+#   /static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2F...%2F3f2a.pdf
+# 뷰어 주소가 아니라 file= 안의 진짜 주소를 받아야 한다.
+PDFJS_WRAP = re.compile(r"/pdfjs/viewer\.html\?file=(.+)$", re.I)
+
+
+def unwrap(url):
+    """pdf.js 뷰어 주소면 속의 진짜 파일 주소로 바꾼다. 아니면 그대로 둔다."""
+    m = PDFJS_WRAP.search(url)
+    if not m:
+        return url
+    inner = urllib.parse.unquote(m.group(1))
+    if inner.startswith("http"):
+        return inner
+    return re.match(r"(https?://[^/]+)", url).group(1) + inner
+
+
+def pdf_text(body):
+    """PDF 에서 글자를 꺼낸다. 표준 라이브러리만 쓴다.
+
+    앞서 BOJ 의 mref260731a.pdf 에서 0자가 나왔다. 글자를 `(…) Tj` 꼴로만 찾았기
+    때문이다. 실제로는 `[(a) -2 (b)] TJ` 로 토막 내 쓰는 판이 더 흔하고, 압축하지
+    않은 스트림도 있다. 둘 다 본다.
+    """
+    import zlib
+    chunks = []
+    for m in re.finditer(rb"stream\r?\n(.*?)\r?\nendstream", body, re.S):
+        raw = m.group(1)
+        try:
+            chunks.append(zlib.decompress(raw))
+        except Exception:                                      # noqa: BLE001
+            chunks.append(raw)          # 압축하지 않은 스트림일 수 있다
+    blob = b"\n".join(chunks)
+
+    out = []
+    # `(…) Tj` 와 `[(…) n (…)] TJ` 를 모두 받는다. TJ 는 조각을 이어 붙인다.
+    for m in re.finditer(rb"\[(.*?)\]\s*TJ|\(((?:[^()\\]|\\.)*)\)\s*Tj", blob, re.S):
+        if m.group(1) is not None:
+            parts = re.findall(rb"\(((?:[^()\\]|\\.)*)\)", m.group(1))
+            out.append(b"".join(parts))
+        else:
+            out.append(m.group(2))
+    txt = b" ".join(out).decode("latin-1", "replace")
+    # PDF 이스케이프를 푼다
+    txt = (txt.replace("\\(", "(").replace("\\)", ")").replace("\\\\", "\\")
+              .replace("\\n", " ").replace("\\r", " ").replace("\\t", " "))
+    return len(chunks), re.sub(r"\s+", " ", txt).strip()
 
 
 def strip_tags(html):
@@ -158,19 +225,8 @@ def look(url, res):
     head = body[:4]
     if head == b"%PDF":
         out["kind"] = "pdf"
-        # 표준 라이브러리만 쓴다. FlateDecode 스트림을 풀어 글자를 찾아본다.
-        import zlib
-        text = []
-        for m in re.finditer(rb"stream\r?\n(.*?)endstream", body, re.S):
-            try:
-                text.append(zlib.decompress(m.group(1)))
-            except Exception:                                  # noqa: BLE001
-                continue
-        blob = b"\n".join(text)
-        # PDF 글자는 (…) Tj 꼴로 들어 있다
-        words = re.findall(rb"\(((?:[^()\\]|\\.)*)\)\s*Tj", blob)
-        txt = " ".join(w.decode("latin-1", "replace") for w in words)
-        out["pdfStreams"] = len(text)
+        nstreams, txt = pdf_text(body)
+        out["pdfStreams"] = nstreams
         out["textChars"] = len(txt)
         out["sample"] = txt[:400]
         body_text = txt
@@ -205,7 +261,27 @@ def look(url, res):
             shapes[label] = {"n": len(hits), "eg": [str(h)[:28] for h in hits[:4]]}
     out["shapes"] = shapes
     out["dateHits"] = sum(v["n"] for v in shapes.values())
+    out["_text"] = body_text          # --dump 용. 보고서에는 넣지 않는다(크다)
     return out
+
+
+def write_dump(dump_dir, source, url, hname, text, limit):
+    """받은 글자를 사람이 읽을 수 있게 적어 둔다.
+
+    파일 이름에 주소를 알아볼 만큼 남긴다. 머리글 종류도 넣는다 — 같은 주소가
+    머리글에 따라 다른 것을 내주는 곳(bls.gov)이 있기 때문이다.
+    """
+    tail = re.sub(r"^https?://", "", url)
+    tail = re.sub(r"[^A-Za-z0-9._-]+", "_", tail)[:90]
+    path = os.path.join(dump_dir, "%s__%s__%s.txt" % (source, hname, tail))
+    body = text[:limit]
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("# 원천: %s\n# 주소: %s\n# 머리글: %s\n# 글자수: %d (적은 것 %d)\n\n"
+                % (source, url, hname, len(text), len(body)))
+        f.write(body)
+        if len(text) > limit:
+            f.write("\n\n[...%d자 더 있다 — --dump-max 를 올려라]\n" % (len(text) - limit))
+    return path
 
 
 def verdict(rows):
@@ -229,8 +305,17 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description="막힌 원천의 우회로 후보를 실측한다")
     ap.add_argument("--only", default="", help="쉼표로 구분한 원천 이름 (ecb,boj,bok,bls)")
     ap.add_argument("--out", default="", help="결과 JSON 을 적을 경로")
+    ap.add_argument("--dump", default="",
+                    help="받은 본문의 글자를 이 디렉터리에 적는다 (파서를 쓸 때 쓴다)")
+    ap.add_argument("--dump-max", type=int, default=120_000,
+                    help="한 파일에 적을 글자 수 상한 (기본 12만자)")
     ap.add_argument("--timeout", type=int, default=25)
     args = ap.parse_args(argv)
+
+    dump_dir = ""
+    if args.dump:
+        dump_dir = args.dump if os.path.isabs(args.dump) else os.path.join(ROOT, args.dump)
+        os.makedirs(dump_dir, exist_ok=True)
 
     only = {x.strip() for x in args.only.split(",") if x.strip()}
     report = {
@@ -245,12 +330,16 @@ def main(argv=None):
             continue
         print("\n=== %s ===" % name)
         rows = []
-        for url in urls:
+        for raw_url in urls:
+            url = unwrap(raw_url)
             for hname, hdrs in HEADERS.items():
                 res = get(url, hdrs, args.timeout)
                 row = look(url, res)
                 row["url"] = url
                 row["headers"] = hname
+                text = row.pop("_text", "")
+                if dump_dir and text and row.get("status") == 200:
+                    write_dump(dump_dir, name, url, hname, text, args.dump_max)
                 rows.append(row)
                 print("  %-7s %-5s %-9s %7s바이트 날짜 %3d개  %s"
                       % (hname, row.get("status"), row.get("kind", "-"),
