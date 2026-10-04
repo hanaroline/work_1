@@ -1,9 +1,9 @@
 {
- "builtAt": "2026-10-03 19:30 KST",
- "builtAtUtc": "2026-10-03T10:30:23Z",
+ "builtAt": "2026-10-04 23:41 KST",
+ "builtAtUtc": "2026-10-04T14:41:24Z",
  "window": {
-  "from": "2026-08-19",
-  "to": "2028-02-15"
+  "from": "2026-08-20",
+  "to": "2028-02-16"
  },
  "note": "증시 일정 캘린더. confirmed 는 official(공식 확인) · websearch(검색 교차 확인) · tentative(기관이 잠정으로 공표) · estimate(제공사 추정 구간) · rule(규칙으로 만든 날짜) 다. 확정이 아닌 것은 화면에서 배지로 구분한다.",
  "confirmed_legend": {
@@ -22,19 +22,19 @@
  },
  "counts": {
   "policy": 52,
-  "indicator": 171,
+  "indicator": 174,
   "earnings": 266,
   "conference": 9,
   "supply": 36,
   "holiday": 103,
   "other": 3,
-  "total": 640,
+  "total": 643,
   "confirmed": {
    "official": 394,
    "websearch": 22,
    "tentative": 0,
    "estimate": 0,
-   "rule": 224
+   "rule": 227
   }
  },
  "sources": {
@@ -189,7 +189,7 @@
     }
    }
   },
-  "asof_kst": "2026-10-03 17:25:52"
+  "asof_kst": "2026-10-04 09:29:39"
  },
  "holidays": [
   {
@@ -1682,12 +1682,6 @@
    "market": "us",
    "sector": "ind"
   },
-  "LIN": {
-   "ko": "린데",
-   "en": "Linde",
-   "market": "us",
-   "sector": "mat"
-  },
   "AMD": {
    "ko": "AMD",
    "en": "Advanced Micro Devices",
@@ -1826,12 +1820,6 @@
    "market": "us",
    "sector": "hc"
   },
-  "ETN": {
-   "ko": "이튼",
-   "en": "Eaton",
-   "market": "us",
-   "sector": "ind"
-  },
   "DHR": {
    "ko": "다나허",
    "en": "Danaher",
@@ -1904,12 +1892,6 @@
    "market": "us",
    "sector": "hc"
   },
-  "MDT": {
-   "ko": "메드트로닉",
-   "en": "Medtronic",
-   "market": "us",
-   "sector": "hc"
-  },
   "LMT": {
    "ko": "록히드마틴",
    "en": "Lockheed Martin",
@@ -1969,12 +1951,6 @@
    "en": "Bristol-Myers Squibb",
    "market": "us",
    "sector": "hc"
-  },
-  "CB": {
-   "ko": "처브",
-   "en": "Chubb",
-   "market": "us",
-   "sector": "fin"
   },
   "DE": {
    "ko": "디어",
@@ -2102,12 +2078,6 @@
    "market": "us",
    "sector": "it"
   },
-  "STX": {
-   "ko": "시게이트테크놀로지",
-   "en": "Seagate Technology",
-   "market": "us",
-   "sector": "it"
-  },
   "APH": {
    "ko": "앰피놀",
    "en": "Amphenol",
@@ -2204,12 +2174,6 @@
    "market": "us",
    "sector": "eng"
   },
-  "ACN": {
-   "ko": "액센츄어",
-   "en": "Accenture",
-   "market": "us",
-   "sector": "it"
-  },
   "HOOD": {
    "ko": "로빈후드마켓",
    "en": "Robinhood Markets",
@@ -2251,12 +2215,6 @@
    "en": "Equinix",
    "market": "us",
    "sector": "re"
-  },
-  "TT": {
-   "ko": "트레인테크놀로지스",
-   "en": "Trane Technologies",
-   "market": "us",
-   "sector": "ind"
   },
   "PWR": {
    "ko": "콴타서비스",
@@ -2321,12 +2279,6 @@
   "GD": {
    "ko": "제너럴다이내믹스",
    "en": "General Dynamics",
-   "market": "us",
-   "sector": "ind"
-  },
-  "JCI": {
-   "ko": "존슨콘트롤즈",
-   "en": "Johnson Controls International",
    "market": "us",
    "sector": "ind"
   },
@@ -2642,12 +2594,6 @@
    "market": "us",
    "sector": "it"
   },
-  "TEL": {
-   "ko": "TE커넥티비티",
-   "en": "TE Connectivity",
-   "market": "us",
-   "sector": "it"
-  },
   "APD": {
    "ko": "에어프로덕츠",
    "en": "Air Products and Chemicals",
@@ -2671,6 +2617,60 @@
    "en": "Marsh McLennan",
    "market": "us",
    "sector": "fin"
+  },
+  "ACN": {
+   "ko": "액센츄어",
+   "en": "Accenture",
+   "market": "us",
+   "sector": "it"
+  },
+  "CB": {
+   "ko": "처브",
+   "en": "Chubb",
+   "market": "us",
+   "sector": "fin"
+  },
+  "ETN": {
+   "ko": "이튼",
+   "en": "Eaton",
+   "market": "us",
+   "sector": "ind"
+  },
+  "JCI": {
+   "ko": "존슨콘트롤즈",
+   "en": "Johnson Controls International",
+   "market": "us",
+   "sector": "ind"
+  },
+  "LIN": {
+   "ko": "린데",
+   "en": "Linde",
+   "market": "us",
+   "sector": "mat"
+  },
+  "MDT": {
+   "ko": "메드트로닉",
+   "en": "Medtronic",
+   "market": "us",
+   "sector": "hc"
+  },
+  "STX": {
+   "ko": "시게이트테크놀로지",
+   "en": "Seagate Technology",
+   "market": "us",
+   "sector": "it"
+  },
+  "TEL": {
+   "ko": "TE커넥티비티",
+   "en": "TE Connectivity",
+   "market": "us",
+   "sector": "it"
+  },
+  "TT": {
+   "ko": "트레인테크놀로지스",
+   "en": "Trane Technologies",
+   "market": "us",
+   "sector": "ind"
   }
  },
  "earnings_snapshot_bases": {
@@ -3077,7 +3077,7 @@
    "source_en": "Federal Reserve — FOMC meeting calendars",
    "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local",
    "meetings_per_year": 8,
-   "fetched_at": "2026-10-03"
+   "fetched_at": "2026-10-04"
   },
   {
    "key": "bok",
@@ -3150,7 +3150,7 @@
    "source_en": "Bank of England — Upcoming MPC dates",
    "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-10-03"
+   "fetched_at": "2026-10-04"
   },
   {
    "key": "pboc",
@@ -13715,6 +13715,31 @@
    ]
   },
   {
+   "id": "indicator-us-claims-2026-12-03",
+   "date": "2026-12-03",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "미국 신규 실업수당 청구건수 (주간)",
+   "title_en": "US Initial Jobless Claims",
+   "org": "美 노동부 (DOL)",
+   "org_en": "Department of Labor",
+   "detail_ko": "매주 목요일 08:30 ET",
+   "detail_en": "Every Thursday, 08:30 ET",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2026-12-03 22:30",
+   "url": "https://www.dol.gov/ui/data.pdf",
+   "source": "美 노동부 (DOL)",
+   "source_en": "Department of Labor",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "us-claims"
+   ]
+  },
+  {
    "id": "indicator-us-empsit-2026-12-04",
    "date": "2026-12-04",
    "end_date": null,
@@ -17640,6 +17665,56 @@
    "tags": [
     "indicator",
     "us-ism-mfg"
+   ]
+  },
+  {
+   "id": "indicator-us-empsit-2027-04-02",
+   "date": "2027-04-02",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 3,
+   "title_ko": "미국 고용상황 (비농업 취업자수·실업률)",
+   "title_en": "US Employment Situation",
+   "org": "美 노동통계국 (BLS)",
+   "org_en": "Bureau of Labor Statistics",
+   "detail_ko": "통상 매월 첫 금요일 08:30 ET",
+   "detail_en": "Usually the first Friday of the month, 08:30 ET",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2027-04-02 21:30",
+   "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
+   "source": "美 노동통계국 (BLS)",
+   "source_en": "Bureau of Labor Statistics",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "us-empsit"
+   ]
+  },
+  {
+   "id": "indicator-kr-cpi-2027-04-02",
+   "date": "2027-04-02",
+   "end_date": null,
+   "country": "kr",
+   "category": "indicator",
+   "importance": 3,
+   "title_ko": "한국 소비자물가동향",
+   "title_en": "Korea CPI",
+   "org": "통계청",
+   "org_en": "Statistics Korea",
+   "detail_ko": "통상 매월 초(1~4일) 08:00",
+   "detail_en": "Usually in the first days of the month, 08:00",
+   "time_local": "08:00",
+   "tz": "Asia/Seoul",
+   "time_kst": "2027-04-02 08:00",
+   "url": "https://kostat.go.kr/board.es?mid=a10501010000&bid=11570",
+   "source": "통계청",
+   "source_en": "Statistics Korea",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "kr-cpi"
    ]
   },
   {
