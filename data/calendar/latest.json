@@ -1,6 +1,6 @@
 {
- "builtAt": "2026-10-05 00:18 KST",
- "builtAtUtc": "2026-10-04T15:18:03Z",
+ "builtAt": "2026-10-05 00:36 KST",
+ "builtAtUtc": "2026-10-04T15:36:27Z",
  "window": {
   "from": "2026-08-20",
   "to": "2028-02-16"
@@ -21,20 +21,20 @@
   "rule": "Derived from the usual release cadence — not confirmed"
  },
  "counts": {
-  "policy": 52,
+  "policy": 63,
   "indicator": 174,
   "earnings": 266,
   "conference": 9,
   "supply": 36,
   "holiday": 103,
   "other": 3,
-  "total": 643,
+  "total": 654,
   "confirmed": {
-   "official": 394,
-   "websearch": 22,
+   "official": 426,
+   "websearch": 11,
    "tentative": 0,
    "estimate": 0,
-   "rule": 227
+   "rule": 217
   }
  },
  "sources": {
@@ -2699,7 +2699,8 @@
    "url": "https://www.bls.gov/schedule/news_release/cpi.htm",
    "calendar_url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "rule_note_en": "Usually in the second week of the month, 08:30 ET",
-   "why_en": "The single biggest mover of the expected policy path; core month-on-month is what matters"
+   "why_en": "The single biggest mover of the expected policy path; core month-on-month is what matters",
+   "fetched_at": "2026-10-04"
   },
   {
    "id": "us-empsit",
@@ -2716,7 +2717,8 @@
    "url": "https://www.bls.gov/schedule/news_release/empsit.htm",
    "calendar_url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "rule_note_en": "Usually the first Friday of the month, 08:30 ET",
-   "why_en": "Whether hiring is cracking decides rate-cut expectations; average hourly earnings matter too"
+   "why_en": "Whether hiring is cracking decides rate-cut expectations; average hourly earnings matter too",
+   "fetched_at": "2026-10-04"
   },
   {
    "id": "us-pce",
@@ -2814,7 +2816,8 @@
    "why_ko": "CPI 로 넘어가기 전 단계의 물가 압력",
    "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
    "rule_note_en": "Usually in the same week as CPI, 08:30 ET",
-   "why_en": "Price pressure one stage before it reaches CPI"
+   "why_en": "Price pressure one stage before it reaches CPI",
+   "fetched_at": "2026-10-04"
   },
   {
    "id": "us-claims",
@@ -3115,7 +3118,8 @@
    "projections_note_ko": "ECB 스태프 거시전망은 3·6·9·12월 회의에 함께 발표",
    "source_en": "ECB — Meetings of the Governing Council and the General Council",
    "projections_note_en": "ECB staff macroeconomic projections accompany the March, June, September and December meetings",
-   "meetings_per_year": 8
+   "meetings_per_year": 8,
+   "fetched_at": "2026-10-04"
   },
   {
    "key": "boj",
@@ -3132,7 +3136,8 @@
    "projections_note_ko": "1·4·7·10월 회의에 전망 리포트(Outlook Report) 동시 발표",
    "source_en": "Bank of Japan — Monetary Policy Meetings",
    "projections_note_en": "The quarterly Outlook Report accompanies the January, April, July and October meetings",
-   "meetings_per_year": 8
+   "meetings_per_year": 8,
+   "fetched_at": "2026-10-04"
   },
   {
    "key": "boe",
@@ -4043,15 +4048,15 @@
    "title_en": "US Employment Situation",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 매월 첫 금요일 08:30 ET",
-   "detail_en": "Usually the first Friday of the month, 08:30 ET",
+   "detail_ko": "고용이 꺾이는지로 금리 인하 기대가 갈린다. 시간당임금 상승률도 함께 본다",
+   "detail_en": "Whether hiring is cracking decides rate-cut expectations; average hourly earnings matter too",
    "time_local": "08:30",
    "tz": "America/New_York",
    "time_kst": "2026-09-04 21:30",
    "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-empsit"
@@ -4184,32 +4189,6 @@
    ]
   },
   {
-   "id": "policy-ecb-2026-09-10",
-   "date": "2026-09-10",
-   "end_date": null,
-   "country": "eu",
-   "category": "policy",
-   "importance": 3,
-   "title_ko": "유럽중앙은행 정책이사회 (ECB) 정책금리 결정",
-   "title_en": "European Central Bank (Governing Council) rate decision",
-   "org": "유럽중앙은행 정책이사회 (ECB)",
-   "org_en": "European Central Bank (Governing Council)",
-   "detail_ko": "기자회견 · 경제전망 동시 발표 · 09-09~09-10 이틀 회의의 둘째 날 · 독일 분데스방크 주최(비정례 개최지)",
-   "detail_en": "press conference · projections released",
-   "time_local": "14:15",
-   "tz": "Europe/Berlin",
-   "time_kst": "2026-09-10 21:15",
-   "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
-   "source": "ECB — Meetings of the Governing Council and the General Council",
-   "source_en": "ECB — Meetings of the Governing Council and the General Council",
-   "confirmed": "websearch",
-   "tags": [
-    "central-bank",
-    "ecb",
-    "sep"
-   ]
-  },
-  {
    "id": "kr-quadruple-expiry-2026-09-10",
    "date": "2026-09-10",
    "end_date": null,
@@ -4270,15 +4249,15 @@
    "title_en": "US Producer Price Index",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 CPI 앞뒤로 같은 주 08:30 ET",
-   "detail_en": "Usually in the same week as CPI, 08:30 ET",
+   "detail_ko": "CPI 로 넘어가기 전 단계의 물가 압력",
+   "detail_en": "Price pressure one stage before it reaches CPI",
    "time_local": "08:30",
    "tz": "America/New_York",
    "time_kst": "2026-09-10 21:30",
    "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-ppi"
@@ -4316,7 +4295,7 @@
    "country": "us",
    "category": "indicator",
    "importance": 3,
-   "title_ko": "미국 소비자물가지수 (CPI) (2026년 8월분)",
+   "title_ko": "미국 소비자물가지수 (CPI)",
    "title_en": "US Consumer Price Index",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
@@ -4328,7 +4307,7 @@
    "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-cpi"
@@ -4529,7 +4508,7 @@
    "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
    "source": "Bank of Japan — Monetary Policy Meetings",
    "source_en": "Bank of Japan — Monetary Policy Meetings",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "boj"
@@ -5100,7 +5079,7 @@
    "country": "us",
    "category": "indicator",
    "importance": 3,
-   "title_ko": "미국 고용상황 (비농업 취업자수·실업률) (2026년 9월분)",
+   "title_ko": "미국 고용상황 (비농업 취업자수·실업률)",
    "title_en": "US Employment Situation",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
@@ -5112,7 +5091,7 @@
    "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-empsit"
@@ -5293,31 +5272,6 @@
    "tags": [
     "supply",
     "kr-option-expiry"
-   ]
-  },
-  {
-   "id": "indicator-us-ppi-2026-10-08",
-   "date": "2026-10-08",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 1,
-   "title_ko": "미국 생산자물가지수 (PPI)",
-   "title_en": "US Producer Price Index",
-   "org": "美 노동통계국 (BLS)",
-   "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 CPI 앞뒤로 같은 주 08:30 ET",
-   "detail_en": "Usually in the same week as CPI, 08:30 ET",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2026-10-08 21:30",
-   "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
-   "source": "美 노동통계국 (BLS)",
-   "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-ppi"
    ]
   },
   {
@@ -5615,15 +5569,15 @@
    "title_en": "US Consumer Price Index",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 매월 둘째 주 (수요일 전후) 08:30 ET",
-   "detail_en": "Usually in the second week of the month, 08:30 ET",
+   "detail_ko": "정책금리 경로를 가장 크게 흔드는 지표. 근원(core) 전월비가 핵심",
+   "detail_en": "The single biggest mover of the expected policy path; core month-on-month is what matters",
    "time_local": "08:30",
    "tz": "America/New_York",
    "time_kst": "2026-10-14 21:30",
    "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-cpi"
@@ -5963,6 +5917,31 @@
     "earnings",
     "us",
     "MRSH"
+   ]
+  },
+  {
+   "id": "indicator-us-ppi-2026-10-15",
+   "date": "2026-10-15",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "미국 생산자물가지수 (PPI)",
+   "title_en": "US Producer Price Index",
+   "org": "美 노동통계국 (BLS)",
+   "org_en": "Bureau of Labor Statistics",
+   "detail_ko": "CPI 로 넘어가기 전 단계의 물가 압력",
+   "detail_en": "Price pressure one stage before it reaches CPI",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2026-10-15 21:30",
+   "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
+   "source": "美 노동통계국 (BLS)",
+   "source_en": "Bureau of Labor Statistics",
+   "confirmed": "official",
+   "tags": [
+    "indicator",
+    "us-ppi"
    ]
   },
   {
@@ -8971,31 +8950,6 @@
    ]
   },
   {
-   "id": "policy-ecb-2026-10-29",
-   "date": "2026-10-29",
-   "end_date": null,
-   "country": "eu",
-   "category": "policy",
-   "importance": 3,
-   "title_ko": "유럽중앙은행 정책이사회 (ECB) 정책금리 결정",
-   "title_en": "European Central Bank (Governing Council) rate decision",
-   "org": "유럽중앙은행 정책이사회 (ECB)",
-   "org_en": "European Central Bank (Governing Council)",
-   "detail_ko": "기자회견 · 10-28~10-29 이틀 회의의 둘째 날",
-   "detail_en": "press conference",
-   "time_local": "14:15",
-   "tz": "Europe/Berlin",
-   "time_kst": "2026-10-29 22:15",
-   "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
-   "source": "ECB — Meetings of the Governing Council and the General Council",
-   "source_en": "ECB — Meetings of the Governing Council and the General Council",
-   "confirmed": "websearch",
-   "tags": [
-    "central-bank",
-    "ecb"
-   ]
-  },
-  {
    "id": "earnings-329180.KS-2026-10-29",
    "date": "2026-10-29",
    "end_date": null,
@@ -10052,7 +10006,7 @@
    "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
    "source": "Bank of Japan — Monetary Policy Meetings",
    "source_en": "Bank of Japan — Monetary Policy Meetings",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "boj",
@@ -11933,15 +11887,15 @@
    "title_en": "US Employment Situation",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 매월 첫 금요일 08:30 ET",
-   "detail_en": "Usually the first Friday of the month, 08:30 ET",
+   "detail_ko": "고용이 꺾이는지로 금리 인하 기대가 갈린다. 시간당임금 상승률도 함께 본다",
+   "detail_en": "Whether hiring is cracking decides rate-cut expectations; average hourly earnings matter too",
    "time_local": "08:30",
    "tz": "America/New_York",
    "time_kst": "2026-11-06 22:30",
    "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-empsit"
@@ -12206,8 +12160,8 @@
    ]
   },
   {
-   "id": "indicator-us-cpi-2026-11-11",
-   "date": "2026-11-11",
+   "id": "indicator-us-cpi-2026-11-10",
+   "date": "2026-11-10",
    "end_date": null,
    "country": "us",
    "category": "indicator",
@@ -12216,15 +12170,15 @@
    "title_en": "US Consumer Price Index",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 매월 둘째 주 (수요일 전후) 08:30 ET",
-   "detail_en": "Usually in the second week of the month, 08:30 ET",
+   "detail_ko": "정책금리 경로를 가장 크게 흔드는 지표. 근원(core) 전월비가 핵심",
+   "detail_en": "The single biggest mover of the expected policy path; core month-on-month is what matters",
    "time_local": "08:30",
    "tz": "America/New_York",
-   "time_kst": "2026-11-11 22:30",
+   "time_kst": "2026-11-10 22:30",
    "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-cpi"
@@ -12437,31 +12391,6 @@
    ]
   },
   {
-   "id": "indicator-us-ppi-2026-11-12",
-   "date": "2026-11-12",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 1,
-   "title_ko": "미국 생산자물가지수 (PPI)",
-   "title_en": "US Producer Price Index",
-   "org": "美 노동통계국 (BLS)",
-   "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 CPI 앞뒤로 같은 주 08:30 ET",
-   "detail_en": "Usually in the same week as CPI, 08:30 ET",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2026-11-12 22:30",
-   "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
-   "source": "美 노동통계국 (BLS)",
-   "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-ppi"
-   ]
-  },
-  {
    "id": "indicator-us-claims-2026-11-12",
    "date": "2026-11-12",
    "end_date": null,
@@ -12640,6 +12569,31 @@
     "earnings",
     "kr",
     "402340.KS"
+   ]
+  },
+  {
+   "id": "indicator-us-ppi-2026-11-13",
+   "date": "2026-11-13",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "미국 생산자물가지수 (PPI)",
+   "title_en": "US Producer Price Index",
+   "org": "美 노동통계국 (BLS)",
+   "org_en": "Bureau of Labor Statistics",
+   "detail_ko": "CPI 로 넘어가기 전 단계의 물가 압력",
+   "detail_en": "Price pressure one stage before it reaches CPI",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2026-11-13 22:30",
+   "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
+   "source": "美 노동통계국 (BLS)",
+   "source_en": "Bureau of Labor Statistics",
+   "confirmed": "official",
+   "tags": [
+    "indicator",
+    "us-ppi"
    ]
   },
   {
@@ -13750,15 +13704,15 @@
    "title_en": "US Employment Situation",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 매월 첫 금요일 08:30 ET",
-   "detail_en": "Usually the first Friday of the month, 08:30 ET",
+   "detail_ko": "고용이 꺾이는지로 금리 인하 기대가 갈린다. 시간당임금 상승률도 함께 본다",
+   "detail_en": "Whether hiring is cracking decides rate-cut expectations; average hourly earnings matter too",
    "time_local": "08:30",
    "tz": "America/New_York",
    "time_kst": "2026-12-04 22:30",
    "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-empsit"
@@ -13838,31 +13792,6 @@
     "conference",
     "bio",
     "sabcs"
-   ]
-  },
-  {
-   "id": "indicator-us-cpi-2026-12-09",
-   "date": "2026-12-09",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 3,
-   "title_ko": "미국 소비자물가지수 (CPI)",
-   "title_en": "US Consumer Price Index",
-   "org": "美 노동통계국 (BLS)",
-   "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 매월 둘째 주 (수요일 전후) 08:30 ET",
-   "detail_en": "Usually in the second week of the month, 08:30 ET",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2026-12-09 22:30",
-   "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
-   "source": "美 노동통계국 (BLS)",
-   "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-cpi"
    ]
   },
   {
@@ -13969,6 +13898,31 @@
    ]
   },
   {
+   "id": "indicator-us-cpi-2026-12-10",
+   "date": "2026-12-10",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 3,
+   "title_ko": "미국 소비자물가지수 (CPI)",
+   "title_en": "US Consumer Price Index",
+   "org": "美 노동통계국 (BLS)",
+   "org_en": "Bureau of Labor Statistics",
+   "detail_ko": "정책금리 경로를 가장 크게 흔드는 지표. 근원(core) 전월비가 핵심",
+   "detail_en": "The single biggest mover of the expected policy path; core month-on-month is what matters",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2026-12-10 22:30",
+   "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
+   "source": "美 노동통계국 (BLS)",
+   "source_en": "Bureau of Labor Statistics",
+   "confirmed": "official",
+   "tags": [
+    "indicator",
+    "us-cpi"
+   ]
+  },
+  {
    "id": "kr-quadruple-expiry-2026-12-10",
    "date": "2026-12-10",
    "end_date": null,
@@ -14016,31 +13970,6 @@
    "tags": [
     "supply",
     "kr-option-expiry"
-   ]
-  },
-  {
-   "id": "indicator-us-ppi-2026-12-10",
-   "date": "2026-12-10",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 1,
-   "title_ko": "미국 생산자물가지수 (PPI)",
-   "title_en": "US Producer Price Index",
-   "org": "美 노동통계국 (BLS)",
-   "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 CPI 앞뒤로 같은 주 08:30 ET",
-   "detail_en": "Usually in the same week as CPI, 08:30 ET",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2026-12-10 22:30",
-   "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
-   "source": "美 노동통계국 (BLS)",
-   "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-ppi"
    ]
   },
   {
@@ -14172,6 +14101,31 @@
    ]
   },
   {
+   "id": "indicator-us-ppi-2026-12-15",
+   "date": "2026-12-15",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "미국 생산자물가지수 (PPI)",
+   "title_en": "US Producer Price Index",
+   "org": "美 노동통계국 (BLS)",
+   "org_en": "Bureau of Labor Statistics",
+   "detail_ko": "CPI 로 넘어가기 전 단계의 물가 압력",
+   "detail_en": "Price pressure one stage before it reaches CPI",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2026-12-15 22:30",
+   "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
+   "source": "美 노동통계국 (BLS)",
+   "source_en": "Bureau of Labor Statistics",
+   "confirmed": "official",
+   "tags": [
+    "indicator",
+    "us-ppi"
+   ]
+  },
+  {
    "id": "policy-ecb-2026-12-17",
    "date": "2026-12-17",
    "end_date": null,
@@ -14182,7 +14136,7 @@
    "title_en": "European Central Bank (Governing Council) rate decision",
    "org": "유럽중앙은행 정책이사회 (ECB)",
    "org_en": "European Central Bank (Governing Council)",
-   "detail_ko": "기자회견 · 경제전망 동시 발표 · 12-16~12-17 이틀 회의의 둘째 날",
+   "detail_ko": "기자회견 · 경제전망 동시 발표",
    "detail_en": "press conference · projections released",
    "time_local": "14:15",
    "tz": "Europe/Berlin",
@@ -14190,7 +14144,7 @@
    "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
    "source": "ECB — Meetings of the Governing Council and the General Council",
    "source_en": "ECB — Meetings of the Governing Council and the General Council",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "ecb",
@@ -14343,7 +14297,7 @@
    "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
    "source": "Bank of Japan — Monetary Policy Meetings",
    "source_en": "Bank of Japan — Monetary Policy Meetings",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "boj"
@@ -15545,6 +15499,32 @@
    ]
   },
   {
+   "id": "policy-boj-2027-01-22",
+   "date": "2027-01-22",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표 · 01-21~01-22 이틀 회의의 둘째 날",
+   "detail_en": "press conference · projections released",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj",
+    "sep"
+   ]
+  },
+  {
    "id": "indicator-eu-pmi-2027-01-25",
    "date": "2027-01-25",
    "end_date": null,
@@ -15830,7 +15810,7 @@
    "title_en": "European Central Bank (Governing Council) rate decision",
    "org": "유럽중앙은행 정책이사회 (ECB)",
    "org_en": "European Central Bank (Governing Council)",
-   "detail_ko": "기자회견 · 02-03~02-04 이틀 회의의 둘째 날",
+   "detail_ko": "기자회견",
    "detail_en": "press conference",
    "time_local": "14:15",
    "tz": "Europe/Berlin",
@@ -15838,7 +15818,7 @@
    "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
    "source": "ECB — Meetings of the Governing Council and the General Council",
    "source_en": "ECB — Meetings of the Governing Council and the General Council",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "ecb"
@@ -17094,7 +17074,7 @@
    "title_en": "European Central Bank (Governing Council) rate decision",
    "org": "유럽중앙은행 정책이사회 (ECB)",
    "org_en": "European Central Bank (Governing Council)",
-   "detail_ko": "기자회견 · 경제전망 동시 발표 · 03-17~03-18 이틀 회의의 둘째 날",
+   "detail_ko": "기자회견 · 경제전망 동시 발표",
    "detail_en": "press conference · projections released",
    "time_local": "14:15",
    "tz": "Europe/Berlin",
@@ -17102,7 +17082,7 @@
    "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
    "source": "ECB — Meetings of the Governing Council and the General Council",
    "source_en": "ECB — Meetings of the Governing Council and the General Council",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "ecb",
@@ -17132,6 +17112,31 @@
    "tags": [
     "central-bank",
     "boe"
+   ]
+  },
+  {
+   "id": "policy-boj-2027-03-18",
+   "date": "2027-03-18",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 03-17~03-18 이틀 회의의 둘째 날",
+   "detail_en": "press conference",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj"
    ]
   },
   {
@@ -17870,6 +17875,32 @@
    ]
   },
   {
+   "id": "policy-boj-2027-04-28",
+   "date": "2027-04-28",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표 · 04-27~04-28 이틀 회의의 둘째 날",
+   "detail_en": "press conference · projections released",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj",
+    "sep"
+   ]
+  },
+  {
    "id": "policy-ecb-2027-04-29",
    "date": "2027-04-29",
    "end_date": null,
@@ -17880,7 +17911,7 @@
    "title_en": "European Central Bank (Governing Council) rate decision",
    "org": "유럽중앙은행 정책이사회 (ECB)",
    "org_en": "European Central Bank (Governing Council)",
-   "detail_ko": "기자회견 · 04-28~04-29 이틀 회의의 둘째 날",
+   "detail_ko": "기자회견",
    "detail_en": "press conference",
    "time_local": "14:15",
    "tz": "Europe/Berlin",
@@ -17888,7 +17919,7 @@
    "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
    "source": "ECB — Meetings of the Governing Council and the General Council",
    "source_en": "ECB — Meetings of the Governing Council and the General Council",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "ecb"
@@ -18360,6 +18391,32 @@
    ]
   },
   {
+   "id": "policy-ecb-2027-06-10",
+   "date": "2027-06-10",
+   "end_date": null,
+   "country": "eu",
+   "category": "policy",
+   "importance": 3,
+   "title_ko": "유럽중앙은행 정책이사회 (ECB) 정책금리 결정",
+   "title_en": "European Central Bank (Governing Council) rate decision",
+   "org": "유럽중앙은행 정책이사회 (ECB)",
+   "org_en": "European Central Bank (Governing Council)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표",
+   "detail_en": "press conference · projections released",
+   "time_local": "14:15",
+   "tz": "Europe/Berlin",
+   "time_kst": "2027-06-10 21:15",
+   "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+   "source": "ECB — Meetings of the Governing Council and the General Council",
+   "source_en": "ECB — Meetings of the Governing Council and the General Council",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "ecb",
+    "sep"
+   ]
+  },
+  {
    "id": "kr-quadruple-expiry-2027-06-10",
    "date": "2027-06-10",
    "end_date": null,
@@ -18382,6 +18439,31 @@
    "tags": [
     "supply",
     "kr-quadruple-expiry"
+   ]
+  },
+  {
+   "id": "policy-boj-2027-06-11",
+   "date": "2027-06-11",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 06-10~06-11 이틀 회의의 둘째 날",
+   "detail_en": "press conference",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj"
    ]
   },
   {
@@ -18690,6 +18772,57 @@
    ]
   },
   {
+   "id": "policy-ecb-2027-07-22",
+   "date": "2027-07-22",
+   "end_date": null,
+   "country": "eu",
+   "category": "policy",
+   "importance": 3,
+   "title_ko": "유럽중앙은행 정책이사회 (ECB) 정책금리 결정",
+   "title_en": "European Central Bank (Governing Council) rate decision",
+   "org": "유럽중앙은행 정책이사회 (ECB)",
+   "org_en": "European Central Bank (Governing Council)",
+   "detail_ko": "기자회견",
+   "detail_en": "press conference",
+   "time_local": "14:15",
+   "tz": "Europe/Berlin",
+   "time_kst": "2027-07-22 21:15",
+   "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+   "source": "ECB — Meetings of the Governing Council and the General Council",
+   "source_en": "ECB — Meetings of the Governing Council and the General Council",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "ecb"
+   ]
+  },
+  {
+   "id": "policy-boj-2027-07-22",
+   "date": "2027-07-22",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표 · 07-21~07-22 이틀 회의의 둘째 날",
+   "detail_en": "press conference · projections released",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj",
+    "sep"
+   ]
+  },
+  {
    "id": "policy-fed-2027-07-28",
    "date": "2027-07-28",
    "end_date": null,
@@ -18946,6 +19079,32 @@
    ]
   },
   {
+   "id": "policy-ecb-2027-09-09",
+   "date": "2027-09-09",
+   "end_date": null,
+   "country": "eu",
+   "category": "policy",
+   "importance": 3,
+   "title_ko": "유럽중앙은행 정책이사회 (ECB) 정책금리 결정",
+   "title_en": "European Central Bank (Governing Council) rate decision",
+   "org": "유럽중앙은행 정책이사회 (ECB)",
+   "org_en": "European Central Bank (Governing Council)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표",
+   "detail_en": "press conference · projections released",
+   "time_local": "14:15",
+   "tz": "Europe/Berlin",
+   "time_kst": "2027-09-09 21:15",
+   "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+   "source": "ECB — Meetings of the Governing Council and the General Council",
+   "source_en": "ECB — Meetings of the Governing Council and the General Council",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "ecb",
+    "sep"
+   ]
+  },
+  {
    "id": "kr-quadruple-expiry-2027-09-09",
    "date": "2027-09-09",
    "end_date": null,
@@ -19198,6 +19357,31 @@
    "tags": [
     "supply",
     "kr-ktb-futures-expiry"
+   ]
+  },
+  {
+   "id": "policy-boj-2027-09-22",
+   "date": "2027-09-22",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 09-21~09-22 이틀 회의의 둘째 날",
+   "detail_en": "press conference",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj"
    ]
   },
   {
@@ -19508,6 +19692,57 @@
    ]
   },
   {
+   "id": "policy-ecb-2027-10-28",
+   "date": "2027-10-28",
+   "end_date": null,
+   "country": "eu",
+   "category": "policy",
+   "importance": 3,
+   "title_ko": "유럽중앙은행 정책이사회 (ECB) 정책금리 결정",
+   "title_en": "European Central Bank (Governing Council) rate decision",
+   "org": "유럽중앙은행 정책이사회 (ECB)",
+   "org_en": "European Central Bank (Governing Council)",
+   "detail_ko": "기자회견",
+   "detail_en": "press conference",
+   "time_local": "14:15",
+   "tz": "Europe/Berlin",
+   "time_kst": "2027-10-28 21:15",
+   "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+   "source": "ECB — Meetings of the Governing Council and the General Council",
+   "source_en": "ECB — Meetings of the Governing Council and the General Council",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "ecb"
+   ]
+  },
+  {
+   "id": "policy-boj-2027-10-29",
+   "date": "2027-10-29",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표 · 10-28~10-29 이틀 회의의 둘째 날",
+   "detail_en": "press conference · projections released",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj",
+    "sep"
+   ]
+  },
+  {
    "id": "holiday-jp-2027-11-03",
    "date": "2027-11-03",
    "end_date": null,
@@ -19739,6 +19974,32 @@
    ]
   },
   {
+   "id": "policy-ecb-2027-12-16",
+   "date": "2027-12-16",
+   "end_date": null,
+   "country": "eu",
+   "category": "policy",
+   "importance": 3,
+   "title_ko": "유럽중앙은행 정책이사회 (ECB) 정책금리 결정",
+   "title_en": "European Central Bank (Governing Council) rate decision",
+   "org": "유럽중앙은행 정책이사회 (ECB)",
+   "org_en": "European Central Bank (Governing Council)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표",
+   "detail_en": "press conference · projections released",
+   "time_local": "14:15",
+   "tz": "Europe/Berlin",
+   "time_kst": "2027-12-16 22:15",
+   "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+   "source": "ECB — Meetings of the Governing Council and the General Council",
+   "source_en": "ECB — Meetings of the Governing Council and the General Council",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "ecb",
+    "sep"
+   ]
+  },
+  {
    "id": "policy-boe-2027-12-16",
    "date": "2027-12-16",
    "end_date": null,
@@ -19761,6 +20022,31 @@
    "tags": [
     "central-bank",
     "boe"
+   ]
+  },
+  {
+   "id": "policy-boj-2027-12-17",
+   "date": "2027-12-17",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 12-16~12-17 이틀 회의의 둘째 날",
+   "detail_en": "press conference",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj"
    ]
   },
   {

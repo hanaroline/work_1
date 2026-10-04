@@ -1,5 +1,5 @@
 {
-  "ranAt": "2026-10-04T15:17:44Z",
+  "ranAt": "2026-10-04T15:36:22Z",
   "note": "발표기관 원문에서 확정 날짜를 받아 seed 를 갱신한 결과. ok=false 인 경로는 seed 를 손대지 않았다 — 검색으로 확인해 둔 날짜가 그대로 남아 있다.",
   "dryRun": false,
   "sources": {
@@ -16,13 +16,24 @@
     "ecb": {
       "urls": [
         "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
-        "https://www.ecb.europa.eu/press/calendars/mgcgc/html/mgcgc_2026.en.html",
-        "https://www.ecb.europa.eu/press/calendars/mgcgc/html/mgcgc_2027.en.html"
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260630~9f54a0a4fb.en.html"
       ],
-      "ok": false,
-      "blocked": true,
-      "why": "받을 수 없는 경로라 요청하지 않았다 — 정책이사회 일정표가 본문에 없다 — 자바스크립트로 그린다 (2026-09-10 러너 확인: 본문 18,492자에 회의 날짜 0건)",
-      "hint": "다시 시험하려면: python scripts/fetch_calendar.py --try-blocked --only ecb"
+      "ok": true,
+      "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260630~9f54a0a4fb.en.html",
+      "bytes": 108041,
+      "count": 9,
+      "changes": [
+        "seed 에만 있던 2026-10-29 (공식 페이지에 없다 — 바뀌었는지 확인)",
+        "새로 확인한 2027-06-10",
+        "새로 확인한 2027-07-22",
+        "새로 확인한 2027-09-09",
+        "새로 확인한 2027-10-28",
+        "새로 확인한 2027-12-16",
+        "2026-12-17 회의 시작일 2026-12-16 → 2026-12-17",
+        "2027-02-04 회의 시작일 2027-02-03 → 2027-02-04",
+        "2027-03-18 회의 시작일 2027-03-17 → 2027-03-18",
+        "2027-04-29 회의 시작일 2027-04-28 → 2027-04-29"
+      ]
     },
     "boe": {
       "urls": [
@@ -30,7 +41,7 @@
       ],
       "ok": true,
       "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
-      "bytes": 83410,
+      "bytes": 83409,
       "count": 13,
       "changes": []
     },
@@ -39,10 +50,20 @@
         "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
         "https://www.boj.or.jp/en/mopo/mpmsche_minu/index_2026.htm"
       ],
-      "ok": false,
-      "blocked": true,
-      "why": "받을 수 없는 경로라 요청하지 않았다 — 회의 일정표가 본문에 없다 — 자바스크립트로 그린다 (2026-09-10 러너 확인: 연도 헤딩은 있으나 '월 일자' 표기 0건)",
-      "hint": "다시 시험하려면: python scripts/fetch_calendar.py --try-blocked --only boj"
+      "ok": true,
+      "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+      "bytes": 41593,
+      "count": 13,
+      "changes": [
+        "새로 확인한 2027-01-22",
+        "새로 확인한 2027-03-18",
+        "새로 확인한 2027-04-28",
+        "새로 확인한 2027-06-11",
+        "새로 확인한 2027-07-22",
+        "새로 확인한 2027-09-22",
+        "새로 확인한 2027-10-29",
+        "새로 확인한 2027-12-17"
+      ]
     },
     "bok": {
       "urls": [
@@ -52,47 +73,54 @@
       ],
       "ok": false,
       "blocked": true,
-      "why": "받을 수 없는 경로라 요청하지 않았다 — 일정이 보도자료의 첨부파일(hwp·pdf)에만 있다 (2026-09-10 러너 확인: 본문은 '자세한 내용은 첨부파일을 참고' 뿐이고, 목록 페이지의 날짜는 의결사항·보도자료 등록일이라 회의일이 아니다)",
+      "why": "받을 수 없는 경로라 요청하지 않았다 — 일정이 첨부파일에만 있고, 그 첨부에서 글자를 꺼낼 수 없다 (2026-10-04 러너 확인: 목록 페이지는 국·영문 모두 본문이 메뉴뿐이고 —자바스크립트로 그린다— 날짜 0건. 뷰어로 감싼 첨부의 진짜 주소 www.bok.or.kr/fileSrc/... 는 200 으로 받아지지만, 글자가 심겨 있지 않아 표준 라이브러리로는 한 자도 꺼내지 못한다. 2027년 일정은 아직 공표 전으로 보인다)",
       "hint": "다시 시험하려면: python scripts/fetch_calendar.py --try-blocked --only bok"
     },
     "bls:us-cpi": {
       "urls": [
+        "https://www.bls.gov/schedule/news_release/bls.ics",
         "https://www.bls.gov/schedule/news_release/cpi.htm"
       ],
-      "ok": false,
-      "tried": [
-        {
-          "url": "https://www.bls.gov/schedule/news_release/cpi.htm",
-          "why": "받지 못했다 — HTTPError: HTTP Error 403: Forbidden"
-        }
-      ],
-      "why": "받지 못했다 — HTTPError: HTTP Error 403: Forbidden"
+      "ok": true,
+      "url": "https://www.bls.gov/schedule/news_release/bls.ics",
+      "bytes": 80672,
+      "count": 4,
+      "changes": [
+        "새로 확인한 2026-10-14",
+        "새로 확인한 2026-11-10",
+        "새로 확인한 2026-12-10"
+      ]
     },
     "bls:us-empsit": {
       "urls": [
+        "https://www.bls.gov/schedule/news_release/bls.ics",
         "https://www.bls.gov/schedule/news_release/empsit.htm"
       ],
-      "ok": false,
-      "tried": [
-        {
-          "url": "https://www.bls.gov/schedule/news_release/empsit.htm",
-          "why": "받지 못했다 — HTTPError: HTTP Error 403: Forbidden"
-        }
-      ],
-      "why": "받지 못했다 — HTTPError: HTTP Error 403: Forbidden"
+      "ok": true,
+      "url": "https://www.bls.gov/schedule/news_release/bls.ics",
+      "bytes": 80672,
+      "count": 4,
+      "changes": [
+        "새로 확인한 2026-09-04",
+        "새로 확인한 2026-11-06",
+        "새로 확인한 2026-12-04"
+      ]
     },
     "bls:us-ppi": {
       "urls": [
+        "https://www.bls.gov/schedule/news_release/bls.ics",
         "https://www.bls.gov/schedule/news_release/ppi.htm"
       ],
-      "ok": false,
-      "tried": [
-        {
-          "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
-          "why": "받지 못했다 — HTTPError: HTTP Error 403: Forbidden"
-        }
-      ],
-      "why": "받지 못했다 — HTTPError: HTTP Error 403: Forbidden"
+      "ok": true,
+      "url": "https://www.bls.gov/schedule/news_release/bls.ics",
+      "bytes": 80672,
+      "count": 4,
+      "changes": [
+        "새로 확인한 2026-09-10",
+        "새로 확인한 2026-10-15",
+        "새로 확인한 2026-11-13",
+        "새로 확인한 2026-12-15"
+      ]
     },
     "treasury": {
       "urls": [
@@ -112,7 +140,7 @@
   },
   "summary": {
     "sources": 10,
-    "ok": 3,
-    "failed": 7
+    "ok": 8,
+    "failed": 2
   }
 }

@@ -34,12 +34,24 @@
       "known_dates": [
         {
           "date": "2026-09-11",
-          "ref_ko": "2026년 8월분",
-          "confirmed": "websearch"
+          "confirmed": "official"
+        },
+        {
+          "date": "2026-10-14",
+          "confirmed": "official"
+        },
+        {
+          "date": "2026-11-10",
+          "confirmed": "official"
+        },
+        {
+          "date": "2026-12-10",
+          "confirmed": "official"
         }
       ],
       "rule_note_en": "Usually in the second week of the month, 08:30 ET",
-      "why_en": "The single biggest mover of the expected policy path; core month-on-month is what matters"
+      "why_en": "The single biggest mover of the expected policy path; core month-on-month is what matters",
+      "fetched_at": "2026-10-04"
     },
     {
       "id": "us-empsit",
@@ -61,13 +73,25 @@
       "fred_release_id": 50,
       "known_dates": [
         {
+          "date": "2026-09-04",
+          "confirmed": "official"
+        },
+        {
           "date": "2026-10-02",
-          "ref_ko": "2026년 9월분",
-          "confirmed": "websearch"
+          "confirmed": "official"
+        },
+        {
+          "date": "2026-11-06",
+          "confirmed": "official"
+        },
+        {
+          "date": "2026-12-04",
+          "confirmed": "official"
         }
       ],
       "rule_note_en": "Usually the first Friday of the month, 08:30 ET",
-      "why_en": "Whether hiring is cracking decides rate-cut expectations; average hourly earnings matter too"
+      "why_en": "Whether hiring is cracking decides rate-cut expectations; average hourly earnings matter too",
+      "fetched_at": "2026-10-04"
     },
     {
       "id": "us-pce",
@@ -198,9 +222,27 @@
       "why_ko": "CPI 로 넘어가기 전 단계의 물가 압력",
       "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
       "fred_release_id": 46,
-      "known_dates": [],
+      "known_dates": [
+        {
+          "date": "2026-09-10",
+          "confirmed": "official"
+        },
+        {
+          "date": "2026-10-15",
+          "confirmed": "official"
+        },
+        {
+          "date": "2026-11-13",
+          "confirmed": "official"
+        },
+        {
+          "date": "2026-12-15",
+          "confirmed": "official"
+        }
+      ],
       "rule_note_en": "Usually in the same week as CPI, 08:30 ET",
-      "why_en": "Price pressure one stage before it reaches CPI"
+      "why_en": "Price pressure one stage before it reaches CPI",
+      "fetched_at": "2026-10-04"
     },
     {
       "id": "us-claims",
