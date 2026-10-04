@@ -1,0 +1,715 @@
+{
+ "note": "막힌 원천의 우회로 후보를 받아 본 결과. 정찰 전용이라 seed 는 손대지 않는다. dateHits 가 크면 그 주소에 파서를 붙일 수 있다.",
+ "ranAt": "2026-10-04T15:23:43Z",
+ "sources": {
+  "bls": {
+   "tried": [
+    {
+     "bytes": 1325,
+     "ctype": "text/html",
+     "dateHits": 0,
+     "error": "HTTP 403 Forbidden",
+     "headers": "plain",
+     "kind": "html",
+     "sample": "Access Denied Bureau of Labor Statistics Access Denied The BLS is committed to providing data promptly and according to established schedules. Automated retrieval programs (commonly called \"robots\" or \"bots\") can cause delays and interfere with other customers' timely access to information. Therefore, bot activity that doesn't conform to BLS usage policy is prohibited. We apologize for any inconve",
+     "shapes": {},
+     "status": 403,
+     "textChars": 551,
+     "title": "Access Denied",
+     "url": "https://www.bls.gov/schedule/news_release/cpi.htm"
+    },
+    {
+     "bytes": 55572,
+     "ctype": "text/html",
+     "dataLinks": [
+      "https://www.bls.gov/manifest.json",
+      "webcal://www.bls.gov/schedule/news_release/bls.ics",
+      "https://www.bls.gov/schedule/news_release/bls.ics"
+     ],
+     "dateHits": 1,
+     "headers": "browser",
+     "kind": "html",
+     "sample": "Schedule of Releases for the Consumer Price Index Skip to Content An official website of the United States government Here is how you know United States Department of Labor The .gov means it's official. Federal government websites often end in .gov or .mil. Before sharing sensitive information, make sure you're on a federal government site. The site is secure. The https:// ensures that you are con",
+     "shapes": {
+      "Month D, YYYY": {
+       "eg": [
+        "May 12, 2026"
+       ],
+       "n": 1
+      }
+     },
+     "status": 200,
+     "textChars": 7176,
+     "title": "Schedule of Releases for the Consumer Price Index",
+     "url": "https://www.bls.gov/schedule/news_release/cpi.htm"
+    },
+    {
+     "bytes": 1325,
+     "ctype": "text/html",
+     "dateHits": 0,
+     "error": "HTTP 403 Forbidden",
+     "headers": "plain",
+     "kind": "html",
+     "sample": "Access Denied Bureau of Labor Statistics Access Denied The BLS is committed to providing data promptly and according to established schedules. Automated retrieval programs (commonly called \"robots\" or \"bots\") can cause delays and interfere with other customers' timely access to information. Therefore, bot activity that doesn't conform to BLS usage policy is prohibited. We apologize for any inconve",
+     "shapes": {},
+     "status": 403,
+     "textChars": 551,
+     "title": "Access Denied",
+     "url": "https://www.bls.gov/schedule/news_release/empsit.htm"
+    },
+    {
+     "bytes": 55578,
+     "ctype": "text/html",
+     "dataLinks": [
+      "https://www.bls.gov/manifest.json",
+      "webcal://www.bls.gov/schedule/news_release/bls.ics",
+      "https://www.bls.gov/schedule/news_release/bls.ics"
+     ],
+     "dateHits": 1,
+     "headers": "browser",
+     "kind": "html",
+     "sample": "Schedule of Releases for the Employment Situation Skip to Content An official website of the United States government Here is how you know United States Department of Labor The .gov means it's official. Federal government websites often end in .gov or .mil. Before sharing sensitive information, make sure you're on a federal government site. The site is secure. The https:// ensures that you are con",
+     "shapes": {
+      "Month D, YYYY": {
+       "eg": [
+        "May 08, 2026"
+       ],
+       "n": 1
+      }
+     },
+     "status": 200,
+     "textChars": 7176,
+     "title": "Schedule of Releases for the Employment Situation",
+     "url": "https://www.bls.gov/schedule/news_release/empsit.htm"
+    },
+    {
+     "bytes": 1325,
+     "ctype": "text/html",
+     "dateHits": 0,
+     "error": "HTTP 403 Forbidden",
+     "headers": "plain",
+     "kind": "html",
+     "sample": "Access Denied Bureau of Labor Statistics Access Denied The BLS is committed to providing data promptly and according to established schedules. Automated retrieval programs (commonly called \"robots\" or \"bots\") can cause delays and interfere with other customers' timely access to information. Therefore, bot activity that doesn't conform to BLS usage policy is prohibited. We apologize for any inconve",
+     "shapes": {},
+     "status": 403,
+     "textChars": 551,
+     "title": "Access Denied",
+     "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm"
+    },
+    {
+     "bytes": 45730,
+     "ctype": "text/html",
+     "dataLinks": [
+      "https://www.bls.gov/manifest.json"
+     ],
+     "dateHits": 0,
+     "error": "HTTP 404 Not Found",
+     "headers": "browser",
+     "kind": "html",
+     "sample": "Sorry, the page you are looking for cannot be found. Skip to Content An official website of the United States government Here is how you know United States Department of Labor The .gov means it's official. Federal government websites often end in .gov or .mil. Before sharing sensitive information, make sure you're on a federal government site. The site is secure. The https:// ensures that you are ",
+     "shapes": {},
+     "status": 404,
+     "textChars": 4722,
+     "title": "Sorry, the page you are looking for cannot be found.",
+     "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm"
+    },
+    {
+     "bytes": 1325,
+     "ctype": "text/html",
+     "dateHits": 0,
+     "error": "HTTP 403 Forbidden",
+     "headers": "plain",
+     "kind": "html",
+     "sample": "Access Denied Bureau of Labor Statistics Access Denied The BLS is committed to providing data promptly and according to established schedules. Automated retrieval programs (commonly called \"robots\" or \"bots\") can cause delays and interfere with other customers' timely access to information. Therefore, bot activity that doesn't conform to BLS usage policy is prohibited. We apologize for any inconve",
+     "shapes": {},
+     "status": 403,
+     "textChars": 551,
+     "title": "Access Denied",
+     "url": "https://www.bls.gov/schedule/news_release/2027_sched.htm"
+    },
+    {
+     "bytes": 45730,
+     "ctype": "text/html",
+     "dataLinks": [
+      "https://www.bls.gov/manifest.json"
+     ],
+     "dateHits": 0,
+     "error": "HTTP 404 Not Found",
+     "headers": "browser",
+     "kind": "html",
+     "sample": "Sorry, the page you are looking for cannot be found. Skip to Content An official website of the United States government Here is how you know United States Department of Labor The .gov means it's official. Federal government websites often end in .gov or .mil. Before sharing sensitive information, make sure you're on a federal government site. The site is secure. The https:// ensures that you are ",
+     "shapes": {},
+     "status": 404,
+     "textChars": 4722,
+     "title": "Sorry, the page you are looking for cannot be found.",
+     "url": "https://www.bls.gov/schedule/news_release/2027_sched.htm"
+    },
+    {
+     "bytes": 1325,
+     "ctype": "text/html",
+     "dateHits": 0,
+     "error": "HTTP 403 Forbidden",
+     "headers": "plain",
+     "kind": "html",
+     "sample": "Access Denied Bureau of Labor Statistics Access Denied The BLS is committed to providing data promptly and according to established schedules. Automated retrieval programs (commonly called \"robots\" or \"bots\") can cause delays and interfere with other customers' timely access to information. Therefore, bot activity that doesn't conform to BLS usage policy is prohibited. We apologize for any inconve",
+     "shapes": {},
+     "status": 403,
+     "textChars": 551,
+     "title": "Access Denied",
+     "url": "https://www.bls.gov/schedule/news_release/bls.ics"
+    },
+    {
+     "bytes": 80672,
+     "ctype": "text/calendar",
+     "dateHits": 315,
+     "headers": "browser",
+     "kind": "ics",
+     "sample": "BEGIN:VCALENDAR\nPRODID:-//Department of Labor//Bureau of Labor Statistics//EN\nVERSION:2.0\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\nSUMMARY:BLS.gov Economic News Release Schedule\nX-WR-CALNAME:BLS.gov Economic News Release Schedule\nX-WR-TIMEZONE:US-Eastern\nBEGIN:VTIMEZONE\nTZID:US-Eastern\nBEGIN:DAYLIGHT\nTZOFFSETFROM:-0500\nTZOFFSETTO:-0400\nDTSTART:20070311T020000\nRRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU\nTZNAME:",
+     "shapes": {
+      "ICS DTSTART": {
+       "eg": [
+        "DTSTART:20070311",
+        "DTSTART:20071104",
+        "DTSTART;TZID=US-Eastern:2025",
+        "DTSTART;TZID=US-Eastern:2025"
+       ],
+       "n": 315
+      }
+     },
+     "status": 200,
+     "textChars": 80672,
+     "url": "https://www.bls.gov/schedule/news_release/bls.ics"
+    },
+    {
+     "bytes": 1325,
+     "ctype": "text/html",
+     "dateHits": 0,
+     "error": "HTTP 403 Forbidden",
+     "headers": "plain",
+     "kind": "html",
+     "sample": "Access Denied Bureau of Labor Statistics Access Denied The BLS is committed to providing data promptly and according to established schedules. Automated retrieval programs (commonly called \"robots\" or \"bots\") can cause delays and interfere with other customers' timely access to information. Therefore, bot activity that doesn't conform to BLS usage policy is prohibited. We apologize for any inconve",
+     "shapes": {},
+     "status": 403,
+     "textChars": 551,
+     "title": "Access Denied",
+     "url": "https://www.bls.gov/schedule/schedule.ics"
+    },
+    {
+     "bytes": 45715,
+     "ctype": "text/html",
+     "dataLinks": [
+      "https://www.bls.gov/manifest.json"
+     ],
+     "dateHits": 0,
+     "error": "HTTP 404 Not Found",
+     "headers": "browser",
+     "kind": "html",
+     "sample": "Sorry, the page you are looking for cannot be found. Skip to Content An official website of the United States government Here is how you know United States Department of Labor The .gov means it's official. Federal government websites often end in .gov or .mil. Before sharing sensitive information, make sure you're on a federal government site. The site is secure. The https:// ensures that you are ",
+     "shapes": {},
+     "status": 404,
+     "textChars": 4707,
+     "title": "Sorry, the page you are looking for cannot be found.",
+     "url": "https://www.bls.gov/schedule/schedule.ics"
+    },
+    {
+     "bytes": 3023,
+     "ctype": "application/json",
+     "dateHits": 0,
+     "headers": "plain",
+     "kind": "json",
+     "sample": "{\"status\":\"REQUEST_SUCCEEDED\",\"responseTime\":93,\"message\":[],\"Results\":{\n\"series\":\n[{\"seriesID\":\"CUUR0000SA0\",\"data\":[{\"year\":\"2026\",\"period\":\"M08\",\"periodName\":\"August\",\"latest\":\"true\",\"value\":\"334.980\",\"footnotes\":[{}]},{\"year\":\"2026\",\"period\":\"M07\",\"periodName\":\"July\",\"value\":\"333.918\",\"footnotes\":[{}]},{\"year\":\"2026\",\"period\":\"M06\",\"periodName\":\"June\",\"value\":\"333.952\",\"footnotes\":[{}]},{\"year",
+     "shapes": {},
+     "status": 200,
+     "textChars": 3023,
+     "url": "https://api.bls.gov/publicAPI/v2/timeseries/data/CUUR0000SA0"
+    }
+   ],
+   "verdict": "길이 있다 — 날짜가 잡히는 주소를 찾았다"
+  },
+  "boj": {
+   "tried": [
+    {
+     "bytes": 42169,
+     "ctype": "text/html;charset=UTF-8",
+     "dataLinks": [
+      "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260123a.pdf",
+      "https://www.boj.or.jp/en/mopo/outlook/gor2601b.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260123.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260123.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260319a.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260319.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260319.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260428a.pdf",
+      "https://www.boj.or.jp/en/mopo/outlook/gor2604b.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260428.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260428.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260616a.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260616.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260616.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260731a.pdf",
+      "https://www.boj.or.jp/en/mopo/outlook/gor2607b.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260731.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260731.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260918.pdf"
+     ],
+     "dateHits": 2,
+     "headers": "plain",
+     "kind": "html",
+     "sample": "Monetary Policy Meetings : 日本銀行 Bank of Japan Skip to main content 日本語 English Home About the Bank About the Bank Outline of the Bank Outline of the Bank History List of Governors Location (Guide Map to Head Office) / Visiting the Bank Head Office, Branches, and Overseas Offices Archives Organization of the Bank Organization of the Bank Policy Board Responsibilities of the Governor, Deputy Governo",
+     "shapes": {
+      "Month D-D": {
+       "eg": [
+        "Meetings 2-1",
+        "Offices 2-1"
+       ],
+       "n": 2
+      }
+     },
+     "status": 200,
+     "textChars": 8514,
+     "title": "Monetary Policy Meetings : 日本銀行 Bank of Japan",
+     "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm"
+    },
+    {
+     "bytes": 43677,
+     "ctype": "text/html;charset=UTF-8",
+     "dataLinks": [
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/mref260731a.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/mref250731a.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/mref240731a.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/mref230728a.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/rel220721a.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/rel210716a.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/rel200715a.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/rel200519a.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/rel200423a.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/k200316a.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/rel190730a.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/rel180731b.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/rel170616c.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/rel160729b.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/rel150807c.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2015/rel150619a.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/rel110804b.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/rel110314e.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/un1008c.pdf",
+      "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/un1005c.pdf"
+     ],
+     "dateHits": 18,
+     "headers": "plain",
+     "kind": "html",
+     "sample": "Others : 日本銀行 Bank of Japan Skip to main content 日本語 English Home About the Bank About the Bank Outline of the Bank Outline of the Bank History List of Governors Location (Guide Map to Head Office) / Visiting the Bank Head Office, Branches, and Overseas Offices Archives Organization of the Bank Organization of the Bank Policy Board Responsibilities of the Governor, Deputy Governors, and Executive ",
+     "shapes": {
+      "Month D, YYYY": {
+       "eg": [
+        "July 31, 2026",
+        "July 31, 2025",
+        "July 31, 2024",
+        "July 28, 2023"
+       ],
+       "n": 16
+      },
+      "Month D-D": {
+       "eg": [
+        "Policy 2-1",
+        "Offices 2-1"
+       ],
+       "n": 2
+      }
+     },
+     "status": 200,
+     "textChars": 9042,
+     "title": "Others : 日本銀行 Bank of Japan",
+     "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/index.htm"
+    },
+    {
+     "bytes": 139494,
+     "ctype": "application/pdf",
+     "dateHits": 0,
+     "headers": "plain",
+     "kind": "pdf",
+     "pdfStreams": 22,
+     "sample": "IdentityAdobeIdentityAdobeIdentityAdobe July 31 , 2 02 6 Bank of Japan -- -- -- --",
+     "shapes": {},
+     "status": 200,
+     "textChars": 82,
+     "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/mref260731a.pdf"
+    },
+    {
+     "bytes": 15558,
+     "ctype": "application/xml;charset=UTF-8",
+     "dataLinks": [
+      "http://www.boj.or.jp/en/rss/whatsnew.xml?id=1002"
+     ],
+     "dateHits": 47,
+     "headers": "plain",
+     "kind": "xml",
+     "sample": "Bank of Japan：RSS http://www.boj.or.jp/en/rss/whatsnew.xml?id=1002 Japanese Government Bonds Held by the Bank of Japan Fri, 02 Oct 2026 17:00:00 +0900 http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260930.xlsx http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260930.xlsx Collateral Accepted by the Bank of Japan (End of Sept.) Fri, 02 Oct 2026 17:00:00 +0900 http://",
+     "shapes": {
+      "D Month YYYY": {
+       "eg": [
+        "02 Oct 2026",
+        "02 Oct 2026",
+        "02 Oct 2026",
+        "02 Oct 2026"
+       ],
+       "n": 47
+      }
+     },
+     "status": 200,
+     "textChars": 10083,
+     "title": "Bank of Japan：RSS",
+     "url": "https://www.boj.or.jp/en/rss/whatsnew.xml"
+    }
+   ],
+   "verdict": "길이 있다 — 날짜가 잡히는 주소를 찾았다"
+  },
+  "bok": {
+   "tried": [
+    {
+     "bytes": 494596,
+     "ctype": "text/html;charset=utf-8",
+     "dataLinks": [
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Ff514048c945f4e19ba9688a0a3ecb105%2F2%2F700fe0a2c066401a81cde04c70a18336.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Ff514048c945f4e19ba9688a0a3ecb105%2F4%2Fac49e187828c45369f9fda8f4276c744.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Ff514048c945f4e19ba9688a0a3ecb105%2F6%2Feacc070c86cf436a9066dc81b8ea2d51.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Ff514048c945f4e19ba9688a0a3ecb105%2F13%2Fa9ee28b141a64fd9ab6834075230f242.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Ff514048c945f4e19ba9688a0a3ecb105%2F14%2F5b9e9dfc272b44e59eda9e2d53a94640.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Ff514048c945f4e19ba9688a0a3ecb105%2F15%2Fc3a4e087a10340ccb9a56e9ca688bb39.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Ff514048c945f4e19ba9688a0a3ecb105%2F16%2F11487972f9bb41b6834d973c8f2f30be.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Ff514048c945f4e19ba9688a0a3ecb105%2F17%2Fae605f725ffe41dd919e65086271ce90.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Ff514048c945f4e19ba9688a0a3ecb105%2F18%2Fc299cb474c494b52a752e467ec8e356b.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Fc8d9eed3100140ba91842ab52723870e%2F2%2F85b4045d9b864ce88f512c3ec20436de.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Fc8d9eed3100140ba91842ab52723870e%2F4%2F6d2e887a579d4e71b241d1ba64391da2.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Fc8d9eed3100140ba91842ab52723870e%2F6%2F98842479c6fb4ed584c2aca48806edf8.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Fc8d9eed3100140ba91842ab52723870e%2F11%2Fd94488abbe4d49d7ad426f6165a36c05.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Fc8d9eed3100140ba91842ab52723870e%2F7%2Fd24017f5a0e94e49816e6c9ea65c5dd0.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Fc8d9eed3100140ba91842ab52723870e%2F8%2F01a90c7b02db43299638f668eb991031.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2Fc8d9eed3100140ba91842ab52723870e%2F9%2Fb742e7ec6b644926be15cee7d3115d11.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2F67c5323a73fb4b4583fc0db39562aaf3%2F2%2Fa5ca52a87ef348bca5591db152aa2754.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2F67c5323a73fb4b4583fc0db39562aaf3%2F8%2F72a591185ebb41e2a30cd5262540f50e.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2F67c5323a73fb4b4583fc0db39562aaf3%2F10%2Ff6cbf383047244ae802952f31a1d4734.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2F67c5323a73fb4b4583fc0db39562aaf3%2F16%2Fe84b0c11fd3546fb8d9655b5fe720076.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2F67c5323a73fb4b4583fc0db39562aaf3%2F11%2F720916d156524449a299ee7e5349b1a0.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2F67c5323a73fb4b4583fc0db39562aaf3%2F12%2F85d9f26750fa4c80aca79a77ff76d632.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2F67c5323a73fb4b4583fc0db39562aaf3%2F13%2F2bc206b6c3ea439d8708bfdd83ffeb9d.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2F67c5323a73fb4b4583fc0db39562aaf3%2F14%2F540c45318a2041a4b862e977c2d9e9fa.pdf",
+      "https://www.bok.or.kr/static/jslibrary/pdfjs/viewer.html?file=%2FfileSrc%2Fportal%2F075c50ad6b6a4bf287f56189695ac18f%2F2%2F94f78e474ad049c2b15c5451d421b085.pdf"
+     ],
+     "dateHits": 0,
+     "headers": "plain",
+     "kind": "html",
+     "sample": "| 통화정책방향 결정회의(목록) | 통화정책방향 결정회의 일정 및 자료 | 통화정책 | 정책/업무 | 한국은행 홈페이지 본문내용 바로가기 주메뉴 바로가기 --> --> 한국은행 --> 경제연구원 화폐박물관 지역본부 경제통계시스템(ECOS) 금융·경제 스냅샷 전자도서관 디지털아카이브 채용 전자계약시스템 관련사이트 바로가기 한국은행 화폐박물관 경제연구원 지역본부 경제통계시스템(ECOS) 금융·경제 스냅샷 전자도서관 디지털아카이브 채용 전자계약시스템 본인인증 ENGLISH 한국은행 BANK OF KOREA 한국은행 한국은행이 하는 일 설립목적 및 역사 한국은행법의 변천 역대총재 금융통화위원회 금융통화위원회 금융통화위원회의 역사 조직도 운영 및 법규 전략 및 조직가치 경영정보 계약정보 평판조사 윤리경영 법규정보 사",
+     "shapes": {},
+     "status": 200,
+     "textChars": 11596,
+     "title": "| 통화정책방향 결정회의(목록) | 통화정책방향 결정회의 일정 및 자료 | 통화정책 | 정책/업무 | 한국은행 홈페이지",
+     "url": "https://www.bok.or.kr/portal/singl/crncyPolicyDrcMtg/listYear.do?menuNo=200755&mtgSe=A"
+    },
+    {
+     "bytes": 4971,
+     "ctype": "text/html;charset=utf-8",
+     "dateHits": 0,
+     "error": "HTTP 404 ",
+     "headers": "plain",
+     "kind": "html",
+     "sample": "한국은행 - 에러페이지 (Error Page) Page Not Found 죄송합니다. 찾을 수 없는 페이지 를 요청하셨습니다. 페이지의 주소를 잘못 입력하였거나 홈페이지 개편으로 인해 요청하신 페이지의 주소가 변경되었을 수 있습니다. 페이지 주소 재확인 또는 개편 홈페이지로 이동 후에 이용하시기 바랍니다. 감사합니다. You entered the page address incorrectly, or The address of the page you requested may have changed due to website reorganization. Please re-check the page address or go to the reorganized homepage before using. Thank you",
+     "shapes": {},
+     "status": 404,
+     "textChars": 453,
+     "title": "한국은행 - 에러페이지 (Error Page)",
+     "url": "https://www.bok.or.kr/eng/main/contents.do?menuNo=400069"
+    },
+    {
+     "bytes": 4971,
+     "ctype": "text/html;charset=utf-8",
+     "dateHits": 0,
+     "error": "HTTP 404 ",
+     "headers": "browser",
+     "kind": "html",
+     "sample": "한국은행 - 에러페이지 (Error Page) Page Not Found 죄송합니다. 찾을 수 없는 페이지 를 요청하셨습니다. 페이지의 주소를 잘못 입력하였거나 홈페이지 개편으로 인해 요청하신 페이지의 주소가 변경되었을 수 있습니다. 페이지 주소 재확인 또는 개편 홈페이지로 이동 후에 이용하시기 바랍니다. 감사합니다. You entered the page address incorrectly, or The address of the page you requested may have changed due to website reorganization. Please re-check the page address or go to the reorganized homepage before using. Thank you",
+     "shapes": {},
+     "status": 404,
+     "textChars": 453,
+     "title": "한국은행 - 에러페이지 (Error Page)",
+     "url": "https://www.bok.or.kr/eng/main/contents.do?menuNo=400069"
+    },
+    {
+     "bytes": 222231,
+     "ctype": "text/html;charset=utf-8",
+     "dateHits": 0,
+     "headers": "plain",
+     "kind": "html",
+     "sample": "| (목록) | Bank of Korea Skip to content --> --> Economic Research Institute Economic Statistics System(ECOS) Financial and Economic Snapshot Family site Economic Research Institute Economic Statistics System(ECOS) Financial and Economic Snapshot KOREAN About History and Mission History and Mission Former Governors Organization Organizational Chart Monetary Policy Board Executive Auditor Vision, Val",
+     "shapes": {},
+     "status": 200,
+     "textChars": 8816,
+     "title": "| (목록) | Bank of Korea",
+     "url": "https://www.bok.or.kr/eng/singl/crncyPolicyDrcMtg/listYear.do?menuNo=400069&mtgSe=A"
+    },
+    {
+     "bytes": 210285,
+     "ctype": "application/pdf",
+     "dateHits": 0,
+     "headers": "plain",
+     "kind": "pdf",
+     "pdfStreams": 255,
+     "sample": "]ð/\u0017äÚv éC-[V%«¢zXr×úzÍ%«\u0002Õ¼ jºfnHå«\u0002Õ µbZ¬1jÀµI-X9ªéÔ\u0011ÈX·9«\u0002ÚVÓ60!yK0ÒãM\u0004Ü\u0014¨´¼©@<\u0001÷¼Ò:KÙ35^\u0006ºÃDå`>\u0000¬]¢N?FHÏ¦ÇÁSåÙ·ÁÉú9JfìI'ò.>p=Þ+\u0019ðr`\u0004É\u0013¸zÇÜ£R³ËXQ:ã­ôË.^å!0=Ä½¶ÿ\u0000ºº¥ËÆzÑjçÉ\u0004DU.\u0011\u0011\u0000UNÔþ²÷#ÞåkZ²LQÂùå8DÒî@\u001bíì À¯\u0015âô­ÏÂ9¤2ÊçÜì\u000fpî\u001bWr¶hÚTXØÉ4-vC©ä¼Yg@/ø®¯\u0015¬æò}\u0015\u0004WCM>\u00071í y<M Áª¿ CØ©SDè'']\u001bMr°iDZ¡pä£Õ±¶¿?¥ü\u000f×xæ;Ý©ý[ ï¹ÊN#r4è§tllZKYÃuCoPo-¶ðQ»Sú¶?ß\u000fsN¶Ñª",
+     "shapes": {},
+     "status": 200,
+     "textChars": 2887,
+     "url": "https://www.bok.or.kr/fileSrc/portal/f514048c945f4e19ba9688a0a3ecb105/2/700fe0a2c066401a81cde04c70a18336.pdf"
+    },
+    {
+     "bytes": 540634,
+     "ctype": "application/pdf",
+     "dateHits": 0,
+     "headers": "plain",
+     "kind": "pdf",
+     "pdfStreams": 411,
+     "sample": "uo3Ð#®E ¦Á\u001a4±á£^e8byeu4RÌìp\u0014\u000eäAªÞ¥¾CÓÖÑ]<M*x«\u0019Ue\u0007\u0004òFO$ \u000fýH 4$\u0012\u0000³-4j¦úým¸4tâ á¤æ!·$¶@ÀÎì Ä ðr\u0005Îº+m¾zéÖF\u0004.Â4,Ä\u000faýÀîp5%H:Þ@`FÃÄ£P,wª\u001bí#ÕPHÏ\u0012JÑ\u0012ÊTä}þ\u0010 C©ú\b4d\b± \u001a ªë~¤©{Éas\u001b¯!Ã\u00032\u0017ß\\ÿ\u0000wý/þtÿ\u0000q/ötý'ÿ\u0000©ÕO\u0018ôis÷Òÿ\u0000çO÷\u0012ÿ\u0000gWVÛ -Ò:ÚÙéãó¼åö:Ê×p¤â7ÛL&7V À\u0003vÐ0sã¶FÒ\u0007 ÚdïRÀûÈÇÛ.ÁH\u0007öZÉ>QfQ_jÅ ^\u001a Ï8ãø£ßJ¬5mpI%¥rYsª×L vp¨U_' §\u00025eÒÓµ=úãsl?PxÕ{ XôÌ&[Õ9ô?L×\u001alµ¡¿ rz«_\"i",
+     "shapes": {},
+     "status": 200,
+     "textChars": 2420,
+     "url": "https://www.bok.or.kr/fileSrc/portal/f514048c945f4e19ba9688a0a3ecb105/4/ac49e187828c45369f9fda8f4276c744.pdf"
+    }
+   ],
+   "verdict": "단서 있다 — 페이지가 받아 오는 데이터 파일을 더 따라가야 한다"
+  },
+  "ecb": {
+   "tried": [
+    {
+     "bytes": 106266,
+     "ctype": "text/html; charset=UTF-8",
+     "dateHits": 5,
+     "headers": "plain",
+     "kind": "html",
+     "sample": "Meetings of the Governing Council and the General Council Skip to: Skip to navigation Skip to content Skip to footer EN Български Čeština Dansk Deutsch Eλληνικά English Español Eesti keel Suomi Français Gaeilge Hrvatski Magyar Italiano Lietuvių Latviešu Malti Nederlands Polski Português Română Slovenčina Slovenščina Svenska Menu Monetary policy & markets Monetary policy & markets Our monetary poli",
+     "shapes": {
+      "D Month YYYY": {
+       "eg": [
+        "10 September 2026",
+        "5 June 2025",
+        "18 April 2024",
+        "13 March 2025"
+       ],
+       "n": 5
+      }
+     },
+     "status": 200,
+     "textChars": 18163,
+     "title": "Meetings of the Governing Council and the General Council",
+     "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html"
+    },
+    {
+     "bytes": 97569,
+     "ctype": "text/html; charset=UTF-8",
+     "dateHits": 5,
+     "error": "HTTP 404 Not Found",
+     "headers": "plain",
+     "kind": "html",
+     "sample": "Sorry, this page does not exist. Skip to: Skip to navigation Skip to content Skip to footer EN Български Čeština Dansk Deutsch Eλληνικά English Español Eesti keel Suomi Français Gaeilge Hrvatski Magyar Italiano Lietuvių Latviešu Malti Nederlands Polski Português Română Slovenčina Slovenščina Svenska Menu Monetary policy & markets Monetary policy & markets Our monetary policy strategy, the tools we",
+     "shapes": {
+      "D Month YYYY": {
+       "eg": [
+        "10 September 2026",
+        "5 June 2025",
+        "18 April 2024",
+        "13 March 2025"
+       ],
+       "n": 5
+      }
+     },
+     "status": 404,
+     "textChars": 13226,
+     "title": "Sorry, this page does not exist.",
+     "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/mgcgc_2026.en.html"
+    },
+    {
+     "bytes": 97569,
+     "ctype": "text/html; charset=UTF-8",
+     "dateHits": 5,
+     "error": "HTTP 404 Not Found",
+     "headers": "browser",
+     "kind": "html",
+     "sample": "Sorry, this page does not exist. Skip to: Skip to navigation Skip to content Skip to footer EN Български Čeština Dansk Deutsch Eλληνικά English Español Eesti keel Suomi Français Gaeilge Hrvatski Magyar Italiano Lietuvių Latviešu Malti Nederlands Polski Português Română Slovenčina Slovenščina Svenska Menu Monetary policy & markets Monetary policy & markets Our monetary policy strategy, the tools we",
+     "shapes": {
+      "D Month YYYY": {
+       "eg": [
+        "10 September 2026",
+        "5 June 2025",
+        "18 April 2024",
+        "13 March 2025"
+       ],
+       "n": 5
+      }
+     },
+     "status": 404,
+     "textChars": 13226,
+     "title": "Sorry, this page does not exist.",
+     "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/mgcgc_2026.en.html"
+    },
+    {
+     "bytes": 97569,
+     "ctype": "text/html; charset=UTF-8",
+     "dateHits": 5,
+     "error": "HTTP 404 Not Found",
+     "headers": "plain",
+     "kind": "html",
+     "sample": "Sorry, this page does not exist. Skip to: Skip to navigation Skip to content Skip to footer EN Български Čeština Dansk Deutsch Eλληνικά English Español Eesti keel Suomi Français Gaeilge Hrvatski Magyar Italiano Lietuvių Latviešu Malti Nederlands Polski Português Română Slovenčina Slovenščina Svenska Menu Monetary policy & markets Monetary policy & markets Our monetary policy strategy, the tools we",
+     "shapes": {
+      "D Month YYYY": {
+       "eg": [
+        "10 September 2026",
+        "5 June 2025",
+        "18 April 2024",
+        "13 March 2025"
+       ],
+       "n": 5
+      }
+     },
+     "status": 404,
+     "textChars": 13226,
+     "title": "Sorry, this page does not exist.",
+     "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/mgcgc_2027.en.html"
+    },
+    {
+     "bytes": 97569,
+     "ctype": "text/html; charset=UTF-8",
+     "dateHits": 5,
+     "error": "HTTP 404 Not Found",
+     "headers": "browser",
+     "kind": "html",
+     "sample": "Sorry, this page does not exist. Skip to: Skip to navigation Skip to content Skip to footer EN Български Čeština Dansk Deutsch Eλληνικά English Español Eesti keel Suomi Français Gaeilge Hrvatski Magyar Italiano Lietuvių Latviešu Malti Nederlands Polski Português Română Slovenčina Slovenščina Svenska Menu Monetary policy & markets Monetary policy & markets Our monetary policy strategy, the tools we",
+     "shapes": {
+      "D Month YYYY": {
+       "eg": [
+        "10 September 2026",
+        "5 June 2025",
+        "18 April 2024",
+        "13 March 2025"
+       ],
+       "n": 5
+      }
+     },
+     "status": 404,
+     "textChars": 13226,
+     "title": "Sorry, this page does not exist.",
+     "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/mgcgc_2027.en.html"
+    },
+    {
+     "bytes": 97535,
+     "ctype": "text/html; charset=UTF-8",
+     "dateHits": 5,
+     "error": "HTTP 404 Not Found",
+     "headers": "plain",
+     "kind": "html",
+     "sample": "Sorry, this page does not exist. Skip to: Skip to navigation Skip to content Skip to footer EN Български Čeština Dansk Deutsch Eλληνικά English Español Eesti keel Suomi Français Gaeilge Hrvatski Magyar Italiano Lietuvių Latviešu Malti Nederlands Polski Português Română Slovenčina Slovenščina Svenska Menu Monetary policy & markets Monetary policy & markets Our monetary policy strategy, the tools we",
+     "shapes": {
+      "D Month YYYY": {
+       "eg": [
+        "10 September 2026",
+        "5 June 2025",
+        "18 April 2024",
+        "13 March 2025"
+       ],
+       "n": 5
+      }
+     },
+     "status": 404,
+     "textChars": 13226,
+     "title": "Sorry, this page does not exist.",
+     "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/index.en.html"
+    },
+    {
+     "bytes": 97535,
+     "ctype": "text/html; charset=UTF-8",
+     "dateHits": 5,
+     "error": "HTTP 404 Not Found",
+     "headers": "browser",
+     "kind": "html",
+     "sample": "Sorry, this page does not exist. Skip to: Skip to navigation Skip to content Skip to footer EN Български Čeština Dansk Deutsch Eλληνικά English Español Eesti keel Suomi Français Gaeilge Hrvatski Magyar Italiano Lietuvių Latviešu Malti Nederlands Polski Português Română Slovenčina Slovenščina Svenska Menu Monetary policy & markets Monetary policy & markets Our monetary policy strategy, the tools we",
+     "shapes": {
+      "D Month YYYY": {
+       "eg": [
+        "10 September 2026",
+        "5 June 2025",
+        "18 April 2024",
+        "13 March 2025"
+       ],
+       "n": 5
+      }
+     },
+     "status": 404,
+     "textChars": 13226,
+     "title": "Sorry, this page does not exist.",
+     "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/index.en.html"
+    },
+    {
+     "bytes": 108125,
+     "ctype": "text/html; charset=UTF-8",
+     "dataLinks": [
+      "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260630_annex~d20c0ea013.en.pdf"
+     ],
+     "dateHits": 7,
+     "headers": "plain",
+     "kind": "html",
+     "sample": "ECB publishes indicative operational calendars for 2027 Skip to: Skip to navigation Skip to content Skip to footer EN Български Čeština Dansk Deutsch Eλληνικά English Español Eesti keel Suomi Français Gaeilge Hrvatski Magyar Italiano Lietuvių Latviešu Malti Nederlands Polski Português Română Slovenčina Slovenščina Svenska Menu Monetary policy & markets Monetary policy & markets Our monetary policy",
+     "shapes": {
+      "D Month YYYY": {
+       "eg": [
+        "10 September 2026",
+        "5 June 2025",
+        "18 April 2024",
+        "13 March 2025"
+       ],
+       "n": 7
+      }
+     },
+     "status": 200,
+     "textChars": 15146,
+     "title": "ECB publishes indicative operational calendars for 2027",
+     "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260630~9f54a0a4fb.en.html"
+    },
+    {
+     "bytes": 5740,
+     "ctype": "application/rss+xml",
+     "dateHits": 16,
+     "headers": "plain",
+     "kind": "xml",
+     "sample": "ECB - European Central Bank https://www.ecb.europa.eu/ Latest releases on the ECB website - Press releases, speeches and interviews, press conferences. en Copyright 2026, European Central Bank webmaster@ecb.europa.eu (ECB Webmaster) Fri, 02 Oct 2026 14:45:11 +0200 Press Automatic http://blogs.law.harvard.edu/tech/rss Decisions taken by the Governing Council of the ECB (in addition to decisions set",
+     "shapes": {
+      "D Month YYYY": {
+       "eg": [
+        "02 Oct 2026",
+        "02 Oct 2026",
+        "02 Oct 2026",
+        "01 Oct 2026"
+       ],
+       "n": 16
+      }
+     },
+     "status": 200,
+     "textChars": 4338,
+     "title": "ECB - European Central Bank",
+     "url": "https://www.ecb.europa.eu/rss/press.html"
+    },
+    {
+     "bytes": 363300,
+     "ctype": "application/pdf",
+     "dateHits": 0,
+     "headers": "plain",
+     "kind": "pdf",
+     "pdfStreams": 18,
+     "sample": "ECB-CONFIDENTIAL # January-2027 February-2027 March-2027 April-2027 May-2027 June-2027 01 Fri 01 Mon MRO ann. 01 Mon MRO ann. 01 Thu 01 Sat 01 Tue MRO allot. 02 Sat 02 Tue MRO allot. 02 Tue MRO allot. 02 Fri 02 Sun 02 Wed MRO settl. 03 Sun 03 Wed MRO settl. 03 Wed MRO settl. 03 Sat 03 Mon MRO ann. 03 Thu 04 Mon MRO ann. 04 Thu 04 Thu 04 Sun 04 Tue 04 Fri 05 Tue MRO allot. 05 Fri 05 Fri 05 Mon MRO ",
+     "shapes": {},
+     "status": 200,
+     "textChars": 153855,
+     "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260630_annex~d20c0ea013.en.pdf"
+    }
+   ],
+   "verdict": "길이 있다 — 날짜가 잡히는 주소를 찾았다"
+  }
+ }
+}
