@@ -267,23 +267,33 @@ def parse_fomc(html):
 # 행 번호가 앞에 붙어 있어 **첫 칸 날짜**만 집어낼 수 있다. 이것이 통화정책회의일이다.
 ECB_MP_ROW = re.compile(
     r"(?:^|\s)\d{1,2}(?:/20\d{2})?\s+"
-    r"(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),\s*(\d{1,2})-([A-Z][a-z]{2})-(\d{2})\b")
+    r"(Mon|Tue|Wed|Thu|Fri|Sat|Sun),\s*(\d{1,2})-([A-Z][a-z]{2})-(\d{2})\b")
 
 
 def parse_ecb_mp_table(text):
-    """「Relevant Governing Council meeting」 칸을 읽는다. 없으면 빈 목록."""
+    """「Relevant Governing Council meeting」 칸을 읽는다. 없으면 빈 목록.
+
+    이 칸에는 **결정을 내리는 날 하루**만 적힌다(실측한 9행 모두 목요일이었다).
+    실제 통화정책회의는 수·목 이틀이고, seed 에도 이틀로 들어 있었다. 하루로만
+    넣으면 화면에서 회의 첫날이 사라진다 — 1차 수집에서 그렇게 깎여 나갔다.
+    그래서 목요일이면 하루 앞을 시작일로 둔다. 목요일이 아닌 행은 ECB 가
+    관례를 벗어나 잡은 회의이니 짐작하지 않고 하루짜리로 둔다.
+    """
     i = text.find("Relevant Governing Council meeting")
     if i < 0:
         return []
     # 표 끝을 모르니 넉넉히 자른다. 뒤에 이어지는 연락처·메뉴에는 이 꼴의 날짜가 없다.
     out, seen = [], set()
     for m in ECB_MP_ROW.finditer(text[i:i + 4000]):
-        day, mname, yy = m.groups()
+        wd, day, mname, yy = m.groups()
         mon = MONTHS.get(mname.lower())
         iso = mk(2000 + int(yy), mon, day) if mon else None
         if iso and iso not in seen:
             seen.add(iso)
-            out.append({"start": iso, "end": iso, "sep": mon in (3, 6, 9, 12),
+            start = iso
+            if wd == "Thu":
+                start = (date.fromisoformat(iso) - timedelta(days=1)).isoformat()
+            out.append({"start": start, "end": iso, "sep": mon in (3, 6, 9, 12),
                         "presser": True, "confirmed": "official"})
     return out
 
@@ -565,7 +575,13 @@ def apply_bank(seed, key, meetings, rep, horizon_days=900):
                  "%s년 회의가 %d개다 — 연 %d회 기관에서 나올 수 없는 수다(엉뚱한 표를 읽었을 것)"
                  % (y, years[y], per_year))
 
-    old = {m["end"]: m for m in bank.get("meetings", [])}
+    # 원천이 구간을 통째로 덮지 않을 수 있다. ECB 「운영달력」 보도자료가 그렇다 —
+    # 2027년치 표는 2026-12-17 회의부터 시작해서, 그 앞의 2026-10-28 회의가 표에 없다.
+    # 구간 전체를 갈아끼우면 멀쩡한 회의가 "원천에 없다"는 이유로 지워진다(1차 수집에서
+    # 실제로 지워졌다). 그래서 **원천이 말하는 범위 안에서만** 갈아끼운다.
+    src_lo = min(m["start"] for m in fresh)
+
+    old = {m["end"]: m for m in bank.get("meetings", []) if src_lo <= m["start"] <= hi}
     new = {m["end"]: m for m in fresh}
     diffs = []
     for d in sorted(set(old) - set(new)):
@@ -577,8 +593,9 @@ def apply_bank(seed, key, meetings, rep, horizon_days=900):
         if old[d].get("start") != new[d].get("start"):
             diffs.append("%s 회의 시작일 %s → %s" % (d, old[d].get("start"), new[d]["start"]))
 
-    # 공식 페이지에서 확인한 것으로 갈아끼우고, 구간 밖의 seed 항목(먼 미래 잠정 일정)은 남긴다.
-    keep = [m for m in bank.get("meetings", []) if not (lo <= m["start"] <= hi)]
+    # 공식 페이지에서 확인한 것으로 갈아끼우고, 원천이 덮지 않는 seed 항목
+    # (원천 시작 이전의 올해 회의, 구간 밖의 먼 미래 잠정 일정)은 남긴다.
+    keep = [m for m in bank.get("meetings", []) if not (src_lo <= m["start"] <= hi)]
     bank["meetings"] = sorted(keep + fresh, key=lambda m: m["start"])
     bank["fetched_at"] = date.today().isoformat()
     if key == "bok" and bank.get("gap_note_ko") and len(fresh) >= 8:
