@@ -98,6 +98,17 @@ CANDIDATES = {
         # 제목이 'indicative operational calendars for 2027' 이었다 — 회의일이
         # 여기 들어 있는지 본문을 받아 눈으로 본다.
         "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260630_annex~d20c0ea013.en.pdf",
+        # [3차] 2차에서 답이 나왔다 — 저 보도자료 **본문**에 「지급준비금 적립기간」
+        # 표가 있고, 그 첫 칸이 'Relevant Governing Council meeting' 이다.
+        # 곧 2027년 통화정책회의일 여덟 개가 거기 적혀 있다. 그런데 저 주소는
+        # 해마다 바뀌는 해시가 붙어 손으로 넣어야 한다. 해마다 저절로 찾아낼
+        # **고정 주소**가 있는지 본다.
+        #   - reserve: 적립기간 달력 상설 페이지. 같은 표가 있을 것이다
+        #   - index_include: 연도별 보도자료 목록의 서버가 그려 주는 조각.
+        #     여기서 'operational calendars' 제목을 찾아 해시 주소를 얻는다
+        "https://www.ecb.europa.eu/press/calendars/reserve/html/index.en.html",
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/index_include.en.html",
+        "https://www.ecb.europa.eu/press/pr/date/2027/html/index_include.en.html",
     ],
     "boj": [
         "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
@@ -154,6 +165,22 @@ def unwrap(url):
     return re.match(r"(https?://[^/]+)", url).group(1) + inner
 
 
+def looks_textual(raw):
+    """풀지 못한 스트림이 '글자 뭉치'인지 '이진 덩어리'인지 가른다.
+
+    PDF 의 글자 스트림은 풀어 놓으면 `BT /F1 12 Tf (…) Tj ET` 같은 아스키다.
+    그림·글꼴 스트림은 아무 바이트나 들어 있다. 앞 4KB 만 보고, 볼 수 있는
+    아스키가 9할을 넘고 글자 연산자가 하나라도 보일 때만 받는다.
+    """
+    head = raw[:4096]
+    if not head:
+        return False
+    ok = sum(1 for b in head if 32 <= b < 127 or b in (9, 10, 13))
+    if ok / len(head) < 0.90:
+        return False
+    return bool(re.search(rb"\bT[Jjfdm]\b|\bBT\b", head))
+
+
 def pdf_text(body):
     """PDF 에서 글자를 꺼낸다. 표준 라이브러리만 쓴다.
 
@@ -168,7 +195,12 @@ def pdf_text(body):
         try:
             chunks.append(zlib.decompress(raw))
         except Exception:                                      # noqa: BLE001
-            chunks.append(raw)          # 압축하지 않은 스트림일 수 있다
+            # 압축하지 않은 스트림일 수 있다. 다만 그림·글꼴 스트림을 그대로
+            # 넣으면 아래 정규식이 이진 쓰레기를 "글자"로 뱉는다 — 2차에서 한국은행
+            # 첨부가 그렇게 나왔다. 날짜 정규식이 그 쓰레기를 물면 없는 날짜를
+            # 지어내게 된다. 그래서 **글자처럼 생긴 것만** 받는다.
+            if looks_textual(raw):
+                chunks.append(raw)
     blob = b"\n".join(chunks)
 
     out = []
