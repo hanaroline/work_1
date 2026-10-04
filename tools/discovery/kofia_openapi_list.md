@@ -1,6 +1,6 @@
 # 탐침 — 금투협 오픈API 서비스 목록 (렌더해서 읽는다)
 
-받은 때: 2026-08-30T05:02:20.379Z
+받은 때: 2026-10-03T09:17:28.975Z
 
 `http://openapi.kofia.or.kr/apiStut/OPENAPISvcStut.jsp`
 

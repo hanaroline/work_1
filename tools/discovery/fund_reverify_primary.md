@@ -1,6 +1,6 @@
 # 재검증 L3 (2차 시도) — 브라우저로 1차 출처를 연다
 
-검증 시각: 2026-10-01T08:49:34.883Z
+검증 시각: 2026-10-03T08:40:32.169Z
 
 **1차 출처에서 조회 경로를 찾음 (전자공시 펀드검색(표준코드))**
 
@@ -12,11 +12,11 @@
 
 | 표준코드 | 펀드 | 유형 | 기준가 | 설정액 | 총보수 |
 |---|---|---|---:|---:|---:|
-| KR5105409225 | 삼성MMF법인 1 | MMF | 1022.88 | 112460억 | 0.05~0.09% |
-| KR5223385430 | KB법인용MMF I-1(운용) | MMF | 1001.13 | 85799억 | 0.06~0.09% |
-| K55107BJ2329 | 우리큰만족법인MMF 1(국공채) | MMF | 1025.3 | 82834억 | 0.078~0.098% |
-| K55235B39924 | 피델리티글로벌테크놀로지증권자투자신탁(주식-재간접형) | 해외주식형 | 5717.02 | 9208억 | 0.162~1.362% |
-| KR5209676463 | 신영밸류고배당증권자투자신탁(주식)운용 | 국내주식형 | 2735.96 | 8298억 | 0.45~1.35% |
+| KR5105409225 | 삼성MMF법인 1 | MMF | 1022.98 | 91942억 | 0.05~0.09% |
+| K55107BJ2329 | 우리큰만족법인MMF 1(국공채) | MMF | 1025.39 | 82307억 | 0.078~0.098% |
+| KR5223385430 | KB법인용MMF I-1(운용) | MMF | 1001.22 | 81515억 | 0.06~0.09% |
+| K55235B39924 | 피델리티글로벌테크놀로지증권자투자신탁(주식-재간접형) | 해외주식형 | 5746.73 | 9214억 | 0.162~1.362% |
+| KR5209676463 | 신영밸류고배당증권자투자신탁(주식)운용 | 국내주식형 | 2695.6 | 8306억 | 0.45~1.35% |
 
 ## 접근 결과
 
@@ -33,19 +33,19 @@
 
 ### 전자공시 펀드공시
 
-- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17908445769172717.108807118289` → 200
-- `GET https://dis.kofia.or.kr/wq/fundann/DISFundAnnList.xml?postfix=17908445781052625.629622088217` → 307
+- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17910168337123085.215009013138` → 200
+- `GET https://dis.kofia.or.kr/wq/fundann/DISFundAnnList.xml?postfix=17910168348746865.893092264216` → 307
 - `GET https://dis.kofia.or.kr/common/error.html` → 200
-- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17908445783936819.877815177012` → 200
+- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17910168351569457.587220579107` → 200
 
 ### 전자공시 펀드검색(표준코드)
 
-- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17908445850275614.4008055151835` → 200
-- `GET https://dis.kofia.or.kr/wq/com/popup/DISComFundSmryInfo.xml?postfix=17908445862499330.308668209565` → 200
-- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17908445864115764.610980323446` → 200
-- `GET https://dis.kofia.or.kr/css/pop.css?postfix=17908445865648026.339636139557` → 200
-- `GET https://dis.kofia.or.kr/css/common.css?postfix=17908445867128144.562907610107` → 200
-- `GET https://dis.kofia.or.kr/wq/com/popup/loading.xml?postfix=17908445868778020.5176056565415` → 200
+- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17910168417601293.6632095921518` → 200
+- `GET https://dis.kofia.or.kr/wq/com/popup/DISComFundSmryInfo.xml?postfix=1791016842923205.0999774465223` → 200
+- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17910168430773299.5523590799557` → 200
+- `GET https://dis.kofia.or.kr/css/pop.css?postfix=17910168432216386.4707308244915` → 200
+- `GET https://dis.kofia.or.kr/css/common.css?postfix=17910168433712185.9428332411944` → 200
+- `GET https://dis.kofia.or.kr/wq/com/popup/loading.xml?postfix=17910168435335638.818763278418` → 200
 - `POST https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/` → 200
   - POST: `<?xml version="1.0" encoding="utf-8"?>
 <message>
@@ -97,14 +97,14 @@
 
 ### 펀드닥터 (에프앤가이드)
 
-- `POST https://www.google-analytics.com/j/collect?v=1&_v=j102&a=1300339385&t=event&ni=0&_s=1&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2F&ul=ko-kr&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&sr=1280x720&vp=1280x720&ec=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0%EC%83%81%EB%8B%A8%EB%B0%B0%EB%84%88&ea=undefined&el=%2F&_u=YGBAgEABAAAAACAAI~&jid=707925816&gjid=1455113463&cid=515719576.1790844601&tid=UA-150939181-1&_gid=266019930.1790844601&_slc=1&gtm=45He69t1n81WSBDNCLza200xf1&gcd=13l3l3l3l1l1&dma=0&tag_exp=115616985~115938466~115938468~117971173~118012007~118897920~118897930~120385422~120469145~120469153&z=1451414847` → 200
-- `POST https://stats.g.doubleclick.net/j/collect?t=dc&aip=1&_r=3&v=1&_v=j102&tid=UA-150939181-1&cid=515719576.1790844601&jid=707925816&gjid=1455113463&_gid=266019930.1790844601&_u=YGBAgEABAAAAAGAAI~&z=2115918852` → 200
-- `POST https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je69t1v9136902590za20gxf1&_p=1790844600628&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=515719576.1790844601&frm=0&pscdl=noapi&rcb=19&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B141.0.7390.37%7CNot%253FA_Brand%3B8.0.0.0%7CChromium%3B141.0.7390.37&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=ko-kr&gaf=2&_s=1&tag_exp=115938466~115938469~118897920~118897930~120213116~120385423~120469145~120469153&sid=1790844600&sct=1&seg=0&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2F&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&en=page_view&_fv=1&_ss=1&tfd=1395` → 204
+- `POST https://www.google-analytics.com/j/collect?v=1&_v=j102&a=1410215883&t=event&ni=0&_s=1&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2F&ul=ko-kr&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&sr=1280x720&vp=1280x720&ec=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0%EC%83%81%EB%8B%A8%EB%B0%B0%EB%84%88&ea=undefined&el=%2F&_u=YGBAgEABAAAAACAAI~&jid=883148133&gjid=565607511&cid=1295694991.1791016857&tid=UA-150939181-1&_gid=2133235729.1791016857&_slc=1&gtm=45He69u2n81WSBDNCLza200xf1&gcd=13l3l3l3l1l1&dma=0&tag_exp=115616986~115938466~115938469~117971173~118897920~118897930~120385422~120420416~120469145~120469153&z=503294263` → 200
+- `POST https://stats.g.doubleclick.net/j/collect?t=dc&aip=1&_r=3&v=1&_v=j102&tid=UA-150939181-1&cid=1295694991.1791016857&jid=883148133&gjid=565607511&_gid=2133235729.1791016857&_u=YGBAgEABAAAAAGAAI~&z=753246580` → 200
+- `POST https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je69u2v9136902590za20gxf1&_p=1791016856945&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=1295694991.1791016857&frm=0&pscdl=noapi&rcb=4&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B141.0.7390.37%7CNot%253FA_Brand%3B8.0.0.0%7CChromium%3B141.0.7390.37&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=ko-kr&gaf=2&_s=1&tag_exp=115616986~115938466~115938469~118897920~118897930~120213116~120385422~120469145~120469153~121046263~121046271&sid=1791016857&sct=1&seg=0&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2F&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&en=page_view&_fv=1&_ss=1&tfd=984` → 204
 - `GET https://www.funddoctor.co.kr/common/footer.jsp` → 200
 
 ### 펀드닥터 펀드검색
 
-- `POST https://www.google-analytics.com/j/collect?v=1&_v=j102&a=440958001&t=event&ni=0&_s=1&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2Fafn%2Ffund%2Ffdlist.jsp%3Ffund_cd%3DKR5105409225&ul=ko-kr&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&sr=1280x720&vp=1280x720&ec=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0%EC%83%81%EB%8B%A8%EB%B0%B0%EB%84%88&ea=undefined&el=%2Fafn%2Ffund%2Ffdlist.jsp&_u=aGDAgUABAAAAACAAI~&jid=359048505&gjid=932644511&cid=1719002976.1790844611&tid=UA-150939181-1&_gid=1683649084.1790844611&_slc=1&gtm=45He69t1n81WSBDNCLza200xf1&gcd=13l3l3l3l1l1&dma=0&tag_exp=115616985~115938465~115938468~117971173~118897920~118897930~120385423~120469145~120469153~121246026~121246034&z=269416995` → 200
-- `POST https://stats.g.doubleclick.net/j/collect?t=dc&aip=1&_r=3&v=1&_v=j102&tid=UA-150939181-1&cid=1719002976.1790844611&jid=359048505&gjid=932644511&_gid=1683649084.1790844611&_u=aGDAgUABAAAAAGAAI~&z=1145730253` → 200
-- `POST https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je69t1h1v9136902590za20gxf1&_p=1790844609303&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=1719002976.1790844611&frm=0&pscdl=noapi&rcb=2&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B141.0.7390.37%7CNot%253FA_Brand%3B8.0.0.0%7CChromium%3B141.0.7390.37&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=ko-kr&gaf=2&_s=1&tag_exp=115616986~115938465~115938468~118897920~118897930~120213116~120385423~120469145~120469153&sid=1790844611&sct=1&seg=0&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2Fafn%2Ffund%2Ffdlist.jsp%3Ffund_cd%3DKR5105409225&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&en=page_view&_fv=1&_ss=1&tfd=2990` → 204
+- `POST https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je69u2v9136902590za20oxf1&_p=1791016865056&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=1467616700.1791016867&frm=0&pscdl=noapi&rcb=13&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B141.0.7390.37%7CNot%253FA_Brand%3B8.0.0.0%7CChromium%3B141.0.7390.37&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=ko-kr&gaf=2&_s=1&tag_exp=115938466~115938468~118012009~118897920~118897930~120213116~120385422~120469145~120469153~121046262~121046270~121280971&sid=1791016866&sct=1&seg=0&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2Fafn%2Ffund%2Ffdlist.jsp%3Ffund_cd%3DKR5105409225&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&en=page_view&_fv=1&_nsi=1&_ss=1&tfd=2290` → 204
+- `POST https://www.google-analytics.com/j/collect?v=1&_v=j102&a=1909784069&t=event&ni=0&_s=1&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2Fafn%2Ffund%2Ffdlist.jsp%3Ffund_cd%3DKR5105409225&ul=ko-kr&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&sr=1280x720&vp=1280x720&ec=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0%EC%83%81%EB%8B%A8%EB%B0%B0%EB%84%88&ea=undefined&el=%2Fafn%2Ffund%2Ffdlist.jsp&_u=YCDAgEABAAAAACAAI~&jid=1545662697&gjid=658265213&cid=1467616700.1791016867&tid=UA-150939181-1&_gid=1370462980.1791016867&_slc=1&gtm=45He69u2n81WSBDNCLza200xf1&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938466~115938469~117971173~118897920~118897930~120385423~120469145~120469153&z=1455138013` → 200
+- `POST https://stats.g.doubleclick.net/j/collect?t=dc&aip=1&_r=3&v=1&_v=j102&tid=UA-150939181-1&cid=1467616700.1791016867&jid=1545662697&gjid=658265213&_gid=1370462980.1791016867&_u=YCDAgEABAAAAAGAAI~&z=1987439898` → 200
 - `GET https://www.funddoctor.co.kr/common/footer.jsp` → 200
