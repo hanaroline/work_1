@@ -1,11 +1,11 @@
 {
  "note": "막힌 원천의 우회로 후보를 받아 본 결과. 정찰 전용이라 seed 는 손대지 않는다. dateHits 가 크면 그 주소에 파서를 붙일 수 있다.",
- "ranAt": "2026-10-04T15:30:25Z",
+ "ranAt": "2026-10-05T03:54:45Z",
  "sources": {
   "bls": {
    "tried": [
     {
-     "bytes": 1325,
+     "bytes": 1323,
      "ctype": "text/html",
      "dateHits": 0,
      "error": "HTTP 403 Forbidden",
@@ -14,7 +14,7 @@
      "sample": "Access Denied Bureau of Labor Statistics Access Denied The BLS is committed to providing data promptly and according to established schedules. Automated retrieval programs (commonly called \"robots\" or \"bots\") can cause delays and interfere with other customers' timely access to information. Therefore, bot activity that doesn't conform to BLS usage policy is prohibited. We apologize for any inconve",
      "shapes": {},
      "status": 403,
-     "textChars": 551,
+     "textChars": 550,
      "title": "Access Denied",
      "url": "https://www.bls.gov/schedule/news_release/cpi.htm"
     },
@@ -44,7 +44,7 @@
      "url": "https://www.bls.gov/schedule/news_release/cpi.htm"
     },
     {
-     "bytes": 1325,
+     "bytes": 1323,
      "ctype": "text/html",
      "dateHits": 0,
      "error": "HTTP 403 Forbidden",
@@ -53,7 +53,7 @@
      "sample": "Access Denied Bureau of Labor Statistics Access Denied The BLS is committed to providing data promptly and according to established schedules. Automated retrieval programs (commonly called \"robots\" or \"bots\") can cause delays and interfere with other customers' timely access to information. Therefore, bot activity that doesn't conform to BLS usage policy is prohibited. We apologize for any inconve",
      "shapes": {},
      "status": 403,
-     "textChars": 551,
+     "textChars": 550,
      "title": "Access Denied",
      "url": "https://www.bls.gov/schedule/news_release/empsit.htm"
     },
@@ -83,7 +83,7 @@
      "url": "https://www.bls.gov/schedule/news_release/empsit.htm"
     },
     {
-     "bytes": 1325,
+     "bytes": 1323,
      "ctype": "text/html",
      "dateHits": 0,
      "error": "HTTP 403 Forbidden",
@@ -92,7 +92,7 @@
      "sample": "Access Denied Bureau of Labor Statistics Access Denied The BLS is committed to providing data promptly and according to established schedules. Automated retrieval programs (commonly called \"robots\" or \"bots\") can cause delays and interfere with other customers' timely access to information. Therefore, bot activity that doesn't conform to BLS usage policy is prohibited. We apologize for any inconve",
      "shapes": {},
      "status": 403,
-     "textChars": 551,
+     "textChars": 550,
      "title": "Access Denied",
      "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm"
     },
@@ -114,7 +114,7 @@
      "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm"
     },
     {
-     "bytes": 1325,
+     "bytes": 1323,
      "ctype": "text/html",
      "dateHits": 0,
      "error": "HTTP 403 Forbidden",
@@ -123,7 +123,7 @@
      "sample": "Access Denied Bureau of Labor Statistics Access Denied The BLS is committed to providing data promptly and according to established schedules. Automated retrieval programs (commonly called \"robots\" or \"bots\") can cause delays and interfere with other customers' timely access to information. Therefore, bot activity that doesn't conform to BLS usage policy is prohibited. We apologize for any inconve",
      "shapes": {},
      "status": 403,
-     "textChars": 551,
+     "textChars": 550,
      "title": "Access Denied",
      "url": "https://www.bls.gov/schedule/news_release/2027_sched.htm"
     },
@@ -145,7 +145,7 @@
      "url": "https://www.bls.gov/schedule/news_release/2027_sched.htm"
     },
     {
-     "bytes": 1325,
+     "bytes": 1323,
      "ctype": "text/html",
      "dateHits": 0,
      "error": "HTTP 403 Forbidden",
@@ -154,7 +154,7 @@
      "sample": "Access Denied Bureau of Labor Statistics Access Denied The BLS is committed to providing data promptly and according to established schedules. Automated retrieval programs (commonly called \"robots\" or \"bots\") can cause delays and interfere with other customers' timely access to information. Therefore, bot activity that doesn't conform to BLS usage policy is prohibited. We apologize for any inconve",
      "shapes": {},
      "status": 403,
-     "textChars": 551,
+     "textChars": 550,
      "title": "Access Denied",
      "url": "https://www.bls.gov/schedule/news_release/bls.ics"
     },
@@ -181,7 +181,7 @@
      "url": "https://www.bls.gov/schedule/news_release/bls.ics"
     },
     {
-     "bytes": 1325,
+     "bytes": 1323,
      "ctype": "text/html",
      "dateHits": 0,
      "error": "HTTP 403 Forbidden",
@@ -190,7 +190,7 @@
      "sample": "Access Denied Bureau of Labor Statistics Access Denied The BLS is committed to providing data promptly and according to established schedules. Automated retrieval programs (commonly called \"robots\" or \"bots\") can cause delays and interfere with other customers' timely access to information. Therefore, bot activity that doesn't conform to BLS usage policy is prohibited. We apologize for any inconve",
      "shapes": {},
      "status": 403,
-     "textChars": 551,
+     "textChars": 550,
      "title": "Access Denied",
      "url": "https://www.bls.gov/schedule/schedule.ics"
     },
@@ -212,15 +212,15 @@
      "url": "https://www.bls.gov/schedule/schedule.ics"
     },
     {
-     "bytes": 3023,
+     "bytes": 3024,
      "ctype": "application/json",
      "dateHits": 0,
      "headers": "plain",
      "kind": "json",
-     "sample": "{\"status\":\"REQUEST_SUCCEEDED\",\"responseTime\":82,\"message\":[],\"Results\":{\n\"series\":\n[{\"seriesID\":\"CUUR0000SA0\",\"data\":[{\"year\":\"2026\",\"period\":\"M08\",\"periodName\":\"August\",\"latest\":\"true\",\"value\":\"334.980\",\"footnotes\":[{}]},{\"year\":\"2026\",\"period\":\"M07\",\"periodName\":\"July\",\"value\":\"333.918\",\"footnotes\":[{}]},{\"year\":\"2026\",\"period\":\"M06\",\"periodName\":\"June\",\"value\":\"333.952\",\"footnotes\":[{}]},{\"year",
+     "sample": "{\"status\":\"REQUEST_SUCCEEDED\",\"responseTime\":162,\"message\":[],\"Results\":{\n\"series\":\n[{\"seriesID\":\"CUUR0000SA0\",\"data\":[{\"year\":\"2026\",\"period\":\"M08\",\"periodName\":\"August\",\"latest\":\"true\",\"value\":\"334.980\",\"footnotes\":[{}]},{\"year\":\"2026\",\"period\":\"M07\",\"periodName\":\"July\",\"value\":\"333.918\",\"footnotes\":[{}]},{\"year\":\"2026\",\"period\":\"M06\",\"periodName\":\"June\",\"value\":\"333.952\",\"footnotes\":[{}]},{\"yea",
      "shapes": {},
      "status": 200,
-     "textChars": 3023,
+     "textChars": 3024,
      "url": "https://api.bls.gov/publicAPI/v2/timeseries/data/CUUR0000SA0"
     }
    ],
@@ -337,28 +337,28 @@
      "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/mref260731a.pdf"
     },
     {
-     "bytes": 15558,
+     "bytes": 16012,
      "ctype": "application/xml;charset=UTF-8",
      "dataLinks": [
       "http://www.boj.or.jp/en/rss/whatsnew.xml?id=1002"
      ],
-     "dateHits": 47,
+     "dateHits": 48,
      "headers": "plain",
      "kind": "xml",
-     "sample": "Bank of Japan：RSS http://www.boj.or.jp/en/rss/whatsnew.xml?id=1002 Japanese Government Bonds Held by the Bank of Japan Fri, 02 Oct 2026 17:00:00 +0900 http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260930.xlsx http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260930.xlsx Collateral Accepted by the Bank of Japan (End of Sept.) Fri, 02 Oct 2026 17:00:00 +0900 http://",
+     "sample": "Bank of Japan：RSS http://www.boj.or.jp/en/rss/whatsnew.xml?id=1002 Opening Remarks by Deputy Governor UCHIDA at the ECONDAT 2026 Fall Meeting (AI, Big Data, and Monetary Policy) Mon, 05 Oct 2026 09:20:00 +0900 http://www.boj.or.jp/en/about/press/koen_2026/ko261005a.htm http://www.boj.or.jp/en/about/press/koen_2026/ko261005a.htm 8th Conference on Nontraditional Data, Machine Learning, and Natural L",
      "shapes": {
       "D Month YYYY": {
        "eg": [
-        "02 Oct 2026",
-        "02 Oct 2026",
-        "02 Oct 2026",
+        "05 Oct 2026",
+        "05 Oct 2026",
+        "05 Oct 2026",
         "02 Oct 2026"
        ],
-       "n": 47
+       "n": 48
       }
      },
      "status": 200,
-     "textChars": 10083,
+     "textChars": 10427,
      "title": "Bank of Japan：RSS",
      "url": "https://www.boj.or.jp/en/rss/whatsnew.xml"
     }
