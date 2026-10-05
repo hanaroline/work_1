@@ -1,0 +1,95 @@
+name: 증시 일정 원천 정찰
+
+# 왜 따로 있나
+#   세션 컨테이너는 ecb.europa.eu·boj.or.jp·bok.or.kr·bls.gov 에 아예 붙지 못한다
+#   (게이트웨이가 CONNECT 에 403). 그래서 "이 주소면 되겠다"를 세션에서 확인할 길이
+#   없다. 러너는 그 정책 밖이므로 여기서 받아 보고 결과만 남긴다.
+#
+#   수집(calendar-data.yml)과 섞지 않는다. 정찰은 seed 를 손대지 않아야 하고, 수집은
+#   주 1회만 돌아야 한다. 한 워크플로에 넣으면 정찰할 때마다 수집이 딸려 온다.
+
+on:
+  push:
+    paths:
+      - 'scripts/probe_calendar_sources.py'
+      - '.github/workflows/calendar-probe.yml'
+  workflow_dispatch:
+    inputs:
+      only:
+        description: '정찰할 원천 (쉼표. 비우면 전부)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: calendar-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 후보 주소를 받아 본다
+        run: |
+          rm -rf data/calendar/probe-dump
+          python3 scripts/probe_calendar_sources.py \
+            --only "${{ github.event.inputs.only }}" \
+            --out data/calendar/probe-report.json \
+            --dump data/calendar/probe-dump \
+            | tee /tmp/probe.log
+
+      - name: 요약을 실행 화면에 적는다
+        if: always()
+        run: |
+          {
+            echo '## 증시 일정 원천 정찰'
+            echo
+            echo '```'
+            sed -n '/=== 요약 ===/,$p' /tmp/probe.log || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # 결과를 가지에 적어 둔다. 세션에서 Actions 로그를 바로 못 읽는 일이 있어,
+      # 파일로 남겨 두어야 git 으로 받아 볼 수 있다.
+      - name: 결과를 가지에 커밋
+        if: always()
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/calendar/probe-report.json data/calendar/probe-dump || true
+          if git diff --cached --quiet; then
+            echo '달라진 것이 없다 — 커밋하지 않는다'
+            exit 0
+          fi
+          git commit -m "chore(calendar): 원천 정찰 결과 $(date -u '+%Y-%m-%d %H:%M UTC')"
+          # 1차에서 여기서 깨졌다. 같은 가지에 수집 워크플로가 동시에 밀어 넣어
+          # 'fetch first' 로 거부당한다. 받아서 얹고 다시 민다. 정찰 결과는 저 혼자
+          # 쓰는 파일이라 충돌하지 않는다. -f 는 쓰지 않는다 — 남의 커밋이 날아간다.
+          for i in 1 2 3 4; do
+            if git push origin "HEAD:${{ github.ref_name }}"; then
+              echo "밀어 넣었다 (${i}번째)"; exit 0
+            fi
+            echo "거부당했다 — 받아서 얹고 다시 해 본다 (${i}/4)"
+            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+            sleep $((i * 5))
+          done
+          echo '::error::네 번 해도 밀어 넣지 못했다'
+          exit 1
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: calendar-probe
+          path: |
+            data/calendar/probe-report.json
+            data/calendar/probe-dump
+            /tmp/probe.log
+          retention-days: 14

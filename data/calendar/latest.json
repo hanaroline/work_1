@@ -1,9 +1,9 @@
 {
- "builtAt": "2026-10-05 11:07 KST",
- "builtAtUtc": "2026-10-05T02:07:31Z",
+ "builtAt": "2026-10-05 00:42 KST",
+ "builtAtUtc": "2026-10-04T15:42:56Z",
  "window": {
-  "from": "2026-08-21",
-  "to": "2028-02-17"
+  "from": "2026-08-20",
+  "to": "2028-02-16"
  },
  "note": "증시 일정 캘린더. confirmed 는 official(공식 확인) · websearch(검색 교차 확인) · tentative(기관이 잠정으로 공표) · estimate(제공사 추정 구간) · rule(규칙으로 만든 날짜) 다. 확정이 아닌 것은 화면에서 배지로 구분한다.",
  "confirmed_legend": {
@@ -21,20 +21,20 @@
   "rule": "Derived from the usual release cadence — not confirmed"
  },
  "counts": {
-  "policy": 51,
-  "indicator": 173,
+  "policy": 65,
+  "indicator": 174,
   "earnings": 266,
   "conference": 9,
   "supply": 36,
   "holiday": 103,
   "other": 3,
-  "total": 641,
+  "total": 656,
   "confirmed": {
-   "official": 394,
-   "websearch": 22,
+   "official": 426,
+   "websearch": 13,
    "tentative": 0,
    "estimate": 0,
-   "rule": 225
+   "rule": 217
   }
  },
  "sources": {
@@ -97,20 +97,20 @@
    "series_days": 400
   },
   "fed_implied": {
-   "contract_price": 96.075,
-   "implied_rate_pct": 3.925,
-   "quote_date": "2026-10-05",
+   "contract_price": 96.12,
+   "implied_rate_pct": 3.88,
+   "quote_date": "2026-10-02",
    "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 — 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
    "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
    "effr_pct": 3.88,
-   "vs_effr_bp": 4,
+   "vs_effr_bp": 0,
    "perf": {
-    "w1": 18.3,
-    "m1": 23.1,
-    "m3": 28.9,
-    "m6": 28.9,
-    "y1": -15.3,
-    "ytd": 20.2,
+    "w1": 13.5,
+    "m1": 17.3,
+    "m3": 25.1,
+    "m6": 24.1,
+    "y1": -20.1,
+    "ytd": 15.4,
     "unit": "bp",
     "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
    }
@@ -189,7 +189,7 @@
     }
    }
   },
-  "asof_kst": "2026-10-05 09:45:36"
+  "asof_kst": "2026-10-04 09:29:39"
  },
  "holidays": [
   {
@@ -920,12 +920,6 @@
    "market": "kr",
    "sector": "hold"
   },
-  "034020.KS": {
-   "ko": "두산에너빌리티",
-   "en": "Doosan Enerbility",
-   "market": "kr",
-   "sector": "heavy"
-  },
   "012450.KS": {
    "ko": "한화에어로스페이스",
    "en": "Hanwha Aerospace",
@@ -937,6 +931,12 @@
    "en": "Samsung Life Insurance",
    "market": "kr",
    "sector": "fin"
+  },
+  "034020.KS": {
+   "ko": "두산에너빌리티",
+   "en": "Doosan Enerbility",
+   "market": "kr",
+   "sector": "heavy"
   },
   "055550.KS": {
    "ko": "신한지주",
@@ -956,29 +956,17 @@
    "market": "kr",
    "sector": "auto"
   },
-  "006400.KS": {
-   "ko": "삼성SDI",
-   "en": "Samsung SDI",
-   "market": "kr",
-   "sector": "bat"
-  },
   "068270.KS": {
    "ko": "셀트리온",
    "en": "Celltrion",
    "market": "kr",
    "sector": "bio"
   },
-  "012330.KS": {
-   "ko": "현대모비스",
-   "en": "Hyundai Mobis",
+  "006400.KS": {
+   "ko": "삼성SDI",
+   "en": "Samsung SDI",
    "market": "kr",
-   "sector": "auto"
-  },
-  "086790.KS": {
-   "ko": "하나금융지주",
-   "en": "Hana Financial Group",
-   "market": "kr",
-   "sector": "fin"
+   "sector": "bat"
   },
   "066570.KS": {
    "ko": "LG전자",
@@ -986,17 +974,23 @@
    "market": "kr",
    "sector": "elec"
   },
+  "086790.KS": {
+   "ko": "하나금융지주",
+   "en": "Hana Financial Group",
+   "market": "kr",
+   "sector": "fin"
+  },
+  "012330.KS": {
+   "ko": "현대모비스",
+   "en": "Hyundai Mobis",
+   "market": "kr",
+   "sector": "auto"
+  },
   "034730.KS": {
    "ko": "SK",
    "en": "SK Inc.",
    "market": "kr",
    "sector": "hold"
-  },
-  "035420.KS": {
-   "ko": "NAVER",
-   "en": "NAVER",
-   "market": "kr",
-   "sector": "it"
   },
   "010120.KS": {
    "ko": "LS일렉트릭",
@@ -1004,17 +998,23 @@
    "market": "kr",
    "sector": "heavy"
   },
+  "035420.KS": {
+   "ko": "NAVER",
+   "en": "NAVER",
+   "market": "kr",
+   "sector": "it"
+  },
   "000810.KS": {
    "ko": "삼성화재",
    "en": "Samsung Fire & Marine",
    "market": "kr",
    "sector": "fin"
   },
-  "267260.KS": {
-   "ko": "HD현대일렉트릭",
-   "en": "HD Hyundai Electric",
+  "096770.KS": {
+   "ko": "SK이노베이션",
+   "en": "SK Innovation",
    "market": "kr",
-   "sector": "heavy"
+   "sector": "chem"
   },
   "298040.KS": {
    "ko": "효성중공업",
@@ -1022,15 +1022,15 @@
    "market": "kr",
    "sector": "heavy"
   },
-  "042660.KS": {
-   "ko": "한화오션",
-   "en": "Hanwha Ocean",
+  "042700.KS": {
+   "ko": "한미반도체",
+   "en": "Hanmi Semiconductor",
    "market": "kr",
-   "sector": "heavy"
+   "sector": "semi"
   },
-  "009540.KS": {
-   "ko": "HD한국조선해양",
-   "en": "HD Korea Shipbuilding & Offshore",
+  "267260.KS": {
+   "ko": "HD현대일렉트릭",
+   "en": "HD Hyundai Electric",
    "market": "kr",
    "sector": "heavy"
   },
@@ -1040,53 +1040,23 @@
    "market": "kr",
    "sector": "fin"
   },
+  "042660.KS": {
+   "ko": "한화오션",
+   "en": "Hanwha Ocean",
+   "market": "kr",
+   "sector": "heavy"
+  },
   "005490.KS": {
    "ko": "POSCO홀딩스",
    "en": "POSCO Holdings",
    "market": "kr",
    "sector": "steel"
   },
-  "096770.KS": {
-   "ko": "SK이노베이션",
-   "en": "SK Innovation",
+  "009540.KS": {
+   "ko": "HD한국조선해양",
+   "en": "HD Korea Shipbuilding & Offshore",
    "market": "kr",
-   "sector": "chem"
-  },
-  "010130.KS": {
-   "ko": "고려아연",
-   "en": "Korea Zinc",
-   "market": "kr",
-   "sector": "steel"
-  },
-  "042700.KS": {
-   "ko": "한미반도체",
-   "en": "Hanmi Semiconductor",
-   "market": "kr",
-   "sector": "semi"
-  },
-  "051910.KS": {
-   "ko": "LG화학",
-   "en": "LG Chem",
-   "market": "kr",
-   "sector": "chem"
-  },
-  "138040.KS": {
-   "ko": "메리츠금융지주",
-   "en": "Meritz Financial Group",
-   "market": "kr",
-   "sector": "fin"
-  },
-  "015760.KS": {
-   "ko": "한국전력",
-   "en": "Korea Electric Power",
-   "market": "kr",
-   "sector": "infra"
-  },
-  "011200.KS": {
-   "ko": "HMM",
-   "en": "HMM",
-   "market": "kr",
-   "sector": "infra"
+   "sector": "heavy"
   },
   "000150.KS": {
    "ko": "두산",
@@ -1094,53 +1064,29 @@
    "market": "kr",
    "sector": "hold"
   },
-  "006800.KS": {
-   "ko": "미래에셋증권",
-   "en": "Mirae Asset Securities",
+  "010130.KS": {
+   "ko": "고려아연",
+   "en": "Korea Zinc",
+   "market": "kr",
+   "sector": "steel"
+  },
+  "138040.KS": {
+   "ko": "메리츠금융지주",
+   "en": "Meritz Financial Group",
    "market": "kr",
    "sector": "fin"
   },
-  "017670.KS": {
-   "ko": "SK텔레콤",
-   "en": "SK Telecom",
+  "051910.KS": {
+   "ko": "LG화학",
+   "en": "LG Chem",
    "market": "kr",
-   "sector": "tel"
+   "sector": "chem"
   },
-  "196170.KQ": {
-   "ko": "알테오젠",
-   "en": "Alteogen",
+  "011200.KS": {
+   "ko": "HMM",
+   "en": "HMM",
    "market": "kr",
-   "sector": "bio"
-  },
-  "010140.KS": {
-   "ko": "삼성중공업",
-   "en": "Samsung Heavy Industries",
-   "market": "kr",
-   "sector": "heavy"
-  },
-  "033780.KS": {
-   "ko": "KT&G",
-   "en": "KT&G",
-   "market": "kr",
-   "sector": "cons"
-  },
-  "267250.KS": {
-   "ko": "HD현대",
-   "en": "HD Hyundai",
-   "market": "kr",
-   "sector": "hold"
-  },
-  "018260.KS": {
-   "ko": "삼성에스디에스",
-   "en": "Samsung SDS",
-   "market": "kr",
-   "sector": "it"
-  },
-  "003550.KS": {
-   "ko": "LG",
-   "en": "LG Corp.",
-   "market": "kr",
-   "sector": "hold"
+   "sector": "infra"
   },
   "010950.KS": {
    "ko": "에쓰오일",
@@ -1148,17 +1094,77 @@
    "market": "kr",
    "sector": "chem"
   },
-  "024110.KS": {
-   "ko": "기업은행",
-   "en": "Industrial Bank of Korea",
+  "015760.KS": {
+   "ko": "한국전력",
+   "en": "Korea Electric Power",
+   "market": "kr",
+   "sector": "infra"
+  },
+  "017670.KS": {
+   "ko": "SK텔레콤",
+   "en": "SK Telecom",
+   "market": "kr",
+   "sector": "tel"
+  },
+  "006800.KS": {
+   "ko": "미래에셋증권",
+   "en": "Mirae Asset Securities",
    "market": "kr",
    "sector": "fin"
+  },
+  "033780.KS": {
+   "ko": "KT&G",
+   "en": "KT&G",
+   "market": "kr",
+   "sector": "cons"
+  },
+  "196170.KQ": {
+   "ko": "알테오젠",
+   "en": "Alteogen",
+   "market": "kr",
+   "sector": "bio"
+  },
+  "003550.KS": {
+   "ko": "LG",
+   "en": "LG Corp.",
+   "market": "kr",
+   "sector": "hold"
+  },
+  "010140.KS": {
+   "ko": "삼성중공업",
+   "en": "Samsung Heavy Industries",
+   "market": "kr",
+   "sector": "heavy"
+  },
+  "018260.KS": {
+   "ko": "삼성에스디에스",
+   "en": "Samsung SDS",
+   "market": "kr",
+   "sector": "it"
+  },
+  "079550.KS": {
+   "ko": "LIG넥스원",
+   "en": "LIG Nex1",
+   "market": "kr",
+   "sector": "heavy"
   },
   "003670.KS": {
    "ko": "포스코퓨처엠",
    "en": "POSCO Future M",
    "market": "kr",
    "sector": "bat"
+  },
+  "024110.KS": {
+   "ko": "기업은행",
+   "en": "Industrial Bank of Korea",
+   "market": "kr",
+   "sector": "fin"
+  },
+  "272210.KS": {
+   "ko": "한화시스템",
+   "en": "Hanwha Systems",
+   "market": "kr",
+   "sector": "heavy"
   },
   "086280.KS": {
    "ko": "현대글로비스",
@@ -1172,35 +1178,17 @@
    "market": "kr",
    "sector": "it"
   },
-  "000720.KS": {
-   "ko": "현대건설",
-   "en": "Hyundai Engineering & Construction",
+  "267250.KS": {
+   "ko": "HD현대",
+   "en": "HD Hyundai",
    "market": "kr",
-   "sector": "infra"
-  },
-  "079550.KS": {
-   "ko": "LIG넥스원",
-   "en": "LIG Nex1",
-   "market": "kr",
-   "sector": "heavy"
+   "sector": "hold"
   },
   "278470.KS": {
    "ko": "에이피알",
    "en": "APR",
    "market": "kr",
    "sector": "cons"
-  },
-  "064350.KS": {
-   "ko": "현대로템",
-   "en": "Hyundai Rotem",
-   "market": "kr",
-   "sector": "heavy"
-  },
-  "272210.KS": {
-   "ko": "한화시스템",
-   "en": "Hanwha Systems",
-   "market": "kr",
-   "sector": "heavy"
   },
   "011070.KS": {
    "ko": "LG이노텍",
@@ -1214,17 +1202,23 @@
    "market": "kr",
    "sector": "heavy"
   },
+  "000720.KS": {
+   "ko": "현대건설",
+   "en": "Hyundai Engineering & Construction",
+   "market": "kr",
+   "sector": "infra"
+  },
+  "064350.KS": {
+   "ko": "현대로템",
+   "en": "Hyundai Rotem",
+   "market": "kr",
+   "sector": "heavy"
+  },
   "030200.KS": {
    "ko": "KT",
    "en": "KT",
    "market": "kr",
    "sector": "tel"
-  },
-  "005830.KS": {
-   "ko": "DB손해보험",
-   "en": "DB Insurance",
-   "market": "kr",
-   "sector": "fin"
   },
   "086520.KQ": {
    "ko": "에코프로",
@@ -1232,29 +1226,11 @@
    "market": "kr",
    "sector": "bat"
   },
-  "078930.KS": {
-   "ko": "GS",
-   "en": "GS Holdings",
-   "market": "kr",
-   "sector": "hold"
-  },
-  "443060.KS": {
-   "ko": "HD현대마린솔루션",
-   "en": "HD Hyundai Marine Solution",
-   "market": "kr",
-   "sector": "heavy"
-  },
   "247540.KQ": {
    "ko": "에코프로비엠",
    "en": "EcoPro BM",
    "market": "kr",
    "sector": "bat"
-  },
-  "307950.KS": {
-   "ko": "현대오토에버",
-   "en": "Hyundai AutoEver",
-   "market": "kr",
-   "sector": "it"
   },
   "003490.KS": {
    "ko": "대한항공",
@@ -1262,11 +1238,53 @@
    "market": "kr",
    "sector": "infra"
   },
+  "005830.KS": {
+   "ko": "DB손해보험",
+   "en": "DB Insurance",
+   "market": "kr",
+   "sector": "fin"
+  },
+  "036930.KQ": {
+   "ko": "주성엔지니어링",
+   "en": "Jusung Engineering",
+   "market": "kr",
+   "sector": "semi"
+  },
   "071050.KS": {
    "ko": "한국금융지주",
    "en": "Korea Investment Holdings",
    "market": "kr",
    "sector": "fin"
+  },
+  "307950.KS": {
+   "ko": "현대오토에버",
+   "en": "Hyundai AutoEver",
+   "market": "kr",
+   "sector": "it"
+  },
+  "443060.KS": {
+   "ko": "HD현대마린솔루션",
+   "en": "HD Hyundai Marine Solution",
+   "market": "kr",
+   "sector": "heavy"
+  },
+  "005940.KS": {
+   "ko": "NH투자증권",
+   "en": "NH Investment & Securities",
+   "market": "kr",
+   "sector": "fin"
+  },
+  "078930.KS": {
+   "ko": "GS",
+   "en": "GS Holdings",
+   "market": "kr",
+   "sector": "hold"
+  },
+  "047050.KS": {
+   "ko": "포스코인터내셔널",
+   "en": "POSCO International",
+   "market": "kr",
+   "sector": "chem"
   },
   "323410.KS": {
    "ko": "카카오뱅크",
@@ -1280,18 +1298,6 @@
    "market": "kr",
    "sector": "infra"
   },
-  "000880.KS": {
-   "ko": "한화",
-   "en": "Hanwha",
-   "market": "kr",
-   "sector": "hold"
-  },
-  "047050.KS": {
-   "ko": "포스코인터내셔널",
-   "en": "POSCO International",
-   "market": "kr",
-   "sector": "chem"
-  },
   "090430.KS": {
    "ko": "아모레퍼시픽",
    "en": "Amorepacific",
@@ -1304,33 +1310,15 @@
    "market": "kr",
    "sector": "cons"
   },
-  "259960.KS": {
-   "ko": "크래프톤",
-   "en": "Krafton",
+  "007660.KS": {
+   "ko": "이수페타시스",
+   "en": "Isu Petasys",
    "market": "kr",
-   "sector": "it"
-  },
-  "036930.KQ": {
-   "ko": "주성엔지니어링",
-   "en": "Jusung Engineering",
-   "market": "kr",
-   "sector": "semi"
-  },
-  "005940.KS": {
-   "ko": "NH투자증권",
-   "en": "NH Investment & Securities",
-   "market": "kr",
-   "sector": "fin"
+   "sector": "elec"
   },
   "180640.KS": {
    "ko": "한진칼",
    "en": "Hanjin KAL",
-   "market": "kr",
-   "sector": "hold"
-  },
-  "006260.KS": {
-   "ko": "LS",
-   "en": "LS Corp.",
    "market": "kr",
    "sector": "hold"
   },
@@ -1340,53 +1328,23 @@
    "market": "kr",
    "sector": "heavy"
   },
-  "047040.KS": {
-   "ko": "대우건설",
-   "en": "Daewoo E&C",
+  "000880.KS": {
+   "ko": "한화",
+   "en": "Hanwha",
    "market": "kr",
-   "sector": "infra"
+   "sector": "hold"
   },
-  "007660.KS": {
-   "ko": "이수페타시스",
-   "en": "Isu Petasys",
-   "market": "kr",
-   "sector": "elec"
-  },
-  "016360.KS": {
-   "ko": "삼성증권",
-   "en": "Samsung Securities",
-   "market": "kr",
-   "sector": "fin"
-  },
-  "161390.KS": {
-   "ko": "한국타이어앤테크놀로지",
-   "en": "Hankook Tire & Technology",
-   "market": "kr",
-   "sector": "auto"
-  },
-  "352820.KS": {
-   "ko": "하이브",
-   "en": "HYBE",
-   "market": "kr",
-   "sector": "tel"
-  },
-  "039490.KS": {
-   "ko": "키움증권",
-   "en": "Kiwoom Securities",
-   "market": "kr",
-   "sector": "fin"
-  },
-  "064400.KS": {
-   "ko": "LG CNS",
-   "en": "LG CNS",
+  "259960.KS": {
+   "ko": "크래프톤",
+   "en": "Krafton",
    "market": "kr",
    "sector": "it"
   },
-  "267270.KS": {
-   "ko": "HD현대건설기계",
-   "en": "HD Hyundai Construction Equipment",
+  "006260.KS": {
+   "ko": "LS",
+   "en": "LS Corp.",
    "market": "kr",
-   "sector": "heavy"
+   "sector": "hold"
   },
   "009830.KS": {
    "ko": "한화솔루션",
@@ -1394,29 +1352,41 @@
    "market": "kr",
    "sector": "chem"
   },
+  "016360.KS": {
+   "ko": "삼성증권",
+   "en": "Samsung Securities",
+   "market": "kr",
+   "sector": "fin"
+  },
+  "353200.KS": {
+   "ko": "대덕전자",
+   "en": "DaeduckElectronics",
+   "market": "kr",
+   "sector": "elec"
+  },
+  "161390.KS": {
+   "ko": "한국타이어앤테크놀로지",
+   "en": "Hankook Tire & Technology",
+   "market": "kr",
+   "sector": "auto"
+  },
+  "047040.KS": {
+   "ko": "대우건설",
+   "en": "Daewoo E&C",
+   "market": "kr",
+   "sector": "infra"
+  },
   "021240.KS": {
    "ko": "코웨이",
    "en": "Coway",
    "market": "kr",
    "sector": "cons"
   },
-  "032640.KS": {
-   "ko": "LG유플러스",
-   "en": "LG Uplus",
+  "064400.KS": {
+   "ko": "LG CNS",
+   "en": "LG CNS",
    "market": "kr",
-   "sector": "tel"
-  },
-  "377300.KS": {
-   "ko": "카카오페이",
-   "en": "Kakao Pay",
-   "market": "kr",
-   "sector": "fin"
-  },
-  "326030.KS": {
-   "ko": "SK바이오팜",
-   "en": "SK Biopharmaceuticals",
-   "market": "kr",
-   "sector": "bio"
+   "sector": "it"
   },
   "062040.KS": {
    "ko": "산일전기",
@@ -1424,35 +1394,17 @@
    "market": "kr",
    "sector": "heavy"
   },
-  "241560.KS": {
-   "ko": "두산밥캣",
-   "en": "Doosan Bobcat",
-   "market": "kr",
-   "sector": "heavy"
-  },
-  "128940.KS": {
-   "ko": "한미약품",
-   "en": "Hanmi Pharm",
-   "market": "kr",
-   "sector": "bio"
-  },
-  "175330.KS": {
-   "ko": "JB금융지주",
-   "en": "JB Financial Group",
+  "039490.KS": {
+   "ko": "키움증권",
+   "en": "Kiwoom Securities",
    "market": "kr",
    "sector": "fin"
   },
-  "000100.KS": {
-   "ko": "유한양행",
-   "en": "Yuhan",
+  "352820.KS": {
+   "ko": "하이브",
+   "en": "HYBE",
    "market": "kr",
-   "sector": "bio"
-  },
-  "052690.KS": {
-   "ko": "한국전력기술",
-   "en": "KEPCO E&C",
-   "market": "kr",
-   "sector": "infra"
+   "sector": "tel"
   },
   "039030.KQ": {
    "ko": "이오테크닉스",
@@ -1460,9 +1412,57 @@
    "market": "kr",
    "sector": "semi"
   },
+  "128940.KS": {
+   "ko": "한미약품",
+   "en": "Hanmi Pharm",
+   "market": "kr",
+   "sector": "bio"
+  },
+  "032640.KS": {
+   "ko": "LG유플러스",
+   "en": "LG Uplus",
+   "market": "kr",
+   "sector": "tel"
+  },
   "001440.KS": {
    "ko": "대한전선",
    "en": "Taihan Cable & Solution",
+   "market": "kr",
+   "sector": "heavy"
+  },
+  "326030.KS": {
+   "ko": "SK바이오팜",
+   "en": "SK Biopharmaceuticals",
+   "market": "kr",
+   "sector": "bio"
+  },
+  "267270.KS": {
+   "ko": "HD현대건설기계",
+   "en": "HD Hyundai Construction Equipment",
+   "market": "kr",
+   "sector": "heavy"
+  },
+  "000100.KS": {
+   "ko": "유한양행",
+   "en": "Yuhan",
+   "market": "kr",
+   "sector": "bio"
+  },
+  "377300.KS": {
+   "ko": "카카오페이",
+   "en": "Kakao Pay",
+   "market": "kr",
+   "sector": "fin"
+  },
+  "175330.KS": {
+   "ko": "JB금융지주",
+   "en": "JB Financial Group",
+   "market": "kr",
+   "sector": "fin"
+  },
+  "241560.KS": {
+   "ko": "두산밥캣",
+   "en": "Doosan Bobcat",
    "market": "kr",
    "sector": "heavy"
   },
@@ -2699,7 +2699,8 @@
    "url": "https://www.bls.gov/schedule/news_release/cpi.htm",
    "calendar_url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "rule_note_en": "Usually in the second week of the month, 08:30 ET",
-   "why_en": "The single biggest mover of the expected policy path; core month-on-month is what matters"
+   "why_en": "The single biggest mover of the expected policy path; core month-on-month is what matters",
+   "fetched_at": "2026-10-04"
   },
   {
    "id": "us-empsit",
@@ -2716,7 +2717,8 @@
    "url": "https://www.bls.gov/schedule/news_release/empsit.htm",
    "calendar_url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "rule_note_en": "Usually the first Friday of the month, 08:30 ET",
-   "why_en": "Whether hiring is cracking decides rate-cut expectations; average hourly earnings matter too"
+   "why_en": "Whether hiring is cracking decides rate-cut expectations; average hourly earnings matter too",
+   "fetched_at": "2026-10-04"
   },
   {
    "id": "us-pce",
@@ -2814,7 +2816,8 @@
    "why_ko": "CPI 로 넘어가기 전 단계의 물가 압력",
    "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
    "rule_note_en": "Usually in the same week as CPI, 08:30 ET",
-   "why_en": "Price pressure one stage before it reaches CPI"
+   "why_en": "Price pressure one stage before it reaches CPI",
+   "fetched_at": "2026-10-04"
   },
   {
    "id": "us-claims",
@@ -3077,7 +3080,7 @@
    "source_en": "Federal Reserve — FOMC meeting calendars",
    "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local",
    "meetings_per_year": 8,
-   "fetched_at": "2026-10-05"
+   "fetched_at": "2026-10-04"
   },
   {
    "key": "bok",
@@ -3115,7 +3118,8 @@
    "projections_note_ko": "ECB 스태프 거시전망은 3·6·9·12월 회의에 함께 발표",
    "source_en": "ECB — Meetings of the Governing Council and the General Council",
    "projections_note_en": "ECB staff macroeconomic projections accompany the March, June, September and December meetings",
-   "meetings_per_year": 8
+   "meetings_per_year": 8,
+   "fetched_at": "2026-10-04"
   },
   {
    "key": "boj",
@@ -3132,7 +3136,8 @@
    "projections_note_ko": "1·4·7·10월 회의에 전망 리포트(Outlook Report) 동시 발표",
    "source_en": "Bank of Japan — Monetary Policy Meetings",
    "projections_note_en": "The quarterly Outlook Report accompanies the January, April, July and October meetings",
-   "meetings_per_year": 8
+   "meetings_per_year": 8,
+   "fetched_at": "2026-10-04"
   },
   {
    "key": "boe",
@@ -3150,7 +3155,7 @@
    "source_en": "Bank of England — Upcoming MPC dates",
    "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-10-05"
+   "fetched_at": "2026-10-04"
   },
   {
    "key": "pboc",
@@ -3554,6 +3559,56 @@
   }
  ],
  "events": [
+  {
+   "id": "pboc-lpr-2026-08-20",
+   "date": "2026-08-20",
+   "end_date": null,
+   "country": "cn",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "중국 대출우대금리 (LPR) 고시",
+   "title_en": "China Loan Prime Rate fixing",
+   "org": "People's Bank of China",
+   "org_en": "People's Bank of China",
+   "detail_ko": "매월 20일 09:15(현지). 20일이 휴일이면 다음 영업일 · 중국의 실질 정책금리. 인민은행 MLF 조정 뒤 반영된다",
+   "detail_en": "The 20th of each month at 09:15 local time, moving to the next business day if the 20th is a holiday · China's effective policy rate; it follows any PBOC adjustment to the MLF",
+   "time_local": "09:15",
+   "tz": "Asia/Shanghai",
+   "time_kst": "2026-08-20 10:15",
+   "url": "https://www.pbc.gov.cn/en/3688229/index.html",
+   "source": "People's Bank of China",
+   "source_en": "People's Bank of China",
+   "confirmed": "rule",
+   "tags": [
+    "supply",
+    "pboc-lpr"
+   ]
+  },
+  {
+   "id": "indicator-us-claims-2026-08-20",
+   "date": "2026-08-20",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "미국 신규 실업수당 청구건수 (주간)",
+   "title_en": "US Initial Jobless Claims",
+   "org": "美 노동부 (DOL)",
+   "org_en": "Department of Labor",
+   "detail_ko": "매주 목요일 08:30 ET",
+   "detail_en": "Every Thursday, 08:30 ET",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2026-08-20 21:30",
+   "url": "https://www.dol.gov/ui/data.pdf",
+   "source": "美 노동부 (DOL)",
+   "source_en": "Department of Labor",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "us-claims"
+   ]
+  },
   {
    "id": "us-option-expiry-2026-08-21",
    "date": "2026-08-21",
@@ -3993,15 +4048,15 @@
    "title_en": "US Employment Situation",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 매월 첫 금요일 08:30 ET",
-   "detail_en": "Usually the first Friday of the month, 08:30 ET",
+   "detail_ko": "고용이 꺾이는지로 금리 인하 기대가 갈린다. 시간당임금 상승률도 함께 본다",
+   "detail_en": "Whether hiring is cracking decides rate-cut expectations; average hourly earnings matter too",
    "time_local": "08:30",
    "tz": "America/New_York",
    "time_kst": "2026-09-04 21:30",
    "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-empsit"
@@ -4220,15 +4275,15 @@
    "title_en": "US Producer Price Index",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 CPI 앞뒤로 같은 주 08:30 ET",
-   "detail_en": "Usually in the same week as CPI, 08:30 ET",
+   "detail_ko": "CPI 로 넘어가기 전 단계의 물가 압력",
+   "detail_en": "Price pressure one stage before it reaches CPI",
    "time_local": "08:30",
    "tz": "America/New_York",
    "time_kst": "2026-09-10 21:30",
    "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-ppi"
@@ -4266,7 +4321,7 @@
    "country": "us",
    "category": "indicator",
    "importance": 3,
-   "title_ko": "미국 소비자물가지수 (CPI) (2026년 8월분)",
+   "title_ko": "미국 소비자물가지수 (CPI)",
    "title_en": "US Consumer Price Index",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
@@ -4278,7 +4333,7 @@
    "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-cpi"
@@ -4479,7 +4534,7 @@
    "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
    "source": "Bank of Japan — Monetary Policy Meetings",
    "source_en": "Bank of Japan — Monetary Policy Meetings",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "boj"
@@ -5050,7 +5105,7 @@
    "country": "us",
    "category": "indicator",
    "importance": 3,
-   "title_ko": "미국 고용상황 (비농업 취업자수·실업률) (2026년 9월분)",
+   "title_ko": "미국 고용상황 (비농업 취업자수·실업률)",
    "title_en": "US Employment Situation",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
@@ -5062,7 +5117,7 @@
    "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-empsit"
@@ -5243,31 +5298,6 @@
    "tags": [
     "supply",
     "kr-option-expiry"
-   ]
-  },
-  {
-   "id": "indicator-us-ppi-2026-10-08",
-   "date": "2026-10-08",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 1,
-   "title_ko": "미국 생산자물가지수 (PPI)",
-   "title_en": "US Producer Price Index",
-   "org": "美 노동통계국 (BLS)",
-   "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 CPI 앞뒤로 같은 주 08:30 ET",
-   "detail_en": "Usually in the same week as CPI, 08:30 ET",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2026-10-08 21:30",
-   "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
-   "source": "美 노동통계국 (BLS)",
-   "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-ppi"
    ]
   },
   {
@@ -5565,15 +5595,15 @@
    "title_en": "US Consumer Price Index",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 매월 둘째 주 (수요일 전후) 08:30 ET",
-   "detail_en": "Usually in the second week of the month, 08:30 ET",
+   "detail_ko": "정책금리 경로를 가장 크게 흔드는 지표. 근원(core) 전월비가 핵심",
+   "detail_en": "The single biggest mover of the expected policy path; core month-on-month is what matters",
    "time_local": "08:30",
    "tz": "America/New_York",
    "time_kst": "2026-10-14 21:30",
    "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-cpi"
@@ -5913,6 +5943,31 @@
     "earnings",
     "us",
     "MRSH"
+   ]
+  },
+  {
+   "id": "indicator-us-ppi-2026-10-15",
+   "date": "2026-10-15",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "미국 생산자물가지수 (PPI)",
+   "title_en": "US Producer Price Index",
+   "org": "美 노동통계국 (BLS)",
+   "org_en": "Bureau of Labor Statistics",
+   "detail_ko": "CPI 로 넘어가기 전 단계의 물가 압력",
+   "detail_en": "Price pressure one stage before it reaches CPI",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2026-10-15 21:30",
+   "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
+   "source": "美 노동통계국 (BLS)",
+   "source_en": "Bureau of Labor Statistics",
+   "confirmed": "official",
+   "tags": [
+    "indicator",
+    "us-ppi"
    ]
   },
   {
@@ -10002,7 +10057,7 @@
    "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
    "source": "Bank of Japan — Monetary Policy Meetings",
    "source_en": "Bank of Japan — Monetary Policy Meetings",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "boj",
@@ -11883,15 +11938,15 @@
    "title_en": "US Employment Situation",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 매월 첫 금요일 08:30 ET",
-   "detail_en": "Usually the first Friday of the month, 08:30 ET",
+   "detail_ko": "고용이 꺾이는지로 금리 인하 기대가 갈린다. 시간당임금 상승률도 함께 본다",
+   "detail_en": "Whether hiring is cracking decides rate-cut expectations; average hourly earnings matter too",
    "time_local": "08:30",
    "tz": "America/New_York",
    "time_kst": "2026-11-06 22:30",
    "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-empsit"
@@ -12156,8 +12211,8 @@
    ]
   },
   {
-   "id": "indicator-us-cpi-2026-11-11",
-   "date": "2026-11-11",
+   "id": "indicator-us-cpi-2026-11-10",
+   "date": "2026-11-10",
    "end_date": null,
    "country": "us",
    "category": "indicator",
@@ -12166,15 +12221,15 @@
    "title_en": "US Consumer Price Index",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 매월 둘째 주 (수요일 전후) 08:30 ET",
-   "detail_en": "Usually in the second week of the month, 08:30 ET",
+   "detail_ko": "정책금리 경로를 가장 크게 흔드는 지표. 근원(core) 전월비가 핵심",
+   "detail_en": "The single biggest mover of the expected policy path; core month-on-month is what matters",
    "time_local": "08:30",
    "tz": "America/New_York",
-   "time_kst": "2026-11-11 22:30",
+   "time_kst": "2026-11-10 22:30",
    "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-cpi"
@@ -12387,31 +12442,6 @@
    ]
   },
   {
-   "id": "indicator-us-ppi-2026-11-12",
-   "date": "2026-11-12",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 1,
-   "title_ko": "미국 생산자물가지수 (PPI)",
-   "title_en": "US Producer Price Index",
-   "org": "美 노동통계국 (BLS)",
-   "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 CPI 앞뒤로 같은 주 08:30 ET",
-   "detail_en": "Usually in the same week as CPI, 08:30 ET",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2026-11-12 22:30",
-   "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
-   "source": "美 노동통계국 (BLS)",
-   "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-ppi"
-   ]
-  },
-  {
    "id": "indicator-us-claims-2026-11-12",
    "date": "2026-11-12",
    "end_date": null,
@@ -12590,6 +12620,31 @@
     "earnings",
     "kr",
     "402340.KS"
+   ]
+  },
+  {
+   "id": "indicator-us-ppi-2026-11-13",
+   "date": "2026-11-13",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "미국 생산자물가지수 (PPI)",
+   "title_en": "US Producer Price Index",
+   "org": "美 노동통계국 (BLS)",
+   "org_en": "Bureau of Labor Statistics",
+   "detail_ko": "CPI 로 넘어가기 전 단계의 물가 압력",
+   "detail_en": "Price pressure one stage before it reaches CPI",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2026-11-13 22:30",
+   "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
+   "source": "美 노동통계국 (BLS)",
+   "source_en": "Bureau of Labor Statistics",
+   "confirmed": "official",
+   "tags": [
+    "indicator",
+    "us-ppi"
    ]
   },
   {
@@ -13700,15 +13755,15 @@
    "title_en": "US Employment Situation",
    "org": "美 노동통계국 (BLS)",
    "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 매월 첫 금요일 08:30 ET",
-   "detail_en": "Usually the first Friday of the month, 08:30 ET",
+   "detail_ko": "고용이 꺾이는지로 금리 인하 기대가 갈린다. 시간당임금 상승률도 함께 본다",
+   "detail_en": "Whether hiring is cracking decides rate-cut expectations; average hourly earnings matter too",
    "time_local": "08:30",
    "tz": "America/New_York",
    "time_kst": "2026-12-04 22:30",
    "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "source": "美 노동통계국 (BLS)",
    "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
+   "confirmed": "official",
    "tags": [
     "indicator",
     "us-empsit"
@@ -13788,31 +13843,6 @@
     "conference",
     "bio",
     "sabcs"
-   ]
-  },
-  {
-   "id": "indicator-us-cpi-2026-12-09",
-   "date": "2026-12-09",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 3,
-   "title_ko": "미국 소비자물가지수 (CPI)",
-   "title_en": "US Consumer Price Index",
-   "org": "美 노동통계국 (BLS)",
-   "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 매월 둘째 주 (수요일 전후) 08:30 ET",
-   "detail_en": "Usually in the second week of the month, 08:30 ET",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2026-12-09 22:30",
-   "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
-   "source": "美 노동통계국 (BLS)",
-   "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-cpi"
    ]
   },
   {
@@ -13919,6 +13949,31 @@
    ]
   },
   {
+   "id": "indicator-us-cpi-2026-12-10",
+   "date": "2026-12-10",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 3,
+   "title_ko": "미국 소비자물가지수 (CPI)",
+   "title_en": "US Consumer Price Index",
+   "org": "美 노동통계국 (BLS)",
+   "org_en": "Bureau of Labor Statistics",
+   "detail_ko": "정책금리 경로를 가장 크게 흔드는 지표. 근원(core) 전월비가 핵심",
+   "detail_en": "The single biggest mover of the expected policy path; core month-on-month is what matters",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2026-12-10 22:30",
+   "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
+   "source": "美 노동통계국 (BLS)",
+   "source_en": "Bureau of Labor Statistics",
+   "confirmed": "official",
+   "tags": [
+    "indicator",
+    "us-cpi"
+   ]
+  },
+  {
    "id": "kr-quadruple-expiry-2026-12-10",
    "date": "2026-12-10",
    "end_date": null,
@@ -13966,31 +14021,6 @@
    "tags": [
     "supply",
     "kr-option-expiry"
-   ]
-  },
-  {
-   "id": "indicator-us-ppi-2026-12-10",
-   "date": "2026-12-10",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 1,
-   "title_ko": "미국 생산자물가지수 (PPI)",
-   "title_en": "US Producer Price Index",
-   "org": "美 노동통계국 (BLS)",
-   "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 CPI 앞뒤로 같은 주 08:30 ET",
-   "detail_en": "Usually in the same week as CPI, 08:30 ET",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2026-12-10 22:30",
-   "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
-   "source": "美 노동통계국 (BLS)",
-   "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-ppi"
    ]
   },
   {
@@ -14122,6 +14152,31 @@
    ]
   },
   {
+   "id": "indicator-us-ppi-2026-12-15",
+   "date": "2026-12-15",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "미국 생산자물가지수 (PPI)",
+   "title_en": "US Producer Price Index",
+   "org": "美 노동통계국 (BLS)",
+   "org_en": "Bureau of Labor Statistics",
+   "detail_ko": "CPI 로 넘어가기 전 단계의 물가 압력",
+   "detail_en": "Price pressure one stage before it reaches CPI",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2026-12-15 22:30",
+   "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
+   "source": "美 노동통계국 (BLS)",
+   "source_en": "Bureau of Labor Statistics",
+   "confirmed": "official",
+   "tags": [
+    "indicator",
+    "us-ppi"
+   ]
+  },
+  {
    "id": "policy-ecb-2026-12-17",
    "date": "2026-12-17",
    "end_date": null,
@@ -14140,7 +14195,7 @@
    "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
    "source": "ECB — Meetings of the Governing Council and the General Council",
    "source_en": "ECB — Meetings of the Governing Council and the General Council",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "ecb",
@@ -14293,7 +14348,7 @@
    "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
    "source": "Bank of Japan — Monetary Policy Meetings",
    "source_en": "Bank of Japan — Monetary Policy Meetings",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "boj"
@@ -15495,6 +15550,32 @@
    ]
   },
   {
+   "id": "policy-boj-2027-01-22",
+   "date": "2027-01-22",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표 · 01-21~01-22 이틀 회의의 둘째 날",
+   "detail_en": "press conference · projections released",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj",
+    "sep"
+   ]
+  },
+  {
    "id": "indicator-eu-pmi-2027-01-25",
    "date": "2027-01-25",
    "end_date": null,
@@ -15788,7 +15869,7 @@
    "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
    "source": "ECB — Meetings of the Governing Council and the General Council",
    "source_en": "ECB — Meetings of the Governing Council and the General Council",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "ecb"
@@ -17052,7 +17133,7 @@
    "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
    "source": "ECB — Meetings of the Governing Council and the General Council",
    "source_en": "ECB — Meetings of the Governing Council and the General Council",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "ecb",
@@ -17082,6 +17163,31 @@
    "tags": [
     "central-bank",
     "boe"
+   ]
+  },
+  {
+   "id": "policy-boj-2027-03-18",
+   "date": "2027-03-18",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 03-17~03-18 이틀 회의의 둘째 날",
+   "detail_en": "press conference",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj"
    ]
   },
   {
@@ -17820,6 +17926,32 @@
    ]
   },
   {
+   "id": "policy-boj-2027-04-28",
+   "date": "2027-04-28",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표 · 04-27~04-28 이틀 회의의 둘째 날",
+   "detail_en": "press conference · projections released",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj",
+    "sep"
+   ]
+  },
+  {
    "id": "policy-ecb-2027-04-29",
    "date": "2027-04-29",
    "end_date": null,
@@ -17838,7 +17970,7 @@
    "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
    "source": "ECB — Meetings of the Governing Council and the General Council",
    "source_en": "ECB — Meetings of the Governing Council and the General Council",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "ecb"
@@ -18310,6 +18442,32 @@
    ]
   },
   {
+   "id": "policy-ecb-2027-06-10",
+   "date": "2027-06-10",
+   "end_date": null,
+   "country": "eu",
+   "category": "policy",
+   "importance": 3,
+   "title_ko": "유럽중앙은행 정책이사회 (ECB) 정책금리 결정",
+   "title_en": "European Central Bank (Governing Council) rate decision",
+   "org": "유럽중앙은행 정책이사회 (ECB)",
+   "org_en": "European Central Bank (Governing Council)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표 · 06-09~06-10 이틀 회의의 둘째 날",
+   "detail_en": "press conference · projections released",
+   "time_local": "14:15",
+   "tz": "Europe/Berlin",
+   "time_kst": "2027-06-10 21:15",
+   "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+   "source": "ECB — Meetings of the Governing Council and the General Council",
+   "source_en": "ECB — Meetings of the Governing Council and the General Council",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "ecb",
+    "sep"
+   ]
+  },
+  {
    "id": "kr-quadruple-expiry-2027-06-10",
    "date": "2027-06-10",
    "end_date": null,
@@ -18332,6 +18490,31 @@
    "tags": [
     "supply",
     "kr-quadruple-expiry"
+   ]
+  },
+  {
+   "id": "policy-boj-2027-06-11",
+   "date": "2027-06-11",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 06-10~06-11 이틀 회의의 둘째 날",
+   "detail_en": "press conference",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj"
    ]
   },
   {
@@ -18640,6 +18823,57 @@
    ]
   },
   {
+   "id": "policy-ecb-2027-07-22",
+   "date": "2027-07-22",
+   "end_date": null,
+   "country": "eu",
+   "category": "policy",
+   "importance": 3,
+   "title_ko": "유럽중앙은행 정책이사회 (ECB) 정책금리 결정",
+   "title_en": "European Central Bank (Governing Council) rate decision",
+   "org": "유럽중앙은행 정책이사회 (ECB)",
+   "org_en": "European Central Bank (Governing Council)",
+   "detail_ko": "기자회견 · 07-21~07-22 이틀 회의의 둘째 날",
+   "detail_en": "press conference",
+   "time_local": "14:15",
+   "tz": "Europe/Berlin",
+   "time_kst": "2027-07-22 21:15",
+   "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+   "source": "ECB — Meetings of the Governing Council and the General Council",
+   "source_en": "ECB — Meetings of the Governing Council and the General Council",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "ecb"
+   ]
+  },
+  {
+   "id": "policy-boj-2027-07-22",
+   "date": "2027-07-22",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표 · 07-21~07-22 이틀 회의의 둘째 날",
+   "detail_en": "press conference · projections released",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj",
+    "sep"
+   ]
+  },
+  {
    "id": "policy-fed-2027-07-28",
    "date": "2027-07-28",
    "end_date": null,
@@ -18896,6 +19130,32 @@
    ]
   },
   {
+   "id": "policy-ecb-2027-09-09",
+   "date": "2027-09-09",
+   "end_date": null,
+   "country": "eu",
+   "category": "policy",
+   "importance": 3,
+   "title_ko": "유럽중앙은행 정책이사회 (ECB) 정책금리 결정",
+   "title_en": "European Central Bank (Governing Council) rate decision",
+   "org": "유럽중앙은행 정책이사회 (ECB)",
+   "org_en": "European Central Bank (Governing Council)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표 · 09-08~09-09 이틀 회의의 둘째 날",
+   "detail_en": "press conference · projections released",
+   "time_local": "14:15",
+   "tz": "Europe/Berlin",
+   "time_kst": "2027-09-09 21:15",
+   "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+   "source": "ECB — Meetings of the Governing Council and the General Council",
+   "source_en": "ECB — Meetings of the Governing Council and the General Council",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "ecb",
+    "sep"
+   ]
+  },
+  {
    "id": "kr-quadruple-expiry-2027-09-09",
    "date": "2027-09-09",
    "end_date": null,
@@ -19148,6 +19408,31 @@
    "tags": [
     "supply",
     "kr-ktb-futures-expiry"
+   ]
+  },
+  {
+   "id": "policy-boj-2027-09-22",
+   "date": "2027-09-22",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 09-21~09-22 이틀 회의의 둘째 날",
+   "detail_en": "press conference",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj"
    ]
   },
   {
@@ -19458,6 +19743,57 @@
    ]
   },
   {
+   "id": "policy-ecb-2027-10-28",
+   "date": "2027-10-28",
+   "end_date": null,
+   "country": "eu",
+   "category": "policy",
+   "importance": 3,
+   "title_ko": "유럽중앙은행 정책이사회 (ECB) 정책금리 결정",
+   "title_en": "European Central Bank (Governing Council) rate decision",
+   "org": "유럽중앙은행 정책이사회 (ECB)",
+   "org_en": "European Central Bank (Governing Council)",
+   "detail_ko": "기자회견 · 10-27~10-28 이틀 회의의 둘째 날",
+   "detail_en": "press conference",
+   "time_local": "14:15",
+   "tz": "Europe/Berlin",
+   "time_kst": "2027-10-28 21:15",
+   "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+   "source": "ECB — Meetings of the Governing Council and the General Council",
+   "source_en": "ECB — Meetings of the Governing Council and the General Council",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "ecb"
+   ]
+  },
+  {
+   "id": "policy-boj-2027-10-29",
+   "date": "2027-10-29",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표 · 10-28~10-29 이틀 회의의 둘째 날",
+   "detail_en": "press conference · projections released",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj",
+    "sep"
+   ]
+  },
+  {
    "id": "holiday-jp-2027-11-03",
    "date": "2027-11-03",
    "end_date": null,
@@ -19689,6 +20025,32 @@
    ]
   },
   {
+   "id": "policy-ecb-2027-12-16",
+   "date": "2027-12-16",
+   "end_date": null,
+   "country": "eu",
+   "category": "policy",
+   "importance": 3,
+   "title_ko": "유럽중앙은행 정책이사회 (ECB) 정책금리 결정",
+   "title_en": "European Central Bank (Governing Council) rate decision",
+   "org": "유럽중앙은행 정책이사회 (ECB)",
+   "org_en": "European Central Bank (Governing Council)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표 · 12-15~12-16 이틀 회의의 둘째 날",
+   "detail_en": "press conference · projections released",
+   "time_local": "14:15",
+   "tz": "Europe/Berlin",
+   "time_kst": "2027-12-16 22:15",
+   "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+   "source": "ECB — Meetings of the Governing Council and the General Council",
+   "source_en": "ECB — Meetings of the Governing Council and the General Council",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "ecb",
+    "sep"
+   ]
+  },
+  {
    "id": "policy-boe-2027-12-16",
    "date": "2027-12-16",
    "end_date": null,
@@ -19711,6 +20073,31 @@
    "tags": [
     "central-bank",
     "boe"
+   ]
+  },
+  {
+   "id": "policy-boj-2027-12-17",
+   "date": "2027-12-17",
+   "end_date": null,
+   "country": "jp",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "일본은행 금융정책결정회의 (BOJ) 정책금리 결정",
+   "title_en": "Bank of Japan (Monetary Policy Meeting) rate decision",
+   "org": "일본은행 금융정책결정회의 (BOJ)",
+   "org_en": "Bank of Japan (Monetary Policy Meeting)",
+   "detail_ko": "기자회견 · 12-16~12-17 이틀 회의의 둘째 날",
+   "detail_en": "press conference",
+   "time_local": null,
+   "tz": "Asia/Tokyo",
+   "time_kst": null,
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+   "source": "Bank of Japan — Monetary Policy Meetings",
+   "source_en": "Bank of Japan — Monetary Policy Meetings",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boj"
    ]
   },
   {
