@@ -1,9 +1,9 @@
 {
- "builtAt": "2026-10-04 23:49 KST",
- "builtAtUtc": "2026-10-04T14:49:32Z",
+ "builtAt": "2026-10-05 11:07 KST",
+ "builtAtUtc": "2026-10-05T02:07:31Z",
  "window": {
-  "from": "2026-08-20",
-  "to": "2028-02-16"
+  "from": "2026-08-21",
+  "to": "2028-02-17"
  },
  "note": "증시 일정 캘린더. confirmed 는 official(공식 확인) · websearch(검색 교차 확인) · tentative(기관이 잠정으로 공표) · estimate(제공사 추정 구간) · rule(규칙으로 만든 날짜) 다. 확정이 아닌 것은 화면에서 배지로 구분한다.",
  "confirmed_legend": {
@@ -21,20 +21,20 @@
   "rule": "Derived from the usual release cadence — not confirmed"
  },
  "counts": {
-  "policy": 52,
-  "indicator": 174,
+  "policy": 51,
+  "indicator": 173,
   "earnings": 266,
   "conference": 9,
   "supply": 36,
   "holiday": 103,
   "other": 3,
-  "total": 643,
+  "total": 641,
   "confirmed": {
    "official": 394,
    "websearch": 22,
    "tentative": 0,
    "estimate": 0,
-   "rule": 227
+   "rule": 225
   }
  },
  "sources": {
@@ -97,20 +97,20 @@
    "series_days": 400
   },
   "fed_implied": {
-   "contract_price": 96.12,
-   "implied_rate_pct": 3.88,
-   "quote_date": "2026-10-02",
+   "contract_price": 96.075,
+   "implied_rate_pct": 3.925,
+   "quote_date": "2026-10-05",
    "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 — 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
    "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
    "effr_pct": 3.88,
-   "vs_effr_bp": 0,
+   "vs_effr_bp": 4,
    "perf": {
-    "w1": 13.5,
-    "m1": 17.3,
-    "m3": 25.1,
-    "m6": 24.1,
-    "y1": -20.1,
-    "ytd": 15.4,
+    "w1": 18.3,
+    "m1": 23.1,
+    "m3": 28.9,
+    "m6": 28.9,
+    "y1": -15.3,
+    "ytd": 20.2,
     "unit": "bp",
     "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
    }
@@ -189,7 +189,7 @@
     }
    }
   },
-  "asof_kst": "2026-10-04 09:29:39"
+  "asof_kst": "2026-10-05 09:45:36"
  },
  "holidays": [
   {
@@ -3077,7 +3077,7 @@
    "source_en": "Federal Reserve — FOMC meeting calendars",
    "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local",
    "meetings_per_year": 8,
-   "fetched_at": "2026-10-04"
+   "fetched_at": "2026-10-05"
   },
   {
    "key": "bok",
@@ -3150,7 +3150,7 @@
    "source_en": "Bank of England — Upcoming MPC dates",
    "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-10-04"
+   "fetched_at": "2026-10-05"
   },
   {
    "key": "pboc",
@@ -3554,56 +3554,6 @@
   }
  ],
  "events": [
-  {
-   "id": "pboc-lpr-2026-08-20",
-   "date": "2026-08-20",
-   "end_date": null,
-   "country": "cn",
-   "category": "policy",
-   "importance": 2,
-   "title_ko": "중국 대출우대금리 (LPR) 고시",
-   "title_en": "China Loan Prime Rate fixing",
-   "org": "People's Bank of China",
-   "org_en": "People's Bank of China",
-   "detail_ko": "매월 20일 09:15(현지). 20일이 휴일이면 다음 영업일 · 중국의 실질 정책금리. 인민은행 MLF 조정 뒤 반영된다",
-   "detail_en": "The 20th of each month at 09:15 local time, moving to the next business day if the 20th is a holiday · China's effective policy rate; it follows any PBOC adjustment to the MLF",
-   "time_local": "09:15",
-   "tz": "Asia/Shanghai",
-   "time_kst": "2026-08-20 10:15",
-   "url": "https://www.pbc.gov.cn/en/3688229/index.html",
-   "source": "People's Bank of China",
-   "source_en": "People's Bank of China",
-   "confirmed": "rule",
-   "tags": [
-    "supply",
-    "pboc-lpr"
-   ]
-  },
-  {
-   "id": "indicator-us-claims-2026-08-20",
-   "date": "2026-08-20",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 1,
-   "title_ko": "미국 신규 실업수당 청구건수 (주간)",
-   "title_en": "US Initial Jobless Claims",
-   "org": "美 노동부 (DOL)",
-   "org_en": "Department of Labor",
-   "detail_ko": "매주 목요일 08:30 ET",
-   "detail_en": "Every Thursday, 08:30 ET",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2026-08-20 21:30",
-   "url": "https://www.dol.gov/ui/data.pdf",
-   "source": "美 노동부 (DOL)",
-   "source_en": "Department of Labor",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-claims"
-   ]
-  },
   {
    "id": "us-option-expiry-2026-08-21",
    "date": "2026-08-21",
