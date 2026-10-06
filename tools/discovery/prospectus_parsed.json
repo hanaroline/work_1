@@ -49309,5 +49309,222 @@
         "targetMarket": null
       }
     ]
+  },
+  "20261006000071": {
+    "rcpNo": "20261006000071",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261006000071",
+    "range": "4104~4105",
+    "offer": "2026-10-08 ~ 2026-10-08",
+    "count": 2,
+    "items": [
+      {
+        "title": "미래에셋증권 제4104회 파생결합사채(주가연계파생결합사채)(낮은위험)",
+        "no": 4104,
+        "riskLabel": "낮은위험",
+        "riskGrade": null,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
+        "underlyings": [
+          "KOSPI200",
+          "삼성전자"
+        ],
+        "issueSize": 5000000000,
+        "offerStart": "2026-10-08",
+        "offerEnd": "2026-10-08",
+        "coolStart": null,
+        "coolEnd": null,
+        "coolingFrom": null,
+        "coolingTo": null,
+        "confirmBy": null,
+        "confirmNote": null,
+        "payDate": "2026-10-08",
+        "minAmount": 10000,
+        "minAmountCcy": "KRW",
+        "recordingRight": false,
+        "riskSummaryDoc": false,
+        "maxLossNotice": false,
+        "issueDate": "2026-10-08",
+        "maturityDate": "2027-10-08",
+        "maturityEvalDate": "2027-10-06",
+        "baseDate": "2026-10-08",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9985.55,
+        "fairValueDate": "2026-10-02",
+        "fairValueGap": -0.14,
+        "volatility": [
+          {
+            "asset": "KOSPI200",
+            "vol": 46.09
+          },
+          {
+            "asset": "삼성전자",
+            "vol": 57.4
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "KOSPI200 · 삼성전자",
+            "rho": 0.959
+          }
+        ],
+        "schedule": [],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 500,
+        "maturityRate": 4.171,
+        "maturityPayLabel": "연 4.1710%",
+        "maturityPrincipalOnly": false,
+        "knockIn": null,
+        "knockInBasis": null,
+        "annualRate": 4.171,
+        "docMaxRate": 4.171,
+        "simulation": [
+          {
+            "label": "만기상환1",
+            "ret": "4.171%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환2",
+            "ret": "4.17%",
+            "count": 5116,
+            "share": 100
+          },
+          {
+            "label": "손실",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 5116,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2005-01-03",
+          "to": "2025-09-24"
+        },
+        "simRuns": 5116,
+        "simFirst": null,
+        "simLoss": 0,
+        "targetMarket": null
+      },
+      {
+        "title": "미래에셋증권 제4105회 파생결합사채(주가연계파생결합사채)(낮은위험)",
+        "no": 4105,
+        "riskLabel": "낮은위험",
+        "riskGrade": null,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
+        "underlyings": [
+          "KOSPI200",
+          "삼성전자"
+        ],
+        "issueSize": 5000000000,
+        "offerStart": "2026-10-08",
+        "offerEnd": "2026-10-08",
+        "coolStart": null,
+        "coolEnd": null,
+        "coolingFrom": null,
+        "coolingTo": null,
+        "confirmBy": null,
+        "confirmNote": null,
+        "payDate": "2026-10-08",
+        "minAmount": 10000,
+        "minAmountCcy": "KRW",
+        "recordingRight": false,
+        "riskSummaryDoc": false,
+        "maxLossNotice": false,
+        "issueDate": "2026-10-08",
+        "maturityDate": "2028-04-07",
+        "maturityEvalDate": "2028-04-05",
+        "baseDate": "2026-10-08",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9985.8,
+        "fairValueDate": "2026-10-02",
+        "fairValueGap": -0.14,
+        "volatility": [
+          {
+            "asset": "KOSPI200",
+            "vol": 44.83
+          },
+          {
+            "asset": "삼성전자",
+            "vol": 56.09
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "KOSPI200 · 삼성전자",
+            "rho": 0.959
+          }
+        ],
+        "schedule": [],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 500,
+        "maturityRate": 6.5949,
+        "maturityPayLabel": "연 4.4006%",
+        "maturityPrincipalOnly": false,
+        "knockIn": null,
+        "knockInBasis": null,
+        "annualRate": 4.4006,
+        "docMaxRate": 6.5949,
+        "simulation": [
+          {
+            "label": "만기상환1",
+            "ret": "6.5949%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환2",
+            "ret": "6.5939%",
+            "count": 4991,
+            "share": 100
+          },
+          {
+            "label": "손실",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 4991,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2005-01-03",
+          "to": "2025-03-25"
+        },
+        "simRuns": 4991,
+        "simFirst": null,
+        "simLoss": 0,
+        "targetMarket": null
+      }
+    ]
   }
 }
