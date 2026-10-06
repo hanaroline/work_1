@@ -1,14 +1,14 @@
-네이버 API 탐색 2026-10-06 00:44:59 KST
+네이버 API 탐색 2026-10-06 10:47:22 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
-    쓸모 · 3161 bytes · 걸린 낱말 ['상승']
+    빈손 · 3163 bytes · 걸린 낱말 없음
+    응답 앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","symbolCode":"KOSPI","stockName":"코스피","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/
     남김: data/market/raw/probe_00_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","symbolCode":"KOSPI","stockName":"코스피","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/logo/index/IndexKOSPI.svg","itemLogoPngUrl":"https://ssl.pstatic.net/imgstock/fn
 
 [internals] https://m.stock.naver.com/api/index/KOSDAQ/basic
-    빈손 · 3194 bytes · 걸린 낱말 없음
-    응답 앞머리: {"stockEndType":"index","itemCode":"KOSDAQ","reutersCode":"KOSDAQ","symbolCode":"KOSDAQ","stockName":"코스닥","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/re
+    쓸모 · 3191 bytes · 걸린 낱말 ['상승']
     남김: data/market/raw/probe_01_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSDAQ","reutersCode":"KOSDAQ","symbolCode":"KOSDAQ","stockName":"코스닥","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/logo/index/IndexKOSDAQ.svg","itemLogoPngUrl":"https://ssl.pstatic.net/imgstoc
 
@@ -17,28 +17,28 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 16300 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
+    쓸모 · 16296 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
     남김: data/market/raw/probe_03_internals.txt
-    앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"6,971.35"},{"code":"openPrice","key":"시가","value":"6,938.27","compareToPreviousPrice":{"code":"5",
+    앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"7,003.74"},{"code":"openPrice","key":"시가","value":"7,044.67","compareToPreviousPrice":{"code":"2",
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/price?pageSize=5&page=1
-    쓸모 · 1282 bytes · 걸린 낱말 ['상승']
+    쓸모 · 1281 bytes · 걸린 낱말 ['상승']
     남김: data/market/raw/probe_04_internals.txt
-    앞머리: [{"localTradedAt":"2026-10-02","closePrice":"7,003.74","compareToPreviousClosePrice":"32.39","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"0.46","openPrice":"6,938.27","highPrice":"7,011.04","lowPric
+    앞머리: [{"localTradedAt":"2026-10-06","closePrice":"6,969.89","compareToPreviousClosePrice":"-33.85","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-0.48","openPrice":"7,044.67","highPrice":"7,044.67","lowP
 
 [sectors] https://m.stock.naver.com/api/stocks/industry
     쓸모 · 2281 bytes · 걸린 낱말 ['changeRate']
     남김: data/market/raw/probe_05_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":294,"name":"통신장비","totalCount":55,"changeRate":"4.06","riseCount":40,"fallCount":9,"steadyCount":6},{"no":313,"name":"석유와가스","totalCount":19,"changeRate":"3.90","riseCount":17,"fallCount":1,"s
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":307,"name":"전자제품","totalCount":16,"changeRate":"6.11","riseCount":6,"fallCount":8,"steadyCount":2},{"no":282,"name":"전자장비와기기","totalCount":105,"changeRate":"5.75","riseCount":70,"fallCount":24
 
 [sectors] https://api.stock.naver.com/industry
     실패 · 36 bytes · 걸린 낱말 없음
     응답 앞머리: HTTPError: HTTP Error 404: Not Found
 
 [sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
-    쓸모 · 8630 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 8644 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_07_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":294,"name":"통신장비","totalCount":55,"changeRate":"4.06","riseCount":40,"fallCount":9,"steadyCount":6},{"no":313,"name":"석유와가스","totalCount":19,"changeRate":"3.90","riseCount":17,"fallCount":1,"s
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":307,"name":"전자제품","totalCount":16,"changeRate":"6.11","riseCount":6,"fallCount":8,"steadyCount":2},{"no":282,"name":"전자장비와기기","totalCount":105,"changeRate":"5.75","riseCount":70,"fallCount":24
 
 [money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
     실패 · 30 bytes · 걸린 낱말 없음
