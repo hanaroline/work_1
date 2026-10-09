@@ -49526,5 +49526,3589 @@
         "targetMarket": null
       }
     ]
+  },
+  "20261008000217": {
+    "rcpNo": "20261008000217",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000217",
+    "range": "38190~38202",
+    "offer": "2026-10-12 ~ 2026-10-21",
+    "count": 13,
+    "items": [
+      {
+        "title": "미래에셋증권 제38190회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 38190,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "instrument": "파생결합증권",
+        "principalProtected": false,
+        "underlyings": [
+          "KOSPI200"
+        ],
+        "issueSize": 10000000000,
+        "offerStart": "2026-10-12",
+        "offerEnd": "2026-10-21",
+        "coolStart": "2026-10-12",
+        "coolEnd": "2026-10-16",
+        "coolingFrom": "2026-10-19",
+        "coolingTo": "2026-10-20",
+        "confirmBy": "2026-10-21",
+        "confirmNote": "2026년 10월 21일 오후 5시까지",
+        "payDate": "2026-10-22",
+        "minAmount": 1000000,
+        "minAmountCcy": "KRW",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-10-22",
+        "maturityDate": "2029-10-22",
+        "maturityEvalDate": "2029-10-17",
+        "baseDate": "2026-10-22",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9697.22,
+        "fairValueDate": "2026-10-06",
+        "fairValueGap": -3.03,
+        "volatility": [
+          {
+            "asset": "KOSPI200",
+            "vol": 36.32
+          }
+        ],
+        "correlation": [],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-04-19",
+            "payout": 104.85,
+            "barrier": 85
+          },
+          {
+            "step": 2,
+            "date": "2027-10-19",
+            "payout": 109.7,
+            "barrier": 85
+          },
+          {
+            "step": 3,
+            "date": "2028-04-18",
+            "payout": 114.55,
+            "barrier": 85
+          },
+          {
+            "step": 4,
+            "date": "2028-10-17",
+            "payout": 119.4,
+            "barrier": 80
+          },
+          {
+            "step": 5,
+            "date": "2029-04-17",
+            "payout": 124.25,
+            "barrier": 75
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 70,
+        "maturityRate": 29.1,
+        "maturityPayLabel": "연 9.70%",
+        "maturityPrincipalOnly": false,
+        "knockIn": 45,
+        "knockInBasis": "종가",
+        "annualRate": 9.7,
+        "docMaxRate": 29.1,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "4.85%",
+            "count": 4873,
+            "share": 94.95
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "9.70%",
+            "count": 152,
+            "share": 2.96
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "14.55%",
+            "count": 89,
+            "share": 1.73
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "19.40%",
+            "count": 12,
+            "share": 0.23
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "24.25%",
+            "count": 6,
+            "share": 0.12
+          },
+          {
+            "label": "만기상환",
+            "ret": "29.10%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 5132,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-09-27"
+        },
+        "simRuns": 5132,
+        "simFirst": 94.95,
+        "simLoss": 0,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ],
+        "targetMarket": {
+          "grades": [
+            1
+          ],
+          "clientType": [
+            "일반투자자",
+            "전문투자자"
+          ],
+          "knowledge": [
+            "중간",
+            "높음"
+          ],
+          "lossTolerance": [
+            "원금대비 100% 손실 감내"
+          ],
+          "appetite": [
+            "위험선호형"
+          ],
+          "horizon": [
+            "1년 이상 ~ 3년 이하"
+          ],
+          "holding": [
+            "중도환매가능",
+            "만기 보유"
+          ],
+          "appetiteDetail": {
+            "name": "위험선호형",
+            "profile": "성장형·성장추구형",
+            "grades": "1,2,3등급"
+          },
+          "basis": "해당상품은 최대원금손실 가능금액이 원금의 100 분의 20 을 초과 하는 상품 으로 자본시장법 시행령 제 2 조 7 에서 정의하는 고난도금융투자상품 에 해당합니다. 고난도금융투자상품 제조 및 판매에 관한 표준 영업행위 준칙 에 따라, 이 상품의 목표시장은 위와 같이 설정하였습니다. 지식과 경험 손실감내능력 위험 추구 성향 및 투자 기간 등의 각 항목과 더불어 이 상품의 설명서 등을 참고하시어 투자에 신중을 기하여 주시기 바랍니다."
+        }
+      },
+      {
+        "title": "미래에셋증권 제38191회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 38191,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "instrument": "파생결합증권",
+        "principalProtected": false,
+        "underlyings": [
+          "KOSPI200",
+          "HSCEI",
+          "Nikkei225"
+        ],
+        "issueSize": 10000000000,
+        "offerStart": "2026-10-12",
+        "offerEnd": "2026-10-21",
+        "coolStart": "2026-10-12",
+        "coolEnd": "2026-10-16",
+        "coolingFrom": "2026-10-19",
+        "coolingTo": "2026-10-20",
+        "confirmBy": "2026-10-21",
+        "confirmNote": "2026년 10월 21일 오후 5시까지",
+        "payDate": "2026-10-22",
+        "minAmount": 1000000,
+        "minAmountCcy": "KRW",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-10-22",
+        "maturityDate": "2029-10-22",
+        "maturityEvalDate": "2029-10-17",
+        "baseDate": "2026-10-22",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9835.76,
+        "fairValueDate": "2026-10-06",
+        "fairValueGap": -1.64,
+        "volatility": [
+          {
+            "asset": "KOSPI200",
+            "vol": 36.32
+          },
+          {
+            "asset": "HSCEI",
+            "vol": 26.07
+          },
+          {
+            "asset": "Nikkei225",
+            "vol": 28.65
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "KOSPI200 · HSCEI",
+            "rho": 0.1783
+          },
+          {
+            "pair": "KOSPI200 · Nikkei225",
+            "rho": 0.7572
+          },
+          {
+            "pair": "HSCEI · Nikkei225",
+            "rho": 0.278
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-04-19",
+            "payout": 105.05,
+            "barrier": 85
+          },
+          {
+            "step": 2,
+            "date": "2027-10-19",
+            "payout": 110.1,
+            "barrier": 85
+          },
+          {
+            "step": 3,
+            "date": "2028-04-18",
+            "payout": 115.15,
+            "barrier": 85
+          },
+          {
+            "step": 4,
+            "date": "2028-10-17",
+            "payout": 120.2,
+            "barrier": 80
+          },
+          {
+            "step": 5,
+            "date": "2029-04-17",
+            "payout": 125.25,
+            "barrier": 75
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 70,
+        "maturityRate": 30.3,
+        "maturityPayLabel": "연 10.10%",
+        "maturityPrincipalOnly": false,
+        "knockIn": 35,
+        "knockInBasis": "종가",
+        "annualRate": 10.1,
+        "docMaxRate": 30.3,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "5.05%",
+            "count": 3742,
+            "share": 79.96
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "10.10%",
+            "count": 272,
+            "share": 5.81
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "15.15%",
+            "count": 78,
+            "share": 1.67
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "20.20%",
+            "count": 110,
+            "share": 2.35
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "25.25%",
+            "count": 142,
+            "share": 3.03
+          },
+          {
+            "label": "만기상환",
+            "ret": "30.30%",
+            "count": 265,
+            "share": 5.66
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 29,
+            "share": 0.62
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 42,
+            "share": 0.9
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 4680,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-06",
+          "to": "2023-09-27"
+        },
+        "simRuns": 4680,
+        "simFirst": 79.96,
+        "simLoss": 1.52,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 29,
+            "share": 0.62
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 42,
+            "share": 0.9
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ],
+        "targetMarket": {
+          "grades": [
+            1
+          ],
+          "clientType": [
+            "일반투자자",
+            "전문투자자"
+          ],
+          "knowledge": [
+            "중간",
+            "높음"
+          ],
+          "lossTolerance": [
+            "원금대비 100% 손실 감내"
+          ],
+          "appetite": [
+            "위험선호형"
+          ],
+          "horizon": [
+            "1년 이상 ~ 3년 이하"
+          ],
+          "holding": [
+            "중도환매가능",
+            "만기 보유"
+          ],
+          "appetiteDetail": {
+            "name": "위험선호형",
+            "profile": "성장형·성장추구형",
+            "grades": "1,2,3등급"
+          },
+          "basis": "해당상품은 최대원금손실 가능금액이 원금의 100 분의 20 을 초과 하는 상품 으로 자본시장법 시행령 제 2 조 7 에서 정의하는 고난도금융투자상품 에 해당합니다. 고난도금융투자상품 제조 및 판매에 관한 표준 영업행위 준칙 에 따라, 이 상품의 목표시장은 위와 같이 설정하였습니다. 지식과 경험 손실감내능력 위험 추구 성향 및 투자 기간 등의 각 항목과 더불어 이 상품의 설명서 등을 참고하시어 투자에 신중을 기하여 주시기 바랍니다."
+        }
+      },
+      {
+        "title": "미래에셋증권 제38192회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 38192,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "instrument": "파생결합증권",
+        "principalProtected": false,
+        "underlyings": [
+          "EuroStoxx50",
+          "S&P500",
+          "KOSPI200"
+        ],
+        "issueSize": 10000000000,
+        "offerStart": "2026-10-12",
+        "offerEnd": "2026-10-21",
+        "coolStart": "2026-10-12",
+        "coolEnd": "2026-10-16",
+        "coolingFrom": "2026-10-19",
+        "coolingTo": "2026-10-20",
+        "confirmBy": "2026-10-21",
+        "confirmNote": "2026년 10월 21일 오후 5시까지",
+        "payDate": "2026-10-22",
+        "minAmount": 1000000,
+        "minAmountCcy": "KRW",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-10-22",
+        "maturityDate": "2029-10-22",
+        "maturityEvalDate": "2029-10-17",
+        "baseDate": "2026-10-22",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9735.83,
+        "fairValueDate": "2026-10-06",
+        "fairValueGap": -2.64,
+        "volatility": [
+          {
+            "asset": "EuroStoxx50",
+            "vol": 21.57
+          },
+          {
+            "asset": "S&P500",
+            "vol": 23.06
+          },
+          {
+            "asset": "KOSPI200",
+            "vol": 36.32
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "EuroStoxx50 · S&P500",
+            "rho": 0.5731
+          },
+          {
+            "pair": "EuroStoxx50 · KOSPI200",
+            "rho": 0.214
+          },
+          {
+            "pair": "S&P500 · KOSPI200",
+            "rho": 0.1686
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-04-19",
+            "payout": 105.25,
+            "barrier": 85
+          },
+          {
+            "step": 2,
+            "date": "2027-10-19",
+            "payout": 110.5,
+            "barrier": 85
+          },
+          {
+            "step": 3,
+            "date": "2028-04-18",
+            "payout": 115.75,
+            "barrier": 80
+          },
+          {
+            "step": 4,
+            "date": "2028-10-17",
+            "payout": 121,
+            "barrier": 80
+          },
+          {
+            "step": 5,
+            "date": "2029-04-17",
+            "payout": 126.25,
+            "barrier": 75
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 70,
+        "maturityRate": 31.5,
+        "maturityPayLabel": "연 10.50%",
+        "maturityPrincipalOnly": false,
+        "knockIn": 40,
+        "knockInBasis": "종가",
+        "annualRate": 10.5,
+        "docMaxRate": 31.5,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "5.25%",
+            "count": 4454,
+            "share": 90.2
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "10.50%",
+            "count": 155,
+            "share": 3.14
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "15.75%",
+            "count": 205,
+            "share": 4.15
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "21.00%",
+            "count": 26,
+            "share": 0.53
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "26.25%",
+            "count": 18,
+            "share": 0.36
+          },
+          {
+            "label": "만기상환",
+            "ret": "31.50%",
+            "count": 80,
+            "share": 1.62
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 4938,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-09-27"
+        },
+        "simRuns": 4938,
+        "simFirst": 90.2,
+        "simLoss": 0,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ],
+        "targetMarket": {
+          "grades": [
+            1
+          ],
+          "clientType": [
+            "일반투자자",
+            "전문투자자"
+          ],
+          "knowledge": [
+            "중간",
+            "높음"
+          ],
+          "lossTolerance": [
+            "원금대비 100% 손실 감내"
+          ],
+          "appetite": [
+            "위험선호형"
+          ],
+          "horizon": [
+            "1년 이상 ~ 3년 이하"
+          ],
+          "holding": [
+            "중도환매가능",
+            "만기 보유"
+          ],
+          "appetiteDetail": {
+            "name": "위험선호형",
+            "profile": "성장형·성장추구형",
+            "grades": "1,2,3등급"
+          },
+          "basis": "해당상품은 최대원금손실 가능금액이 원금의 100 분의 20 을 초과 하는 상품 으로 자본시장법 시행령 제 2 조 7 에서 정의하는 고난도금융투자상품 에 해당합니다. 고난도금융투자상품 제조 및 판매에 관한 표준 영업행위 준칙 에 따라, 이 상품의 목표시장은 위와 같이 설정하였습니다. 지식과 경험 손실감내능력 위험 추구 성향 및 투자 기간 등의 각 항목과 더불어 이 상품의 설명서 등을 참고하시어 투자에 신중을 기하여 주시기 바랍니다."
+        }
+      },
+      {
+        "title": "미래에셋증권 제38193회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 38193,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "instrument": "파생결합증권",
+        "principalProtected": false,
+        "underlyings": [
+          "EuroStoxx50",
+          "KOSPI200",
+          "Nikkei225"
+        ],
+        "issueSize": 10000000000,
+        "offerStart": "2026-10-12",
+        "offerEnd": "2026-10-21",
+        "coolStart": "2026-10-12",
+        "coolEnd": "2026-10-16",
+        "coolingFrom": "2026-10-19",
+        "coolingTo": "2026-10-20",
+        "confirmBy": "2026-10-21",
+        "confirmNote": "2026년 10월 21일 오후 5시까지",
+        "payDate": "2026-10-22",
+        "minAmount": 1000000,
+        "minAmountCcy": "KRW",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-10-22",
+        "maturityDate": "2029-10-22",
+        "maturityEvalDate": "2029-10-17",
+        "baseDate": "2026-10-22",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9485.04,
+        "fairValueDate": "2026-10-06",
+        "fairValueGap": -5.15,
+        "volatility": [
+          {
+            "asset": "EuroStoxx50",
+            "vol": 21.57
+          },
+          {
+            "asset": "KOSPI200",
+            "vol": 36.32
+          },
+          {
+            "asset": "Nikkei225",
+            "vol": 28.65
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "EuroStoxx50 · KOSPI200",
+            "rho": 0.214
+          },
+          {
+            "pair": "EuroStoxx50 · Nikkei225",
+            "rho": 0.2755
+          },
+          {
+            "pair": "KOSPI200 · Nikkei225",
+            "rho": 0.7572
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-04-19",
+            "payout": 105.75,
+            "barrier": 85
+          },
+          {
+            "step": 2,
+            "date": "2027-10-19",
+            "payout": 111.5,
+            "barrier": 85
+          },
+          {
+            "step": 3,
+            "date": "2028-04-18",
+            "payout": 117.25,
+            "barrier": 85
+          },
+          {
+            "step": 4,
+            "date": "2028-10-17",
+            "payout": 123,
+            "barrier": 80
+          },
+          {
+            "step": 5,
+            "date": "2029-04-17",
+            "payout": 128.75,
+            "barrier": 75
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 70,
+        "maturityRate": 34.5,
+        "maturityPayLabel": "연 11.50%",
+        "maturityPrincipalOnly": false,
+        "knockIn": 45,
+        "knockInBasis": "종가",
+        "annualRate": 11.5,
+        "docMaxRate": 34.5,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "5.75%",
+            "count": 4224,
+            "share": 88.04
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "11.50%",
+            "count": 174,
+            "share": 3.63
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "17.25%",
+            "count": 117,
+            "share": 2.44
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "23.00%",
+            "count": 71,
+            "share": 1.48
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "28.75%",
+            "count": 54,
+            "share": 1.13
+          },
+          {
+            "label": "만기상환",
+            "ret": "34.50%",
+            "count": 53,
+            "share": 1.1
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 23,
+            "share": 0.48
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 82,
+            "share": 1.71
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 4798,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-06",
+          "to": "2023-09-27"
+        },
+        "simRuns": 4798,
+        "simFirst": 88.04,
+        "simLoss": 2.19,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 23,
+            "share": 0.48
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 82,
+            "share": 1.71
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ],
+        "targetMarket": {
+          "grades": [
+            1
+          ],
+          "clientType": [
+            "일반투자자",
+            "전문투자자"
+          ],
+          "knowledge": [
+            "중간",
+            "높음"
+          ],
+          "lossTolerance": [
+            "원금대비 100% 손실 감내"
+          ],
+          "appetite": [
+            "위험선호형"
+          ],
+          "horizon": [
+            "1년 이상 ~ 3년 이하"
+          ],
+          "holding": [
+            "중도환매가능",
+            "만기 보유"
+          ],
+          "appetiteDetail": {
+            "name": "위험선호형",
+            "profile": "성장형·성장추구형",
+            "grades": "1,2,3등급"
+          },
+          "basis": "해당상품은 최대원금손실 가능금액이 원금의 100 분의 20 을 초과 하는 상품 으로 자본시장법 시행령 제 2 조 7 에서 정의하는 고난도금융투자상품 에 해당합니다. 고난도금융투자상품 제조 및 판매에 관한 표준 영업행위 준칙 에 따라, 이 상품의 목표시장은 위와 같이 설정하였습니다. 지식과 경험 손실감내능력 위험 추구 성향 및 투자 기간 등의 각 항목과 더불어 이 상품의 설명서 등을 참고하시어 투자에 신중을 기하여 주시기 바랍니다."
+        }
+      },
+      {
+        "title": "미래에셋증권 제38194회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 38194,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "instrument": "파생결합증권",
+        "principalProtected": false,
+        "underlyings": [
+          "삼성전자",
+          "SK하이닉스"
+        ],
+        "issueSize": 10000000000,
+        "offerStart": "2026-10-12",
+        "offerEnd": "2026-10-21",
+        "coolStart": "2026-10-12",
+        "coolEnd": "2026-10-16",
+        "coolingFrom": "2026-10-19",
+        "coolingTo": "2026-10-20",
+        "confirmBy": "2026-10-21",
+        "confirmNote": "2026년 10월 21일 오후 5시까지",
+        "payDate": "2026-10-22",
+        "minAmount": 1000000,
+        "minAmountCcy": "KRW",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-10-22",
+        "maturityDate": "2029-10-22",
+        "maturityEvalDate": "2029-10-17",
+        "baseDate": "2026-10-22",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9614.08,
+        "fairValueDate": "2026-10-06",
+        "fairValueGap": -3.86,
+        "volatility": [
+          {
+            "asset": "삼성전자",
+            "vol": 47.45
+          },
+          {
+            "asset": "SK하이닉스",
+            "vol": 56.01
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "삼성전자 · SK하이닉스",
+            "rho": 0.8793
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-04-19",
+            "payout": 106,
+            "barrier": 65
+          },
+          {
+            "step": 2,
+            "date": "2027-10-19",
+            "payout": 112,
+            "barrier": 65
+          },
+          {
+            "step": 3,
+            "date": "2028-04-18",
+            "payout": 118,
+            "barrier": 65
+          },
+          {
+            "step": 4,
+            "date": "2028-10-17",
+            "payout": 124,
+            "barrier": 65
+          },
+          {
+            "step": 5,
+            "date": "2029-04-17",
+            "payout": 130,
+            "barrier": 65
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 60,
+        "maturityRate": 36,
+        "maturityPayLabel": "연 12.00%",
+        "maturityPrincipalOnly": false,
+        "knockIn": 35,
+        "knockInBasis": "종가",
+        "annualRate": 12,
+        "docMaxRate": 36,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "6.00%",
+            "count": 4951,
+            "share": 96.76
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "12.00%",
+            "count": 81,
+            "share": 1.58
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "18.00%",
+            "count": 56,
+            "share": 1.09
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "24.00%",
+            "count": 19,
+            "share": 0.37
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "30.00%",
+            "count": 2,
+            "share": 0.04
+          },
+          {
+            "label": "만기상환",
+            "ret": "36.00%",
+            "count": 8,
+            "share": 0.16
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 5117,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-09-27"
+        },
+        "simRuns": 5117,
+        "simFirst": 96.76,
+        "simLoss": 0,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ],
+        "targetMarket": {
+          "grades": [
+            1
+          ],
+          "clientType": [
+            "일반투자자",
+            "전문투자자"
+          ],
+          "knowledge": [
+            "중간",
+            "높음"
+          ],
+          "lossTolerance": [
+            "원금대비 100% 손실 감내"
+          ],
+          "appetite": [
+            "위험선호형"
+          ],
+          "horizon": [
+            "1년 이상 ~ 3년 이하"
+          ],
+          "holding": [
+            "중도환매가능",
+            "만기 보유"
+          ],
+          "appetiteDetail": {
+            "name": "위험선호형",
+            "profile": "성장형·성장추구형",
+            "grades": "1,2,3등급"
+          },
+          "basis": "해당상품은 최대원금손실 가능금액이 원금의 100 분의 20 을 초과 하는 상품 으로 자본시장법 시행령 제 2 조 7 에서 정의하는 고난도금융투자상품 에 해당합니다. 고난도금융투자상품 제조 및 판매에 관한 표준 영업행위 준칙 에 따라, 이 상품의 목표시장은 위와 같이 설정하였습니다. 지식과 경험 손실감내능력 위험 추구 성향 및 투자 기간 등의 각 항목과 더불어 이 상품의 설명서 등을 참고하시어 투자에 신중을 기하여 주시기 바랍니다."
+        }
+      },
+      {
+        "title": "미래에셋증권 제38195회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 38195,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "instrument": "파생결합증권",
+        "principalProtected": false,
+        "underlyings": [
+          "KOSPI200",
+          "SK하이닉스"
+        ],
+        "issueSize": 10000000000,
+        "offerStart": "2026-10-12",
+        "offerEnd": "2026-10-21",
+        "coolStart": "2026-10-12",
+        "coolEnd": "2026-10-16",
+        "coolingFrom": "2026-10-19",
+        "coolingTo": "2026-10-20",
+        "confirmBy": "2026-10-21",
+        "confirmNote": "2026년 10월 21일 오후 5시까지",
+        "payDate": "2026-10-22",
+        "minAmount": 1000000,
+        "minAmountCcy": "KRW",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-10-22",
+        "maturityDate": "2029-10-22",
+        "maturityEvalDate": "2029-10-17",
+        "baseDate": "2026-10-22",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9603.48,
+        "fairValueDate": "2026-10-06",
+        "fairValueGap": -3.97,
+        "volatility": [
+          {
+            "asset": "KOSPI200",
+            "vol": 36.32
+          },
+          {
+            "asset": "SK하이닉스",
+            "vol": 56.01
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "KOSPI200 · SK하이닉스",
+            "rho": 0.9451
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-04-19",
+            "payout": 106.5,
+            "barrier": 70
+          },
+          {
+            "step": 2,
+            "date": "2027-10-19",
+            "payout": 113,
+            "barrier": 70
+          },
+          {
+            "step": 3,
+            "date": "2028-04-18",
+            "payout": 119.5,
+            "barrier": 70
+          },
+          {
+            "step": 4,
+            "date": "2028-10-17",
+            "payout": 126,
+            "barrier": 70
+          },
+          {
+            "step": 5,
+            "date": "2029-04-17",
+            "payout": 132.5,
+            "barrier": 70
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 65,
+        "maturityRate": 39,
+        "maturityPayLabel": "연 13.00%",
+        "maturityPrincipalOnly": false,
+        "knockIn": 35,
+        "knockInBasis": "종가",
+        "annualRate": 13,
+        "docMaxRate": 39,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "6.50%",
+            "count": 4842,
+            "share": 94.57
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "13.00%",
+            "count": 132,
+            "share": 2.58
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "19.50%",
+            "count": 76,
+            "share": 1.48
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "26.00%",
+            "count": 39,
+            "share": 0.76
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "32.50%",
+            "count": 2,
+            "share": 0.04
+          },
+          {
+            "label": "만기상환",
+            "ret": "39.00%",
+            "count": 12,
+            "share": 0.23
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 10,
+            "share": 0.2
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 7,
+            "share": 0.14
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 5120,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-09-27"
+        },
+        "simRuns": 5120,
+        "simFirst": 94.57,
+        "simLoss": 0.34,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 10,
+            "share": 0.2
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 7,
+            "share": 0.14
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ],
+        "targetMarket": {
+          "grades": [
+            1
+          ],
+          "clientType": [
+            "일반투자자",
+            "전문투자자"
+          ],
+          "knowledge": [
+            "중간",
+            "높음"
+          ],
+          "lossTolerance": [
+            "원금대비 100% 손실 감내"
+          ],
+          "appetite": [
+            "위험선호형"
+          ],
+          "horizon": [
+            "1년 이상 ~ 3년 이하"
+          ],
+          "holding": [
+            "중도환매가능",
+            "만기 보유"
+          ],
+          "appetiteDetail": {
+            "name": "위험선호형",
+            "profile": "성장형·성장추구형",
+            "grades": "1,2,3등급"
+          },
+          "basis": "해당상품은 최대원금손실 가능금액이 원금의 100 분의 20 을 초과 하는 상품 으로 자본시장법 시행령 제 2 조 7 에서 정의하는 고난도금융투자상품 에 해당합니다. 고난도금융투자상품 제조 및 판매에 관한 표준 영업행위 준칙 에 따라, 이 상품의 목표시장은 위와 같이 설정하였습니다. 지식과 경험 손실감내능력 위험 추구 성향 및 투자 기간 등의 각 항목과 더불어 이 상품의 설명서 등을 참고하시어 투자에 신중을 기하여 주시기 바랍니다."
+        }
+      },
+      {
+        "title": "미래에셋증권 제38196회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 38196,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "instrument": "파생결합증권",
+        "principalProtected": false,
+        "underlyings": [
+          "삼성전자",
+          "SK하이닉스"
+        ],
+        "issueSize": 5000000000,
+        "offerStart": "2026-10-12",
+        "offerEnd": "2026-10-21",
+        "coolStart": "2026-10-12",
+        "coolEnd": "2026-10-16",
+        "coolingFrom": "2026-10-19",
+        "coolingTo": "2026-10-20",
+        "confirmBy": "2026-10-21",
+        "confirmNote": "2026년 10월 21일 오후 5시까지",
+        "payDate": "2026-10-22",
+        "minAmount": 1000000,
+        "minAmountCcy": "KRW",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-10-22",
+        "maturityDate": "2029-10-22",
+        "maturityEvalDate": "2029-10-17",
+        "baseDate": "2026-10-22",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9488.41,
+        "fairValueDate": "2026-10-06",
+        "fairValueGap": -5.12,
+        "volatility": [
+          {
+            "asset": "삼성전자",
+            "vol": 47.45
+          },
+          {
+            "asset": "SK하이닉스",
+            "vol": 56.01
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "삼성전자 · SK하이닉스",
+            "rho": 0.8793
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-04-19",
+            "payout": 108.5,
+            "barrier": 75
+          },
+          {
+            "step": 2,
+            "date": "2027-10-19",
+            "payout": 117,
+            "barrier": 75
+          },
+          {
+            "step": 3,
+            "date": "2028-04-18",
+            "payout": 125.5,
+            "barrier": 75
+          },
+          {
+            "step": 4,
+            "date": "2028-10-17",
+            "payout": 134,
+            "barrier": 75
+          },
+          {
+            "step": 5,
+            "date": "2029-04-17",
+            "payout": 142.5,
+            "barrier": 70
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 65,
+        "maturityRate": 51,
+        "maturityPayLabel": "연 17.00%",
+        "maturityPrincipalOnly": false,
+        "knockIn": 35,
+        "knockInBasis": "종가",
+        "annualRate": 17,
+        "docMaxRate": 51,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "8.50%",
+            "count": 4642,
+            "share": 90.72
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "17.00%",
+            "count": 225,
+            "share": 4.4
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "25.50%",
+            "count": 151,
+            "share": 2.95
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "34.00%",
+            "count": 53,
+            "share": 1.04
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "42.50%",
+            "count": 2,
+            "share": 0.04
+          },
+          {
+            "label": "만기상환",
+            "ret": "51.00%",
+            "count": 16,
+            "share": 0.31
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 19,
+            "share": 0.37
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 9,
+            "share": 0.18
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 5117,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-09-27"
+        },
+        "simRuns": 5117,
+        "simFirst": 90.72,
+        "simLoss": 0.55,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 19,
+            "share": 0.37
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 9,
+            "share": 0.18
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ],
+        "targetMarket": {
+          "grades": [
+            1
+          ],
+          "clientType": [
+            "일반투자자",
+            "전문투자자"
+          ],
+          "knowledge": [
+            "중간",
+            "높음"
+          ],
+          "lossTolerance": [
+            "원금대비 100% 손실 감내"
+          ],
+          "appetite": [
+            "위험선호형"
+          ],
+          "horizon": [
+            "1년 이상 ~ 3년 이하"
+          ],
+          "holding": [
+            "중도환매가능",
+            "만기 보유"
+          ],
+          "appetiteDetail": {
+            "name": "위험선호형",
+            "profile": "성장형·성장추구형",
+            "grades": "1,2,3등급"
+          },
+          "basis": "해당상품은 최대원금손실 가능금액이 원금의 100 분의 20 을 초과 하는 상품 으로 자본시장법 시행령 제 2 조 7 에서 정의하는 고난도금융투자상품 에 해당합니다. 고난도금융투자상품 제조 및 판매에 관한 표준 영업행위 준칙 에 따라, 이 상품의 목표시장은 위와 같이 설정하였습니다. 지식과 경험 손실감내능력 위험 추구 성향 및 투자 기간 등의 각 항목과 더불어 이 상품의 설명서 등을 참고하시어 투자에 신중을 기하여 주시기 바랍니다."
+        }
+      },
+      {
+        "title": "미래에셋증권 제38197회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 38197,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "instrument": "파생결합증권",
+        "principalProtected": false,
+        "underlyings": [
+          "삼성전자",
+          "SK하이닉스"
+        ],
+        "issueSize": 10000000000,
+        "offerStart": "2026-10-12",
+        "offerEnd": "2026-10-21",
+        "coolStart": "2026-10-12",
+        "coolEnd": "2026-10-16",
+        "coolingFrom": "2026-10-19",
+        "coolingTo": "2026-10-20",
+        "confirmBy": "2026-10-21",
+        "confirmNote": "2026년 10월 21일 오후 5시까지",
+        "payDate": "2026-10-22",
+        "minAmount": 1000000,
+        "minAmountCcy": "KRW",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-10-22",
+        "maturityDate": "2029-10-22",
+        "maturityEvalDate": "2029-10-17",
+        "baseDate": "2026-10-22",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9332.51,
+        "fairValueDate": "2026-10-06",
+        "fairValueGap": -6.67,
+        "volatility": [
+          {
+            "asset": "삼성전자",
+            "vol": 47.45
+          },
+          {
+            "asset": "SK하이닉스",
+            "vol": 56.01
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "삼성전자 · SK하이닉스",
+            "rho": 0.8793
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-04-19",
+            "payout": 110,
+            "barrier": 85
+          },
+          {
+            "step": 2,
+            "date": "2027-10-19",
+            "payout": 120,
+            "barrier": 85
+          },
+          {
+            "step": 3,
+            "date": "2028-04-18",
+            "payout": 130,
+            "barrier": 85
+          },
+          {
+            "step": 4,
+            "date": "2028-10-17",
+            "payout": 140,
+            "barrier": 80
+          },
+          {
+            "step": 5,
+            "date": "2029-04-17",
+            "payout": 150,
+            "barrier": 75
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 70,
+        "maturityRate": 60,
+        "maturityPayLabel": "연 20.00%",
+        "maturityPrincipalOnly": false,
+        "knockIn": 35,
+        "knockInBasis": "종가",
+        "annualRate": 20,
+        "docMaxRate": 60,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "10.00%",
+            "count": 4007,
+            "share": 78.31
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "20.00%",
+            "count": 515,
+            "share": 10.06
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "30.00%",
+            "count": 306,
+            "share": 5.98
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "40.00%",
+            "count": 154,
+            "share": 3.01
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "50.00%",
+            "count": 49,
+            "share": 0.96
+          },
+          {
+            "label": "만기상환",
+            "ret": "60.00%",
+            "count": 15,
+            "share": 0.29
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 40,
+            "share": 0.78
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 27,
+            "share": 0.53
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 4,
+            "share": 0.08
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 5117,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-09-27"
+        },
+        "simRuns": 5117,
+        "simFirst": 78.31,
+        "simLoss": 1.39,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 40,
+            "share": 0.78
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 27,
+            "share": 0.53
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 4,
+            "share": 0.08
+          }
+        ],
+        "targetMarket": {
+          "grades": [
+            1
+          ],
+          "clientType": [
+            "일반투자자",
+            "전문투자자"
+          ],
+          "knowledge": [
+            "중간",
+            "높음"
+          ],
+          "lossTolerance": [
+            "원금대비 100% 손실 감내"
+          ],
+          "appetite": [
+            "위험선호형"
+          ],
+          "horizon": [
+            "1년 이상 ~ 3년 이하"
+          ],
+          "holding": [
+            "중도환매가능",
+            "만기 보유"
+          ],
+          "appetiteDetail": {
+            "name": "위험선호형",
+            "profile": "성장형·성장추구형",
+            "grades": "1,2,3등급"
+          },
+          "basis": "해당상품은 최대원금손실 가능금액이 원금의 100 분의 20 을 초과 하는 상품 으로 자본시장법 시행령 제 2 조 7 에서 정의하는 고난도금융투자상품 에 해당합니다. 고난도금융투자상품 제조 및 판매에 관한 표준 영업행위 준칙 에 따라, 이 상품의 목표시장은 위와 같이 설정하였습니다. 지식과 경험 손실감내능력 위험 추구 성향 및 투자 기간 등의 각 항목과 더불어 이 상품의 설명서 등을 참고하시어 투자에 신중을 기하여 주시기 바랍니다."
+        }
+      },
+      {
+        "title": "미래에셋증권 제38198회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 38198,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "instrument": "파생결합증권",
+        "principalProtected": false,
+        "underlyings": [
+          "KOSPI200",
+          "HSCEI",
+          "Nikkei225"
+        ],
+        "issueSize": 10000000000,
+        "offerStart": "2026-10-12",
+        "offerEnd": "2026-10-21",
+        "coolStart": "2026-10-12",
+        "coolEnd": "2026-10-16",
+        "coolingFrom": "2026-10-19",
+        "coolingTo": "2026-10-20",
+        "confirmBy": "2026-10-21",
+        "confirmNote": "2026년 10월 21일 오후 5시까지",
+        "payDate": "2026-10-22",
+        "minAmount": 100000,
+        "minAmountCcy": "KRW",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-10-22",
+        "maturityDate": "2029-10-22",
+        "maturityEvalDate": "2029-10-17",
+        "baseDate": "2026-10-22",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9876.02,
+        "fairValueDate": "2026-10-06",
+        "fairValueGap": -1.24,
+        "volatility": [
+          {
+            "asset": "KOSPI200",
+            "vol": 36.32
+          },
+          {
+            "asset": "HSCEI",
+            "vol": 26.07
+          },
+          {
+            "asset": "Nikkei225",
+            "vol": 28.65
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "KOSPI200 · HSCEI",
+            "rho": 0.1783
+          },
+          {
+            "pair": "KOSPI200 · Nikkei225",
+            "rho": 0.7572
+          },
+          {
+            "pair": "HSCEI · Nikkei225",
+            "rho": 0.278
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-04-19",
+            "payout": 105.35,
+            "barrier": 90
+          },
+          {
+            "step": 2,
+            "date": "2027-10-19",
+            "payout": 110.7,
+            "barrier": 85
+          },
+          {
+            "step": 3,
+            "date": "2028-04-18",
+            "payout": 116.05,
+            "barrier": 85
+          },
+          {
+            "step": 4,
+            "date": "2028-10-17",
+            "payout": 121.4,
+            "barrier": 80
+          },
+          {
+            "step": 5,
+            "date": "2029-04-17",
+            "payout": 126.75,
+            "barrier": 75
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 70,
+        "maturityRate": 32.1,
+        "maturityPayLabel": "연 10.70%",
+        "maturityPrincipalOnly": false,
+        "knockIn": 35,
+        "knockInBasis": "종가",
+        "annualRate": 10.7,
+        "docMaxRate": 32.1,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "5.35%",
+            "count": 3181,
+            "share": 67.97
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "10.70%",
+            "count": 649,
+            "share": 13.87
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "16.05%",
+            "count": 113,
+            "share": 2.41
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "21.40%",
+            "count": 156,
+            "share": 3.33
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "26.75%",
+            "count": 156,
+            "share": 3.33
+          },
+          {
+            "label": "만기상환",
+            "ret": "32.10%",
+            "count": 351,
+            "share": 7.5
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 32,
+            "share": 0.68
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 42,
+            "share": 0.9
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 4680,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-06",
+          "to": "2023-09-27"
+        },
+        "simRuns": 4680,
+        "simFirst": 67.97,
+        "simLoss": 1.58,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 32,
+            "share": 0.68
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 42,
+            "share": 0.9
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ],
+        "targetMarket": {
+          "grades": [
+            1
+          ],
+          "clientType": [
+            "일반투자자",
+            "전문투자자"
+          ],
+          "knowledge": [
+            "중간",
+            "높음"
+          ],
+          "lossTolerance": [
+            "원금대비 100% 손실 감내"
+          ],
+          "appetite": [
+            "위험선호형"
+          ],
+          "horizon": [
+            "1년 이상 ~ 3년 이하"
+          ],
+          "holding": [
+            "중도환매가능",
+            "만기 보유"
+          ],
+          "appetiteDetail": {
+            "name": "위험선호형",
+            "profile": "성장형·성장추구형",
+            "grades": "1,2,3등급"
+          },
+          "basis": "해당상품은 최대원금손실 가능금액이 원금의 100 분의 20 을 초과 하는 상품 으로 자본시장법 시행령 제 2 조 7 에서 정의하는 고난도금융투자상품 에 해당합니다. 고난도금융투자상품 제조 및 판매에 관한 표준 영업행위 준칙 에 따라, 이 상품의 목표시장은 위와 같이 설정하였습니다. 지식과 경험 손실감내능력 위험 추구 성향 및 투자 기간 등의 각 항목과 더불어 이 상품의 설명서 등을 참고하시어 투자에 신중을 기하여 주시기 바랍니다."
+        }
+      },
+      {
+        "title": "미래에셋증권 제38199회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 38199,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "instrument": "파생결합증권",
+        "principalProtected": false,
+        "underlyings": [
+          "삼성전자",
+          "SK하이닉스"
+        ],
+        "issueSize": 10000000000,
+        "offerStart": "2026-10-12",
+        "offerEnd": "2026-10-21",
+        "coolStart": "2026-10-12",
+        "coolEnd": "2026-10-16",
+        "coolingFrom": "2026-10-19",
+        "coolingTo": "2026-10-20",
+        "confirmBy": "2026-10-21",
+        "confirmNote": "2026년 10월 21일 오후 5시까지",
+        "payDate": "2026-10-22",
+        "minAmount": 100000,
+        "minAmountCcy": "KRW",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-10-22",
+        "maturityDate": "2029-10-22",
+        "maturityEvalDate": "2029-10-17",
+        "baseDate": "2026-10-22",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9317.53,
+        "fairValueDate": "2026-10-06",
+        "fairValueGap": -6.82,
+        "volatility": [
+          {
+            "asset": "삼성전자",
+            "vol": 47.45
+          },
+          {
+            "asset": "SK하이닉스",
+            "vol": 56.01
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "삼성전자 · SK하이닉스",
+            "rho": 0.8793
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-04-19",
+            "payout": 106.5,
+            "barrier": 90
+          },
+          {
+            "step": 2,
+            "date": "2027-10-19",
+            "payout": 113,
+            "barrier": 85
+          },
+          {
+            "step": 3,
+            "date": "2028-04-18",
+            "payout": 119.5,
+            "barrier": 85
+          },
+          {
+            "step": 4,
+            "date": "2028-10-17",
+            "payout": 126,
+            "barrier": 80
+          },
+          {
+            "step": 5,
+            "date": "2029-04-17",
+            "payout": 132.5,
+            "barrier": 75
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 70,
+        "maturityRate": 39,
+        "maturityPayLabel": "연 13.00%",
+        "maturityPrincipalOnly": false,
+        "knockIn": 25,
+        "knockInBasis": "종가",
+        "annualRate": 13,
+        "docMaxRate": 39,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "6.50%",
+            "count": 3623,
+            "share": 70.8
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "13.00%",
+            "count": 794,
+            "share": 15.52
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "19.50%",
+            "count": 339,
+            "share": 6.62
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "26.00%",
+            "count": 184,
+            "share": 3.6
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "32.50%",
+            "count": 57,
+            "share": 1.11
+          },
+          {
+            "label": "만기상환",
+            "ret": "39.00%",
+            "count": 21,
+            "share": 0.41
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 43,
+            "share": 0.84
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 47,
+            "share": 0.92
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 9,
+            "share": 0.18
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 5117,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-09-27"
+        },
+        "simRuns": 5117,
+        "simFirst": 70.8,
+        "simLoss": 1.94,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 43,
+            "share": 0.84
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 47,
+            "share": 0.92
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 9,
+            "share": 0.18
+          }
+        ],
+        "targetMarket": {
+          "grades": [
+            1
+          ],
+          "clientType": [
+            "일반투자자",
+            "전문투자자"
+          ],
+          "knowledge": [
+            "중간",
+            "높음"
+          ],
+          "lossTolerance": [
+            "원금대비 100% 손실 감내"
+          ],
+          "appetite": [
+            "위험선호형"
+          ],
+          "horizon": [
+            "1년 이상 ~ 3년 이하"
+          ],
+          "holding": [
+            "중도환매가능",
+            "만기 보유"
+          ],
+          "appetiteDetail": {
+            "name": "위험선호형",
+            "profile": "성장형·성장추구형",
+            "grades": "1,2,3등급"
+          },
+          "basis": "해당상품은 최대원금손실 가능금액이 원금의 100 분의 20 을 초과 하는 상품 으로 자본시장법 시행령 제 2 조 7 에서 정의하는 고난도금융투자상품 에 해당합니다. 고난도금융투자상품 제조 및 판매에 관한 표준 영업행위 준칙 에 따라, 이 상품의 목표시장은 위와 같이 설정하였습니다. 지식과 경험 손실감내능력 위험 추구 성향 및 투자 기간 등의 각 항목과 더불어 이 상품의 설명서 등을 참고하시어 투자에 신중을 기하여 주시기 바랍니다."
+        }
+      },
+      {
+        "title": "미래에셋증권 제38200회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 38200,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "instrument": "파생결합증권",
+        "principalProtected": false,
+        "underlyings": [
+          "테슬라",
+          "마이크론 테크놀로지"
+        ],
+        "issueSize": 10000000000,
+        "offerStart": "2026-10-12",
+        "offerEnd": "2026-10-21",
+        "coolStart": "2026-10-12",
+        "coolEnd": "2026-10-16",
+        "coolingFrom": "2026-10-19",
+        "coolingTo": "2026-10-20",
+        "confirmBy": "2026-10-21",
+        "confirmNote": "2026년 10월 21일 오후 5시까지",
+        "payDate": "2026-10-22",
+        "minAmount": 100000,
+        "minAmountCcy": "KRW",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-10-22",
+        "maturityDate": "2029-10-22",
+        "maturityEvalDate": "2029-10-17",
+        "baseDate": "2026-10-22",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 6790.32,
+        "fairValueDate": "2026-10-06",
+        "fairValueGap": -32.1,
+        "volatility": [
+          {
+            "asset": "테슬라",
+            "vol": 55.4
+          },
+          {
+            "asset": "마이크론 테크놀로지",
+            "vol": 93.06
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "테슬라 · 마이크론 테크놀로지",
+            "rho": 0.368
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-04-19",
+            "payout": 107.65,
+            "barrier": 90
+          },
+          {
+            "step": 2,
+            "date": "2027-10-19",
+            "payout": 115.3,
+            "barrier": 85
+          },
+          {
+            "step": 3,
+            "date": "2028-04-18",
+            "payout": 122.95,
+            "barrier": 80
+          },
+          {
+            "step": 4,
+            "date": "2028-10-17",
+            "payout": 130.6,
+            "barrier": 75
+          },
+          {
+            "step": 5,
+            "date": "2029-04-17",
+            "payout": 138.25,
+            "barrier": 70
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 65,
+        "maturityRate": 45.9,
+        "maturityPayLabel": "연 15.30%",
+        "maturityPrincipalOnly": false,
+        "knockIn": 30,
+        "knockInBasis": "종가",
+        "annualRate": 15.3,
+        "docMaxRate": 45.9,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "7.65%",
+            "count": 1905,
+            "share": 57.09
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "15.30%",
+            "count": 609,
+            "share": 18.25
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "22.95%",
+            "count": 265,
+            "share": 7.94
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "30.60%",
+            "count": 240,
+            "share": 7.19
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "38.25%",
+            "count": 243,
+            "share": 7.28
+          },
+          {
+            "label": "만기상환",
+            "ret": "45.90%",
+            "count": 71,
+            "share": 2.13
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 4,
+            "share": 0.12
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 3337,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2010-06-29",
+          "to": "2023-09-29"
+        },
+        "simRuns": 3337,
+        "simFirst": 57.09,
+        "simLoss": 0.12,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 4,
+            "share": 0.12
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ],
+        "targetMarket": {
+          "grades": [
+            1
+          ],
+          "clientType": [
+            "일반투자자",
+            "전문투자자"
+          ],
+          "knowledge": [
+            "중간",
+            "높음"
+          ],
+          "lossTolerance": [
+            "원금대비 100% 손실 감내"
+          ],
+          "appetite": [
+            "위험선호형"
+          ],
+          "horizon": [
+            "1년 이상 ~ 3년 이하"
+          ],
+          "holding": [
+            "중도환매가능",
+            "만기 보유"
+          ],
+          "appetiteDetail": {
+            "name": "위험선호형",
+            "profile": "성장형·성장추구형",
+            "grades": "1,2,3등급"
+          },
+          "basis": "해당상품은 최대원금손실 가능금액이 원금의 100 분의 20 을 초과 하는 상품 으로 자본시장법 시행령 제 2 조 7 에서 정의하는 고난도금융투자상품 에 해당합니다. 고난도금융투자상품 제조 및 판매에 관한 표준 영업행위 준칙 에 따라, 이 상품의 목표시장은 위와 같이 설정하였습니다. 지식과 경험 손실감내능력 위험 추구 성향 및 투자 기간 등의 각 항목과 더불어 이 상품의 설명서 등을 참고하시어 투자에 신중을 기하여 주시기 바랍니다."
+        }
+      },
+      {
+        "title": "미래에셋증권 제38201회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 38201,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "instrument": "파생결합증권",
+        "principalProtected": false,
+        "underlyings": [
+          "테슬라",
+          "팔란티어 테크"
+        ],
+        "issueSize": 10000000000,
+        "offerStart": "2026-10-12",
+        "offerEnd": "2026-10-21",
+        "coolStart": "2026-10-12",
+        "coolEnd": "2026-10-16",
+        "coolingFrom": "2026-10-19",
+        "coolingTo": "2026-10-20",
+        "confirmBy": "2026-10-21",
+        "confirmNote": "2026년 10월 21일 오후 5시까지",
+        "payDate": "2026-10-22",
+        "minAmount": 100000,
+        "minAmountCcy": "KRW",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-10-22",
+        "maturityDate": "2029-10-22",
+        "maturityEvalDate": "2029-10-17",
+        "baseDate": "2026-10-22",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 8276.47,
+        "fairValueDate": "2026-10-06",
+        "fairValueGap": -17.24,
+        "volatility": [
+          {
+            "asset": "테슬라",
+            "vol": 55.4
+          },
+          {
+            "asset": "팔란티어 테크",
+            "vol": 66.33
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "테슬라 · 팔란티어 테크",
+            "rho": 0.2676
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-04-19",
+            "payout": 108.5,
+            "barrier": 75
+          },
+          {
+            "step": 2,
+            "date": "2027-10-19",
+            "payout": 117,
+            "barrier": 75
+          },
+          {
+            "step": 3,
+            "date": "2028-04-18",
+            "payout": 125.5,
+            "barrier": 75
+          },
+          {
+            "step": 4,
+            "date": "2028-10-17",
+            "payout": 134,
+            "barrier": 75
+          },
+          {
+            "step": 5,
+            "date": "2029-04-17",
+            "payout": 142.5,
+            "barrier": 70
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 70,
+        "maturityRate": 51,
+        "maturityPayLabel": "연 17.00%",
+        "maturityPrincipalOnly": false,
+        "knockIn": 35,
+        "knockInBasis": "종가",
+        "annualRate": 17,
+        "docMaxRate": 51,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "8.50%",
+            "count": 424,
+            "share": 56.16
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "17.00%",
+            "count": 109,
+            "share": 14.44
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "25.50%",
+            "count": 64,
+            "share": 8.48
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "34.00%",
+            "count": 15,
+            "share": 1.99
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "42.50%",
+            "count": 45,
+            "share": 5.96
+          },
+          {
+            "label": "만기상환",
+            "ret": "51.00%",
+            "count": 68,
+            "share": 9.01
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 16,
+            "share": 2.12
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 6,
+            "share": 0.79
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 8,
+            "share": 1.06
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 755,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2020-09-30",
+          "to": "2023-09-29"
+        },
+        "simRuns": 755,
+        "simFirst": 56.16,
+        "simLoss": 3.97,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 16,
+            "share": 2.12
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 6,
+            "share": 0.79
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 8,
+            "share": 1.06
+          }
+        ],
+        "targetMarket": {
+          "grades": [
+            1
+          ],
+          "clientType": [
+            "일반투자자",
+            "전문투자자"
+          ],
+          "knowledge": [
+            "중간",
+            "높음"
+          ],
+          "lossTolerance": [
+            "원금대비 100% 손실 감내"
+          ],
+          "appetite": [
+            "위험선호형"
+          ],
+          "horizon": [
+            "1년 이상 ~ 3년 이하"
+          ],
+          "holding": [
+            "중도환매가능",
+            "만기 보유"
+          ],
+          "appetiteDetail": {
+            "name": "위험선호형",
+            "profile": "성장형·성장추구형",
+            "grades": "1,2,3등급"
+          },
+          "basis": "해당상품은 최대원금손실 가능금액이 원금의 100 분의 20 을 초과 하는 상품 으로 자본시장법 시행령 제 2 조 7 에서 정의하는 고난도금융투자상품 에 해당합니다. 고난도금융투자상품 제조 및 판매에 관한 표준 영업행위 준칙 에 따라, 이 상품의 목표시장은 위와 같이 설정하였습니다. 지식과 경험 손실감내능력 위험 추구 성향 및 투자 기간 등의 각 항목과 더불어 이 상품의 설명서 등을 참고하시어 투자에 신중을 기하여 주시기 바랍니다."
+        }
+      },
+      {
+        "title": "미래에셋증권 제38202회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 38202,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "instrument": "파생결합증권",
+        "principalProtected": false,
+        "underlyings": [
+          "마이크론 테크놀로지",
+          "팔란티어 테크"
+        ],
+        "issueSize": 10000000000,
+        "offerStart": "2026-10-12",
+        "offerEnd": "2026-10-21",
+        "coolStart": "2026-10-12",
+        "coolEnd": "2026-10-16",
+        "coolingFrom": "2026-10-19",
+        "coolingTo": "2026-10-20",
+        "confirmBy": "2026-10-21",
+        "confirmNote": "2026년 10월 21일 오후 5시까지",
+        "payDate": "2026-10-22",
+        "minAmount": 100000,
+        "minAmountCcy": "KRW",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-10-22",
+        "maturityDate": "2029-10-22",
+        "maturityEvalDate": "2029-10-12",
+        "baseDate": "2026-10-22",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 6290.48,
+        "fairValueDate": "2026-10-06",
+        "fairValueGap": -37.1,
+        "volatility": [
+          {
+            "asset": "마이크론 테크놀로지",
+            "vol": 93.06
+          },
+          {
+            "asset": "팔란티어 테크",
+            "vol": 66.33
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "마이크론 테크놀로지 · 팔란티어 테크",
+            "rho": 0.0267
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-04-19",
+            "payout": 111.75,
+            "barrier": 85
+          },
+          {
+            "step": 2,
+            "date": "2027-10-19",
+            "payout": 123.5,
+            "barrier": 85
+          },
+          {
+            "step": 3,
+            "date": "2028-04-18",
+            "payout": 135.25,
+            "barrier": 85
+          },
+          {
+            "step": 4,
+            "date": "2028-10-17",
+            "payout": 147,
+            "barrier": 80
+          },
+          {
+            "step": 5,
+            "date": "2029-04-17",
+            "payout": 158.75,
+            "barrier": 75
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 70,
+        "maturityRate": 70.5,
+        "maturityPayLabel": "연 23.50%",
+        "maturityPrincipalOnly": false,
+        "knockIn": 30,
+        "knockInBasis": "종가",
+        "annualRate": 23.5,
+        "docMaxRate": 70.5,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "11.75%",
+            "count": 391,
+            "share": 51.79
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "23.50%",
+            "count": 57,
+            "share": 7.55
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "35.25%",
+            "count": 49,
+            "share": 6.49
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "47.00%",
+            "count": 84,
+            "share": 11.13
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "58.75%",
+            "count": 82,
+            "share": 10.86
+          },
+          {
+            "label": "만기상환",
+            "ret": "70.50%",
+            "count": 71,
+            "share": 9.4
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 5,
+            "share": 0.66
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 9,
+            "share": 1.19
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 7,
+            "share": 0.93
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 755,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2020-09-30",
+          "to": "2023-09-29"
+        },
+        "simRuns": 755,
+        "simFirst": 51.79,
+        "simLoss": 2.78,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 5,
+            "share": 0.66
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 9,
+            "share": 1.19
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 7,
+            "share": 0.93
+          }
+        ],
+        "targetMarket": {
+          "grades": [
+            1
+          ],
+          "clientType": [
+            "일반투자자",
+            "전문투자자"
+          ],
+          "knowledge": [
+            "중간",
+            "높음"
+          ],
+          "lossTolerance": [
+            "원금대비 100% 손실 감내"
+          ],
+          "appetite": [
+            "위험선호형"
+          ],
+          "horizon": [
+            "1년 이상 ~ 3년 이하"
+          ],
+          "holding": [
+            "중도환매가능",
+            "만기 보유"
+          ],
+          "appetiteDetail": {
+            "name": "위험선호형",
+            "profile": "성장형·성장추구형",
+            "grades": "1,2,3등급"
+          },
+          "basis": "해당상품은 최대원금손실 가능금액이 원금의 100 분의 20 을 초과 하는 상품 으로 자본시장법 시행령 제 2 조 7 에서 정의하는 고난도금융투자상품 에 해당합니다. 고난도금융투자상품 제조 및 판매에 관한 표준 영업행위 준칙 에 따라, 이 상품의 목표시장은 위와 같이 설정하였습니다. 지식과 경험 손실감내능력 위험 추구 성향 및 투자 기간 등의 각 항목과 더불어 이 상품의 설명서 등을 참고하시어 투자에 신중을 기하여 주시기 바랍니다."
+        }
+      }
+    ]
+  },
+  "20261008000245": {
+    "rcpNo": "20261008000245",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000245",
+    "range": "4106~4106",
+    "offer": "2026-10-12 ~ 2026-10-21",
+    "count": 1,
+    "items": [
+      {
+        "title": "미래에셋증권 제4106회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
+        "no": 4106,
+        "riskLabel": "낮은위험",
+        "riskGrade": 5,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
+        "underlyings": [
+          "삼성전자",
+          "SK하이닉스"
+        ],
+        "issueSize": 10000000000,
+        "offerStart": "2026-10-12",
+        "offerEnd": "2026-10-21",
+        "coolStart": null,
+        "coolEnd": null,
+        "coolingFrom": null,
+        "coolingTo": null,
+        "confirmBy": null,
+        "confirmNote": null,
+        "payDate": "2026-10-22",
+        "minAmount": 1000000,
+        "minAmountCcy": "KRW",
+        "recordingRight": false,
+        "riskSummaryDoc": false,
+        "maxLossNotice": false,
+        "issueDate": "2026-10-22",
+        "maturityDate": "2029-10-22",
+        "maturityEvalDate": "2029-10-17",
+        "baseDate": "2026-10-22",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9835.32,
+        "fairValueDate": "2026-10-06",
+        "fairValueGap": -1.65,
+        "volatility": [
+          {
+            "asset": "삼성전자",
+            "vol": 47.45
+          },
+          {
+            "asset": "SK하이닉스",
+            "vol": 56.01
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "삼성전자 · SK하이닉스",
+            "rho": 0.8793
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-04-19",
+            "payout": 100,
+            "barrier": 80
+          },
+          {
+            "step": 2,
+            "date": "2027-10-19",
+            "payout": 100,
+            "barrier": 80
+          },
+          {
+            "step": 3,
+            "date": "2028-04-18",
+            "payout": 100,
+            "barrier": 80
+          },
+          {
+            "step": 4,
+            "date": "2028-10-17",
+            "payout": 100,
+            "barrier": 80
+          },
+          {
+            "step": 5,
+            "date": "2029-04-17",
+            "payout": 100,
+            "barrier": 80
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": {
+          "barrier": 75,
+          "rate": 0.6175,
+          "count": 36,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 3영업일"
+        },
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 80,
+        "maturityRate": 0,
+        "maturityPayLabel": "액면금액",
+        "maturityPrincipalOnly": true,
+        "knockIn": null,
+        "knockInBasis": null,
+        "annualRate": 7.41,
+        "docMaxRate": 0.6175,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "~3.705%",
+            "count": 4350,
+            "share": 85.01
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "~7.41%",
+            "count": 373,
+            "share": 7.29
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "~11.115%",
+            "count": 235,
+            "share": 4.59
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "~14.82%",
+            "count": 89,
+            "share": 1.74
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "~18.525%",
+            "count": 11,
+            "share": 0.21
+          },
+          {
+            "label": "만기상환",
+            "ret": "~22.23%",
+            "count": 3,
+            "share": 0.06
+          },
+          {
+            "label": "만기상환",
+            "ret": "0%(원금지급)",
+            "count": 56,
+            "share": 1.09
+          },
+          {
+            "label": "손실",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 5117,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-09-27"
+        },
+        "simRuns": 5117,
+        "simFirst": 85.01,
+        "simLoss": 0,
+        "targetMarket": null
+      }
+    ]
   }
 }
