@@ -6,7 +6,7 @@
  */
 (function (g) {
   g.DOC_PAGES = {
- "updatedAt": "2026-10-12T02:42:11.753Z",
+ "updatedAt": "2026-10-12T02:44:40.002Z",
  "source": "securities.miraeasset.com /public/editor/elsdls/<ISIN>.pdf",
  "docLabel": "간이투자설명서 및 투자설명서 (교부본)",
  "anchors": [
