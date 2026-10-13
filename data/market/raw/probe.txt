@@ -1,4 +1,4 @@
-네이버 API 탐색 2026-10-13 09:42:14 KST
+네이버 API 탐색 2026-10-13 11:36:29 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
@@ -18,29 +18,29 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 16315 bytes · 걸린 낱말 ['riseCount', 'fallCount']
+    쓸모 · 16339 bytes · 걸린 낱말 ['riseCount', 'fallCount']
     남김: data/market/raw/probe_03_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"6,384.24"},{"code":"openPrice","key":"시가","value":"6,186.08","compareToPreviousPrice":{"code":"5",
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/price?pageSize=5&page=1
     빈손 · 1290 bytes · 걸린 낱말 없음
-    응답 앞머리: [{"localTradedAt":"2026-10-13","closePrice":"6,103.96","compareToPreviousClosePrice":"-280.28","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"
+    응답 앞머리: [{"localTradedAt":"2026-10-13","closePrice":"5,941.69","compareToPreviousClosePrice":"-442.55","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"
     남김: data/market/raw/probe_04_internals.txt
-    앞머리: [{"localTradedAt":"2026-10-13","closePrice":"6,103.96","compareToPreviousClosePrice":"-280.28","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-4.39","openPrice":"6,186.08","highPrice":"6,198.46","low
+    앞머리: [{"localTradedAt":"2026-10-13","closePrice":"5,941.69","compareToPreviousClosePrice":"-442.55","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-6.93","openPrice":"6,186.08","highPrice":"6,198.46","low
 
 [sectors] https://m.stock.naver.com/api/stocks/industry
-    쓸모 · 2270 bytes · 걸린 낱말 ['changeRate']
+    쓸모 · 2275 bytes · 걸린 낱말 ['changeRate']
     남김: data/market/raw/probe_05_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":332,"name":"문구류","totalCount":1,"changeRate":"4.63","riseCount":1,"fallCount":0,"steadyCount":0},{"no":285,"name":"방송과엔터테인먼트","totalCount":57,"changeRate":"0.80","riseCount":17,"fallCount":32,
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":285,"name":"방송과엔터테인먼트","totalCount":57,"changeRate":"0.23","riseCount":9,"fallCount":40,"steadyCount":8},{"no":293,"name":"컴퓨터와주변기기","totalCount":21,"changeRate":"-0.13","riseCount":3,"fallCou
 
 [sectors] https://api.stock.naver.com/industry
     실패 · 36 bytes · 걸린 낱말 없음
     응답 앞머리: HTTPError: HTTP Error 404: Not Found
 
 [sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
-    쓸모 · 8678 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 8676 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_07_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":332,"name":"문구류","totalCount":1,"changeRate":"4.63","riseCount":1,"fallCount":0,"steadyCount":0},{"no":285,"name":"방송과엔터테인먼트","totalCount":57,"changeRate":"0.80","riseCount":17,"fallCount":32,
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":285,"name":"방송과엔터테인먼트","totalCount":57,"changeRate":"0.25","riseCount":9,"fallCount":40,"steadyCount":8},{"no":323,"name":"해운사","totalCount":11,"changeRate":"-0.16","riseCount":1,"fallCount":9
 
 [money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
     실패 · 30 bytes · 걸린 낱말 없음
