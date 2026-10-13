@@ -14,7 +14,7 @@
  * 표·도형·차트는 전부 네이티브라 파워포인트에서 그대로 고칠 수 있다.
  */
 import pptxgen from 'pptxgenjs';
-import { analyze, kindOf, tierOf, KINDS, TIER_RULE, money, baseOf, unitOf, josa, perRiskVsIdx } from './lib/els-analysis.mjs';
+import { analyze, kindOf, tierOf, idxWorstOver, rankLow, KINDS, TIER_RULE, money, baseOf, unitOf, josa, perRiskVsIdx } from './lib/els-analysis.mjs';
 
 const A = await analyze(process.argv[2]);
 const OUT = 'els-analysis-deck.pptx';   // 문서판 els-analysis.pdf 와 겹치지 않게
@@ -311,7 +311,7 @@ if (A.plan.hasCooling) {
 
   const pts = [
     `평균으로 보면 맞는 말입니다. 개별 종목만 담은 상품이 지수만 담은 것의 ${f1(A.kindRatio)}배이고, 가격 출렁임도 ${f1(A.byKind.find((r) => r.key === '지수')?.vol, 0)}% 대 ${f1(A.byKind.find((r) => r.key === '종목')?.vol, 0)}%로 갈립니다.`,
-    `그런데 상품 하나하나로 내려가면 뒤집힙니다. 지수만 담은 제${A.idxWorst.no}회가 ${f1(A.idxWorst.mcLoss)}%로 종목 섞인 상품 대부분보다 위험하고, 제${A.stockBest.no}회는 ${f1(A.stockBest.mcLoss)}%로 ${A.items.length}종 중 ${A.safest.findIndex((i) => i.no === A.stockBest.no) + 1}번째로 낮습니다.`,
+    `그런데 상품 하나하나로 내려가면 뒤집힙니다. ${idxWorstOver(A.items, A.idxWorst) ? `지수만 담은 제${A.idxWorst.no}회가 ${f1(A.idxWorst.mcLoss)}%로 ${idxWorstOver(A.items, A.idxWorst)} 위험하고, ` : ''}제${A.stockBest.no}회는 ${f1(A.stockBest.mcLoss)}%로 ${rankLow(A.safest.findIndex((i) => i.no === A.stockBest.no) + 1, A.items.length)}.`,
     `실제로 갈라놓은 건 자산 종류가 아니라 "원금 지키는 선이 얼마나 아래인가"와 "두 자산이 얼마나 같이 움직이는가"였습니다. 제${A.idxWorst.no}회는 선이 ${A.idxWorst.floor}%${A.idxWorst.knockIn == null ? '(낙인이 없어 만기에 지켜야 하는 선)' : '(이번 주에서 높은 축이라 여유가 적음)'}${rhoPhrase(A.idxWorst)}, 제${A.stockBest.no}회는 선이 ${A.stockBest.floor}%${rhoPhrase(A.stockBest)}입니다.`,
   ];
   s.addText(pts.map((t, i) => ({ text: t, options: { bullet: true, breakLine: i < pts.length - 1 } })), {

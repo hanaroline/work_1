@@ -91,6 +91,24 @@ export const kindOf = (it) => it.underlyings.every((u) => IDX.has(u)) ? '지수'
   : it.underlyings.some((u) => IDX.has(u)) ? '혼합' : '종목';
 export const tierOf = (it) => TIERS[it.tier];
 
+/**
+ * "지수만 담은 가장 위험한 상품이 종목 섞인 상품 ___보다 위험하다" 의 빈칸.
+ * 예전에는 "대부분보다" 를 붙박이로 적었는데, 2026-10-13 제38193회(18.6%)는
+ * 종목 섞인 8종 중 3종보다만 위험했다 — 반을 넘을 때만 "대부분" 이라 쓰고,
+ * 아니면 실제로 더 안전한 회차를 이름으로 댄다. 하나도 없으면 null.
+ */
+export const idxWorstOver = (items, idxWorst) => {
+  if (!idxWorst) return null;
+  const mixed = items.filter((i) => i.mcLoss != null && kindOf(i) !== '지수');
+  const safer = mixed.filter((i) => i.mcLoss < idxWorst.mcLoss).sort((a, b) => a.mcLoss - b.mcLoss);
+  if (!safer.length) return null;
+  return safer.length * 2 > mixed.length ? '종목 섞인 상품 대부분보다'
+    : `종목 섞인 제${safer.map((i) => i.no).join('·')}회보다`;
+};
+
+/** 순위 표현 — 1위를 "1번째로 낮습니다" 라 적지 않는다 */
+export const rankLow = (rank, n) => rank === 1 ? `${n}종 중 가장 낮습니다` : `${n}종 중 ${rank}번째로 낮습니다`;
+
 const monthsBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000 / 30.44);
 
 /**

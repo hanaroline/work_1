@@ -20,7 +20,7 @@
  */
 import { writeFile } from 'node:fs/promises';
 import {
-  analyze, kindOf, tierOf, KINDS, TIER_RULE, IDX, MC, money, baseOf, unitOf, josa, perRiskVsIdx,
+  analyze, kindOf, tierOf, idxWorstOver, rankLow, KINDS, TIER_RULE, IDX, MC, money, baseOf, unitOf, josa, perRiskVsIdx,
 } from './lib/els-analysis.mjs';
 
 const OUT = 'els-analysis.html';
@@ -804,7 +804,7 @@ ${byKind.map((r) => `        <tr><td><b>${r.key}형</b></td><td class="num">${r.
   </div>
   <ul class="keys">
     <li><b>평균으로 보면 맞는 말입니다.</b> 개별 종목만 담은 상품이 손해 볼 가능성이 지수만 담은 것의 <b>${f1(kindRatio, 1)}배</b>입니다. 가격 출렁임도 ${f1(byKind.find((r) => r.key === '지수')?.vol, 0)}% 대 ${f1(byKind.find((r) => r.key === '종목')?.vol, 0)}%로 확연히 갈립니다. 자산 종류부터 보는 관행에는 근거가 있습니다.</li>
-    <li><b>그런데 상품 하나하나로 내려가면 뒤집힙니다.</b> 지수만 담은 제${idxWorst.no}회(${esc(idxWorst.underlyings.join('·'))})가 ${f1(idxWorst.mcLoss, 1)}%로, 종목이 섞인 상품 대부분보다 오히려 위험합니다. 반대로 제${stockBest.no}회(${esc(stockBest.underlyings.join('·'))})는 ${f1(stockBest.mcLoss, 1)}%로 ${items.length}종 중 ${safest.findIndex((i) => i.no === stockBest.no) + 1}번째로 낮습니다.</li>
+    <li><b>그런데 상품 하나하나로 내려가면 뒤집힙니다.</b> ${idxWorstOver(items, idxWorst) ? `지수만 담은 제${idxWorst.no}회(${esc(idxWorst.underlyings.join('·'))})가 ${f1(idxWorst.mcLoss, 1)}%로, ${idxWorstOver(items, idxWorst)} 오히려 위험합니다. 반대로 ` : ''}제${stockBest.no}회(${esc(stockBest.underlyings.join('·'))})는 ${f1(stockBest.mcLoss, 1)}%로 ${rankLow(safest.findIndex((i) => i.no === stockBest.no) + 1, items.length)}.</li>
     <li><b>실제로 갈라놓은 건 자산 종류가 아니라 두 가지였습니다.</b> 첫째, <b>원금 지키는 선이 얼마나 아래에 있는가</b> — 제${idxWorst.no}회는 ${idxWorst.knockIn == null ? '낙인이 없는 대신 만기에 지켜야 하는 선이' : '그 선이'} ${idxWorst.floor}%로 이번 주에서 높은 축이라, 조금만 빠져도 닿습니다. 둘째, <b>두 자산이 얼마나 같이 움직이는가</b> — 따로 노는 자산끼리 묶으면 "둘 중 더 나쁜 쪽"으로 판정하는 구조에서 훨씬 불리해집니다.${idxWorst.rho != null && stockBest.rho != null ? ` 이 값이 제${idxWorst.no}회는 ${f1(idxWorst.rho, 2)}, 제${stockBest.no}회는 ${f1(stockBest.rho, 2)}입니다(1이면 완전히 같이 움직임).` : ''}</li>
     <li><b>그래서 이 문서는 자산 종류로 거르지 않고, B의 손해 볼 가능성만 보고 등급을 매겼습니다.</b> 대신 개별 종목이 섞인 상품을 권할 때는 <b>왜 관행을 거스르는지</b>를 카드마다 적어 두었습니다. 고객이 "종목이 들어갔는데 안전하다고요?" 하시면 그 문장을 그대로 읽으시면 됩니다.</li>
   </ul>
