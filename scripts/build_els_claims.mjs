@@ -699,6 +699,25 @@ if (STALE.length) {
       a: `R${n}_SIMLOSS`, b: R.simRuns / 100, printed: runs, tolerance: 0.5,
     });
   }
+  // 분석자료 추천 카드의 이익·손실 띠 아래에 손실 구간별 횟수를 "0~-10% 32번 ·
+  // -10% ~ -20% 42번" 으로 적는다. 공시 표에 그대로 실린 값이다. 이전 판까지는
+  // 대장에 없었고 다른 항목과 우연히 겹쳐 통과하다가, 제38190회 판에서 42 가
+  // 미등록으로 걸려 자동 빌드가 멈췄다(2026-10-12). 합이 손실 횟수와 맞는지도 본다.
+  for (const s of A.slots) {
+    const R = s.pick, n = R.no;
+    const bk = (R.lossBuckets || []).filter((b) => b.count > 0);
+    if (!bk.length || claims.some((c) => c.id === `R${n}_LOSSB1`)) continue;
+    bk.forEach((b, k) => disclosed(`R${n}_LOSSB${k + 1}`, '백테스트 손실 구간 횟수',
+      `제${n}회 발행사 모의실험 손실 구간 「${b.label}」 횟수 (A)`, b.count, '회', ['h-card'],
+      { series: '발행사 수익률 모의실험 (공시 원문)' }));
+    if (claims.some((c) => c.id === `R${n}_SIMLOSSRUNS`)) {
+      derived.push({
+        id: `D${n}_LOSSBSUM`, kind: 'sum',
+        terms: bk.map((_, k) => `R${n}_LOSSB${k + 1}`),
+        printed: claims.find((c) => c.id === `R${n}_SIMLOSSRUNS`).value, tolerance: 1,
+      });
+    }
+  }
   // 추천 카드는 "1만원 → 빠르면 6개월 뒤 10,800원" 으로 첫 상환금액을 적는다
   for (const s of A.slots) {
     const R = s.pick, n = R.no;
@@ -734,7 +753,7 @@ const ledger = {
     '온라인 전용 확인': '종',
     '낙인까지 하락폭': '%', '만기 손실 하락폭': '%', '액면가액': '원', '공정가 괴리': '%',
     '손실 시 평균 손실 크기': '%',
-    '모의실험 횟수': '회', '백테스트 손실 횟수': '회', '1차 상환 비중': '%', '등급 경계': '%',
+    '모의실험 횟수': '회', '백테스트 손실 횟수': '회', '백테스트 손실 구간 횟수': '회', '1차 상환 비중': '%', '등급 경계': '%',
     '공정가격(원)': '원', '공정가격(달러)': '달러', '기초자산 시세': '종',
     // 3장(구조)·5장(수익률-위험 분석)에서 새로 인쇄하는 지표
     '차수 배리어': '%', '상환금액 비율': '%', '상환금액(원)': '원', '상환금액(달러)': '달러',
