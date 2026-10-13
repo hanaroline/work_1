@@ -651,7 +651,11 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
     { text: `이번 회차에서 같은 위험을 지고 가장 많이 받는 쪽은 제${prBest.no}회(연 ${f1(prBest.annualRate, 1)}% · 손실 확률 ${f1(prBest.mcLoss)}%)이고, 가장 적게 받는 쪽은 제${prWorst.no}회(연 ${f1(prWorst.annualRate, 1)}% · ${f1(prWorst.mcLoss)}%)입니다. 수익률 순서로 고르면 이 차이가 보이지 않습니다.`,
       options: { color: 'D9E3EE' } },
     ...(sens && sLo && sBase
-      ? [{ text: `  ※ 제${sens.no}회로 상관계수를 공시값 ${f1(sens.disclosed, 2)}에서 ${f1(sLo.rho, 1)}까지 낮춰 봐도 손실 확률은 ${f1(sBase.loss)}%→${f1(sLo.loss)}%에 머뭅니다 — 결론이 상관계수 한 값에 얹혀 있지 않습니다.`,
+      // 실제로 1등을 지키는지는 lib 가 정한다(stillFirst). 2026-10-13 제38194회는
+      // 0.80 에서 이미 제38195회에 내줬는데 "결론이 한 값에 얹혀 있지 않다" 고 적었다.
+      ? [{ text: sens.stillFirst
+          ? `  ※ 제${sens.no}회로 상관계수를 공시값 ${f1(sens.disclosed, 2)}에서 ${f1(sLo.rho, 1)}까지 낮춰 봐도 손실 확률은 ${f1(sBase.loss)}%→${f1(sLo.loss)}%에 머물고 1등은 그대로입니다 — 결론이 상관계수 한 값에 얹혀 있지 않습니다.`
+          : `  ※ 단, 제${sens.no}회${sens.isOverallBest ? '' : '(값어치 멀쩡한 상품 중 1등)'}의 우위는 공시 상관계수 ${f1(sens.disclosed, 2)}에 기대고 있습니다 — ${f1(sens.flipAt.rho, 2)}로만 낮춰도 위험 1%당 수익률이 ${f1(sens.flipAt.ratio, 2)}%로 제${sens.runnerUp.no}회(${f1(sens.runnerUpRatio, 2)}%)보다 낮아집니다.`,
           options: { color: '9FB6CE' } }]
       : []),
   ], { x: M + 0.2, y: yN, w: CW - 0.4, h: 0.98, fontFace: F, fontSize: 9, valign: 'middle', margin: 0, lineSpacing: 12.5 });
@@ -739,7 +743,7 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
   s.addShape(pres.ShapeType.rect, { x: M, y: yN, w: CW, h: 0.62, fill: { color: BLUE }, line: { width: 0 } });
   s.addText([
     { text: '상담에서 이렇게 말씀하세요  ', options: { bold: true, color: WHITE } },
-    { text: `“수익률만 보면 이게 높아 보이는데, 발행사가 공시한 이 상품의 값어치가 1만원이 아니라 ${fv(CAU[0])}입니다. 주의 상품을 빼고 가장 높은 제${topRest.no}회는 연 ${f1(topRest.annualRate, 1)}%에 손실 확률이 ${f1(topRest.mcLoss)}%입니다 — ${rateVs(topRest, CAU[0])} 위험은 ${f1(CAU[0].mcLoss / topRest.mcLoss, 1)}배 차이입니다.”`, options: { color: 'D9E3EE' } },
+    { text: `“수익률만 보면 이게 높아 보이는데, 발행사가 공시한 이 상품의 값어치가 1만원이 아니라 ${fv(CAU[0])}입니다. 권하지 않는 상품을 빼고 가장 높은 제${topRest.no}회는 연 ${f1(topRest.annualRate, 1)}%에 손실 확률이 ${f1(topRest.mcLoss)}%입니다 — ${rateVs(topRest, CAU[0])} 위험은 ${f1(CAU[0].mcLoss / topRest.mcLoss, 1)}배 차이입니다.”`, options: { color: 'D9E3EE' } },
   ], { x: M + 0.2, y: yN, w: CW - 0.4, h: 0.62, fontFace: F, fontSize: 10, valign: 'middle', margin: 0, lineSpacing: 14 });
 }
 
@@ -781,7 +785,7 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
      */
     ['“그냥 수익률 제일 높은 걸로 주세요.”',
       CAU.includes(topRate)
-        ? `그게 이번엔 안 맞습니다. 제일 높은 건 연 ${f1(topRate.annualRate, 1)}%인 제${topRate.no}회인데 손실 확률이 ${f1(topRate.mcLoss)}%입니다. 주의 상품을 빼고 가장 높은 제${topRest.no}회는 연 ${f1(topRest.annualRate, 1)}%에 손실 확률이 ${f1(topRest.mcLoss)}%뿐입니다 — ${rateVs(topRest, topRate)} 위험만 ${f1(topRate.mcLoss / topRest.mcLoss, 1)}배 지시는 셈입니다. 수익률과 위험은 비례하지 않습니다.`
+        ? `그게 이번엔 안 맞습니다. 제일 높은 건 연 ${f1(topRate.annualRate, 1)}%인 제${topRate.no}회인데 손실 확률이 ${f1(topRate.mcLoss)}%입니다. 권하지 않는 상품을 빼고 가장 높은 제${topRest.no}회는 연 ${f1(topRest.annualRate, 1)}%에 손실 확률이 ${f1(topRest.mcLoss)}%뿐입니다 — ${rateVs(topRest, topRate)} 위험만 ${f1(topRate.mcLoss / topRest.mcLoss, 1)}배 지시는 셈입니다. 수익률과 위험은 비례하지 않습니다.`
         : `이번엔 그 말씀이 맞습니다. 제일 높은 건 연 ${f1(topRate.annualRate, 1)}%인 제${topRate.no}회인데, 손실 확률이 ${f1(topRate.mcLoss)}%로 권해 드릴 수 있는 축입니다. 다만 수익률 순서를 그대로 따라가시면 안 됩니다 — 연 ${f1(CAU[0].annualRate, 1)}%인 제${CAU[0].no}회는 손실 확률이 ${f1(CAU[0].mcLoss)}%로, ${f1(topRate.annualRate, 1)}%짜리보다 ${f1(topRate.annualRate - CAU[0].annualRate, 1)}%p 덜 주면서 위험은 ${f1(CAU[0].mcLoss / topRate.mcLoss, 1)}배입니다. 수익률과 위험은 비례하지 않습니다.`],
   ];
 
