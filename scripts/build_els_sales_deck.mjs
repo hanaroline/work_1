@@ -739,7 +739,7 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
   s.addShape(pres.ShapeType.rect, { x: M, y: yN, w: CW, h: 0.62, fill: { color: BLUE }, line: { width: 0 } });
   s.addText([
     { text: '상담에서 이렇게 말씀하세요  ', options: { bold: true, color: WHITE } },
-    { text: `“수익률만 보면 이게 높아 보이는데, 발행사가 공시한 이 상품의 값어치가 1만원이 아니라 ${fv(CAU[0])}입니다. 권해 드릴 수 있는 것 중 가장 높은 제${topRest.no}회는 연 ${f1(topRest.annualRate, 1)}%에 손실 확률이 ${f1(topRest.mcLoss)}%입니다 — ${rateVs(topRest, CAU[0])} 위험은 ${f1(CAU[0].mcLoss / topRest.mcLoss, 1)}배 차이입니다.”`, options: { color: 'D9E3EE' } },
+    { text: `“수익률만 보면 이게 높아 보이는데, 발행사가 공시한 이 상품의 값어치가 1만원이 아니라 ${fv(CAU[0])}입니다. 주의 상품을 빼고 가장 높은 제${topRest.no}회는 연 ${f1(topRest.annualRate, 1)}%에 손실 확률이 ${f1(topRest.mcLoss)}%입니다 — ${rateVs(topRest, CAU[0])} 위험은 ${f1(CAU[0].mcLoss / topRest.mcLoss, 1)}배 차이입니다.”`, options: { color: 'D9E3EE' } },
   ], { x: M + 0.2, y: yN, w: CW - 0.4, h: 0.62, fontFace: F, fontSize: 10, valign: 'middle', margin: 0, lineSpacing: 14 });
 }
 
@@ -781,7 +781,7 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
      */
     ['“그냥 수익률 제일 높은 걸로 주세요.”',
       CAU.includes(topRate)
-        ? `그게 이번엔 안 맞습니다. 제일 높은 건 연 ${f1(topRate.annualRate, 1)}%인 제${topRate.no}회인데 손실 확률이 ${f1(topRate.mcLoss)}%입니다. 권해 드릴 수 있는 것 중 가장 높은 제${topRest.no}회는 연 ${f1(topRest.annualRate, 1)}%에 손실 확률이 ${f1(topRest.mcLoss)}%뿐입니다 — ${rateVs(topRest, topRate)} 위험만 ${f1(topRate.mcLoss / topRest.mcLoss, 1)}배 지시는 셈입니다. 수익률과 위험은 비례하지 않습니다.`
+        ? `그게 이번엔 안 맞습니다. 제일 높은 건 연 ${f1(topRate.annualRate, 1)}%인 제${topRate.no}회인데 손실 확률이 ${f1(topRate.mcLoss)}%입니다. 주의 상품을 빼고 가장 높은 제${topRest.no}회는 연 ${f1(topRest.annualRate, 1)}%에 손실 확률이 ${f1(topRest.mcLoss)}%뿐입니다 — ${rateVs(topRest, topRate)} 위험만 ${f1(topRate.mcLoss / topRest.mcLoss, 1)}배 지시는 셈입니다. 수익률과 위험은 비례하지 않습니다.`
         : `이번엔 그 말씀이 맞습니다. 제일 높은 건 연 ${f1(topRate.annualRate, 1)}%인 제${topRate.no}회인데, 손실 확률이 ${f1(topRate.mcLoss)}%로 권해 드릴 수 있는 축입니다. 다만 수익률 순서를 그대로 따라가시면 안 됩니다 — 연 ${f1(CAU[0].annualRate, 1)}%인 제${CAU[0].no}회는 손실 확률이 ${f1(CAU[0].mcLoss)}%로, ${f1(topRate.annualRate, 1)}%짜리보다 ${f1(topRate.annualRate - CAU[0].annualRate, 1)}%p 덜 주면서 위험은 ${f1(CAU[0].mcLoss / topRate.mcLoss, 1)}배입니다. 수익률과 위험은 비례하지 않습니다.`],
   ];
 

@@ -107,6 +107,17 @@ export const idxWorstOver = (items, idxWorst) => {
 };
 
 /** 순위 표현 — 1위를 "1번째로 낮습니다" 라 적지 않는다 */
+/**
+ * 회귀 기울기를 말로 옮긴다. 회귀는 값어치 멀쩡한 상품만으로 잰다.
+ * 2026-10-13 에는 기울기가 -0.19 였는데 "+-0.19%p — 방향은 맞지만" 이 인쇄됐다.
+ * 음수면 방향부터 틀린 것이므로 그렇게 적는다.
+ */
+export const regSlopeText = (reg, nFair) => {
+  const v = Math.abs(reg.slope).toFixed(2);
+  return reg.slope > 0
+    ? `값어치 멀쩡한 ${nFair}종에서 수익률을 1%p 더 받을 때 손실 확률은 평균 ${v}%p 오르지만, 상품마다 그 몇 배씩 들쭉날쭉합니다`
+    : `값어치 멀쩡한 ${nFair}종만 보면 수익률을 1%p 더 받는 상품의 손실 확률이 평균 ${v}%p 오히려 낮게 나옵니다 — 수익률로는 위험을 가늠할 수 없습니다`;
+};
 export const rankLow = (rank, n) => rank === 1 ? `${n}종 중 가장 낮습니다` : `${n}종 중 ${rank}번째로 낮습니다`;
 
 const monthsBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000 / 30.44);
@@ -409,7 +420,7 @@ export async function analyze(rcpNo) {
       pick: takeMax(items.filter((i) => krw(i) && sane(i) && i.mcLoss != null),
         (i) => -i.mcLoss * 1000 + i.annualRate) },
     { label: '수익과 안정을 반반 보는 분',
-      why: '지는 위험 1%당 받는 수익률이 이번 회차에서 가장 큽니다 — 같은 위험이면 여기가 제일 많이 줍니다.',
+      why: null,   // 아래에서 실제 순위를 보고 정한다
       pick: takeMax(items.filter((i) => krw(i) && sane(i) && i.tier < 2 && i.mcLoss),
         (i) => i.annualRate / i.mcLoss) },
     { label: '수익률을 먼저 보는 분',
@@ -426,17 +437,35 @@ export async function analyze(rcpNo) {
    * 제38161회를 "가장 높은 수익률" 이라 적었고, 실제 1위는 23.0%인 제38165회로
    * 바로 위 자리에 있었다.
    */
+  /**
+   * 반반 자리도 같다. 이 자리는 방어 자리가 가져간 상품을 빼고 고르므로, 위험 1%당
+   * 수익률 1등이 방어 자리에 먼저 올라가면 "이번 회차에서 가장 큽니다" 가 거짓이 된다
+   * — 2026-10-13 제38195회(1.04%)를 그렇게 적었는데, 1등은 1번 자리 제38194회(1.06%)였다.
+   */
+  const midSlot = slots.find((s) => s.label === '수익과 안정을 반반 보는 분');
+  if (midSlot) {
+    const p = midSlot.pick;
+    const ratio = (i) => i.annualRate / i.mcLoss;
+    const better = items.filter((i) => i.mcLoss && ratio(i) > ratio(p) + 1e-9);
+    const betterPicked = better.every((i) => slots.some((s) => s !== midSlot && s.pick.no === i.no));
+    midSlot.why = !better.length
+      ? '지는 위험 1%당 받는 수익률이 이번 회차에서 가장 큽니다 — 같은 위험이면 여기가 제일 많이 줍니다.'
+      : betterPicked
+        ? `지는 위험 1%당 받는 수익률이 앞 자리에 오른 제${better.map((i) => i.no).join('·')}회 다음으로 큽니다 — 같은 위험이면 그만큼 많이 줍니다.`
+        : '지는 위험 1%당 받는 수익률이 권할 수 있는 상품 중에서 가장 큽니다 — 같은 위험이면 그만큼 많이 줍니다.';
+  }
+
   const rateSlot = slots.find((s) => s.label === '수익률을 먼저 보는 분');
   if (rateSlot) {
     const p = rateSlot.pick;
     const maxAll = Math.max(...items.map((i) => i.annualRate));
     const higherPicked = slots
       .filter((s) => s !== rateSlot && s.pick.annualRate > p.annualRate)
-      .sort((a, b) => b.pick.annualRate - a.pick.annualRate)[0];
+      .sort((a, b) => b.pick.annualRate - a.pick.annualRate);
     rateSlot.why = p.annualRate >= maxAll - 0.001
       ? '이번 회차에서 가장 높은 수익률입니다. 넣는 순간의 값어치가 크게 깎이지 않은 상품 중에서 골랐습니다.'
-      : higherPicked
-        ? `넣는 순간의 값어치가 크게 깎이지 않은 상품 중에서 골랐습니다. 이보다 높은 제${higherPicked.pick.no}회(연 ${higherPicked.pick.annualRate}%)는 바로 위 자리에 이미 올라 있어, 그다음으로 높은 수익률입니다.`
+      : higherPicked.length
+        ? `넣는 순간의 값어치가 크게 깎이지 않은 상품 중에서 골랐습니다. 이보다 높은 ${higherPicked.map((s) => `제${s.pick.no}회(연 ${s.pick.annualRate}%)`).join('·')}는 앞 자리에 이미 올라 있어, 그다음으로 높은 수익률입니다.`
         : '넣는 순간의 값어치가 크게 깎이지 않은 상품 중에서 가장 높은 수익률입니다. 더 높은 회차는 값어치가 깎였거나 손실 확률이 높아 권하지 않습니다.';
   }
 
@@ -459,6 +488,20 @@ export async function analyze(rcpNo) {
   coupon.sensSlot = coupon.sens == null ? 0
     : slots.findIndex((s) => s.pick.no === coupon.sens.no) + 1;
   coupon.sensIsPick = coupon.sensSlot > 0;
+  /**
+   * 민감도 표 밑 문장의 전제도 실제 순위로 정한다. 2026-10-13 제38194회는 상관을
+   * 0.50 까지 낮추면 0.81% 로 떨어져 제38195회(1.04%)에 1등을 내주는데
+   * "여전히 이번 회차 1등" 이라 적었다. 비교는 인쇄되는 소수 둘째 자리로 한다.
+   */
+  if (coupon.sens) {
+    const E = coupon.eff, me = E.fairBest;
+    const runnerUp = E.order.find((i) => i.no !== me.no);
+    const last = coupon.sens.rows[coupon.sens.rows.length - 1];
+    coupon.sens.isOverallBest = E.best.no === me.no;
+    coupon.sens.runnerUp = runnerUp;
+    coupon.sens.stillFirst = coupon.sens.isOverallBest
+      && (!runnerUp || +last.ratio.toFixed(2) > +E.ratio(runnerUp).toFixed(2));
+  }
 
   await saveCache();
 

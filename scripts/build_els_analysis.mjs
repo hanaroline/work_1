@@ -20,7 +20,7 @@
  */
 import { writeFile } from 'node:fs/promises';
 import {
-  analyze, kindOf, tierOf, idxWorstOver, rankLow, KINDS, TIER_RULE, IDX, MC, money, baseOf, unitOf, josa, perRiskVsIdx,
+  analyze, kindOf, tierOf, idxWorstOver, rankLow, regSlopeText, KINDS, TIER_RULE, IDX, MC, money, baseOf, unitOf, josa, perRiskVsIdx,
 } from './lib/els-analysis.mjs';
 
 const OUT = 'els-analysis.html';
@@ -351,7 +351,7 @@ if (T && CW.group.length >= 2) {
     : '기초자산과 기간이 같아도 상환 조건이 조금씩 달라 값이 갈립니다.';
   whyItems.push(`<b>상품 조건이 달라서.</b> ${esc(CW.group[0].underlyings.join('·'))}를 기초자산으로 삼는 ${CW.group.length}종은 <b>기초자산도, 적용 변동성(${f1(CW.group[0].vmax, 1)}%)도, 기간(${CW.group[0].months}개월)도 똑같은데</b> 수익률만 ${f1(Math.min(...rates), 1)}~${f1(Math.max(...rates), 1)}%로 갈립니다. 제${T.hi.no}회는 손실 확률 ${f1(T.hi.mcLoss, 1)}%에 수익률 ${f1(T.hi.annualRate, 1)}%, 제${T.lo.no}회는 손실 확률 ${f1(T.lo.mcLoss, 1)}%에 수익률 ${f1(T.lo.annualRate, 1)}% — ${gapText} ${why}`);
 }
-whyItems.push(`<b>값어치가 깎여서.</b> 제${CW.priced.no}회는 수익률 ${f1(CW.priced.annualRate, 1)}%인데 손실 확률이 <b>${f1(CW.priced.mcLoss, 1)}%</b>나 됩니다 — 손실 확률 1%마다 겨우 ${eff1(CW.priced)}%를 받는 셈으로 이번 회차 꼴찌입니다. 1만원을 넣는 순간의 값어치가 제값보다 ${f1(Math.abs(CW.priced.fairValueGap), 1)}%나 깎여 있어, 높은 수익률이 <b>위험을 진 대가가 아니라 비용으로 새어나간</b> 경우입니다. 이렇게 값어치가 많이 깎인 ${coupon.n - coupon.nFair}종만 빼도 수익률과 변동성의 관계가 ${f1(CR.vol.all.r, 2)}에서 <b>${f1(CR.vol.fair.r, 2)}</b>로 올라갑니다. 바꿔 말하면 <b>"높은 수익률 = 높은 위험"은 제값 받는 상품에서만 통합니다.</b>`);
+whyItems.push(`<b>값어치가 깎여서.</b> 제${CW.priced.no}회는 수익률 ${f1(CW.priced.annualRate, 1)}%인데 손실 확률이 <b>${f1(CW.priced.mcLoss, 1)}%</b>나 됩니다 — 손실 확률 1%마다 겨우 ${eff1(CW.priced)}%를 받는 셈${CW.priced.no === CE.worst.no ? '으로 이번 회차 꼴찌' : ''}입니다. 1만원을 넣는 순간의 값어치가 제값보다 ${f1(Math.abs(CW.priced.fairValueGap), 1)}%나 깎여 있어, 높은 수익률이 <b>위험을 진 대가가 아니라 비용으로 새어나간</b> 경우입니다. 이렇게 값어치가 많이 깎인 ${coupon.n - coupon.nFair}종만 빼도 수익률과 변동성의 관계가 ${f1(CR.vol.all.r, 2)}에서 <b>${f1(CR.vol.fair.r, 2)}</b>로 올라갑니다. 바꿔 말하면 <b>"높은 수익률 = 높은 위험"은 제값 받는 상품에서만 통합니다.</b>`);
 if (CW.fx) {
   whyItems.push(`<b>돈의 종류가 달라서.</b> 제${CW.fx.fx.no}회(${CW.fx.fx.currency})는 수익률 ${f1(CW.fx.fx.annualRate, 1)}%에 손실 확률이 ${f1(CW.fx.fx.mcLoss, 1)}%로, 기초자산이 똑같은 원화 제${CW.fx.krw.no}회(${f1(CW.fx.krw.annualRate, 1)}%, ${f1(CW.fx.krw.mcLoss, 1)}%)보다 <b>더 주면서 덜 위험해 보입니다.</b> ${CW.fx.fx.currency} 이자가 수익률에 섞여 든 것이고, 대신 <b>이 손실 확률에 잡히지 않는 환율 위험</b>이 붙기 때문입니다.`);
 }
@@ -832,8 +832,8 @@ ${rhoRow('참고 · 손실 확률 × 잃을 때의 크기', 'expLoss')}
   <p class="tnote">숫자가 <b>1에 가까울수록</b> "수익률 높은 상품이 손실 확률도 높다"가 잘 들어맞고, 0이면 아무 관계가 없다는 뜻입니다(순서를 견주는 방식으로 쟀습니다). <b>값어치 멀쩡한 ${coupon.nFair}종</b> = 넣는 순간의 값어치가 제값보다 5% 넘게 깎이지는 않은 상품 — 나머지 ${coupon.n - coupon.nFair}종은 아래 ②.</p>
 
   <ul class="keys">
-    <li><b>둘씩 짝지어 세어 보면 이렇습니다.</b> ${coupon.n}종으로 만들 수 있는 ${CP.all.n}짝 중 <b>${CP.all.ok}짝(${f1(CP.all.pct, 0)}%)</b>에서 "수익률 높은 쪽이 손실 확률도 높다"가 맞았습니다. 값어치 멀쩡한 ${coupon.nFair}종만 보면 ${CP.fair.n}짝 중 <b>${CP.fair.ok}짝(${f1(CP.fair.pct, 0)}%)</b>이고, 뒤집힌 ${CP.all.bad}짝이 곧 아래에서 볼 자리입니다.</li>
-    <li><b>그런데 정비례는 아닙니다.</b> 수익률만 알아서는 손실 확률을 <b>${f1(CG.r2 * 100, 0)}%밖에</b> 맞히지 못합니다. 수익률을 1%p 더 받을 때 손실 확률은 평균 ${f1(CG.slope, 2)}%p 오르지만, 상품마다 그 몇 배씩 들쭉날쭉합니다. 실무에서 제일 쓸모 있는 숫자는 이것입니다 — <b>손실 확률 1%마다 받는 연 수익률이 ${eff1(CE.worst)}%(제${CE.worst.no}회)에서 ${eff1(CE.best)}%(제${CE.best.no}회)까지 ${f1(CE.spread, 1)}배</b> 차이 납니다. 값어치가 멀쩡한 ${coupon.nFair}종만 추려도 ${f1(CE.fairSpread, 1)}배입니다. 정확히 비례한다면 이 값은 전부 같아야 합니다.</li>
+    <li><b>둘씩 짝지어 세어 보면 이렇습니다.</b> ${coupon.n}종으로 만들 수 있는 ${CP.all.n}짝 중 <b>${CP.all.ok}짝(${f1(CP.all.pct, 0)}%)</b>에서 "수익률 높은 쪽이 손실 확률도 높다"가 맞았습니다. 값어치 멀쩡한 ${coupon.nFair}종만 보면 ${CP.fair.n}짝 중 <b>${CP.fair.ok}짝(${f1(CP.fair.pct, 0)}%)</b>이고, ${coupon.n}종에서 뒤집힌 ${CP.all.bad}짝이 곧 아래에서 볼 자리입니다.</li>
+    <li><b>그런데 정비례는 아닙니다.</b> 수익률만 알아서는 손실 확률을 <b>${f1(CG.r2 * 100, 0)}%밖에</b> 맞히지 못합니다. ${regSlopeText(CG, coupon.nFair)}. 실무에서 제일 쓸모 있는 숫자는 이것입니다 — <b>손실 확률 1%마다 받는 연 수익률이 ${eff1(CE.worst)}%(제${CE.worst.no}회)에서 ${eff1(CE.best)}%(제${CE.best.no}회)까지 ${f1(CE.spread, 1)}배</b> 차이 납니다. 값어치가 멀쩡한 ${coupon.nFair}종만 추려도 ${f1(CE.fairSpread, 1)}배입니다. 정확히 비례한다면 이 값은 전부 같아야 합니다.</li>
   </ul>
 
   <h3 class="sub3">어긋나는 이유는 ${whyCount}입니다</h3>
@@ -844,7 +844,7 @@ ${whyList}
   <h3 class="sub3">확률만 보면 왜 느슨해지나 — 잃을 때 잃는 크기가 다릅니다</h3>
   <p class="slead2">위 표에서 손실 확률은 <b>${f1(CR.loss.fair.r, 2)}</b>인데 <b>잃을 때 얼마나 잃는지</b>를 곱하면 <b>${f1(CR.expLoss.fair.r, 2)}</b>로 올라갑니다. 확률이 못 잡는 부분이 <b>손실의 크기</b>입니다 — 지수만 담은 상품은 손해가 나면 ${f1(avgLossOf('지수'), 0)}% 남짓 잃지만, 개별 종목 상품은 ${f1(avgLossOf('종목'), 0)}%가량 잃습니다. 발행사는 "얼마나 자주 잃느냐"만이 아니라 <b>"자주 × 크게"</b>로 값을 매기기 때문입니다. <b>그래서 등급이 같은 두 상품 중에 고르실 때는 기초자산 종류를 한 번 더 보십시오</b> — 손실 확률이 같아도 개별 종목 쪽이 실제로는 더 비싼 위험입니다.</p>
 
-  <h3 class="sub3">가장 크게 어긋난 상품은 따로 흔들어 봤습니다 — 손실 확률 1%당 수익률 1등인 제${CS.no}회${coupon.sensIsPick ? ` (추천 ${coupon.sensSlot}번)` : ''}</h3>
+  <h3 class="sub3">가장 크게 어긋난 상품은 따로 흔들어 봤습니다 — ${CS.isOverallBest ? '' : '값어치 멀쩡한 상품 중 '}손실 확률 1%당 수익률 1등인 제${CS.no}회${coupon.sensIsPick ? ` (추천 ${coupon.sensSlot}번)` : ''}</h3>
   <p class="slead2">그 우위가 <b>"두 기초자산이 ${f1(CS.disclosed, 2)}만큼 같이 움직인다"는 공시 값 하나에 얹혀 있는 건 아닌지</b>, 그 값을 억지로 낮춰가며 다시 돌려봤습니다.</p>
   <div class="tw">
     <table class="kt">
@@ -855,7 +855,9 @@ ${whyList}
       </tbody>
     </table>
   </div>
-  <p class="tnote">같이 움직이는 정도를 ${f1(CS.rows[CS.rows.length - 1].rho, 2)}까지 억지로 낮춰도 손실 확률은 ${f1(CS.rows[0].loss, 1)}%에서 ${f1(CS.rows[CS.rows.length - 1].loss, 1)}%로 오르는 데 그치고, 손실 확률 1%당 수익률은 ${f1(CS.rows[CS.rows.length - 1].ratio, 2)}%로 <b>여전히 1등</b>입니다. 두 기초자산의 변동성이 ${f1(CS.volSpread, 1)}%p나 벌어져 <b>같이 움직이든 말든 "더 나쁜 쪽"이 거의 항상 같은 자산</b>이기 때문입니다.</p>
+  <p class="tnote">${CS.stillFirst
+    ? `같이 움직이는 정도를 ${f1(CS.rows[CS.rows.length - 1].rho, 2)}까지 억지로 낮춰도 손실 확률은 ${f1(CS.rows[0].loss, 1)}%에서 ${f1(CS.rows[CS.rows.length - 1].loss, 1)}%로 오르는 데 그치고, 손실 확률 1%당 수익률은 ${f1(CS.rows[CS.rows.length - 1].ratio, 2)}%로 <b>여전히 1등</b>입니다. 두 기초자산의 변동성이 ${f1(CS.volSpread, 1)}%p나 벌어져 <b>같이 움직이든 말든 "더 나쁜 쪽"이 거의 항상 같은 자산</b>이기 때문입니다.`
+    : `같이 움직이는 정도를 ${f1(CS.rows[CS.rows.length - 1].rho, 2)}까지 낮추면 손실 확률은 ${f1(CS.rows[0].loss, 1)}%에서 ${f1(CS.rows[CS.rows.length - 1].loss, 1)}%로 오르고, 손실 확률 1%당 수익률은 ${f1(CS.rows[CS.rows.length - 1].ratio, 2)}%로 내려가 <b>제${CS.runnerUp.no}회에 1등을 내줍니다.</b> 이 상품의 우위는 <b>두 자산이 서류값 ${f1(CS.disclosed, 2)}만큼 같이 움직인다는 전제</b>에 기대고 있습니다.`}</p>
 
   <p class="mnote"><b>상담에서 쓰실 한 줄</b> — ${topIsFairBest
       ? '고객이 "그냥 수익률 높은 순서대로 보여 달라"고 하시면'

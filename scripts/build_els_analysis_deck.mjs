@@ -14,7 +14,7 @@
  * 표·도형·차트는 전부 네이티브라 파워포인트에서 그대로 고칠 수 있다.
  */
 import pptxgen from 'pptxgenjs';
-import { analyze, kindOf, tierOf, idxWorstOver, rankLow, KINDS, TIER_RULE, money, baseOf, unitOf, josa, perRiskVsIdx } from './lib/els-analysis.mjs';
+import { analyze, kindOf, tierOf, idxWorstOver, rankLow, regSlopeText, KINDS, TIER_RULE, money, baseOf, unitOf, josa, perRiskVsIdx } from './lib/els-analysis.mjs';
 
 const A = await analyze(process.argv[2]);
 const OUT = 'els-analysis-deck.pptx';   // 문서판 els-analysis.pdf 와 겹치지 않게
@@ -356,7 +356,7 @@ if (A.plan.hasCooling) {
   const cw = (CW - 0.6) / 3;
   const stats = [
     { k: '둘씩 짝지어 세면', v: `${f1(CP.all.pct, 0)}%`, d: `${C.n}종으로 만들 수 있는 ${CP.all.n}짝 중 ${CP.all.ok}짝에서 "수익률 높은 쪽이 손실 확률도 높다"가 맞았습니다`, c: BLUE },
-    { k: '그런데 수익률로 맞히는 건', v: `${f1(CG.r2 * 100, 0)}%`, d: `수익률 1%p당 손실 확률 +${f1(CG.slope, 2)}%p — 방향은 맞지만 상품마다 그 몇 배씩 들쭉날쭉합니다`, c: WARN },
+    { k: '그런데 수익률로 맞히는 건', v: `${f1(CG.r2 * 100, 0)}%`, d: `${regSlopeText(CG, C.nFair)}`, c: WARN },
     { k: '손실 확률 1%당 연 수익률', v: `${f1(CE.spread, 1)}배`, d: `${f1(CE.ratio(CE.worst), 2)}%(제${CE.worst.no}회) ~ ${f1(CE.ratio(CE.best), 2)}%(제${CE.best.no}회). 정확히 비례한다면 전부 같아야 합니다`, c: ACTIVE },
   ];
   stats.forEach((t, i) => {
@@ -476,7 +476,7 @@ if (A.plan.hasCooling) {
           : `수익률은 ${f1(T.d)}%p 더 ${T.hiRiskier ? `주지만 손실 확률은 ${f1(T.gap)}%p나 더 집니다` : `주면서 손실 확률은 오히려 ${f1(T.gap)}%p 더 낮습니다`} — 손실 확률 1%당 받는 돈으로 바꾸면 ${f1(CE.ratio(T.lo), 2)}%에서 ${f1(CE.ratio(T.hi), 2)}%로 ${+f1(CE.ratio(T.hi), 2) > +f1(CE.ratio(T.lo), 2) ? '올라갑니다' : '오히려 줄어듭니다'}. `)
         + twinWhy(T) },
     { n: '②', k: '값어치가 깎여서', c: BAD,
-      t: `제${CW2.priced.no}회는 연 ${f1(CW2.priced.annualRate)}%인데 손실 확률이 ${f1(CW2.priced.mcLoss)}%나 됩니다 — 손실 확률 1%당 ${f1(CE.ratio(CW2.priced), 2)}%로 이번 회차 꼴찌입니다. 넣는 순간의 값어치가 제값보다 ${f1(Math.abs(CW2.priced.fairValueGap))}%나 깎여 있기 때문입니다.\n\n`
+      t: `제${CW2.priced.no}회는 연 ${f1(CW2.priced.annualRate)}%인데 손실 확률이 ${f1(CW2.priced.mcLoss)}%나 됩니다 — 손실 확률 1%당 ${f1(CE.ratio(CW2.priced), 2)}%${CW2.priced.no === CE.worst.no ? '로 이번 회차 꼴찌입니다' : '뿐입니다'}. 넣는 순간의 값어치가 제값보다 ${f1(Math.abs(CW2.priced.fairValueGap))}%나 깎여 있기 때문입니다.\n\n`
         + `높은 수익률이 위험을 진 대가로 돌아오는 게 아니라 비용으로 새어나간 경우입니다.\n\n`
         + `많이 깎인 ${C.n - C.nFair}종만 빼도 수익률과 변동성의 관계가 ${f1(C.rho.vol.all.r, 2)} → ${f1(C.rho.vol.fair.r, 2)}로 올라갑니다. 이 법칙은 제값 받는 상품에서만 통합니다.` },
     CW2.fx && { n: '③', k: '돈의 종류가 달라서', c: ACTIVE,
@@ -499,7 +499,7 @@ if (A.plan.hasCooling) {
   });
 
   if (CS) {
-    s.addText(`제${CS.no}회${C.sensIsPick ? `(추천 ${C.sensSlot}번)` : ''} — 손실 확률 1%당 수익률 1등. 이 우위가 공시 상관 ${f1(CS.disclosed, 2)} 하나에 얹혀 있는지 흔들어 봤습니다`, {
+    s.addText(`제${CS.no}회${C.sensIsPick ? `(추천 ${C.sensSlot}번)` : ''} — ${CS.isOverallBest ? '' : '값어치 멀쩡한 상품 중 '}손실 확률 1%당 수익률 1등. 이 우위가 공시 상관 ${f1(CS.disclosed, 2)} 하나에 얹혀 있는지 흔들어 봤습니다`, {
       x: M, y: y0 + 2.46, w: CW, h: 0.26, fontFace: F, fontSize: 12, bold: true, color: INK, margin: 0,
     });
     const rhoHd = [{ text: '같이 움직이는 정도', options: { bold: true, color: INK, fill: { color: SOFT } } }]
@@ -519,8 +519,11 @@ if (A.plan.hasCooling) {
       rowH: 0.34, valign: 'middle', margin: 4,
     });
     const last = CS.rows[CS.rows.length - 1];
-    s.addText(`같이 움직이는 정도를 ${f1(last.rho, 2)}까지 억지로 낮춰도 손실 확률은 ${f1(CS.rows[0].loss)}% → ${f1(last.loss)}% 오르는 데 그치고, 손실 확률 1%당 수익률은 ${f1(last.ratio, 2)}%로 여전히 이번 회차 1등입니다. `
-      + `두 기초자산의 변동성이 ${f1(CS.volSpread)}%p나 벌어져 있어서, 같이 움직이든 말든 "더 나쁜 쪽"이 거의 항상 같은 자산이기 때문입니다. 변동성이 비슷한 짝이었다면 이렇게 버티지 못합니다.`, {
+    s.addText(CS.stillFirst
+      ? `같이 움직이는 정도를 ${f1(last.rho, 2)}까지 억지로 낮춰도 손실 확률은 ${f1(CS.rows[0].loss)}% → ${f1(last.loss)}% 오르는 데 그치고, 손실 확률 1%당 수익률은 ${f1(last.ratio, 2)}%로 여전히 이번 회차 1등입니다. `
+        + `두 기초자산의 변동성이 ${f1(CS.volSpread)}%p나 벌어져 있어서, 같이 움직이든 말든 "더 나쁜 쪽"이 거의 항상 같은 자산이기 때문입니다. 변동성이 비슷한 짝이었다면 이렇게 버티지 못합니다.`
+      : `같이 움직이는 정도를 ${f1(last.rho, 2)}까지 낮추면 손실 확률은 ${f1(CS.rows[0].loss)}% → ${f1(last.loss)}%로 오르고, 손실 확률 1%당 수익률은 ${f1(last.ratio, 2)}%로 내려가 제${CS.runnerUp.no}회에 1등을 내줍니다. `
+        + `이 상품의 우위는 두 자산이 서류값 ${f1(CS.disclosed, 2)}만큼 같이 움직인다는 전제에 기대고 있습니다.`, {
       x: M, y: y0 + 3.94, w: CW, h: 0.62, fontFace: F, fontSize: 10, color: FAINT, valign: 'top', lineSpacing: 13, margin: 0,
     });
   }

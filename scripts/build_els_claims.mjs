@@ -550,8 +550,13 @@ if (STALE.length) {
   }
   stat('REG_R2', '설명력', '연 수익률만으로 손실 확률을 맞히는 정도 (결정계수)',
     Math.round(C.reg.r2 * 100), '%', ['h-why']);
-  stat('REG_SLOPE', '회귀 기울기', '연 수익률 1%p 당 손실 확률 증가폭',
+  stat('REG_SLOPE', '회귀 기울기', `값어치 멀쩡한 ${C.nFair}종에서 연 수익률 1%p 당 손실 확률 증가폭`,
     +C.reg.slope.toFixed(2), '%p', ['h-why']);
+  // 기울기가 음수면 "오히려 n%p 낮다" 로 부호를 말로 옮겨 인쇄한다 — 인쇄되는 건 절댓값이다.
+  if (C.reg.slope < 0) {
+    stat('REG_SLOPE_ABS', '회귀 기울기', `값어치 멀쩡한 ${C.nFair}종에서 연 수익률 1%p 당 손실 확률이 오히려 낮아지는 폭`,
+      +Math.abs(C.reg.slope).toFixed(2), '%p', ['h-why']);
+  }
 
   // ④ 짝 세기 — 값어치 멀쩡한 것만 본 경우
   stat('PAIRS_FAIR_N', '짝 수', `값어치 멀쩡한 ${C.nFair}종으로 지은 짝의 수`, C.pairs.fair.n, '쌍', ['h-pairs']);
