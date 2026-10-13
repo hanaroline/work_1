@@ -116,7 +116,7 @@ export const regSlopeText = (reg, nFair) => {
   const v = Math.abs(reg.slope).toFixed(2);
   return reg.slope > 0
     ? `값어치 멀쩡한 ${nFair}종에서 수익률을 1%p 더 받을 때 손실 확률은 평균 ${v}%p 오르지만, 상품마다 그 몇 배씩 들쭉날쭉합니다`
-    : `값어치 멀쩡한 ${nFair}종만 보면 수익률을 1%p 더 받는 상품의 손실 확률이 평균 ${v}%p 오히려 낮게 나옵니다 — 수익률로는 위험을 가늠할 수 없습니다`;
+    : `값어치 멀쩡한 ${nFair}종만 보면 수익률이 1%p 높을수록 손실 확률은 평균 ${v}%p 오히려 낮습니다 — 수익률로 위험을 가늠할 수 없습니다`;
 };
 export const rankLow = (rank, n) => rank === 1 ? `${n}종 중 가장 낮습니다` : `${n}종 중 ${rank}번째로 낮습니다`;
 
@@ -226,7 +226,7 @@ function couponStudy(items, best) {
   const rank1 = [...withMc].sort((a, b) => ratio(b) - ratio(a));
   const fairRank = [...fair].sort((a, b) => ratio(b) - ratio(a));
   const eff = {
-    ratio, order: rank1,
+    ratio, order: rank1, fairOrder: fairRank,
     best: rank1[0], worst: rank1[rank1.length - 1],
     spread: perRiskSpread(rank1[0], rank1[rank1.length - 1]),
     fairBest: fairRank[0], fairWorst: fairRank[fairRank.length - 1],
@@ -495,12 +495,22 @@ export async function analyze(rcpNo) {
    */
   if (coupon.sens) {
     const E = coupon.eff, me = E.fairBest;
-    const runnerUp = E.order.find((i) => i.no !== me.no);
-    const last = coupon.sens.rows[coupon.sens.rows.length - 1];
     coupon.sens.isOverallBest = E.best.no === me.no;
+    // 견주는 상대는 머리말이 부르는 1등의 범위와 같아야 한다 — 전체 1등이면 전체에서,
+    // 값어치 멀쩡한 상품 중 1등이면 그 안에서 2등.
+    const rivals = coupon.sens.isOverallBest ? E.order : E.fairOrder;
+    const runnerUp = rivals.find((i) => i.no !== me.no);
+    const r2 = (v) => +v.toFixed(2);
     coupon.sens.runnerUp = runnerUp;
-    coupon.sens.stillFirst = coupon.sens.isOverallBest
-      && (!runnerUp || +last.ratio.toFixed(2) > +E.ratio(runnerUp).toFixed(2));
+    coupon.sens.runnerUpRatio = runnerUp ? E.ratio(runnerUp) : null;
+    // 처음으로 2등 아래로 내려가는 칸. 맨 끝 칸만 보고 "0.50까지 낮추면 내줍니다"라
+    // 적으면, 0.80에서 이미 내준 사실(2026-10-13 제38194회 0.97% < 1.04%)이 가려진다.
+    coupon.sens.flipAt = runnerUp
+      ? coupon.sens.rows.slice(1).find((r) => r2(r.ratio) < r2(E.ratio(runnerUp))) ?? null
+      : null;
+    coupon.sens.stillFirst = coupon.sens.flipAt == null;
+    // 서류값 칸은 따로 다시 돌린 값이라 본문의 효율과 소수 둘째 자리가 다를 수 있다.
+    coupon.sens.baseDiffers = r2(coupon.sens.rows[0].ratio) !== r2(E.ratio(me));
   }
 
   await saveCache();

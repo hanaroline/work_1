@@ -364,7 +364,7 @@ if (A.plan.hasCooling) {
     s.addShape(pres.ShapeType.rect, { x, y: y0 + 2.42, w: cw, h: 1.32, fill: { color: SURF }, line: { color: HAIR, width: 1 } });
     s.addText(t.k, { x: x + 0.22, y: y0 + 2.54, w: cw - 0.44, h: 0.24, fontFace: F, fontSize: 10.5, color: MUTED, margin: 0 });
     s.addText(t.v, { x: x + 0.22, y: y0 + 2.76, w: cw - 0.44, h: 0.46, fontFace: F, fontSize: 28, bold: true, color: t.c, margin: 0 });
-    s.addText(t.d, { x: x + 0.22, y: y0 + 3.24, w: cw - 0.44, h: 0.44, fontFace: F, fontSize: 10, color: BODY, valign: 'top', lineSpacing: 13, margin: 0 });
+    s.addText(t.d, { x: x + 0.22, y: y0 + 3.22, w: cw - 0.44, h: 0.48, fontFace: F, fontSize: 9.5, color: BODY, valign: 'top', lineSpacing: 12, margin: 0 });
   });
 
   const pw = (CW - 0.3) / 2;
@@ -519,12 +519,17 @@ if (A.plan.hasCooling) {
       rowH: 0.34, valign: 'middle', margin: 4,
     });
     const last = CS.rows[CS.rows.length - 1];
-    s.addText(CS.stillFirst
+    const flip = CS.flipAt;
+    const tail = CS.stillFirst && CS.isOverallBest
       ? `같이 움직이는 정도를 ${f1(last.rho, 2)}까지 억지로 낮춰도 손실 확률은 ${f1(CS.rows[0].loss)}% → ${f1(last.loss)}% 오르는 데 그치고, 손실 확률 1%당 수익률은 ${f1(last.ratio, 2)}%로 여전히 이번 회차 1등입니다. `
         + `두 기초자산의 변동성이 ${f1(CS.volSpread)}%p나 벌어져 있어서, 같이 움직이든 말든 "더 나쁜 쪽"이 거의 항상 같은 자산이기 때문입니다. 변동성이 비슷한 짝이었다면 이렇게 버티지 못합니다.`
-      : `같이 움직이는 정도를 ${f1(last.rho, 2)}까지 낮추면 손실 확률은 ${f1(CS.rows[0].loss)}% → ${f1(last.loss)}%로 오르고, 손실 확률 1%당 수익률은 ${f1(last.ratio, 2)}%로 내려가 제${CS.runnerUp.no}회에 1등을 내줍니다. `
-        + `이 상품의 우위는 두 자산이 서류값 ${f1(CS.disclosed, 2)}만큼 같이 움직인다는 전제에 기대고 있습니다.`, {
-      x: M, y: y0 + 3.94, w: CW, h: 0.62, fontFace: F, fontSize: 10, color: FAINT, valign: 'top', lineSpacing: 13, margin: 0,
+      : CS.stillFirst
+        ? `같이 움직이는 정도를 ${f1(last.rho, 2)}까지 낮춰도 손실 확률 1%당 수익률은 ${f1(last.ratio, 2)}%로 값어치 멀쩡한 상품 중 1등을 지킵니다.`
+        : `같이 움직이는 정도를 ${f1(flip.rho, 2)}까지만 낮춰도 손실 확률 1%당 수익률이 ${f1(flip.ratio, 2)}%로 제${CS.runnerUp.no}회(${f1(CS.runnerUpRatio, 2)}%)보다 낮아져 1등을 내줍니다`
+          + `(${f1(last.rho, 2)}이면 손실 확률 ${f1(CS.rows[0].loss)}% → ${f1(last.loss)}%). 이 상품의 우위는 두 자산이 서류값 ${f1(CS.disclosed, 2)}만큼 같이 움직인다는 전제에 기대고 있습니다.`;
+    s.addText(tail + (CS.baseDiffers
+      ? ` 서류값 칸은 따로 다시 돌린 값이라 앞 숫자(${f1(CE.ratio(CE.fairBest), 2)}%)와 끝자리가 조금 다릅니다.` : ''), {
+      x: M, y: y0 + 3.94, w: CW, h: 0.66, fontFace: F, fontSize: 10, color: FAINT, valign: 'top', lineSpacing: 13, margin: 0,
     });
   }
 
@@ -756,7 +761,7 @@ function defence(it) {
   const y0 = head(s, '상담할 때 이 순서로 말씀하시면 됩니다', `추천 1번 제${it0.no}회 기준입니다. 다른 상품이면 회차·기간·원금 지키는 선 숫자만 바꾸십시오.`);
   const script = [
     ...(A.plan.hasCooling ? [`"먼저 일정부터 말씀드리면, 청약은 ${dayLabel(A.plan.retailEnd)}까지 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 숙려기간이라 주문을 받을 수 없습니다."`] : []),
-    `"이 상품은 최장 ${it0.months}개월짜리인데, ${it0.every}개월마다 끝날 기회가 옵니다. 지금까지는 대부분 첫 번째에 끝났습니다."`,
+    `"이 상품은 최장 ${it0.months}개월짜리인데, ${it0.every}개월마다 끝날 기회가 옵니다. 컴퓨터로 같은 조건을 돌려보면 ${f1(it0.mcByStep[0], 0)}%가 첫 번째에 끝났습니다."`,
     `"${it0.underlyings.join(' · ')} 중 더 많이 떨어진 하나로 판정합니다."`,
     '"올라야 버는 게 아니라, 많이 안 떨어지면 버는 구조입니다. 제자리여도 약속한 이자를 다 받습니다."',
     `"대신 ${it0.knockIn ?? it0.maturityBarrier}% 아래로 크게 떨어지면 떨어진 만큼 그대로 손실입니다. 원금은 보장되지 않습니다."`,

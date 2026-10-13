@@ -855,9 +855,12 @@ ${whyList}
       </tbody>
     </table>
   </div>
-  <p class="tnote">${CS.stillFirst
+  <p class="tnote">${CS.stillFirst && CS.isOverallBest
     ? `같이 움직이는 정도를 ${f1(CS.rows[CS.rows.length - 1].rho, 2)}까지 억지로 낮춰도 손실 확률은 ${f1(CS.rows[0].loss, 1)}%에서 ${f1(CS.rows[CS.rows.length - 1].loss, 1)}%로 오르는 데 그치고, 손실 확률 1%당 수익률은 ${f1(CS.rows[CS.rows.length - 1].ratio, 2)}%로 <b>여전히 1등</b>입니다. 두 기초자산의 변동성이 ${f1(CS.volSpread, 1)}%p나 벌어져 <b>같이 움직이든 말든 "더 나쁜 쪽"이 거의 항상 같은 자산</b>이기 때문입니다.`
-    : `같이 움직이는 정도를 ${f1(CS.rows[CS.rows.length - 1].rho, 2)}까지 낮추면 손실 확률은 ${f1(CS.rows[0].loss, 1)}%에서 ${f1(CS.rows[CS.rows.length - 1].loss, 1)}%로 오르고, 손실 확률 1%당 수익률은 ${f1(CS.rows[CS.rows.length - 1].ratio, 2)}%로 내려가 <b>제${CS.runnerUp.no}회에 1등을 내줍니다.</b> 이 상품의 우위는 <b>두 자산이 서류값 ${f1(CS.disclosed, 2)}만큼 같이 움직인다는 전제</b>에 기대고 있습니다.`}</p>
+    : CS.stillFirst
+      ? `같이 움직이는 정도를 ${f1(CS.rows[CS.rows.length - 1].rho, 2)}까지 낮춰도 손실 확률 1%당 수익률은 ${f1(CS.rows[CS.rows.length - 1].ratio, 2)}%로 <b>값어치 멀쩡한 상품 중 1등을 지킵니다.</b>`
+      : `같이 움직이는 정도를 ${f1(CS.flipAt.rho, 2)}까지만 낮춰도 손실 확률 1%당 수익률이 ${f1(CS.flipAt.ratio, 2)}%로 제${CS.runnerUp.no}회(${f1(CS.runnerUpRatio, 2)}%)보다 낮아져 <b>1등을 내줍니다</b>(${f1(CS.rows[CS.rows.length - 1].rho, 2)}이면 손실 확률 ${f1(CS.rows[0].loss, 1)}% → ${f1(CS.rows[CS.rows.length - 1].loss, 1)}%). 이 상품의 우위는 <b>두 자산이 서류값 ${f1(CS.disclosed, 2)}만큼 같이 움직인다는 전제</b>에 기대고 있습니다.`}${CS.baseDiffers
+    ? ` 서류값 칸은 따로 다시 돌린 값이라 앞 숫자(${f1(CE.ratio(CE.fairBest), 2)}%)와 끝자리가 조금 다릅니다.` : ''}</p>
 
   <p class="mnote"><b>상담에서 쓰실 한 줄</b> — ${topIsFairBest
       ? '고객이 "그냥 수익률 높은 순서대로 보여 달라"고 하시면'
@@ -938,7 +941,7 @@ ${cautionCards}
     <h4>상담할 때 이 순서로 말씀하시면 됩니다</h4>
     <ol>
       ${plan.hasCooling ? `<li>"먼저 일정부터 말씀드리면, 청약은 <b>${dayLabel(retailEnd)}까지</b> 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 숙려기간이라 주문을 받을 수 없습니다."</li>` : ''}
-      <li>"이 상품은 최장 ${slots[0].pick.months}개월짜리인데, ${slots[0].pick.every}개월마다 끝날 기회가 옵니다. 지금까지는 대부분 첫 번째에 끝났습니다."</li>
+      <li>"이 상품은 최장 ${slots[0].pick.months}개월짜리인데, ${slots[0].pick.every}개월마다 끝날 기회가 옵니다. 컴퓨터로 같은 조건을 돌려보면 ${f1(slots[0].pick.mcByStep[0], 0)}%가 첫 번째에 끝났습니다."</li>
       <li>"${judgeLine(slots[0].pick).replace(/<\/?b>/g, '')}"</li>
       <li>"<b>올라야 버는 게 아니라, 많이 안 떨어지면 버는 구조</b>입니다. 제자리여도 약속한 이자를 다 받습니다."</li>
       <li>"대신 ${slots[0].pick.knockIn ?? slots[0].pick.maturityBarrier}% 아래로 크게 떨어지면 <b>떨어진 만큼 그대로 손실</b>입니다. 원금은 보장되지 않습니다."</li>
