@@ -389,7 +389,7 @@ if (A.plan.hasCooling) {
   const pts = A.items.filter((i) => i.mcLoss != null);
   const s = slide();
   const y0 = head(s, '흩어 놓고 보면 이렇습니다',
-    `${pts.length}종을 손실 확률(B)과 연 수익률로 찍었습니다. 왼쪽 위가 적은 위험에 많이 받는 자리, 오른쪽 아래가 위험만 큰 자리입니다. 점 위에 마우스를 올리면 회차와 기초자산이 뜹니다.`);
+    `${pts.length}종을 손실 확률(B)과 연 수익률로 찍었습니다. 왼쪽 위가 적은 위험에 많이 받는 자리, 오른쪽 아래가 위험만 큰 자리입니다. PPT 파일에서는 점에 마우스를 올리면 회차와 기초자산이 뜹니다.`);
 
   const xs = pts.map((i) => +i.mcLoss.toFixed(1));
   const stepv = (v, u, up) => (up ? Math.ceil(v / u) : Math.floor(v / u)) * u;

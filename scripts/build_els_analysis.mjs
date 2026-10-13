@@ -296,7 +296,7 @@ const scatter = (() => {
     <span class="lg"><i style="background:#F58220"></i>추천 ${slots.length}종</span>
     <span class="lg"><i style="background:#9AA6B2"></i>그 외 ${pts.length - slots.length - caution.length}종</span>
     <span class="lg"><i style="background:#C62828"></i>권하지 않는 ${caution.length}종</span>
-    <span class="lgn">왼쪽 위가 적은 위험에 많이 받는 자리, 오른쪽 아래가 위험만 큰 자리입니다. 글씨를 단 두 점은 손실 확률 1%당 받는 수익률의 1등과 꼴찌입니다. 점 위에 마우스를 올리면 회차가 뜹니다.</span>
+    <span class="lgn">왼쪽 위가 적은 위험에 많이 받는 자리, 오른쪽 아래가 위험만 큰 자리입니다. 글씨를 단 두 점은 손실 확률 1%당 받는 수익률의 1등과 꼴찌입니다. HTML 파일에서는 점에 마우스를 올리면 회차가 뜹니다.</span>
   </figcaption>
 </figure>`;
 })();

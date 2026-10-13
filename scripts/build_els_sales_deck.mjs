@@ -550,7 +550,7 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
   const C = A.coupon;
   const pts = A.items.filter((i) => i.mcLoss != null).sort((a, b) => a.mcLoss - b.mcLoss);
   const y0 = head(s, '수익률이 높다고 그만큼 위험한 것은 아닙니다',
-    `이번 회차 ${pts.length}종을 손실 확률(B)과 연 수익률로 흩어 놓았습니다. 왼쪽 위가 적은 위험에 많이 받는 자리, 오른쪽 아래가 위험만 큰 자리입니다. 점 위에 마우스를 올리면 회차와 기초자산이 뜹니다.`);
+    `이번 회차 ${pts.length}종을 손실 확률(B)과 연 수익률로 흩어 놓았습니다. 왼쪽 위가 적은 위험에 많이 받는 자리, 오른쪽 아래가 위험만 큰 자리입니다. PPT 파일에서는 점에 마우스를 올리면 회차와 기초자산이 뜹니다.`);
 
   // ── 산점도 ── 네이티브 차트라 파워포인트에서 데이터를 그대로 고칠 수 있다.
   const xs = pts.map((i) => +i.mcLoss.toFixed(1));
