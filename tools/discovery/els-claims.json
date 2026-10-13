@@ -8001,8 +8001,26 @@
       "id": "REG_SLOPE",
       "kind": "model_output",
       "metric": "회귀 기울기",
-      "text": "연 수익률 1%p 당 손실 확률 증가폭",
+      "text": "값어치 멀쩡한 6종에서 연 수익률 1%p 당 손실 확률 증가폭",
       "value": -0.19,
+      "unit": "%p",
+      "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
+      "as_of": "2026-10-08",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000217",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 수치가 아니라 이 자료가 이번 회차 데이터로 직접 잰 값",
+      "printed_on": [
+        "h-why"
+      ]
+    },
+    {
+      "id": "REG_SLOPE_ABS",
+      "kind": "model_output",
+      "metric": "회귀 기울기",
+      "text": "값어치 멀쩡한 6종에서 연 수익률 1%p 당 손실 확률이 오히려 낮아지는 폭",
+      "value": 0.19,
       "unit": "%p",
       "series": "이번 회차 전 종목을 대상으로 한 자체 통계 (입력: 공시 조건 + 손실 확률 B)",
       "as_of": "2026-10-08",
