@@ -1,4 +1,4 @@
-네이버 API 탐색 2026-10-14 09:20:05 KST
+네이버 API 탐색 2026-10-14 09:38:34 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
@@ -16,28 +16,28 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 16251 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
+    쓸모 · 16260 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
     남김: data/market/raw/probe_03_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"6,035.35"},{"code":"openPrice","key":"시가","value":"6,062.08","compareToPreviousPrice":{"code":"2",
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/price?pageSize=5&page=1
     쓸모 · 1288 bytes · 걸린 낱말 ['상승']
     남김: data/market/raw/probe_04_internals.txt
-    앞머리: [{"localTradedAt":"2026-10-14","closePrice":"6,149.50","compareToPreviousClosePrice":"114.15","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"1.89","openPrice":"6,062.08","highPrice":"6,167.65","lowPri
+    앞머리: [{"localTradedAt":"2026-10-14","closePrice":"6,170.42","compareToPreviousClosePrice":"135.07","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"2.24","openPrice":"6,062.08","highPrice":"6,190.65","lowPri
 
 [sectors] https://m.stock.naver.com/api/stocks/industry
-    쓸모 · 2294 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 2289 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_05_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":323,"name":"해운사","totalCount":11,"changeRate":"5.24","riseCount":11,"fallCount":0,"steadyCount":0},{"no":298,"name":"가정용기기와용품","totalCount":20,"changeRate":"3.36","riseCount":19,"fallCount":1,
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":323,"name":"해운사","totalCount":11,"changeRate":"5.16","riseCount":10,"fallCount":0,"steadyCount":1},{"no":278,"name":"반도체와반도체장비","totalCount":172,"changeRate":"3.36","riseCount":63,"fallCount":
 
 [sectors] https://api.stock.naver.com/industry
     실패 · 36 bytes · 걸린 낱말 없음
     응답 앞머리: HTTPError: HTTP Error 404: Not Found
 
 [sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
-    쓸모 · 8623 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 8619 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_07_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":323,"name":"해운사","totalCount":11,"changeRate":"5.59","riseCount":11,"fallCount":0,"steadyCount":0},{"no":333,"name":"무선통신서비스","totalCount":4,"changeRate":"3.32","riseCount":4,"fallCount":0,"st
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":323,"name":"해운사","totalCount":11,"changeRate":"5.13","riseCount":10,"fallCount":0,"steadyCount":1},{"no":333,"name":"무선통신서비스","totalCount":4,"changeRate":"3.30","riseCount":2,"fallCount":2,"st
 
 [money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
     실패 · 30 bytes · 걸린 낱말 없음
