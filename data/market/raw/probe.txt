@@ -1,4 +1,4 @@
-네이버 API 탐색 2026-10-14 16:15:16 KST
+네이버 API 탐색 2026-10-14 21:22:31 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
@@ -18,7 +18,7 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 16304 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
+    쓸모 · 16309 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
     남김: data/market/raw/probe_03_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"6,035.35"},{"code":"openPrice","key":"시가","value":"6,062.08","compareToPreviousPrice":{"code":"2",
 
@@ -29,9 +29,9 @@
     앞머리: [{"localTradedAt":"2026-10-14","closePrice":"6,008.81","compareToPreviousClosePrice":"-26.54","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-0.44","openPrice":"6,062.08","highPrice":"6,190.65","lowP
 
 [sectors] https://m.stock.naver.com/api/stocks/industry
-    쓸모 · 2277 bytes · 걸린 낱말 ['changeRate']
+    쓸모 · 2286 bytes · 걸린 낱말 ['changeRate']
     남김: data/market/raw/probe_05_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":323,"name":"해운사","totalCount":11,"changeRate":"5.93","riseCount":8,"fallCount":3,"steadyCount":0},{"no":329,"name":"도로와철도운송","totalCount":8,"changeRate":"3.21","riseCount":6,"fallCount":2,"ste
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":323,"name":"해운사","totalCount":11,"changeRate":"6.15","riseCount":9,"fallCount":1,"steadyCount":1},{"no":324,"name":"상업서비스와공급품","totalCount":31,"changeRate":"4.66","riseCount":10,"fallCount":14
 
 [sectors] https://api.stock.naver.com/industry
     실패 · 36 bytes · 걸린 낱말 없음
@@ -40,7 +40,7 @@
 [sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
     쓸모 · 8646 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_07_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":323,"name":"해운사","totalCount":11,"changeRate":"6.09","riseCount":8,"fallCount":3,"steadyCount":0},{"no":329,"name":"도로와철도운송","totalCount":8,"changeRate":"3.21","riseCount":6,"fallCount":2,"ste
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":323,"name":"해운사","totalCount":11,"changeRate":"6.15","riseCount":9,"fallCount":1,"steadyCount":1},{"no":324,"name":"상업서비스와공급품","totalCount":31,"changeRate":"4.66","riseCount":10,"fallCount":14
 
 [money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
     실패 · 30 bytes · 걸린 낱말 없음
