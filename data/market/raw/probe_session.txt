@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-10-16 07:36:52 KST
+세션을 지닌 채 API 부르기 2026-10-16 08:47:40 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 131243 bytes
@@ -17,26 +17,26 @@
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
         HTTP 200 · 8835 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"215","officeHname":"한국경제TV","articleId":"0001269345","title":"\"기름값만 문제가 아니다\"...美 생산자 물가 뜯어보니 [굿모닝 글로벌 이슈]","datetime":"2026-10-16 07:05:21","type":"1","subcontent":"미국의 9월 
+        앞머리: {"articles":[{"officeId":"009","officeHname":"매일경제","articleId":"0005749404","title":"“떨어지면 빚내 사고 또 샀는데”…33.7조 빚투 개미들 손실 눈덩이","datetime":"2026-10-16 08:29:06","type":"1","subcontent":"신용융자 잔고 한때 34조25
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
         HTTP 200 · 8835 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"215","officeHname":"한국경제TV","articleId":"0001269345","title":"\"기름값만 문제가 아니다\"...美 생산자 물가 뜯어보니 [굿모닝 글로벌 이슈]","datetime":"2026-10-16 07:05:21","type":"1","subcontent":"미국의 9월 
+        앞머리: {"articles":[{"officeId":"009","officeHname":"매일경제","articleId":"0005749404","title":"“떨어지면 빚내 사고 또 샀는데”…33.7조 빚투 개미들 손실 눈덩이","datetime":"2026-10-16 08:29:06","type":"1","subcontent":"신용융자 잔고 한때 34조25
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 127995 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26574 bytes · JSON!
+        HTTP 200 · 26577 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
-        HTTP 200 · 2415 bytes · JSON!
-        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
+        HTTP 200 · 2412 bytes · JSON!
+        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","s
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
-        HTTP 200 · 5048 bytes · JSON!
+        HTTP 200 · 5029 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
