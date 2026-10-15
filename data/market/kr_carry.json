@@ -12,14 +12,14 @@
    },
    "bizdate": "20261015",
    "investor_flows": {
-    "retail": 13524.0,
-    "foreign": -36829.0,
-    "institution": 16876.0
+    "retail": 13967.0,
+    "foreign": -37637.0,
+    "institution": 17176.0
    },
    "program_trading": {
-    "arb": 5138.0,
-    "non_arb": -155.0,
-    "total": 4983.0
+    "arb": 5652.0,
+    "non_arb": -1083.0,
+    "total": 4570.0
    },
    "intraday": {
     "high": 5751.45,
@@ -42,14 +42,14 @@
    },
    "bizdate": "20261015",
    "investor_flows": {
-    "retail": -667.0,
-    "foreign": 2171.0,
-    "institution": -1644.0
+    "retail": -748.0,
+    "foreign": 2228.0,
+    "institution": -1614.0
    },
    "program_trading": {
-    "arb": 68.0,
-    "non_arb": 1616.0,
-    "total": 1685.0
+    "arb": 117.0,
+    "non_arb": 1692.0,
+    "total": 1809.0
    },
    "intraday": {
     "high": 788.69,
@@ -65,7 +65,7 @@
  "sectors": [
   {
    "name": "상업서비스와공급품",
-   "change_pct": 4.2,
+   "change_pct": 5.33,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 4,
    "declining": 23,
@@ -74,7 +74,7 @@
   },
   {
    "name": "담배",
-   "change_pct": 3.8,
+   "change_pct": 4.4,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 1,
    "declining": 0,
@@ -82,17 +82,8 @@
    "total": 1
   },
   {
-   "name": "컴퓨터와주변기기",
-   "change_pct": 1.03,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 7,
-   "declining": 12,
-   "unchanged": 2,
-   "total": 21
-  },
-  {
    "name": "다각화된통신서비스",
-   "change_pct": 1.01,
+   "change_pct": 2.2,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 2,
    "declining": 0,
@@ -100,53 +91,17 @@
    "total": 3
   },
   {
-   "name": "카드",
-   "change_pct": 0.36,
+   "name": "은행",
+   "change_pct": 0.9,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 1,
-   "declining": 0,
+   "advancing": 7,
+   "declining": 4,
    "unchanged": 0,
-   "total": 1
-  },
-  {
-   "name": "제약",
-   "change_pct": 0.16,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 22,
-   "declining": 138,
-   "unchanged": 14,
-   "total": 174
-  },
-  {
-   "name": "교육서비스",
-   "change_pct": 0.05,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 4,
-   "declining": 15,
-   "unchanged": 5,
-   "total": 24
-  },
-  {
-   "name": "음료",
-   "change_pct": 0.04,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 3,
-   "declining": 12,
-   "unchanged": 1,
-   "total": 16
-  },
-  {
-   "name": "사무용전자제품",
-   "change_pct": 0.0,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 0,
-   "declining": 0,
-   "unchanged": 1,
-   "total": 1
+   "total": 11
   },
   {
    "name": "가정용기기와용품",
-   "change_pct": -0.19,
+   "change_pct": 0.79,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 3,
    "declining": 17,
@@ -154,71 +109,107 @@
    "total": 20
   },
   {
-   "name": "식품",
-   "change_pct": -0.21,
+   "name": "손해보험",
+   "change_pct": 0.54,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 23,
-   "declining": 64,
-   "unchanged": 5,
-   "total": 92
+   "advancing": 5,
+   "declining": 7,
+   "unchanged": 0,
+   "total": 12
+  },
+  {
+   "name": "제약",
+   "change_pct": 0.5,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 17,
+   "declining": 147,
+   "unchanged": 10,
+   "total": 174
+  },
+  {
+   "name": "카드",
+   "change_pct": 0.12,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 1,
+   "declining": 0,
+   "unchanged": 0,
+   "total": 1
+  },
+  {
+   "name": "음료",
+   "change_pct": -0.07,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 4,
+   "declining": 11,
+   "unchanged": 1,
+   "total": 16
   },
   {
    "name": "운송인프라",
    "change_pct": -0.39,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 1,
+   "advancing": 2,
    "declining": 6,
-   "unchanged": 1,
+   "unchanged": 0,
    "total": 8
   },
   {
-   "name": "기타금융",
-   "change_pct": -0.42,
+   "name": "식품",
+   "change_pct": -0.41,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 19,
+   "declining": 70,
+   "unchanged": 3,
+   "total": 92
+  },
+  {
+   "name": "광고",
+   "change_pct": -0.61,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 2,
+   "declining": 15,
+   "unchanged": 2,
+   "total": 19
+  },
+  {
+   "name": "식품과기본식료품소매",
+   "change_pct": -0.97,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 3,
-   "declining": 3,
+   "declining": 4,
+   "unchanged": 0,
+   "total": 7
+  },
+  {
+   "name": "방송과엔터테인먼트",
+   "change_pct": -0.98,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 8,
+   "declining": 42,
+   "unchanged": 7,
+   "total": 57
+  },
+  {
+   "name": "기타금융",
+   "change_pct": -0.98,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 1,
+   "declining": 5,
    "unchanged": 0,
    "total": 6
   },
   {
-   "name": "종이와목재",
-   "change_pct": -0.65,
+   "name": "컴퓨터와주변기기",
+   "change_pct": -1.22,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 2,
-   "declining": 11,
-   "unchanged": 1,
-   "total": 14
+   "advancing": 5,
+   "declining": 13,
+   "unchanged": 3,
+   "total": 21
   },
   {
    "name": "가스유틸리티",
-   "change_pct": -0.7,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 3,
-   "declining": 9,
-   "unchanged": 0,
-   "total": 12
-  },
-  {
-   "name": "방송과엔터테인먼트",
-   "change_pct": -0.72,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 6,
-   "declining": 41,
-   "unchanged": 10,
-   "total": 57
-  },
-  {
-   "name": "광고",
-   "change_pct": -0.75,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 2,
-   "declining": 16,
-   "unchanged": 1,
-   "total": 19
-  },
-  {
-   "name": "손해보험",
-   "change_pct": -0.8,
+   "change_pct": -1.24,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 1,
    "declining": 11,
@@ -227,115 +218,106 @@
   },
   {
    "name": "화장품",
-   "change_pct": -0.9,
+   "change_pct": -1.27,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 10,
-   "declining": 50,
-   "unchanged": 4,
+   "advancing": 5,
+   "declining": 57,
+   "unchanged": 2,
    "total": 64
   },
   {
    "name": "게임엔터테인먼트",
-   "change_pct": -1.05,
+   "change_pct": -1.36,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 8,
-   "declining": 22,
+   "advancing": 6,
+   "declining": 24,
    "unchanged": 4,
    "total": 34
   },
   {
-   "name": "부동산",
-   "change_pct": -1.06,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 7,
-   "declining": 21,
-   "unchanged": 2,
-   "total": 30
-  },
-  {
-   "name": "은행",
-   "change_pct": -1.14,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 1,
-   "declining": 10,
-   "unchanged": 0,
-   "total": 11
-  },
-  {
-   "name": "도로와철도운송",
-   "change_pct": -1.16,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 0,
-   "declining": 7,
-   "unchanged": 1,
-   "total": 8
-  },
-  {
-   "name": "식품과기본식료품소매",
-   "change_pct": -1.16,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 2,
-   "declining": 5,
-   "unchanged": 0,
-   "total": 7
-  },
-  {
-   "name": "가구",
-   "change_pct": -1.18,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 1,
-   "declining": 9,
-   "unchanged": 1,
-   "total": 11
-  },
-  {
-   "name": "인터넷과카탈로그소매",
-   "change_pct": -1.31,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 2,
-   "declining": 4,
-   "unchanged": 0,
-   "total": 6
-  },
-  {
-   "name": "호텔,레스토랑,레저",
-   "change_pct": -1.61,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 1,
-   "declining": 18,
-   "unchanged": 0,
-   "total": 19
-  },
-  {
    "name": "섬유,의류,신발,호화품",
-   "change_pct": -1.62,
+   "change_pct": -1.43,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 10,
-   "declining": 67,
+   "advancing": 11,
+   "declining": 66,
    "unchanged": 4,
    "total": 81
   },
   {
+   "name": "부동산",
+   "change_pct": -1.47,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 3,
+   "declining": 24,
+   "unchanged": 3,
+   "total": 30
+  },
+  {
    "name": "항공사",
-   "change_pct": -1.75,
+   "change_pct": -1.53,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 2,
-   "declining": 7,
-   "unchanged": 0,
+   "declining": 6,
+   "unchanged": 1,
    "total": 9
   },
   {
-   "name": "전문소매",
-   "change_pct": -1.75,
+   "name": "해운사",
+   "change_pct": -1.54,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 1,
-   "declining": 4,
+   "advancing": 0,
+   "declining": 11,
+   "unchanged": 0,
+   "total": 11
+  },
+  {
+   "name": "전문소매",
+   "change_pct": -1.57,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 3,
+   "declining": 2,
    "unchanged": 0,
    "total": 5
   },
   {
-   "name": "복합유틸리티",
-   "change_pct": -1.79,
+   "name": "호텔,레스토랑,레저",
+   "change_pct": -1.65,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 2,
+   "declining": 16,
+   "unchanged": 1,
+   "total": 19
+  },
+  {
+   "name": "종이와목재",
+   "change_pct": -1.66,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 2,
+   "declining": 12,
+   "unchanged": 0,
+   "total": 14
+  },
+  {
+   "name": "레저용장비와제품",
+   "change_pct": -1.68,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 5,
+   "declining": 8,
+   "unchanged": 0,
+   "total": 13
+  },
+  {
+   "name": "도로와철도운송",
+   "change_pct": -1.78,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 0,
+   "declining": 8,
+   "unchanged": 0,
+   "total": 8
+  },
+  {
+   "name": "사무용전자제품",
+   "change_pct": -1.85,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 0,
    "declining": 1,
@@ -343,71 +325,62 @@
    "total": 1
   },
   {
-   "name": "출판",
-   "change_pct": -1.8,
+   "name": "가구",
+   "change_pct": -2.03,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 1,
-   "declining": 6,
-   "unchanged": 0,
-   "total": 7
-  },
-  {
-   "name": "레저용장비와제품",
-   "change_pct": -2.07,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 3,
-   "declining": 10,
-   "unchanged": 0,
-   "total": 13
-  },
-  {
-   "name": "해운사",
-   "change_pct": -2.42,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 1,
-   "declining": 10,
-   "unchanged": 0,
-   "total": 11
-  },
-  {
-   "name": "건축제품",
-   "change_pct": -2.47,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 1,
-   "declining": 9,
+   "advancing": 2,
+   "declining": 8,
    "unchanged": 1,
    "total": 11
   },
   {
-   "name": "포장재",
-   "change_pct": -2.58,
+   "name": "교육서비스",
+   "change_pct": -2.05,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 6,
-   "declining": 21,
-   "unchanged": 0,
+   "advancing": 4,
+   "declining": 18,
+   "unchanged": 2,
+   "total": 24
+  },
+  {
+   "name": "포장재",
+   "change_pct": -2.27,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 7,
+   "declining": 18,
+   "unchanged": 2,
    "total": 27
   },
   {
-   "name": "판매업체",
-   "change_pct": -2.76,
+   "name": "복합유틸리티",
+   "change_pct": -2.43,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 3,
-   "declining": 8,
-   "unchanged": 2,
-   "total": 13
+   "advancing": 0,
+   "declining": 1,
+   "unchanged": 0,
+   "total": 1
   },
   {
-   "name": "생명과학도구및서비스",
-   "change_pct": -2.93,
+   "name": "건축제품",
+   "change_pct": -2.73,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 8,
-   "declining": 29,
-   "unchanged": 4,
-   "total": 41
+   "advancing": 2,
+   "declining": 9,
+   "unchanged": 0,
+   "total": 11
+  },
+  {
+   "name": "인터넷과카탈로그소매",
+   "change_pct": -2.88,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 1,
+   "declining": 5,
+   "unchanged": 0,
+   "total": 6
   },
   {
    "name": "무선통신서비스",
-   "change_pct": -2.99,
+   "change_pct": -3.07,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 1,
    "declining": 3,
@@ -415,53 +388,35 @@
    "total": 4
   },
   {
-   "name": "가정용품",
-   "change_pct": -3.15,
+   "name": "판매업체",
+   "change_pct": -3.09,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 3,
-   "declining": 7,
-   "unchanged": 2,
+   "declining": 9,
+   "unchanged": 1,
+   "total": 13
+  },
+  {
+   "name": "가정용품",
+   "change_pct": -3.32,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 3,
+   "declining": 6,
+   "unchanged": 3,
    "total": 12
   },
   {
    "name": "백화점과일반상점",
-   "change_pct": -3.39,
+   "change_pct": -3.5,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 3,
-   "declining": 11,
-   "unchanged": 0,
+   "advancing": 1,
+   "declining": 12,
+   "unchanged": 1,
    "total": 14
   },
   {
-   "name": "소프트웨어",
-   "change_pct": -3.67,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 12,
-   "declining": 53,
-   "unchanged": 9,
-   "total": 74
-  },
-  {
-   "name": "양방향미디어와서비스",
-   "change_pct": -3.73,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 2,
-   "declining": 13,
-   "unchanged": 1,
-   "total": 16
-  },
-  {
-   "name": "전기유틸리티",
-   "change_pct": -3.8,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 0,
-   "declining": 5,
-   "unchanged": 0,
-   "total": 5
-  },
-  {
    "name": "디스플레이패널",
-   "change_pct": -3.9,
+   "change_pct": -3.51,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 0,
    "declining": 4,
@@ -469,21 +424,30 @@
    "total": 6
   },
   {
-   "name": "건강관리장비와용품",
-   "change_pct": -4.08,
+   "name": "양방향미디어와서비스",
+   "change_pct": -3.82,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 11,
-   "declining": 77,
-   "unchanged": 16,
-   "total": 104
+   "advancing": 3,
+   "declining": 13,
+   "unchanged": 0,
+   "total": 16
+  },
+  {
+   "name": "생명과학도구및서비스",
+   "change_pct": -3.92,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 4,
+   "declining": 33,
+   "unchanged": 4,
+   "total": 41
   },
   {
    "name": "항공화물운송과물류",
-   "change_pct": -4.19,
+   "change_pct": -4.05,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 1,
-   "declining": 12,
-   "unchanged": 0,
+   "advancing": 0,
+   "declining": 11,
+   "unchanged": 2,
    "total": 13
   },
   {
@@ -496,31 +460,22 @@
    "total": 1546
   },
   {
-   "name": "무역회사와판매업체",
-   "change_pct": -4.32,
+   "name": "전기유틸리티",
+   "change_pct": -4.33,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 1,
-   "declining": 6,
-   "unchanged": 1,
-   "total": 8
+   "advancing": 0,
+   "declining": 5,
+   "unchanged": 0,
+   "total": 5
   },
   {
    "name": "건축자재",
-   "change_pct": -4.47,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 1,
-   "declining": 49,
-   "unchanged": 1,
-   "total": 51
-  },
-  {
-   "name": "건강관리업체및서비스",
-   "change_pct": -4.51,
+   "change_pct": -4.6,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 4,
-   "declining": 26,
+   "declining": 47,
    "unchanged": 0,
-   "total": 30
+   "total": 51
   },
   {
    "name": "다각화된소비자서비스",
@@ -533,21 +488,30 @@
   },
   {
    "name": "증권",
-   "change_pct": -5.0,
+   "change_pct": -4.92,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 2,
-   "declining": 37,
+   "advancing": 1,
+   "declining": 38,
    "unchanged": 0,
    "total": 39
   },
   {
-   "name": "생물공학",
-   "change_pct": -5.11,
+   "name": "무역회사와판매업체",
+   "change_pct": -4.92,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 8,
-   "declining": 44,
-   "unchanged": 7,
-   "total": 59
+   "advancing": 1,
+   "declining": 6,
+   "unchanged": 1,
+   "total": 8
+  },
+  {
+   "name": "건강관리업체및서비스",
+   "change_pct": -5.07,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 7,
+   "declining": 23,
+   "unchanged": 0,
+   "total": 30
   },
   {
    "name": "문구류",
@@ -559,26 +523,35 @@
    "total": 1
   },
   {
-   "name": "자동차",
-   "change_pct": -5.32,
+   "name": "출판",
+   "change_pct": -5.19,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 1,
-   "declining": 11,
+   "advancing": 0,
+   "declining": 7,
    "unchanged": 0,
-   "total": 12
+   "total": 7
   },
   {
-   "name": "자동차부품",
-   "change_pct": -5.34,
+   "name": "건강관리장비와용품",
+   "change_pct": -5.29,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 13,
-   "declining": 131,
+   "advancing": 5,
+   "declining": 80,
+   "unchanged": 19,
+   "total": 104
+  },
+  {
+   "name": "소프트웨어",
+   "change_pct": -5.61,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 9,
+   "declining": 56,
    "unchanged": 9,
-   "total": 153
+   "total": 74
   },
   {
    "name": "우주항공과국방",
-   "change_pct": -5.44,
+   "change_pct": -5.66,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 2,
    "declining": 33,
@@ -586,134 +559,134 @@
    "total": 35
   },
   {
-   "name": "전자제품",
-   "change_pct": -5.44,
+   "name": "비철금속",
+   "change_pct": -5.71,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 2,
-   "declining": 13,
-   "unchanged": 1,
-   "total": 16
+   "advancing": 4,
+   "declining": 33,
+   "unchanged": 3,
+   "total": 40
+  },
+  {
+   "name": "자동차부품",
+   "change_pct": -5.73,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 23,
+   "declining": 121,
+   "unchanged": 9,
+   "total": 153
+  },
+  {
+   "name": "자동차",
+   "change_pct": -5.78,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 0,
+   "declining": 12,
+   "unchanged": 0,
+   "total": 12
   },
   {
    "name": "철강",
-   "change_pct": -5.45,
+   "change_pct": -5.88,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 12,
-   "declining": 41,
+   "advancing": 10,
+   "declining": 43,
    "unchanged": 2,
    "total": 55
   },
   {
-   "name": "창업투자",
-   "change_pct": -5.64,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 9,
-   "declining": 59,
-   "unchanged": 19,
-   "total": 87
-  },
-  {
    "name": "조선",
-   "change_pct": -5.8,
+   "change_pct": -6.06,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 2,
-   "declining": 26,
+   "advancing": 1,
+   "declining": 27,
    "unchanged": 2,
    "total": 30
   },
   {
-   "name": "비철금속",
-   "change_pct": -5.93,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 2,
-   "declining": 34,
-   "unchanged": 4,
-   "total": 40
-  },
-  {
-   "name": "디스플레이장비및부품",
-   "change_pct": -6.48,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 5,
-   "declining": 62,
-   "unchanged": 4,
-   "total": 71
-  },
-  {
-   "name": "IT서비스",
-   "change_pct": -6.54,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 14,
-   "declining": 97,
-   "unchanged": 8,
-   "total": 119
-  },
-  {
-   "name": "건설",
-   "change_pct": -6.58,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 8,
-   "declining": 62,
-   "unchanged": 8,
-   "total": 78
-  },
-  {
-   "name": "화학",
-   "change_pct": -6.63,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 14,
-   "declining": 101,
-   "unchanged": 7,
-   "total": 122
-  },
-  {
-   "name": "건강관리기술",
-   "change_pct": -6.63,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 1,
-   "declining": 11,
-   "unchanged": 1,
-   "total": 13
-  },
-  {
-   "name": "핸드셋",
-   "change_pct": -7.26,
+   "name": "생물공학",
+   "change_pct": -6.39,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 7,
-   "declining": 49,
-   "unchanged": 1,
-   "total": 57
+   "declining": 46,
+   "unchanged": 6,
+   "total": 59
   },
   {
-   "name": "전기제품",
-   "change_pct": -7.28,
+   "name": "전자제품",
+   "change_pct": -6.64,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 3,
-   "declining": 62,
-   "unchanged": 3,
-   "total": 68
+   "advancing": 1,
+   "declining": 14,
+   "unchanged": 1,
+   "total": 16
+  },
+  {
+   "name": "창업투자",
+   "change_pct": -6.85,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 13,
+   "declining": 57,
+   "unchanged": 17,
+   "total": 87
   },
   {
    "name": "석유와가스",
-   "change_pct": -7.39,
+   "change_pct": -6.97,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 1,
-   "declining": 17,
+   "advancing": 0,
+   "declining": 18,
    "unchanged": 1,
    "total": 19
   },
   {
-   "name": "복합기업",
-   "change_pct": -7.86,
+   "name": "화학",
+   "change_pct": -7.48,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 2,
-   "declining": 22,
+   "advancing": 16,
+   "declining": 99,
+   "unchanged": 7,
+   "total": 122
+  },
+  {
+   "name": "IT서비스",
+   "change_pct": -7.54,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 10,
+   "declining": 102,
+   "unchanged": 7,
+   "total": 119
+  },
+  {
+   "name": "건설",
+   "change_pct": -7.68,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 9,
+   "declining": 61,
+   "unchanged": 8,
+   "total": 78
+  },
+  {
+   "name": "디스플레이장비및부품",
+   "change_pct": -7.75,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 6,
+   "declining": 60,
+   "unchanged": 5,
+   "total": 71
+  },
+  {
+   "name": "건강관리기술",
+   "change_pct": -7.94,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 0,
+   "declining": 13,
    "unchanged": 0,
-   "total": 24
+   "total": 13
   },
   {
    "name": "생명보험",
-   "change_pct": -8.27,
+   "change_pct": -8.07,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 0,
    "declining": 3,
@@ -721,26 +694,53 @@
    "total": 3
   },
   {
-   "name": "기계",
-   "change_pct": -8.29,
+   "name": "복합기업",
+   "change_pct": -8.26,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 5,
-   "declining": 93,
+   "advancing": 0,
+   "declining": 23,
+   "unchanged": 1,
+   "total": 24
+  },
+  {
+   "name": "핸드셋",
+   "change_pct": -8.39,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 4,
+   "declining": 52,
+   "unchanged": 1,
+   "total": 57
+  },
+  {
+   "name": "전기제품",
+   "change_pct": -8.93,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 2,
+   "declining": 63,
+   "unchanged": 3,
+   "total": 68
+  },
+  {
+   "name": "기계",
+   "change_pct": -9.57,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 6,
+   "declining": 92,
    "unchanged": 7,
    "total": 105
   },
   {
    "name": "에너지장비및서비스",
-   "change_pct": -9.36,
+   "change_pct": -10.58,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 2,
-   "declining": 27,
+   "advancing": 1,
+   "declining": 28,
    "unchanged": 5,
    "total": 34
   },
   {
    "name": "통신장비",
-   "change_pct": -9.62,
+   "change_pct": -11.05,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
    "advancing": 0,
    "declining": 48,
@@ -749,32 +749,32 @@
   },
   {
    "name": "반도체와반도체장비",
-   "change_pct": -10.53,
+   "change_pct": -11.65,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 6,
-   "declining": 165,
-   "unchanged": 2,
+   "advancing": 5,
+   "declining": 167,
+   "unchanged": 1,
    "total": 173
   },
   {
    "name": "전기장비",
-   "change_pct": -12.54,
+   "change_pct": -14.31,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 2,
-   "declining": 30,
+   "advancing": 0,
+   "declining": 32,
    "unchanged": 3,
    "total": 35
   },
   {
    "name": "전자장비와기기",
-   "change_pct": -13.82,
+   "change_pct": -16.12,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 12,
-   "declining": 86,
+   "advancing": 9,
+   "declining": 89,
    "unchanged": 7,
    "total": 105
   }
  ],
  "sectors_bizdate": "20261015",
- "saved_at_kst": "2026-10-15 16:12:23"
+ "saved_at_kst": "2026-10-15 21:03:43"
 }
