@@ -6,7 +6,7 @@
  */
 (function (g) {
   g.DOC_PAGES = {
- "updatedAt": "2026-10-14T23:44:21.775Z",
+ "updatedAt": "2026-10-15T05:54:50.628Z",
  "source": "securities.miraeasset.com /public/editor/elsdls/<ISIN>.pdf",
  "docLabel": "간이투자설명서 및 투자설명서 (교부본)",
  "anchors": [
@@ -358,6 +358,47 @@
     "riskFactors": 54,
     "offering": 24,
     "fundUse": 67
+   }
+  },
+  "KR6MD00092S2": {
+   "name": "미래에셋증권(ELS)38223",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD00092S2.pdf",
+   "pages": 76,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "payoff": 13,
+    "payoffChart": 14,
+    "lossCase": 15,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 57,
+    "offering": 26,
+    "fundUse": 71
+   }
+  },
+  "KR6MD00092Q6": {
+   "name": "미래에셋증권(ELS)38222",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD00092Q6.pdf",
+   "pages": 76,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "fixDate": 12,
+    "payoff": 13,
+    "payoffChart": 14,
+    "lossCase": 15,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 58,
+    "offering": 26,
+    "fundUse": 71
    }
   }
  }
