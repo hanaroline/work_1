@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-10-17 08:40:25 KST
+세션을 지닌 채 API 부르기 2026-10-17 08:57:42 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 131243 bytes
@@ -16,12 +16,12 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 120442 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8802 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"215","officeHname":"한국경제TV","articleId":"0001269467","title":"빚내서 주식 샀다가 3천억 강제청산…개미들 '피눈물'","datetime":"2026-10-17 08:26:55","type":"1","subcontent":"코스피가 최근 7거래일 연속 하락하며 5,
+        HTTP 200 · 8800 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"016","officeHname":"헤럴드경제","articleId":"0002710576","title":"빚내서 주식 샀다가 날벼락…반대매매 3000억에 개미들 ‘곡소리’","datetime":"2026-10-17 08:44:12","type":"1","subcontent":"코스피가 7거래일 연속 하락하는
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8802 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"215","officeHname":"한국경제TV","articleId":"0001269467","title":"빚내서 주식 샀다가 3천억 강제청산…개미들 '피눈물'","datetime":"2026-10-17 08:26:55","type":"1","subcontent":"코스피가 최근 7거래일 연속 하락하며 5,
+        HTTP 200 · 8800 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"016","officeHname":"헤럴드경제","articleId":"0002710576","title":"빚내서 주식 샀다가 날벼락…반대매매 3000억에 개미들 ‘곡소리’","datetime":"2026-10-17 08:44:12","type":"1","subcontent":"코스피가 7거래일 연속 하락하는
         남김: data/market/raw/session_list.json
 
 ### 시장지표
