@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-10-18 08:29:06 KST
+세션을 지닌 채 API 부르기 2026-10-18 08:58:39 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 131243 bytes
@@ -16,12 +16,12 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 120442 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8803 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"119","officeHname":"데일리안","articleId":"0003143868","title":"AI·반도체 골라 담자…ETF 7종목 출격","datetime":"2026-10-18 08:03:09","type":"1","subcontent":"인공지능(AI) 반도체부터 피지컬 AI, 투자자들의 선택
+        HTTP 200 · 8812 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"016","officeHname":"헤럴드경제","articleId":"0002710740","title":"“한주 만에 24% 폭락했다고?”…삼전닉스 금융위기 이후 최악의 주간 하락률 [투자360]","datetime":"2026-10-18 08:39:08","type":"1","subcontent":"코스피
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8803 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"119","officeHname":"데일리안","articleId":"0003143868","title":"AI·반도체 골라 담자…ETF 7종목 출격","datetime":"2026-10-18 08:03:09","type":"1","subcontent":"인공지능(AI) 반도체부터 피지컬 AI, 투자자들의 선택
+        HTTP 200 · 8812 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"016","officeHname":"헤럴드경제","articleId":"0002710740","title":"“한주 만에 24% 폭락했다고?”…삼전닉스 금융위기 이후 최악의 주간 하락률 [투자360]","datetime":"2026-10-18 08:39:08","type":"1","subcontent":"코스피
         남김: data/market/raw/session_list.json
 
 ### 시장지표
@@ -33,7 +33,7 @@
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
         HTTP 200 · 2414 bytes · JSON!
-        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
+        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","s
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
         HTTP 200 · 5050 bytes · JSON!
