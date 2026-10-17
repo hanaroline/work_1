@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-10-17 09:20:40 KST
+세션을 지닌 채 API 부르기 2026-10-18 08:11:05 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 131243 bytes
@@ -16,12 +16,12 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 120442 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8828 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"014","officeHname":"파이낸셜뉴스","articleId":"0005590478","title":"\"폭락장에 또 박살난 내 주식... ETF로 갈아타려는데 괜찮을까요?\"[인치범의 주식투자 부트캠프]","datetime":"2026-10-17 09:01:12","type":"1","subconte
+        HTTP 200 · 8812 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"119","officeHname":"데일리안","articleId":"0003143868","title":"AI·반도체 골라 담자…ETF 7종목 출격","datetime":"2026-10-18 08:03:09","type":"1","subcontent":"인공지능(AI) 반도체부터 피지컬 AI, 투자자들의 선택
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8828 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"014","officeHname":"파이낸셜뉴스","articleId":"0005590478","title":"\"폭락장에 또 박살난 내 주식... ETF로 갈아타려는데 괜찮을까요?\"[인치범의 주식투자 부트캠프]","datetime":"2026-10-17 09:01:12","type":"1","subconte
+        HTTP 200 · 8812 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"119","officeHname":"데일리안","articleId":"0003143868","title":"AI·반도체 골라 담자…ETF 7종목 출격","datetime":"2026-10-18 08:03:09","type":"1","subcontent":"인공지능(AI) 반도체부터 피지컬 AI, 투자자들의 선택
         남김: data/market/raw/session_list.json
 
 ### 시장지표
@@ -40,7 +40,7 @@
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
-        HTTP 200 · 7379 bytes · JSON!
+        HTTP 200 · 7380 bytes · JSON!
         앞머리: [{"categoryType":"bond","stockExchangeType":null,"reutersCode":"US10YT=RR","symbolCode":null,"name":"미국 국채 10년","fullName":null,"nameEng":null,"itemLogoUrl":null,"itemLogoPngUrl":null,"delayTime":0,"d
         남김: data/market/raw/session_bond.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dminte
