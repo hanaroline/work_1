@@ -202,11 +202,17 @@ async function post(body, tries = 3) {
  */
 const UGB = String(argOf('--ugb', 'T,G')).split(',').map((s) => s.trim()).filter(Boolean);
 const UGB_NAME = { T: '투자설명서', G: '간이투자설명서', Y: '규약' };
+/*
+ * 조회가 실패하면 던진다. 예전에는 삼켜서 「파일 0건」과 구별되지 않았다 —
+ * T 가 끊기고 G 만 오면 정식 설명서가 있는데도 간이로 판독하게 된다.
+ */
 async function fileList(code) {
   const rows = [];
   for (const u of UGB) {
     let xml;
-    try { xml = await post(listBody(code, u)); } catch { continue; }
+    try { xml = await post(listBody(code, u)); } catch (e) {
+      throw new Error('목록 조회 실패 uGb=' + u + ' — ' + String(e && e.message || e).slice(0, 80));
+    }
     for (const r of parseList(xml)) rows.push({ ...r, uGb: u });
   }
   return rows;
@@ -294,17 +300,35 @@ async function getPdf(row, tries = 3) {
 }
 
 /* ── 씨앗으로 계약이 살아 있는지 먼저 본다 ───────────────────── */
-const seed = targets[0];
-console.log(`\n계약 확인 — ${seed.code} ${un(seed.name)}`);
-const seedRows = await fileList(seed.code);
-console.log(`  파일 ${seedRows.length}건`);
-seedRows.forEach((r) => console.log('   uGb=' + r.uGb + ' · ' + r.serverPath.slice(-7) + ' · ' + r.standardDt + ' · ' + r.originalFileNm.slice(0, 70)));
-const seedPick = pickProspectus(seedRows);
+/*
+ * 씨앗은 targets[0] 하나가 아니다. 10/14 부터 다섯 번 「계약이 바뀌었다」로
+ * 멈췄는데, 탐침(probe_kofia_prospectus.mjs)으로 보니 계약은 멀쩡했고
+ * 맨 앞 종목(K55223EU5794)에 금투협 공시가 원래 없었다 — 화면도 0건이다.
+ * 그래서 지난번에 실제로 받았던 종목(직전 결과의 refs)을 먼저 씨앗으로 쓰고,
+ * 대상 앞쪽 몇 개를 덧붙여 하나라도 설명서가 나오면 계약이 살아 있다고 본다.
+ */
+const prev = {};
+try { new Function('window', await readFile(OUT, 'utf8'))(prev); } catch { /* 처음 돌 때는 없다 */ }
+const PREV = prev.FUND_PROSPECTUS_KOFIA || null;
+const seedCodes = [...new Set([...Object.keys((PREV && PREV.refs) || {}).slice(0, 3),
+  ...targets.slice(0, 3).map((t) => t.code)])];
+const nameOf = (c) => { const t = C.items.find((x) => x.code === c); return t ? un(t.name) : ''; };
+let seedPick = null;
+for (const c of seedCodes) {
+  console.log(`\n계약 확인 — ${c} ${nameOf(c)}`);
+  let rows;
+  try { rows = await fileList(c); } catch (e) { console.log('  ' + e.message); continue; }
+  console.log(`  파일 ${rows.length}건`);
+  rows.forEach((r) => console.log('   uGb=' + r.uGb + ' · ' + r.serverPath.slice(-7) + ' · ' + r.standardDt + ' · ' + r.originalFileNm.slice(0, 70)));
+  seedPick = pickProspectus(rows);
+  if (seedPick) break;
+}
 if (!seedPick) {
   console.error(
-    '\n씨앗 종목에서 투자설명서를 못 찾았습니다 — 조회 계약이 바뀌었을 수 있습니다.\n' +
+    `\n씨앗 ${seedCodes.length}종목 어디에서도 투자설명서를 못 찾았습니다 — 조회 계약이 바뀌었을 수 있습니다.\n` +
     '  · 받은 파일 목록을 위에서 확인하세요 (uGb=T 가 투자설명서, G 가 간이입니다).\n' +
-    '  · scripts/probe_kofia_prospectus.mjs 로 화면이 보내는 POST 를 다시 관찰하세요.\n' +
+    '  · scripts/probe_kofia_prospectus.mjs 로 화면이 보내는 POST 를 다시 관찰하세요\n' +
+    '    (워크플로를 mode=probe 로 돌리면 됩니다).\n' +
     `  · ${OUT} 은 그대로 두므로 페이지는 직전 결과를 유지합니다.`
   );
   process.exit(1);
@@ -411,6 +435,30 @@ const body =
     refs,
     items
   }) + ';\n';
+
+/* ── 직전 결과와 종목코드로 맞대 본다 — 늘어난 것과 줄어든 것을 함께 센다 ── */
+if (PREV && PREV.items) {
+  const dec = (it, pl) => Object.fromEntries(Object.entries(it || {}).map(([k, v]) => [k, typeof v === 'number' ? pl[v] : v]));
+  let same = 0, changed = 0, added = 0, lostFields = 0;
+  const lost = [], fieldLoss = [];
+  const codes = new Set([...Object.keys(PREV.items), ...Object.keys(items)]);
+  for (const c of codes) {
+    const a = PREV.items[c] ? dec(PREV.items[c], PREV.pool || []) : null;
+    const b = items[c] ? dec(items[c], pool) : null;
+    if (!a) { added++; continue; }
+    if (!b) { lost.push(c); continue; }
+    const gone = Object.keys(a).filter((k) => b[k] == null);
+    if (gone.length) { lostFields += gone.length; fieldLoss.push(c + ' ' + gone.join(',')); }
+    const norm = (o) => JSON.stringify(Object.keys(o).sort().map((k) => [k, o[k]]));
+    if (norm(a) === norm(b)) same++; else changed++;
+  }
+  console.log(`\n직전(${PREV.updatedAt}) 대비 — 그대로 ${same} · 바뀜 ${changed} · 새로 채움 ${added} · 잃음 ${lost.length}` +
+    ` · 남은 종목에서 잃은 칸 ${lostFields}`);
+  const why = new Map(misses.map((m) => [m.code, m.why]));
+  lost.slice(0, 30).forEach((c) => console.log('  잃음 ' + c + ' — ' + (why.get(c) || '이번 대상에 없음')));
+  fieldLoss.slice(0, 30).forEach((s) => console.log('  칸 잃음 ' + s));
+}
+
 await writeFile(OUT, body);
 
 console.log(`\n${OUT} 기록 — ${Object.keys(items).length}건`);

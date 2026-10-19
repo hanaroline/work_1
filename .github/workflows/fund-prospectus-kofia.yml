@@ -16,6 +16,7 @@ on:
         default: 'collect'
         options:
           - collect   # 수집·판독 후 커밋
+          - dry       # 수집·판독만 하고 커밋하지 않음 (직전 대비 증감은 로그에)
           - probe     # 조회 계약만 관찰 (커밋 없음 · 결과는 로그와 아티팩트)
       scope:
         description: '대상'
@@ -118,7 +119,7 @@ jobs:
           node scripts/collect_fund_prospectus_kofia.mjs "$@"
 
       - name: 결과 커밋
-        if: inputs.mode != 'probe'
+        if: inputs.mode != 'probe' && inputs.mode != 'dry'
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
