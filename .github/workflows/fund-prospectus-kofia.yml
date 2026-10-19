@@ -10,6 +10,13 @@ name: 펀드 투자설명서 판독 (금투협 · 두 번째 원천)
 on:
   workflow_dispatch:
     inputs:
+      mode:
+        description: '할 일'
+        type: choice
+        default: 'collect'
+        options:
+          - collect   # 수집·판독 후 커밋
+          - probe     # 조회 계약만 관찰 (커밋 없음 · 결과는 로그와 아티팩트)
       scope:
         description: '대상'
         type: choice
@@ -80,7 +87,25 @@ jobs:
           npm install --no-save pdfjs-dist@3.11.174 playwright@1.56.1
           npx playwright install --with-deps chromium
 
+      # 씨앗에서 「파일 0건」으로 멈추면 이것부터 돌린다. 커밋하지 않는다.
+      - name: 계약 관찰 (probe)
+        if: inputs.mode == 'probe'
+        env:
+          CODES: ${{ inputs.codes || '' }}
+        run: |
+          if [ -n "$CODES" ]; then node scripts/probe_kofia_prospectus.mjs --codes "$CODES"
+          else node scripts/probe_kofia_prospectus.mjs; fi
+          cat tools/discovery/kofia_prospectus_probe.md
+
+      - name: 관찰 결과 올리기
+        if: inputs.mode == 'probe'
+        uses: actions/upload-artifact@v4
+        with:
+          name: kofia-prospectus-probe
+          path: tools/discovery/kofia_prospectus_probe.*
+
       - name: 수집·판독
+        if: inputs.mode != 'probe'
         env:
           SCOPE: ${{ inputs.scope || 'missing' }}
           LIMIT: ${{ inputs.limit || '0' }}
@@ -93,6 +118,7 @@ jobs:
           node scripts/collect_fund_prospectus_kofia.mjs "$@"
 
       - name: 결과 커밋
+        if: inputs.mode != 'probe'
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
