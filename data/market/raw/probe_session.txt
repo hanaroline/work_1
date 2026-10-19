@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-10-19 22:57:29 KST
+세션을 지닌 채 API 부르기 2026-10-19 23:31:20 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 131243 bytes
@@ -16,12 +16,12 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 120442 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8868 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"008","officeHname":"머니투데이","articleId":"0005428636","title":"단일ETF 사태에 \"송구\" 이찬진, 금감원 고강도 검사엔 \"이유있다\" 방어","datetime":"2026-10-19 22:42:49","type":"1","subcontent":"이찬진 금융감독
+        HTTP 200 · 8857 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"008","officeHname":"머니투데이","articleId":"0005428638","title":"중앙일보 다시 범삼성가 될까, 다우·CJ그룹 품으로","datetime":"2026-10-19 22:51:23","type":"1","subcontent":"다우키움그룹·CJ그룹 컨소시엄이 중앙일보 인수
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8868 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"008","officeHname":"머니투데이","articleId":"0005428636","title":"단일ETF 사태에 \"송구\" 이찬진, 금감원 고강도 검사엔 \"이유있다\" 방어","datetime":"2026-10-19 22:42:49","type":"1","subcontent":"이찬진 금융감독
+        HTTP 200 · 8857 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"008","officeHname":"머니투데이","articleId":"0005428638","title":"중앙일보 다시 범삼성가 될까, 다우·CJ그룹 품으로","datetime":"2026-10-19 22:51:23","type":"1","subcontent":"다우키움그룹·CJ그룹 컨소시엄이 중앙일보 인수
         남김: data/market/raw/session_list.json
 
 ### 시장지표
@@ -36,7 +36,7 @@
         앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
-        HTTP 200 · 5046 bytes · JSON!
+        HTTP 200 · 5045 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
