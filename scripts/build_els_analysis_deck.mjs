@@ -734,7 +734,7 @@ function defence(it) {
   const s = slide();
   const chk = [
     ...(A.plan.hasCooling ? [[`청약 마감은 ${dayLabel(A.plan.retailEnd)}입니다`,
-      `홈페이지에는 ${dot(A.plan.start)}~${dot(A.plan.end)}로 나오지만 개인 일반투자자는 ${dayLabel(A.plan.retailEnd)}까지만 청약할 수 있습니다. 이후는 숙려·가입의사확인 기간이라 주문을 받을 수 없습니다.${A.plan.othersNote ? ' ' + A.plan.othersNote : ''}`]] : []),
+      `홈페이지에는 ${dot(A.plan.start)}~${dot(A.plan.end)}로 나오지만 개인 일반투자자는 ${dayLabel(A.plan.retailEnd)}까지만 청약할 수 있습니다. ${A.plan.othersShort || '이후는 숙려·가입의사확인 기간이라 주문을 받을 수 없습니다.'}`]] : []),
     [`${baseOf(A.head)}을 넣어도 ${baseOf(A.head)}어치가 아닙니다`,
       `넣는 순간의 실제 값어치가 ${money(A.gapBest, A.gapBest.fairValue / 100)}부터 ${money(A.gapWorst, A.gapWorst.fairValue / 100)}까지 벌어집니다. 차액은 회사 몫과 비용이고, 이마저도 앞으로 들 비용을 이미 뺀 값입니다.`],
     ['중간에 빼면 손해입니다',

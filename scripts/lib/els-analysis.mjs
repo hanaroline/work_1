@@ -434,6 +434,9 @@ export async function analyze(rcpNo) {
   plan.othersNote = plan.others.map((o) =>
     `단, 제${o.nos.join('·')}회는 별도 공시(청약 ${dotDate(o.start)}~${dotDate(o.end)})라 개인 일반투자자 마감이 `
     + `${koDay(o.retailEnd)}${o.passed ? '로 이미 지났습니다' : '입니다'}.`).join(' ');
+  /** 좁은 칸용 — 분석 덱 14장 카드처럼 줄 수가 빠듯한 자리 */
+  plan.othersShort = plan.others.map((o) =>
+    `제${o.nos.join('·')}회는 별도 공시라 ${koDay(o.retailEnd)}${o.passed ? '에 이미 마감됐습니다' : '까지입니다'}.`).join(' ');
   plan.recordingRight = items.every((i) => i.recordingRight);
   plan.maxLossNotice = items.every((i) => i.maxLossNotice);
 
