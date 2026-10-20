@@ -1476,6 +1476,19 @@ function metricOutOfRange(key, v) {
 
 function metricsBlock(f) {
   var m = f.metrics;
+  // 잰 창 안에 기준가 재산정(위 계단)이 있어 수집기가 지표를 싣지 않은 펀드.
+  // 아무것도 안 그리면 원천에 지표가 없는 것과 같아 보이므로 까닭을 적는다.
+  if (!m && f.metricsDropped) {
+    var at = f.metricsDropped.at || '';
+    return '<h4>' + esc(lang === 'ko' ? '위험 · 성과 지표' : 'Risk metrics') + '</h4>' +
+      '<div class="notice warn">' + (lang === 'ko'
+        ? '<strong>지표를 싣지 않았습니다.</strong> 측정 기간 안에 기준가 재산정(' + esc(at) +
+          ')이 있어, 원천이 그 계단을 수익으로 셈한 값입니다. 깨진 계산을 그대로 찍는 대신 비웠습니다.'
+        : '<strong>Metrics withheld.</strong> A base-price restatement (' + esc(at) +
+          ') falls inside the measurement window, and the source counted that jump as return. ' +
+          'Rather than print a broken calculation, the metrics are left blank.') +
+      '</div>';
+  }
   if (!m) return '';
   var ROWS = [
     ['standardDeviation', '표준편차', 'Std. deviation', '%'],

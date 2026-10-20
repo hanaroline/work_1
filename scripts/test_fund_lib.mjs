@@ -137,6 +137,22 @@ function series(from, days, fn) {
     JSON.stringify(r.dropped));
 }
 
+// (라) 위 계단 뒤에 아래 계단이 짝으로 온 경우 — 골든브릿지으뜸단기 10-19 수집.
+//     08-03 ×3.44 로 뛰고 09-04 ×0.30 으로 내려앉아, 생값은 +3% 인데 원천 1년은
+//     +243% 다. 생값과 어긋나서 (나)처럼 "보정한 값" 으로 보이지만, 네이버는
+//     아래 계단만 보정하고 위 계단은 흘려 넣었다. 비워야 한다.
+{
+  const daily = series('2026-07-01', 60,
+    (i) => (i < 35 ? 974 + i * 0.01 : i < 50 ? 3351 + i * 0.03 : 1005 + i * 0.01));
+  const sets = { '3m': daily, '1y': daily, '5y': daily };
+  const src = { '1m': 243.14 };
+  const r = verifyReturns(src, sets);
+  check('위 계단을 가로지른 값은 생값과 어긋나도 비운다',
+    !(r.kept && r.kept['1m'] != null)
+      && (r.dropped || []).some((d) => d.period === '1m' && d.up === true),
+    JSON.stringify(r.dropped));
+}
+
 console.log('\n=== 5. 유형 → 투자 지역·자산군 ===\n');
 // 원천이 준 유형 이름을 읽을 뿐, 분류를 지어내지 않는다.
 for (const [type, region, asset] of [

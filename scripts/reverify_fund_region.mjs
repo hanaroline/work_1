@@ -1,9 +1,18 @@
 #!/usr/bin/env node
 /**
- * 재검증 L3-b — **투자지역**을 1차 출처와 전수에 가깝게 대조한다.
+ * 재검증 L3-c — **투자지역**을 1차 출처와 전수에 가깝게 대조한다.
  *
  *   node scripts/reverify_fund_region.mjs [표본수]
  *   -> tools/discovery/fund_reverify_region.{json,md}
+ *
+ * ── 2026-10-20 부터 워크플로에서 돌리지 않는다 ─────────────────────────────
+ *
+ * fund-reverify.yml 의 L3-d(probe_fund_verify_kofia.mjs)가 같은 호출
+ * (COMFundUnityBasInfoSO · fundBasInfoSrch)의 같은 칸(vInvestRgnGbNm)을 전수로
+ * 읽는다. 둘을 함께 돌리면 금투협을 3천 번 더 부를 뿐 새로 보는 것이 없다
+ * (10/19 판에서 둘 다 3,189건 · 불일치 0). 손으로 돌릴 수 있게 남겨 둔다.
+ * 이 대본도 L3-d 도 수집기가 받은 자리를 다시 읽으므로, 금투협 값 **자체**가
+ * 맞는지는 보지 못한다.
  *
  * ── 왜 이 한 필드만 따로 보나 ───────────────────────────────────────────────
  *

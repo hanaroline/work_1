@@ -136,6 +136,29 @@ for (const f of FUNDS) {
              `— 원천이 ${c.at} 계단을 그대로 흘려 넣은 값이다`,
              { period: k, value: v, raw: c.raw, stepAt: c.at });
       }
+      // 위로 난 계단을 가로지른 칸은 생값과 어긋나도 남기면 안 된다. 짝을 이룬
+      // 아래 계단만 보정되고 위 계단은 흘려 들어가, 어긋남이 "보정" 처럼 보일
+      // 뿐이다(10-19 골든브릿지 두 펀드 1년 +243%·+216%, 베어링[USD] +36,279%).
+      const up = (f.steps || []).filter((s) => s.ratio > 1 && s.day > cutoff && s.day <= anchor)
+        .map((s) => s.day).sort()[0];
+      if (up) {
+        flag('error', '계단구간-위계단남김', f,
+             `${k} = ${v}% 가 ${up} 위 계단(기준가 재산정)을 가로지르는데 남겼다 (구간 ${cutoff}~${anchor})`,
+             { period: k, value: v, stepAt: up });
+      }
+    }
+  }
+  // 위험지표도 같다. 잰 창 안에 위 계단이 있으면 원천이 그것을 먹고 셈한 값이다.
+  if (f.metrics && anchor) {
+    const from = new Date(`${anchor}T00:00:00Z`);
+    from.setUTCDate(from.getUTCDate() - (Number(f.metricsWeeks) || 52) * 7);
+    const fromDay = from.toISOString().slice(0, 10);
+    const up = (f.steps || []).filter((s) => s.ratio > 1 && s.day > fromDay && s.day <= anchor)
+      .map((s) => s.day).sort()[0];
+    if (up) {
+      flag('error', '위험지표-위계단남김', f,
+           `위험지표 창(${fromDay}~${anchor}) 안에 ${up} 위 계단이 있는데 지표를 실었다`,
+           { stepAt: up });
     }
   }
   // 같은 기간이 남기도 하고 버려지기도 할 수는 없다.

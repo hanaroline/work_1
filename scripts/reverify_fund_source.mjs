@@ -323,8 +323,9 @@ for (const r of rows) {
   // 때 659건이 잡혔는데, 어긋난 쪽이 규칙이었지 자료가 아니었다.
   //
   // 이 층이 볼 수 있는 것은 "1차 출처 수집물이 화면 자료로 그대로 옮겨졌는가"
-  // 까지다. 금투협이 준 값 자체가 맞는지는 L3-c(reverify_fund_region.mjs)가
-  // 금투협을 다시 받아 확인한다. 층을 섞지 않는다.
+  // 까지다. 수집 뒤 금투협을 다시 받아 맞대는 것은 L3-d(probe_fund_verify_kofia.mjs)
+  // 의 "투자지역" 줄이다. 다만 그것도 같은 자리를 다시 읽는 것이라 금투협 값
+  // 자체가 맞는지는 아무 층도 못 본다 — 맞댈 두 번째 출처가 없다. 층을 섞지 않는다.
   {
     const want = REGION ? (REGION[code] ?? null) : null;
     const got = stored.region ?? null;
@@ -352,7 +353,8 @@ for (const r of rows) {
   // ── 위험지표 ────────────────────────────────────────────────────────────
   {
     const m = cp?.metricsDetail?.fundMetric || null;
-    const sm = stored.metrics || null;
+    // 창 안의 위 계단 때문에 싣지 않은 지표도 원천 값 그대로 metricsDropped 에 있다.
+    const sm = stored.metrics || stored.metricsDropped?.values || null;
     const pairs = [['standardDeviation', 'standardDeviation'], ['trackingError', 'trackingError'],
                    ['sharpRatio', 'sharpe'], ['informationRatio', 'informationRatio'],
                    ['jensenAlpha', 'jensenAlpha'], ['beta', 'beta']];
@@ -576,8 +578,10 @@ md.push('', `**오류 ${errs.length}건 · 경고 ${warns.length}건**`, '');
 out.naverWouldSay = naverWouldSay;
 md.push('## 투자지역은 이 층에서 대조하지 않습니다', '',
   '투자지역의 출처는 네이버가 아니라 **금융투자협회(1차 출처)** 입니다. 그래서 여기서는',
-  '"1차 출처에서 받은 값이 화면 자료로 그대로 옮겨졌는가" 까지만 봅니다. 금투협이 준 값',
-  '자체가 맞는지는 `reverify_fund_region.mjs`(L3-c)가 금투협을 **다시 받아** 확인합니다.', '',
+  '"1차 출처에서 받은 값이 화면 자료로 그대로 옮겨졌는가" 까지만 봅니다. 금투협을 **다시',
+  '받아** 맞대는 것은 `fund_verify_kofia.md`(L3-d)의 "투자지역" 줄입니다. 그것도 같은 자리를',
+  '다시 읽는 것이라, 금투협이 준 값 **자체**가 맞는지는 어느 층도 확인하지 못합니다 —',
+  '투자지역에는 맞댈 두 번째 출처가 없습니다.', '',
   '처음에는 이 층에서 네이버 유형명과 맞댔습니다. 그 규칙이 틀렸습니다 — 유형명에서 읽는',
   '방식이 10.7% 어긋난다는 것을 확인하고 수집을 고쳤는데 대조 규칙만 옛것으로 남아 있었고,',
   '그래서 고쳐진 값들이 통째로 오류로 잡혔습니다. **어긋난 쪽이 규칙이었습니다.**', '',

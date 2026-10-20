@@ -398,6 +398,23 @@ function verifyReturns(src, sets) {
                      at: crossing[0], raw: +raw.toFixed(4) });
       continue;
     }
+    // ── 위로 난 계단을 가로지르면 생값과 어긋나도 남기지 않는다 ──
+    // 위 계단(기준가 재산정)은 대개 아래 계단(결산·분배)과 짝으로 온다. 네이버는
+    // 위 계단은 흘려 넣고 아래 계단은 보정하므로, 둘을 함께 가로지르는 구간은
+    // 생값과 어긋나서 "보정한 것"처럼 보이지만 실제로는 위 계단만 먹은 값이다.
+    // 10-19 수집에서 세 펀드 16칸이 그랬다:
+    //   골든브릿지으뜸단기   08-03 ×3.44 → 09-04 ×0.30, 1년 원천 +243.14% · 생값 +3.29%
+    //   골든브릿지스마트단기채 08-03 ×3.15 → 09-04 ×0.33, 1년 원천 +215.62% · 생값 +4.75%
+    //   베어링[USD]         12-08 ×0.01 → 09-17 ×33953, 1년 +36,279% · +36,604%
+    //                       (격차 324%p 라 남았지만 비로는 0.9% 차이)
+    // 남긴 497칸 중 위 계단을 가로지른 것은 이 16칸뿐이었다 — 나머지 481칸은 그대로.
+    const upAt = steps.filter((s) => s.ratio > 1 && s.day > cutoff && s.day <= anchor.day)
+      .map((s) => s.day).sort()[0];
+    if (upAt) {
+      dropped.push({ period: p.key, reason: 'step', source: val,
+                     at: upAt, raw: +raw.toFixed(4), up: true });
+      continue;
+    }
     // 원천이 보정했다. 남기되, 왜 남겼는지 근거를 적어 둔다.
     kept[p.key] = val;
     checked.push({ period: p.key, at: crossing[0], raw: +raw.toFixed(4) });
@@ -663,6 +680,20 @@ async function fetchDetail(code) {
   // **"표본에서 안 보였다" 는 "없다" 가 아니다.**
   const pm = cp?.metricsDetail?.peerMetric || null;
 
+  // 위험지표를 잰 창(기본 52주) 안에 위로 난 계단이 있으면 지표를 싣지 않는다.
+  // 원천이 그 계단을 흘려 넣고 표준편차·베타를 셈했기 때문이다 — 10-19 수집에서
+  // 베어링[USD] 표준편차 1147, 골든브릿지 두 펀드 베타 8.7·96, 다올전단채 베타 36.
+  // 값은 metricsDropped 에 남겨 L1 재검증이 원천과 대조할 수 있게 한다.
+  const metricsUpAt = (() => {
+    if (!m || !steps || !anchorDay) return null;
+    const wk = num(cp?.metricsDetail?.termWeeks) || 52;
+    const from = new Date(`${anchorDay}T00:00:00Z`);
+    from.setUTCDate(from.getUTCDate() - wk * 7);
+    const fromDay = from.toISOString().slice(0, 10);
+    return steps.filter((s) => s.ratio > 1 && s.day > fromDay && s.day <= anchorDay)
+      .map((s) => s.day).sort()[0] || null;
+  })();
+
   // ── 설정액·순자산이 그 펀드의 기준가와 앞뒤가 맞는가 ──────────────────────
   //
   // 원천의 두 필드가 무엇인지 407종목으로 확인했다
@@ -789,13 +820,25 @@ async function fetchDetail(code) {
     seriesFrom: longS[0]?.day ?? dailyS[0]?.day ?? null,
     seriesTo: (longS[longS.length - 1] || dailyS[dailyS.length - 1])?.day ?? null,
 
-    metrics: m ? {
+    metrics: m && !metricsUpAt ? {
       standardDeviation: num(m.standardDeviation),
       trackingError: num(m.trackingError),
       sharpe: num(m.sharpRatio),
       informationRatio: num(m.informationRatio),
       jensenAlpha: num(m.jensenAlpha),
       beta: num(m.beta),
+    } : null,
+    // 창 안의 위 계단 때문에 싣지 않은 위험지표. 화면은 까닭과 날짜만 적는다.
+    metricsDropped: m && metricsUpAt ? {
+      reason: 'step-up', at: metricsUpAt,
+      values: {
+        standardDeviation: num(m.standardDeviation),
+        trackingError: num(m.trackingError),
+        sharpe: num(m.sharpRatio),
+        informationRatio: num(m.informationRatio),
+        jensenAlpha: num(m.jensenAlpha),
+        beta: num(m.beta),
+      },
     } : null,
     // 같은 응답이 주는 유형평균. 우리가 셈해서 만든 것이 아니라 원천이 준
     // 값이다 — 화면에서 그렇게 밝힌다.

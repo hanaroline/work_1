@@ -91,15 +91,15 @@ jobs:
         timeout-minutes: 45
         run: node scripts/probe_fund_verify_kofia.mjs
 
-      # L3-c 투자지역 — 이 화면의 주축이다. 1차 출처 대조에서 하나가 어긋났고
-      # (내 자료 "해외" vs 금투협 "혼합"), 얼마나 퍼졌는지 세야 한다.
-      # 표본 300 이 아니라 전수로 본다. 유형마다 비례로 뽑는 코드라 넉넉한
-      # 수를 주면 각 유형의 목록을 통째로 가져간다.
-      - name: L3-c 투자지역 대조 (전수)
-        if: always()
-        continue-on-error: true
-        timeout-minutes: 45
-        run: node scripts/reverify_fund_region.mjs 4000
+      # L3-c 투자지역 대조(reverify_fund_region.mjs)는 2026-10-20 에 뺐다.
+      # 바로 위 L3-d 와 **같은 호출**(COMFundUnityBasInfoSO · fundBasInfoSrch)의
+      # **같은 칸**(vInvestRgnGbNm)을 전수로 한 번 더 읽고 있었다 — 10/19 판에서
+      # 둘 다 3,189건·불일치 0 으로 결과까지 같았다. 투자지역의 전수 대조는
+      # L3-d 의 "투자지역" 줄이 맡는다. 대본은 손으로 돌릴 수 있게 남겨 둔다.
+      #
+      # 둘 다 수집기(collect_fund_region.mjs)가 받은 바로 그 자리를 다시 읽으므로
+      # "옮겨 적은 것이 맞는가" 는 보지만 "금투협 값 자체가 맞는가" 는 못 본다.
+      # 투자지역에는 맞댈 두 번째 출처가 없다.
 
       # L1-b — 화면이 그 자리에서 만드는 주장(필터·랭킹·중복도·역조회).
       # 데이터에 없는 값이라 어떤 감사도 본 적이 없다.
