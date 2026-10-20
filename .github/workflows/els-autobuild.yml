@@ -21,6 +21,10 @@ on:
         description: '새 회차가 없어도 산출물을 다시 빌드한다'
         type: boolean
         default: false
+      rcp:
+        description: '빌드할 접수번호(쉼표로 여럿). 비우면 새 회차로 고른다'
+        type: string
+        default: ''
   schedule:
     # 평일 10:10 KST (01:10 UTC). els-weekly.yml 의 매일 수집(08:00 KST 예약,
     # 실제로는 09:30~10:00 에 붙는다)보다 뒤, 점검 예약(10:30 KST)보다 앞이다.
@@ -103,7 +107,17 @@ jobs:
       - name: 대상 접수번호 결정
         id: rcp
         if: steps.check.outputs.status == 'NEW' || inputs.force == true
+        env:
+          RCP_IN: ${{ inputs.rcp }}
         run: |
+          # 손으로 돌릴 때 접수번호를 직접 줄 수 있다. force 로 다시 빌드하면 새 회차가
+          # 없어 "가장 큰 접수번호" 하나만 집히는데, 두 공시를 묶어 낸 주(2026-10-19,
+          # 제38205~38223회)를 그대로 다시 내려면 둘 다 넘겨야 한다.
+          if [ -n "$RCP_IN" ]; then
+            echo "접수번호(입력): $RCP_IN"
+            echo "rcp=$RCP_IN" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           RCP=$(node -e '
             const fs = require("fs");
             const P = JSON.parse(fs.readFileSync("tools/discovery/prospectus_parsed.json", "utf8"));
@@ -191,8 +205,9 @@ jobs:
           git diff --cached --quiet && { echo "변경 없음"; exit 0; }
           RANGE=$(node -e '
             const P = JSON.parse(require("fs").readFileSync("tools/discovery/prospectus_parsed.json","utf8"));
-            const b = P["${{ steps.rcp.outputs.rcp }}".split(",")[0]];
-            const n = b.items.map(i => i.no);
+            // 공시 여럿을 묶은 판은 전부 센다 — 첫 공시만 세면 "제38222~38223회 2종" 처럼
+            // 19종짜리 판에 2종 제목이 붙는다(2026-10-19).
+            const n = "${{ steps.rcp.outputs.rcp }}".split(",").flatMap((r) => P[r].items.map(i => i.no));
             process.stdout.write(`제${Math.min(...n)}~${Math.max(...n)}회 ${n.length}종`);
           ')
           git commit -m "feat(els): ${RANGE} 세일즈 자료 3종 (자동 빌드)" \
