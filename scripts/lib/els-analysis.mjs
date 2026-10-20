@@ -310,20 +310,57 @@ function couponStudy(items, best) {
   };
 }
 
-/** 결론이 공시 상관계수 한 값에 얹혀 있지 않은지 흔들어 본다 */
+/**
+ * 결론이 공시 상관계수 한 값에 얹혀 있지 않은지 흔들어 본다.
+ *
+ * 공시값에서 **모든 쌍을 같은 폭만큼 낮춰** 다시 돌린다(0 아래로는 내리지 않는다).
+ * 예전에는 모든 쌍을 0.90·0.80…0.50 한 값으로 맞췄는데, 기초자산이 셋인 상품은
+ * 공시 상관이 0.22·0.6·0.7 처럼 쌍마다 달라 "0.50으로 맞추기" 가 어떤 쌍은 올리고
+ * 어떤 쌍은 내리는 일이 됐다. 그런데도 자료에는 "0.50까지만 낮춰도" 라고 찍혔다
+ * (2026-10-19 판, 제38207회 — 공시 최저 0.22). 폭으로 낮추면 늘 "낮추는" 쪽이다.
+ */
+export const SENS_SHIFTS = [0.1, 0.2, 0.3, 0.4, 0.5];
 function rhoSensitivity(it, rcp) {
   if (!it || !it.correlation?.length) return null;
   const p = fromProspectus(it);
-  const rows = [null, 0.9, 0.8, 0.7, 0.6, 0.5].map((r) => {
-    const mc = mcRun(p, it.volatility, r == null ? it.correlation : it.correlation.map((c) => ({ ...c, rho: r })), MC_SENS,
-      cacheKey(rcp, it.no, `rho:${r ?? 'disclosed'}`, MC_SENS));
+  const single = it.correlation.length === 1;
+  const rows = [0, ...SENS_SHIFTS].map((d) => {
+    const corr = d === 0 ? it.correlation
+      : it.correlation.map((c) => ({ ...c, rho: Math.max(0, +(c.rho - d).toFixed(4)) }));
+    const mc = mcRun(p, it.volatility, corr, MC_SENS,
+      cacheKey(rcp, it.no, d === 0 ? 'rho:disclosed' : `rhoshift:${d}`, MC_SENS));
     const exp = (mc.lossRate / 100) * Math.abs(mc.avgLoss);
     // 위험당 대가는 같은 표에 인쇄되는 1자리 손실 확률로 나눈다 (couponStudy 의 ratio 와 같은 규칙)
-    return { rho: r, loss: mc.lossRate, expLoss: exp, ratio: it.annualRate / +mc.lossRate.toFixed(1) };
+    // rho 는 쌍이 하나일 때만 "낮춘 뒤의 값" 이다. 서류값 칸은 null.
+    return { shift: d, rho: d === 0 ? null : (single ? corr[0].rho : null),
+      loss: mc.lossRate, expLoss: exp, ratio: it.annualRate / +mc.lossRate.toFixed(1) };
   });
+  const rhos = it.correlation.map((c) => c.rho);
   const vols = it.volatility.map((v) => v.vol).sort((a, b) => a - b);
-  return { no: it.no, disclosed: Math.min(...it.correlation.map((c) => c.rho)), rows, volSpread: vols[vols.length - 1] - vols[0] };
+  return {
+    no: it.no, nAssets: it.underlyings.length, nPairs: rhos.length,
+    disclosed: Math.min(...rhos), disclosedMax: Math.max(...rhos),
+    rows, volSpread: vols[vols.length - 1] - vols[0],
+  };
 }
+
+/**
+ * 민감도 문구 — 세 빌더가 같은 말을 쓰도록 여기 한 곳에 둔다.
+ * 쌍이 하나면 "0.78까지", 여럿이면 "서류값보다 0.1씩" 이라고 적는다.
+ */
+const f2 = (v) => v.toFixed(2);
+export const sensText = {
+  /** 공시값 — "0.88" 또는 "0.22~0.75" */
+  disclosed: (S) => S.nPairs === 1 ? f2(S.disclosed) : `${f2(S.disclosed)}~${f2(S.disclosedMax)}`,
+  /** 주어 — "두 자산이" / "세 자산이" */
+  subject: (S) => `${['', '한', '두', '세', '네', '다섯'][S.nAssets] ?? S.nAssets} 자산이`,
+  /** 표 머리 칸 */
+  col: (S, r) => r.shift === 0 ? `서류값 ${sensText.disclosed(S)}` : S.nPairs === 1 ? f2(r.rho) : `−${r.shift.toFixed(1)}`,
+  /** "~만 낮춰도" 앞에 오는 말 — "0.78까지" / "서류값보다 0.1씩" */
+  to: (S, r) => S.nPairs === 1 ? `${f2(r.rho)}까지` : `서류값보다 ${r.shift.toFixed(1)}씩`,
+  /** 끝 칸을 가리키는 말 — "0.38이면" / "0.5씩 낮추면" */
+  at: (S, r) => S.nPairs === 1 ? `${f2(r.rho)}이면` : `${r.shift.toFixed(1)}씩 낮추면`,
+};
 
 export async function analyze(rcpNo) {
   const w = {};
@@ -367,6 +404,36 @@ export async function analyze(rcpNo) {
   plan.retailDays = plan.coolStart && plan.coolEnd
     ? Math.round((new Date(plan.coolEnd) - new Date(plan.coolStart)) / 86400000) + 1 : null;
   plan.hasCooling = Boolean(plan.coolEnd && plan.coolEnd !== plan.end);
+  /**
+   * 대표 공시와 일정이 다른 회차는 공시마다 한 묶음으로 따로 든다. 표지의 마감일은
+   * 대표 공시 것이라, 이것을 따로 적지 않으면 창구가 전 종목을 같은 날로 안내한다 —
+   * 2026-10-19 판이 제38222·38223회(개인 마감 10/19)까지 10/23 으로 안내했다.
+   */
+  plan.asOf = new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10);   // 이 자료를 만든 날(KST)
+  const offGroups = new Map();
+  for (const i of items) {
+    if (key(i) === key(head)) continue;
+    if (!offGroups.has(key(i))) offGroups.set(key(i), []);
+    offGroups.get(key(i)).push(i);
+  }
+  plan.others = [...offGroups.values()].map((g) => {
+    const o = g[0];
+    const retailEnd = o.coolEnd || o.offerEnd;
+    return {
+      nos: g.map((i) => i.no), rcp: o.rcp, start: o.offerStart, end: o.offerEnd, retailEnd,
+      coolingFrom: o.coolingFrom, coolingTo: o.coolingTo, confirmBy: o.confirmBy,
+      passed: retailEnd < plan.asOf,
+    };
+  });
+  const koDay = (iso) => {
+    const d = new Date(iso + 'T00:00:00Z');
+    return `${d.getUTCMonth() + 1}월 ${d.getUTCDate()}일(${'일월화수목금토'[d.getUTCDay()]})`;
+  };
+  const dotDate = (iso) => iso.replace(/-/g, '.');
+  /** 표지 마감일 옆에 붙이는 한 문장. 일정이 하나뿐이면 빈 문자열이다. */
+  plan.othersNote = plan.others.map((o) =>
+    `단, 제${o.nos.join('·')}회는 별도 공시(청약 ${dotDate(o.start)}~${dotDate(o.end)})라 개인 일반투자자 마감이 `
+    + `${koDay(o.retailEnd)}${o.passed ? '로 이미 지났습니다' : '입니다'}.`).join(' ');
   plan.recordingRight = items.every((i) => i.recordingRight);
   plan.maxLossNotice = items.every((i) => i.maxLossNotice);
 
@@ -536,4 +603,34 @@ export async function analyze(rcpNo) {
     gapWorst: items.reduce((a, b) => ((b.fairValueGap ?? 0) < (a.fairValueGap ?? 0) ? b : a)),
     tierCount: [0, 1, 2].map((t) => items.filter((i) => i.tier === t).length),
   };
+}
+
+/**
+ * 기초자산끼리 같이 움직이는 정도를 말로 — `it.rho` 는 공시 상관 중 **가장 낮은 쌍**이다.
+ * 자산이 둘이면 그 값이 곧 "둘이 같이 움직이는 정도" 지만, 셋 이상이면 쌍이 여럿이라
+ * "둘이" 라고 하면 틀린다(2026-10-19 판 추천 3종이 모두 세 자산이었다).
+ */
+const KO_N = ['', '한', '두', '세', '네', '다섯'];
+export const rhoLabel = (it) => it.rho == null ? '기준 자산 하나'
+  : it.underlyings.length === 2 ? `둘이 같이 움직임 ${it.rho.toFixed(2)}`
+  : `가장 따로 노는 쌍 ${it.rho.toFixed(2)}`;
+/** "두 자산이" / "세 자산이 서로" — 뒤에 "거의 같이 움직이고" 따위가 온다 */
+export const togetherOf = (it) => it.underlyings.length === 2 ? '두 자산이' : `${KO_N[it.underlyings.length] ?? it.underlyings.length} 자산이 서로`;
+/** 괄호 안 값 — "0.96" / "가장 낮은 쌍도 0.81" */
+export const rhoValOf = (it) => it.underlyings.length === 2 ? it.rho.toFixed(2) : `가장 낮은 쌍도 ${it.rho.toFixed(2)}`;
+
+/**
+ * "기초자산이 같은 N종은 ○○도 똑같은데 수익률만 갈린다" 의 ○○ 부분.
+ * 같은 기초자산이라도 공시마다 적용 변동성이 조금씩 다를 수 있다 — 2026-10-19 판은
+ * 56.8% 와 57.4% 가 섞였는데 "적용 변동성(56.8%)도 똑같은데" 라고 찍혔다.
+ */
+export function sameGroupText(group) {
+  const vols = [...new Set(group.map((i) => i.vmax.toFixed(1)))].map(Number).sort((a, b) => a - b);
+  const months = [...new Set(group.map((i) => i.months))].sort((a, b) => a - b);
+  const mPart = months.length === 1 ? `기간(${months[0]}개월)도` : null;
+  if (vols.length === 1) {
+    return mPart ? `기초자산도, 적용 변동성(${vols[0].toFixed(1)}%)도, ${mPart} 똑같은데`
+      : `기초자산도, 적용 변동성(${vols[0].toFixed(1)}%)도 똑같은데`;
+  }
+  return `기초자산${mPart ? `도, ${mPart}` : '이'} 똑같고 적용 변동성도 ${vols[0].toFixed(1)}~${vols.at(-1).toFixed(1)}%로 거의 같은데`;
 }

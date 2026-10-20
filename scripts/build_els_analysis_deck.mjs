@@ -14,7 +14,7 @@
  * 표·도형·차트는 전부 네이티브라 파워포인트에서 그대로 고칠 수 있다.
  */
 import pptxgen from 'pptxgenjs';
-import { analyze, kindOf, tierOf, idxWorstOver, rankLow, regSlopeText, KINDS, TIER_RULE, money, baseOf, unitOf, josa, perRiskVsIdx } from './lib/els-analysis.mjs';
+import { analyze, kindOf, tierOf, idxWorstOver, rankLow, regSlopeText, KINDS, TIER_RULE, money, baseOf, unitOf, josa, perRiskVsIdx, sensText, rhoLabel, togetherOf, rhoValOf, sameGroupText } from './lib/els-analysis.mjs';
 
 const A = await analyze(process.argv[2]);
 const OUT = 'els-analysis-deck.pptx';   // 문서판 els-analysis.pdf 와 겹치지 않게
@@ -59,7 +59,7 @@ const slide = () => pres.addSlide();
  * 하나뿐인 상품(제38133회 KOSPI200)에 그냥 붙이면 값 자리에 "–" 가 찍힌다.
  */
 const rhoPhrase = (it) => (it?.rho != null && it.underlyings.length > 1
-  ? `에 같이 움직임 ${f1(it.rho, 2)}` : '');
+  ? `에 ${it.underlyings.length === 2 ? '같이 움직임' : '가장 따로 노는 쌍'} ${f1(it.rho, 2)}` : '');
 
 /**
  * 값이 갈린 짝을 두고 "무엇이 달라서" 를 적을 때, **실제로 다른 조건만** 짚는다.
@@ -83,8 +83,8 @@ const twinWhy = (T) => {
 const stockRec = A.slots.map((s2) => s2.pick).find((i) => kindOf(i) !== '지수');
 const stockAnswer = !stockRec
   ? `다만 이번 주 추천 ${A.slots.length}종은 모두 지수만 담은 상품이라, 그 걱정은 이 세 종에는 해당하지 않습니다.`
-  : `다만 제${stockRec.no}회는 ${stockRec.rho != null && stockRec.underlyings.length > 1
-      ? `두 자산이 거의 같이 움직이고(${f1(stockRec.rho, 2)}, 1이면 완전히 같이 움직임) ` : ''}`
+  : `다만 제${stockRec.no}회는 ${stockRec.rho != null && stockRec.underlyings.length > 1 && stockRec.rho >= 0.7
+      ? `${togetherOf(stockRec)} 거의 같이 움직이고(${rhoValOf(stockRec)}, 1이면 완전히 같이 움직임) ` : ''}`
     + `원금 지키는 선이 ${stockRec.floor}%로 아래에 있어서, 위험을 지는 대가로 손실 확률 1%당 연 ${f1(A.perRisk(stockRec), 2)}%를 줍니다 — 지수형 평균 ${f1(A.idxPerRisk, 2)}%보다 많습니다.`;
 
 // ══ 1. 표지 ════════════════════════════════════════════════════════════════
@@ -112,6 +112,13 @@ const stockAnswer = !stockRec
     s.addText(k, { x: 9.0, y: 2.1 + i * 0.84, w: 3.4, h: 0.24, fontFace: F, fontSize: 10, color: MUTED, margin: 0 });
     s.addText(v, { x: 9.0, y: 2.34 + i * 0.84, w: 3.4, h: 0.34, fontFace: F, fontSize: fs, bold: true, color: c, margin: 0 });
   });
+  // 위 날짜는 대표 공시 것이다. 일정이 다른 공시의 회차는 상자 밑에 따로 적는다.
+  if (P.others.length) {
+    s.addText(P.others.map((o) => `제${o.nos.join('·')}회는 별도 공시 — 개인 마감 ${dot(o.retailEnd)}${o.passed ? '(지남)' : ''}`
+      + `, 전체 ${dot(o.start)}~${dot(o.end)}`).join('\n'), {
+      x: 8.7, y: 4.64, w: 4.0, h: 0.5, fontFace: F, fontSize: 10, bold: true, color: WHITE, valign: 'top', margin: 0,
+    });
+  }
 
   // 부제와 안내문 사이가 통째로 비어 추천 요약을 얹는다
   s.addShape(pres.ShapeType.rect, { x: M, y: 4.52, w: 7.6, h: 0.02, fill: { color: WHITE }, line: { width: 0 } });
@@ -189,7 +196,10 @@ if (A.plan.hasCooling) {
   s.addText(`전문투자자·법인 등 숙려제도 대상이 아닌 경우에만 ${dot(P.end)}까지 청약할 수 있습니다. 만 65세 이상 고령투자자는 별도 확인 절차가 더해질 수 있습니다.`, {
     x: M, y: by + 0.84, w: CW, h: 0.3, fontFace: F, fontSize: 10.5, color: FAINT, margin: 0,
   });
-  s.addNotes(`마감일을 잘못 안내하면 고객이 청약 기회를 놓칩니다. 홈페이지의 ${dot(P.end)}이 아니라 ${dayLabel(P.retailEnd)}이 개인 일반투자자의 마감입니다.`);
+  if (P.othersNote) {
+    s.addText(P.othersNote, { x: M, y: by + 1.16, w: CW, h: 0.3, fontFace: F, fontSize: 10.5, bold: true, color: ACTIVE, margin: 0 });
+  }
+  s.addNotes(`마감일을 잘못 안내하면 고객이 청약 기회를 놓칩니다. 홈페이지의 ${dot(P.end)}이 아니라 ${dayLabel(P.retailEnd)}이 개인 일반투자자의 마감입니다.${P.othersNote ? ' ' + P.othersNote : ''}`);
 }
 
 // ══ 2. 이번 회차 한눈에 ════════════════════════════════════════════════════
@@ -312,13 +322,13 @@ if (A.plan.hasCooling) {
   const pts = [
     `평균으로 보면 맞는 말입니다. 개별 종목만 담은 상품이 지수만 담은 것의 ${f1(A.kindRatio)}배이고, 가격 출렁임도 ${f1(A.byKind.find((r) => r.key === '지수')?.vol, 0)}% 대 ${f1(A.byKind.find((r) => r.key === '종목')?.vol, 0)}%로 갈립니다.`,
     `그런데 상품 하나하나로 내려가면 뒤집힙니다. ${idxWorstOver(A.items, A.idxWorst) ? `지수만 담은 제${A.idxWorst.no}회가 ${f1(A.idxWorst.mcLoss)}%로 ${idxWorstOver(A.items, A.idxWorst)} 위험하고, ` : ''}제${A.stockBest.no}회는 ${f1(A.stockBest.mcLoss)}%로 ${rankLow(A.safest.findIndex((i) => i.no === A.stockBest.no) + 1, A.items.length)}.`,
-    `실제로 갈라놓은 건 자산 종류가 아니라 "원금 지키는 선이 얼마나 아래인가"와 "두 자산이 얼마나 같이 움직이는가"였습니다. 제${A.idxWorst.no}회는 선이 ${A.idxWorst.floor}%${A.idxWorst.knockIn == null ? '(낙인이 없어 만기에 지켜야 하는 선)' : '(이번 주에서 높은 축이라 여유가 적음)'}${rhoPhrase(A.idxWorst)}, 제${A.stockBest.no}회는 선이 ${A.stockBest.floor}%${rhoPhrase(A.stockBest)}입니다.`,
+    `실제로 갈라놓은 건 자산 종류가 아니라 "원금 지키는 선이 얼마나 아래인가"와 "기초자산끼리 얼마나 같이 움직이는가"였습니다. 제${A.idxWorst.no}회는 선이 ${A.idxWorst.floor}%${A.idxWorst.knockIn == null ? '(낙인이 없어 만기에 지켜야 하는 선)' : '(이번 주에서 높은 축이라 여유가 적음)'}${rhoPhrase(A.idxWorst)}, 제${A.stockBest.no}회는 선이 ${A.stockBest.floor}%${rhoPhrase(A.stockBest)}입니다.`,
   ];
   s.addText(pts.map((t, i) => ({ text: t, options: { bullet: true, breakLine: i < pts.length - 1 } })), {
     x: 6.44, y: y0 + 1.86, w: CW - 5.82, h: 3.0, fontFace: F, fontSize: 12.5, color: BODY, lineSpacing: 18, paraSpaceAfter: 12, margin: 0,
   });
   s.addShape(pres.ShapeType.rect, { x: M, y: y0 + 4.06, w: 5.5, h: 0.86, fill: { color: SURF }, line: { color: HAIR, width: 1 } });
-  s.addText(`두 자산이 따로 놀수록 "더 많이 떨어진 하나로 판정한다"는 조건에서 크게 불리해집니다. 무엇을 담았느냐보다 이쪽이 결정적입니다.`, {
+  s.addText(`기초자산끼리 따로 놀수록 "더 많이 떨어진 하나로 판정한다"는 조건에서 크게 불리해집니다. 무엇을 담았느냐보다 이쪽이 결정적입니다.`, {
     x: M + 0.2, y: y0 + 4.06, w: 5.1, h: 0.86, fontFace: F, fontSize: 11.5, color: BODY, valign: 'middle', lineSpacing: 16, margin: 0,
   });
   s.addNotes('고객이 "종목 들어간 건 위험하지 않나요"라고 물으면 이 장을 펴십시오. 일반론은 맞고, 상품별로는 확인이 필요하다는 답입니다.');
@@ -442,7 +452,7 @@ if (A.plan.hasCooling) {
   // 오른쪽 — 그림에서 바로 읽히는 것만 짧게
   const rx = M + 8.35, rw = CW - 8.35;
   const notes = [
-    ['왼쪽 위로 갈수록 좋습니다', `같은 위험을 지고 가장 많이 받는 쪽은 제${CE.fairBest.no}회(연 ${f1(CE.fairBest.annualRate)}% · 손실 확률 ${f1(CE.fairBest.mcLoss)}%)입니다.`, BLUE],
+    ['왼쪽 위로 갈수록 좋습니다', `같은 위험을 지고 가장 많이 받는 쪽은 ${CE.best.no === CE.fairBest.no ? '' : '값어치 멀쩡한 상품 중에서 '}제${CE.fairBest.no}회(연 ${f1(CE.fairBest.annualRate)}% · 손실 확률 ${f1(CE.fairBest.mcLoss)}%)입니다.`, BLUE],
     ['오른쪽 아래가 피할 자리', `제${CE.worst.no}회는 연 ${f1(CE.worst.annualRate)}%를 받자고 손실 확률 ${f1(CE.worst.mcLoss)}%를 집니다 — 손실 확률 1%당 ${f1(CE.ratio(CE.worst), 2)}%뿐입니다.`, BAD],
     ['줄이 아니라 구름입니다', `정비례한다면 점들이 한 줄에 놓여야 합니다. 흩어진 폭이 곧 고를 자리이고, 이번 회차는 위험당 대가가 ${f1(CE.spread, 1)}배까지 벌어집니다.`, ACTIVE],
   ];
@@ -467,7 +477,7 @@ if (A.plan.hasCooling) {
   const T = CW2.twin || CW2.twinAny;
   const cards = [
     T && CW2.group.length >= 2 && { n: '①', k: '상품 조건이 달라서', c: BLUE,
-      t: `${CW2.group[0].underlyings.join('·')} ${CW2.group.length}종은 기초자산도, 적용 변동성(${f1(CW2.group[0].vmax)}%)도, 기간(${CW2.group[0].months}개월)도 똑같은데 수익률만 갈립니다.\n\n`
+      t: `${CW2.group[0].underlyings.join('·')} ${CW2.group.length}종은 ${sameGroupText(CW2.group)} 수익률만 갈립니다.\n\n`
         + `제${T.hi.no}회 손실 확률 ${f1(T.hi.mcLoss)}% · 연 ${f1(T.hi.annualRate)}%\n`
         + `제${T.lo.no}회 손실 확률 ${f1(T.lo.mcLoss)}% · 연 ${f1(T.lo.annualRate)}%\n\n`
         + (CW2.twin
@@ -499,12 +509,12 @@ if (A.plan.hasCooling) {
   });
 
   if (CS) {
-    s.addText(`제${CS.no}회${C.sensIsPick ? `(추천 ${C.sensSlot}번)` : ''} — ${CS.isOverallBest ? '' : '값어치 멀쩡한 상품 중 '}손실 확률 1%당 수익률 1등. 이 우위가 공시 상관 ${f1(CS.disclosed, 2)} 하나에 얹혀 있는지 흔들어 봤습니다`, {
+    s.addText(`제${CS.no}회${C.sensIsPick ? `(추천 ${C.sensSlot}번)` : ''} — ${CS.isOverallBest ? '' : '값어치 멀쩡한 상품 중 '}손실 확률 1%당 수익률 1등. 이 우위가 공시 상관 ${sensText.disclosed(CS)}${CS.nPairs === 1 ? ' 하나' : ''}에 얹혀 있는지 흔들어 봤습니다`, {
       x: M, y: y0 + 2.46, w: CW, h: 0.26, fontFace: F, fontSize: 12, bold: true, color: INK, margin: 0,
     });
-    const rhoHd = [{ text: '같이 움직이는 정도', options: { bold: true, color: INK, fill: { color: SOFT } } }]
+    const rhoHd = [{ text: CS.nPairs === 1 ? '같이 움직이는 정도' : '같이 움직이는 정도 (모든 쌍)', options: { bold: true, color: INK, fill: { color: SOFT } } }]
       .concat(CS.rows.map((r) => ({
-        text: r.rho == null ? `서류값 ${f1(CS.disclosed, 2)}` : f1(r.rho, 2),
+        text: sensText.col(CS, r),
         options: { bold: true, color: INK, fill: { color: SOFT }, align: 'right' },
       })));
     const rrow = (label, f, hi) => [{ text: label, options: { bold: Boolean(hi), color: hi ? INK : BODY } }]
@@ -521,13 +531,15 @@ if (A.plan.hasCooling) {
     const last = CS.rows[CS.rows.length - 1];
     const flip = CS.flipAt;
     const tail = CS.stillFirst && CS.isOverallBest
-      ? `같이 움직이는 정도를 ${f1(last.rho, 2)}까지 억지로 낮춰도 손실 확률은 ${f1(CS.rows[0].loss)}% → ${f1(last.loss)}% 오르는 데 그치고, 손실 확률 1%당 수익률은 ${f1(last.ratio, 2)}%로 여전히 이번 회차 1등입니다. `
-        + `두 기초자산의 변동성이 ${f1(CS.volSpread)}%p나 벌어져 있어서, 같이 움직이든 말든 "더 나쁜 쪽"이 거의 항상 같은 자산이기 때문입니다. 변동성이 비슷한 짝이었다면 이렇게 버티지 못합니다.`
+      ? `같이 움직이는 정도를 ${sensText.to(CS, last)} 억지로 낮춰도 손실 확률은 ${f1(CS.rows[0].loss)}% → ${f1(last.loss)}% 오르는 데 그치고, 손실 확률 1%당 수익률은 ${f1(last.ratio, 2)}%로 여전히 이번 회차 1등입니다. `
+        + `${CS.nAssets === 2 ? '두 기초자산의' : '기초자산끼리'} 변동성이 ${f1(CS.volSpread)}%p나 벌어져 있어서, 같이 움직이든 말든 "더 나쁜 쪽"이 거의 항상 같은 자산이기 때문입니다. 변동성이 비슷한 짝이었다면 이렇게 버티지 못합니다.`
       : CS.stillFirst
-        ? `같이 움직이는 정도를 ${f1(last.rho, 2)}까지 낮춰도 손실 확률 1%당 수익률은 ${f1(last.ratio, 2)}%로 값어치 멀쩡한 상품 중 1등을 지킵니다.`
-        : `같이 움직이는 정도를 ${f1(flip.rho, 2)}까지만 낮춰도 손실 확률 1%당 수익률이 ${f1(flip.ratio, 2)}%로 제${CS.runnerUp.no}회(${f1(CS.runnerUpRatio, 2)}%)보다 낮아져 1등을 내줍니다`
-          + `(${f1(last.rho, 2)}이면 손실 확률 ${f1(CS.rows[0].loss)}% → ${f1(last.loss)}%). 이 상품의 우위는 두 자산이 서류값 ${f1(CS.disclosed, 2)}만큼 같이 움직인다는 전제에 기대고 있습니다.`;
-    s.addText(tail + (CS.baseDiffers
+        ? `같이 움직이는 정도를 ${sensText.to(CS, last)} 낮춰도 손실 확률 1%당 수익률은 ${f1(last.ratio, 2)}%로 값어치 멀쩡한 상품 중 1등을 지킵니다.`
+        : `같이 움직이는 정도를 ${sensText.to(CS, flip)}만 낮춰도 손실 확률 1%당 수익률이 ${f1(flip.ratio, 2)}%로 제${CS.runnerUp.no}회(${f1(CS.runnerUpRatio, 2)}%)보다 낮아져 1등을 내줍니다`
+          + `(${sensText.at(CS, last)} 손실 확률 ${f1(CS.rows[0].loss)}% → ${f1(last.loss)}%). 이 상품의 우위는 ${sensText.subject(CS)} 서류에 적힌 만큼(${sensText.disclosed(CS)}) 같이 움직인다는 전제에 기대고 있습니다.`;
+    // 쌍이 여럿이면 "모든 쌍을 같은 폭으로 낮췄다" 는 것을 밝힌다 — 안 밝히면 칸 머리의 −0.1 이 무엇인지 모른다.
+    const how = CS.nPairs > 1 ? ` 칸 머리의 −0.1 등은 ${CS.nPairs}쌍 모두를 서류값에서 그만큼 낮춘 것입니다(0 아래로는 내리지 않음).` : '';
+    s.addText(tail + how + (CS.baseDiffers
       ? ` 서류값 칸은 따로 다시 돌린 값이라 앞 숫자(${f1(CE.ratio(CE.fairBest), 2)}%)와 끝자리가 조금 다릅니다.` : ''), {
       x: M, y: y0 + 3.94, w: CW, h: 0.66, fontFace: F, fontSize: 10, color: FAINT, valign: 'top', lineSpacing: 13, margin: 0,
     });
@@ -599,7 +611,7 @@ A.slots.forEach((slot, idx) => {
     [`A. 발행사 ${it.simYearsWhole}년 백테스트`, `${f1(it.simLoss, 2)}%`, `${it.simRuns?.toLocaleString('ko-KR')}번 중 ${Math.round((it.simLoss ?? 0) / 100 * (it.simRuns ?? 0))}번`],
     ['B. 같은 조건 시뮬레이션 손실', `${f1(it.mcLoss)}%`, `${A.items.length}종 평균 ${f1(A.mcAvgAll)}% · 낮은 쪽 ${A.safest.findIndex((x) => x.no === it.no) + 1}번째`],
     [`${baseOf(it)}의 실제 값어치`, money(it, it.fairValue / 100), `제값보다 ${sgn(it.fairValueGap, 2)}%`],
-    ['가격 출렁임', `${f1(it.vmax)}%`, it.rho != null ? `둘이 같이 움직임 ${f1(it.rho, 2)}` : '기준 자산 하나'],
+    ['가격 출렁임', `${f1(it.vmax)}%`, rhoLabel(it)],
   ];
   const sy = hy + 2.14, sw = (CW - 0.24 * 3) / 4;
   stats.forEach(([k, v, sub], i) => {
@@ -630,7 +642,7 @@ function defence(it) {
   const base = `"개별 종목이 들어갔는데 괜찮나요?" → ${stock}${josa(stock, '이', '가')} 들어간 게 맞고, 가격 출렁임 ${f1(it.vmax)}%로 지수만 담은 상품 평균(${f1(idxAvg === undefined ? null : A.byKind.find((r) => r.key === '지수').vol)}%)보다 큰 것도 맞습니다. `;
   return it.mcLoss <= idxAvg
     ? base + `다만 컴퓨터로 똑같이 돌려본 손해 볼 가능성은 ${f1(it.mcLoss)}%로 지수만 담은 상품 평균(${f1(idxAvg)}%)보다 낮고, 지수만 담은 ${idxN}종 중 ${beats}종보다도 낮습니다. `
-      + (it.rho >= 0.7 ? `두 자산이 ${f1(it.rho, 2)}만큼 거의 같이 움직여서 "더 나쁜 쪽으로 판정"하는 불이익이 거의 없고, 원금 지키는 선도 ${it.knockIn}%로 훨씬 아래입니다.` : `원금 지키는 선이 ${it.knockIn}%로 훨씬 아래입니다.`)
+      + (it.rho >= 0.7 ? `${togetherOf(it)} ${rhoValOf(it)}만큼 거의 같이 움직여서 "더 나쁜 쪽으로 판정"하는 불이익이 거의 없고, 원금 지키는 선도 ${it.knockIn}%로 훨씬 아래입니다.` : `원금 지키는 선이 ${it.knockIn}%로 훨씬 아래입니다.`)
     : base + `손해 볼 가능성도 ${f1(it.mcLoss)}%로 지수만 담은 상품 평균(${f1(idxAvg)}%)보다 높습니다. 그런데도 올린 이유는 안전해서가 아니라 대가가 크기 때문입니다 — `
       + `손해 볼 가능성 1%마다 연 ${f1(A.perRisk(it), 2)}%로, 지수 상품 평균 ${f1(A.idxPerRisk, 2)}%의 ${f1(perRiskVsIdx(it, A.idxPerRisk))}배입니다. `
       + `원금 지키는 게 제일 중요한 분께는 추천 1번을 권하십시오.`;
@@ -722,7 +734,7 @@ function defence(it) {
   const s = slide();
   const chk = [
     ...(A.plan.hasCooling ? [[`청약 마감은 ${dayLabel(A.plan.retailEnd)}입니다`,
-      `홈페이지에는 ${dot(A.plan.start)}~${dot(A.plan.end)}로 나오지만 개인 일반투자자는 ${dayLabel(A.plan.retailEnd)}까지만 청약할 수 있습니다. 이후는 숙려·가입의사확인 기간이라 주문을 받을 수 없습니다.`]] : []),
+      `홈페이지에는 ${dot(A.plan.start)}~${dot(A.plan.end)}로 나오지만 개인 일반투자자는 ${dayLabel(A.plan.retailEnd)}까지만 청약할 수 있습니다. 이후는 숙려·가입의사확인 기간이라 주문을 받을 수 없습니다.${A.plan.othersNote ? ' ' + A.plan.othersNote : ''}`]] : []),
     [`${baseOf(A.head)}을 넣어도 ${baseOf(A.head)}어치가 아닙니다`,
       `넣는 순간의 실제 값어치가 ${money(A.gapBest, A.gapBest.fairValue / 100)}부터 ${money(A.gapWorst, A.gapWorst.fairValue / 100)}까지 벌어집니다. 차액은 회사 몫과 비용이고, 이마저도 앞으로 들 비용을 이미 뺀 값입니다.`],
     ['중간에 빼면 손해입니다',
@@ -833,7 +845,7 @@ function defence(it) {
 // ══ 꼬리말 — 표지 빼고 전 장 ═══════════════════════════════════════════════
 pres.slides.forEach((s, i) => {
   if (i === 0) return;
-  s.addText(`출처 — 금융감독원 전자공시시스템(DART)에 ${A.filedOn} 올라온 투자설명서 (접수번호 ${A.rcp})  ·  원금을 잃을 수 있는 상품입니다`, {
+  s.addText(`출처 — 금융감독원 전자공시시스템(DART)에 ${A.rcps.map((r) => `${r.slice(0, 4)}.${r.slice(4, 6)}.${r.slice(6, 8)}`).join('·')} 올라온 투자설명서 (접수번호 ${A.rcps.join(' · ')})  ·  원금을 잃을 수 있는 상품입니다`, {
     x: M, y: H - 0.42, w: CW - 0.7, h: 0.26, fontFace: F, fontSize: 8.5, color: FAINT, margin: 0,
   });
   s.addText(String(i + 1), { x: W - M - 0.6, y: H - 0.42, w: 0.6, h: 0.26, fontFace: F, fontSize: 9, color: FAINT, align: 'right', margin: 0 });

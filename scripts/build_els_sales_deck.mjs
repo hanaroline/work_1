@@ -16,7 +16,7 @@
  */
 import { readFile } from 'node:fs/promises';
 import pptxgen from 'pptxgenjs';
-import { analyze, kindOf, tierOf, unitOf, money, perRiskOf, perRiskSpread, TIER_CUT } from './lib/els-analysis.mjs';
+import { analyze, kindOf, tierOf, unitOf, money, perRiskOf, perRiskSpread, TIER_CUT, sensText } from './lib/els-analysis.mjs';
 
 const A = await analyze(process.argv[2]);   // 인자가 없으면 가장 최근 공시 회차
 const OUT = 'els-sales-deck.pptx';
@@ -152,6 +152,28 @@ const topRate = [...A.items].sort((a, b) => b.annualRate - a.annualRate)[0];
 // 그대로 쓰면 권하지 않는 상품을 권하게 된다.
 const topRest = [...REST].sort((a, b) => b.annualRate - a.annualRate)[0];
 // 두 상품의 수익률 차이를 말로 바꾼다. 회차마다 더 받기도 덜 받기도 한다.
+/**
+ * "제일 높은 걸로 주세요" — 1위가 권하지 않는 상품일 때의 답.
+ *
+ * 예전 문장은 늘 "수익률과 위험은 비례하지 않습니다" 로 끝났는데, 1위와 대안의
+ * 위험 차이가 작으면 그 결론이 서지 않는다(2026-10-19 판: 21.0% 대 18.0%에
+ * 손실 확률 25.9% 대 23.4% — 1.1배). 그래서 위험이 수익률보다 뚜렷이 더 벌어질
+ * 때만 그 말을 하고, 아니면 1위를 권하지 않는 실제 사유를 댄다.
+ */
+function topAnswer() {
+  const riskX = +(topRate.mcLoss / topRest.mcLoss).toFixed(1);
+  const rateX = topRate.annualRate / topRest.annualRate;
+  const head = `제일 높은 건 연 ${f1(topRate.annualRate, 1)}%인 제${topRate.no}회인데 손실 확률이 ${f1(topRate.mcLoss)}%입니다. `
+    + `권하지 않는 상품을 빼고 가장 높은 제${topRest.no}회는 연 ${f1(topRest.annualRate, 1)}%에 손실 확률 ${f1(topRest.mcLoss)}%입니다`;
+  if (riskX >= 1.5 && riskX > rateX * 1.25) {
+    return `그게 이번엔 안 맞습니다. ${head} — 제${topRate.no}회는 연 ${f1(topRate.annualRate - topRest.annualRate, 1)}%p 더 주는 대신 위험이 ${f1(riskX, 1)}배입니다. 수익률과 위험은 비례하지 않습니다.`;
+  }
+  const why = (topRate.fairValueGap ?? 0) <= -10 ? `넣는 순간 값어치가 ${f1(Math.abs(topRate.fairValueGap), 1)}% 깎여 있어`
+    : topRate.simShort ? `회사가 돌려본 기간이 ${f1(topRate.simYears, 1)}년뿐이라`
+    : `손실 확률이 이 자료가 권하는 선(${TIER_CUT[1]}%)을 넘어`;
+  return `${head}. 이 둘은 더 받는 만큼 위험도 커지는 사이입니다. 다만 제${topRate.no}회는 ${why} 권하지 않습니다. 수익률을 원하시면 제${topRest.no}회를, 위험을 줄이고 싶으시면 앞의 추천 ${A.slots.length}종을 보시죠.`;
+}
+
 const rateVs = (alt, base) => {
   const d = alt.annualRate - base.annualRate;
   if (Math.abs(d) < 1.5) return '받는 돈은 사실상 같은데';
@@ -241,10 +263,11 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
 
   // 위 일정은 대표 공시 기준이다. 다른 공시로 나온 회차는 날짜가 며칠씩 밀리므로
   // 여기에 따로 적는다 — 적지 않으면 창구가 전 종목을 같은 날로 안내하게 된다.
-  if (A.offSchedule.length) {
+  if (P.others.length) {
     s.addText(
-      A.offSchedule
-        .map((i) => `제${i.no}회는 청약 ${dot(i.offerStart)}~${dot(i.offerEnd)} (별도 공시)`)
+      P.others
+        .map((o) => `제${o.nos.join('·')}회는 별도 공시 — 개인 마감 ${dot(o.retailEnd)}${o.passed ? '(지남)' : ''}`
+          + `, 전체 ${dot(o.start)}~${dot(o.end)}`)
         .join('\n'),
       { x: 8.82, y: 6.02, w: 3.6, h: 0.4, fontFace: F, fontSize: 8.5, color: ACTIVE, margin: 0, lineSpacing: 11 },
     );
@@ -648,14 +671,19 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
   s.addShape(pres.ShapeType.rect, { x: M, y: yN, w: CW, h: 0.98, fill: { color: BLUE }, line: { width: 0 } });
   s.addText([
     { text: '그래서 고르는 자리가 생깁니다  ', options: { bold: true, color: WHITE } },
-    { text: `이번 회차에서 같은 위험을 지고 가장 많이 받는 쪽은 제${prBest.no}회(연 ${f1(prBest.annualRate, 1)}% · 손실 확률 ${f1(prBest.mcLoss)}%)이고, 가장 적게 받는 쪽은 제${prWorst.no}회(연 ${f1(prWorst.annualRate, 1)}% · ${f1(prWorst.mcLoss)}%)입니다. 수익률 순서로 고르면 이 차이가 보이지 않습니다.`,
+    // 위험당 대가 1등이 권하지 않는 상품이면 "고르는 자리" 로 그것을 가리키면 안 된다
+    // (2026-10-19 판: 제38223회를 가리켰는데 6장에서 권하지 않는 상품이었다).
+    { text: (CAU.some((c) => c.no === prBest.no) && C.eff.fairBest
+      ? `이번 회차에서 같은 위험을 지고 가장 많이 받는 쪽은 제${prBest.no}회지만 권하지 않는 상품이고, 값어치 멀쩡한 상품 중에서는 제${C.eff.fairBest.no}회(연 ${f1(C.eff.fairBest.annualRate, 1)}% · 손실 확률 ${f1(C.eff.fairBest.mcLoss)}%)입니다. `
+      : `이번 회차에서 같은 위험을 지고 가장 많이 받는 쪽은 제${prBest.no}회(연 ${f1(prBest.annualRate, 1)}% · 손실 확률 ${f1(prBest.mcLoss)}%)이고, `)
+      + `가장 적게 받는 쪽은 제${prWorst.no}회(연 ${f1(prWorst.annualRate, 1)}% · ${f1(prWorst.mcLoss)}%)입니다. 수익률 순서로 고르면 이 차이가 보이지 않습니다.`,
       options: { color: 'D9E3EE' } },
     ...(sens && sLo && sBase
       // 실제로 1등을 지키는지는 lib 가 정한다(stillFirst). 2026-10-13 제38194회는
       // 0.80 에서 이미 제38195회에 내줬는데 "결론이 한 값에 얹혀 있지 않다" 고 적었다.
       ? [{ text: sens.stillFirst
-          ? `  ※ 제${sens.no}회로 상관계수를 공시값 ${f1(sens.disclosed, 2)}에서 ${f1(sLo.rho, 1)}까지 낮춰 봐도 손실 확률은 ${f1(sBase.loss)}%→${f1(sLo.loss)}%에 머물고 1등은 그대로입니다 — 결론이 상관계수 한 값에 얹혀 있지 않습니다.`
-          : `  ※ 단, 제${sens.no}회${sens.isOverallBest ? '' : '(값어치 멀쩡한 상품 중 1등)'}의 우위는 공시 상관계수 ${f1(sens.disclosed, 2)}에 기대고 있습니다 — ${f1(sens.flipAt.rho, 2)}로만 낮춰도 위험 1%당 수익률이 ${f1(sens.flipAt.ratio, 2)}%로 제${sens.runnerUp.no}회(${f1(sens.runnerUpRatio, 2)}%)보다 낮아집니다.`,
+          ? `  ※ 제${sens.no}회로 상관계수를 공시값 ${sensText.disclosed(sens)}에서 ${sensText.to(sens, sLo)} 낮춰 봐도 손실 확률은 ${f1(sBase.loss)}%→${f1(sLo.loss)}%에 머물고 1등은 그대로입니다 — 결론이 상관계수 한 값에 얹혀 있지 않습니다.`
+          : `  ※ 단, 제${sens.no}회${sens.isOverallBest ? '' : '(값어치 멀쩡한 상품 중 1등)'}의 우위는 공시 상관계수 ${sensText.disclosed(sens)}에 기대고 있습니다 — ${sensText.to(sens, sens.flipAt)}만 낮춰도 위험 1%당 수익률이 ${f1(sens.flipAt.ratio, 2)}%로 제${sens.runnerUp.no}회(${f1(sens.runnerUpRatio, 2)}%)보다 낮아집니다.`,
           options: { color: '9FB6CE' } }]
       : []),
   ], { x: M + 0.2, y: yN, w: CW - 0.4, h: 0.98, fontFace: F, fontSize: 9, valign: 'middle', margin: 0, lineSpacing: 12.5 });
@@ -785,7 +813,7 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
      */
     ['“그냥 수익률 제일 높은 걸로 주세요.”',
       CAU.includes(topRate)
-        ? `그게 이번엔 안 맞습니다. 제일 높은 건 연 ${f1(topRate.annualRate, 1)}%인 제${topRate.no}회인데 손실 확률이 ${f1(topRate.mcLoss)}%입니다. 권하지 않는 상품을 빼고 가장 높은 제${topRest.no}회는 연 ${f1(topRest.annualRate, 1)}%에 손실 확률이 ${f1(topRest.mcLoss)}%뿐입니다 — ${rateVs(topRest, topRate)} 위험만 ${f1(topRate.mcLoss / topRest.mcLoss, 1)}배 지시는 셈입니다. 수익률과 위험은 비례하지 않습니다.`
+        ? topAnswer()
         : `이번엔 그 말씀이 맞습니다. 제일 높은 건 연 ${f1(topRate.annualRate, 1)}%인 제${topRate.no}회인데, 손실 확률이 ${f1(topRate.mcLoss)}%로 권해 드릴 수 있는 축입니다. 다만 수익률 순서를 그대로 따라가시면 안 됩니다 — 연 ${f1(CAU[0].annualRate, 1)}%인 제${CAU[0].no}회는 손실 확률이 ${f1(CAU[0].mcLoss)}%로, ${f1(topRate.annualRate, 1)}%짜리보다 ${f1(topRate.annualRate - CAU[0].annualRate, 1)}%p 덜 주면서 위험은 ${f1(CAU[0].mcLoss / topRate.mcLoss, 1)}배입니다. 수익률과 위험은 비례하지 않습니다.`],
   ];
 
@@ -815,7 +843,7 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
     ['2', '손실 조건을 숫자로 설명', `“${R2()}” — 배리어와 낙인을 %가 아니라 “얼마나 떨어져야 하는지”로 바꿔 말합니다.`],
     ['3', '확률과 크기를 함께 제시', `손실 확률 ${f1(REC[0].mcLoss)}%와 손실 시 평균 ${f1(Math.abs(REC[0].mcAvgLoss))}%를 한 문장에 같이 담습니다.`],
     ['4', '성향에 맞는 한 종만 권유', `${A.slots.length}종 중 하나로 좁혀 드립니다. ${CAU.length}종(제${CAU.map((c) => c.no).join('·')}회)은 권유 대상에서 제외합니다.`],
-    ['5', '일정과 절차 안내', `개인 일반투자자 마감은 ${dot(P.retailEnd)}입니다. 숙려 후 ${dot(P.confirmBy)}까지 가입의사를 직접 확인하지 않으면 청약이 취소됩니다.`],
+    ['5', '일정과 절차 안내', `개인 일반투자자 마감은 ${dot(P.retailEnd)}입니다. 숙려 후 ${dot(P.confirmBy)}까지 가입의사를 직접 확인하지 않으면 청약이 취소됩니다.${P.othersNote ? ' ' + P.othersNote : ''}`],
   ];
   steps.forEach(([n, t, b], i) => {
     const y = y0 + 0.52 + i * 1.0;

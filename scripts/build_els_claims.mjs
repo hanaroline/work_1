@@ -76,6 +76,14 @@ for (const [id, text, v] of [
   ['PLAN_ISSUE', '발행일', A.head.issueDate],
   ['PLAN_MATURITY', '만기일', A.head.maturityDate],
 ]) disclosed(id, '일정', text, ymd(v), 'YYYYMMDD', ['p1-cal', 'p8-step5']);
+// 대표 공시와 일정이 다른 공시의 회차 — 표지 밑·일정 안내에 따로 인쇄된다
+P.others.forEach((o, k) => {
+  for (const [id, text, v] of [
+    [`PLAN_X${k + 1}_START`, `제${o.nos.join('·')}회 청약 시작일 (별도 공시)`, o.start],
+    [`PLAN_X${k + 1}_RETAIL_END`, `제${o.nos.join('·')}회 개인 일반투자자 청약 종료일 (별도 공시)`, o.retailEnd],
+    [`PLAN_X${k + 1}_END`, `제${o.nos.join('·')}회 전체 청약 종료일 (별도 공시)`, o.end],
+  ]) disclosed(id, '일정', text, ymd(v), 'YYYYMMDD', ['p1-cal', 'p8-step5']);
+});
 
 disclosed('COUNT', '건수', '이번 회차 상품 수', A.items.length, '종', ['p1-title', 'p2-title']);
 disclosed('SIMYEARS_WHOLE', '검증 기간', '설명서 백테스트 검증 기간 (표지·부제에 쓰는 대표값)',
@@ -314,12 +322,17 @@ for (const it of A.items) {
     const lo = C.sens.rows.at(-1), base = C.sens.rows[0];
     disclosed('SENS_RHO_DISCLOSED', '상관계수', `민감도 확인에 쓴 제${C.sens.no}회의 공시 최저 상관계수`,
       +C.sens.disclosed.toFixed(2), '무차원', ['p5-foot']);
-    stat('SENS_RHO_LOW', '가정 상관계수', '민감도 확인에서 낮춰 본 상관계수 하한', lo.rho, '무차원', ['p5-foot'],
-      { note: '공시값이 아니라 우리가 가정해 넣은 값' });
+    if (C.sens.nPairs > 1) {
+      disclosed('SENS_RHO_DISCLOSED_MAX', '상관계수', `민감도 확인에 쓴 제${C.sens.no}회의 공시 최고 상관계수`,
+        +C.sens.disclosedMax.toFixed(2), '무차원', ['p5-foot']);
+    }
+    // 쌍이 하나면 낮춘 뒤의 값을, 여럿이면 낮춘 폭을 인쇄한다 (sensText.to)
+    stat('SENS_RHO_LOW', '가정 상관계수', '민감도 확인에서 낮춰 본 상관계수 하한(쌍이 여럿이면 낮춘 폭)',
+      lo.rho ?? lo.shift, '무차원', ['p5-foot'], { note: '공시값이 아니라 우리가 가정해 넣은 값' });
     stat('SENS_LOSS_BASE', '손실 확률 (민감도)', `제${C.sens.no}회 공시 상관계수 그대로의 손실 확률 (민감도 표본)`,
       +base.loss.toFixed(1), '%', ['p5-foot'],
       { note: `민감도는 경로 ${A.mc.paths.toLocaleString('ko-KR')} 대신 ${MC_SENS.paths.toLocaleString('ko-KR')} 로 돌린 값이라 본 계산과 소수점이 조금 다르다` });
-    stat('SENS_LOSS_LOW', '손실 확률 (민감도)', `제${C.sens.no}회 상관계수를 ${lo.rho} 로 낮췄을 때의 손실 확률`,
+    stat('SENS_LOSS_LOW', '손실 확률 (민감도)', `제${C.sens.no}회 상관계수를 ${lo.rho ?? `서류값 −${lo.shift}`} 로 낮췄을 때의 손실 확률`,
       +lo.loss.toFixed(1), '%', ['p5-foot']);
   }
 
@@ -359,6 +372,17 @@ computed('CAU_AVGLOSS', '손실 시 평균 손실 크기', `권하지 않는 ${C
 for (const k of A.byKind) {
   computed(`KIND_${k.key}`, '손실 확률', `${k.key}형 ${k.n}종의 평균 손실 확률`,
     +k.loss.toFixed(1), '%', k.key === '지수' ? ['p4-foot'] : []);
+}
+// 7장 "제일 높은 걸로 주세요" — 수익률 1위가 권하지 않는 상품일 때 대안과 견준 값
+{
+  const top = [...A.items].sort((a, b) => b.annualRate - a.annualRate)[0];
+  const alt = [...REST].sort((a, b) => b.annualRate - a.annualRate)[0];
+  if (top && alt && CAU.includes(top) && alt.mcLoss) {
+    computed('TOP_ALT_LOSS_RATIO', '손실 확률 배수', `수익률 1위 제${top.no}회와 대안 제${alt.no}회의 손실 확률 배수`,
+      +(top.mcLoss / alt.mcLoss).toFixed(1), '배', ['p7-script6']);
+    disclosed('TOP_ALT_RATE_DIFF', '수익률 차이', `제${top.no}회와 제${alt.no}회의 연 수익률 차이`,
+      +(top.annualRate - alt.annualRate).toFixed(1), '%p', ['p7-script6']);
+  }
 }
 // 6·7장 스크립트가 "대신 이걸 보시죠" 로 내미는 상품. 주의 종목을 뺀 나머지 중
 // 수익률 1위다 — 최고 수익률 회차가 주의 종목과 겹치는 주가 있어서 그렇게 잡는다.
@@ -626,16 +650,16 @@ if (STALE.length) {
   // ⑦ 상관 민감도 표 — 덱은 양 끝만 쓰지만 분석자료는 여섯 칸을 다 인쇄한다
   if (C.sens) {
     C.sens.rows.forEach((r, k) => {
-      if (r.rho != null && k < C.sens.rows.length - 1) {
-        stat(`SENS_RHO_${k}`, '가정 상관계수', `민감도 ${k}번째 칸의 가정 상관계수`, r.rho, '무차원', ['h-sens'],
+      if (k > 0) {
+        stat(`SENS_RHO_${k}`, '가정 상관계수', `민감도 ${k}번째 칸의 가정 상관계수(쌍이 여럿이면 낮춘 폭)`, r.rho ?? r.shift, '무차원', ['h-sens'],
           { note: '공시값이 아니라 우리가 가정해 넣은 값' });
       }
       if (k > 0 && k < C.sens.rows.length - 1) {
         stat(`SENS_LOSS_${k}`, '손실 확률 (민감도)',
-          `제${C.sens.no}회 상관계수 ${r.rho} 가정 시 손실 확률`, +r.loss.toFixed(1), '%', ['h-sens']);
+          `제${C.sens.no}회 상관계수 ${r.rho ?? `서류값 −${r.shift}`} 가정 시 손실 확률`, +r.loss.toFixed(1), '%', ['h-sens']);
       }
       stat(`SENS_RATIO_${k}`, '위험당 대가 (민감도)',
-        `제${C.sens.no}회 ${r.rho == null ? '공시 상관계수' : `상관계수 ${r.rho}`} 가정 시 위험당 대가`,
+        `제${C.sens.no}회 ${r.shift === 0 ? '공시 상관계수' : `상관계수 ${r.rho ?? `서류값 −${r.shift}`}`} 가정 시 위험당 대가`,
         +r.ratio.toFixed(2), '%', ['h-sens']);
     });
     stat('SENS_VOLSPREAD', '변동성 차이', `제${C.sens.no}회 두 기초자산의 적용 변동성 차이`,

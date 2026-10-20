@@ -20,7 +20,7 @@
  */
 import { writeFile } from 'node:fs/promises';
 import {
-  analyze, kindOf, tierOf, idxWorstOver, rankLow, regSlopeText, KINDS, TIER_RULE, IDX, MC, money, baseOf, unitOf, josa, perRiskVsIdx,
+  analyze, kindOf, tierOf, idxWorstOver, rankLow, regSlopeText, KINDS, TIER_RULE, IDX, MC, money, baseOf, unitOf, josa, perRiskVsIdx, sensText, rhoLabel, togetherOf, rhoValOf, sameGroupText,
 } from './lib/els-analysis.mjs';
 
 const OUT = 'els-analysis.html';
@@ -160,7 +160,7 @@ const defenceLine = (it) => {
   const body = safer
     ? `그런데 컴퓨터로 똑같이 돌려본 손실 확률은 <b>${f1(it.mcLoss, 1)}%</b>로 지수형 평균(${f1(idxAvg, 1)}%)<b>보다 낮고</b>, 지수만 담은 ${idxN}종 중 ${beats}종보다도 낮습니다. `
       + (it.rho != null && it.rho >= 0.7
-        ? `이유는 <b>두 자산이 거의 같이 움직이기 때문</b>입니다. 같이 움직이는 정도가 <b>${f1(it.rho, 2)}</b>(1이면 완전히 같이 움직임)라, "더 떨어진 하나로 판정한다"는 조건이 있어도 실제로 손해 볼 일이 거의 없습니다. 여기에 원금 지키는 선도 <b>${it.knockIn ?? it.maturityBarrier}%</b>로 아주 낮게 잡혀 있습니다.`
+        ? `이유는 <b>${togetherOf(it)} 거의 같이 움직이기 때문</b>입니다. 같이 움직이는 정도가 <b>${rhoValOf(it)}</b>(1이면 완전히 같이 움직임)라, "더 떨어진 하나로 판정한다"는 조건이 있어도 실제로 손해 볼 일이 거의 없습니다. 여기에 원금 지키는 선도 <b>${it.knockIn ?? it.maturityBarrier}%</b>로 아주 낮게 잡혀 있습니다.`
         : `원금 지키는 선이 <b>${it.knockIn ?? it.maturityBarrier}%</b>로 아주 낮게 잡혀 있어, 많이 출렁여도 거기까지 내려가려면 한참 남았습니다.`)
     : `그래서 손실 확률도 <b>${f1(it.mcLoss, 1)}%</b>로 지수형 평균(${f1(idxAvg, 1)}%)보다 <b>높습니다.</b> `
       + `그런데도 이 자리에 올린 이유는 안전해서가 아니라 <b>그 위험을 지는 대가를 그만큼 많이 주기 때문</b>입니다. `
@@ -197,7 +197,7 @@ const card = (slot, i) => {
           <div class="rf"><span>A. 발행사 ${it.simYearsWhole}년 백테스트</span><b>${f1(it.simLoss, 2)}%</b><small>${it.simRuns?.toLocaleString('ko-KR')}번 중 ${Math.round((it.simLoss ?? 0) / 100 * (it.simRuns ?? 0))}번 · 이익 ${f1(it.simWin, 2)}%</small></div>
           <div class="rf"><span>B. 같은 조건 시뮬레이션 손실</span><b>${f1(it.mcLoss, 1)}%</b><small>${items.length}종 평균 ${f1(mcAvgAll, 1)}% · ${rankLabel(it)}</small></div>
           <div class="rf"><span>${baseOf(it)}의 실제 값어치</span><b>${money(it, it.fairValue / 100)}</b><small>제값보다 ${sgn(it.fairValueGap, 2)}%</small></div>
-          <div class="rf"><span>가격 출렁임</span><b>${f1(it.vmax, 1)}%</b><small>${it.rho != null ? `둘이 같이 움직임 ${f1(it.rho, 2)}` : '기준 자산 하나'} · ${covLabel(it)} 최저 ${f1(it.low, 0)}%</small></div>
+          <div class="rf"><span>가격 출렁임</span><b>${f1(it.vmax, 1)}%</b><small>${rhoLabel(it)} · ${covLabel(it)} 최저 ${f1(it.low, 0)}%</small></div>
         </div>
         <p class="recwhy"><b>추천 이유</b> ${slot.why}${it.currency !== 'KRW'
           ? ` <b>${it.currency}</b>로 투자하고 ${it.currency}로 돌려받는 상품이라, 위 수익률에 환율 변동이 그대로 더해지거나 빠집니다.` : ''}</p>
@@ -349,7 +349,7 @@ if (T && CW.group.length >= 2) {
     // 폭이 다르다는 것이므로 그렇게 적는다.
     ? `${diffs.join(', ')}가 수익률과 손실 확률을 같은 폭으로 흔들지 않기 때문입니다.`
     : '기초자산과 기간이 같아도 상환 조건이 조금씩 달라 값이 갈립니다.';
-  whyItems.push(`<b>상품 조건이 달라서.</b> ${esc(CW.group[0].underlyings.join('·'))}를 기초자산으로 삼는 ${CW.group.length}종은 <b>기초자산도, 적용 변동성(${f1(CW.group[0].vmax, 1)}%)도, 기간(${CW.group[0].months}개월)도 똑같은데</b> 수익률만 ${f1(Math.min(...rates), 1)}~${f1(Math.max(...rates), 1)}%로 갈립니다. 제${T.hi.no}회는 손실 확률 ${f1(T.hi.mcLoss, 1)}%에 수익률 ${f1(T.hi.annualRate, 1)}%, 제${T.lo.no}회는 손실 확률 ${f1(T.lo.mcLoss, 1)}%에 수익률 ${f1(T.lo.annualRate, 1)}% — ${gapText} ${why}`);
+  whyItems.push(`<b>상품 조건이 달라서.</b> ${esc(CW.group[0].underlyings.join('·'))}를 기초자산으로 삼는 ${CW.group.length}종은 <b>${sameGroupText(CW.group)}</b> 수익률만 ${f1(Math.min(...rates), 1)}~${f1(Math.max(...rates), 1)}%로 갈립니다. 제${T.hi.no}회는 손실 확률 ${f1(T.hi.mcLoss, 1)}%에 수익률 ${f1(T.hi.annualRate, 1)}%, 제${T.lo.no}회는 손실 확률 ${f1(T.lo.mcLoss, 1)}%에 수익률 ${f1(T.lo.annualRate, 1)}% — ${gapText} ${why}`);
 }
 whyItems.push(`<b>값어치가 깎여서.</b> 제${CW.priced.no}회는 수익률 ${f1(CW.priced.annualRate, 1)}%인데 손실 확률이 <b>${f1(CW.priced.mcLoss, 1)}%</b>나 됩니다 — 손실 확률 1%마다 겨우 ${eff1(CW.priced)}%를 받는 셈${CW.priced.no === CE.worst.no ? '으로 이번 회차 꼴찌' : ''}입니다. 1만원을 넣는 순간의 값어치가 제값보다 ${f1(Math.abs(CW.priced.fairValueGap), 1)}%나 깎여 있어, 높은 수익률이 <b>위험을 진 대가가 아니라 비용으로 새어나간</b> 경우입니다. 이렇게 값어치가 많이 깎인 ${coupon.n - coupon.nFair}종만 빼도 수익률과 변동성의 관계가 ${f1(CR.vol.all.r, 2)}에서 <b>${f1(CR.vol.fair.r, 2)}</b>로 올라갑니다. 바꿔 말하면 <b>"높은 수익률 = 높은 위험"은 제값 받는 상품에서만 통합니다.</b>`);
 if (CW.fx) {
@@ -369,8 +369,8 @@ const whyCount = ['한 가지', '두 가지', '세 가지'][whyItems.length - 1]
 const stockRec = slots.map((s2) => s2.pick).find((i) => kindOf(i) !== '지수');
 const stockPick = !stockRec
   ? `다만 이번 주 추천 ${slots.length}종은 모두 지수만 담은 상품이라, 그 걱정은 이 세 종에는 해당하지 않습니다.`
-  : `다만 제${stockRec.no}회는 ${stockRec.rho != null && stockRec.underlyings.length > 1
-      ? `두 자산이 거의 같이 움직이고(${f1(stockRec.rho, 2)}, 1이면 완전히 같이 움직임) `
+  : `다만 제${stockRec.no}회는 ${stockRec.rho != null && stockRec.underlyings.length > 1 && stockRec.rho >= 0.7
+      ? `${togetherOf(stockRec)} 거의 같이 움직이고(${rhoValOf(stockRec)}, 1이면 완전히 같이 움직임) `
       : ''}원금 지키는 선이 ${stockRec.floor}%로 아래에 있어서, 위험을 지는 대가로 손실 확률 1%마다 연 ${f1(perRisk(stockRec), 2)}%를 줍니다 — 지수형 평균 ${f1(idxPerRisk, 2)}%보다 많습니다.`;
 
 const cautionCards = caution.map((it) => `        <div class="cau">
@@ -711,7 +711,7 @@ footer a{color:var(--muted)}
 <div class="asof ${phase}">
   <p class="asofk">홈페이지 확인</p>
   <p class="asofv">${stamp(checkedAt) || '–'} 기준 · 미래에셋증권 ELS/DLS 캘린더에 <b>청약 진행중 ${onOfferNow == null ? '–' : `${onOfferNow}건`}</b></p>
-  <p class="asofn">${phaseLine}</p>
+  <p class="asofn">${phaseLine}${plan.othersNote ? ` <b>${plan.othersNote}</b>` : ''}</p>
 </div>
 
 ${plan.hasCooling ? `<section class="tl">
@@ -749,7 +749,7 @@ ${plan.hasCooling ? `<section class="tl">
     </li>
   </ol>
   <p class="tlnote"><b>상담에서 이렇게 말씀하십시오</b> — "청약은 <b>${dayLabel(retailEnd)}까지</b> 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 숙려기간이라 주문을 받을 수 없고, 숙려기간이 끝나면 저희가 다시 연락드려 최종 의사를 확인합니다. 그때 확인이 안 되면 청약이 집행되지 않습니다."</p>
-  <p class="tlsub">전문투자자·법인 등 숙려제도 대상이 아닌 경우에만 ${offerTo}까지 청약할 수 있습니다. 만 65세 이상 고령투자자는 별도 확인 절차가 더해질 수 있습니다.</p>
+  <p class="tlsub">전문투자자·법인 등 숙려제도 대상이 아닌 경우에만 ${offerTo}까지 청약할 수 있습니다. 만 65세 이상 고령투자자는 별도 확인 절차가 더해질 수 있습니다.${plan.othersNote ? ` <b>${plan.othersNote}</b>` : ''}</p>
 </section>` : ''}
 
 <section>
@@ -785,7 +785,7 @@ ${plan.hasCooling ? `<section class="tl">
     <div class="mth">
       <p class="mk">B. 같은 조건 시뮬레이션 <span class="mine">직접 계산</span></p>
       <p class="mq">"회사가 값 매길 때 잡은 만큼 실제로 출렁인다면?"</p>
-      <p>${items.length}종 전부를 <b>똑같은 횟수(${MC.paths.toLocaleString('ko-KR')}번)·똑같은 기간·똑같은 규칙</b>으로 돌렸습니다. 얼마나 출렁이는지, 두 자산이 얼마나 같이 움직이는지는 지어내지 않고 <b>투자설명서에 적힌 값</b>을 그대로 넣었습니다.</p>
+      <p>${items.length}종 전부를 <b>똑같은 횟수(${MC.paths.toLocaleString('ko-KR')}번)·똑같은 기간·똑같은 규칙</b>으로 돌렸습니다. 얼마나 출렁이는지, 기초자산끼리 얼마나 같이 움직이는지는 지어내지 않고 <b>투자설명서에 적힌 값</b>을 그대로 넣었습니다.</p>
       <p><b>좋은 점</b> 기간 차이가 없어져서 ${items.length}종을 <b>공평하게 줄 세울 수</b> 있습니다.</p>
       <p><b>조심할 점</b> 어느 자산도 오른다고 보지 않았고(본전에서 출발), 회사가 쓴 출렁임 수치는 시장이 미리 걱정해서 얹어 놓은 값이라 <b>실제보다 크게 잡히는 게 보통</b>입니다. 그래서 이 숫자는 <b>넉넉하게 잡은 최대치</b>로 읽으셔야 합니다.</p>
     </div>
@@ -805,7 +805,7 @@ ${byKind.map((r) => `        <tr><td><b>${r.key}형</b></td><td class="num">${r.
   <ul class="keys">
     <li><b>평균으로 보면 맞는 말입니다.</b> 개별 종목만 담은 상품이 손해 볼 가능성이 지수만 담은 것의 <b>${f1(kindRatio, 1)}배</b>입니다. 가격 출렁임도 ${f1(byKind.find((r) => r.key === '지수')?.vol, 0)}% 대 ${f1(byKind.find((r) => r.key === '종목')?.vol, 0)}%로 확연히 갈립니다. 자산 종류부터 보는 관행에는 근거가 있습니다.</li>
     <li><b>그런데 상품 하나하나로 내려가면 뒤집힙니다.</b> ${idxWorstOver(items, idxWorst) ? `지수만 담은 제${idxWorst.no}회(${esc(idxWorst.underlyings.join('·'))})가 ${f1(idxWorst.mcLoss, 1)}%로, ${idxWorstOver(items, idxWorst)} 오히려 위험합니다. 반대로 ` : ''}제${stockBest.no}회(${esc(stockBest.underlyings.join('·'))})는 ${f1(stockBest.mcLoss, 1)}%로 ${rankLow(safest.findIndex((i) => i.no === stockBest.no) + 1, items.length)}.</li>
-    <li><b>실제로 갈라놓은 건 자산 종류가 아니라 두 가지였습니다.</b> 첫째, <b>원금 지키는 선이 얼마나 아래에 있는가</b> — 제${idxWorst.no}회는 ${idxWorst.knockIn == null ? '낙인이 없는 대신 만기에 지켜야 하는 선이' : '그 선이'} ${idxWorst.floor}%로 이번 주에서 높은 축이라, 조금만 빠져도 닿습니다. 둘째, <b>두 자산이 얼마나 같이 움직이는가</b> — 따로 노는 자산끼리 묶으면 "둘 중 더 나쁜 쪽"으로 판정하는 구조에서 훨씬 불리해집니다.${idxWorst.rho != null && stockBest.rho != null ? ` 이 값이 제${idxWorst.no}회는 ${f1(idxWorst.rho, 2)}, 제${stockBest.no}회는 ${f1(stockBest.rho, 2)}입니다(1이면 완전히 같이 움직임).` : ''}</li>
+    <li><b>실제로 갈라놓은 건 자산 종류가 아니라 두 가지였습니다.</b> 첫째, <b>원금 지키는 선이 얼마나 아래에 있는가</b> — 제${idxWorst.no}회는 ${idxWorst.knockIn == null ? '낙인이 없는 대신 만기에 지켜야 하는 선이' : '그 선이'} ${idxWorst.floor}%로 이번 주에서 높은 축이라, 조금만 빠져도 닿습니다. 둘째, <b>기초자산끼리 얼마나 같이 움직이는가</b> — 따로 노는 자산끼리 묶으면 "그중 더 나쁜 쪽"으로 판정하는 구조에서 훨씬 불리해집니다.${idxWorst.rho != null && stockBest.rho != null ? ` 가장 따로 노는 쌍으로 보면 이 값이 제${idxWorst.no}회는 ${f1(idxWorst.rho, 2)}, 제${stockBest.no}회는 ${f1(stockBest.rho, 2)}입니다(1이면 완전히 같이 움직임).` : ''}</li>
     <li><b>그래서 이 문서는 자산 종류로 거르지 않고, B의 손해 볼 가능성만 보고 등급을 매겼습니다.</b> 대신 개별 종목이 섞인 상품을 권할 때는 <b>왜 관행을 거스르는지</b>를 카드마다 적어 두었습니다. 고객이 "종목이 들어갔는데 안전하다고요?" 하시면 그 문장을 그대로 읽으시면 됩니다.</li>
   </ul>
 </section>
@@ -845,10 +845,10 @@ ${whyList}
   <p class="slead2">위 표에서 손실 확률은 <b>${f1(CR.loss.fair.r, 2)}</b>인데 <b>잃을 때 얼마나 잃는지</b>를 곱하면 <b>${f1(CR.expLoss.fair.r, 2)}</b>로 올라갑니다. 확률이 못 잡는 부분이 <b>손실의 크기</b>입니다 — 지수만 담은 상품은 손해가 나면 ${f1(avgLossOf('지수'), 0)}% 남짓 잃지만, 개별 종목 상품은 ${f1(avgLossOf('종목'), 0)}%가량 잃습니다. 발행사는 "얼마나 자주 잃느냐"만이 아니라 <b>"자주 × 크게"</b>로 값을 매기기 때문입니다. <b>그래서 등급이 같은 두 상품 중에 고르실 때는 기초자산 종류를 한 번 더 보십시오</b> — 손실 확률이 같아도 개별 종목 쪽이 실제로는 더 비싼 위험입니다.</p>
 
   <h3 class="sub3">가장 크게 어긋난 상품은 따로 흔들어 봤습니다 — ${CS.isOverallBest ? '' : '값어치 멀쩡한 상품 중 '}손실 확률 1%당 수익률 1등인 제${CS.no}회${coupon.sensIsPick ? ` (추천 ${coupon.sensSlot}번)` : ''}</h3>
-  <p class="slead2">그 우위가 <b>"두 기초자산이 ${f1(CS.disclosed, 2)}만큼 같이 움직인다"는 공시 값 하나에 얹혀 있는 건 아닌지</b>, 그 값을 억지로 낮춰가며 다시 돌려봤습니다.</p>
+  <p class="slead2">그 우위가 <b>"${sensText.subject(CS)} 서류에 적힌 만큼(${sensText.disclosed(CS)}) 같이 움직인다"는 공시 값에 얹혀 있는 건 아닌지</b>, 그 값을 억지로 낮춰가며 다시 돌려봤습니다.${CS.nPairs > 1 ? ` 칸 머리의 −0.1 등은 ${CS.nPairs}쌍 모두를 서류값에서 그만큼 낮춘 것입니다(0 아래로는 내리지 않음).` : ''}</p>
   <div class="tw">
     <table class="kt">
-      <thead><tr><th>두 자산이 같이 움직이는 정도</th>${CS.rows.map((r) => `<th class="num">${r.rho == null ? '서류값 ' + f1(CS.disclosed, 2) : f1(r.rho, 2)}</th>`).join('')}</tr></thead>
+      <thead><tr><th>${CS.nPairs === 1 ? '두 자산이 같이 움직이는 정도' : '같이 움직이는 정도 (모든 쌍)'}</th>${CS.rows.map((r) => `<th class="num">${sensText.col(CS, r)}</th>`).join('')}</tr></thead>
       <tbody>
         <tr><td>손실 확률</td>${sensRow((r) => f1(r.loss, 1) + '%')}</tr>
         <tr><td><b>손실 확률 1%당 연 수익률</b></td>${sensRow((r) => `<b>${f1(r.ratio, 2)}%</b>`)}</tr>
@@ -856,10 +856,10 @@ ${whyList}
     </table>
   </div>
   <p class="tnote">${CS.stillFirst && CS.isOverallBest
-    ? `같이 움직이는 정도를 ${f1(CS.rows[CS.rows.length - 1].rho, 2)}까지 억지로 낮춰도 손실 확률은 ${f1(CS.rows[0].loss, 1)}%에서 ${f1(CS.rows[CS.rows.length - 1].loss, 1)}%로 오르는 데 그치고, 손실 확률 1%당 수익률은 ${f1(CS.rows[CS.rows.length - 1].ratio, 2)}%로 <b>여전히 1등</b>입니다. 두 기초자산의 변동성이 ${f1(CS.volSpread, 1)}%p나 벌어져 <b>같이 움직이든 말든 "더 나쁜 쪽"이 거의 항상 같은 자산</b>이기 때문입니다.`
+    ? `같이 움직이는 정도를 ${sensText.to(CS, CS.rows[CS.rows.length - 1])} 억지로 낮춰도 손실 확률은 ${f1(CS.rows[0].loss, 1)}%에서 ${f1(CS.rows[CS.rows.length - 1].loss, 1)}%로 오르는 데 그치고, 손실 확률 1%당 수익률은 ${f1(CS.rows[CS.rows.length - 1].ratio, 2)}%로 <b>여전히 1등</b>입니다. ${CS.nAssets === 2 ? '두 기초자산의' : '기초자산끼리'} 변동성이 ${f1(CS.volSpread, 1)}%p나 벌어져 <b>같이 움직이든 말든 "더 나쁜 쪽"이 거의 항상 같은 자산</b>이기 때문입니다.`
     : CS.stillFirst
-      ? `같이 움직이는 정도를 ${f1(CS.rows[CS.rows.length - 1].rho, 2)}까지 낮춰도 손실 확률 1%당 수익률은 ${f1(CS.rows[CS.rows.length - 1].ratio, 2)}%로 <b>값어치 멀쩡한 상품 중 1등을 지킵니다.</b>`
-      : `같이 움직이는 정도를 ${f1(CS.flipAt.rho, 2)}까지만 낮춰도 손실 확률 1%당 수익률이 ${f1(CS.flipAt.ratio, 2)}%로 제${CS.runnerUp.no}회(${f1(CS.runnerUpRatio, 2)}%)보다 낮아져 <b>1등을 내줍니다</b>(${f1(CS.rows[CS.rows.length - 1].rho, 2)}이면 손실 확률 ${f1(CS.rows[0].loss, 1)}% → ${f1(CS.rows[CS.rows.length - 1].loss, 1)}%). 이 상품의 우위는 <b>두 자산이 서류값 ${f1(CS.disclosed, 2)}만큼 같이 움직인다는 전제</b>에 기대고 있습니다.`}${CS.baseDiffers
+      ? `같이 움직이는 정도를 ${sensText.to(CS, CS.rows[CS.rows.length - 1])} 낮춰도 손실 확률 1%당 수익률은 ${f1(CS.rows[CS.rows.length - 1].ratio, 2)}%로 <b>값어치 멀쩡한 상품 중 1등을 지킵니다.</b>`
+      : `같이 움직이는 정도를 ${sensText.to(CS, CS.flipAt)}만 낮춰도 손실 확률 1%당 수익률이 ${f1(CS.flipAt.ratio, 2)}%로 제${CS.runnerUp.no}회(${f1(CS.runnerUpRatio, 2)}%)보다 낮아져 <b>1등을 내줍니다</b>(${sensText.at(CS, CS.rows[CS.rows.length - 1])} 손실 확률 ${f1(CS.rows[0].loss, 1)}% → ${f1(CS.rows[CS.rows.length - 1].loss, 1)}%). 이 상품의 우위는 <b>${sensText.subject(CS)} 서류에 적힌 만큼(${sensText.disclosed(CS)}) 같이 움직인다는 전제</b>에 기대고 있습니다.`}${CS.baseDiffers
     ? ` 서류값 칸은 따로 다시 돌린 값이라 앞 숫자(${f1(CE.ratio(CE.fairBest), 2)}%)와 끝자리가 조금 다릅니다.` : ''}</p>
 
   <p class="mnote"><b>상담에서 쓰실 한 줄</b> — ${topIsFairBest
@@ -914,7 +914,7 @@ ${cautionCards}
   <div class="checks">
     ${plan.hasCooling ? `<div class="chk warnbox">
       <h4>1. 청약 마감은 ${dayLabel(retailEnd)}입니다</h4>
-      <p>홈페이지에는 ${offerFrom}~${offerTo}로 나오지만, 개인 일반투자자는 <b>${dayLabel(retailEnd)}까지</b>만 청약할 수 있습니다. ${dot(plan.coolingFrom)}~${dot(plan.coolingTo)}은 숙려기간, ${dot(plan.confirmBy)}은 가입의사확인기간이라 주문을 받을 수 없습니다. <b>마감일을 잘못 안내하면 고객이 청약 기회를 놓칩니다.</b></p>
+      <p>홈페이지에는 ${offerFrom}~${offerTo}로 나오지만, 개인 일반투자자는 <b>${dayLabel(retailEnd)}까지</b>만 청약할 수 있습니다. ${dot(plan.coolingFrom)}~${dot(plan.coolingTo)}은 숙려기간, ${dot(plan.confirmBy)}은 가입의사확인기간이라 주문을 받을 수 없습니다. <b>마감일을 잘못 안내하면 고객이 청약 기회를 놓칩니다.</b>${plan.othersNote ? ` ${plan.othersNote}` : ''}</p>
     </div>` : ''}
     <div class="chk">
       <h4>${plan.hasCooling ? 2 : 1}. 1만원을 넣어도 1만원어치가 아닙니다</h4>
@@ -985,11 +985,11 @@ ${[
 </main>
 
 <footer class="wrap">
-  <p><b>어디서 가져온 숫자인가</b> — 금융감독원 전자공시시스템(DART)에 ${filedOn} 올라온 미래에셋증권 투자설명서(일괄신고추가서류 접수번호 ${RCP})입니다. 조건·값어치·가격 출렁임·회사가 돌려본 결과는 <b>사람이 옮겨 적지 않고 공시 원문에서 그대로 뽑았습니다.</b></p>
-  <p>청약 일정(숙려제도 대상청약기간 · 숙려기간 · 가입의사확인기간)도 투자설명서 상품개요 표에 적힌 날짜 그대로이며, 이번 주 ${items.length}종이 전부 같습니다. 자본시장법상 개인 일반투자자는 2영업일 이상의 숙려기간을 거쳐야 하고, 그 기간과 가입의사확인기간에는 청약할 수 없습니다.</p>
+  <p><b>어디서 가져온 숫자인가</b> — 금융감독원 전자공시시스템(DART)에 ${filedOn} 올라온 미래에셋증권 투자설명서(일괄신고추가서류 접수번호 ${A.rcps.join(' · ')})입니다. 조건·값어치·가격 출렁임·회사가 돌려본 결과는 <b>사람이 옮겨 적지 않고 공시 원문에서 그대로 뽑았습니다.</b></p>
+  <p>청약 일정(숙려제도 대상청약기간 · 숙려기간 · 가입의사확인기간)도 투자설명서 상품개요 표에 적힌 날짜 그대로${plan.uniform ? `이며, 이번 주 ${items.length}종이 전부 같습니다` : `입니다. 위 일정은 대표 공시 기준이고, ${plan.others.map((o) => `제${o.nos.join('·')}회`).join('·')}는 별도 공시라 날짜가 다릅니다`}. 자본시장법상 개인 일반투자자는 2영업일 이상의 숙려기간을 거쳐야 하고, 그 기간과 가입의사확인기간에는 청약할 수 없습니다.</p>
   <p>판매 중인지 여부는 ${stamp(checkedAt) || '–'}에 미래에셋증권 홈페이지 ELS/DLS 목록을 상태별로 조회해 확인했습니다. 공시는 판매 시작 며칠 전에 올라오므로, <b>문서에 실린 회차가 오늘 곧바로 살 수 있다는 뜻은 아닙니다.</b></p>
   <p>과거 최저점과 자체 검증 수치는 ${dot(String(H.dates[0]))}~${dot(String(H.dates[H.dates.length - 1]))} 기준 자산의 일별 종가로, 매 거래일 가입했다고 치고 끝까지 돌린 결과입니다. 늦게 상장한 자산이 섞인 상품은 그만큼 돌려본 기간이 짧으며, 상품마다 실제 기간을 적어 두었습니다.</p>
-  <p><b>B(같은 조건 시뮬레이션 손실)는 이 문서가 직접 계산한 값입니다.</b> 상품마다 앞으로 나올 법한 가격 흐름을 ${MC.paths.toLocaleString('ko-KR')}가지 만들어, 실제 확인일·원금 지키는 선·조기 종료 규칙을 그대로 적용해 셌습니다. 출렁임 정도와 두 자산이 같이 움직이는 정도는 지어내지 않고 <b>투자설명서에 회사가 적어 놓은 값</b>을 그대로 썼습니다(회사 표기 기준 — 해당 만기의 변동성, 같이 움직이는 정도는 최근 180영업일 실제 값). 어느 자산도 오르거나 내린다고 가정하지 않았고, 난수를 고정해 두어 같은 조건이면 언제 돌려도 같은 값이 나옵니다. 회사가 쓴 출렁임 수치는 실제보다 크게 잡히는 것이 보통이라 이 확률은 <b>넉넉하게 잡은 최대치</b>로 읽으셔야 하며, 회사의 상품 가격 계산이나 손익과는 무관한 별개 계산입니다.</p>
+  <p><b>B(같은 조건 시뮬레이션 손실)는 이 문서가 직접 계산한 값입니다.</b> 상품마다 앞으로 나올 법한 가격 흐름을 ${MC.paths.toLocaleString('ko-KR')}가지 만들어, 실제 확인일·원금 지키는 선·조기 종료 규칙을 그대로 적용해 셌습니다. 출렁임 정도와 기초자산끼리 같이 움직이는 정도는 지어내지 않고 <b>투자설명서에 회사가 적어 놓은 값</b>을 그대로 썼습니다(회사 표기 기준 — 해당 만기의 변동성, 같이 움직이는 정도는 최근 180영업일 실제 값). 어느 자산도 오르거나 내린다고 가정하지 않았고, 난수를 고정해 두어 같은 조건이면 언제 돌려도 같은 값이 나옵니다. 회사가 쓴 출렁임 수치는 실제보다 크게 잡히는 것이 보통이라 이 확률은 <b>넉넉하게 잡은 최대치</b>로 읽으셔야 하며, 회사의 상품 가격 계산이나 손익과는 무관한 별개 계산입니다.</p>
   <p>본 자료는 투자 권유를 위한 참고 자료입니다. 실제로 가입하시기 전에 <b>투자설명서와 간이투자설명서를 반드시 확인</b>하셔야 합니다. <b>원금 손실이 날 수 있는 상품입니다.</b></p>
   <p>생성 ${builtOn} · scripts/build_els_analysis.mjs</p>
 </footer>
