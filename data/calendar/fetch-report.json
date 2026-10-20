@@ -1,5 +1,5 @@
 {
-  "ranAt": "2026-10-12T01:14:11Z",
+  "ranAt": "2026-10-19T01:30:13Z",
   "note": "발표기관 원문에서 확정 날짜를 받아 seed 를 갱신한 결과. ok=false 인 경로는 seed 를 손대지 않았다 — 검색으로 확인해 둔 날짜가 그대로 남아 있다.",
   "dryRun": false,
   "sources": {
@@ -10,7 +10,7 @@
       "ok": true,
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "bytes": 167852,
-      "count": 13,
+      "count": 12,
       "changes": []
     },
     "ecb": {
@@ -20,7 +20,7 @@
       ],
       "ok": true,
       "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260630~9f54a0a4fb.en.html",
-      "bytes": 108131,
+      "bytes": 108247,
       "count": 9,
       "changes": []
     },
@@ -30,8 +30,8 @@
       ],
       "ok": true,
       "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
-      "bytes": 83410,
-      "count": 13,
+      "bytes": 83370,
+      "count": 12,
       "changes": []
     },
     "boj": {
@@ -42,7 +42,7 @@
       "ok": true,
       "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
       "bytes": 41593,
-      "count": 13,
+      "count": 12,
       "changes": []
     },
     "bok": {
@@ -93,12 +93,8 @@
       "urls": [
         "https://www.treasurydirect.gov/TA_WS/securities/upcoming?format=json"
       ],
-      "ok": true,
-      "url": "https://www.treasurydirect.gov/TA_WS/securities/upcoming?format=json",
-      "count": 7,
-      "changes": [
-        "예정 입찰일 7일분"
-      ]
+      "ok": false,
+      "why": "믿을 수 없어 반영하지 않았다 — 입찰을 0건만 읽었다"
     },
     "fred": {
       "ok": false,
@@ -107,7 +103,7 @@
   },
   "summary": {
     "sources": 10,
-    "ok": 8,
-    "failed": 2
+    "ok": 7,
+    "failed": 3
   }
 }
