@@ -99,6 +99,37 @@ jobs:
           }
           "
 
+      # 위험등급 근거(VaR)와 클래스별 보수 표는 위 발췌의 14줄 안에 다 들어오지 않는다.
+      # 값이 크게 뛴 종목을 원문과 맞춰 보려면 그 대목을 통째로 봐야 한다.
+      - name: 원문 발췌 — 위험등급(VaR)·보수 표 대목
+        if: always()
+        run: |
+          node -e "
+          const fs=require('fs'), path='/tmp/sample/text';
+          if(!fs.existsSync(path)){ console.log('(받아 둔 원문 없음)'); process.exit(0); }
+          const files=fs.readdirSync(path).filter(f=>f.endsWith('.txt'));
+          const show=(t,re,before,after,max,lines)=>{
+            const shown=[]; let n=0;
+            for(const m of t.matchAll(re)){
+              const at=m.index;
+              if(shown.some(x=>Math.abs(x-at)<after)) continue;
+              shown.push(at); if(++n>max) break;
+              const seg=t.slice(Math.max(0,at-before), at+after).replace(/\t/g,' | ').replace(/\n{2,}/g,'\n');
+              console.log('  ── @'+at+' 「'+m[0]+'」 ──');
+              seg.split('\n').map(l=>l.trim()).filter(Boolean).slice(0,lines).forEach(l=>console.log('     '+l.slice(0,180)));
+            }
+          };
+          for(const f of files){
+            const t=fs.readFileSync(path+'/'+f,'utf8');
+            console.log('');
+            console.log('════════ '+f+' ════════');
+            console.log('[위험등급·VaR]');
+            show(t,/최대\s*손실\s*예상액|VaR|수익률\s*변동성|변동성은/gi,300,500,8,16);
+            console.log('[보수 표]');
+            show(t,/투자자가 부담하는 수수료|수수료,\s*총보수 및 비용/g,80,1800,3,40);
+          }
+          "
+
       - name: 추출률
         env:
           FIELDS: ${{ inputs.fields || 'clsA,clsAExp,redeemFee,liqRisk' }}
