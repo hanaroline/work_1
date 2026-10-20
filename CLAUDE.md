@@ -73,6 +73,10 @@
 **[docs/handover/월배당ETF제안서-프롬프트.md](docs/handover/월배당ETF제안서-프롬프트.md)**.
 갱신은 **매월 1일 10:00 KST GitHub Actions cron** 이 저절로 합니다(Claude 예약 아님).
 
+**공모펀드 조회**(`fund-search.html`) — `main` 이 아니라 **`claude/fund-search-tool`**
+가지(조상 없음)에만 있습니다. 인계는 그 가지의 `docs/fund-continuity.md`
+(`git show origin/claude/fund-search-tool:docs/fund-continuity.md`)를 보십시오.
+
 그 밖의 갈래(증권사 리포트 · 매매 타이밍 · 100대 기업 대시보드 · 마포 WM ·
 데이터센터 밸류체인 맵)는 `docs/handover/` 의 해당 문서를, 문서가 없는 갈래는
 `README.md`(248KB)의 해당 절을 보십시오.

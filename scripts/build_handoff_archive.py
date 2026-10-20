@@ -184,9 +184,6 @@ def main():
     if not sections:
         sys.exit('보관본에서 절 구분을 찾지 못했습니다.')
 
-    today = datetime.date.today().isoformat()
-    head = re.sub(r'(작성\s+)\d{4}-\d{2}-\d{2}', r'\g<1>' + today, head)
-
     rebuilt = []
     for sec in sections:
         if sec['num'] == 3:
@@ -207,6 +204,14 @@ def main():
             return 0
         print('어긋남 있음 — `python3 scripts/build_handoff_archive.py` 로 다시 만드십시오.')
         return 1
+
+    # 날짜는 내용이 바뀌었을 때만 새로 찍는다. 먼저 찍으면 날이 바뀔 때마다
+    # --check 가 내용과 상관없이 어긋남을 알린다.
+    if new == old:
+        print('바뀐 것 없음 — 보관본이 이미 routines.json 과 맞습니다.')
+        return 0
+    today = datetime.date.today().isoformat()
+    new = re.sub(r'(작성\s+)\d{4}-\d{2}-\d{2}', r'\g<1>' + today, new, count=1)
 
     with io.open(ARCHIVE, 'w', encoding='utf-8') as fp:
         fp.write(new)
