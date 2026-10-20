@@ -187,7 +187,9 @@ python3 vendor/check_claims.py tools/discovery/els-claims.json
    쪽 수와 글자 수가 그대로이고 더 작을 때만 바꿔치기한다.
 
 손으로 돌릴 때는 `workflow_dispatch` 로 부르고(`ref` = `main`), 새 회차가 없어도
-다시 빌드하려면 `force` 를 켠다.
+다시 빌드하려면 `force` 를 켠다. `force` 만 켜면 가장 큰 접수번호 **하나**만 집힌다.
+공시 둘을 묶은 판을 그대로 다시 내려면 `rcp` 에 접수번호를 쉼표로 넘긴다
+(예: `20261016000319,20261014000084`, 2026-10-20 에 입력을 추가했다).
 
 **러너가 도는 동안 작업 브랜치에 push 하지 않는다.** 러너는 끝에 pull 없이
 `git push origin HEAD:<브랜치>` 를 하므로, 그 사이 올라간 커밋이 있으면 러너 쪽
