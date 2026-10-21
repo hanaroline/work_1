@@ -92,7 +92,8 @@ function parseStructure(desc) {
   ) || [])[0];
 
   let barriers = null;
-  let lizard = null;
+  // 리자드는 회차마다 붙을 수 있다 — "90(75)-85(65)-…" 는 1·2차 모두 리자드다
+  const lizards = [];
   if (seq) {
     barriers = [];
     for (const token of seq.split(/\s*-\s*/)) {
@@ -101,21 +102,27 @@ function parseStructure(desc) {
       const bar = Number(m[1]);
       if (!(bar > 0 && bar <= 200)) continue;
       const index = barriers.push(bar) - 1;
-      if (m[2] && /^\d{2,3}(?:\.\d+)?$/.test(m[2])) lizard = { index, barrier: Number(m[2]) };
+      if (m[2] && /^\d{2,3}(?:\.\d+)?$/.test(m[2])) lizards.push({ index, barrier: Number(m[2]) });
     }
     if (!barriers.length) barriers = null;
   }
 
   // "리자드 조건 충족 시 연 20.5%" — 리자드 상환 시 적용되는 수익률
-  if (lizard) {
+  if (lizards.length) {
     const rate = (s.match(/리자드[^0-9%]*(\d+(?:\.\d+)?)\s*%/) || [])[1];
-    if (rate) lizard.rate = Number(rate);
+    if (rate) for (const lz of lizards) lz.rate = Number(rate);
   }
 
   const kiRaw = (s.match(/(?:KI|K\.I|낙인|녹인)\s*[:\s]*([0-9]{2,3}(?:\.\d+)?|-|없음)/i) || [])[1];
   const knockIn = !kiRaw || kiRaw === '-' || kiRaw === '없음' ? null : Number(kiRaw);
 
-  return { barriers, knockIn, lizard };
+  return { barriers, knockIn, lizards };
+}
+
+/** i 번째 회차의 리자드 필드 — 없으면 빈 객체 */
+function lizardAt(lizards, i) {
+  const lz = lizards.find((x) => x.index === i);
+  return lz ? { lizard: lz.barrier, lizardRate: lz.rate ?? null } : {};
 }
 
 /**
@@ -147,7 +154,7 @@ function normalize(r) {
   const couponRate = toNum(r.omkt_drv_frcs_ern_r);
   if (couponRate == null) return null;
 
-  const { barriers, knockIn: descKi, lizard } = parseStructure(r.omkt_drv_desc_cn);
+  const { barriers, knockIn: descKi, lizards } = parseStructure(r.omkt_drv_desc_cn);
 
   const maturityMonths = toMonths(r.omkt_drv_exrt_cycl_cn)
     ?? (barriers ? barriers.length * (toMonths(r.omkt_drv_rpy_cycl_cn) ?? 6) : 36);
@@ -159,9 +166,7 @@ function normalize(r) {
   const schedule = Array.from({ length: count }, (_, i) => ({
     months: Math.round(step * (i + 1)),
     barrier: barriers ? barriers[i] : null,
-    ...(lizard && lizard.index === i
-      ? { lizard: lizard.barrier, lizardRate: lizard.rate ?? null }
-      : {}),
+    ...lizardAt(lizards, i),
   })).filter((x) => x.barrier != null);
   if (!schedule.length) return null;
 
@@ -395,4 +400,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   main().catch((e) => { console.error(e); process.exit(1); });
 }
 
-export { parseStructure, normalize, serializeData, readData };
+export { parseStructure, lizardAt, normalize, serializeData, readData };
