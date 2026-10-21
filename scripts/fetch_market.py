@@ -3588,8 +3588,35 @@ def supply_bands(series, n=6):
 _EARN_PAT = re.compile(
     r"(실적|매출|영업이익|어닝|컨퍼런스콜|컨콜|가이던스|잠정실적|분기\s*실적)")
 _CALL_PAT = re.compile(r"(컨퍼런스콜|컨콜|실적\s*발표\s*후|콜에서)")
-_BEAT_PAT = re.compile(r"(상회|웃돌|서프라이즈|어닝\s*서프)")
-_MISS_PAT = re.compile(r"(하회|밑돌|쇼크|어닝\s*쇼크|부진)")
+_BEAT_PAT = re.compile(r"(상회|웃돌)")
+_MISS_PAT = re.compile(r"(하회|밑돌)")
+# 「상회·웃돌」만으로는 판정이 아니다 — 「매출 증가율이 투자 증가율을 웃돌 것」도
+# 걸린다. **기준(컨센서스·전망치)과 같은 문장**에 있고 **이미 나온 결과**일 때만 본다.
+_BASIS_PAT = re.compile(r"(컨센서스|전망치|예상치|추정치|기대치|시장\s*(?:기대|예상|전망))")
+_FUTURE_PAT = re.compile(r"(상회|웃돌|하회|밑돌)[가-힣]{0,3}\s*(것|전망|예정|듯|가능성)")
+_BEAT_WORD = re.compile(r"어닝\s*서프라이즈")
+_MISS_WORD = re.compile(r"어닝\s*쇼크")
+
+
+def _earn_verdict(nm, title, sents):
+    """회사 이름이 든 문장에서만 판정한다. 상회·하회가 엇갈리거나 없으면 None.
+
+    2026-10-21 판에서 기사 전체를 훑던 옛 규칙이 네 건을 모두 「상회」로 찍었다 —
+    현대로템은 인용문이 「전망치를 9.7% 밑돌았다」인데도. 틀린 판정보다 빈칸이 낫다.
+    """
+    beat = miss = False
+    for x in ([title] if nm in title else []) + [x for x in sents if nm in x]:
+        if _BEAT_WORD.search(x):
+            beat = True
+        if _MISS_WORD.search(x):
+            miss = True
+        if not _BASIS_PAT.search(x) or _FUTURE_PAT.search(x):
+            continue
+        beat |= bool(_BEAT_PAT.search(x))
+        miss |= bool(_MISS_PAT.search(x))
+    if beat == miss:
+        return None
+    return "beat" if beat else "miss"
 
 
 def earnings_from_news(articles, names):
@@ -3599,8 +3626,8 @@ def earnings_from_news(articles, names):
     찾을 수 없다. 수집기가 기사에서 회사 이름과 실적 표현이 같은 문장에 있는
     대목을 골라 두고, 브리핑은 고르기만 한다.
 
-    지어내지 않는다 — **문장을 그대로** 낸다. 판정(상회/하회)도 기사에 그
-    말이 있을 때만 붙인다.
+    지어내지 않는다 — **문장을 그대로** 낸다. 판정(상회/하회)은 회사 이름과
+    기준(컨센서스·전망치)과 결과가 한 문장에 있을 때만 붙인다.
     """
     out = []
     for a in articles or []:
@@ -3635,9 +3662,6 @@ def earnings_from_news(articles, names):
         for c in calls:
             if c not in quotes:
                 quotes.append(c)
-        # 판정은 **기사 전체**에서 본다 — 뽑은 문장 셋 안에 「웃돌았다」가
-        # 없을 뿐 기사에는 있는 일이 흔하다.
-        joined = title + " " + body[:3000]
         out.append({
             "company": nm,
             "title": title,
@@ -3645,8 +3669,7 @@ def earnings_from_news(articles, names):
             "quotes": quotes[:4],
             "call_quotes": calls,
             "has_call": bool(calls),
-            "verdict": ("beat" if _BEAT_PAT.search(joined) else
-                        ("miss" if _MISS_PAT.search(joined) else None)),
+            "verdict": _earn_verdict(nm, title, sents),
         })
     # 같은 회사가 여러 기사에 걸리면 인용이 가장 많은 것 하나만
     best = {}
