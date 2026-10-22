@@ -1,4 +1,4 @@
-네이버 API 탐색 2026-10-22 09:03:37 KST
+네이버 API 탐색 2026-10-22 09:19:34 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
@@ -8,7 +8,7 @@
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","symbolCode":"KOSPI","stockName":"코스피","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/logo/index/IndexKOSPI.svg","itemLogoPngUrl":"https://ssl.pstatic.net/imgstock/fn
 
 [internals] https://m.stock.naver.com/api/index/KOSDAQ/basic
-    빈손 · 3193 bytes · 걸린 낱말 없음
+    빈손 · 3194 bytes · 걸린 낱말 없음
     응답 앞머리: {"stockEndType":"index","itemCode":"KOSDAQ","reutersCode":"KOSDAQ","symbolCode":"KOSDAQ","stockName":"코스닥","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/re
     남김: data/market/raw/probe_01_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSDAQ","reutersCode":"KOSDAQ","symbolCode":"KOSDAQ","stockName":"코스닥","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/logo/index/IndexKOSDAQ.svg","itemLogoPngUrl":"https://ssl.pstatic.net/imgstoc
@@ -18,28 +18,28 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 16235 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
+    쓸모 · 16253 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
     남김: data/market/raw/probe_03_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"5,735.66"},{"code":"openPrice","key":"시가","value":"5,670.11","compareToPreviousPrice":{"code":"5",
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/price?pageSize=5&page=1
     쓸모 · 1280 bytes · 걸린 낱말 ['상승']
     남김: data/market/raw/probe_04_internals.txt
-    앞머리: [{"localTradedAt":"2026-10-22","closePrice":"5,701.68","compareToPreviousClosePrice":"-33.98","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-0.59","openPrice":"5,670.11","highPrice":"5,701.68","lowP
+    앞머리: [{"localTradedAt":"2026-10-22","closePrice":"5,694.41","compareToPreviousClosePrice":"-41.25","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-0.72","openPrice":"5,670.11","highPrice":"5,732.23","lowP
 
 [sectors] https://m.stock.naver.com/api/stocks/industry
-    쓸모 · 2267 bytes · 걸린 낱말 ['changeRate']
+    쓸모 · 2280 bytes · 걸린 낱말 ['changeRate']
     남김: data/market/raw/probe_05_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":279,"name":"건설","totalCount":78,"changeRate":"4.18","riseCount":33,"fallCount":23,"steadyCount":22},{"no":282,"name":"전자장비와기기","totalCount":105,"changeRate":"2.75","riseCount":34,"fallCount":5
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":279,"name":"건설","totalCount":78,"changeRate":"5.60","riseCount":34,"fallCount":27,"steadyCount":17},{"no":282,"name":"전자장비와기기","totalCount":105,"changeRate":"2.82","riseCount":25,"fallCount":7
 
 [sectors] https://api.stock.naver.com/industry
     실패 · 36 bytes · 걸린 낱말 없음
     응답 앞머리: HTTPError: HTTP Error 404: Not Found
 
 [sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
-    쓸모 · 8687 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 8680 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_07_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":279,"name":"건설","totalCount":78,"changeRate":"4.18","riseCount":33,"fallCount":23,"steadyCount":22},{"no":282,"name":"전자장비와기기","totalCount":105,"changeRate":"2.75","riseCount":34,"fallCount":5
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":279,"name":"건설","totalCount":78,"changeRate":"5.60","riseCount":34,"fallCount":27,"steadyCount":17},{"no":282,"name":"전자장비와기기","totalCount":105,"changeRate":"2.82","riseCount":25,"fallCount":7
 
 [money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
     실패 · 30 bytes · 걸린 낱말 없음
