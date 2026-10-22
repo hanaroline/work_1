@@ -3382,30 +3382,62 @@ def update_history(out, path="data/market/history.json"):
 
     시세일(코스피 일봉 날짜)을 열쇠로 삼아 덮어쓴다 — 하루에 여러 번 돌아도
     행이 늘지 않는다. 넉 달치(120행)만 남긴다.
+
+    **열쇠 날짜와 네이버 값의 날짜가 다를 수 있다.** 야후 코스피 일봉은 개장
+    직후(09시 언저리) 한동안 오늘 봉이 없거나 하루 뒤로 물러난다. 그때 네이버
+    등락 종목 수·업종·수급은 이미 오늘 장중값이라, 옛날에는 그 장중값이
+    그제·어제 행을 덮어썼다 — 2026-10-21 09:08 수집이 10-19 행을, 9~10월에만
+    열네 행을 그렇게 망가뜨렸다. 그래서 세 가지를 지킨다.
+
+    1. 열쇠 날짜보다 새 행이 이미 있으면(일봉이 뒤로 물러남) 아무것도 쓰지 않는다.
+    2. 열쇠 날짜 당일 15:35 전 수집은 장중값이므로 쓰지 않는다.
+    3. 등락 종목 수·업종·수급은 **제 날짜가 열쇠 날짜와 같을 때만** 싣고,
+       빠진 칸은 같은 날 앞서 쌓아 둔 값을 그대로 둔다.
     """
     kd = (out.get("indices", {}).get("kospi") or {}).get("date")
     if not kd:
         return
+    now = out["generated_at_kst"]
+    if now[:10] == kd and now[11:16] < "15:35":
+        print("   history: %s 장중 수집이라 쌓지 않는다" % kd)
+        return
+    try:
+        with open(path, encoding="utf-8") as f:
+            hist = json.load(f)
+        old = hist.get("rows", [])
+    except (OSError, ValueError):
+        old = []
+    if any(r.get("date", "") > kd for r in old):
+        print("   history: 코스피 일봉 날짜 %s 가 이미 쌓인 행보다 이르다 — 쓰지 않는다" % kd)
+        return
+    prev = next((r for r in old if r.get("date") == kd), {})
+    kd8 = kd.replace("-", "")
+    today8 = now[:10].replace("-", "")
+
     mi = out.get("market_internals") or {}
     mf = (out.get("money_flow") or {}).get("latest") or {}
     inv = out.get("investors_kospi") or []          # 최신이 맨 앞인 리스트다
-    row = {"date": kd, "collected_kst": out["generated_at_kst"]}
+    row = {"date": kd, "collected_kst": now}
     for k in ("kospi", "kosdaq"):
         q = out.get("indices", {}).get(k) or {}
         if q.get("close"):
             row[k] = {"close": q["close"], "change_pct": q.get("change_pct")}
-        b = (mi.get(k) or {}).get("breadth")
-        if b:
+        m = mi.get(k) or {}
+        b = m.get("breadth")
+        if b and (m.get("carried_from") or m.get("bizdate")) == kd8:
             row.setdefault("breadth", {})[k] = b
-    if out.get("sectors", {}).get("all"):
+    # 업종은 날짜를 따로 달고 오지 않는다 — 같은 때 받은 네이버 영업일을 쓴다.
+    sec = out.get("sectors") or {}
+    live_bd = (mi.get("kospi") or {}).get("bizdate") or today8
+    if sec.get("all") and (sec.get("carried_from") or live_bd) == kd8:
         row["sectors"] = {s["name"]: s.get("change_pct")
-                          for s in out["sectors"]["all"] if s.get("name")}
+                          for s in sec["all"] if s.get("name")}
     if mf:
         row["money_flow"] = {k: mf.get(k) for k in
                              ("date", "deposit", "deposit_delta", "credit_balance",
                               "credit_balance_delta", "margin_due", "margin_due_delta",
                               "fund_equity") if k in mf}
-    if inv:
+    if inv and "20" + str(inv[0].get("date") or "").replace(".", "") == kd8:
         row["investors_kospi"] = {k: inv[0].get(k)
                                   for k in ("date", "retail", "foreign", "institution")}
     rk = out.get("rates_kr") or {}
@@ -3419,12 +3451,13 @@ def update_history(out, path="data/market/history.json"):
     if won:
         row["usdkrw"] = won
 
-    try:
-        with open(path, encoding="utf-8") as f:
-            hist = json.load(f)
-        rows = [r for r in hist.get("rows", []) if r.get("date") != kd]
-    except (OSError, ValueError):
-        rows = []
+    # 날짜가 안 맞아 빠진 칸은 같은 날 앞서 쌓은 값을 남긴다.
+    if prev.get("breadth"):
+        row["breadth"] = dict(prev["breadth"], **row.get("breadth", {}))
+    for k, v in prev.items():
+        row.setdefault(k, v)
+
+    rows = [r for r in old if r.get("date") != kd]
     rows.append(row)
     rows.sort(key=lambda r: r["date"])
     with open(path, "w", encoding="utf-8") as f:
