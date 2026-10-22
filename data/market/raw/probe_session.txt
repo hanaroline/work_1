@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-10-22 16:15:39 KST
+세션을 지닌 채 API 부르기 2026-10-22 21:24:37 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 130880 bytes
@@ -16,12 +16,12 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 121113 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8816 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"629","officeHname":"더팩트","articleId":"0000544646","title":"코스피, 하루 만에 또 3%대 급락…'롤코' 장세에 5600선도 내줘","datetime":"2026-10-22 16:08:18","type":"1","subcontent":"삼성전자 4.03%·SK하이닉스
+        HTTP 200 · 8775 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"009","officeHname":"매일경제","articleId":"0005752802","title":"[단독] “자동차 주식은 좋은 일이 아예 없나요?”…환율까지 안도와준다는데","datetime":"2026-10-22 20:39:10","type":"1","subcontent":"환율 3개월간 10%이상
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8816 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"629","officeHname":"더팩트","articleId":"0000544646","title":"코스피, 하루 만에 또 3%대 급락…'롤코' 장세에 5600선도 내줘","datetime":"2026-10-22 16:08:18","type":"1","subcontent":"삼성전자 4.03%·SK하이닉스
+        HTTP 200 · 8775 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"009","officeHname":"매일경제","articleId":"0005752802","title":"[단독] “자동차 주식은 좋은 일이 아예 없나요?”…환율까지 안도와준다는데","datetime":"2026-10-22 20:39:10","type":"1","subcontent":"환율 3개월간 10%이상
         남김: data/market/raw/session_list.json
 
 ### 시장지표
