@@ -124,7 +124,11 @@ def test_name_agrees():
 def borrowed_prices(path):
     """저장소에 있는 국내 일봉을 76 티커에 빌려 끼운다. 값의 뜻은 없다."""
     src = json.load(open(BORROW, encoding='utf-8'))['stocks']
-    keys = sorted(src)
+    # 최신일에 닿은 종목만 빌린다. 계열이 멈춘 종목(2026-10 에 052690 이
+    # 10-02 에서 멈췄다)을 끼우면 검산기의 '시장 최신보다 뒤짐' 검사가 정당하게
+    # 잡아, 이 시험이 자료 사정으로 깨진다.
+    newest = max(s['d'][-1] for s in src.values())
+    keys = sorted(k for k in src if src[k]['d'][-1] == newest)
     out = {}
     for n, it in enumerate(L.items()):
         s = src[keys[n % len(keys)]]

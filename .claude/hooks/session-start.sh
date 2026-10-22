@@ -34,6 +34,37 @@ else
   npm i -D "playwright@${PW_VERSION}" --no-audit --no-fund
 fi
 
+# 퇴직급여 도구 빌드(scripts/build-retire-payout.js)가 읽는 것들. 없으면
+# "폰트 파일이 없습니다" 로 멈추고 retire-payout.html 을 짓지 못한다 — 계정을
+# 옮긴 첫 세션(2026-10-22)에서 실제로 그랬다.
+# 판은 .github/workflows/pr-check.yml 의 `퇴직급여` 작업과 같게 맞춘다. 판이
+# 다르면 여기서 지은 HTML 이 CI 가 지은 것과 바이트가 어긋나 CI 가 끊는다.
+#
+# --no-save 로 깐다. 위의 `npm i -D` 는 package.json 에 없는 것을 지우므로
+# 이 단계는 반드시 playwright **다음**에 둔다.
+BUILD_DEPS=(
+  react@18.3.1
+  react-dom@18.3.1
+  @babel/standalone@7.25.6
+  tailwindcss@3.4.16
+  spoqa-han-sans@3.3.0
+  @fontsource/inter@5.3.0
+)
+# require('x/package.json') 은 exports 를 막아 둔 꾸러미에서 실패하므로
+# 파일을 직접 읽는다.
+missing=()
+for dep in "${BUILD_DEPS[@]}"; do
+  name="${dep%@*}" want="${dep##*@}"
+  have=$(node -e "try{console.log(require('./node_modules/${name}/package.json').version)}catch(e){}" 2>/dev/null)
+  [ "$have" = "$want" ] || missing+=("$dep")
+done
+if [ ${#missing[@]} -eq 0 ]; then
+  echo "퇴직급여 빌드 꾸러미 이미 있음 — 건너뛴다"
+else
+  echo "퇴직급여 빌드 꾸러미 설치: ${missing[*]}"
+  npm install --no-save "${missing[@]}" --no-audit --no-fund
+fi
+
 # 브라우저는 **내려받지 않는다.** 이 실행 환경에는 크로미움이 미리 깔려 있고
 # (PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers), 그 위에 `playwright install` 을
 # 다시 부르면 수백 MB 를 세션 몫 디스크에 또 쌓는다.
