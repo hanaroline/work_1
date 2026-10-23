@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-10-24 07:46:54 KST
+세션을 지닌 채 API 부르기 2026-10-24 08:54:50 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 130880 bytes
@@ -16,19 +16,19 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 121113 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8838 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"119","officeHname":"데일리안","articleId":"0003146489","title":"열흘 남은 美 중간선거…투자전략 어떻게","datetime":"2026-10-24 07:14:14","type":"1","subcontent":"미국 중간선거가 열흘 앞으로 다가온 가운데 선거 이후 투자전
+        HTTP 200 · 8818 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"014","officeHname":"파이낸셜뉴스","articleId":"0005593781","title":"60대 투자자 \"고배당주 분리과세 배당, 건보료도 제외되나요\"[세무 재테크 Q&A]","datetime":"2026-10-24 08:00:14","type":"1","subcontent":"Q. 매
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8838 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"119","officeHname":"데일리안","articleId":"0003146489","title":"열흘 남은 美 중간선거…투자전략 어떻게","datetime":"2026-10-24 07:14:14","type":"1","subcontent":"미국 중간선거가 열흘 앞으로 다가온 가운데 선거 이후 투자전
+        HTTP 200 · 8818 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"014","officeHname":"파이낸셜뉴스","articleId":"0005593781","title":"60대 투자자 \"고배당주 분리과세 배당, 건보료도 제외되나요\"[세무 재테크 Q&A]","datetime":"2026-10-24 08:00:14","type":"1","subcontent":"Q. 매
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 127576 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26605 bytes · JSON!
+        HTTP 200 · 26587 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
@@ -36,7 +36,7 @@
         앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
-        HTTP 200 · 5047 bytes · JSON!
+        HTTP 200 · 5044 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
