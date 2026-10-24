@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-10-24 09:32:54 KST
+세션을 지닌 채 API 부르기 2026-10-25 08:20:10 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 130880 bytes
@@ -16,12 +16,12 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 121113 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8804 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"011","officeHname":"서울경제","articleId":"0004674693","title":"‘국장 못 믿겠다’…4개월만 증시 대기자금 51조 원 감소","datetime":"2026-10-24 09:17:10","type":"1","subcontent":"증시 대기자금인 투자자예탁금이 약 4개월
+        HTTP 200 · 8767 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"011","officeHname":"서울경제","articleId":"0004674786","title":"“AI주 말고 딴 거 사라” 보고서 내더니만…정작 기술주 ‘매수’한 월가 큰손들의 속내","datetime":"2026-10-25 08:14:13","type":"1","subcontent":"인공지능(A
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8804 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"011","officeHname":"서울경제","articleId":"0004674693","title":"‘국장 못 믿겠다’…4개월만 증시 대기자금 51조 원 감소","datetime":"2026-10-24 09:17:10","type":"1","subcontent":"증시 대기자금인 투자자예탁금이 약 4개월
+        HTTP 200 · 8767 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"011","officeHname":"서울경제","articleId":"0004674786","title":"“AI주 말고 딴 거 사라” 보고서 내더니만…정작 기술주 ‘매수’한 월가 큰손들의 속내","datetime":"2026-10-25 08:14:13","type":"1","subcontent":"인공지능(A
         남김: data/market/raw/session_list.json
 
 ### 시장지표
@@ -32,15 +32,15 @@
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
-        HTTP 200 · 2414 bytes · JSON!
+        HTTP 200 · 2411 bytes · JSON!
         앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
-        HTTP 200 · 5044 bytes · JSON!
+        HTTP 200 · 5041 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
-        HTTP 200 · 7372 bytes · JSON!
+        HTTP 200 · 7373 bytes · JSON!
         앞머리: [{"categoryType":"bond","stockExchangeType":null,"reutersCode":"US10YT=RR","symbolCode":null,"name":"미국 국채 10년","fullName":null,"nameEng":null,"itemLogoUrl":null,"itemLogoPngUrl":null,"delayTime":0,"d
         남김: data/market/raw/session_bond.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dminte
