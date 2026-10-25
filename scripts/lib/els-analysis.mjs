@@ -517,12 +517,20 @@ export async function analyze(rcpNo) {
     const p = midSlot.pick;
     const ratio = (i) => i.annualRate / i.mcLoss;
     const better = items.filter((i) => i.mcLoss && ratio(i) > ratio(p) + 1e-9);
-    const betterPicked = better.every((i) => slots.some((s) => s !== midSlot && s.pick.no === i.no));
+    // 견줄 상대는 후보가 될 수 있었던 상품(값어치 멀쩡한 것)이다. 예전에는 후보 밖
+    // 상품이 하나라도 위에 있으면 "권할 수 있는 상품 중에서 가장 큽니다" 로 떨어졌는데,
+    // 그 위에 1번 자리 상품이 있어도 그렇게 적혔다 — 2026-10-26 제38232회(0.87%) 위에
+    // 1번 자리 제38226회(0.91%)가 있었다.
+    const betterSane = better.filter(sane);
+    const picked = (i) => slots.some((s) => s !== midSlot && s.pick.no === i.no);
+    const scope = better.length > betterSane.length ? '값어치 멀쩡한 상품 중에서는 ' : '';
     midSlot.why = !better.length
       ? '지는 위험 1%당 받는 수익률이 이번 회차에서 가장 큽니다 — 같은 위험이면 여기가 제일 많이 줍니다.'
-      : betterPicked
-        ? `지는 위험 1%당 받는 수익률이 앞 자리에 오른 제${better.map((i) => i.no).join('·')}회 다음으로 큽니다 — 같은 위험이면 그만큼 많이 줍니다.`
-        : '지는 위험 1%당 받는 수익률이 권할 수 있는 상품 중에서 가장 큽니다 — 같은 위험이면 그만큼 많이 줍니다.';
+      : !betterSane.length
+        ? '지는 위험 1%당 받는 수익률이 값어치 멀쩡한 상품 중에서 가장 큽니다 — 같은 위험이면 그만큼 많이 줍니다.'
+        : betterSane.every(picked)
+          ? `지는 위험 1%당 받는 수익률이 ${scope}앞 자리에 오른 제${betterSane.map((i) => i.no).join('·')}회 다음으로 큽니다 — 같은 위험이면 그만큼 많이 줍니다.`
+          : `지는 위험 1%당 받는 수익률이 값어치 멀쩡한 상품 중 ${betterSane.length + 1}번째로 큽니다.`;
   }
 
   const rateSlot = slots.find((s) => s.label === '수익률을 먼저 보는 분');
