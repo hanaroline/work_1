@@ -24,6 +24,7 @@ claims[].printed_on 으로 장별 범위를 좁히면 더 조일 수 있으나, 
 import json
 import re
 import sys
+from decimal import Decimal, ROUND_HALF_UP
 
 import pymupdf
 
@@ -83,8 +84,13 @@ def put(v, src):
         return
     allowed.setdefault(round(f, 4), src)
     # 인쇄는 자리수를 줄여 나간다. 반올림한 꼴도 같은 근거로 받아 준다.
+    # 파이썬 round 는 .5 를 짝수 쪽으로 보내고(6676.5 → 6676) 빌더의 JS 는 위로
+    # 올린다(→ 6677). 둘 다 받는다 — 2026-10-26 제38238회 공정가격 6,676.5원이
+    # 6,677원으로 인쇄돼 "대장에 없는 숫자" 로 걸렸다.
     for nd in (0, 1, 2):
         allowed.setdefault(round(round(f, nd), 4), src)
+        half_up = float(Decimal(repr(f)).quantize(Decimal(1).scaleb(-nd), rounding=ROUND_HALF_UP))
+        allowed.setdefault(round(half_up, 4), src)
     # 백분율은 부호를 떼고 적는 자리가 있다 ("평균 63.2% 를 잃습니다")
     if f < 0:
         put(-f, src)
