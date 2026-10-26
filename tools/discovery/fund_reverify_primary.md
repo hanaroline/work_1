@@ -1,6 +1,6 @@
 # 재검증 L3 (2차 시도) — 브라우저로 1차 출처를 연다
 
-검증 시각: 2026-10-25T23:24:28.771Z
+검증 시각: 2026-10-26T05:43:45.960Z
 
 **1차 출처에서 조회 경로를 찾음 (전자공시 펀드검색(표준코드))**
 
@@ -33,19 +33,19 @@
 
 ### 전자공시 펀드공시
 
-- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17929706702959408.995463021774` → 200
-- `GET https://dis.kofia.or.kr/wq/fundann/DISFundAnnList.xml?postfix=17929706714617009.678455836106` → 307
+- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17929934273354814.1929961880805` → 200
+- `GET https://dis.kofia.or.kr/wq/fundann/DISFundAnnList.xml?postfix=1792993428552923.0421155981284` → 307
 - `GET https://dis.kofia.or.kr/common/error.html` → 200
-- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17929706717332398.6956086604537` → 200
+- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17929934288119671.600257841797` → 200
 
 ### 전자공시 펀드검색(표준코드)
 
-- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17929706783447121.435882197496` → 200
-- `GET https://dis.kofia.or.kr/wq/com/popup/DISComFundSmryInfo.xml?postfix=1792970679497507.12528480907457` → 200
-- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17929706796553353.1527509553616` → 200
-- `GET https://dis.kofia.or.kr/css/pop.css?postfix=17929706798013211.890510667197` → 200
-- `GET https://dis.kofia.or.kr/css/common.css?postfix=17929706799449965.63550522302` → 200
-- `GET https://dis.kofia.or.kr/wq/com/popup/loading.xml?postfix=17929706801031471.7096488142788` → 200
+- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17929934354322577.003462359875` → 200
+- `GET https://dis.kofia.or.kr/wq/com/popup/DISComFundSmryInfo.xml?postfix=17929934365691974.3327121381649` → 200
+- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17929934367229425.371741858366` → 200
+- `GET https://dis.kofia.or.kr/css/pop.css?postfix=17929934368649985.875172495666` → 200
+- `GET https://dis.kofia.or.kr/css/common.css?postfix=17929934370017087.889591244158` → 200
+- `GET https://dis.kofia.or.kr/wq/com/popup/loading.xml?postfix=17929934371605430.81612251852` → 200
 - `POST https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/` → 200
   - POST: `<?xml version="1.0" encoding="utf-8"?>
 <message>
@@ -97,15 +97,15 @@
 
 ### 펀드다모아
 
-- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17929706869133363.3911114541625` → 200
-- `GET https://dis.kofia.or.kr/wq/damoa/DISFundDamoaNotice.xml?postfix=17929706880494697.819123457903` → 200
-- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17929706881831886.8543612998633` → 200
-- `GET https://dis.kofia.or.kr/wq/com/gnb.xml?postfix=17929706883285726.817672065283` → 200
-- `GET https://dis.kofia.or.kr/css/common.css?postfix=17929706884676040.175224011424` → 200
-- `GET https://dis.kofia.or.kr/css/layout.css?postfix=17929706886036995.34860990884` → 200
-- `GET https://dis.kofia.or.kr/css/sub.css?postfix=17929706887385221.252050791396` → 200
-- `GET https://dis.kofia.or.kr/wq/com/gnbTop.xml?postfix=17929706888733104.717106439354` → 200
-- `GET https://dis.kofia.or.kr/wq/com/snb.xml?postfix=17929706890171795.296553303779` → 200
-- `GET https://dis.kofia.or.kr/wq/com/subTit.xml?postfix=17929706891492793.1989964967997` → 200
-- `GET https://dis.kofia.or.kr/wq/com/subTip.xml?postfix=17929706892894854.298933372725` → 200
-- `GET https://dis.kofia.or.kr/wq/com/quick.xml?postfix=17929706894249335.028926119989` → 200
+- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17929934439536945.553358864625` → 200
+- `GET https://dis.kofia.or.kr/wq/damoa/DISFundDamoaNotice.xml?postfix=17929934450883792.190603710306` → 200
+- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17929934452216723.661528779332` → 200
+- `GET https://dis.kofia.or.kr/wq/com/gnb.xml?postfix=17929934453715942.198434679264` → 200
+- `GET https://dis.kofia.or.kr/css/common.css?postfix=17929934455134247.539455578536` → 200
+- `GET https://dis.kofia.or.kr/css/layout.css?postfix=17929934456471821.1064964420054` → 200
+- `GET https://dis.kofia.or.kr/css/sub.css?postfix=17929934457826117.21261745541` → 200
+- `GET https://dis.kofia.or.kr/wq/com/gnbTop.xml?postfix=17929934459195497.316414191667` → 200
+- `GET https://dis.kofia.or.kr/wq/com/snb.xml?postfix=17929934460607348.559704796049` → 200
+- `GET https://dis.kofia.or.kr/wq/com/subTit.xml?postfix=17929934461952438.290188133526` → 200
+- `GET https://dis.kofia.or.kr/wq/com/subTip.xml?postfix=1792993446328262.6759037441295` → 200
+- `GET https://dis.kofia.or.kr/wq/com/quick.xml?postfix=17929934464595721.830924310762` → 200
