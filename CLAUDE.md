@@ -77,6 +77,11 @@
 가지(조상 없음)에만 있습니다. 인계는 그 가지의 `docs/fund-continuity.md`
 (`git show origin/claude/fund-search-tool:docs/fund-continuity.md`)를 보십시오.
 
+**보유자산 통합 브리핑**(`briefing.html` + PowerShell 로컬 서버 `server.ps1`) —
+`main` 이 아니라 **`claude/asset-briefing-dashboard-1owydo`** 가지(조상 없음)에만 있습니다.
+그 가지로 옮기면 루트의 `CLAUDE.md` 가 `인수인계_가이드.md` 로 안내합니다
+(`git show origin/claude/asset-briefing-dashboard-1owydo:인수인계_가이드.md`).
+
 그 밖의 갈래(증권사 리포트 · 매매 타이밍 · 100대 기업 대시보드 · 마포 WM ·
 데이터센터 밸류체인 맵)는 `docs/handover/` 의 해당 문서를, 문서가 없는 갈래는
 `README.md`(248KB)의 해당 절을 보십시오.
