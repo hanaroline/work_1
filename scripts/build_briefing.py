@@ -35,11 +35,11 @@ sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
 from briefing_lib import (  # noqa: E402
     KST, WD, VF_OK, VF_MD, VF_C, VF_1, VF_N,
-    d, DK, DE, DD, DS, n, pct, bp, eok, jo, esc,
+    d, DK, DE, DD, DS, n, pct, bp, eok, eokc, jo, esc,
     L, TH, THP, perf_cells, perf_line, tbl, exp as _exp, P, lede, stat, card, callout,
     sparkline, bar, Doc, Narrative, assemble)
 import briefing_lib as _lib  # noqa: E402
-from briefing_prepare import prepare, KIND_NAME  # noqa: E402
+from briefing_prepare import prepare, KIND_NAME, RANK_NOTE_KO, RANK_NOTE_EN  # noqa: E402
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -407,8 +407,8 @@ def sec_today(C):
         stat("거래대금", "Turnover", C["turnover_now"], C["turnover_word"],
              C["turnover_trail"], C["turnover_trail_en"]),
         stat("외국인 순매수", "Foreign net", eok(kf.get("foreign")), "",
-             "기관 " + eok(kf.get("institution")) + " &middot; 개인 " + eok(kf.get("retail")),
-             "Institutions " + eok(kf.get("institution")) + ", retail " + eok(kf.get("retail"))),
+             "기관 " + eokc(kf.get("institution")) + " &middot; 개인 " + eokc(kf.get("retail")),
+             "Institutions " + eokc(kf.get("institution")) + ", retail " + eokc(kf.get("retail"))),
         stat("미 10년물", "US 10-year", n(ru["curve"]["ust10y"], 3) + "%",
              bp(ru["change_bp"]["ust10y"]),
              "2년 " + bp(ru["change_bp"]["ust2y"]) + " &middot; 30년 " + bp(ru["change_bp"]["ust30y"]),
@@ -540,16 +540,16 @@ def sec_flows(C):
         _brow("외국인 순매수", "Foreign net buying",
               "방향보다 <strong>전날 대비 변화</strong>가 큽니다 &mdash; 팔던 손이 멎는 것만으로 지수가 움직입니다",
               "The change matters more than the level",
-              eok(kf.get("foreign")), eok(qf.get("foreign")), True),
+              eokc(kf.get("foreign")), eokc(qf.get("foreign")), True),
         _brow("기관 순매수", "Institutions", "연기금·투신·보험", "Pensions, funds, insurers",
-              eok(kf.get("institution")), eok(qf.get("institution"))),
+              eokc(kf.get("institution")), eokc(qf.get("institution"))),
         _brow("개인 순매수", "Retail", "외국인·기관이 판 것을 누가 받았는지",
-              "Who absorbed what the others sold", eok(kf.get("retail")), eok(qf.get("retail"))),
+              "Who absorbed what the others sold", eokc(kf.get("retail")), eokc(qf.get("retail"))),
         _brow("프로그램 비차익", "Non-arb programme",
               "크게 마이너스면 <strong>바스켓 매도</strong>가 지수를 눌렀다는 신호입니다",
               "Deeply negative means basket selling weighed on the index",
-              eok((KSI.get("program_trading") or {}).get("non_arb")),
-              eok((C["KQI"].get("program_trading") or {}).get("non_arb"))),
+              eokc((KSI.get("program_trading") or {}).get("non_arb")),
+              eokc((C["KQI"].get("program_trading") or {}).get("non_arb"))),
     ]
     flow_tbl = tbl("투자자별 순매수 &mdash; " + DK(C["prev_kr"]) + ", 단위 원",
                    "Net buying by investor type &mdash; " + DE(C["prev_kr"]),
@@ -696,10 +696,11 @@ def sec_global(C):
         trio_foot = ('<p class="tbl-foot">' + L(
             "세 표는 <strong>통화가 다 다릅니다</strong>(EUR&middot;GBp&middot;CHF&middot;JPY&middot;CNY"
             "&middot;HKD) &mdash; <strong>종가는 견주지 말고 등락률로 견주십시오.</strong> 도쿄와 홍콩은 "
-            "국내 오후에 닫으므로 <strong>미국 장중 소식을 모르는 값</strong>입니다 " + VF_MD + ".",
+            "국내 오후에 닫으므로 <strong>미국 장중 소식을 모르는 값</strong>입니다 " + VF_MD + ". "
+            + RANK_NOTE_KO,
             "The three tables are in <strong>different currencies</strong> (EUR, GBp, CHF, JPY, CNY, HKD) "
             "&mdash; <strong>compare percentages, not price levels.</strong> Tokyo and Hong Kong close "
-            "before the US session " + VF_MD + ".") + '</p>')
+            "before the US session " + VF_MD + ". " + RANK_NOTE_EN) + '</p>')
         # 업종 ETF 는 「어느 업종에 돈이 붙었나」를 한 표로 말한다 &mdash; 금리가
         # 움직인 날에는 이것이 지수보다 많은 것을 설명한다(은행↑ 유틸리티↓).
         # 해외 지수와 업종 ETF 는 둘 다 열이 적어 나란히 세운다 &mdash; 「어디가

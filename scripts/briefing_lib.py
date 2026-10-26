@@ -83,6 +83,18 @@ def eok(v, dp=0):
     return sign + n(a, dp) + "억"
 
 
+def eokc(v, dp=0):
+    """순매수·순매도처럼 **방향이 뜻인 값**에 쓰는 eok — 부호대로 색을 입힌다.
+
+    순매수(+)는 오른 값과 같은 빨강, 순매도(−)는 파랑이다. 부호 하나만으로는
+    표를 훑는 눈이 놓친다(2026-10-27 요청). 잔액처럼 방향이 없는 값에는 쓰지 않는다.
+    """
+    if v is None:
+        return '<span class="mut">&mdash;</span>'
+    cls = "up" if v > 0 else ("down" if v < 0 else "flat")
+    return '<span class="%s">%s</span>' % (cls, eok(v, dp))
+
+
 def jo(v, dp=2):
     """억원 → 조원 (부호 없이 수준값으로)"""
     if v is None:

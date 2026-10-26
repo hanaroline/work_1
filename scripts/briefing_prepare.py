@@ -9,7 +9,7 @@ import datetime
 
 from briefing_lib import (
     CORE, VF_OK, VF_MD, VF_C, VF_1, VF_N,
-    d, DK, DE, DD, DS, n, pct, bp, eok, jo, esc,
+    d, DK, DE, DD, DS, n, pct, bp, eok, eokc, jo, esc,
     L, TH, THP, perf_cells, perf_line, tbl, sparkline, bar)
 
 # 생성형 AI 고지. 2026-09-30 에 넣었다.
@@ -42,6 +42,23 @@ def _pos52(close, fw):
         return None
     return (close - lo) / (hi - lo) * 100.0
 
+
+# 순매수·순매도 색 범례. 값은 eokc 가 부호대로 칠한다.
+FLOW_LEGEND_KO = ('<span class="up">빨강은 순매수</span>, '
+                  '<span class="down">파랑은 순매도</span>입니다.')
+FLOW_LEGEND_EN = ('<span class="up">Red is net buying</span>, '
+                  '<span class="down">blue is net selling</span>.')
+
+# 종목표의 「오른 쪽·내린 쪽」은 **부호가 아니라 순위로** 자른다(위 k · 아래 k).
+# 다 같이 오른 날은 「내린 쪽」에 덜 오른 종목이, 다 같이 내린 날은 「오른 쪽」에
+# 덜 내린 종목이 들어간다 — 표를 읽는 사람이 헷갈리지 않게 꼬리말에 적는다
+# (2026-10-27 요청). 지역 카드(sec_regions)는 부호로 가르므로 해당하지 않는다.
+RANK_NOTE_KO = ("<strong>「오른 쪽&middot;내린 쪽」은 등락률 순위의 위&middot;아래</strong>입니다 &mdash; "
+                "대부분 오른 날은 「내린 쪽」에도 상승 종목이, 대부분 내린 날은 「오른 쪽」에도 "
+                "하락 종목이 들어갈 수 있으니 <strong>등락률의 부호를 보십시오.</strong>")
+RANK_NOTE_EN = ("<strong>Gainers and losers are the top and bottom of the ranking</strong>, not a split by "
+                "sign &mdash; on a broad up day the losers can still be up, and on a broad down day the "
+                "gainers can still be down. <strong>Check the sign.</strong>")
 
 _KNUM = {6: "여섯", 8: "여덟", 10: "열", 12: "열둘"}
 
@@ -311,19 +328,19 @@ def _tables(C):
     ih = [TH("날짜", "Date", "wrap"), TH("개인", "Retail", "n"), TH("외국인", "Foreign", "n"),
           TH("기관", "Institution", "n"), TH("검증", "Verified", "n opt")]
     irows = ['      <tr><th class="wrap">' + r["date"] + '</th>'
-             '<td class="n">' + eok(r["retail"]) + '</td>'
-             '<td class="n">' + eok(r["foreign"]) + '</td>'
-             '<td class="n">' + eok(r["institution"]) + '</td>'
+             '<td class="n">' + eokc(r["retail"]) + '</td>'
+             '<td class="n">' + eokc(r["foreign"]) + '</td>'
+             '<td class="n">' + eokc(r["institution"]) + '</td>'
              '<td class="n opt">' + VF_MD + '</td></tr>'
              for r in (D.get("investors_kospi") or [])[:10]]
     C["inv_trend"] = tbl("코스피 투자자별 순매수 &mdash; 최근 10거래일, 단위 억원",
                          "KOSPI net buying by investor type &mdash; last 10 sessions",
                          ih, irows, cls="data compact",
-                         foot_ko="<strong>하루치가 아니라 방향이 언제 바뀌었는지를 보십시오.</strong> 외국인이 "
+                         foot_ko=FLOW_LEGEND_KO + " <strong>하루치가 아니라 방향이 언제 바뀌었는지를 보십시오.</strong> 외국인이 "
                                  "며칠째 같은 쪽인지, 그 흐름이 끊긴 날이 언제인지가 위 표의 하루치보다 "
                                  "오래 갑니다 " + VF_MD + ". 개인과 외국인이 <strong>거울처럼 반대</strong>인 "
                                  "구간은 손이 바뀌고 있다는 뜻입니다.",
-                         foot_en="<strong>Read the turn, not the day.</strong> How many sessions foreigners have "
+                         foot_en=FLOW_LEGEND_EN + " <strong>Read the turn, not the day.</strong> How many sessions foreigners have "
                                  "stayed on one side, and when that run broke, outlasts any single day&rsquo;s "
                                  "figure " + VF_MD + ". Stretches where retail mirrors foreign flow are the "
                                  "market changing hands.")
@@ -619,18 +636,19 @@ def _fallbacks(C):
     C["kr_stk_foot_ko"] = ("<strong>수집한 " + n(len(C["S"]), 0) + " 종목을 다 싣지 않고 위아래 "
                            + _KNUM[_k] + "씩만</strong> "
                            "보입니다 &mdash; 가운데 종목은 그날을 설명하지 못합니다. "
-                           "「사유」는 <strong>확인된 것만</strong> 답니다.")
+                           "「사유」는 <strong>확인된 것만</strong> 답니다. " + RANK_NOTE_KO)
     C["kr_stk_foot_en"] = ("<strong>Only the top and bottom " + str(_k) + "</strong> &mdash; the middle of the "
                            "list does not explain the day. A reason is shown "
-                           "<strong>only where verified</strong>.")
+                           "<strong>only where verified</strong>. " + RANK_NOTE_EN)
     C["us_stk_foot_ko"] = ("<strong>이 표는 미국 정규장 마감 값</strong>입니다 &mdash; 마감 뒤에 나온 실적이나 "
                            "시간외 움직임은 들어 있지 않습니다. <strong>「실적&middot;컨퍼런스콜」 절과 함께 "
-                           "보십시오.</strong>")
+                           "보십시오.</strong> " + RANK_NOTE_KO)
     C["us_stk_foot_en"] = ("<strong>These are regular-session closes</strong> &mdash; after-hours moves and "
-                           "post-close results are not in them. <strong>Read alongside the results section.</strong>")
-    C["flow_foot_ko"] = ("세 주체 합이 0 이 아닌 것은 <strong>기타법인이 빠져 있기 때문</strong>입니다. "
+                           "post-close results are not in them. <strong>Read alongside the results section.</strong> "
+                           + RANK_NOTE_EN)
+    C["flow_foot_ko"] = (FLOW_LEGEND_KO + " 세 주체 합이 0 이 아닌 것은 <strong>기타법인이 빠져 있기 때문</strong>입니다. "
                          "<strong>선물 외국인은 받지 못하므로 프로그램 비차익을 대용</strong>으로 봅니다 " + VF_1 + ".")
-    C["flow_foot_en"] = ("The columns do not sum to zero because <strong>other corporates are excluded</strong>. "
+    C["flow_foot_en"] = (FLOW_LEGEND_EN + " The columns do not sum to zero because <strong>other corporates are excluded</strong>. "
                          "<strong>Foreign futures flow is unavailable; non-arb programme trading stands in</strong> "
                          + VF_1 + ".")
 
