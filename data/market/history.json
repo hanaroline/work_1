@@ -6513,11 +6513,33 @@
   },
   {
    "date": "2026-10-23",
-   "collected_kst": "2026-10-26 08:33:31",
+   "collected_kst": "2026-10-26 09:07:00",
    "kospi": {
     "close": 5550.2998,
     "change_pct": 0.2987
    },
+   "kosdaq": {
+    "close": 751.69,
+    "change_pct": -1.6241
+   },
+   "money_flow": {
+    "date": "2026-10-22",
+    "deposit": 886842.0,
+    "deposit_delta": -9502.0,
+    "credit_balance": 299350.0,
+    "credit_balance_delta": 874.0,
+    "fund_equity": 3125463.0
+   },
+   "rates_kr": {
+    "ktb1y": 3.668,
+    "ktb5y": 3.948,
+    "ktb10y": 4.097,
+    "cd91": 3.26,
+    "call": 3.032,
+    "cofix_new": 3.43,
+    "cofix_balance": 3.15
+   },
+   "usdkrw": 1323.2,
    "breadth": {
     "kospi": {
      "limit_up": 2,
@@ -6533,10 +6555,6 @@
      "declining": 1248,
      "limit_down": 0
     }
-   },
-   "kosdaq": {
-    "close": 751.69,
-    "change_pct": -1.6241
    },
    "sectors": {
     "제약": 2.26,
@@ -6619,30 +6637,12 @@
     "전기장비": -4.28,
     "우주항공과국방": -4.49
    },
-   "money_flow": {
-    "date": "2026-10-22",
-    "deposit": 886842.0,
-    "deposit_delta": -9502.0,
-    "credit_balance": 299350.0,
-    "credit_balance_delta": 874.0,
-    "fund_equity": 3125463.0
-   },
    "investors_kospi": {
     "date": "26.10.23",
     "retail": 422,
     "foreign": -9811,
     "institution": 8682
-   },
-   "rates_kr": {
-    "ktb1y": 3.668,
-    "ktb5y": 3.948,
-    "ktb10y": 4.097,
-    "cd91": 3.26,
-    "call": 3.032,
-    "cofix_new": 3.43,
-    "cofix_balance": 3.15
-   },
-   "usdkrw": 1325.5
+   }
   }
  ]
 }
