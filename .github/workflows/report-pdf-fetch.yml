@@ -1,0 +1,54 @@
+name: 리포트 원문 PDF 가져오기 (암호화)
+
+# 세션은 네이버·증권사 리포트 PDF 에 직접 붙지 못한다. 러너가 받아서
+# 세션이 만든 공개키(recipient.pem)로 암호화해 이 가지에만 올린다.
+# 저장소가 공개이므로 원문을 평문으로 올리지 않는다 — 복호화 키는
+# 세션 스크래치 안에만 있고 저장소에는 없다.
+#
+# 이 가지(조상 없음)에는 이 워크플로 하나만 있다. main 과 섞이지 않는다.
+
+on:
+  push:
+    branches: ['claude/report-pdf-fetch']
+    paths: ['data/report-pdf/REQUEST.tsv']
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 받기
+        run: |
+          set -u
+          mkdir -p pdf
+          : > pdf/LOG.tsv
+          while IFS=$'\t' read -r nid url; do
+            [ -z "$nid" ] && continue
+            case "$url" in
+              *pstatic.net*) ref="https://finance.naver.com/research/" ;;
+              *hanaw.com*)   ref="https://www.hanaw.com/main/research/research/RC_000000_M.cmd" ;;
+              *miraeasset*)  ref="https://securities.miraeasset.com/bbs/board/message/list.do" ;;
+              *) ref="" ;;
+            esac
+            code=$(curl -sSL -m 60 --retry 2 -A 'Mozilla/5.0' -e "$ref" -o "pdf/$nid.pdf" -w '%{http_code}' "$url" || echo ERR)
+            kind=$(file -b "pdf/$nid.pdf" 2>/dev/null | cut -c1-40)
+            size=$(stat -c %s "pdf/$nid.pdf" 2>/dev/null || echo 0)
+            printf '%s\t%s\t%s\t%s\n' "$nid" "$code" "$size" "$kind" | tee -a pdf/LOG.tsv
+          done < data/report-pdf/REQUEST.tsv
+      - name: 암호화
+        run: |
+          tar -cf bundle.tar pdf
+          openssl cms -encrypt -binary -aes256 -outform DER \
+            -in bundle.tar -out data/report-pdf/bundle.cms data/report-pdf/recipient.pem
+          cut -f1,2,3 pdf/LOG.tsv > data/report-pdf/LOG.tsv
+          ls -l data/report-pdf
+      - name: 커밋
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898299+github-actions[bot]@users.noreply.github.com'
+          git add data/report-pdf/bundle.cms data/report-pdf/LOG.tsv
+          git commit -m "리포트 원문 묶음 (암호화) $(TZ=Asia/Seoul date '+%F %T KST')"
+          git push
