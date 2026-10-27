@@ -65261,5 +65261,254 @@
         "targetMarket": null
       }
     ]
+  },
+  "20261027000094": {
+    "rcpNo": "20261027000094",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261027000094",
+    "range": "36745~36745",
+    "offer": "2026-11-13 ~ 2026-11-13",
+    "count": 1,
+    "items": [
+      {
+        "title": "미래에셋증권 제36745회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 36745,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "instrument": "파생결합증권",
+        "principalProtected": false,
+        "underlyings": [
+          "EuroStoxx50",
+          "S&P500",
+          "KOSPI200"
+        ],
+        "issueSize": 19800000000,
+        "offerStart": "2026-11-13",
+        "offerEnd": "2026-11-13",
+        "coolStart": null,
+        "coolEnd": null,
+        "coolingFrom": null,
+        "coolingTo": null,
+        "confirmBy": null,
+        "confirmNote": null,
+        "payDate": "2026-11-13",
+        "minAmount": 990000,
+        "minAmountCcy": "KRW",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-11-13",
+        "maturityDate": "2029-11-13",
+        "maturityEvalDate": "2029-11-09",
+        "baseDate": "2026-11-13",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9756.16,
+        "fairValueDate": "2026-10-26",
+        "fairValueGap": -2.44,
+        "volatility": [
+          {
+            "asset": "EuroStoxx50",
+            "vol": 22.02
+          },
+          {
+            "asset": "S&P500",
+            "vol": 23.31
+          },
+          {
+            "asset": "KOSPI200",
+            "vol": 35.84
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "EuroStoxx50 · S&P500",
+            "rho": 0.5713
+          },
+          {
+            "pair": "EuroStoxx50 · KOSPI200",
+            "rho": 0.2273
+          },
+          {
+            "pair": "S&P500 · KOSPI200",
+            "rho": 0.1609
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-05-10",
+            "payout": 104.4,
+            "barrier": 75
+          },
+          {
+            "step": 2,
+            "date": "2027-11-10",
+            "payout": 108.8,
+            "barrier": 75
+          },
+          {
+            "step": 3,
+            "date": "2028-05-10",
+            "payout": 113.2,
+            "barrier": 70
+          },
+          {
+            "step": 4,
+            "date": "2028-11-09",
+            "payout": 117.6,
+            "barrier": 70
+          },
+          {
+            "step": 5,
+            "date": "2029-05-09",
+            "payout": 122,
+            "barrier": 65
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 60,
+        "maturityRate": 26.4,
+        "maturityPayLabel": "연 8.80%",
+        "maturityPrincipalOnly": false,
+        "knockIn": null,
+        "knockInBasis": null,
+        "annualRate": 8.8,
+        "docMaxRate": 26.4,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "4.40%",
+            "count": 4797,
+            "share": 96.91
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "8.80%",
+            "count": 87,
+            "share": 1.76
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "13.20%",
+            "count": 66,
+            "share": 1.33
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "17.60%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "22.00%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환",
+            "ret": "26.40%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 4950,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-10-20"
+        },
+        "simRuns": 4950,
+        "simFirst": 96.91,
+        "simLoss": 0,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ],
+        "targetMarket": null
+      }
+    ]
   }
 }
