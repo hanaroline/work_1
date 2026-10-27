@@ -56,19 +56,26 @@ def n(v, dp=2):
     return ("{:,.%df}" % dp).format(v)
 
 
+def _signed(v, dp):
+    """부호 붙인 수와 색 이름. **반올림해 0 이면 부호도 색도 없다** — 보합을
+    「+0.00%」로 적으면 오른 것처럼 읽히고, −0.004 는 「−0.00%」 파랑이 된다."""
+    if round(v, dp) == 0:
+        return ("{:,.%df}" % dp).format(0), "flat"
+    s = ("{:+,.%df}" % dp).format(v).replace("-", "&minus;")
+    return s, ("up" if v > 0 else "down")
+
+
 def pct(v, dp=2):
     if v is None:
         return '<span class="mut">&mdash;</span>'
-    s = ("{:+,.%df}" % dp).format(v).replace("-", "&minus;")
-    cls = "up" if v > 0 else ("down" if v < 0 else "flat")
+    s, cls = _signed(v, dp)
     return '<span class="%s">%s%%</span>' % (cls, s)
 
 
 def bp(v, dp=1):
     if v is None:
         return '<span class="mut">&mdash;</span>'
-    s = ("{:+,.%df}" % dp).format(v).replace("-", "&minus;")
-    cls = "up" if v > 0 else ("down" if v < 0 else "flat")
+    s, cls = _signed(v, dp)
     return '<span class="%s">%sbp</span>' % (cls, s)
 
 

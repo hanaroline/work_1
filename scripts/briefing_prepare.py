@@ -6,6 +6,7 @@
 그래서 자료를 갈아 끼우면 판 전체가 함께 바뀐다(지침 7-2-1 ④).
 """
 import datetime
+import re
 
 from briefing_lib import (
     CORE, VF_OK, VF_MD, VF_C, VF_1, VF_N,
@@ -36,6 +37,40 @@ AI_NOTICE = ('<div class="ai-notice">\n'
              '</div>')
 
 
+def cm_foot(I, lang, short=False):
+    """원자재 표 꼬리말 &mdash; 브렌트가 보도된 정산가로 바뀌어 있으면 그 사실을 적는다.
+
+    늘 「야후 일봉 종가」라고만 쓰면, 브렌트를 정산가로 고쳐 넣은 날에 꼬리말이
+    표와 어긋난다. 출처 메모(`source_note`)가 있을 때만 문구를 바꾼다.
+    """
+    settled = bool((I.get("brent") or {}).get("source_note"))
+    if lang == "ko":
+        if settled:
+            s = ("<strong>브렌트는 보도된 선물 정산가</strong>이고, 나머지 유가·원자재는 "
+                 "<strong>야후 일봉 종가</strong>입니다 &mdash; 기준이 섞여 있으니 폭을 인용하실 때 "
+                 "어느 기준인지 밝혀 주십시오 ")
+        elif short:
+            s = ("유가는 <strong>야후 일봉 종가</strong>입니다 &mdash; 국내 보도가 쓰는 "
+                 "<strong>선물 정산가</strong>와 폭이 다를 수 있습니다 ")
+        else:
+            s = ("유가는 <strong>야후 일봉 종가</strong>입니다. 국내 보도는 <strong>선물 정산가</strong>를 "
+                 "쓰는 일이 많아 폭이 다를 수 있습니다 &mdash; <strong>틀린 값이 아니라 기준이 다른 "
+                 "값</strong>이므로, 폭을 인용하실 때 어느 기준인지 밝혀 주십시오 ")
+    else:
+        if settled:
+            s = ("<strong>Brent is the reported futures settlement</strong>; other crude and commodities "
+                 "are <strong>Yahoo daily closes</strong> &mdash; the bases are mixed, so name the basis "
+                 "when quoting a move ")
+        elif short:
+            s = ("Crude is the <strong>Yahoo daily close</strong>, which differs from the "
+                 "<strong>futures settlement</strong> Korean coverage quotes ")
+        else:
+            s = ("Crude is at the <strong>Yahoo daily close</strong>. Korean coverage often quotes "
+                 "<strong>futures settlements</strong>, which differ &mdash; <strong>a different basis, "
+                 "not a wrong one</strong> ")
+    return s + VF_MD + "."
+
+
 def _pos52(close, fw):
     lo, hi = fw.get("low"), fw.get("high")
     if not lo or not hi or hi <= lo:
@@ -49,22 +84,29 @@ FLOW_LEGEND_KO = ('<span class="up">빨강은 순매수</span>, '
 FLOW_LEGEND_EN = ('<span class="up">Red is net buying</span>, '
                   '<span class="down">blue is net selling</span>.')
 
-# 종목표의 「오른 쪽·내린 쪽」은 **부호가 아니라 순위로** 자른다(위 k · 아래 k).
-# 다 같이 오른 날은 「내린 쪽」에 덜 오른 종목이, 다 같이 내린 날은 「오른 쪽」에
-# 덜 내린 종목이 들어간다 — 표를 읽는 사람이 헷갈리지 않게 꼬리말에 적는다
-# (2026-10-27 요청). 지역 카드(sec_regions)는 부호로 가르므로 해당하지 않는다.
-RANK_NOTE_KO = ("<strong>「오른 쪽&middot;내린 쪽」은 등락률 순위의 위&middot;아래</strong>입니다 &mdash; "
-                "대부분 오른 날은 「내린 쪽」에도 상승 종목이, 대부분 내린 날은 「오른 쪽」에도 "
-                "하락 종목이 들어갈 수 있으니 <strong>등락률의 부호를 보십시오.</strong>")
-RANK_NOTE_EN = ("<strong>Gainers and losers are the top and bottom of the ranking</strong>, not a split by "
-                "sign &mdash; on a broad up day the losers can still be up, and on a broad down day the "
-                "gainers can still be down. <strong>Check the sign.</strong>")
+# 종목표는 **부호가 아니라 순위로** 자른다(위 k · 아래 k). 그래서 칸 이름을
+# 「오른 쪽·내린 쪽」이 아니라 「상승률 상위·하위」로 단다 — 다 같이 오른 날은
+# 하위 칸에도 오른 종목이, 다 같이 내린 날은 상위 칸에도 내린 종목이 들어가기
+# 때문이다(2026-10-27 요청). 꼬리말에도 한 줄 적는다. 지역 카드(sec_regions)는
+# 부호로 가르므로 「오른 쪽·내린 쪽」 그대로다.
+RANK_NOTE_KO = ("<strong>「상승률 상위&middot;하위」는 순위의 위&middot;아래</strong>입니다 &mdash; "
+                "대부분 오른 날은 하위에도 오른 종목이, 대부분 내린 날은 상위에도 "
+                "내린 종목이 들어갈 수 있으니 <strong>등락률의 부호를 보십시오.</strong>")
+RANK_NOTE_EN = ("<strong>Top and bottom are positions in the ranking</strong>, not a split by "
+                "sign &mdash; on a broad up day the bottom names can still be up, and on a broad down day "
+                "the top names can still be down. <strong>Check the sign.</strong>")
 
 _KNUM = {6: "여섯", 8: "여덟", 10: "열", 12: "열둘"}
 
 # 등락 종목 수 추이에 세우는 거래일 수. 캡션의 「최근 N거래일」도 이 값에서
 # 나오므로, 늘리거나 줄일 때 문구를 따로 고칠 일이 없습니다.
 BREADTH_DAYS = 5
+
+
+def _md(s):
+    """「2026-10-26」·「26.10.26」 어느 쪽이 와도 다른 표와 같은 「10/26」 으로."""
+    m = re.match(r"(?:\d{2,4})[-.](\d{1,2})[-.](\d{1,2})$", (s or "").strip())
+    return "%d/%d" % (int(m.group(1)), int(m.group(2))) if m else esc(s or "")
 
 
 def _split(dct, k=8):
@@ -308,7 +350,7 @@ def _tables(C):
         ks_, kq_ = b.get("kospi") or zero, b.get("kosdaq") or zero
         miss = (ks_.get("advancing", 0) + ks_.get("declining", 0)) == 0
         dash = '<span class="mut">&mdash;</span>'
-        brows.append('      <tr><th class="wrap">' + r["date"][5:] + '</th>'
+        brows.append('      <tr><th class="wrap">' + _md(r["date"]) + '</th>'
                      '<td class="n">' + pct(r["kospi"]["change_pct"]) + '</td>'
                      '<td class="n">' + (dash if miss else n(ks_["advancing"], 0)) + '</td>'
                      '<td class="n">' + (dash if miss else n(ks_["declining"], 0)) + '</td>'
@@ -327,7 +369,7 @@ def _tables(C):
     # 투자자별 추이
     ih = [TH("날짜", "Date", "wrap"), TH("개인", "Retail", "n"), TH("외국인", "Foreign", "n"),
           TH("기관", "Institution", "n"), TH("검증", "Verified", "n opt")]
-    irows = ['      <tr><th class="wrap">' + r["date"] + '</th>'
+    irows = ['      <tr><th class="wrap">' + _md(r["date"]) + '</th>'
              '<td class="n">' + eokc(r["retail"]) + '</td>'
              '<td class="n">' + eokc(r["foreign"]) + '</td>'
              '<td class="n">' + eokc(r["institution"]) + '</td>'
@@ -447,12 +489,7 @@ def _tables(C):
     C["cm_tbl"] = tbl("원자재 &middot; 기타 &mdash; " + DK(C["prev_us"]),
                       "Commodities and others &mdash; " + DE(C["prev_us"]), ch, crows,
                       cls="data compact",
-                      foot_ko="유가는 <strong>야후 일봉 종가</strong>입니다. 국내 보도는 <strong>선물 정산가</strong>를 "
-                              "쓰는 일이 많아 폭이 다를 수 있습니다 &mdash; <strong>틀린 값이 아니라 기준이 다른 "
-                              "값</strong>이므로, 폭을 인용하실 때 어느 기준인지 밝혀 주십시오 " + VF_MD + ".",
-                      foot_en="Crude is at the <strong>Yahoo daily close</strong>. Korean coverage often quotes "
-                              "<strong>futures settlements</strong>, which differ &mdash; <strong>a different basis, "
-                              "not a wrong one</strong> " + VF_MD + ".")
+                      foot_ko=cm_foot(I, "ko"), foot_en=cm_foot(I, "en"))
 
     # 미 국채 곡선 전체
     LAB = [("ust1m", "1개월", "1M"), ("ust3m", "3개월", "3M"), ("ust6m", "6개월", "6M"),

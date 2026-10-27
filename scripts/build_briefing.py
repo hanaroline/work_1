@@ -39,7 +39,7 @@ from briefing_lib import (  # noqa: E402
     L, TH, THP, perf_cells, perf_line, tbl, exp as _exp, P, lede, stat, card, callout,
     sparkline, bar, Doc, Narrative, assemble)
 import briefing_lib as _lib  # noqa: E402
-from briefing_prepare import prepare, KIND_NAME, RANK_NOTE_KO, RANK_NOTE_EN  # noqa: E402
+from briefing_prepare import prepare, KIND_NAME, RANK_NOTE_KO, RANK_NOTE_EN, cm_foot  # noqa: E402
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -406,7 +406,7 @@ def sec_today(C):
              + _adr(kqb) + "x)"),
         stat("거래대금", "Turnover", C["turnover_now"], C["turnover_word"],
              C["turnover_trail"], C["turnover_trail_en"]),
-        stat("외국인 순매수", "Foreign net", eok(kf.get("foreign")), "",
+        stat("외국인 순매수", "Foreign net", eokc(kf.get("foreign")), "",
              "기관 " + eokc(kf.get("institution")) + " &middot; 개인 " + eokc(kf.get("retail")),
              "Institutions " + eokc(kf.get("institution")) + ", retail " + eokc(kf.get("retail"))),
         stat("미 10년물", "US 10-year", n(ru["curve"]["ust10y"], 3) + "%",
@@ -1148,7 +1148,7 @@ def _region_core(C, key, tko, ten):
         return ""
     head = [TH("종목", "Name", "wrap"), TH("종가", "Close", "n"), TH("등락률", "Change %", "n")]
     rows = []
-    for label_ko, label_en, grp in (("오른 쪽", "Up", order[:3]), ("내린 쪽", "Down", order[-3:])):
+    for label_ko, label_en, grp in (("상승률 상위", "Top", order[:3]), ("상승률 하위", "Bottom", order[-3:])):
         rows.append('      <tr class="grp"><th class="wrap" colspan="3">'
                     + L(label_ko, label_en) + '</th></tr>')
         for k, v in grp:
@@ -1174,7 +1174,7 @@ def _wide(dct, k=10):
 
 
 def _stock_core(tko, ten, top, bot, why, foot_ko="", foot_en="", k=10, dp=2):
-    """핵심본용 종목표 — **오른 쪽과 내린 쪽을 나란히 세워 개수를 늘린다.**
+    """핵심본용 종목표 — **상위와 하위를 나란히 세워 개수를 늘린다.**
 
     한 표에 세로로 쌓으면 종목 하나가 한 줄씩 자리를 먹어, 여섯 쪽에 맞추려고
     네 개까지 줄여 놓았었다. 네 개로는 「무엇이 움직였나」에 답하지 못한다.
@@ -1195,8 +1195,8 @@ def _stock_core(tko, ten, top, bot, why, foot_ko="", foot_en="", k=10, dp=2):
         return tbl(cap_ko, cap_en, head, rows, cls="data compact")
 
     return ('<div class="duo">\n'
-            + one("오른 쪽 &middot; " + tko, "Gainers &middot; " + ten, top) + "\n"
-            + one("내린 쪽 &middot; " + tko, "Losers &middot; " + ten, list(reversed(bot))) + "\n"
+            + one("상승률 상위 &middot; " + tko, "Top by change &middot; " + ten, top) + "\n"
+            + one("상승률 하위 &middot; " + tko, "Bottom by change &middot; " + ten, list(reversed(bot))) + "\n"
             '</div>\n'
             + ('<p class="tbl-foot">' + L(foot_ko, foot_en) + '</p>' if foot_ko else ""))
 
@@ -1367,10 +1367,7 @@ def _cm_core(C):
                "Commodities &mdash; " + DE(C["prev_us"]),
                [TH("항목", "Item", "wrap"), TH("종가", "Close", "n"), TH("등락률", "Change %", "n")],
                rows, cls="data compact",
-               foot_ko="유가는 <strong>야후 일봉 종가</strong>입니다 &mdash; 국내 보도가 쓰는 "
-                       "<strong>선물 정산가</strong>와 폭이 다를 수 있습니다 " + VF_MD + ".",
-               foot_en="Crude is the <strong>Yahoo daily close</strong>, which differs from the "
-                       "<strong>futures settlement</strong> Korean coverage quotes " + VF_MD + ".")
+               foot_ko=cm_foot(I, "ko", True), foot_en=cm_foot(I, "en", True))
 
 
 def _earn_core(C, k=6):
@@ -1466,7 +1463,7 @@ def _stock_table(tko, ten, top, bot, why, foot_ko="", foot_en="", dp=2):
             TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP(),
             TH("검증", "Verified", "n opt")]
     rows = []
-    for label_ko, label_en, group in (("오른 쪽", "Gainers", _cut(top)), ("내린 쪽", "Losers", _cut(bot))):
+    for label_ko, label_en, group in (("상승률 상위", "Top by change", _cut(top)), ("상승률 하위", "Bottom by change", _cut(bot))):
         # colspan 은 **머리행에서 센다.** 9 로 박아 두면 핵심본처럼 열이 줄었을 때
         # 머리행과 어긋나 재검증기가 FAIL 을 낸다(실제로 났다).
         # colspan 은 **실제로 서는 머리 칸 수**에서 센다. 9 로 박아 두면 핵심본처럼
