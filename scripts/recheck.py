@@ -209,10 +209,34 @@ def check_dates(h, d, path=None):
     today = (d.get("indices", {}).get("kospi", {}) or {}).get("date")
 
     # 판의 날짜는 파일 이름에서 읽습니다 — 시세 파일은 그 뒤로 갱신됩니다.
-    edate = None
+    edate = kind = None
     if path:
-        fm = re.match(r"(\d{4}-\d{2}-\d{2})-", os.path.basename(path))
-        edate = fm.group(1) if fm else None
+        fm = re.match(r"(\d{4}-\d{2}-\d{2})-([a-z]+)", os.path.basename(path))
+        if fm:
+            edate, kind = fm.group(1), fm.group(2)
+    # 모닝·해외 판은 장 열기 전에 나가므로 국내 날짜가 **직전 영업일**인 것이 정상입니다.
+    # 그것까지 「대조 시점」으로 알리면 날마다 같은 경고가 떠서 진짜 경고가 묻힙니다.
+    if edate and today and kind in ("morning", "global"):
+        import datetime as _dt
+        e = _dt.date.fromisoformat(edate)
+        p = e - _dt.timedelta(days=1)
+        while p.weekday() >= 5:
+            p -= _dt.timedelta(days=1)
+        if today == edate:
+            warn("대조 시점",
+                 "장 열기 전 판(%s)인데 시세 파일의 국내 날짜가 판 날짜와 같습니다 — "
+                 "장중 시세가 섞였을 수 있습니다" % edate)
+            return
+        if today > edate:
+            warn("대조 시점",
+                 "판은 %s 인데 시세 파일의 국내 날짜는 %s 입니다 — 판을 만든 뒤 시세가 갱신됐습니다. "
+                 "날짜 관련 검사는 참고로만 보십시오" % (edate, today))
+            return
+        if today != p.isoformat():
+            warn("대조 시점",
+                 "판은 %s 이고 직전 평일은 %s 인데 시세 파일의 국내 날짜는 %s 입니다 — "
+                 "휴장이 끼었는지 보십시오" % (edate, p.isoformat(), today))
+        edate = today  # 아래 대조는 정상 경로로 이어 간다
     if edate and today and edate != today:
         warn("대조 시점",
              "판은 %s 인데 시세 파일의 국내 날짜는 %s 입니다 — 판을 만든 뒤 시세가 갱신됐습니다. "

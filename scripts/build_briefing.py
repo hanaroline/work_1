@@ -697,10 +697,18 @@ def sec_global(C):
             "세 표는 <strong>통화가 다 다릅니다</strong>(EUR&middot;GBp&middot;CHF&middot;JPY&middot;CNY"
             "&middot;HKD) &mdash; <strong>종가는 견주지 말고 등락률로 견주십시오.</strong> 도쿄와 홍콩은 "
             "국내 오후에 닫으므로 <strong>미국 장중 소식을 모르는 값</strong>입니다 " + VF_MD + ". "
-            + RANK_NOTE_KO,
+            "<strong>위 미국 표까지 네 표 모두</strong> &mdash; " + RANK_NOTE_KO,
             "The three tables are in <strong>different currencies</strong> (EUR, GBp, CHF, JPY, CNY, HKD) "
             "&mdash; <strong>compare percentages, not price levels.</strong> Tokyo and Hong Kong close "
-            "before the US session " + VF_MD + ". " + RANK_NOTE_EN) + '</p>')
+            "before the US session " + VF_MD + ". <strong>For all four tables, the US one above "
+            "included</strong> &mdash; " + RANK_NOTE_EN) + '</p>')
+        # 순위 유의 문구는 바로 아래 3단 표 꼬리말에 한 번만 둔다 &mdash; 미국 표에도
+        # 달면 같은 절에 같은 문장이 두 번 선다(2026-10-27 요청). 3단 표가 없는 날만
+        # 미국 표에 남긴다.
+        us_foot_ko, us_foot_en = C["us_stk_foot_ko"], C["us_stk_foot_en"]
+        if trio:
+            us_foot_ko = us_foot_ko.replace(" " + RANK_NOTE_KO, "")
+            us_foot_en = us_foot_en.replace(" " + RANK_NOTE_EN, "")
         # 업종 ETF 는 「어느 업종에 돈이 붙었나」를 한 표로 말한다 &mdash; 금리가
         # 움직인 날에는 이것이 지수보다 많은 것을 설명한다(은행↑ 유틸리티↓).
         # 해외 지수와 업종 ETF 는 둘 다 열이 적어 나란히 세운다 &mdash; 「어디가
@@ -711,7 +719,7 @@ def sec_global(C):
                 + _stock_core("미국 종목 &mdash; " + DK(C["prev_us"]) + ", 달러",
                               "US stocks &mdash; " + DE(C["prev_us"]) + ", in dollars",
                               C["us_top"], C["us_bot"], C["why"],
-                              foot_ko=C["us_stk_foot_ko"], foot_en=C["us_stk_foot_en"])
+                              foot_ko=us_foot_ko, foot_en=us_foot_en)
                 + ("\n<div class=\"trio\">\n" + trio + "\n</div>\n" + trio_foot if trio else ""))
     return (lede(a, b) + "\n" + gidx + "\n" + us_stk + "\n"
             + exp("미국 업종 ETF &middot; 유럽 &middot; 일본 &middot; 중국 개별 종목",
