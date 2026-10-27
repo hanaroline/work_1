@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-10-27 21:41:03 KST
+세션을 지닌 채 API 부르기 2026-10-27 22:07:59 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 130880 bytes
@@ -16,12 +16,12 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 121113 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8801 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"009","officeHname":"매일경제","articleId":"0005754919","title":"단일종목 레버리지, 외국인은 이미 털고나왔다…대부분 비중 0%대로","datetime":"2026-10-27 21:11:10","type":"1","subcontent":"10월말 보유비중 0%대 그쳐 반
+        HTTP 200 · 8823 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"015","officeHname":"한국경제","articleId":"0005347242","title":"200만 구독자 '짠한형 신동엽' 제작사, 75억원에 흡수합병","datetime":"2026-10-27 21:41:13","type":"1","subcontent":"유튜브 예능 '짠한형 신동엽' 제작사
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8801 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"009","officeHname":"매일경제","articleId":"0005754919","title":"단일종목 레버리지, 외국인은 이미 털고나왔다…대부분 비중 0%대로","datetime":"2026-10-27 21:11:10","type":"1","subcontent":"10월말 보유비중 0%대 그쳐 반
+        HTTP 200 · 8823 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"015","officeHname":"한국경제","articleId":"0005347242","title":"200만 구독자 '짠한형 신동엽' 제작사, 75억원에 흡수합병","datetime":"2026-10-27 21:41:13","type":"1","subcontent":"유튜브 예능 '짠한형 신동엽' 제작사
         남김: data/market/raw/session_list.json
 
 ### 시장지표
@@ -36,7 +36,7 @@
         앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
-        HTTP 200 · 5039 bytes · JSON!
+        HTTP 200 · 5040 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
