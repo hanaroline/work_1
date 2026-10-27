@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-10-27 10:26:10 KST
+세션을 지닌 채 API 부르기 2026-10-27 16:22:46 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 130880 bytes
@@ -16,12 +16,12 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 121113 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8882 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"011","officeHname":"서울경제","articleId":"0004675487","title":"“지금이 기회네” 주가 빠질 때 산 개미들…외국인은 ‘정반대’ 투자로 수익률 6배 앞섰다","datetime":"2026-10-27 10:00:06","type":"1","subcontent":"코스피 시
+        HTTP 200 · 8798 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"011","officeHname":"서울경제","articleId":"0004675664","title":"AI 투심 회복에 삼전 4%·하닉 5%↑마감[마켓시그널]","datetime":"2026-10-27 16:11:12","type":"1","subcontent":"코스피가 미국 인공지능(AI) 기업 앤트로
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8882 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"011","officeHname":"서울경제","articleId":"0004675487","title":"“지금이 기회네” 주가 빠질 때 산 개미들…외국인은 ‘정반대’ 투자로 수익률 6배 앞섰다","datetime":"2026-10-27 10:00:06","type":"1","subcontent":"코스피 시
+        HTTP 200 · 8798 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"011","officeHname":"서울경제","articleId":"0004675664","title":"AI 투심 회복에 삼전 4%·하닉 5%↑마감[마켓시그널]","datetime":"2026-10-27 16:11:12","type":"1","subcontent":"코스피가 미국 인공지능(AI) 기업 앤트로
         남김: data/market/raw/session_list.json
 
 ### 시장지표
@@ -36,11 +36,11 @@
         앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
-        HTTP 200 · 5044 bytes · JSON!
+        HTTP 200 · 5045 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
-        HTTP 200 · 7366 bytes · JSON!
+        HTTP 200 · 7375 bytes · JSON!
         앞머리: [{"categoryType":"bond","stockExchangeType":null,"reutersCode":"US10YT=RR","symbolCode":null,"name":"미국 국채 10년","fullName":null,"nameEng":null,"itemLogoUrl":null,"itemLogoPngUrl":null,"delayTime":0,"d
         남김: data/market/raw/session_bond.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dminte
