@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-10-28 10:13:27 KST
+세션을 지닌 채 API 부르기 2026-10-28 16:28:33 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 130880 bytes
@@ -16,24 +16,24 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 121113 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8868 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"138","officeHname":"디지털데일리","articleId":"0002246276","title":"“이틀 새 350포인트 급등”…코스피 5800선 탈환, 하이닉스 시총 1000조 돌파","datetime":"2026-10-28 10:01:10","type":"1","subcontent":"코스피가 
+        HTTP 200 · 8798 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"138","officeHname":"디지털데일리","articleId":"0002246372","title":"“하이닉스 83조 실적에 100조 주주환원”…코스피 6.6% 폭등, 6000선 탈환","datetime":"2026-10-28 16:14:11","type":"1","subcontent":"코스피 60
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8868 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"138","officeHname":"디지털데일리","articleId":"0002246276","title":"“이틀 새 350포인트 급등”…코스피 5800선 탈환, 하이닉스 시총 1000조 돌파","datetime":"2026-10-28 10:01:10","type":"1","subcontent":"코스피가 
+        HTTP 200 · 8798 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"138","officeHname":"디지털데일리","articleId":"0002246372","title":"“하이닉스 83조 실적에 100조 주주환원”…코스피 6.6% 폭등, 6000선 탈환","datetime":"2026-10-28 16:14:11","type":"1","subcontent":"코스피 60
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 127576 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26530 bytes · JSON!
+        HTTP 200 · 26535 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
         HTTP 200 · 2411 bytes · JSON!
-        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
+        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","s
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
         HTTP 200 · 5033 bytes · JSON!
