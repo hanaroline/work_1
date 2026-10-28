@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-10-28 09:35:26 KST
+세션을 지닌 채 API 부르기 2026-10-28 09:50:02 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 130880 bytes
@@ -16,19 +16,19 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 121113 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8854 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"421","officeHname":"뉴스1","articleId":"0009254509","title":"'깜짝 실적·60조 추가 환원' SK하이닉스 3%↑…삼전도 4% 급등[핫종목]","datetime":"2026-10-28 09:24:58","type":"1","subcontent":"SK하이닉스가 사상 최
+        HTTP 200 · 8847 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"001","officeHname":"연합뉴스","articleId":"0016405149","title":"SK하이닉스 3분기 영업익 역대 최대 83조…매출 100조 첫 돌파(종합)","datetime":"2026-10-28 09:33:09","type":"1","subcontent":"HBM4·서버용 DDR5
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8854 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"421","officeHname":"뉴스1","articleId":"0009254509","title":"'깜짝 실적·60조 추가 환원' SK하이닉스 3%↑…삼전도 4% 급등[핫종목]","datetime":"2026-10-28 09:24:58","type":"1","subcontent":"SK하이닉스가 사상 최
+        HTTP 200 · 8847 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"001","officeHname":"연합뉴스","articleId":"0016405149","title":"SK하이닉스 3분기 영업익 역대 최대 83조…매출 100조 첫 돌파(종합)","datetime":"2026-10-28 09:33:09","type":"1","subcontent":"HBM4·서버용 DDR5
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 127576 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26528 bytes · JSON!
+        HTTP 200 · 26525 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
