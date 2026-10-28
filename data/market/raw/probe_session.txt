@@ -1,11 +1,11 @@
-세션을 지닌 채 API 부르기 2026-10-28 22:57:15 KST
+세션을 지닌 채 API 부르기 2026-10-29 07:45:53 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 130880 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
-        HTTP 200 · 11573 bytes · JSON!
-        앞머리: {"content":[{"bizdate":"20261026","customerDeposit":"886826","customerDepositDiff":"-11800","customerDepositDiffAbs":"11800","creditLoan":"296397","creditLoanDiff":"-870","creditLoanDiffAbs":"870","be
+        HTTP 200 · 11578 bytes · JSON!
+        앞머리: {"content":[{"bizdate":"20261027","customerDeposit":"901030","customerDepositDiff":"14204","customerDepositDiffAbs":"14204","creditLoan":"292153","creditLoanDiff":"-4243","creditLoanDiffAbs":"4243","b
         남김: data/market/raw/session_trendDeposit.json
     API https://stock.naver.com/api/domestic/market/trendDeposit/chart?startDate=20260801&endDate=20260911
         HTTP 200 · 22502 bytes · JSON!
@@ -16,27 +16,27 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 121113 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8849 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"018","officeHname":"이데일리","articleId":"0006398345","title":"뉴욕증시, FOMC 앞두고 상승 출발…SK하닉 호실적에 반도체주 강세","datetime":"2026-10-28 22:49:10","type":"1","subcontent":"미국 뉴욕증시가 28일(현지시
+        HTTP 200 · 8869 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"366","officeHname":"조선비즈","articleId":"0001201078","title":"저PBR 명단 공개 D-4… ‘공시’보단 ‘ROE’가 중요[투자노트]","datetime":"2026-10-29 07:28:17","type":"1","subcontent":"공시 기업 764곳, 시총 8
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8849 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"018","officeHname":"이데일리","articleId":"0006398345","title":"뉴욕증시, FOMC 앞두고 상승 출발…SK하닉 호실적에 반도체주 강세","datetime":"2026-10-28 22:49:10","type":"1","subcontent":"미국 뉴욕증시가 28일(현지시
+        HTTP 200 · 8869 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"366","officeHname":"조선비즈","articleId":"0001201078","title":"저PBR 명단 공개 D-4… ‘공시’보단 ‘ROE’가 중요[투자노트]","datetime":"2026-10-29 07:28:17","type":"1","subcontent":"공시 기업 764곳, 시총 8
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 127576 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26539 bytes · JSON!
+        HTTP 200 · 26527 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
-        HTTP 200 · 2412 bytes · JSON!
+        HTTP 200 · 2413 bytes · JSON!
         앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
-        HTTP 200 · 5038 bytes · JSON!
+        HTTP 200 · 5031 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
