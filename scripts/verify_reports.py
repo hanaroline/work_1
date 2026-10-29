@@ -30,7 +30,7 @@ import glob
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fetch_reports import (THEMES, theme_counts, _sentences, pool_key,  # noqa: E402
-                           _TP_MOVE)
+                           tp_move)
 
 OK, BAD, WARN = [], [], []
 
@@ -283,8 +283,17 @@ def verify(path):
         if not r.get("target_move"):
             continue
         hay = (r.get("excerpt") or "") + " " + (r.get("title") or "")
-        # 방향어만으로는 모자라다 — 목표주가와 묶여 있어야 근거다.
-        if _TP_MOVE.search(hay):
+        # 방향어만으로는 모자라다 — 목표주가와 묶여 있어야 근거다. 실린 방향과
+        # 같은 방향이어야 한다.
+        if tp_move(hay)[0] == r["target_move"]:
+            continue
+        # 뽑을 때 본문에서 떠 둔 근거 문구가 있으면 그것도 본다. 다만 그
+        # 문구가 발췌 안에 있어야 할 자리(본문이 발췌보다 길지 않음)인데 발췌에
+        # 없으면 근거로 치지 않는다 — 아래에서 「근거 못 찾음」으로 센다.
+        src = r.get("target_move_src") or ""
+        longer = (r.get("body_chars") or 0) > len(r.get("excerpt") or "")
+        if src and (longer or src in (r.get("excerpt") or "") + " " + (r.get("title") or "")) \
+                and tp_move(hay + " " + src)[0] == r["target_move"]:
             continue
         # 본문을 앞 1200자까지만 보관한다. 그 뒤에 적힌 근거는 여기서 볼 수
         # 없다 — 뽑을 때는 본문 전체를 보므로 실제로는 있을 수 있다. 다1 이
