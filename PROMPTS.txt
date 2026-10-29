@@ -122,7 +122,7 @@ bash scripts/publish_calendar_data.sh
   출처 주소와 함께 남긴다. 캘린더는 확정도를 다섯 단계로 표시한다:
   official / websearch / tentative / estimate / rule
 - 수집이 실패해도 seed 를 덮어쓰지 않는다. 의심스러우면 그대로 둔다.
-- 시세·ELS·브리핑 자료는 웹사이트(GitHub Pages)로 노출하지 않는다. (pages.yml)
+- 이 저장소는 웹사이트(GitHub Pages)로 배포하지 않는다. 고객용 페이지도 두지 않는다.
 - 비밀(API 키)은 GitHub 저장소 시크릿에만 둔다. 저장소 파일에 넣지 않는다.
 - 회사 망이 *.translate.goog 를 비업무용으로 막는다. 번역 프록시를 쓰지 않는다.
 - scripts/*.py 는 표준 라이브러리만 쓴다.

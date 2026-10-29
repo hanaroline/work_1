@@ -93,8 +93,8 @@
 에 출처 주소와 함께 남깁니다. "아마 이쯤일 것"으로 채우지 않습니다. 캘린더는 확정도를
 `official · websearch · tentative · estimate · rule` 다섯 단계로 구분해 화면에 표시합니다.
 
-**시세·ELS·브리핑 자료는 웹사이트(GitHub Pages)로 노출하지 않습니다.** `pages.yml` 에
-그 지침이 적혀 있습니다. 사람이 받아 갈 파일은 데이터 브랜치의 고정 주소에 둡니다.
+**이 저장소는 웹사이트(GitHub Pages)로 배포하지 않습니다.** 고객용 페이지도 두지 않습니다
+(2026-10-29 `pages.yml` 삭제). 사람이 받아 갈 파일은 데이터 브랜치의 고정 주소에 둡니다.
 
 **비밀은 저장소 파일에 넣지 않습니다.** API 키는 GitHub 저장소 시크릿에만 둡니다
 (`Settings → Secrets and variables → Actions`).
