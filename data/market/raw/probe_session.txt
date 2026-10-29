@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-10-29 22:46:40 KST
+세션을 지닌 채 API 부르기 2026-10-29 23:04:34 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 130880 bytes
@@ -16,12 +16,12 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 121113 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8794 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"030","officeHname":"전자신문","articleId":"0003480308","title":"400만원 간다더니 165만원?…SK하닉 목표주가 235만원 차이, “개미들 뒷골 당긴다”","datetime":"2026-10-29 22:36:16","type":"1","subcontent":"역대급 
+        HTTP 200 · 8792 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"030","officeHname":"전자신문","articleId":"0003480308","title":"400만원 간다더니 165만원?…SK하닉 목표주가 235만원 차이, “개미들만 골머리”","datetime":"2026-10-29 22:36:16","type":"1","subcontent":"역대급 실적
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8794 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"030","officeHname":"전자신문","articleId":"0003480308","title":"400만원 간다더니 165만원?…SK하닉 목표주가 235만원 차이, “개미들 뒷골 당긴다”","datetime":"2026-10-29 22:36:16","type":"1","subcontent":"역대급 
+        HTTP 200 · 8792 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"030","officeHname":"전자신문","articleId":"0003480308","title":"400만원 간다더니 165만원?…SK하닉 목표주가 235만원 차이, “개미들만 골머리”","datetime":"2026-10-29 22:36:16","type":"1","subcontent":"역대급 실적
         남김: data/market/raw/session_list.json
 
 ### 시장지표
@@ -33,7 +33,7 @@
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
         HTTP 200 · 2414 bytes · JSON!
-        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
+        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","s
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
         HTTP 200 · 5046 bytes · JSON!
