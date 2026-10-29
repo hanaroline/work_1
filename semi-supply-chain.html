@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>반도체 소부장 맵</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#F58220; --orange-act:#CB6015; --orange-soft:#FAB072; --blue:#043B72;
+  --hl:#D7D7D7; --canvas:#FFFFFF; --soft:#ECEFF4; --subtle:#F7F8FA;
+  --hair:#CDCECB; --hair-soft:#E5E4E1; --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted2:#84888B;
+  --eq:#1F2733; --etc:#043B72; --mat:#E9EAEC; --svc:#2F64A8;
+  --font-kr:'Spoqa Han Sans Neo','Noto Sans KR',sans-serif;
+  --font-en:'Inter','Aptos','Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--canvas);color:var(--body);font-size:17px;line-height:1.6}
+html[lang="ko"] body{font-family:var(--font-kr)}
+html[lang="en"] body{font-family:var(--font-en)}
+.page{max-width:1240px;margin:0 auto;padding:0 28px}
+@media (max-width:768px){.page{padding:0 16px}}
+a{color:var(--blue)}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+/* header */
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:28px 0 0}
+.tag{display:inline-block;border:1px solid #C62828;color:#C62828;font-size:13px;padding:3px 10px;border-radius:2px;margin-bottom:14px}
+h1{font-size:34px;line-height:1.25;letter-spacing:-.3px;color:var(--ink);margin:0 0 8px;font-weight:700}
+.lead{font-size:18px;color:var(--body);margin:0;max-width:820px}
+@media (max-width:768px){h1{font-size:26px}.lead{font-size:16px}}
+.lang{display:inline-flex;border:1px solid var(--hair);border-radius:2px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;flex:none}
+@media (max-width:640px){.top{display:block;position:relative}.top .lang{position:absolute;top:28px;right:0}.top .tag{margin-bottom:24px}}
+.lang button{border:0;background:#fff;color:var(--muted);font-family:var(--font-en);font-size:14px;font-weight:500;letter-spacing:.5px;padding:9px 17px}
+.lang button+button{border-left:1px solid var(--hair)}
+.lang button:hover{background:var(--subtle);color:var(--ink)}
+.lang button[aria-checked="true"]{background:var(--orange);color:#fff}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--hair);margin:28px 0 0}
+.stat{padding:16px 20px}
+.stat+.stat{border-left:1px solid var(--hair-soft)}
+.stat .l{font-size:14px;font-weight:500;color:var(--muted);letter-spacing:.3px}
+.stat .v{font-family:var(--font-en);font-size:34px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.2}
+.stat .v.o{color:var(--orange)}.stat .v.b{color:var(--blue)}
+@media (max-width:768px){.stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(3){border-left:0}.stat:nth-child(n+3){border-top:1px solid var(--hair-soft)}.stat .v{font-size:28px}}
+
+/* section */
+.section{margin-top:64px}
+.rule{height:1px;background:var(--orange);margin-bottom:16px}
+h2{font-size:26px;font-weight:700;color:var(--ink);margin:0 0 6px;line-height:1.3}
+.sub{color:var(--muted);font-size:15px;margin:0 0 20px}
+@media (max-width:768px){.section{margin-top:44px}h2{font-size:22px}}
+
+/* toolbar */
+.toolbar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--hair-soft);padding:12px 0;margin-top:28px}
+@media (max-width:640px){.toolbar{position:static}}
+.trow{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.trow+.trow{margin-top:10px}
+.search{flex:1 1 280px;display:flex;align-items:center;border:1px solid var(--hair);border-radius:2px;background:#fff}
+.search input{flex:1;border:0;outline:0;font:inherit;font-size:16px;padding:9px 12px;min-width:0;background:transparent}
+.search .cnt{font-size:13px;color:var(--muted);padding:0 12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.grp{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.grp .gl{font-size:13px;color:var(--muted);margin-right:2px}
+.chip{border:1px solid var(--hair);background:#fff;color:var(--body);font-size:14px;padding:5px 11px;border-radius:2px;line-height:1.3}
+.chip:hover{background:var(--subtle);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip.view[aria-pressed="true"]{background:var(--orange);border-color:var(--orange)}
+.reset{border:0;background:none;color:var(--muted);font-size:14px;text-decoration:underline;padding:4px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.sw.eq{background:var(--eq)}.sw.etc{background:var(--etc)}.sw.mat{background:var(--mat);border:1px solid var(--hair)}.sw.svc{background:var(--svc)}
+
+/* map */
+.stage{margin-top:28px}
+.stage h3{font-size:20px;color:var(--ink);margin:0 0 12px;font-weight:700;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.stage h3 small{font-size:14px;color:var(--muted);font-weight:400}
+.cols{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
+@media (max-width:1100px){.cols{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:720px){.cols{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.col{display:flex;flex-direction:column;gap:7px;min-width:0}
+.colh{background:var(--orange);color:#fff;border:0;border-radius:4px;font-size:15px;font-weight:700;padding:10px 6px;text-align:center;line-height:1.25;min-height:46px}
+.colh:hover{background:var(--orange-act)}
+.colh .n{display:block;font-family:var(--font-en);font-size:12px;font-weight:500;opacity:.9}
+.co{border:0;border-radius:4px;font-size:14.5px;font-weight:500;padding:9px 6px;text-align:center;line-height:1.25;transition:opacity .15s;word-break:keep-all}
+.co.eq{background:var(--eq);color:#fff}
+.co.etc{background:var(--etc);color:#fff}
+.co.svc{background:var(--svc);color:#fff}
+.co.mat{background:var(--mat);color:var(--ink)}
+.co:hover{outline:2px solid var(--orange);outline-offset:-2px}
+.co.dim{opacity:.16}
+.co.hit{box-shadow:inset 0 0 0 2px var(--orange)}
+.co .hb{display:inline-block;font-family:var(--font-en);font-size:10px;font-weight:700;letter-spacing:.3px;margin-left:4px;padding:0 3px;border-radius:2px;background:var(--orange);color:#fff;vertical-align:1px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:12px}
+
+/* table */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--hair);margin-top:20px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:900px}
+th{background:var(--orange-soft);color:var(--ink);font-weight:700;text-align:left;padding:9px 10px;white-space:nowrap;cursor:pointer;user-select:none;position:relative}
+th[aria-sort="ascending"]::after{content:" ▲";font-size:10px}
+th[aria-sort="descending"]::after{content:" ▼";font-size:10px}
+td{border-top:1px solid var(--hair-soft);padding:9px 10px;vertical-align:top}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--subtle)}
+td.num{font-family:var(--font-en);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.nm{font-weight:700;color:var(--ink);white-space:nowrap}
+.pill{display:inline-block;font-size:12px;padding:1px 7px;border-radius:2px;margin:1px 3px 1px 0;white-space:nowrap;border:1px solid var(--hair);color:var(--body);background:#fff}
+.pill.t-eq{background:var(--eq);border-color:var(--eq);color:#fff}
+.pill.t-etc{background:var(--etc);border-color:var(--etc);color:#fff}
+.pill.t-svc{background:var(--svc);border-color:var(--svc);color:#fff}
+.pill.t-mat{background:var(--mat);border-color:var(--hair)}
+.pill.tg{border-color:var(--orange);color:var(--orange-act)}
+.unv{color:var(--muted2);font-size:11px;margin-left:2px}
+
+/* process cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.card{border:1px solid var(--hair);border-radius:4px;padding:16px 18px;background:#fff}
+.card h4{margin:0 0 4px;font-size:17px;color:var(--ink);display:flex;justify-content:space-between;gap:8px}
+.card h4 span{font-family:var(--font-en);font-size:12px;font-weight:600;color:var(--orange-act);white-space:nowrap}
+.card p{margin:6px 0;font-size:14.5px;line-height:1.6}
+.card .w{background:var(--subtle);border-left:2px solid var(--orange);padding:8px 10px;font-size:14px}
+.card .w b{color:var(--ink)}
+.card .mini{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.mini button{border:1px solid var(--hair);background:#fff;font-size:12.5px;padding:2px 7px;border-radius:2px;color:var(--body)}
+.mini button:hover{border-color:var(--orange);color:var(--ink)}
+
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:14px;margin:0 0 20px}
+.flow .st{border:1px solid var(--hair);padding:5px 10px;border-radius:2px;background:#fff}
+.flow .st.f{border-color:var(--orange-soft)}
+.flow .ar{color:var(--muted2)}
+.flow .div{font-weight:700;color:var(--blue);padding:0 4px}
+
+/* baskets */
+.baskets{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+.bk{border:1px solid var(--hair);border-radius:4px;padding:16px 18px}
+.bk h4{margin:0 0 4px;font-size:17px;color:var(--ink)}
+.bk p{margin:0 0 10px;font-size:14px;color:var(--muted)}
+
+.multi td:first-child{white-space:nowrap}
+
+.note{font-size:13.5px;color:var(--muted);line-height:1.7;margin:0}
+.note li{margin-bottom:4px}
+footer{margin:64px 0 40px;border-top:1px solid var(--hair);padding-top:16px}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(26,26,26,.35);z-index:40;display:none}
+.scrim.on{display:block}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(560px,100%);background:#fff;z-index:50;transform:translateX(100%);transition:transform .2s ease;overflow-y:auto;border-left:1px solid var(--hair);box-shadow:-4px 0 24px rgba(0,0,0,.08)}
+.drawer.on{transform:none}
+.dh{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--hair-soft);padding:18px 22px 14px;z-index:1}
+.dh .x{position:absolute;right:14px;top:12px;border:1px solid var(--hair);background:#fff;border-radius:2px;width:36px;height:36px;font-size:20px;line-height:1;color:var(--muted)}
+.dh .x:hover{color:var(--ink);background:var(--subtle)}
+.dh h3{margin:0;font-size:26px;color:var(--ink);line-height:1.25;padding-right:44px}
+.dh .en{font-family:var(--font-en);color:var(--muted);font-size:14px}
+.dh .meta{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.db{padding:6px 22px 30px}
+.db h5{font-size:14px;color:var(--orange-act);letter-spacing:.3px;margin:20px 0 6px;font-weight:700}
+.db .one{font-size:17px;color:var(--ink);font-weight:500;margin:14px 0 0;line-height:1.55}
+.db ul{margin:0;padding-left:18px}
+.db li{margin-bottom:5px;font-size:15.5px}
+.db .peers{display:flex;flex-wrap:wrap;gap:6px}
+.db .peers .pl{font-size:13px;color:var(--muted);width:100%;margin-top:4px}
+.db .links{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+.btn{display:inline-block;background:var(--orange);color:#fff;text-decoration:none;font-size:15px;font-weight:500;padding:9px 16px;border-radius:2px}
+.btn:hover{background:var(--orange-act)}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--hair)}
+.btn.ghost:hover{background:var(--subtle)}
+.db .warn{font-size:13px;color:var(--muted);margin-top:16px;border-top:1px solid var(--hair-soft);padding-top:10px}
+.hidden{display:none!important}
+
+@media print{
+  .lang,.toolbar,.drawer,.scrim{display:none!important}
+  body{font-size:11pt}.page{max-width:100%;padding:0}
+  .section{margin-top:24px;page-break-inside:auto}
+  .stage,.card,.bk,table{page-break-inside:avoid}
+  .co.dim{opacity:1}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="top">
+  <div>
+    <span class="tag" data-i18n="tag">사내 참고용 · 투자권유 아님</span>
+    <h1 data-i18n="title">국내 반도체 소부장 맵 — 전공정 · 후공정</h1>
+    <p class="lead" data-i18n="lead">반도체가 만들어지는 순서대로 14개 공정을 나누고, 각 공정에 이름을 올린 국내 소재·부품·장비·서비스 기업의 핵심사업과 특징을 정리했습니다. 기업을 누르면 상세가 열립니다.</p>
+  </div>
+  <div class="lang" role="radiogroup" aria-label="Language">
+    <button role="radio" data-lang="ko" aria-checked="true">KO</button>
+    <button role="radio" data-lang="en" aria-checked="false">EN</button>
+  </div>
+</header>
+
+<div class="stats" id="stats"></div>
+
+<div class="toolbar" id="toolbar">
+  <div class="trow">
+    <label class="search">
+      <input id="q" type="search" autocomplete="off" data-i18n-ph="ph">
+      <span class="cnt" id="cnt"></span>
+    </label>
+    <div class="grp" role="group" aria-label="view">
+      <button class="chip view" data-view="map" aria-pressed="true" data-i18n="vMap">맵 보기</button>
+      <button class="chip view" data-view="table" aria-pressed="false" data-i18n="vTable">표 보기</button>
+    </div>
+  </div>
+  <div class="trow">
+    <div class="grp" id="fStage"></div>
+    <div class="grp" id="fType"></div>
+  </div>
+  <div class="trow">
+    <div class="grp" id="fTag"></div>
+    <button class="reset" id="reset" data-i18n="reset">필터 지우기</button>
+  </div>
+</div>
+
+<section class="section" id="map" style="margin-top:28px">
+  <div id="mapView"></div>
+  <div id="tableView" class="hidden">
+    <div class="tbl-wrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+  </div>
+</section>
+
+<section class="section" id="process">
+  <div class="rule"></div>
+  <h2 data-i18n="sProc">공정 해설과 관전 포인트</h2>
+  <p class="sub" data-i18n="sProcSub">각 공정이 하는 일, 업황을 볼 때 무엇을 보면 되는지.</p>
+  <div class="flow" id="flow"></div>
+  <div class="cards" id="cards"></div>
+</section>
+
+<section class="section" id="themes">
+  <div class="rule"></div>
+  <h2 data-i18n="sTheme">테마별 묶음</h2>
+  <p class="sub" data-i18n="sThemeSub">공정을 가로질러 같은 수요에 묶이는 기업들. 이름을 누르면 상세가 열립니다.</p>
+  <div class="baskets" id="baskets"></div>
+</section>
+
+<section class="section" id="multi">
+  <div class="rule"></div>
+  <h2 data-i18n="sMulti">여러 공정에 걸친 기업</h2>
+  <p class="sub" data-i18n="sMultiSub">자료에서 두 칸 이상에 이름이 오른 기업. 한 공정의 업황만으로 판단하면 안 되는 곳들입니다.</p>
+  <div class="tbl-wrap"><table class="multi" id="multiTbl"><thead></thead><tbody></tbody></table></div>
+</section>
+
+<footer>
+  <div class="rule"></div>
+  <h2 data-i18n="sNote" style="font-size:20px">읽기 전에</h2>
+  <ul class="note" id="notes"></ul>
+</footer>
+
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-labelledby="dName">
+  <div class="dh">
+    <button class="x" id="dClose" aria-label="close">×</button>
+    <h3 id="dName"></h3>
+    <div class="en" id="dEn"></div>
+    <div class="meta" id="dMeta"></div>
+  </div>
+  <div class="db" id="dBody"></div>
+</aside>
+
+<script>
+/* =====================================================================
+ * 데이터
+ * 공정 배치는 미래에셋자산운용 「TIGER 코리아테크액티브ETF」 판매사 사내한 자료
+ * 18~19쪽(2. (2) 반도체 소부장 – 전공정 / 후공정) 그대로입니다.
+ * 기업 설명은 공개 자료를 바탕으로 한 정성 요약이며, 매출·점유율 같은 수치는
+ * 넣지 않았습니다(확인되지 않은 숫자를 싣지 않기 위함).
+ * v:1 = 종목코드를 저장소 data/ 의 보유종목·리포트 자료와 대조함
+ * v:0 = 대조할 자료가 저장소에 없어 작성자 지식으로만 적음(화면에 † 표시)
+ * ===================================================================== */
+const TYPES = {
+  eq:  {ko:'장비', en:'Equipment'},
+  etc: {ko:'기타 장비', en:'Other equip.'},
+  mat: {ko:'소재/부품', en:'Materials/Parts'},
+  svc: {ko:'서비스', en:'Services'}
+};
+const TAGS = {
+  hbm:  {ko:'HBM', en:'HBM'},
+  adv:  {ko:'첨단패키징', en:'Adv. packaging'},
+  euv:  {ko:'EUV·미세화', en:'EUV/Scaling'},
+  ai:   {ko:'AI·데이터센터', en:'AI/Datacenter'},
+  glass:{ko:'유리기판', en:'Glass substrate'},
+  local:{ko:'국산화', en:'Localization'},
+  logic:{ko:'비메모리·파운드리', en:'Logic/Foundry'},
+  mem:  {ko:'메모리 투자', en:'Memory capex'}
+};
+const COLS = [
+ {id:'f1',st:'F',ko:'인프라/보조설비',en:'Infra & Sub-fab',
+  d:'팹을 돌리는 데 필요한 클린룸·배기·진공·가스/케미컬 공급·폐가스 처리 설비. 공정 장비 옆에서 함께 깔립니다.',
+  de:'Cleanrooms, exhaust, vacuum, gas/chemical supply and abatement that keep a fab running; installed alongside process tools.',
+  w:'신규 팹 착공·증설 일정. 공정 장비보다 먼저 발주되는 경우가 많아 투자 사이클의 선행 신호가 됩니다.',
+  we:'New fab construction timelines. Often ordered before process tools, so a leading signal of the capex cycle.'},
+ {id:'f2',st:'F',ko:'웨이퍼/CMP',en:'Wafer / CMP',
+  d:'실리콘 웨이퍼 자체와, 층을 쌓을 때마다 표면을 평탄하게 갈아내는 CMP(화학적 기계 연마) 장비·패드·슬러리.',
+  de:'The silicon wafer itself, plus CMP (chemical-mechanical planarization) tools, pads and slurries that flatten each layer.',
+  w:'웨이퍼 투입량(가동률)에 연동되는 소모품 성격. 적층 수가 늘수록 CMP 횟수도 늘어납니다.',
+  we:'Consumables tied to wafer starts (utilization). More stacked layers mean more CMP steps.'},
+ {id:'f3',st:'F',ko:'산화/어닐링',en:'Oxidation / Annealing',
+  d:'막을 만든 뒤 열·레이저·고압 가스로 처리해 결함을 줄이고 전기적 특성을 다듬는 공정.',
+  de:'Heat, laser or high-pressure gas treatment after film formation to cure defects and tune electrical properties.',
+  w:'미세화로 저온·국부 열처리 수요가 커지는 영역. 신규 공정 채택(고압 수소, 레이저 어닐링) 여부가 핵심입니다.',
+  we:'Scaling drives demand for low-temperature, localized anneals. Watch adoption of new steps (high-pressure H2, laser anneal).'},
+ {id:'f4',st:'F',ko:'증착',en:'Deposition',
+  d:'웨이퍼 위에 원자·분자 단위로 얇은 막을 쌓는 공정(CVD·ALD). 장비와 막의 원료인 전구체가 함께 들어갑니다.',
+  de:'Building thin films atom-by-atom (CVD/ALD). Includes the tools and the precursors that become the film.',
+  w:'전공정 장비 중 비중이 큰 축. 3D 낸드 적층·DRAM 미세화로 ALD 수요가 늘고, 고객사별 투자 집행이 실적을 가릅니다.',
+  we:'One of the largest front-end equipment pools. 3D NAND stacking and DRAM scaling lift ALD; customer capex timing drives results.'},
+ {id:'f5',st:'F',ko:'포토',en:'Photolithography',
+  d:'빛으로 회로 패턴을 새기는 공정. 국내 기업은 노광기보다 감광액(PR)·블랭크마스크·펠리클 같은 소재 쪽에 있습니다.',
+  de:'Patterning circuits with light. Korean players sit in materials—photoresist, blank masks, pellicles—rather than scanners.',
+  w:'EUV 확대와 일본산 소재 대체(국산화) 진척. 고객 인증 통과가 곧 매출 전환점입니다.',
+  we:'EUV expansion and substitution of Japanese materials. Passing customer qualification is the revenue inflection.'},
+ {id:'f6',st:'F',ko:'식각',en:'Etch',
+  d:'필요 없는 막을 깎아내 패턴을 완성하는 공정. 장비와 식각액, 플라즈마에 닳는 챔버 부품(링·전극)이 포함됩니다.',
+  de:'Removing unwanted film to finish the pattern. Includes tools, etchants and chamber parts (rings, electrodes) consumed by plasma.',
+  w:'고종횡비 식각이 늘수록 소모성 부품 교체 주기가 짧아집니다. 부품 업체는 가동률, 장비 업체는 투자에 연동됩니다.',
+  we:'More high-aspect-ratio etch shortens parts replacement cycles. Parts track utilization; tools track capex.'},
+ {id:'f7',st:'F',ko:'세정',en:'Cleaning',
+  d:'각 공정 사이에 남은 입자·잔여물을 씻어내는 공정과, 장비 부품을 세정·코팅해 재사용하게 하는 서비스.',
+  de:'Removing particles and residue between steps, plus services that clean and re-coat tool parts for reuse.',
+  w:'공정 수가 늘수록 세정 횟수도 늘어나는 구조. 부품 세정·코팅은 가동률에 연동되는 반복 매출입니다.',
+  we:'More process steps mean more cleans. Parts cleaning/coating is recurring revenue tied to utilization.'},
+ {id:'b1',st:'B',ko:'검사/계측',en:'Inspection / Metrology',
+  d:'웨이퍼·패키지·기판의 결함을 찾고 치수·정렬을 재는 장비. 수율을 지키는 눈 역할을 합니다.',
+  de:'Tools that find defects and measure dimensions/overlay on wafers, packages and substrates—the eyes that protect yield.',
+  w:'미세화·적층으로 검사 횟수가 늘어나는 구조. 해외 대형사 대비 국산 장비 채택 확대가 관전 포인트입니다.',
+  we:'Scaling and stacking increase inspection steps. Watch wider adoption of domestic tools versus global incumbents.'},
+ {id:'b2',st:'B',ko:'패키징/절단',en:'Packaging / Dicing',
+  d:'웨이퍼를 칩으로 자르고(다이싱), 칩을 붙이고(본딩), 열로 접합(리플로우)하는 장비.',
+  de:'Tools that cut wafers into dies (dicing), attach dies (bonding) and join them with heat (reflow).',
+  w:'HBM 적층 수 증가와 TC 본더·하이브리드 본딩 전환. 메모리 고객사의 HBM 증설이 가장 큰 변수입니다.',
+  we:'HBM stack-height growth and the TC-bonder to hybrid-bonding transition. Memory makers\' HBM expansion is the swing factor.'},
+ {id:'b3',st:'B',ko:'기판',en:'Substrates',
+  d:'칩과 메인보드를 이어 주는 패키지 기판(FC-BGA 등)과 메모리 모듈용 PCB.',
+  de:'Package substrates (FC-BGA etc.) that connect chips to boards, and PCBs for memory modules.',
+  w:'AI 가속기·서버 CPU용 대면적 FC-BGA, 차세대 유리기판, DDR5·서버 모듈 교체 수요.',
+  we:'Large-area FC-BGA for AI accelerators and server CPUs, next-gen glass substrates, DDR5/server module upgrades.'},
+ {id:'b4',st:'B',ko:'패키징 소켓',en:'Sockets & Interconnect',
+  d:'테스트할 때 칩을 꽂는 소켓·핀과, 칩을 연결하는 솔더볼·본딩와이어 같은 접합 소재.',
+  de:'Sockets and pins that hold chips during test, and interconnect materials such as solder balls and bonding wire.',
+  w:'신제품 출시 때마다 바뀌는 소모품 성격. 고객 다변화(해외 팹리스·빅테크)와 고성능 칩 테스트 수요.',
+  we:'Consumables replaced with every new product. Watch customer diversification (global fabless/hyperscalers) and high-end test demand.'},
+ {id:'b5',st:'B',ko:'테스트 장비',en:'Test Equipment',
+  d:'완성된 칩이 정상 작동하는지 보는 테스터·핸들러·번인 장비.',
+  de:'Testers, handlers and burn-in systems that verify finished chips work.',
+  w:'HBM·DDR5·SSD 세대 전환 때 신규 장비 수요가 몰립니다. 고객사 한두 곳 의존도가 높은 곳이 많습니다.',
+  we:'Demand clusters around HBM/DDR5/SSD generation changes. Many depend heavily on one or two customers.'},
+ {id:'b6',st:'B',ko:'OSAT',en:'OSAT',
+  d:'패키징과 테스트를 대신 해 주는 외주 업체(Outsourced Semiconductor Assembly & Test).',
+  de:'Outsourced Semiconductor Assembly & Test—contract packaging and testing.',
+  w:'고객사의 외주 비중과 가동률. 메모리 업황, 국내 시스템반도체 물량, 해외 거점 증설이 실적을 좌우합니다.',
+  we:'Customer outsourcing ratio and utilization. Memory cycle, domestic logic volumes and overseas expansion drive results.'},
+ {id:'b7',st:'B',ko:'IP/디자인하우스',en:'IP / Design House',
+  d:'칩 설계에 쓰이는 설계자산(IP)을 팔거나, 팹리스의 설계를 파운드리 공정에 맞게 옮겨 주는 회사, 그리고 팹리스.',
+  de:'Firms licensing design IP, those porting fabless designs to foundry processes (design houses), and fabless chipmakers.',
+  w:'AI 칩 설계 수요, 삼성 파운드리·TSMC 생태계 내 위치, 개발 용역에서 양산 매출로 넘어가는 시점.',
+  we:'AI-chip design demand, position in Samsung Foundry/TSMC ecosystems, and the shift from NRE to mass-production revenue.'}
+];
+/* 자료 칸별 배치와 칸 안의 색(유형) — 자료에 적힌 순서 그대로 */
+const MEMBERS = {
+ f1:[['신성이엔지','etc'],['한양이엔지','etc'],['엘오티베큠','etc'],['GST','etc'],['유니셈','etc'],['예스티','etc']],
+ f2:[['케이씨텍','eq'],['SKC','mat'],['솔브레인','mat'],['SK실트론','mat'],['동진쎄미켐','mat']],
+ f3:[['AP시스템','eq'],['이오테크닉스','eq'],['HPSP','eq'],['디아이티','eq']],
+ f4:[['원익IPS','eq'],['유진테크','eq'],['테스','eq'],['주성엔지니어링','eq'],['한솔케미칼','mat'],['덕산테코피아','mat']],
+ f5:[['동진쎄미켐','mat'],['에스앤에스텍','mat'],['에프에스티','mat'],['이엔에프테크놀로지','mat']],
+ f6:[['브이엠','eq'],['피에스케이','eq'],['이엔에프테크놀로지','mat'],['솔브레인','mat'],['티씨케이','mat'],['원익QnC','mat'],['하나머티리얼즈','mat']],
+ f7:[['제우스','eq'],['케이씨텍','eq'],['에스티아이','eq'],['코미코','mat'],['엘티씨','mat'],['솔브레인','mat'],['한솔아이원스','mat']],
+ b1:[['파크시스템스','eq'],['넥스틴','eq'],['오로스테크놀로지','eq'],['인텍플러스','eq'],['기가비스','eq']],
+ b2:[['한미반도체','eq'],['한화비전','eq'],['이오테크닉스','eq'],['프로텍','eq'],['에스티아이','eq'],['피에스케이홀딩스','eq']],
+ b3:[['삼성전기','mat'],['티엘비','mat'],['대덕전자','mat'],['해성디에스','mat'],['심텍','mat'],['LG이노텍','mat'],['코리아써키트','mat']],
+ b4:[['덕산하이메탈','mat'],['엠케이전자','mat'],['리노공업','mat'],['ISC','mat'],['티에스이','mat'],['티에프이','mat']],
+ b5:[['테크윙','eq'],['와이씨','eq'],['디아이','eq'],['네오셈','eq'],['유니테스트','eq'],['엑시콘','eq']],
+ b6:[['하나마이크론','svc'],['두산테스나','svc'],['SFA반도체','svc'],['네패스','svc'],['네패스아크','svc'],['LB세미콘','svc'],['한양디지텍','svc']],
+ b7:[['파두','svc'],['제주반도체','svc'],['칩스앤미디어','svc'],['오픈엣지테크놀로지','svc'],['가온칩스','svc'],['에이직랜드','svc'],['에이디테크놀로지','svc']]
+};
+/* 기업 상세
+ * e 영문명 · c 종목코드 · m 시장 · v 코드대조 · s/se 한줄요약 · b/be 핵심사업 · p/pe 특징·체크포인트
+ * cu/cue 주요 고객(널리 알려진 곳만) · tg 테마 */
+const CO = {
+'신성이엔지':{e:'Shinsung E&G',c:'011930',m:'KOSPI',v:1,tg:['mem'],
+ s:'클린룸과 그 핵심 설비 FFU를 만드는 클린환경 전문 기업.',se:'Cleanroom specialist known for FFUs (fan filter units).',
+ b:['클린룸 설비 — FFU(팬 필터 유닛), 공조, EFEM용 미니 환경 장비','신재생에너지 — 태양광 모듈·발전소 사업'],
+ be:['Cleanroom equipment — FFUs, air handling, mini-environments','Renewables — solar modules and power plants'],
+ p:['반도체·디스플레이 팹 신·증설 공사에 연동되는 수주형 사업','태양광 사업 실적이 함께 섞여 반도체 업황만으로 설명되지 않음'],
+ pe:['Order-driven business tied to fab construction','Solar results are mixed in, so earnings don\'t track chips alone'],
+ cu:'삼성전자, SK하이닉스',cue:'Samsung Electronics, SK hynix'},
+'한양이엔지':{e:'Hanyang ENG',c:'045100',m:'KOSDAQ',v:0,tg:['mem'],
+ s:'반도체 팹의 고순도 가스·케미컬 공급 배관과 공급장치를 설계·시공하는 회사.',se:'Designs and installs ultra-pure gas/chemical supply systems for fabs.',
+ b:['초고순도 가스·케미컬 공급 시스템(배관·공급장치) 설계·시공','팹 유틸리티 공사, 공급장치 자체 제작'],
+ be:['Ultra-pure gas/chemical supply systems (piping & dispensing)','Fab utility construction and in-house supply units'],
+ p:['삼성전자 팹 투자와 함께 움직이는 대표적 설비 협력사','라인 신설 시점에 수주가 몰리는 구조'],
+ pe:['A key utility partner moving with Samsung fab investment','Orders cluster around new line builds'],
+ cu:'삼성전자',cue:'Samsung Electronics'},
+'엘오티베큠':{e:'LOT Vacuum',c:'083310',m:'KOSDAQ',v:0,tg:['mem','local'],
+ s:'공정 챔버를 진공으로 만드는 드라이 진공펌프를 국산화한 회사.',se:'Domestic maker of dry vacuum pumps for process chambers.',
+ b:['반도체·디스플레이용 드라이 진공펌프','펌프 유지보수(리퍼비시) 서비스'],
+ be:['Dry vacuum pumps for semiconductor and display','Pump maintenance and refurbishment'],
+ p:['해외 대형사가 장악한 시장에서 국산 대체를 진행','장비 대수에 비례해 펌프와 정비 수요가 따라붙음'],
+ pe:['Substituting for global incumbents in a concentrated market','Pump and service demand scales with installed tools'],
+ cu:'',cue:''},
+'GST':{e:'Global Standard Technology',c:'083450',m:'KOSDAQ',v:1,tg:['mem'],
+ s:'공정 뒤 남은 유해가스를 태워 없애는 스크러버와 칠러를 만드는 회사.',se:'Makes gas scrubbers (abatement) and chillers.',
+ b:['가스 스크러버 — 공정 폐가스 처리','칠러 — 장비 온도 제어','신사업: 열관리·온실가스 감축 설비'],
+ be:['Gas scrubbers for process exhaust','Chillers for tool temperature control','New: thermal management and GHG abatement'],
+ p:['공정 장비 증설에 비례해 늘어나는 부대 설비','환경 규제 강화가 수요를 받치는 구조'],
+ pe:['Ancillary equipment scaling with tool installs','Tighter environmental rules support demand'],
+ cu:'삼성전자, SK하이닉스',cue:'Samsung Electronics, SK hynix'},
+'유니셈':{e:'Unisem',c:'036200',m:'KOSDAQ',v:1,tg:['mem'],
+ s:'스크러버와 칠러를 함께 하는 반도체 환경·온도 제어 장비 회사.',se:'Scrubbers and chillers for fabs.',
+ b:['가스 스크러버','칠러','관련 유지보수'],be:['Gas scrubbers','Chillers','Related maintenance'],
+ p:['GST와 같은 시장을 두고 경쟁하는 구도','국내 메모리 투자와 해외 고객 확대가 관전 포인트'],
+ pe:['Competes with GST in the same market','Watch domestic memory capex and overseas customers'],
+ cu:'SK하이닉스',cue:'SK hynix'},
+'예스티':{e:'YEST',c:'122640',m:'KOSDAQ',v:1,tg:['hbm','adv'],
+ s:'열·압력을 다루는 장비 회사. 웨이퍼 가압 장비로 HBM 공정에 들어갑니다.',se:'Heat/pressure equipment maker; pressure-curing tools used in HBM.',
+ b:['가압 장비 — 웨이퍼 기포 제거·휨 개선','칠러·퍼니스 등 열처리 장비','디스플레이·전력반도체용 장비'],
+ be:['Pressure-curing tools to remove voids and reduce warpage','Chillers, furnaces and thermal tools','Equipment for display and power chips'],
+ p:['HBM 공정 신규 채택 여부가 실적 변수','이 자료에서는 인프라/보조설비 칸에 분류'],
+ pe:['HBM process adoption is the swing factor','Classified under infrastructure in the source chart'],
+ cu:'',cue:''},
+'케이씨텍':{e:'KCTech',c:'281820',m:'KOSPI',v:1,tg:['mem','local'],
+ s:'CMP 장비와 슬러리를 함께 하는 국내 대표 평탄화 업체.',se:'Leading Korean CMP player in both tools and slurry.',
+ b:['CMP 장비','CMP 슬러리(세리아 등)','습식 세정 장비'],be:['CMP tools','CMP slurries (incl. ceria)','Wet cleaning tools'],
+ p:['장비와 소모품을 함께 해 투자기·가동기 양쪽에 노출','CMP·세정 두 칸에 모두 이름이 오름'],
+ pe:['Tools plus consumables—exposed to both capex and utilization','Appears in both CMP and cleaning columns'],
+ cu:'삼성전자, SK하이닉스',cue:'Samsung Electronics, SK hynix'},
+'SKC':{e:'SKC',c:'011790',m:'KOSPI',v:1,tg:['glass','adv','ai'],
+ s:'SK그룹 소재 회사. 반도체 쪽은 CMP 패드와 유리기판(앱솔릭스)이 핵심.',se:'SK Group materials arm; CMP pads and glass substrates (Absolics) in chips.',
+ b:['반도체 소재 — CMP 패드 등(자회사)','유리기판 — 미국 법인 앱솔릭스','동박(2차전지) · 화학'],
+ be:['Semiconductor materials—CMP pads etc. (subsidiaries)','Glass substrates—US subsidiary Absolics','Copper foil (batteries), chemicals'],
+ p:['유리기판 상용화 일정이 반도체 쪽 최대 관심사','테스트 소켓 ISC를 자회사로 둠','동박 등 2차전지 사업 비중이 커 업황이 섞임'],
+ pe:['Glass-substrate commercialization is the key chip catalyst','Owns test-socket maker ISC','Large battery-materials exposure mixes the cycle'],
+ cu:'',cue:''},
+'솔브레인':{e:'Soulbrain',c:'357780',m:'KOSDAQ',v:1,tg:['local','mem'],
+ s:'고순도 식각액(불산)으로 알려진 국내 대표 반도체 공정 소재 기업.',se:'Leading Korean process-materials maker, known for high-purity etchants.',
+ b:['식각액 — 고순도 불산 등','CMP 슬러리, 증착 전구체','2차전지 전해액, 디스플레이 소재'],
+ be:['Etchants—high-purity HF etc.','CMP slurries, deposition precursors','Battery electrolytes, display materials'],
+ p:['2019년 일본 수출규제 때 고순도 불산 국산화로 주목','웨이퍼 투입량에 연동되는 소모성 매출','식각·CMP·세정 세 칸에 이름이 오름'],
+ pe:['Rose to prominence localizing high-purity HF in 2019','Consumable revenue tied to wafer starts','Appears in etch, CMP and cleaning columns'],
+ cu:'삼성전자, SK하이닉스',cue:'Samsung Electronics, SK hynix'},
+'SK실트론':{e:'SK siltron',c:'',m:'비상장',v:1,tg:['mem'],
+ s:'국내 유일의 반도체용 실리콘 웨이퍼 제조사(비상장).',se:'Korea\'s only silicon-wafer maker (unlisted).',
+ b:['실리콘 웨이퍼(300mm 중심)','SiC(탄화규소) 웨이퍼 — 미국 법인'],be:['Silicon wafers (mainly 300mm)','SiC wafers—US subsidiary'],
+ p:['비상장 — 지분은 SK㈜가 보유, 직접 매매 불가','웨이퍼는 장기공급계약 비중이 높아 가격이 늦게 움직임'],
+ pe:['Unlisted—owned by SK Inc.; not directly tradable','Long-term contracts make wafer prices move with a lag'],
+ cu:'삼성전자, SK하이닉스 등',cue:'Samsung Electronics, SK hynix, others'},
+'동진쎄미켐':{e:'Dongjin Semichem',c:'005290',m:'KOSDAQ',v:1,tg:['euv','local'],
+ s:'국내 감광액(PR) 대표 기업. 포토 공정 소재를 폭넓게 공급합니다.',se:'Korea\'s leading photoresist maker with a broad photo-materials line.',
+ b:['감광액(PR) — KrF·ArF, EUV용 개발','신너·현상액, CMP 슬러리','디스플레이·2차전지 소재'],
+ be:['Photoresists—KrF/ArF, EUV in development','Thinners/developers, CMP slurries','Display and battery materials'],
+ p:['일본 업체가 장악한 PR 시장에서 국산화를 이끈 회사','EUV PR 양산 적용 여부가 관전 포인트','포토·CMP 두 칸에 이름이 오름'],
+ pe:['Led localization in a Japan-dominated PR market','EUV PR mass adoption is the watch item','Appears in photo and CMP columns'],
+ cu:'삼성전자, SK하이닉스',cue:'Samsung Electronics, SK hynix'},
+'AP시스템':{e:'AP Systems',c:'265520',m:'KOSDAQ',v:0,tg:[],
+ s:'레이저 어닐링(ELA) 장비 회사. 디스플레이가 주력이고 반도체용 열처리 장비도 합니다.',se:'Laser annealing (ELA) toolmaker—mainly display, with semiconductor RTP.',
+ b:['OLED용 레이저 어닐링(ELA)·LLO 장비','반도체용 급속 열처리(RTP) 장비'],
+ be:['ELA and laser lift-off tools for OLED','Rapid thermal processing (RTP) for semiconductors'],
+ p:['실적은 디스플레이 투자 사이클 영향이 큼','반도체 열처리 매출 확대 여부를 따로 볼 것'],
+ pe:['Earnings driven mostly by display capex','Track semiconductor RTP growth separately'],
+ cu:'삼성디스플레이',cue:'Samsung Display'},
+'이오테크닉스':{e:'EO Technics',c:'039030',m:'KOSDAQ',v:1,tg:['hbm','adv','mem'],
+ s:'레이저 마커로 출발해 레이저 어닐링·다이싱까지 넓힌 레이저 장비 전문 기업.',se:'Laser-tool specialist—from markers to laser annealing and dicing.',
+ b:['레이저 마커 — 반도체 패키지 표면 각인','레이저 어닐링 — 전공정 열처리','레이저 그루빙·스텔스 다이싱 — 웨이퍼 절단'],
+ be:['Laser markers for package marking','Laser annealing (front-end)','Laser grooving and stealth dicing'],
+ p:['전공정(어닐링)과 후공정(절단) 양쪽에 걸친 몇 안 되는 회사','HBM용 얇은 웨이퍼 절단 수요가 신성장 축'],
+ pe:['One of few spanning front-end anneal and back-end dicing','Thin-wafer dicing for HBM is a growth driver'],
+ cu:'삼성전자, SK하이닉스, 해외 OSAT',cue:'Samsung, SK hynix, global OSATs'},
+'HPSP':{e:'HPSP',c:'403870',m:'KOSDAQ',v:1,tg:['euv','logic','mem'],
+ s:'고압 수소 어닐링 장비를 사실상 홀로 공급하는 회사.',se:'Near-sole supplier of high-pressure hydrogen annealing tools.',
+ b:['고압 수소 어닐링(HPA) 장비','고압 산화(HPO) 장비'],be:['High-pressure hydrogen anneal (HPA)','High-pressure oxidation (HPO)'],
+ p:['파운드리 선단공정에서 시작해 메모리로 적용 확대','독점적 지위로 수익성이 높은 편 — 경쟁사 진입이 리스크'],
+ pe:['Started in leading-edge logic, expanding into memory','Near-monopoly margins; competitor entry is the risk'],
+ cu:'삼성전자, TSMC, 인텔 등',cue:'Samsung, TSMC, Intel, others'},
+'디아이티':{e:'DIT',c:'110990',m:'KOSDAQ',v:0,tg:['hbm'],
+ s:'레이저 어닐링과 디스플레이 검사 장비를 하는 회사.',se:'Laser annealing and display inspection tools.',
+ b:['반도체 레이저 어닐링 장비(HBM 공정 적용)','디스플레이 검사 장비'],be:['Semiconductor laser annealing (used in HBM)','Display inspection tools'],
+ p:['SK하이닉스 HBM 투자와 연동되는 매출 비중이 커짐','고객 집중도 높음'],
+ pe:['Growing share of sales tied to SK hynix HBM capex','High customer concentration'],
+ cu:'SK하이닉스',cue:'SK hynix'},
+'원익IPS':{e:'Wonik IPS',c:'240810',m:'KOSDAQ',v:1,tg:['mem','logic'],
+ s:'국내 최대 전공정 증착 장비 회사.',se:'Korea\'s largest front-end deposition toolmaker.',
+ b:['CVD·ALD 증착 장비','열처리·식각 일부 장비','디스플레이·태양광 장비'],
+ be:['CVD and ALD deposition','Some thermal and etch tools','Display and solar tools'],
+ p:['삼성전자 메모리·파운드리 투자 비중이 큼','국내 증착 장비의 대장주 격'],
+ pe:['Heavily exposed to Samsung memory and foundry capex','Bellwether for Korean deposition equipment'],
+ cu:'삼성전자, SK하이닉스',cue:'Samsung Electronics, SK hynix'},
+'유진테크':{e:'Eugene Technology',c:'084370',m:'KOSDAQ',v:1,tg:['mem'],
+ s:'LPCVD·ALD 증착 장비 회사. 해외 메모리 고객까지 확보.',se:'LPCVD/ALD toolmaker with overseas memory customers.',
+ b:['LPCVD(저압 화학기상증착)','ALD(원자층 증착) — 배치형 포함','열처리 장비'],
+ be:['LPCVD','ALD incl. batch','Thermal tools'],
+ p:['국내 양대 메모리에 더해 해외 메모리사로 고객 다변화','DRAM 미세화에 따른 ALD 수요가 핵심'],
+ pe:['Diversified beyond Korea\'s two memory makers','DRAM scaling-driven ALD demand is key'],
+ cu:'SK하이닉스, 삼성전자, 마이크론',cue:'SK hynix, Samsung, Micron'},
+'테스':{e:'TES',c:'095610',m:'KOSDAQ',v:1,tg:['mem'],
+ s:'PE-CVD와 가스식각 장비를 하는 전공정 장비 회사.',se:'PE-CVD and gas-phase etch toolmaker.',
+ b:['PE-CVD — 하드마스크 막(ACL) 등','가스 식각(GPE) 장비','UV 경화 장비'],be:['PE-CVD incl. hardmask (ACL)','Gas-phase etch','UV cure'],
+ p:['메모리 투자 사이클에 민감','SK하이닉스 비중이 높은 편'],pe:['Sensitive to the memory capex cycle','Relatively high SK hynix exposure'],
+ cu:'SK하이닉스, 삼성전자',cue:'SK hynix, Samsung'},
+'주성엔지니어링':{e:'Jusung Engineering',c:'036930',m:'KOSDAQ',v:1,tg:['mem'],
+ s:'ALD 원천기술을 앞세운 증착 장비 회사. 반도체·디스플레이·태양광을 함께 합니다.',se:'Deposition toolmaker built on ALD IP across chips, display and solar.',
+ b:['반도체 ALD·CVD 장비','디스플레이 장비','태양광(이종접합) 장비'],be:['Semiconductor ALD/CVD','Display tools','Solar (heterojunction) tools'],
+ p:['해외(중국 포함) 메모리 고객 매출 비중이 있어 수출 규제 영향을 받음','태양광 장비 수주가 실적 변동을 키움'],
+ pe:['Overseas (incl. China) sales expose it to export controls','Solar orders add earnings volatility'],
+ cu:'SK하이닉스, 해외 메모리사',cue:'SK hynix, overseas memory makers'},
+'한솔케미칼':{e:'Hansol Chemical',c:'014680',m:'KOSPI',v:1,tg:['local','mem'],
+ s:'반도체 세정용 과산화수소와 증착용 전구체를 공급하는 소재 회사.',se:'Supplies hydrogen peroxide for cleaning and deposition precursors.',
+ b:['초고순도 과산화수소','증착 전구체(프리커서)','QD(퀀텀닷) 소재, 2차전지 바인더'],
+ be:['Ultra-pure hydrogen peroxide','Deposition precursors','Quantum-dot materials, battery binders'],
+ p:['웨이퍼 투입량에 연동되는 소재 매출','부품 세정·코팅 회사 한솔아이원스를 자회사로 둠'],
+ pe:['Materials revenue tied to wafer starts','Owns parts cleaning/coating firm Hansol IONES'],
+ cu:'삼성전자, SK하이닉스',cue:'Samsung Electronics, SK hynix'},
+'덕산테코피아':{e:'Duksan Techopia',c:'317330',m:'KOSDAQ',v:0,tg:['local'],
+ s:'증착 전구체와 OLED 소재 중간체를 만드는 덕산그룹 계열사.',se:'Duksan Group affiliate making precursors and OLED intermediates.',
+ b:['반도체 증착 전구체(실리콘계 등)','OLED 소재 중간체','2차전지 전해액 첨가제'],
+ be:['Deposition precursors (silicon-based etc.)','OLED intermediates','Battery electrolyte additives'],
+ p:['전구체 국산화와 고객 확대가 관전 포인트','덕산하이메탈과 같은 그룹'],pe:['Watch precursor localization and new customers','Sister company of Duksan Hi-Metal'],
+ cu:'',cue:''},
+'에스앤에스텍':{e:'S&S Tech',c:'101490',m:'KOSDAQ',v:1,tg:['euv','local'],
+ s:'포토마스크의 원판인 블랭크마스크를 만드는 회사. EUV용 개발도 진행.',se:'Blank-mask maker, developing EUV blanks and pellicles.',
+ b:['블랭크마스크(반도체·디스플레이)','EUV 블랭크마스크·펠리클 개발'],be:['Blank masks for chips and display','EUV blank masks and pellicles in development'],
+ p:['일본 업체 중심 시장에서 국산 대체','EUV 제품 양산 공급 여부가 재평가 포인트'],
+ pe:['Domestic substitute in a Japan-led market','EUV product mass supply is the re-rating trigger'],
+ cu:'삼성전자',cue:'Samsung Electronics'},
+'에프에스티':{e:'FST',c:'036810',m:'KOSDAQ',v:1,tg:['euv'],
+ s:'마스크 보호막 펠리클과 칠러를 하는 회사.',se:'Pellicles and chillers.',
+ b:['펠리클 — 포토마스크 오염 방지막','칠러 — 공정 온도 제어','EUV 펠리클 개발'],be:['Pellicles that protect photomasks','Chillers','EUV pellicle development'],
+ p:['EUV 펠리클 채택이 중장기 성장 축','칠러 매출은 장비 투자에 연동'],pe:['EUV pellicle adoption is the long-term driver','Chiller sales follow capex'],
+ cu:'삼성전자, SK하이닉스',cue:'Samsung Electronics, SK hynix'},
+'이엔에프테크놀로지':{e:'ENF Technology',c:'102710',m:'KOSDAQ',v:1,tg:['local'],
+ s:'식각액·신너 등 공정 케미컬을 공급하는 소재 회사.',se:'Process chemicals—etchants, thinners.',
+ b:['식각액(에천트)','신너·PR 박리액','디스플레이용 케미컬'],be:['Etchants','Thinners and PR strippers','Display chemicals'],
+ p:['포토·식각 두 칸에 이름이 오름','소모성 매출로 가동률에 연동'],pe:['Appears in photo and etch columns','Consumable revenue tied to utilization'],
+ cu:'삼성전자, SK하이닉스',cue:'Samsung Electronics, SK hynix'},
+'브이엠':{e:'VM',c:'089970',m:'KOSDAQ',v:1,tg:['mem','local'],
+ s:'국산 식각 장비 회사.',se:'Domestic etch toolmaker.',
+ b:['건식 식각 장비(폴리실리콘 등)'],be:['Dry etch tools (polysilicon etc.)'],
+ p:['해외 대형사가 장악한 식각 장비에서 국산화','SK하이닉스 비중이 높음'],pe:['Localizing etch tools against global incumbents','High SK hynix exposure'],
+ cu:'SK하이닉스',cue:'SK hynix'},
+'피에스케이':{e:'PSK',c:'319660',m:'KOSDAQ',v:1,tg:['mem','logic'],
+ s:'감광액을 걷어내는 드라이 스트립 장비에서 세계 선두권인 회사.',se:'A global leader in dry strip (PR removal) tools.',
+ b:['드라이 스트립(PR 제거) 장비','드라이 클리닝·하드마스크 스트립 장비'],be:['Dry strip (PR removal)','Dry clean and hardmask strip'],
+ p:['해외 고객 비중이 높아 국내 투자만으로 설명되지 않음','2019년 인적분할로 장비(피에스케이)와 후공정(피에스케이홀딩스)이 나뉨'],
+ pe:['High overseas exposure beyond Korean capex','Split in 2019: front-end (PSK) vs back-end (PSK Holdings)'],
+ cu:'삼성전자, SK하이닉스, 해외 메모리·파운드리',cue:'Samsung, SK hynix, global memory/foundry'},
+'티씨케이':{e:'TCK',c:'064760',m:'KOSDAQ',v:1,tg:['mem'],
+ s:'식각 챔버에 들어가는 SiC 포커스링을 만드는 회사.',se:'Makes SiC focus rings for etch chambers.',
+ b:['SiC(탄화규소) 포커스링 등 식각 부품','흑연 소재 부품'],be:['SiC focus rings and etch parts','Graphite parts'],
+ p:['플라즈마에 닳는 소모품 — 가동률에 연동','고단 적층 낸드 식각 확대 수혜 구조'],pe:['Plasma-consumed parts tied to utilization','Benefits from high-layer NAND etch'],
+ cu:'삼성전자, SK하이닉스',cue:'Samsung Electronics, SK hynix'},
+'원익QnC':{e:'Wonik QnC',c:'074600',m:'KOSDAQ',v:0,tg:['mem'],
+ s:'쿼츠웨어(석영 부품)와 세라믹, 부품 세정을 하는 소재·부품 회사.',se:'Quartzware, ceramics and parts cleaning.',
+ b:['쿼츠웨어 — 공정용 석영 부품','세라믹 부품, 부품 세정','쿼츠 원재료(해외 자회사)'],be:['Quartzware for process tools','Ceramics, parts cleaning','Quartz raw materials (overseas subsidiary)'],
+ p:['소모품 성격으로 가동률에 연동','원재료부터 부품까지 수직계열화'],pe:['Consumables tied to utilization','Vertically integrated from raw quartz to parts'],
+ cu:'',cue:''},
+'하나머티리얼즈':{e:'Hana Materials',c:'166090',m:'KOSDAQ',v:1,tg:['mem'],
+ s:'식각 장비에 들어가는 실리콘·SiC 전극과 링을 만드는 회사.',se:'Silicon/SiC electrodes and rings for etch tools.',
+ b:['실리콘 캐소드(전극)·링','SiC 링'],be:['Silicon cathodes (electrodes) and rings','SiC rings'],
+ p:['해외 식각 장비사 공급 비중이 큼','부품 교체 주기와 가동률에 연동'],pe:['Large share of sales to global etch toolmakers','Tied to replacement cycles and utilization'],
+ cu:'해외 식각 장비사, 국내 메모리사',cue:'Global etch toolmakers, Korean memory makers'},
+'제우스':{e:'Zeus',c:'079370',m:'KOSDAQ',v:1,tg:['mem'],
+ s:'습식 세정 장비와 반송 로봇을 하는 장비 회사.',se:'Wet cleaning tools and transfer robots.',
+ b:['습식 세정 장비(배치·매엽)','반송 로봇·물류 자동화','디스플레이 장비'],be:['Wet cleaning (batch and single-wafer)','Transfer robots, automation','Display tools'],
+ p:['국내외 메모리 투자에 연동','로봇 사업이 신성장 축'],pe:['Tied to domestic and overseas memory capex','Robotics as a growth leg'],
+ cu:'',cue:''},
+'에스티아이':{e:'STI',c:'039440',m:'KOSDAQ',v:0,tg:['hbm','adv'],
+ s:'케미컬 공급장치(CCSS)로 시작해 HBM용 리플로우 장비까지 하는 회사.',se:'From chemical supply systems (CCSS) to reflow tools for HBM.',
+ b:['CCSS — 공정 케미컬 중앙 공급 장치','리플로우 장비 — 범프 접합(HBM 등)','습식 장비'],
+ be:['CCSS—central chemical supply','Reflow tools for bump joining (HBM etc.)','Wet tools'],
+ p:['전공정(세정)·후공정(패키징) 두 칸에 이름이 오름','HBM 투자 확대 시 리플로우 수요 증가'],
+ pe:['Appears in cleaning and packaging columns','Reflow demand rises with HBM capex'],
+ cu:'삼성전자, SK하이닉스',cue:'Samsung Electronics, SK hynix'},
+'코미코':{e:'Komico',c:'183300',m:'KOSDAQ',v:1,tg:['mem'],
+ s:'공정 장비 부품을 세정·코팅해 다시 쓰게 해 주는 회사.',se:'Cleans and re-coats tool parts for reuse.',
+ b:['부품 세정 서비스','부품 코팅(내플라즈마 코팅 등)','해외 거점(미국·중국·대만 등)'],be:['Parts cleaning services','Plasma-resistant coatings','Overseas sites (US, China, Taiwan, etc.)'],
+ p:['가동률에 연동되는 반복 매출','미코그룹 계열'],pe:['Recurring revenue tied to utilization','Part of MiCo Group'],
+ cu:'삼성전자, SK하이닉스, 해외 팹',cue:'Samsung, SK hynix, overseas fabs'},
+'엘티씨':{e:'LTC',c:'170920',m:'KOSDAQ',v:1,tg:['local'],
+ s:'박리액·세정액 같은 공정 케미컬 회사.',se:'Process chemicals—strippers and cleaners.',
+ b:['PR 박리액(스트리퍼)','세정액','디스플레이용 케미컬'],be:['PR strippers','Cleaning chemicals','Display chemicals'],
+ p:['디스플레이 비중이 함께 있어 업황이 섞임'],pe:['Display exposure mixes the cycle'],
+ cu:'',cue:''},
+'한솔아이원스':{e:'Hansol IONES',c:'114810',m:'KOSDAQ',v:0,tg:['mem'],
+ s:'장비 부품 정밀가공과 세정·코팅을 하는 한솔케미칼 자회사.',se:'Hansol Chemical subsidiary for precision parts and cleaning/coating.',
+ b:['반도체 장비 부품 정밀가공','부품 세정·코팅'],be:['Precision machining of tool parts','Parts cleaning and coating'],
+ p:['장비 투자(신규 부품)와 가동률(세정) 양쪽에 연동'],pe:['Exposed to both capex (new parts) and utilization (cleaning)'],
+ cu:'',cue:''},
+'파크시스템스':{e:'Park Systems',c:'140860',m:'KOSDAQ',v:1,tg:['euv','logic'],
+ s:'원자현미경(AFM) 세계 선두권 회사.',se:'A global leader in atomic force microscopes (AFM).',
+ b:['산업용 AFM — 반도체 계측','연구용 AFM','화이트라이트 간섭계 등 계측'],be:['Industrial AFM for chip metrology','Research AFM','Other metrology'],
+ p:['해외 매출 비중이 높고 고객이 다변화됨','미세화로 나노 단위 계측 수요 증가'],pe:['High overseas sales, diversified customers','Scaling raises nano-scale metrology demand'],
+ cu:'글로벌 반도체·연구기관',cue:'Global chipmakers and research labs'},
+'넥스틴':{e:'Nextin',c:'348210',m:'KOSDAQ',v:1,tg:['local','mem'],
+ s:'패턴 웨이퍼 결함 검사 장비(다크필드)를 국산화한 회사.',se:'Domestic dark-field patterned-wafer inspection tools.',
+ b:['다크필드 패턴 웨이퍼 검사 장비','신규 검사 장비 개발'],be:['Dark-field patterned-wafer inspection','New inspection tools in development'],
+ p:['해외 대형사가 장악한 검사 장비에서 국산 대체','중국 고객 비중 — 수출 규제 영향'],pe:['Substitutes for a global incumbent','China exposure—sensitive to export controls'],
+ cu:'SK하이닉스, 중국 메모리사',cue:'SK hynix, Chinese memory makers'},
+'오로스테크놀로지':{e:'AUROS Technology',c:'322310',m:'KOSDAQ',v:0,tg:['local','mem'],
+ s:'노광 정렬 상태를 재는 오버레이 계측 장비 회사.',se:'Overlay metrology for lithography alignment.',
+ b:['오버레이 계측 장비','패키징용 계측·검사 장비'],be:['Overlay metrology','Packaging metrology and inspection'],
+ p:['해외 대형사 대비 국산 대체','미세화·적층으로 계측 단계 증가'],pe:['Domestic substitute for incumbents','More metrology steps with scaling'],
+ cu:'SK하이닉스',cue:'SK hynix'},
+'인텍플러스':{e:'Intekplus',c:'064290',m:'KOSDAQ',v:1,tg:['adv','ai'],
+ s:'반도체 패키지·기판 외관 검사 장비 회사.',se:'Visual inspection for packages and substrates.',
+ b:['반도체 패키지 외관 검사','FC-BGA 기판 검사','2차전지 외관 검사'],be:['Package visual inspection','FC-BGA substrate inspection','Battery inspection'],
+ p:['해외 CPU·AI 칩 고객의 패키지 검사 수요','2차전지 비중이 함께 있음'],pe:['Package inspection demand from global CPU/AI chipmakers','Also has battery exposure'],
+ cu:'',cue:''},
+'기가비스':{e:'GIGAVIS',c:'420770',m:'KOSDAQ',v:1,tg:['adv','ai','glass'],
+ s:'기판 회로 결함을 찾고 고치는 AOI·자동수리 장비 회사.',se:'AOI and auto-repair tools for substrate circuits.',
+ b:['AOI(자동광학검사) — 기판 미세회로 검사','AOR(자동수리) 장비'],be:['AOI for fine substrate circuits','Auto-repair (AOR)'],
+ p:['FC-BGA 증설 사이클에 연동','기판 미세화가 진입장벽'],pe:['Tied to FC-BGA expansion','Finer substrate lines raise barriers'],
+ cu:'국내외 기판 업체',cue:'Korean and global substrate makers'},
+'한미반도체':{e:'Hanmi Semiconductor',c:'042700',m:'KOSPI',v:1,tg:['hbm','adv','ai'],
+ s:'HBM 적층에 쓰이는 TC 본더로 주목받는 후공정 장비 대표 기업.',se:'Back-end leader known for TC bonders used in HBM stacking.',
+ b:['TC 본더 — HBM 칩 적층 접합','비전 플레이스먼트(절단·검사·분류)','마이크로 쏘(절단)'],
+ be:['TC bonders for HBM stacking','Vision placement (saw, inspect, sort)','Micro saws'],
+ p:['SK하이닉스 HBM 투자와 가장 직접 연동','하이브리드 본딩 전환과 경쟁사(한화 등) 진입이 리스크','마이크론 등 고객 확대 여부'],
+ pe:['Most directly tied to SK hynix HBM capex','Risks: hybrid-bonding shift, new competitors (e.g., Hanwha)','Watch customer expansion (e.g., Micron)'],
+ cu:'SK하이닉스, 마이크론',cue:'SK hynix, Micron'},
+'한화비전':{e:'Hanwha Vision',c:'489790',m:'KOSPI',v:1,tg:['hbm','adv'],
+ s:'보안카메라 회사. 반도체 장비는 자회사 한화세미텍(TC 본더·칩마운터)이 합니다.',se:'Security-camera maker; chip tools via subsidiary Hanwha Semitech (TC bonders, mounters).',
+ b:['영상보안(CCTV) — 주력','한화세미텍 — TC 본더, 칩마운터, 후공정 장비'],be:['Video surveillance—core','Hanwha Semitech—TC bonders, chip mounters'],
+ p:['반도체 장비는 자회사 실적으로 반영 — 전사 실적 중 비중 확인 필요','HBM TC 본더 신규 진입자로 고객 확보 여부가 관건'],
+ pe:['Chip tools sit in a subsidiary—check their weight in group earnings','New TC-bonder entrant; winning customers is key'],
+ cu:'',cue:''},
+'프로텍':{e:'Protec',c:'053610',m:'KOSDAQ',v:0,tg:['adv'],
+ s:'디스펜서와 레이저 리플로우 등 패키징 장비 회사.',se:'Dispensers and laser reflow for packaging.',
+ b:['디스펜서 — 언더필 등 도포','레이저 리플로우·본딩 장비','공압 부품'],be:['Dispensers (underfill etc.)','Laser reflow and bonding','Pneumatic parts'],
+ p:['해외 OSAT 고객 비중','첨단 패키징 공정 확대 수혜 구조'],pe:['Overseas OSAT exposure','Benefits from advanced packaging growth'],
+ cu:'',cue:''},
+'피에스케이홀딩스':{e:'PSK Holdings',c:'031980',m:'KOSDAQ',v:1,tg:['hbm','adv'],
+ s:'후공정 디스컴·리플로우 장비 회사. HBM·첨단 패키징 수요를 받습니다.',se:'Back-end descum and reflow tools for HBM/advanced packaging.',
+ b:['디스컴(Descum) 장비 — 범프 공정 전 잔여물 제거','리플로우 장비','하이드로젠 어닐링 등'],
+ be:['Descum tools before bumping','Reflow tools','Hydrogen anneal etc.'],
+ p:['HBM·첨단 패키징 투자와 연동','해외 OSAT·파운드리 고객 비중'],pe:['Tied to HBM and advanced packaging capex','Overseas OSAT/foundry exposure'],
+ cu:'SK하이닉스, 해외 OSAT',cue:'SK hynix, global OSATs'},
+'삼성전기':{e:'Samsung Electro-Mechanics',c:'009150',m:'KOSPI',v:1,tg:['ai','glass','adv'],
+ s:'MLCC와 패키지 기판(FC-BGA)을 하는 삼성 계열 부품사.',se:'Samsung affiliate making MLCCs and package substrates (FC-BGA).',
+ b:['MLCC(적층세라믹콘덴서)','패키지 기판 — FC-BGA, BGA','카메라 모듈','유리기판 개발'],
+ be:['MLCCs','Package substrates—FC-BGA, BGA','Camera modules','Glass substrate development'],
+ p:['서버·AI용 FC-BGA 확대가 기판 사업의 축','MLCC·카메라 모듈 비중이 커 기판만으로 설명되지 않음'],
+ pe:['Server/AI FC-BGA is the substrate growth axis','MLCC and camera modules dominate the mix'],
+ cu:'',cue:''},
+'티엘비':{e:'TLB',c:'356860',m:'KOSDAQ',v:1,tg:['ai','mem'],
+ s:'메모리 모듈과 SSD용 PCB 전문 회사.',se:'PCBs for memory modules and SSDs.',
+ b:['메모리 모듈 PCB(DDR5 등)','SSD용 PCB','CXL 등 차세대 모듈 PCB'],be:['Memory module PCBs (DDR5 etc.)','SSD PCBs','Next-gen (CXL) module PCBs'],
+ p:['DDR5·서버 모듈 전환에 연동','메모리 업황에 민감'],pe:['Tied to DDR5/server module transition','Sensitive to the memory cycle'],
+ cu:'삼성전자, SK하이닉스',cue:'Samsung Electronics, SK hynix'},
+'대덕전자':{e:'Daeduck Electronics',c:'353200',m:'KOSPI',v:1,tg:['ai','mem'],
+ s:'메모리용 패키지 기판과 FC-BGA를 하는 기판 회사.',se:'Package substrates for memory and FC-BGA.',
+ b:['메모리 패키지 기판','FC-BGA','통신·전장용 기판'],be:['Memory package substrates','FC-BGA','Telecom and auto boards'],
+ p:['FC-BGA 투자 회수 시점이 관건','메모리 업황 연동'],pe:['Payback on FC-BGA capacity is key','Tied to memory cycle'],
+ cu:'',cue:''},
+'해성디에스':{e:'Haesung DS',c:'195870',m:'KOSPI',v:1,tg:['mem'],
+ s:'리드프레임과 패키지 기판을 하는 회사. 차량용 비중이 큽니다.',se:'Lead frames and package substrates, with large auto exposure.',
+ b:['리드프레임 — 차량용 반도체 중심','패키지 기판 — 메모리용'],be:['Lead frames—mainly automotive chips','Package substrates—memory'],
+ p:['차량용 반도체 업황 영향이 큼','메모리 기판은 DDR5 전환 연동'],pe:['Highly exposed to auto chips','Memory substrates tied to DDR5'],
+ cu:'',cue:''},
+'심텍':{e:'Simmtech',c:'222800',m:'KOSDAQ',v:1,tg:['mem','ai'],
+ s:'메모리용 패키지 기판과 모듈 PCB의 국내 대표 회사.',se:'Leading maker of memory package substrates and module PCBs.',
+ b:['메모리 패키지 기판(MCP·FBGA 등)','메모리 모듈 PCB','SiP 기판'],be:['Memory package substrates (MCP, FBGA)','Memory module PCBs','SiP substrates'],
+ p:['메모리 업황에 가장 민감한 기판 회사 중 하나','고객이 국내외 메모리사로 다변화'],pe:['Among the most memory-sensitive substrate makers','Diversified across global memory makers'],
+ cu:'삼성전자, SK하이닉스, 마이크론',cue:'Samsung, SK hynix, Micron'},
+'LG이노텍':{e:'LG Innotek',c:'011070',m:'KOSPI',v:1,tg:['glass','adv'],
+ s:'카메라 모듈이 주력이고, 반도체 기판(RF-SiP·FC-BGA)을 키우는 회사.',se:'Camera modules core; growing chip substrates (RF-SiP, FC-BGA).',
+ b:['광학솔루션 — 카메라 모듈(주력)','기판소재 — RF-SiP, FC-BGA, 포토마스크','전장부품'],
+ be:['Optics—camera modules (core)','Substrates—RF-SiP, FC-BGA, photomasks','Automotive parts'],
+ p:['실적은 카메라 모듈·북미 고객 영향이 압도적','FC-BGA·유리기판은 신성장 옵션'],pe:['Earnings dominated by camera modules and a US customer','FC-BGA and glass substrates are growth options'],
+ cu:'',cue:''},
+'코리아써키트':{e:'Korea Circuit',c:'007810',m:'KOSPI',v:1,tg:['mem','ai'],
+ s:'영풍그룹 계열 PCB·패키지 기판 회사.',se:'Young Poong Group PCB and package-substrate maker.',
+ b:['메모리 모듈 PCB','패키지 기판(자회사 포함)','FC-BGA'],be:['Memory module PCBs','Package substrates (incl. subsidiaries)','FC-BGA'],
+ p:['메모리·서버 모듈 업황 연동'],pe:['Tied to memory/server module cycle'],
+ cu:'',cue:''},
+'덕산하이메탈':{e:'Duksan Hi-Metal',c:'077360',m:'KOSDAQ',v:1,tg:['adv'],
+ s:'칩과 기판을 잇는 솔더볼을 만드는 회사.',se:'Makes solder balls that connect chips to substrates.',
+ b:['솔더볼(마이크로 솔더볼 포함)','솔더 페이스트 등 접합 소재'],be:['Solder balls incl. micro balls','Solder paste and joining materials'],
+ p:['패키지 생산량에 연동되는 소모품','미세 피치 패키지 확대가 수혜 요인'],pe:['Consumables tied to package output','Benefits from finer-pitch packages'],
+ cu:'',cue:''},
+'엠케이전자':{e:'MK Electron',c:'033160',m:'KOSDAQ',v:1,tg:['adv'],
+ s:'본딩와이어와 솔더볼을 만드는 접합 소재 회사.',se:'Bonding wire and solder balls.',
+ b:['본딩와이어(금·은·구리)','솔더볼','2차전지 음극재(신사업)'],be:['Bonding wire (gold, silver, copper)','Solder balls','Battery anode materials (new)'],
+ p:['금 가격이 매출 규모에 영향','패키지 물량 연동'],pe:['Gold prices affect reported revenue','Tied to package volumes'],
+ cu:'',cue:''},
+'리노공업':{e:'LEENO Industrial',c:'058470',m:'KOSDAQ',v:1,tg:['ai','logic'],
+ s:'테스트 핀(리노핀)과 소켓의 대표 기업. 수익성이 높기로 유명합니다.',se:'Known for LEENO pins and test sockets; famously high margins.',
+ b:['테스트 핀(포고 핀)','테스트 소켓','의료기기용 부품'],be:['Test (pogo) pins','Test sockets','Medical device parts'],
+ p:['해외 팹리스·빅테크 등 고객이 넓게 다변화','신제품 개발 단계 소량 다품종 주문이 많아 단가가 높음'],
+ pe:['Broad global customer base (fabless, big tech)','High-mix R&D-stage orders support pricing'],
+ cu:'글로벌 팹리스·IDM',cue:'Global fabless and IDMs'},
+'ISC':{e:'ISC',c:'095340',m:'KOSDAQ',v:1,tg:['ai','logic'],
+ s:'실리콘 러버 테스트 소켓 회사. SKC 자회사.',se:'Silicone-rubber test sockets; an SKC subsidiary.',
+ b:['러버형 테스트 소켓','포고형 소켓','반도체 소재(신사업)'],be:['Rubber test sockets','Pogo sockets','Materials (new)'],
+ p:['AI 가속기·서버 칩 테스트 수요','2023년 SKC가 인수'],pe:['AI accelerator and server-chip test demand','Acquired by SKC in 2023'],
+ cu:'글로벌 팹리스·IDM',cue:'Global fabless and IDMs'},
+'티에스이':{e:'TSE',c:'131290',m:'KOSDAQ',v:1,tg:['mem','hbm'],
+ s:'프로브카드·인터페이스 보드·소켓을 함께 하는 테스트 부품 회사.',se:'Probe cards, interface boards and sockets.',
+ b:['프로브카드','인터페이스 보드','테스트 소켓, OLED 검사 장비'],be:['Probe cards','Interface boards','Test sockets, OLED inspection'],
+ p:['메모리 테스트 물량 연동','HBM용 프로브카드 개발'],pe:['Tied to memory test volumes','Developing HBM probe cards'],
+ cu:'삼성전자, SK하이닉스',cue:'Samsung Electronics, SK hynix'},
+'티에프이':{e:'TFE',c:'425420',m:'KOSDAQ',v:0,tg:['logic'],
+ s:'테스트 소켓과 교체용 키트(COK)를 하는 회사.',se:'Test sockets and change-over kits (COK).',
+ b:['테스트 소켓','COK(Change Over Kit)','테스트 보드'],be:['Test sockets','Change-over kits','Test boards'],
+ p:['자료 표기가 흐려 판독 — 원 자료로 확인 권장','신제품 전환 시 교체 수요'],pe:['Name read from a faded print—verify against source','Replacement demand at product changeovers'],
+ cu:'',cue:''},
+'테크윙':{e:'Techwing',c:'089030',m:'KOSDAQ',v:1,tg:['hbm','mem'],
+ s:'메모리 테스트 핸들러 세계 선두권. HBM용 큐브 프로버를 개발했습니다.',se:'A global leader in memory test handlers; developed Cube Prober for HBM.',
+ b:['메모리 테스트 핸들러','큐브 프로버 — HBM 적층 다이 검사','비메모리 핸들러'],be:['Memory test handlers','Cube Prober for HBM stacked dies','Logic handlers'],
+ p:['HBM 큐브 프로버 양산 공급 여부가 재평가 포인트','메모리 업황에 민감'],pe:['Cube Prober mass supply is the re-rating trigger','Sensitive to the memory cycle'],
+ cu:'',cue:''},
+'와이씨':{e:'YC',c:'232140',m:'KOSDAQ',v:1,tg:['hbm','mem','local'],
+ s:'메모리 웨이퍼 테스터 회사. HBM용 테스터를 공급합니다.',se:'Memory wafer testers, including for HBM.',
+ b:['메모리 웨이퍼 테스터','HBM 테스터','번인 테스터'],be:['Memory wafer testers','HBM testers','Burn-in testers'],
+ p:['해외 대형 테스터사가 장악한 시장에서 국산화','삼성전자 HBM 투자와 연동'],pe:['Localizing in a market led by global tester makers','Tied to Samsung HBM capex'],
+ cu:'삼성전자',cue:'Samsung Electronics'},
+'디아이':{e:'DI',c:'003160',m:'KOSPI',v:1,tg:['hbm','mem'],
+ s:'메모리 번인 테스터 회사(자회사 디지털프론티어 등).',se:'Memory burn-in testers (incl. subsidiary Digital Frontier).',
+ b:['메모리 번인 테스터','웨이퍼 테스터 유통','HBM 번인 테스터'],be:['Memory burn-in testers','Wafer tester distribution','HBM burn-in testers'],
+ p:['삼성전자 투자 비중이 큼','HBM 번인 공정 장비 수요'],pe:['Heavily tied to Samsung capex','HBM burn-in demand'],
+ cu:'삼성전자',cue:'Samsung Electronics'},
+'네오셈':{e:'Neosem',c:'253590',m:'KOSDAQ',v:1,tg:['ai','mem'],
+ s:'SSD 테스터 회사. CXL 메모리 테스터로 넓히는 중.',se:'SSD testers, expanding to CXL memory testers.',
+ b:['SSD 테스터(PCIe 세대별)','CXL 메모리 테스터'],be:['SSD testers by PCIe gen','CXL memory testers'],
+ p:['PCIe 세대 전환·데이터센터 SSD 수요에 연동','해외 고객 비중'],pe:['Tied to PCIe transitions and datacenter SSDs','Overseas customers'],
+ cu:'',cue:''},
+'유니테스트':{e:'Unitest',c:'086390',m:'KOSDAQ',v:0,tg:['mem'],
+ s:'메모리 번인·컴포넌트 테스터 회사.',se:'Memory burn-in and component testers.',
+ b:['메모리 번인 테스터','컴포넌트·모듈 테스터'],be:['Memory burn-in testers','Component/module testers'],
+ p:['메모리 투자 사이클 연동','고객 집중도 높음'],pe:['Tied to memory capex','High customer concentration'],
+ cu:'',cue:''},
+'엑시콘':{e:'Exicon',c:'092870',m:'KOSDAQ',v:1,tg:['mem','local'],
+ s:'메모리 컴포넌트 테스터와 SSD 테스터 회사.',se:'Memory component and SSD testers.',
+ b:['메모리 컴포넌트 테스터','SSD 테스터','비메모리 테스터 개발'],be:['Memory component testers','SSD testers','Logic testers in development'],
+ p:['삼성전자 비중이 큼','DDR5 등 세대 전환 시 수요'],pe:['Heavily tied to Samsung','Demand at DDR5-type transitions'],
+ cu:'삼성전자',cue:'Samsung Electronics'},
+'하나마이크론':{e:'Hana Micron',c:'067310',m:'KOSDAQ',v:1,tg:['mem','adv'],
+ s:'국내 최대 메모리 OSAT. 베트남·브라질 거점을 둡니다.',se:'Korea\'s largest memory OSAT, with sites in Vietnam and Brazil.',
+ b:['메모리 패키징·테스트 외주','해외 법인(베트남·브라질)','소재 자회사(하나머티리얼즈 지분)'],
+ be:['Memory packaging and test','Overseas sites (Vietnam, Brazil)','Stake in Hana Materials'],
+ p:['고객사 외주 확대와 베트남 증설','메모리 업황·환율 영향'],pe:['Customer outsourcing and Vietnam expansion','Memory cycle and FX exposure'],
+ cu:'삼성전자, SK하이닉스',cue:'Samsung Electronics, SK hynix'},
+'두산테스나':{e:'Doosan Tesna',c:'131970',m:'KOSDAQ',v:1,tg:['logic'],
+ s:'시스템반도체(SoC·CIS) 웨이퍼 테스트 외주 회사.',se:'Wafer test for logic chips (SoC, CIS).',
+ b:['SoC·AP 웨이퍼 테스트','CIS(이미지센서) 테스트','차량용 반도체 테스트'],be:['SoC/AP wafer test','CIS test','Automotive chip test'],
+ p:['삼성 시스템LSI·파운드리 물량에 연동','두산그룹 계열'],pe:['Tied to Samsung System LSI/Foundry volumes','Part of Doosan Group'],
+ cu:'삼성전자',cue:'Samsung Electronics'},
+'SFA반도체':{e:'SFA Semicon',c:'036540',m:'KOSDAQ',v:1,tg:['mem'],
+ s:'메모리 중심 패키징·테스트 OSAT. 에스에프에이 계열.',se:'Memory-focused OSAT; SFA Engineering affiliate.',
+ b:['메모리 패키징·테스트','필리핀 법인'],be:['Memory packaging and test','Philippines site'],
+ p:['메모리 업황·고객 외주 정책 연동'],pe:['Tied to memory cycle and outsourcing policy'],
+ cu:'삼성전자, 마이크론',cue:'Samsung, Micron'},
+'네패스':{e:'Nepes',c:'033640',m:'KOSDAQ',v:1,tg:['adv','logic'],
+ s:'웨이퍼레벨패키지(WLP)와 팬아웃 패키징을 하는 회사.',se:'Wafer-level and fan-out packaging.',
+ b:['WLP(웨이퍼레벨패키지)·범핑','팬아웃 패키징(FOWLP·PLP)','전자재료'],be:['WLP and bumping','Fan-out (FOWLP/PLP)','Electronic materials'],
+ p:['PMIC·DDI 등 비메모리 물량 연동','팬아웃 투자 회수가 관건'],pe:['Tied to PMIC/DDI volumes','Payback on fan-out investments is key'],
+ cu:'삼성전자 등',cue:'Samsung and others'},
+'네패스아크':{e:'Nepes Ark',c:'330860',m:'KOSDAQ',v:1,tg:['logic'],
+ s:'네패스에서 분사한 비메모리 테스트 외주 회사.',se:'Logic-chip test spin-off from Nepes.',
+ b:['PMIC·DDI·SoC 테스트'],be:['PMIC, DDI and SoC test'],
+ p:['삼성 시스템LSI 물량 연동'],pe:['Tied to Samsung System LSI volumes'],
+ cu:'삼성전자',cue:'Samsung Electronics'},
+'LB세미콘':{e:'LB Semicon',c:'061970',m:'KOSDAQ',v:0,tg:['logic'],
+ s:'디스플레이 구동칩(DDI) 범핑·테스트 OSAT.',se:'OSAT for display driver IC (DDI) bumping and test.',
+ b:['DDI 범핑·테스트','PMIC 등 비메모리 패키징'],be:['DDI bumping and test','PMIC and other logic packaging'],
+ p:['디스플레이·스마트폰 업황 연동','LX세미콘 등 DDI 팹리스 물량'],pe:['Tied to display/smartphone cycle','Volumes from DDI fabless (e.g., LX Semicon)'],
+ cu:'LX세미콘 등',cue:'LX Semicon and others'},
+'한양디지텍':{e:'Hanyang Digitech',c:'078350',m:'KOSDAQ',v:1,tg:['mem','ai'],
+ s:'메모리 모듈을 조립·생산하는 회사.',se:'Assembles memory modules.',
+ b:['메모리 모듈 제조(서버·PC용)','카메라 모듈 등'],be:['Memory module manufacturing (server/PC)','Camera modules etc.'],
+ p:['DDR5·서버 모듈 수요 연동','고객 집중도 높음'],pe:['Tied to DDR5/server modules','High customer concentration'],
+ cu:'삼성전자',cue:'Samsung Electronics'},
+'파두':{e:'FADU',c:'440110',m:'KOSDAQ',v:1,tg:['ai'],
+ s:'데이터센터용 SSD 컨트롤러를 설계하는 팹리스.',se:'Fabless designer of datacenter SSD controllers.',
+ b:['기업용 SSD 컨트롤러','SSD 완제품·모듈 공급','CXL 등 차세대 제품 개발'],be:['Enterprise SSD controllers','SSD products/modules','Next-gen (CXL) development'],
+ p:['글로벌 데이터센터·낸드 고객 수주에 실적이 크게 흔들림','2023년 상장 직후 실적 급감으로 논란 — 공시·실적 확인 필수'],
+ pe:['Earnings swing on hyperscaler/NAND orders','Controversy over post-IPO earnings drop in 2023—check filings'],
+ cu:'',cue:''},
+'제주반도체':{e:'Jeju Semiconductor',c:'080220',m:'KOSDAQ',v:1,tg:['ai'],
+ s:'저전력 메모리(LPDDR·MCP)를 설계하는 메모리 팹리스.',se:'Fabless designer of low-power memory (LPDDR, MCP).',
+ b:['저전력 DRAM·낸드 MCP','IoT·차량·통신 모듈용 메모리'],be:['Low-power DRAM and NAND MCPs','Memory for IoT, auto, comms'],
+ p:['온디바이스 AI 기대가 주가 변수','메모리 가격에 연동'],pe:['On-device AI hopes drive sentiment','Tied to memory prices'],
+ cu:'',cue:''},
+'칩스앤미디어':{e:'Chips&Media',c:'094360',m:'KOSDAQ',v:1,tg:['ai','logic'],
+ s:'비디오 코덱 반도체 설계자산(IP) 회사.',se:'Video codec semiconductor IP.',
+ b:['비디오 코덱 IP','이미지 신호처리(ISP) IP','NPU IP 개발'],be:['Video codec IP','ISP IP','NPU IP in development'],
+ p:['라이선스 + 로열티 구조 — 고객 칩 양산 시 로열티 발생','해외 고객 비중 높음'],pe:['License plus royalty—royalties on customer chip volumes','High overseas sales'],
+ cu:'글로벌 팹리스',cue:'Global fabless'},
+'오픈엣지테크놀로지':{e:'OPENEDGES Technology',c:'394280',m:'KOSDAQ',v:1,tg:['ai','logic'],
+ s:'NPU와 메모리 인터페이스(PHY·컨트롤러) IP 회사.',se:'NPU and memory-interface (PHY/controller) IP.',
+ b:['NPU IP','메모리 컨트롤러·PHY IP(LPDDR 등)','온칩 인터커넥트 IP'],be:['NPU IP','Memory controller/PHY IP (LPDDR etc.)','On-chip interconnect IP'],
+ p:['AI 칩 설계 수요 연동','로열티 매출 확대 시점이 관건'],pe:['Tied to AI chip design demand','Timing of royalty ramp is key'],
+ cu:'',cue:''},
+'가온칩스':{e:'Gaonchips',c:'399720',m:'KOSDAQ',v:1,tg:['ai','logic'],
+ s:'삼성 파운드리 디자인솔루션파트너(DSP) 디자인하우스.',se:'Samsung Foundry Design Solution Partner (DSP).',
+ b:['파운드리 설계 서비스(턴키)','AI·차량용 칩 개발 용역'],be:['Turnkey foundry design services','AI and automotive chip NRE'],
+ p:['해외 AI 칩 고객 수주가 성장 축','개발 용역 → 양산 매출 전환 시점'],pe:['Overseas AI-chip wins drive growth','Shift from NRE to production revenue'],
+ cu:'',cue:''},
+'에이직랜드':{e:'ASICLAND',c:'445090',m:'KOSDAQ',v:0,tg:['ai','logic'],
+ s:'TSMC 밸류체인 파트너(VCA) 디자인하우스.',se:'TSMC Value Chain Aggregator (VCA) design house.',
+ b:['TSMC 공정 기반 설계·양산 대행','AI·차량용 ASIC'],be:['Design and production management on TSMC processes','AI and automotive ASICs'],
+ p:['국내 유일급 TSMC VCA로 차별화','수주 프로젝트 규모에 따른 실적 변동'],pe:['Differentiated as a rare Korean TSMC VCA','Earnings swing with project size'],
+ cu:'',cue:''},
+'에이디테크놀로지':{e:'ADTechnology',c:'200710',m:'KOSDAQ',v:1,tg:['ai','logic'],
+ s:'삼성 파운드리 DSP 디자인하우스.',se:'Samsung Foundry DSP design house.',
+ b:['파운드리 설계 서비스','선단공정 SoC·AI 칩 개발'],be:['Foundry design services','Leading-edge SoC/AI chip development'],
+ p:['2020년 TSMC 진영에서 삼성 파운드리 진영으로 전환','삼성 선단공정 수주 성과가 관건'],
+ pe:['Switched from TSMC to Samsung Foundry ecosystem in 2020','Samsung leading-edge wins are key'],
+ cu:'',cue:''}
+};
+/* 테마 묶음 설명 */
+const BASKETS = [
+ {tag:'hbm',ko:'HBM 밸류체인',en:'HBM value chain',
+  d:'AI 가속기용 고대역폭메모리. 칩을 쌓고(TC 본더) 붙이고(리플로우) 검사하는 후공정 장비에 수요가 몰립니다.',
+  de:'High-bandwidth memory for AI accelerators. Demand concentrates in stacking (TC bonders), joining (reflow) and test.'},
+ {tag:'adv',ko:'첨단 패키징',en:'Advanced packaging',
+  d:'칩 여러 개를 한 패키지에 묶는 기술. 범핑·팬아웃·접합 소재·기판 검사까지 이어집니다.',
+  de:'Combining multiple dies in one package—spans bumping, fan-out, interconnect materials and substrate inspection.'},
+ {tag:'ai',ko:'AI·데이터센터',en:'AI / Datacenter',
+  d:'서버용 기판(FC-BGA)·SSD·테스트 소켓·AI 칩 설계 등 데이터센터 수요에 묶이는 곳.',
+  de:'Server substrates, SSDs, test sockets and AI-chip design tied to datacenter demand.'},
+ {tag:'glass',ko:'유리기판',en:'Glass substrates',
+  d:'플라스틱 대신 유리를 쓰는 차세대 패키지 기판. 상용화 일정이 관건입니다.',
+  de:'Next-gen package substrates using glass instead of organic cores; commercialization timing is key.'},
+ {tag:'euv',ko:'EUV·미세화',en:'EUV / Scaling',
+  d:'선폭을 줄이는 선단공정에 필요한 소재·열처리·계측.',de:'Materials, anneal and metrology needed for leading-edge nodes.'},
+ {tag:'local',ko:'국산화',en:'Localization',
+  d:'일본·미국 업체가 장악한 품목을 국산으로 대체해 온 곳. 고객 인증 통과가 전환점입니다.',
+  de:'Firms substituting for Japanese/US incumbents; customer qualification is the turning point.'}
+];
+const I18N = {
+ ko:{tag:'사내 참고용 · 투자권유 아님',title:'국내 반도체 소부장 맵 — 전공정 · 후공정',
+  lead:'반도체가 만들어지는 순서대로 14개 공정을 나누고, 각 공정에 이름을 올린 국내 소재·부품·장비·서비스 기업의 핵심사업과 특징을 정리했습니다. 기업을 누르면 상세가 열립니다.',
+  ph:'기업명·종목코드·사업 키워드 검색 (예: HBM, 펠리클, 042700)',vMap:'맵 보기',vTable:'표 보기',reset:'필터 지우기',
+  sProc:'공정 해설과 관전 포인트',sProcSub:'각 공정이 하는 일, 업황을 볼 때 무엇을 보면 되는지. 공정 이름을 누르면 그 공정만 걸러집니다.',
+  sTheme:'테마별 묶음',sThemeSub:'공정을 가로질러 같은 수요에 묶이는 기업들. 이름을 누르면 상세가 열립니다.',
+  sMulti:'여러 공정에 걸친 기업',sMultiSub:'자료에서 두 칸 이상에 이름이 오른 기업. 한 공정의 업황만으로 판단하면 안 되는 곳들입니다.',
+  sNote:'읽기 전에',stage:'단계',all:'전체',F:'전공정',B:'후공정',type:'유형',theme:'테마',
+  stCo:'수록 기업',stF:'전공정 기업',stB:'후공정 기업',stP:'공정 칸',
+  fsub:'웨이퍼 위에 회로를 만드는 단계',bsub:'만든 칩을 자르고 붙이고 검사하는 단계',
+  cnt:n=>`${n}개사`,co:'기업',code:'코드',mkt:'시장',proc:'공정',summ:'한줄 요약',
+  one:'한줄 요약',biz:'핵심사업',pt:'특징 · 체크포인트',cu:'주요 고객',tg:'테마',peers:'같은 공정의 다른 기업',
+  naver:'네이버 금융',dart:'DART 공시',unlisted:'비상장',
+  unv:'종목코드를 저장소 자료와 대조하지 못했습니다. 거래 전 직접 확인하십시오.',
+  warn:'공개 자료를 바탕으로 한 정성 요약입니다. 수치는 싣지 않았으니 사업보고서(DART)로 확인하십시오.',
+  watch:'관전 포인트',where:'칸',
+  notes:[
+   '공정 배치(어느 기업이 어느 칸에 있는지)와 색 구분은 미래에셋자산운용 「TIGER 코리아테크액티브ETF」 판매사 사내한 자료 18~19쪽을 그대로 옮겼습니다. 자료의 분류이며 각 기업의 매출 구성 전체를 뜻하지 않습니다.',
+   '기업 설명은 공개된 사업 내용을 바탕으로 한 정성 요약입니다(2026년 10월 작성). 매출·점유율·시가총액 같은 수치는 확인 없이 싣지 않기 위해 일부러 넣지 않았습니다.',
+   '「주요 고객」은 널리 알려진 경우만 적었고, 모르는 곳은 비워 두었습니다. 비어 있다고 고객이 없다는 뜻이 아닙니다.',
+   '종목코드 옆 † 표시는 저장소의 보유종목·리포트 자료와 대조하지 못한 코드입니다. 거래 전 직접 확인하십시오.',
+   '후공정 「패키징 소켓」 칸 마지막 기업은 원 자료 인쇄가 흐려 「티에프이」로 판독했습니다. 원 자료로 한 번 더 확인하십시오.',
+   '이 화면은 개별 종목이나 주식에 대한 추천이 아닙니다. 사내 교육·참고용입니다.'
+  ]},
+ en:{tag:'Internal reference · Not investment advice',title:'Korea Semiconductor Supply Chain Map — Front-end · Back-end',
+  lead:'Fourteen process steps in manufacturing order, with the Korean materials, parts, equipment and service companies listed in each. Click a company for details.',
+  ph:'Search company, ticker or keyword (e.g., HBM, pellicle, 042700)',vMap:'Map',vTable:'Table',reset:'Clear filters',
+  sProc:'Process guide & what to watch',sProcSub:'What each step does and what to watch. Click a step name to filter the map.',
+  sTheme:'Theme baskets',sThemeSub:'Companies across steps tied to the same demand. Click a name for details.',
+  sMulti:'Companies in multiple steps',sMultiSub:'Listed in two or more columns of the source chart—don\'t judge them on one step\'s cycle.',
+  sNote:'Before you read',stage:'Stage',all:'All',F:'Front-end',B:'Back-end',type:'Type',theme:'Theme',
+  stCo:'Companies',stF:'Front-end',stB:'Back-end',stP:'Process steps',
+  fsub:'Building circuits on the wafer',bsub:'Cutting, joining and testing finished chips',
+  cnt:n=>`${n} cos.`,co:'Company',code:'Ticker',mkt:'Market',proc:'Step',summ:'Summary',
+  one:'Summary',biz:'Core business',pt:'Notes & checkpoints',cu:'Key customers',tg:'Themes',peers:'Others in the same step',
+  naver:'Naver Finance',dart:'DART filings',unlisted:'Unlisted',
+  unv:'Ticker not cross-checked against repo data. Verify before trading.',
+  warn:'Qualitative summary from public information; no figures included. Check DART filings.',
+  watch:'What to watch',where:'Steps',
+  notes:[
+   'Step placement and color coding follow pp.18–19 of Mirae Asset Global Investments\' internal distributor material for the TIGER Korea Tech Active ETF. It reflects that chart\'s classification, not each company\'s full revenue mix.',
+   'Company descriptions are qualitative summaries of public business information (written October 2026). Revenue, share and market-cap figures are deliberately omitted rather than printed unverified.',
+   '"Key customers" lists only widely known relationships; blank does not mean none.',
+   'A † next to a ticker means it could not be cross-checked against repository holdings/report data. Verify before trading.',
+   'The last company in the back-end "Sockets" column was read as "TFE" from a faded print. Please verify against the source.',
+   'This page is not a recommendation of any individual stock. For internal training and reference only.'
+  ]}
+};
+</script>
+<script>
+(function(){
+let lang='ko';
+try{const s=localStorage.getItem('semi-map-lang');if(s==='en'||s==='ko')lang=s}catch(e){}
+const st={q:'',stage:'all',types:new Set(),tags:new Set(),col:null,view:'map',sort:{k:null,dir:1}};
+const T=k=>I18N[lang][k];
+const L=(o,k)=>lang==='en'?(o[k+'e']||o[k]):o[k];
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=s=>document.querySelector(s);
+
+/* 기업별 소속 칸 */
+const where={};
+for(const col of COLS){for(const [n,t] of MEMBERS[col.id]){(where[n]=where[n]||[]).push({col,t});}}
+const names=Object.keys(where);
+names.forEach(n=>{if(!CO[n])console.warn('missing',n)});
+const nm=n=>lang==='en'?CO[n].e:n;
+const typesOf=n=>[...new Set(where[n].map(w=>w.t))];
+const stagesOf=n=>[...new Set(where[n].map(w=>w.col.st))];
+
+function matches(n){
+  const c=CO[n];
+  if(st.stage!=='all'&&!stagesOf(n).includes(st.stage))return false;
+  if(st.col&&!where[n].some(w=>w.col.id===st.col))return false;
+  if(st.types.size&&!typesOf(n).some(t=>st.types.has(t)))return false;
+  if(st.tags.size&&![...st.tags].every(t=>c.tg.includes(t)))return false;
+  if(st.q){
+    const q=st.q.toLowerCase().replace(/\s+/g,'');
+    const hay=[n,c.e,c.c,c.s,c.se,...c.b,...c.be,...c.p,...c.pe,c.cu,c.cue,...c.tg.map(t=>TAGS[t].ko+TAGS[t].en),...where[n].map(w=>w.col.ko+w.col.en)].join(' ').toLowerCase().replace(/\s+/g,'');
+    if(!hay.includes(q))return false;
+  }
+  return true;
+}
+const filtering=()=>st.q||st.stage!=='all'||st.types.size||st.tags.size||st.col;
+
+function renderStatic(){
+  document.documentElement.lang=lang;
+  document.title=lang==='en'?'Semiconductor Supply Chain Map':'반도체 소부장 맵';
+  document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=T(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>el.placeholder=T(el.dataset.i18nPh));
+  document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-checked',b.dataset.lang===lang));
+  const nF=names.filter(n=>stagesOf(n).includes('F')).length, nB=names.filter(n=>stagesOf(n).includes('B')).length;
+  $('#stats').innerHTML=[[T('stCo'),names.length,''],[T('stF'),nF,'o'],[T('stB'),nB,'b'],[T('stP'),COLS.length,'']]
+    .map(([l,v,c])=>`<div class="stat"><div class="l">${l}</div><div class="v ${c}">${v}</div></div>`).join('');
+  // filters
+  $('#fStage').innerHTML=`<span class="gl">${T('stage')}</span>`+['all','F','B'].map(s=>`<button class="chip" data-stage="${s}" aria-pressed="${st.stage===s}">${T(s)}</button>`).join('');
+  $('#fType').innerHTML=`<span class="gl">${T('type')}</span>`+Object.entries(TYPES).map(([k,v])=>`<button class="chip" data-type="${k}" aria-pressed="${st.types.has(k)}"><span class="sw ${k}"></span>${v[lang]}</button>`).join('');
+  $('#fTag').innerHTML=`<span class="gl">${T('theme')}</span>`+Object.entries(TAGS).map(([k,v])=>`<button class="chip" data-tag="${k}" aria-pressed="${st.tags.has(k)}">${v[lang]}</button>`).join('');
+  // flow & cards
+  $('#flow').innerHTML=COLS.map((c,i)=>(i===7?`<span class="div">|</span>`:i?`<span class="ar">→</span>`:'')+`<span class="st ${c.st==='F'?'f':''}">${esc(lang==='en'?c.en:c.ko)}</span>`).join('');
+  $('#cards').innerHTML=COLS.map(c=>`<article class="card" id="p-${c.id}">
+    <h4>${esc(lang==='en'?c.en:c.ko)}<span>${T(c.st)} · ${T('cnt')(MEMBERS[c.id].length)}</span></h4>
+    <p>${esc(L(c,'d'))}</p>
+    <p class="w"><b>${T('watch')}</b> — ${esc(L(c,'w'))}</p>
+    <div class="mini">${MEMBERS[c.id].map(([n])=>`<button data-co="${esc(n)}">${esc(nm(n))}</button>`).join('')}</div>
+  </article>`).join('');
+  $('#baskets').innerHTML=BASKETS.map(b=>{const list=names.filter(n=>CO[n].tg.includes(b.tag));
+    return `<div class="bk"><h4>${esc(lang==='en'?b.en:b.ko)} <span class="pill">${T('cnt')(list.length)}</span></h4><p>${esc(L(b,'d'))}</p>
+    <div class="mini">${list.map(n=>`<button data-co="${esc(n)}">${esc(nm(n))}</button>`).join('')}</div></div>`}).join('');
+  // multi
+  const multi=names.filter(n=>where[n].length>1);
+  $('#multiTbl thead').innerHTML=`<tr><th>${T('co')}</th><th>${T('where')}</th><th>${T('summ')}</th></tr>`;
+  $('#multiTbl tbody').innerHTML=multi.map(n=>`<tr data-co="${esc(n)}"><td class="nm">${esc(nm(n))}</td><td>${where[n].map(w=>`<span class="pill t-${w.t}">${esc(lang==='en'?w.col.en:w.col.ko)}</span>`).join('')}</td><td>${esc(L(CO[n],'s'))}</td></tr>`).join('');
+  $('#notes').innerHTML=T('notes').map(x=>`<li>${esc(x)}</li>`).join('');
+}
+
+function codeHtml(n){const c=CO[n];if(!c.c)return `<span class="unv">${T('unlisted')}</span>`;return esc(c.c)+(c.v?'':'<span class="unv" title="'+esc(T('unv'))+'">†</span>');}
+
+function renderMap(){
+  let shown=0;const seen=new Set();
+  const stageHtml=s=>`<div class="stage"><h3>${T(s)}<small>${T(s==='F'?'fsub':'bsub')}</small></h3><div class="cols">${
+    COLS.filter(c=>c.st===s).map(c=>`<div class="col"><button class="colh" data-col="${c.id}" aria-pressed="${st.col===c.id}">${esc(lang==='en'?c.en:c.ko)}<span class="n">${MEMBERS[c.id].length}</span></button>${
+      MEMBERS[c.id].map(([n,t])=>{const m=matches(n);if(m&&!seen.has(n)){seen.add(n);shown++;}
+        const hbm=CO[n].tg.includes('hbm')?'<span class="hb">HBM</span>':'';
+        return `<button class="co ${t} ${m?(filtering()?'hit':''):'dim'}" data-co="${esc(n)}" title="${esc(L(CO[n],'s'))}">${esc(nm(n))}${hbm}</button>`}).join('')
+    }</div>`).join('')}</div></div>`;
+  $('#mapView').innerHTML=stageHtml('F')+stageHtml('B')+`<div class="legend">${Object.entries(TYPES).map(([k,v])=>`<span><span class="sw ${k}"></span>${v[lang]}</span>`).join('')}<span><span class="hb" style="display:inline-block;font-family:var(--font-en);font-size:10px;font-weight:700;padding:0 3px;border-radius:2px;background:var(--orange);color:#fff">HBM</span> ${lang==='en'?'HBM-related':'HBM 연관'}</span></div>`;
+  return shown;
+}
+
+function renderTable(){
+  const rows=names.filter(matches).map(n=>({n,c:CO[n],w:where[n]}));
+  const k=st.sort.k,d=st.sort.dir;
+  const key={co:r=>nm(r.n),code:r=>r.c.c||'zzz',mkt:r=>r.c.m,stage:r=>stagesOf(r.n).join(),proc:r=>COLS.indexOf(r.w[0].col),type:r=>typesOf(r.n)[0]};
+  if(k)rows.sort((a,b)=>{const x=key[k](a),y=key[k](b);return (x>y?1:x<y?-1:0)*d});
+  else rows.sort((a,b)=>COLS.indexOf(a.w[0].col)-COLS.indexOf(b.w[0].col));
+  const H=[['co',T('co')],['code',T('code')],['mkt',T('mkt')],['proc',T('proc')],['type',T('type')],[null,T('summ')],[null,T('tg')]];
+  $('#tbl thead').innerHTML='<tr>'+H.map(([k2,l])=>`<th ${k2?`data-sort="${k2}" aria-sort="${st.sort.k===k2?(d>0?'ascending':'descending'):'none'}"`:''}>${l}</th>`).join('')+'</tr>';
+  $('#tbl tbody').innerHTML=rows.map(r=>`<tr data-co="${esc(r.n)}">
+    <td class="nm">${esc(nm(r.n))}</td><td class="num">${codeHtml(r.n)}</td><td>${esc(r.c.m==='비상장'?T('unlisted'):r.c.m)}</td>
+    <td>${r.w.map(w=>`<span class="pill">${esc(lang==='en'?w.col.en:w.col.ko)}</span>`).join('')}</td>
+    <td>${typesOf(r.n).map(t=>`<span class="pill t-${t}">${TYPES[t][lang]}</span>`).join('')}</td>
+    <td>${esc(L(r.c,'s'))}</td>
+    <td>${r.c.tg.map(t=>`<span class="pill tg">${TAGS[t][lang]}</span>`).join('')}</td></tr>`).join('');
+  return rows.length;
+}
+
+function render(){
+  const n=st.view==='map'?renderMap():renderTable();
+  if(st.view==='map')renderTable(); // 표도 미리 갱신(인쇄 대비)
+  $('#cnt').textContent=T('cnt')(n)+' / '+names.length;
+  $('#mapView').classList.toggle('hidden',st.view!=='map');
+  $('#tableView').classList.toggle('hidden',st.view!=='table');
+  document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===st.view));
+  document.querySelectorAll('[data-stage]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.stage===st.stage));
+  document.querySelectorAll('[data-type]').forEach(b=>b.setAttribute('aria-pressed',st.types.has(b.dataset.type)));
+  document.querySelectorAll('[data-tag]').forEach(b=>b.setAttribute('aria-pressed',st.tags.has(b.dataset.tag)));
+}
+
+let lastFocus=null,openName=null;
+function openCo(n){
+  const c=CO[n];if(!c)return;openName=n;
+  lastFocus=document.activeElement;
+  $('#dName').textContent=nm(n);
+  $('#dEn').textContent=lang==='en'?n:c.e;
+  $('#dMeta').innerHTML=`<span class="pill">${c.c?codeHtml(n):T('unlisted')}</span>`+(c.m&&c.m!=='비상장'?`<span class="pill">${c.m}</span>`:'')+
+    typesOf(n).map(t=>`<span class="pill t-${t}">${TYPES[t][lang]}</span>`).join('')+
+    where[n].map(w=>`<span class="pill">${T(w.col.st)} · ${esc(lang==='en'?w.col.en:w.col.ko)}</span>`).join('');
+  const peers=where[n].map(w=>`<div class="pl">${esc(lang==='en'?w.col.en:w.col.ko)}</div>`+MEMBERS[w.col.id].filter(([p])=>p!==n).map(([p])=>`<button class="chip" data-co="${esc(p)}">${esc(nm(p))}</button>`).join('')).join('');
+  const links=c.c?`<a class="btn" target="_blank" rel="noopener" href="https://finance.naver.com/item/main.naver?code=${c.c}">${T('naver')}</a>
+     <a class="btn ghost" target="_blank" rel="noopener" href="https://dart.fss.or.kr/dsab007/main.do?option=corp&textCrpNm=${encodeURIComponent(n)}">${T('dart')}</a>`:'';
+  const cu=L(c,'cu');
+  $('#dBody').innerHTML=`<p class="one">${esc(L(c,'s'))}</p>
+    <h5>${T('biz')}</h5><ul>${L(c,'b').map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+    <h5>${T('pt')}</h5><ul>${L(c,'p').map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+    ${cu?`<h5>${T('cu')}</h5><p style="margin:0">${esc(cu)}</p>`:''}
+    ${c.tg.length?`<h5>${T('tg')}</h5><div>${c.tg.map(t=>`<button class="chip" data-tagjump="${t}">${TAGS[t][lang]}</button>`).join(' ')}</div>`:''}
+    <h5>${T('peers')}</h5><div class="peers">${peers}</div>
+    <div class="links">${links}</div>
+    ${c.c&&!c.v?`<p class="warn">† ${esc(T('unv'))}</p>`:''}
+    <p class="warn">${esc(T('warn'))}</p>`;
+  $('#drawer').classList.add('on');$('#drawer').setAttribute('aria-hidden','false');$('#scrim').classList.add('on');
+  $('#drawer').scrollTop=0;$('#dClose').focus();
+}
+function closeCo(){openName=null;$('#drawer').classList.remove('on');$('#drawer').setAttribute('aria-hidden','true');$('#scrim').classList.remove('on');if(lastFocus)lastFocus.focus();}
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button,tr[data-co],th[data-sort]');if(!t)return;
+  if(t.dataset.lang){lang=t.dataset.lang;try{localStorage.setItem('semi-map-lang',lang)}catch(_){}
+    renderStatic();render();if(openName)openCo(openName);return;}
+  if(t.dataset.co){openCo(t.dataset.co);return;}
+  if(t.dataset.tagjump){st.tags=new Set([t.dataset.tagjump]);closeCo();render();$('#toolbar').scrollIntoView({behavior:'smooth'});return;}
+  if(t.dataset.view){st.view=t.dataset.view;render();return;}
+  if(t.dataset.stage){st.stage=t.dataset.stage;st.col=null;render();return;}
+  if(t.dataset.type){st.types.has(t.dataset.type)?st.types.delete(t.dataset.type):st.types.add(t.dataset.type);render();return;}
+  if(t.dataset.tag){st.tags.has(t.dataset.tag)?st.tags.delete(t.dataset.tag):st.tags.add(t.dataset.tag);render();return;}
+  if(t.dataset.col){st.col=st.col===t.dataset.col?null:t.dataset.col;render();return;}
+  if(t.dataset.sort){const k=t.dataset.sort;st.sort=st.sort.k===k?{k,dir:-st.sort.dir}:{k,dir:1};renderTable();return;}
+  if(t.id==='reset'){st.q='';$('#q').value='';st.stage='all';st.types.clear();st.tags.clear();st.col=null;render();return;}
+  if(t.id==='dClose'){closeCo();return;}
+});
+// 공정 해설 카드 제목 → 그 공정만 걸러 맵으로
+document.addEventListener('click',e=>{const h=e.target.closest('.card h4');if(!h)return;const id=h.parentElement.id.slice(2);st.col=id;st.view='map';render();$('#toolbar').scrollIntoView({behavior:'smooth'});});
+$('#scrim').addEventListener('click',closeCo);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&openName)closeCo();if(e.key==='Enter'&&e.target.matches('tr[data-co]'))openCo(e.target.dataset.co);});
+$('#q').addEventListener('input',e=>{st.q=e.target.value.trim();render();});
+
+renderStatic();render();
+})();
+</script>
+</body>
+</html>
