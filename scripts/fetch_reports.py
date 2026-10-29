@@ -910,10 +910,14 @@ def fetch_detail(rep, dump_dir=None, alien=()):
     # 하락세임」. 올렸다는 말이 아니라 그 이름의 팩터가 부진하다는 말인데,
     # 머리 요약에 「목표주가는 1건 상향()」으로 실릴 뻔했다 — 가리킬 종목이
     # 없으니 괄호까지 비었다. 빈 괄호가 오히려 다행이었다.
+    #
+    # 근거 문구를 함께 남긴다. 발췌는 본문 앞 1200자뿐이라, 그 뒤에 적힌
+    # 「목표주가를 … 하향」은 다음 판에서 다시 따질 때 보이지 않는다 — 10/28
+    # 유진 대우건설의 하향이 그렇게 두 판 만에 지워졌다.
     if not rep.get("target_move") and rep.get("stock"):
-        move = _TP_MOVE.search(body + " " + rep["title"])
+        move, src = tp_move(body + " " + rep["title"])
         if move:
-            rep["target_move"] = move.group(1)
+            rep["target_move"], rep["target_move_src"] = move, src
     return rep
 
 
@@ -1083,7 +1087,51 @@ _TP_COLON = re.compile(r"(?:목표\s*(?:주가|가)|TP)\s*[:：]\s*([\d,]+(?:\.\
 # 「업종 최선호주 의견 유지」나 「가격 상승세가 유지되는 가운데」까지
 # 목표주가 조정으로 둔갑한다 — 9/11 판에서 실제로 셋이 그렇게 걸렸다.
 # 갓 뽑을 때와 지난 판에서 넘어온 것을 털 때가 같은 잣대여야 한다.
-_TP_MOVE = re.compile(r"목표\s*(?:주가|가)[^.\n]{0,40}?(상향|하향|유지)")
+#
+# 예전에는 「목표주가 뒤 마흔 자 안에서 처음 걸린 방향어」 하나를 썼다
+# (`목표\s*(?:주가|가)[^.\n]{0,40}?(상향|하향|유지)`). 그러면 틀린다. 10/29 유진 파마리서치가
+# 그랬다 — 「목표주가 42만원] 당사는 파마리서치에 대해 투자의견 BUY를
+# 유지하고 목표주가를 42만원으로 하향한다」. 앞의 목표주가에서 마흔 자 안에
+# 투자의견의 「유지」가 먼저 걸려 하향이 유지로 실렸다(10/28 칩스앤미디어도
+# 본문은 26,000→17,400원 하향인데 유지로 실렸다).
+#
+# 그래서 목표주가 낱말마다 따로 본다.
+# - 다음 목표주가나 문장 끝을 넘어가지 않는다.
+# - 상향·하향은 「의견」을 건너 잡지 않는다 — 「투자의견 매수로 상향」은
+#   의견을 올린 것이지 목표주가를 올린 것이 아니다(10/23 신한 한세실업).
+# - 유지는 건너 잡는다 — 「목표주가 80,000원과 투자의견 매수를 유지」는 둘 다
+#   유지한다는 말이다(하나증권이 늘 이렇게 쓴다).
+# - 목표주가마다 가장 먼저 나온 방향어 하나만 쓴다 — 「목표주가 280만원 유지,
+#   … 실적 상향」의 상향은 목표주가 얘기가 아니다.
+# 그렇게 모은 것 가운데 상향·하향이 있으면 그것을 쓴다. 둘 다 있으면 어느
+# 쪽인지 댈 수 없으므로 비운다. 없고 유지만 있으면 유지다.
+_TP_ANCHOR = re.compile(r"목표\s*(?:주가|가)")
+_TP_WORD = re.compile(r"상향|하향|유지")
+
+
+def tp_move(text):
+    """(상향·하향·유지, 근거 문구) 또는 (None, None)."""
+    found = []
+    for a in _TP_ANCHOR.finditer(text):
+        seg = text[a.end():a.end() + 40]
+        cut = len(seg)
+        for stop in (re.search(r"\n|(?<!\d)\.|\.(?!\d)", seg), _TP_ANCHOR.search(seg)):
+            if stop:
+                cut = min(cut, stop.start())
+        seg = seg[:cut]
+        op = re.search(r"의견", seg)
+        for w in _TP_WORD.finditer(seg):
+            if w.group(0) != "유지" and op and op.start() < w.start():
+                continue
+            found.append((w.group(0), text[a.start():a.end() + w.end()]))
+            break
+    turns = {d for d, _ in found if d != "유지"}
+    if len(turns) > 1:
+        return None, None
+    for d, src in found:
+        if not turns or d in turns:
+            return d, src
+    return None, None
 
 
 _TP_BARE = re.compile(r"(?:목표\s*(?:주가|가)|TP)[^\d\n]{0,6}?"
@@ -1561,6 +1609,9 @@ def _absorb(old, new):
     # 그것은 그 판의 출처를 따라야 한다.
     if new.get("target_from") and old.get("target_price") == new.get("target_price"):
         old.setdefault("target_from", new["target_from"])
+    # 상하향과 그 근거 문구도 한 쌍이다. 방향이 같을 때만 문구를 옮긴다.
+    if new.get("target_move_src") and old.get("target_move") == new.get("target_move"):
+        old.setdefault("target_move_src", new["target_move_src"])
     # 제목은 되찾은 쪽(잘리지 않은 쪽)이 낫다.
     if old["title"].rstrip().endswith("..") and not new["title"].rstrip().endswith(".."):
         old["title"] = new["title"]
@@ -1623,10 +1674,28 @@ def drop_unsourced(r):
     # 적힌 「목표주가 상향」이 지난 판에서 넘어올 수 있다(9/16).
     if r.get("target_move") and not r.get("stock"):
         r.pop("target_move", None)
+        r.pop("target_move_src", None)
+    #
+    # 근거는 발췌·제목과, 뽑을 때 본문에서 떠 둔 문구(`target_move_src`)에서
+    # 찾는다. 그 문구가 없던 때 들어온 줄은 요약 문장도 본다 — 요약도 본문에서
+    # 뜬 문장이다. 다만 요약은 문장을 잇느라 줄바꿈이 사라져 「조정 … 투자의견
+    # 유지」 같은 남의 문장까지 이어 읽을 수 있으므로, 문구가 있는 줄에는 대지
+    # 않는다. 다시 따진 방향이 실린 것과 다르면 다시 따진 쪽을 쓴다 — 실린
+    # 것은 옛 잣대로 뽑은 값이다(위 `tp_move` 설명).
     if r.get("target_move"):
-        hay = (r.get("excerpt") or "") + " " + (r.get("title") or "")
-        if not _TP_MOVE.search(hay):
+        title = r.get("title") or ""
+        src = r.get("target_move_src")
+        if src:
+            move, _ = tp_move(" ".join((r.get("excerpt") or "", src, title)))
+        else:
+            move, src = tp_move((r.get("excerpt") or "") + " " + title)
+            if not move:
+                move, src = tp_move((r.get("summary") or "") + " " + title)
+        if move:
+            r["target_move"], r["target_move_src"] = move, src
+        else:
             r.pop("target_move", None)
+            r.pop("target_move_src", None)
 
     tp = r.get("target_price")
     if tp and r.get("target_from") != "api":
@@ -1637,6 +1706,7 @@ def drop_unsourced(r):
         if not any(f in hay for f in forms):
             r.pop("target_price", None)
             r.pop("target_move", None)
+            r.pop("target_move_src", None)
     return r
 
 
