@@ -1,11 +1,11 @@
-세션을 지닌 채 API 부르기 2026-10-29 23:04:34 KST
+세션을 지닌 채 API 부르기 2026-10-30 07:46:15 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 130880 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
-        HTTP 200 · 11578 bytes · JSON!
-        앞머리: {"content":[{"bizdate":"20261027","customerDeposit":"901030","customerDepositDiff":"14204","customerDepositDiffAbs":"14204","creditLoan":"292153","creditLoanDiff":"-4243","creditLoanDiffAbs":"4243","b
+        HTTP 200 · 11582 bytes · JSON!
+        앞머리: {"content":[{"bizdate":"20261028","customerDeposit":"882975","customerDepositDiff":"-18055","customerDepositDiffAbs":"18055","creditLoan":"289137","creditLoanDiff":"-3017","creditLoanDiffAbs":"3017","
         남김: data/market/raw/session_trendDeposit.json
     API https://stock.naver.com/api/domestic/market/trendDeposit/chart?startDate=20260801&endDate=20260911
         HTTP 200 · 22502 bytes · JSON!
@@ -16,31 +16,31 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 121113 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8792 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"030","officeHname":"전자신문","articleId":"0003480308","title":"400만원 간다더니 165만원?…SK하닉 목표주가 235만원 차이, “개미들만 골머리”","datetime":"2026-10-29 22:36:16","type":"1","subcontent":"역대급 실적
+        HTTP 200 · 8740 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"277","officeHname":"아시아경제","articleId":"0005835576","title":"3분기 실적 절반가량 기대 못미쳐…영업익 반도체 '투톱'이 끌었다","datetime":"2026-10-30 07:37:00","type":"1","subcontent":"올해 3분기 실적 시즌 초반 상
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8792 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"030","officeHname":"전자신문","articleId":"0003480308","title":"400만원 간다더니 165만원?…SK하닉 목표주가 235만원 차이, “개미들만 골머리”","datetime":"2026-10-29 22:36:16","type":"1","subcontent":"역대급 실적
+        HTTP 200 · 8740 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"277","officeHname":"아시아경제","articleId":"0005835576","title":"3분기 실적 절반가량 기대 못미쳐…영업익 반도체 '투톱'이 끌었다","datetime":"2026-10-30 07:37:00","type":"1","subcontent":"올해 3분기 실적 시즌 초반 상
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 127576 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26553 bytes · JSON!
+        HTTP 200 · 26557 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
-        HTTP 200 · 2414 bytes · JSON!
-        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","s
+        HTTP 200 · 2415 bytes · JSON!
+        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
-        HTTP 200 · 5046 bytes · JSON!
+        HTTP 200 · 5038 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
-        HTTP 200 · 7376 bytes · JSON!
+        HTTP 200 · 7377 bytes · JSON!
         앞머리: [{"categoryType":"bond","stockExchangeType":null,"reutersCode":"US10YT=RR","symbolCode":null,"name":"미국 국채 10년","fullName":null,"nameEng":null,"itemLogoUrl":null,"itemLogoPngUrl":null,"delayTime":0,"d
         남김: data/market/raw/session_bond.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dminte
