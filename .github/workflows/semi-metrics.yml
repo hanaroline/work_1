@@ -1,0 +1,88 @@
+name: 반도체 소부장 맵 지표 갱신
+
+# semi-supply-chain.html 의 기업별 시장 지표(현재가·시총·PER·PBR·EPS·BPS·외국인
+# 소진율·수익률·52주 위치·상장일)를 장 마감 뒤에 한 번 받아 넣는다.
+#
+# 클로드 세션에서는 네이버·KIS 에 못 붙는다(CONNECT 403). 그래서 러너 몫이다.
+# 수집기는 scripts/fetch_semi_metrics.py — 못 받은 값은 비워 두고 지어내지 않는다.
+#
+# 상장일은 KIS 상품기본조회로 받는다. 키(KIS_APP_KEY / KIS_APP_SECRET)가 없거나
+# 그 앱키 환경에서 조회가 안 되면 상장일만 비고 나머지는 그대로 돈다.
+#
+# schedule 은 기본 가지(main)에서만 발동한다.
+
+on:
+  schedule:
+    # 평일 16:40 KST(07:40 UTC) — 15:30 마감 뒤 시세가 굳은 다음
+    - cron: '40 7 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: '앞의 몇 곳만 (0 = 전부)'
+        required: false
+        default: '0'
+      env:
+        description: '상장일 조회에 쓸 KIS 앱키 환경 (vps=모의, prod=실전)'
+        required: false
+        default: 'vps'
+        type: choice
+        options: ['vps', 'prod']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: semi-metrics-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    # 76곳 × (basic + integration + 일봉) ≈ 76 × 2 초. 상장일 첫 회는 모의투자 초당 1건.
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 지표 받기
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: ${{ inputs.env || 'vps' }}
+          KIS_TOKEN_CACHE: ${{ runner.temp }}/kis-token.json
+        run: python3 scripts/fetch_semi_metrics.py --limit "${{ inputs.limit || '0' }}"
+
+      - name: 결과 커밋
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/semi-metrics.json data/semi-metrics-report.md semi-supply-chain.html
+          if git diff --cached --quiet; then
+            echo "바뀐 것이 없다 — 커밋 생략"
+            exit 0
+          fi
+          git commit -m "data(semi): 반도체 소부장 맵 지표 갱신 ($(date -u +%Y-%m-%d\ %H:%M))"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+          done
+          exit 1
+
+      - name: 요약
+        if: always()
+        run: |
+          {
+            echo "### 반도체 소부장 맵 지표 갱신"
+            echo ""
+            if [ -f data/semi-metrics-report.md ]; then
+              cat data/semi-metrics-report.md
+            else
+              echo "산출물이 없습니다 — 수집 단계 로그를 보세요."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
