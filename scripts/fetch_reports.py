@@ -1384,16 +1384,22 @@ def move_brief(rows, moves, limit=8, used=None):
 
 
 def crowd_brief(rows, crowd, limit=4, per=3, used=None):
-    """여러 곳이 함께 본 종목마다 증권사별 한 줄 — 시각차가 드러나야 한다."""
+    """여러 곳이 함께 본 종목마다 증권사별 한 줄 — 시각차가 드러나야 한다.
+
+    고를 줄이 모자라도 **종목은 빼지 않는다.** 총평 문장이 「삼성전자 8곳」을
+    앞세워 놓고 아래 표에서는 그 종목이 사라진 판이 있었다 — 첫 줄이 짧은
+    리포트가 많고, 남은 줄은 주제 칸이 먼저 가져갔기 때문이다. 줄을 새로
+    짓거나 다른 칸의 줄을 되풀이하지 않고, 몇 곳·목표주가 폭·다룬 증권사만
+    싣는다.
+    """
     out = []
     for c in crowd[:limit]:
         hit = [r for r in rows if (r.get("stock") or {}).get("code") == c.get("code")]
         lines = _pick_lines(hit, per=per, used=used)
-        if len(lines) < 2:
-            continue
         out.append({"name": c.get("name") or c.get("code"), "count": c["count"],
                     "target_avg": c.get("target_avg"), "target_min": c.get("target_min"),
-                    "target_max": c.get("target_max"), "points": lines})
+                    "target_max": c.get("target_max"), "brokers": c.get("brokers") or [],
+                    "points": lines})
     return out
 
 
