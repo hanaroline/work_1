@@ -357,6 +357,7 @@ semi-supply-chain.html # 국내 반도체 소부장 맵 — 전공정·후공정
                        # 시장 지표(시총·현재가·PER·PBR·EPS·BPS·외국인 소진율·수익률·52주 위치·상장일)는
                        # 아래 수집기가 /*METRICS-BEGIN*/…/*METRICS-END*/ 자리에 넣는다. 못 받은 값은 빈칸
 scripts/fetch_semi_metrics.py         # 위 지표 수집기 (네이버 basic·integration·일봉 + KIND·다음 상장일, 표준 라이브러리만)
+scripts/embed_semi_fonts.py           # 화면이 쓰는 글자만 담은 Noto Sans KR·Inter 부분 글꼴을 HTML 안에 넣는다(오프라인용, 문구 고치면 다시 돌림)
 .github/workflows/semi-metrics.yml    # 평일 16:40 KST 자동 갱신 (수동 실행 가능, schedule 은 main 에서만)
 data/semi-metrics.json                # 수집 결과 원본 · data/semi-metrics-report.md 채움 현황 보고
 
