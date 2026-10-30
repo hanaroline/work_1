@@ -1,0 +1,28 @@
+name: 상장일 원천 정찰 (일회성)
+
+# KIS 키가 모의투자용이라 상장일을 못 받는다. 러너에서 다른 원천이 열리는지 본다.
+# 처음 만든 워크플로는 API 로 못 부르므로 이 가지에 push 하면 돈다.
+on:
+  push:
+    branches: ['claude/semi-listed-probe']
+    paths: ['scripts/probe_listed_date.py', '.github/workflows/semi-listed-probe.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/probe_listed_date.py
+      - name: 결과 커밋
+        run: |
+          cat data/semi-listed-probe.md >> "$GITHUB_STEP_SUMMARY"
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/semi-listed-probe.md
+          git commit -m "상장일 원천 정찰 결과" || exit 0
+          git push
