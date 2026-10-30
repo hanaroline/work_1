@@ -160,7 +160,9 @@ def shape(q, cand, cur):
         r['pos52'] = pos52(price, r['hi52'], r['lo52'])
     else:
         r['pos52'] = None
-    if r['dy'] is not None and r['dy'] < 0:
+    # 야후는 배당을 주는 회사에도 0 을 줄 때가 있다(다이요 홀딩스 4626, 2026-10-30) —
+    # 0 은 '무배당'과 '값 없음'을 가를 수 없으므로 비운다
+    if r['dy'] is not None and r['dy'] <= 0:
         r['dy'] = None
     return r
 
@@ -184,7 +186,9 @@ def collect(cc, limit=0):
         yname = q.get('longName') or q.get('shortName')
         raw[r['n']] = {'y': r['y'], 'longName': q.get('longName'), 'shortName': q.get('shortName'),
                        'exchange': q.get('exchange'), 'currency': q.get('currency'),
-                       'marketState': q.get('marketState')}
+                       'marketState': q.get('marketState'),
+                       'dividendYield': q.get('dividendYield'), 'dividendRate': q.get('dividendRate'),
+                       'trailingAnnualDividendYield': q.get('trailingAnnualDividendYield')}
         if not same_company(r['e'], q.get('longName'), q.get('shortName')):
             co[r['n']] = blank('이름 불일치: 데이터 파일 "%s" ↔ 야후 "%s"' % (r['e'], yname))
             continue
