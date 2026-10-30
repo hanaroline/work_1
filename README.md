@@ -353,7 +353,12 @@ fund-search.html      # 공모펀드 조회 — 배포용 단일 파일 (빌드 
 data/fund.js          # 공모펀드 통합 데이터 (매일 자동 수집)
 
 semi-supply-chain.html # 국내 반도체 소부장 맵 — 전공정·후공정 14개 공정별 기업의 핵심사업·특징
-                       # (단일 파일, 데이터 인라인, 수치 미수록. 공정 배치 출처: TIGER 코리아테크액티브ETF 사내한 18~19쪽)
+                       # (단일 파일, 데이터 인라인. 공정 배치 출처: TIGER 코리아테크액티브ETF 사내한 18~19쪽)
+                       # 시장 지표(시총·현재가·PER·PBR·EPS·BPS·외국인 소진율·수익률·52주 위치·상장일)는
+                       # 아래 수집기가 /*METRICS-BEGIN*/…/*METRICS-END*/ 자리에 넣는다. 못 받은 값은 빈칸
+scripts/fetch_semi_metrics.py         # 위 지표 수집기 (네이버 basic·integration·일봉 + KIS 상장일, 표준 라이브러리만)
+.github/workflows/semi-metrics.yml    # 평일 16:40 KST 자동 갱신 (수동 실행 가능, schedule 은 main 에서만)
+data/semi-metrics.json                # 수집 결과 원본 · data/semi-metrics-report.md 채움 현황 보고
 
 scripts/             # 그 밖의 수집·빌드·탐색 스크립트
 ```

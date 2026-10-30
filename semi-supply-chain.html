@@ -167,6 +167,32 @@ footer{margin:64px 0 40px;border-top:1px solid var(--hair);padding-top:16px}
 .btn:hover{background:var(--orange-act)}
 .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--hair)}
 .btn.ghost:hover{background:var(--subtle)}
+.db .mg{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--hair);border-radius:2px;margin-top:4px}
+.db .mg>div{padding:8px 10px;border-right:1px solid var(--hair-soft);border-bottom:1px solid var(--hair-soft);min-width:0}
+.db .mg>div:nth-child(3n){border-right:0}
+.db .mg .l{font-size:12px;color:var(--muted);line-height:1.3}
+.db .mg .v{font-family:var(--font-en);font-variant-numeric:tabular-nums;font-size:16px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.db .mg .v small{font-size:12px;font-weight:500;margin-left:4px}
+.up{color:#C62828!important}.dn{color:var(--blue)!important}
+.db .pos{margin-top:10px;font-size:12.5px;color:var(--muted)}
+.db .pos .bar{position:relative;height:6px;background:var(--soft);border-radius:1px;margin:6px 0 4px}
+.db .pos .bar i{position:absolute;top:-4px;width:2px;height:14px;background:var(--orange)}
+.db .pos .ends{display:flex;justify-content:space-between;font-family:var(--font-en);font-variant-numeric:tabular-nums}
+.db .src{font-size:12px;color:var(--muted2);margin:6px 0 0;line-height:1.5}
+.db .empty{font-size:14px;color:var(--muted);background:var(--subtle);padding:10px 12px;margin:4px 0 0}
+.xp{display:inline-block;font-size:12px;font-weight:700;padding:1px 7px;border-radius:2px;white-space:nowrap;border:1px solid var(--hair)}
+.xp.d{background:var(--orange);border-color:var(--orange);color:#fff}
+.xp.i{background:#fff;border-color:var(--orange-soft);color:var(--orange-act)}
+.xp.l{background:var(--subtle);color:var(--muted)}
+.db .xrow{display:flex;gap:8px;align-items:baseline;font-size:15px}
+.db .pt{width:100%;min-width:0;font-size:13px;margin-top:4px}
+.db .pt th{font-size:12px;padding:5px 6px;cursor:default}
+.db .pt td{padding:5px 6px;white-space:nowrap}
+.db .pt td.n{text-align:right;font-family:var(--font-en);font-variant-numeric:tabular-nums}
+.db .pt tr.me td{background:var(--hl);font-weight:700}
+.db .ptw{overflow-x:auto}
+td.r,th.r{text-align:right}
+@media (max-width:480px){.db .mg{grid-template-columns:repeat(2,1fr)}.db .mg>div:nth-child(3n){border-right:1px solid var(--hair-soft)}.db .mg>div:nth-child(2n){border-right:0}}
 .db .warn{font-size:13px;color:var(--muted);margin-top:16px;border-top:1px solid var(--hair-soft);padding-top:10px}
 .hidden{display:none!important}
 
@@ -265,6 +291,7 @@ footer{margin:64px 0 40px;border-top:1px solid var(--hair);padding-top:16px}
   <div class="db" id="dBody"></div>
 </aside>
 
+<script>/*METRICS-BEGIN*/window.SEMI_METRICS=null;/*METRICS-END*/</script>
 <script>
 /* =====================================================================
  * 데이터
@@ -834,6 +861,241 @@ const BASKETS = [
   d:'일본·미국 업체가 장악한 품목을 국산으로 대체해 온 곳. 고객 인증 통과가 전환점입니다.',
   de:'Firms substituting for Japanese/US incumbents; customer qualification is the turning point.'}
 ];
+/* 기업 상세 — 투자 체크(D군). 공개 자료를 바탕으로 한 정성 요약이며 숫자·날짜는 넣지 않습니다.
+ * x  HBM·AI 노출도 — d 직접(HBM·AI 반도체/서버 공정·부품에 제품이 바로 쓰임)
+ *                    i 간접(메모리·파운드리 설비투자 전반을 통해 연결) · l 낮음
+ * xn/xne 노출 근거 · r/re 핵심 리스크 · ev/eve 앞으로 볼 이벤트 */
+const EXTRA = {
+'신성이엔지':{x:'i',xn:'HBM·AI용 신규 팹 클린룸 공사에 연동',xne:'Tied to cleanroom builds for new HBM/AI fabs',
+ r:['팹 신·증설 시점에 따라 수주가 크게 출렁임','태양광 사업 손익이 실적을 흐림'],re:['Orders swing with fab construction timing','Solar business clouds earnings'],
+ ev:['국내외 메모리 신규 팹 착공·클린룸 발주','해외 팹 프로젝트 수주'],eve:['New memory fab groundbreakings and cleanroom orders','Overseas fab project wins']},
+'한양이엔지':{x:'i',xn:'신규 팹 가스·케미컬 배관 공사 수주형',xne:'Gas/chemical piping for new fabs',
+ r:['대형 고객사 투자 일정 의존도가 높음','공사형 사업이라 원가·인력 관리가 수익성을 좌우'],re:['Highly dependent on key customers\' capex timing','Project-based margins hinge on cost and labor control'],
+ ev:['고객사 신규 라인 착공 일정','해외 공장 프로젝트 참여'],eve:['Customers\' new line construction schedules','Participation in overseas fab projects']},
+'엘오티베큠':{x:'i',xn:'공정 장비 증설 수량에 연동되는 진공펌프',xne:'Vacuum pumps scale with tool installations',
+ r:['글로벌 진공펌프 대형사와의 경쟁','디스플레이·태양광 등 전방 다변화의 성과 편차'],re:['Competition with global vacuum pump majors','Uneven results from diversifying end markets'],
+ ev:['국내 메모리 고객의 설비 증설','해외 고객 확보 여부'],eve:['Domestic memory customers\' tool additions','New overseas customer wins']},
+'GST':{x:'i',xn:'공정 장비마다 붙는 스크러버·칠러',xne:'Scrubbers/chillers attach to each process tool',
+ r:['메모리 설비투자 사이클에 실적이 연동','환경 규제 변화에 따른 제품 요구 변화'],re:['Earnings track memory capex cycles','Product needs shift with environmental rules'],
+ ev:['고객사 증설·전환 투자','친환경 스크러버 등 신제품 채택'],eve:['Customer expansion and conversion capex','Adoption of new eco-friendly scrubbers']},
+'유니셈':{x:'i',xn:'메모리 공정 장비 증설에 따라가는 보조 장비',xne:'Auxiliary tools follow memory tool additions',
+ r:['특정 고객 의존도가 높음','동종 스크러버·칠러 업체와의 가격 경쟁'],re:['High dependence on a few customers','Price competition with scrubber/chiller peers'],
+ ev:['주요 고객 신규 라인 발주','해외 고객 확대'],eve:['Key customers\' new line orders','Expansion to overseas customers']},
+'예스티':{x:'d',xn:'웨이퍼 가압 장비가 HBM 공정에 쓰임',xne:'Wafer pressure tools used in HBM processes',
+ r:['HBM 투자 속도에 실적 민감도가 큼','신규 장비의 양산 채택 여부가 불확실'],re:['Earnings highly sensitive to HBM capex pace','Uncertain volume adoption of new tools'],
+ ev:['HBM 라인 증설에 따른 가압 장비 수주','신규 장비 고객 평가 통과'],eve:['Pressure-tool orders from HBM line expansions','New tools passing customer qualification']},
+'케이씨텍':{x:'i',xn:'적층 공정이 늘수록 CMP 수요 증가',xne:'More stacking layers raise CMP demand',
+ r:['해외 CMP 장비 대형사와의 경쟁','고객사 투자 축소 시 장비 매출 급감'],re:['Competition with global CMP majors','Tool sales drop sharply when customers cut capex'],
+ ev:['슬러리 신규 채택 확대','첨단 패키징용 CMP 수요'],eve:['Broader adoption of its slurries','CMP demand from advanced packaging']},
+'SKC':{x:'d',xn:'유리기판이 AI 반도체 차세대 기판 후보',xne:'Glass substrates target next-gen AI chip packaging',
+ r:['유리기판 상용화 시점이 불확실하고 투자 부담이 큼','화학·이차전지 소재 등 다른 사업의 부진이 실적을 가림'],re:['Glass substrate timing uncertain with heavy investment','Weakness in chemicals and battery materials masks results'],
+ ev:['앱솔릭스 유리기판 고객 인증·양산','사업 구조 개편'],eve:['Absolics glass substrate qualification and mass production','Portfolio restructuring']},
+'솔브레인':{x:'i',xn:'메모리 생산량에 연동되는 식각액·소재',xne:'Etchants/materials scale with memory output',
+ r:['메모리 가동률 하락 시 물량 감소','이차전지 소재 등 비반도체 사업 변동'],re:['Volumes fall when memory utilization drops','Swings in non-semiconductor businesses such as battery materials'],
+ ev:['고객사 가동률 회복','신규 전구체·소재 공급'],eve:['Recovery in customer utilization','New precursor/material supply']},
+'SK실트론':{x:'i',xn:'모든 메모리·로직 생산의 출발점인 웨이퍼',xne:'Wafers underpin all memory and logic output',
+ r:['비상장으로 시장 지표 확인 불가','웨이퍼 장기계약 가격 협상과 업황 변동'],re:['Unlisted, so no market metrics','Wafer contract pricing and cycle swings'],
+ ev:['지분 매각·상장 등 지배구조 변화','SiC 웨이퍼 사업 진척'],eve:['Ownership changes such as a stake sale or IPO','Progress in SiC wafers']},
+'동진쎄미켐':{x:'i',xn:'첨단 노광 공정 확대 시 감광액 수요',xne:'Photoresist demand grows with advanced lithography',
+ r:['EUV 감광액은 해외 업체 비중이 높아 국산화 속도가 관건','디스플레이 소재 업황 변동'],re:['EUV resist localization pace is key against foreign suppliers','Display materials cycle'],
+ ev:['EUV 감광액 양산 공급 확대','해외 생산거점 증설'],eve:['Expanded EUV resist supply','Overseas plant expansion']},
+'AP시스템':{x:'l',xn:'디스플레이 장비 비중이 큼',xne:'Display equipment dominates',
+ r:['디스플레이 투자 사이클 의존도가 높음','반도체 장비 매출 비중이 작아 반도체 업황 수혜가 제한적'],re:['Highly exposed to display capex cycles','Small semi share limits chip-cycle upside'],
+ ev:['8.6세대 OLED 투자 수주','반도체 열처리 장비 고객 확대'],eve:['Gen 8.6 OLED investment orders','More customers for semi thermal tools']},
+'이오테크닉스':{x:'d',xn:'레이저 그루빙·다이싱이 HBM·첨단 패키징에 쓰임',xne:'Laser grooving/dicing used in HBM and advanced packaging',
+ r:['해외 레이저 장비사와의 경쟁','어닐링 등 신장비 고객 채택 속도'],re:['Competition with global laser tool makers','Pace of customer adoption for new tools such as annealing'],
+ ev:['HBM용 레이저 장비 공급 확대','파운드리 고객향 어닐링 장비'],eve:['More laser tools for HBM','Annealing tools for foundry customers']},
+'HPSP':{x:'i',xn:'미세공정 전환 시 고압 어닐링 수요',xne:'High-pressure anneal demand rises with node shrinks',
+ r:['특허 분쟁과 경쟁사 진입 가능성','소수 고객 집중'],re:['Patent disputes and possible new entrants','Concentration in a few customers'],
+ ev:['메모리 고객향 적용 공정 확대','경쟁 장비 등장 여부'],eve:['More memory process steps adopting the tool','Whether rival tools emerge']},
+'디아이티':{x:'d',xn:'레이저 어닐링 장비가 HBM 공정에 공급',xne:'Laser annealing tools supplied to HBM lines',
+ r:['특정 고객 의존도가 높음','디스플레이 검사 장비 업황 변동'],re:['High dependence on a key customer','Display inspection equipment cycle'],
+ ev:['HBM 증설에 따른 레이저 장비 추가 수주','신규 장비 개발'],eve:['Further laser tool orders from HBM expansion','New tool development']},
+'원익IPS':{x:'i',xn:'메모리·파운드리 증착 투자 전반에 연동',xne:'Linked to overall memory/foundry deposition capex',
+ r:['주요 고객 투자 계획 변화에 매출이 크게 출렁임','해외 증착 장비 대형사와의 경쟁'],re:['Revenue swings with key customers\' capex plans','Competition with global deposition majors'],
+ ev:['주요 고객 신규 라인 발주','신규 증착 장비 양산 적용'],eve:['Key customers\' new line orders','New deposition tools entering production']},
+'유진테크':{x:'i',xn:'DRAM 미세화·전환 투자 수혜',xne:'Benefits from DRAM node migration capex',
+ r:['해외 고객사 투자 축소 위험','대형 증착 장비사와의 경쟁'],re:['Risk of overseas customers cutting capex','Competition with large deposition players'],
+ ev:['해외 메모리 고객 추가 수주','ALD 신장비 채택'],eve:['More orders from overseas memory customers','Adoption of new ALD tools']},
+'테스':{x:'i',xn:'메모리 증설·전환 투자에 연동',xne:'Tied to memory expansion and conversion capex',
+ r:['메모리 고객 투자 사이클 의존','제품군이 좁아 특정 공정 수요에 민감'],re:['Dependence on memory capex cycles','Narrow lineup sensitive to specific process demand'],
+ ev:['고객사 전환 투자 재개','신규 공정 장비 채택'],eve:['Resumption of customer conversion capex','Adoption of new process tools']},
+'주성엔지니어링':{x:'i',xn:'메모리·파운드리 ALD 투자에 연동',xne:'Linked to memory/foundry ALD investment',
+ r:['해외 고객 비중이 큰 시기에 지역 리스크 노출','태양광·디스플레이 신사업의 성과 불확실'],re:['Regional risk when overseas sales are large','Uncertain results in solar/display ventures'],
+ ev:['신규 고객 ALD 장비 수주','해외 고객 다변화'],eve:['ALD orders from new customers','Overseas customer diversification']},
+'한솔케미칼':{x:'i',xn:'메모리 생산량에 연동되는 과산화수소·전구체',xne:'Peroxide/precursors scale with memory output',
+ r:['고객사 가동률 변화','이차전지 소재 등 신사업 투자 부담'],re:['Customer utilization changes','Investment burden in battery materials'],
+ ev:['신규 전구체 고객 인증','해외 공장 가동'],eve:['New precursor qualifications','Overseas plant start-up']},
+'덕산테코피아':{x:'i',xn:'메모리 증착 전구체 수요에 연동',xne:'Tied to memory precursor demand',
+ r:['신규 공장 투자에 따른 고정비 부담','OLED 소재 업황 변동'],re:['Fixed-cost burden from new plants','OLED materials cycle'],
+ ev:['신규 전구체 양산 공급','이차전지 소재 사업 진척'],eve:['Mass supply of new precursors','Progress in battery materials']},
+'에스앤에스텍':{x:'i',xn:'첨단 노광 확대 시 블랭크마스크 수요',xne:'Blank mask demand grows with advanced lithography',
+ r:['EUV 블랭크마스크는 해외 업체 독과점 구조','고객 인증 지연'],re:['EUV blank masks dominated by foreign suppliers','Delays in customer qualification'],
+ ev:['EUV 블랭크마스크·펠리클 상용 공급','중국 등 해외 고객 확대'],eve:['Commercial EUV blank mask/pellicle supply','Overseas customer expansion']},
+'에프에스티':{x:'i',xn:'EUV 공정 확대 시 펠리클 수요',xne:'Pellicle demand rises with EUV adoption',
+ r:['EUV 펠리클 상용화 지연','칠러 사업의 설비투자 연동성'],re:['Delays in EUV pellicle commercialization','Chiller sales tied to capex'],
+ ev:['EUV 펠리클 고객 채택','칠러 신규 수주'],eve:['Customer adoption of EUV pellicles','New chiller orders']},
+'이엔에프테크놀로지':{x:'i',xn:'메모리 생산량에 연동되는 공정 케미컬',xne:'Process chemicals scale with memory output',
+ r:['원재료 가격 변동','디스플레이 케미컬 업황'],re:['Raw material price swings','Display chemical cycle'],
+ ev:['고객사 가동률 회복','신규 식각액 채택'],eve:['Customer utilization recovery','New etchant adoption']},
+'브이엠':{x:'i',xn:'메모리 식각 장비 투자에 연동',xne:'Linked to memory etch tool investment',
+ r:['특정 고객 의존도가 높음','해외 식각 장비 대형사와의 경쟁'],re:['High dependence on a key customer','Competition with global etch majors'],
+ ev:['신규 고객 확보','차세대 식각 장비 양산 적용'],eve:['New customer wins','Next-gen etch tools entering production']},
+'피에스케이':{x:'i',xn:'메모리·로직 증설 시 스트립 장비 수요',xne:'Strip tool demand follows memory/logic expansion',
+ r:['중국 고객 비중 변화와 수출 규제','신규 장비(베벨 식각 등) 채택 속도'],re:['Shifts in China exposure and export controls','Adoption pace of new tools such as bevel etch'],
+ ev:['베벨 식각·하드마스크 스트립 신장비 확대','해외 파운드리 고객 수주'],eve:['Expansion of bevel etch and hardmask strip tools','Orders from overseas foundries']},
+'티씨케이':{x:'i',xn:'식각 공정 가동률에 연동되는 소모성 부품',xne:'Consumables scale with etch utilization',
+ r:['경쟁사의 SiC 링 진입','고객 가동률 하락'],re:['Competitors entering SiC rings','Lower customer utilization'],
+ ev:['고객 가동률 회복','신규 소재 부품 채택'],eve:['Customer utilization recovery','Adoption of new material parts']},
+'원익QnC':{x:'i',xn:'공정 가동률에 연동되는 쿼츠 소모품',xne:'Quartz consumables scale with utilization',
+ r:['자회사(쿼츠 원재료 등) 실적 변동','고객 재고 조정'],re:['Swings at subsidiaries such as quartz raw materials','Customer inventory adjustments'],
+ ev:['고객 가동률 회복','세정·코팅 사업 확대'],eve:['Customer utilization recovery','Growth in cleaning/coating']},
+'하나머티리얼즈':{x:'i',xn:'식각 공정 가동률에 연동되는 부품',xne:'Parts scale with etch utilization',
+ r:['해외 장비사향 매출 비중에 따른 고객 집중','고객 재고 조정'],re:['Customer concentration via overseas tool makers','Customer inventory adjustments'],
+ ev:['SiC 부품 확대','증설 설비 가동'],eve:['Growth in SiC parts','New capacity coming online']},
+'제우스':{x:'i',xn:'세정 장비가 메모리·파운드리 투자에 연동',xne:'Cleaning tools tied to memory/foundry capex',
+ r:['특정 해외 고객 의존','로봇 등 신사업 투자 부담'],re:['Reliance on specific overseas customers','Investment burden in robotics'],
+ ev:['HBM·첨단 패키징용 세정 장비 공급','신규 고객 확보'],eve:['Cleaning tools for HBM/advanced packaging','New customer wins']},
+'에스티아이':{x:'d',xn:'HBM용 리플로우 장비 공급',xne:'Supplies reflow tools for HBM',
+ r:['HBM 투자 속도에 실적 민감','CCSS 사업의 대형 고객 투자 의존'],re:['Earnings sensitive to HBM capex pace','CCSS reliant on big customers\' investment'],
+ ev:['HBM 증설에 따른 리플로우 장비 수주','해외 고객 확대'],eve:['Reflow orders from HBM expansion','Overseas customer growth']},
+'코미코':{x:'i',xn:'공정 가동률에 연동되는 세정·코팅 서비스',xne:'Cleaning/coating services scale with utilization',
+ r:['해외 거점 고객 투자 변화','신규 코팅 기술 경쟁'],re:['Customer capex shifts at overseas sites','Competition in new coating technology'],
+ ev:['해외 공장 증설','고부가 코팅 확대'],eve:['Overseas plant expansion','Growth in high-value coatings']},
+'엘티씨':{x:'l',xn:'디스플레이 케미컬 비중이 큼',xne:'Display chemicals carry a large share',
+ r:['디스플레이 업황 의존','원재료 가격 변동'],re:['Reliance on display cycle','Raw material price swings'],
+ ev:['반도체용 케미컬 고객 확대','해외 공장 가동'],eve:['More semi chemical customers','Overseas plant start-up']},
+'한솔아이원스':{x:'i',xn:'공정 가동률에 연동되는 부품 가공·세정',xne:'Parts machining/cleaning scale with utilization',
+ r:['해외 장비사 고객 집중','고객 재고 조정'],re:['Concentration in overseas tool makers','Customer inventory adjustments'],
+ ev:['신규 고객 부품 공급','세정·코팅 증설'],eve:['Parts supply to new customers','Cleaning/coating capacity growth']},
+'파크시스템스':{x:'i',xn:'미세공정·첨단 패키징 계측 수요',xne:'Metrology demand from node shrinks and advanced packaging',
+ r:['해외 반도체 고객 투자 일정 변화','연구용 시장의 예산 변동'],re:['Shifts in overseas chip customers\' capex timing','Research market budget swings'],
+ ev:['반도체 팹향 대형 AFM 수주','신규 장비 출시'],eve:['Large AFM orders from fabs','New tool launches']},
+'넥스틴':{x:'i',xn:'메모리 패턴 검사 투자에 연동',xne:'Linked to memory pattern inspection spending',
+ r:['중국 고객 비중과 수출 규제','해외 검사 장비 대형사와의 경쟁'],re:['China exposure and export controls','Competition with global inspection majors'],
+ ev:['국내 고객 장비 채택 확대','신규 검사 장비 출시'],eve:['Wider adoption by domestic customers','New inspection tool launches']},
+'오로스테크놀로지':{x:'i',xn:'노광 공정 확대 시 오버레이 계측 수요',xne:'Overlay metrology grows with lithography steps',
+ r:['해외 계측 장비 대형사와의 경쟁','특정 고객 의존'],re:['Competition with global metrology majors','Reliance on key customers'],
+ ev:['첨단 패키징용 계측 장비 공급','해외 고객 확보'],eve:['Metrology tools for advanced packaging','Overseas customer wins']},
+'인텍플러스':{x:'d',xn:'AI용 FC-BGA 기판·패키지 검사',xne:'Inspects FC-BGA substrates and packages for AI',
+ r:['기판 업체 투자 사이클 의존','고객 집중'],re:['Dependence on substrate makers\' capex','Customer concentration'],
+ ev:['FC-BGA·유리기판 검사 장비 수주','HBM 검사 장비 적용'],eve:['Orders for FC-BGA/glass substrate inspection','HBM inspection adoption']},
+'기가비스':{x:'d',xn:'AI 서버용 고다층 기판 검사·수리',xne:'Inspects/repairs high-layer substrates for AI servers',
+ r:['기판 업체 투자 사이클 의존','해외 고객 비중에 따른 지역 리스크'],re:['Dependence on substrate makers\' capex','Regional risk from overseas sales'],
+ ev:['FC-BGA·유리기판 투자에 따른 수주','신규 고객 확보'],eve:['Orders from FC-BGA/glass substrate investment','New customer wins']},
+'한미반도체':{x:'d',xn:'HBM 적층 TC 본더 공급',xne:'Supplies TC bonders for HBM stacking',
+ r:['TC 본더 경쟁 심화와 고객 다변화 여부','하이브리드 본딩 전환 시 기술 대응'],re:['Rising TC bonder competition and customer diversification','Technology response to hybrid bonding'],
+ ev:['HBM 신규 세대 TC 본더 수주','하이브리드 본더 개발'],eve:['TC bonder orders for next HBM generations','Hybrid bonder development']},
+'한화비전':{x:'d',xn:'자회사 한화세미텍의 HBM용 TC 본더',xne:'Subsidiary Hanwha Semitech\'s TC bonders for HBM',
+ r:['보안카메라 본업 비중이 커 반도체 노출이 희석','TC 본더 시장 내 후발 주자'],re:['Large security camera business dilutes semi exposure','Late entrant in TC bonders'],
+ ev:['한화세미텍 TC 본더 고객 수주','하이브리드 본더 개발'],eve:['Hanwha Semitech TC bonder orders','Hybrid bonder development']},
+'프로텍':{x:'i',xn:'첨단 패키징 공정 장비',xne:'Advanced packaging process tools',
+ r:['고객 투자 일정 의존','신장비 채택 속도'],re:['Dependence on customer capex timing','Adoption pace of new tools'],
+ ev:['레이저 리플로우 장비 채택','해외 OSAT 고객 확대'],eve:['Adoption of laser reflow tools','Overseas OSAT customer growth']},
+'피에스케이홀딩스':{x:'d',xn:'HBM·첨단 패키징용 디스컴·리플로우',xne:'Descum/reflow tools for HBM and advanced packaging',
+ r:['HBM 투자 속도에 실적 민감','해외 OSAT 투자 변화'],re:['Earnings sensitive to HBM capex pace','Overseas OSAT capex changes'],
+ ev:['HBM 증설에 따른 장비 수주','신규 장비 고객 확대'],eve:['Tool orders from HBM expansion','More customers for new tools']},
+'삼성전기':{x:'d',xn:'AI 서버·가속기용 FC-BGA·MLCC',xne:'FC-BGA and MLCCs for AI servers and accelerators',
+ r:['스마트폰·PC 등 전방 수요 변동','기판 경쟁 심화'],re:['End demand swings in phones and PCs','Intensifying substrate competition'],
+ ev:['AI 가속기용 FC-BGA 공급 확대','유리기판 시제품·양산'],eve:['More FC-BGA for AI accelerators','Glass substrate samples and production']},
+'티엘비':{x:'d',xn:'AI 서버용 메모리 모듈·SSD PCB',xne:'Memory module and SSD PCBs for AI servers',
+ r:['메모리 업황 의존','원재료·환율 변동'],re:['Memory cycle dependence','Raw material and FX swings'],
+ ev:['고용량 서버 모듈(DDR5·CXL) 수요','eSSD용 기판 확대'],eve:['Demand for high-capacity server modules (DDR5/CXL)','Growth in eSSD boards']},
+'대덕전자':{x:'d',xn:'AI 관련 FC-BGA·메모리 기판',xne:'FC-BGA and memory substrates tied to AI',
+ r:['FC-BGA 투자 부담과 가동률','메모리 기판 업황 변동'],re:['FC-BGA investment burden and utilization','Memory substrate cycle'],
+ ev:['FC-BGA 신규 고객','메모리 기판 수요 회복'],eve:['New FC-BGA customers','Memory substrate demand recovery']},
+'해성디에스':{x:'l',xn:'차량용 리드프레임 비중이 큼',xne:'Automotive lead frames dominate',
+ r:['자동차 업황 의존','원재료(구리) 가격 변동'],re:['Auto cycle dependence','Copper price swings'],
+ ev:['차량용 반도체 수요 회복','패키지 기판 증설 효과'],eve:['Automotive chip demand recovery','Benefits from substrate capacity']},
+'심텍':{x:'d',xn:'HBM·고용량 메모리용 기판과 모듈 PCB',xne:'Substrates/module PCBs for HBM and high-capacity memory',
+ r:['메모리 업황에 실적 민감','고정비 부담'],re:['Earnings sensitive to memory cycle','Fixed-cost burden'],
+ ev:['서버용 모듈·CXL 기판 수요','고부가 기판 비중 확대'],eve:['Server module/CXL board demand','Higher value substrate mix']},
+'LG이노텍':{x:'l',xn:'카메라 모듈 비중이 압도적',xne:'Camera modules dominate revenue',
+ r:['북미 스마트폰 고객 의존','기판 사업 비중이 작아 반도체 수혜 제한'],re:['Dependence on a North American smartphone customer','Small substrate share limits semi upside'],
+ ev:['FC-BGA 고객 확대','유리기판 개발'],eve:['FC-BGA customer expansion','Glass substrate development']},
+'코리아써키트':{x:'i',xn:'메모리·모바일 기판 수요에 연동',xne:'Tied to memory/mobile substrate demand',
+ r:['메모리·스마트폰 업황 의존','FC-BGA 투자 회수'],re:['Memory and smartphone cycle dependence','Recouping FC-BGA investment'],
+ ev:['FC-BGA 양산 고객','서버용 기판 수요'],eve:['FC-BGA production customers','Server substrate demand']},
+'덕산하이메탈':{x:'i',xn:'첨단 패키징 확대 시 솔더볼 수요',xne:'Solder ball demand grows with advanced packaging',
+ r:['원재료(주석·은) 가격 변동','고객 집중'],re:['Tin/silver price swings','Customer concentration'],
+ ev:['미세 솔더볼·신소재 채택','자회사 실적'],eve:['Adoption of fine-pitch solder balls and new materials','Subsidiary results']},
+'엠케이전자':{x:'i',xn:'패키징 물량에 연동되는 접합 소재',xne:'Bonding materials scale with packaging volume',
+ r:['금 등 원재료 가격 변동','이차전지 소재 등 신사업 부담'],re:['Gold and raw material price swings','Burden from battery materials venture'],
+ ev:['고부가 솔더볼 확대','해외 고객 확보'],eve:['Growth in high-value solder balls','Overseas customer wins']},
+'리노공업':{x:'d',xn:'AI·고성능 칩 테스트 핀·소켓',xne:'Test pins/sockets for AI and high-performance chips',
+ r:['스마트폰 AP 등 모바일 비중 변동','고객사 신제품 개발 일정 의존'],re:['Shifts in mobile AP exposure','Dependence on customers\' product development timing'],
+ ev:['AI 가속기·온디바이스 AI 칩 개발 증가','신규 고객 확보'],eve:['More AI accelerator and on-device AI chip development','New customer wins']},
+'ISC':{x:'d',xn:'AI·GPU·CPU용 테스트 소켓',xne:'Test sockets for AI, GPU and CPU',
+ r:['고객 집중과 단가 경쟁','모회사 SKC 그룹 전략 변화'],re:['Customer concentration and price competition','Strategy shifts at parent SKC'],
+ ev:['AI 칩 고객 소켓 공급 확대','장비·소재 사업 확장'],eve:['More sockets for AI chip customers','Expansion into equipment and materials']},
+'티에스이':{x:'d',xn:'HBM·메모리 프로브카드와 인터페이스 보드',xne:'Probe cards and interface boards for HBM/memory',
+ r:['메모리 고객 투자·개발 일정 의존','프로브카드 해외 대형사와의 경쟁'],re:['Dependence on memory customers\' capex and R&D timing','Competition with global probe card majors'],
+ ev:['HBM용 프로브카드 공급','비메모리 고객 확대'],eve:['HBM probe card supply','Non-memory customer growth']},
+'티에프이':{x:'i',xn:'로직 칩 테스트 소켓·키트',xne:'Logic chip test sockets and kits',
+ r:['고객사 신제품 일정 의존','소켓 시장 경쟁'],re:['Dependence on customers\' product launches','Socket market competition'],
+ ev:['신규 고객 확보','AI 칩 테스트 수요'],eve:['New customer wins','AI chip test demand']},
+'테크윙':{x:'d',xn:'HBM용 큐브 프로버',xne:'Cube prober for HBM',
+ r:['큐브 프로버 양산 채택이 아직 불확실','메모리 업황 의존'],re:['Volume adoption of the cube prober still uncertain','Memory cycle dependence'],
+ ev:['큐브 프로버 고객 평가·양산 수주','핸들러 교체 수요'],eve:['Cube prober qualification and volume orders','Handler replacement demand']},
+'와이씨':{x:'d',xn:'HBM용 웨이퍼 테스터',xne:'Wafer testers for HBM',
+ r:['특정 고객 의존도가 높음','해외 테스터 대형사와의 경쟁'],re:['High dependence on a key customer','Competition with global tester majors'],
+ ev:['HBM 증설에 따른 테스터 수주','신규 고객 확보'],eve:['Tester orders from HBM expansion','New customer wins']},
+'디아이':{x:'d',xn:'HBM 관련 번인·웨이퍼 테스터',xne:'Burn-in/wafer testers tied to HBM',
+ r:['자회사 실적 의존','메모리 업황 변동'],re:['Reliance on subsidiaries\' results','Memory cycle swings'],
+ ev:['HBM 테스터 공급','고객 다변화'],eve:['HBM tester supply','Customer diversification']},
+'네오셈':{x:'d',xn:'AI 서버용 SSD·CXL 테스터',xne:'SSD/CXL testers for AI servers',
+ r:['SSD 업황과 고객 투자 일정','CXL 시장 개화 시점'],re:['SSD cycle and customer capex timing','Timing of CXL market adoption'],
+ ev:['차세대 SSD 인터페이스 테스터 수주','CXL 테스터 공급'],eve:['Testers for next-gen SSD interfaces','CXL tester supply']},
+'유니테스트':{x:'i',xn:'메모리 테스터 수요에 연동',xne:'Tied to memory tester demand',
+ r:['메모리 업황 의존','특정 고객 집중'],re:['Memory cycle dependence','Customer concentration'],
+ ev:['DDR5 등 신규 메모리 테스터 수주','신사업 진척'],eve:['Testers for new memory such as DDR5','New business progress']},
+'엑시콘':{x:'i',xn:'메모리·SSD 테스터 수요에 연동',xne:'Tied to memory/SSD tester demand',
+ r:['특정 고객 의존','메모리 투자 사이클'],re:['Reliance on a key customer','Memory capex cycle'],
+ ev:['신규 메모리 테스터 공급','비메모리 테스터 확대'],eve:['New memory tester supply','Expansion into non-memory testers']},
+'하나마이크론':{x:'i',xn:'메모리 패키징·테스트 물량에 연동',xne:'Tied to memory packaging/test volume',
+ r:['해외 거점 투자 부담과 환율','고객 외주 물량 변화'],re:['Overseas investment burden and FX','Changes in customer outsourcing'],
+ ev:['베트남 거점 증설 가동','HBM 관련 외주 확대'],eve:['Vietnam capacity ramp','More HBM-related outsourcing']},
+'두산테스나':{x:'l',xn:'모바일 SoC·이미지센서 테스트 중심',xne:'Focused on mobile SoC and image sensor test',
+ r:['주요 고객 시스템반도체 물량 의존','증설 투자에 따른 고정비'],re:['Reliance on a key customer\'s logic volumes','Fixed costs from capacity investment'],
+ ev:['신규 고객·제품 테스트 수주','파운드리 가동률 회복'],eve:['New customer/product test wins','Foundry utilization recovery']},
+'SFA반도체':{x:'i',xn:'메모리 패키징 물량에 연동',xne:'Tied to memory packaging volume',
+ r:['메모리 업황 의존','고객 외주 정책 변화'],re:['Memory cycle dependence','Customer outsourcing policy changes'],
+ ev:['해외 거점 가동률','신규 패키지 수주'],eve:['Overseas site utilization','New package orders']},
+'네패스':{x:'l',xn:'팬아웃 등 패키징 기술 보유, AI 직접 물량은 제한적',xne:'Fan-out know-how but limited direct AI volume',
+ r:['적자 지속 시 재무 부담','신규 패키징 사업의 고객 확보'],re:['Financial strain if losses persist','Securing customers for new packaging'],
+ ev:['팬아웃 패키징 고객 확보','사업 구조 조정'],eve:['Fan-out packaging customer wins','Business restructuring']},
+'네패스아크':{x:'l',xn:'비메모리 테스트 외주 중심',xne:'Non-memory test outsourcing',
+ r:['주요 고객 물량 의존','가동률 변동'],re:['Reliance on key customer volumes','Utilization swings'],
+ ev:['신규 테스트 고객','차량·전력 반도체 테스트'],eve:['New test customers','Automotive/power chip test']},
+'LB세미콘':{x:'l',xn:'디스플레이 구동칩 중심',xne:'Display driver IC focused',
+ r:['디스플레이 업황 의존','고객 집중'],re:['Display cycle dependence','Customer concentration'],
+ ev:['전력·차량 반도체 테스트 확대','신규 고객'],eve:['Growth in power/auto chip test','New customers']},
+'한양디지텍':{x:'i',xn:'서버용 메모리 모듈 수요에 연동',xne:'Tied to server memory module demand',
+ r:['고객 위탁 물량 의존','메모리 업황'],re:['Reliance on consigned volumes','Memory cycle'],
+ ev:['고용량 서버 모듈 수요','신규 고객'],eve:['High-capacity server module demand','New customers']},
+'파두':{x:'d',xn:'AI 데이터센터용 SSD 컨트롤러',xne:'SSD controllers for AI data centers',
+ r:['소수 고객 의존으로 분기 매출 변동이 큼','공시·실적 관련 신뢰 이슈를 겪은 바 있음'],re:['Few customers make quarterly sales volatile','Has faced trust issues over disclosures and results'],
+ ev:['차세대 SSD 컨트롤러 고객 채택','신규 하이퍼스케일러 고객'],eve:['Adoption of next-gen SSD controllers','New hyperscaler customers']},
+'제주반도체':{x:'i',xn:'온디바이스 AI 기기용 저전력 메모리',xne:'Low-power memory for on-device AI devices',
+ r:['메모리 가격 변동','파운드리 생산 의존'],re:['Memory price swings','Reliance on foundry production'],
+ ev:['온디바이스 AI 기기 채택','신규 제품 출시'],eve:['Adoption in on-device AI products','New product launches']},
+'칩스앤미디어':{x:'i',xn:'AI·차량용 칩에 들어가는 비디오 IP',xne:'Video IP used in AI and automotive chips',
+ r:['라이선스 계약 시점에 따른 매출 변동','IP 경쟁'],re:['Revenue swings with license timing','IP competition'],
+ ev:['신규 라이선스 계약','NPU 등 신규 IP'],eve:['New license deals','New IP such as NPU']},
+'오픈엣지테크놀로지':{x:'d',xn:'NPU·메모리 인터페이스 IP',xne:'NPU and memory interface IP',
+ r:['적자 구조와 계약 시점 의존','해외 IP 대형사와의 경쟁'],re:['Loss-making with contract timing risk','Competition with global IP majors'],
+ ev:['고객사 칩 양산에 따른 로열티','신규 라이선스'],eve:['Royalties as customer chips ramp','New license deals']},
+'가온칩스':{x:'d',xn:'AI 반도체 설계 위탁 수주',xne:'Design services for AI chips',
+ r:['삼성 파운드리 경쟁력에 연동','프로젝트 단위 매출 변동'],re:['Tied to Samsung Foundry competitiveness','Project-based revenue swings'],
+ ev:['AI 칩 설계·양산 프로젝트 수주','해외 고객 확대'],eve:['AI chip design/production project wins','Overseas customer growth']},
+'에이직랜드':{x:'d',xn:'TSMC 기반 AI·고성능 칩 설계 위탁',xne:'TSMC-based design services for AI/HPC chips',
+ r:['프로젝트 단위 매출 변동','소수 고객 의존'],re:['Project-based revenue swings','Reliance on few customers'],
+ ev:['첨단 공정 설계 프로젝트 수주','양산 매출 전환'],eve:['Advanced-node design project wins','Conversion to production revenue']},
+'에이디테크놀로지':{x:'i',xn:'삼성 파운드리 기반 설계 위탁',xne:'Samsung Foundry-based design services',
+ r:['파운드리 전환에 따른 일시적 공백','프로젝트 단위 매출 변동'],re:['Transition gaps after switching foundry partners','Project-based revenue swings'],
+ ev:['AI 칩 설계 수주','양산 매출 전환'],eve:['AI chip design wins','Conversion to production revenue']}
+};
+
 const I18N = {
  ko:{tag:'사내 참고용 · 투자권유 아님',title:'국내 반도체 소부장 맵 — 전공정 · 후공정',
   lead:'반도체가 만들어지는 순서대로 14개 공정을 나누고, 각 공정에 이름을 올린 국내 소재·부품·장비·서비스 기업의 핵심사업과 특징을 정리했습니다. 기업을 누르면 상세가 열립니다.',
@@ -845,14 +1107,25 @@ const I18N = {
   stCo:'수록 기업',stF:'전공정 기업',stB:'후공정 기업',stP:'공정 칸',
   fsub:'웨이퍼 위에 회로를 만드는 단계',bsub:'만든 칩을 자르고 붙이고 검사하는 단계',
   cnt:n=>`${n}개사`,co:'기업',code:'코드',mkt:'시장',proc:'공정',summ:'한줄 요약',
-  one:'한줄 요약',biz:'핵심사업',pt:'특징 · 체크포인트',cu:'주요 고객',tg:'테마',peers:'같은 공정의 다른 기업',
+  one:'한줄 요약',biz:'핵심사업 · 사업부문',pt:'특징 · 체크포인트',cu:'주요 고객',tg:'테마',peers:'같은 공정의 다른 기업',
   naver:'네이버 금융',dart:'DART 공시',unlisted:'비상장',
   unv:'종목코드를 대조하지 못했습니다. 거래 전 직접 확인하십시오.',
-  warn:'공개 자료를 바탕으로 한 정성 요약입니다. 수치는 싣지 않았으니 사업보고서(DART)로 확인하십시오.',
+  warn:'기업 설명·리스크·이벤트는 공개 자료를 바탕으로 한 정성 요약입니다. 시장 지표 밖의 수치(매출·점유율 등)는 싣지 않았으니 사업보고서(DART)로 확인하십시오.',
   watch:'관전 포인트',where:'칸',
+  mT:'주요 지표',mPrice:'현재가',mCap:'시가총액',mPer:'PER',mPbr:'PBR',mEps:'EPS',mBps:'BPS',mFrgn:'외국인 소진율',
+  m1m:'1개월',m3m:'3개월',mYtd:'연초 대비',m52:'52주 범위 · 현재 위치',mListed:'상장일',
+  mAsof:d=>`기준 ${d} 종가`,mSrc:'출처: 네이버 증권(시세·시총·PER·PBR·EPS·BPS·외국인 소진율), 수익률·52주 범위는 네이버 일봉으로 계산, 상장일은 한국투자증권 Open API. 빈칸(–)은 받아 오지 못한 값입니다.',
+  mNone:'아직 지표를 수집하지 않았습니다. 매 거래일 장 마감 뒤(16:40) 자동으로 채워집니다.',
+  mUnl:'비상장 기업이라 시장 지표가 없습니다.',mNoCo:'이 종목은 이번 수집에서 값을 받지 못했습니다.',
+  xT:'HBM · AI 노출도',x:{d:'직접',i:'간접',l:'낮음'},rT:'핵심 리스크',evT:'앞으로 볼 이벤트',
+  ptT:'같은 공정 지표 비교',pkT:'같은 공정의 다른 기업',
+  cMcap:'시총',cPer:'PER',cPbr:'PBR',c1m:'1개월',cYtd:'연초',c52:'52주 위치',cX:'HBM·AI',
+  won:v=>`${v}원`,eok:v=>v>=10000?`${(v/10000).toLocaleString('ko-KR',{maximumFractionDigits:1})}조`:`${Math.round(v).toLocaleString('ko-KR')}억`,times:'배',
   notes:[
    '공정 배치(어느 기업이 어느 칸에 있는지)와 색 구분은 미래에셋자산운용 「TIGER 코리아테크액티브ETF」 판매사 사내한 자료 18~19쪽을 그대로 옮겼습니다. 자료의 분류이며 각 기업의 매출 구성 전체를 뜻하지 않습니다.',
-   '기업 설명은 공개된 사업 내용을 바탕으로 한 정성 요약입니다(2026년 10월 작성). 매출·점유율·시가총액 같은 수치는 확인 없이 싣지 않기 위해 일부러 넣지 않았습니다.',
+   '기업 설명은 공개된 사업 내용을 바탕으로 한 정성 요약입니다(2026년 10월 작성). 매출·점유율 같은 수치는 확인 없이 싣지 않기 위해 일부러 넣지 않았습니다.',
+   '「주요 지표」는 매 거래일 장 마감 뒤 자동 수집합니다 — 현재가·시가총액·PER·PBR·EPS·BPS·외국인 소진율은 네이버 증권, 1개월·3개월·연초 대비 수익률과 52주 범위는 네이버 일봉으로 계산(52주 범위는 일봉 고가·저가 기준), 상장일은 한국투자증권 Open API. 기준일은 상세 창에 함께 적었고, 받아 오지 못한 값은 빈칸(–)으로 둡니다. PER·PBR은 네이버가 보여 주는 최근 실적 기준이며 적자 기업은 비어 있습니다.',
+   '「HBM · AI 노출도」(직접: 제품이 HBM·AI 반도체나 AI 서버의 공정·부품에 바로 쓰임 / 간접: 메모리·파운드리 설비투자 전반을 통해 연결 / 낮음), 「핵심 리스크」, 「앞으로 볼 이벤트」는 공개 자료를 바탕으로 한 정성 판단입니다(2026년 10월 작성). 실적 전망이 아니며 일정이나 수치를 담지 않았습니다.',
    '「주요 고객」은 널리 알려진 경우만 적었고, 모르는 곳은 비워 두었습니다. 비어 있다고 고객이 없다는 뜻이 아닙니다.',
    '종목코드는 저장소의 보유종목·리포트 자료, 또는 공개 시세·리서치 페이지(2026-10-29 검색)와 대조했습니다. 코드 옆 † 표시는 대조하지 못한 코드입니다.',
    '후공정 「패키징 소켓」 칸 마지막 기업은 원 자료 인쇄가 흐려 「티에프이」로 판독했습니다. 원 자료로 한 번 더 확인하십시오.',
@@ -868,14 +1141,25 @@ const I18N = {
   stCo:'Companies',stF:'Front-end',stB:'Back-end',stP:'Process steps',
   fsub:'Building circuits on the wafer',bsub:'Cutting, joining and testing finished chips',
   cnt:n=>`${n} cos.`,co:'Company',code:'Ticker',mkt:'Market',proc:'Step',summ:'Summary',
-  one:'Summary',biz:'Core business',pt:'Notes & checkpoints',cu:'Key customers',tg:'Themes',peers:'Others in the same step',
+  one:'Summary',biz:'Core business · Segments',pt:'Notes & checkpoints',cu:'Key customers',tg:'Themes',peers:'Others in the same step',
   naver:'Naver Finance',dart:'DART filings',unlisted:'Unlisted',
   unv:'Ticker not cross-checked. Verify before trading.',
-  warn:'Qualitative summary from public information; no figures included. Check DART filings.',
+  warn:'Descriptions, risks and events are qualitative summaries from public information. Figures other than market metrics (revenue, share, etc.) are not included; check DART filings.',
   watch:'What to watch',where:'Steps',
+  mT:'Key metrics',mPrice:'Price',mCap:'Market cap',mPer:'PER',mPbr:'PBR',mEps:'EPS',mBps:'BPS',mFrgn:'Foreign ownership',
+  m1m:'1M',m3m:'3M',mYtd:'YTD',m52:'52-week range · position',mListed:'Listed',
+  mAsof:d=>`Close as of ${d}`,mSrc:'Sources: Naver Finance (price, market cap, PER, PBR, EPS, BPS, foreign ownership limit usage); returns and 52-week range computed from Naver daily bars; listing date from Korea Investment & Securities Open API. A dash (–) means the value was not retrieved.',
+  mNone:'Metrics have not been collected yet. They fill in automatically after each trading day\'s close (16:40 KST).',
+  mUnl:'Unlisted company — no market metrics.',mNoCo:'No values were retrieved for this ticker in the latest run.',
+  xT:'HBM · AI exposure',x:{d:'Direct',i:'Indirect',l:'Low'},rT:'Key risks',evT:'Events to watch',
+  ptT:'Metrics vs. same-step peers',pkT:'Others in the same step',
+  cMcap:'Mkt cap',cPer:'PER',cPbr:'PBR',c1m:'1M',cYtd:'YTD',c52:'52W pos.',cX:'HBM·AI',
+  won:v=>`KRW ${v}`,eok:v=>v>=10000?`KRW ${(v/10000).toLocaleString('en-US',{maximumFractionDigits:1})}T`:`KRW ${(v/10).toLocaleString('en-US',{maximumFractionDigits:0})}B`,times:'x',
   notes:[
    'Step placement and color coding follow pp.18–19 of Mirae Asset Global Investments\' internal distributor material for the TIGER Korea Tech Active ETF. It reflects that chart\'s classification, not each company\'s full revenue mix.',
-   'Company descriptions are qualitative summaries of public business information (written October 2026). Revenue, share and market-cap figures are deliberately omitted rather than printed unverified.',
+   'Company descriptions are qualitative summaries of public business information (written October 2026). Revenue and share figures are deliberately omitted rather than printed unverified.',
+   '"Key metrics" are collected automatically after each trading day\'s close: price, market cap, PER, PBR, EPS, BPS and foreign ownership from Naver Finance; 1M/3M/YTD returns and the 52-week range computed from Naver daily bars (range uses daily highs/lows); listing date from the Korea Investment & Securities Open API. The as-of date is shown in the detail panel, and values not retrieved are left blank (–). PER/PBR follow Naver\'s trailing basis and are blank for loss-making companies.',
+   '"HBM · AI exposure" (Direct: products used directly in HBM/AI chips or AI server processes and parts / Indirect: linked via overall memory and foundry capex / Low), "Key risks" and "Events to watch" are qualitative judgments from public information (written October 2026). They are not earnings forecasts and contain no dates or figures.',
    '"Key customers" lists only widely known relationships; blank does not mean none.',
    'Tickers were cross-checked against repository holdings/report data or public quote/research pages (searched 2026-10-29). A † marks a ticker that could not be cross-checked.',
    'The last company in the back-end "Sockets" column was read as "TFE" from a faded print. Please verify against the source.',
@@ -902,6 +1186,22 @@ const nm=n=>lang==='en'?CO[n].e:n;
 const typesOf=n=>[...new Set(where[n].map(w=>w.t))];
 const stagesOf=n=>[...new Set(where[n].map(w=>w.col.st))];
 
+/* 시장 지표(수집기가 window.SEMI_METRICS 에 넣음)와 투자 체크(EXTRA) */
+const MET=(window.SEMI_METRICS&&window.SEMI_METRICS.co)||null;
+const mt=n=>(MET&&MET[n])||null;
+const X=n=>EXTRA[n]||null;
+const DASH='–';
+const fNum=(v,d=0)=>v==null?DASH:Number(v).toLocaleString(lang==='en'?'en-US':'ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fPct=(v,d=2)=>v==null?DASH:(v>0?'+':'')+fNum(v,d)+'%';
+const cls=v=>v==null||v===0?'':v>0?'up':'dn';
+const fX=v=>v==null?DASH:fNum(v,2)+T('times');
+const fCap=v=>v==null?DASH:T('eok')(v);
+const fWon=v=>v==null?DASH:T('won')(fNum(v));
+const xBadge=n=>{const x=X(n);return x?`<span class="xp ${x.x}">${T('x')[x.x]}</span>`:''};
+const XORD={d:0,i:1,l:2};
+const NUMK=new Set(['mcap','per','pbr','r1m','rytd','pos52']);
+const byNull=(x,y,d)=>x==null&&y==null?0:x==null?1:y==null?-1:(x>y?1:x<y?-1:0)*d;
+
 function matches(n){
   const c=CO[n];
   if(st.stage!=='all'&&!stagesOf(n).includes(st.stage))return false;
@@ -910,7 +1210,7 @@ function matches(n){
   if(st.tags.size&&![...st.tags].every(t=>c.tg.includes(t)))return false;
   if(st.q){
     const q=st.q.toLowerCase().replace(/\s+/g,'');
-    const hay=[n,c.e,c.c,c.s,c.se,...c.b,...c.be,...c.p,...c.pe,c.cu,c.cue,...c.tg.map(t=>TAGS[t].ko+TAGS[t].en),...where[n].map(w=>w.col.ko+w.col.en)].join(' ').toLowerCase().replace(/\s+/g,'');
+    const hay=[n,c.e,c.c,c.s,c.se,...c.b,...c.be,...c.p,...c.pe,c.cu,c.cue,...c.tg.map(t=>TAGS[t].ko+TAGS[t].en),...(X(n)?[X(n).xn,X(n).xne,...X(n).r,...X(n).re,...X(n).ev,...X(n).eve]:[]),...where[n].map(w=>w.col.ko+w.col.en)].join(' ').toLowerCase().replace(/\s+/g,'');
     if(!hay.includes(q))return false;
   }
   return true;
@@ -965,15 +1265,21 @@ function renderMap(){
 function renderTable(){
   const rows=names.filter(matches).map(n=>({n,c:CO[n],w:where[n]}));
   const k=st.sort.k,d=st.sort.dir;
-  const key={co:r=>nm(r.n),code:r=>r.c.c||'zzz',mkt:r=>r.c.m,stage:r=>stagesOf(r.n).join(),proc:r=>COLS.indexOf(r.w[0].col),type:r=>typesOf(r.n)[0]};
-  if(k)rows.sort((a,b)=>{const x=key[k](a),y=key[k](b);return (x>y?1:x<y?-1:0)*d});
+  const mv=f=>r=>{const m=mt(r.n);return m?m[f]??null:null};
+  const key={co:r=>nm(r.n),code:r=>r.c.c||'zzz',mkt:r=>r.c.m,stage:r=>stagesOf(r.n).join(),proc:r=>COLS.indexOf(r.w[0].col),type:r=>typesOf(r.n)[0],
+    mcap:mv('mcap'),per:mv('per'),pbr:mv('pbr'),r1m:mv('r1m'),rytd:mv('rytd'),pos52:mv('pos52'),x:r=>X(r.n)?XORD[X(r.n).x]:null};
+  if(k)rows.sort((a,b)=>byNull(key[k](a),key[k](b),d));
   else rows.sort((a,b)=>COLS.indexOf(a.w[0].col)-COLS.indexOf(b.w[0].col));
-  const H=[['co',T('co')],['code',T('code')],['mkt',T('mkt')],['proc',T('proc')],['type',T('type')],[null,T('summ')],[null,T('tg')]];
-  $('#tbl thead').innerHTML='<tr>'+H.map(([k2,l])=>`<th ${k2?`data-sort="${k2}" aria-sort="${st.sort.k===k2?(d>0?'ascending':'descending'):'none'}"`:''}>${l}</th>`).join('')+'</tr>';
+  const H=[['co',T('co')],['code',T('code')],['mkt',T('mkt')],['proc',T('proc')],['type',T('type')],
+    ['mcap',T('cMcap'),'r'],['per',T('cPer'),'r'],['pbr',T('cPbr'),'r'],['r1m',T('c1m'),'r'],['rytd',T('cYtd'),'r'],['pos52',T('c52'),'r'],['x',T('cX')],
+    [null,T('summ')],[null,T('tg')]];
+  $('#tbl thead').innerHTML='<tr>'+H.map(([k2,l,c2])=>`<th ${c2?`class="${c2}" `:''}${k2?`data-sort="${k2}" aria-sort="${st.sort.k===k2?(d>0?'ascending':'descending'):'none'}"`:''}>${l}</th>`).join('')+'</tr>';
   $('#tbl tbody').innerHTML=rows.map(r=>`<tr data-co="${esc(r.n)}">
     <td class="nm">${esc(nm(r.n))}</td><td class="num">${codeHtml(r.n)}</td><td>${esc(r.c.m==='비상장'?T('unlisted'):r.c.m)}</td>
     <td>${r.w.map(w=>`<span class="pill">${esc(lang==='en'?w.col.en:w.col.ko)}</span>`).join('')}</td>
     <td>${typesOf(r.n).map(t=>`<span class="pill t-${t}">${TYPES[t][lang]}</span>`).join('')}</td>
+    ${(m=>`<td class="num r">${fCap(m.mcap)}</td><td class="num r">${fX(m.per)}</td><td class="num r">${fX(m.pbr)}</td><td class="num r ${cls(m.r1m)}">${fPct(m.r1m,1)}</td><td class="num r ${cls(m.rytd)}">${fPct(m.rytd,1)}</td><td class="num r">${m.pos52==null?DASH:fNum(m.pos52)+'%'}</td>`)(mt(r.n)||{})}
+    <td>${xBadge(r.n)}</td>
     <td>${esc(L(r.c,'s'))}</td>
     <td>${r.c.tg.map(t=>`<span class="pill tg">${TAGS[t][lang]}</span>`).join('')}</td></tr>`).join('');
   return rows.length;
@@ -991,6 +1297,32 @@ function render(){
   document.querySelectorAll('[data-tag]').forEach(b=>b.setAttribute('aria-pressed',st.tags.has(b.dataset.tag)));
 }
 
+function metricsHtml(n){
+  const c=CO[n],h=`<h5>${T('mT')}</h5>`;
+  if(!c.c)return h+`<p class="empty">${T('mUnl')}</p>`;
+  if(!MET)return h+`<p class="empty">${T('mNone')}</p>`;
+  const src=`<p class="src">${esc(T('mAsof')(window.SEMI_METRICS.asOf||DASH))} · ${esc(T('mSrc'))}</p>`;
+  const m=mt(n);
+  if(!m||(m.price==null&&m.mcap==null&&m.r1m==null))return h+`<p class="empty">${T('mNoCo')}</p>`+src;
+  const cell=(l,v,k='')=>`<div><div class="l">${l}</div><div class="v ${k}">${v}</div></div>`;
+  const price=fWon(m.price)+(m.chgPct==null?'':`<small class="${cls(m.chgPct)}">${fPct(m.chgPct)}</small>`);
+  const grid=[cell(T('mPrice'),price),cell(T('mCap'),fCap(m.mcap)),cell(T('mFrgn'),m.frgn==null?DASH:fNum(m.frgn,2)+'%'),
+    cell(T('mPer'),fX(m.per)),cell(T('mPbr'),fX(m.pbr)),cell(T('mListed'),esc(m.listed||DASH)),
+    cell(T('mEps'),fWon(m.eps)),cell(T('mBps'),fWon(m.bps)),cell(T('c52'),m.pos52==null?DASH:fNum(m.pos52,1)+'%'),
+    cell(T('m1m'),fPct(m.r1m),cls(m.r1m)),cell(T('m3m'),fPct(m.r3m),cls(m.r3m)),cell(T('mYtd'),fPct(m.rytd),cls(m.rytd))].join('');
+  const pos=m.hi52!=null&&m.lo52!=null&&m.pos52!=null?`<div class="pos">${T('m52')}<div class="bar" role="img" aria-label="${fNum(m.pos52,1)}%"><i style="left:calc(${m.pos52}% - 1px)"></i></div><div class="ends"><span>${fWon(m.lo52)}</span><span>${fWon(m.hi52)}</span></div></div>`:'';
+  return h+`<div class="mg">${grid}</div>${pos}${src}`;
+}
+function peerTable(n){
+  if(!MET)return '';
+  return where[n].map(w=>{
+    const list=MEMBERS[w.col.id].map(([p])=>p).filter(p=>CO[p].c).sort((a,b)=>byNull((mt(a)||{}).mcap,(mt(b)||{}).mcap,-1));
+    if(list.length<2)return '';
+    const rows=list.map(p=>{const m=mt(p)||{};return `<tr data-co="${esc(p)}" class="${p===n?'me':''}"><td>${esc(nm(p))}</td><td class="n">${fCap(m.mcap)}</td><td class="n">${fX(m.per)}</td><td class="n">${fX(m.pbr)}</td><td class="n ${cls(m.r1m)}">${fPct(m.r1m,1)}</td><td class="n ${cls(m.rytd)}">${fPct(m.rytd,1)}</td><td class="n">${m.pos52==null?DASH:fNum(m.pos52)+'%'}</td></tr>`}).join('');
+    return `<div class="pl" style="font-size:13px;color:var(--muted);margin-top:6px">${esc(lang==='en'?w.col.en:w.col.ko)}</div><div class="ptw"><table class="pt"><thead><tr><th>${T('co')}</th><th class="r">${T('cMcap')}</th><th class="r">${T('cPer')}</th><th class="r">${T('cPbr')}</th><th class="r">${T('c1m')}</th><th class="r">${T('cYtd')}</th><th class="r">${T('c52')}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  }).join('');
+}
+
 let lastFocus=null,openName=null;
 function openCo(n){
   const c=CO[n];if(!c)return;openName=n;
@@ -1004,11 +1336,16 @@ function openCo(n){
   const links=c.c?`<a class="btn" target="_blank" rel="noopener" href="https://finance.naver.com/item/main.naver?code=${c.c}">${T('naver')}</a>
      <a class="btn ghost" target="_blank" rel="noopener" href="https://dart.fss.or.kr/dsab007/main.do?option=corp&textCrpNm=${encodeURIComponent(n)}">${T('dart')}</a>`:'';
   const cu=L(c,'cu');
+  const x=X(n),pt=peerTable(n);
   $('#dBody').innerHTML=`<p class="one">${esc(L(c,'s'))}</p>
+    ${x?`<h5>${T('xT')}</h5><div class="xrow">${xBadge(n)}<span>${esc(L(x,'xn'))}</span></div>`:''}
+    ${metricsHtml(n)}
     <h5>${T('biz')}</h5><ul>${L(c,'b').map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
     <h5>${T('pt')}</h5><ul>${L(c,'p').map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+    ${x?`<h5>${T('rT')}</h5><ul>${L(x,'r').map(v=>`<li>${esc(v)}</li>`).join('')}</ul><h5>${T('evT')}</h5><ul>${L(x,'ev').map(v=>`<li>${esc(v)}</li>`).join('')}</ul>`:''}
     ${cu?`<h5>${T('cu')}</h5><p style="margin:0">${esc(cu)}</p>`:''}
     ${c.tg.length?`<h5>${T('tg')}</h5><div>${c.tg.map(t=>`<button class="chip" data-tagjump="${t}">${TAGS[t][lang]}</button>`).join(' ')}</div>`:''}
+    ${pt?`<h5>${T('ptT')}</h5>${pt}`:''}
     <h5>${T('peers')}</h5><div class="peers">${peers}</div>
     <div class="links">${links}</div>
     ${c.c&&!c.v?`<p class="warn">† ${esc(T('unv'))}</p>`:''}
@@ -1029,7 +1366,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.type){st.types.has(t.dataset.type)?st.types.delete(t.dataset.type):st.types.add(t.dataset.type);render();return;}
   if(t.dataset.tag){st.tags.has(t.dataset.tag)?st.tags.delete(t.dataset.tag):st.tags.add(t.dataset.tag);render();return;}
   if(t.dataset.col){st.col=st.col===t.dataset.col?null:t.dataset.col;render();return;}
-  if(t.dataset.sort){const k=t.dataset.sort;st.sort=st.sort.k===k?{k,dir:-st.sort.dir}:{k,dir:1};renderTable();return;}
+  if(t.dataset.sort){const k=t.dataset.sort;st.sort=st.sort.k===k?{k,dir:-st.sort.dir}:{k,dir:NUMK.has(k)?-1:1};renderTable();return;}
   if(t.id==='reset'){st.q='';$('#q').value='';st.stage='all';st.types.clear();st.tags.clear();st.col=null;render();return;}
   if(t.id==='dClose'){closeCo();return;}
 });
