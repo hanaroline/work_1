@@ -1114,7 +1114,7 @@ const I18N = {
   watch:'관전 포인트',where:'칸',
   mT:'주요 지표',mPrice:'현재가',mCap:'시가총액',mPer:'PER',mPbr:'PBR',mEps:'EPS',mBps:'BPS',mFrgn:'외국인 소진율',
   m1m:'1개월',m3m:'3개월',mYtd:'연초 대비',m52:'52주 범위 · 현재 위치',mListed:'상장일',
-  mAsof:d=>`기준 ${d} 종가`,mSrc:'출처: 네이버 증권(시세·시총·PER·PBR·EPS·BPS·외국인 소진율), 수익률·52주 범위는 네이버 일봉으로 계산, 상장일은 한국투자증권 Open API. 빈칸(–)은 받아 오지 못한 값입니다.',
+  mAsof:(d,g)=>g?`${g} 장중 값(종가 아님)`:`기준 ${d} 종가`,mSrc:'출처: 네이버 증권(시세·시총·PER·PBR·EPS·BPS·외국인 소진율), 수익률·52주 범위는 네이버 일봉으로 계산, 상장일은 한국투자증권 Open API. 빈칸(–)은 받아 오지 못한 값입니다.',
   mNone:'아직 지표를 수집하지 않았습니다. 매 거래일 장 마감 뒤(16:40) 자동으로 채워집니다.',
   mUnl:'비상장 기업이라 시장 지표가 없습니다.',mNoCo:'이 종목은 이번 수집에서 값을 받지 못했습니다.',
   xT:'HBM · AI 노출도',x:{d:'직접',i:'간접',l:'낮음'},rT:'핵심 리스크',evT:'앞으로 볼 이벤트',
@@ -1148,7 +1148,7 @@ const I18N = {
   watch:'What to watch',where:'Steps',
   mT:'Key metrics',mPrice:'Price',mCap:'Market cap',mPer:'PER',mPbr:'PBR',mEps:'EPS',mBps:'BPS',mFrgn:'Foreign ownership',
   m1m:'1M',m3m:'3M',mYtd:'YTD',m52:'52-week range · position',mListed:'Listed',
-  mAsof:d=>`Close as of ${d}`,mSrc:'Sources: Naver Finance (price, market cap, PER, PBR, EPS, BPS, foreign ownership limit usage); returns and 52-week range computed from Naver daily bars; listing date from Korea Investment & Securities Open API. A dash (–) means the value was not retrieved.',
+  mAsof:(d,g)=>g?`Intraday as of ${g} (not a close)`:`Close as of ${d}`,mSrc:'Sources: Naver Finance (price, market cap, PER, PBR, EPS, BPS, foreign ownership limit usage); returns and 52-week range computed from Naver daily bars; listing date from Korea Investment & Securities Open API. A dash (–) means the value was not retrieved.',
   mNone:'Metrics have not been collected yet. They fill in automatically after each trading day\'s close (16:40 KST).',
   mUnl:'Unlisted company — no market metrics.',mNoCo:'No values were retrieved for this ticker in the latest run.',
   xT:'HBM · AI exposure',x:{d:'Direct',i:'Indirect',l:'Low'},rT:'Key risks',evT:'Events to watch',
@@ -1301,7 +1301,7 @@ function metricsHtml(n){
   const c=CO[n],h=`<h5>${T('mT')}</h5>`;
   if(!c.c)return h+`<p class="empty">${T('mUnl')}</p>`;
   if(!MET)return h+`<p class="empty">${T('mNone')}</p>`;
-  const src=`<p class="src">${esc(T('mAsof')(window.SEMI_METRICS.asOf||DASH))} · ${esc(T('mSrc'))}</p>`;
+  const src=`<p class="src">${esc(T('mAsof')(window.SEMI_METRICS.asOf||DASH,window.SEMI_METRICS.intraday?window.SEMI_METRICS.generated:''))} · ${esc(T('mSrc'))}</p>`;
   const m=mt(n);
   if(!m||(m.price==null&&m.mcap==null&&m.r1m==null))return h+`<p class="empty">${T('mNoCo')}</p>`+src;
   const cell=(l,v,k='')=>`<div><div class="l">${l}</div><div class="v ${k}">${v}</div></div>`;

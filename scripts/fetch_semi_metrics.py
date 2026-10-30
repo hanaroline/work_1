@@ -286,6 +286,7 @@ def slim(payload):
     keep = ('price', 'chg', 'chgPct', 'mcap', 'per', 'pbr', 'eps', 'bps', 'frgn',
             'hi52', 'lo52', 'pos52', 'r1m', 'r3m', 'rytd', 'lastDay', 'listed', 'tradedAt')
     return {'asOf': payload['asOf'], 'generated': payload['generated'],
+            'intraday': payload.get('intraday', False),
             'sources': payload['sources'],
             'co': {n: {k: r.get(k) for k in keep} for n, r in payload['co'].items()}}
 
@@ -337,6 +338,8 @@ def main(argv):
     days = sorted({r['lastDay'] for r in co.values() if r.get('lastDay')})
     payload = {
         'asOf': days[-1] if days else None,
+        # 장중에 돌리면 값이 종가가 아니다 — 화면이 '종가' 대신 '장중'으로 적게 한다
+        'intraday': any(r.get('status') == 'OPEN' for r in co.values()),
         'generated': today.strftime('%Y-%m-%d %H:%M KST'),
         'sources': {
             'quote': 'm.stock.naver.com/api/stock/<코드>/basic · /integration',
