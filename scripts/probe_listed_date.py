@@ -43,7 +43,7 @@ SRC = [
     ('FnGuide 기업개요', lambda c: get('https://comp.fnguide.com/SVO2/ASP/SVD_Corp.asp?pGB=1&gicode=A%s' % c), ['상장일', '상장']),
     ('WiseReport 기업개요', lambda c: get('https://navercomp.wisereport.co.kr/v2/company/c1020001.aspx?cmp_cd=%s' % c), ['상장일', '상장']),
     ('Naver integration', lambda c: get('https://m.stock.naver.com/api/stock/%s/integration' % c, ref='https://m.stock.naver.com/'), ['상장', r'[Ll]ist[A-Za-z]*"\s*:\s*"[^"]*"']),
-    ('KRX 정보데이터 01901', lambda c: get('http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd', ref='http://data.krx.co.kr/', data={'bld': 'dbms/MDC/STAT/standard/MDCSTAT01901', 'mktId': 'ALL', 'share': '1', 'csvxls_isNo': 'false'}), ['%s[^}]{0,400}' % c]),
+    ('KRX 정보데이터 01901', lambda c: get('http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd', ref='http://data.krx.co.kr/', data={'bld': 'dbms/MDC/STAT/standard/MDCSTAT01901', 'mktId': 'ALL', 'share': '1', 'csvxls_isNo': 'false'}), ['%s[^}]{0,400}']),
 ]
 
 
