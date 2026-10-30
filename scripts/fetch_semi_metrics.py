@@ -5,7 +5,7 @@
   화면의 `const CO = {...}` 에 실린 상장사(종목코드 있는 곳)마다
     · 현재가·전일대비·등락률·시가총액·PER·PBR·EPS·BPS·외국인 소진율  ← 네이버 증권 basic / integration
     · 1개월·3개월·연초 대비 수익률, 52주 최고·최저와 현재 위치(%)     ← 네이버 일봉
-    · 상장일                                                         ← 한국투자증권 Open API (키가 있을 때만)
+    · 상장일                         ← KIND 상장법인목록(거래소) + 다음 금융 시세 API 대조
   를 모아 data/semi-metrics.json 에 쓰고, 같은 내용을 HTML 의 표지 사이
   (/*METRICS-BEGIN*/ … /*METRICS-END*/) 에 끼워 넣는다 — 화면 한 장만 받아 가도 보이게.
 
@@ -13,7 +13,8 @@
   · **못 받은 값은 null 로 둔다.** 문자열을 숫자로 못 읽으면 지어내지 않고 비운다.
     원래 문자열은 raw 에 같이 남긴다(화면이 아닌 검증용).
   · 응답의 종목명이 화면의 회사명과 다르면 그 종목의 값을 쓰지 않는다(코드 오기 방어).
-  · 상장일은 한 번 받으면 다음 실행에서 이어 쓴다(바뀌지 않는 값).
+  · 상장일은 두 곳(KIND·다음)이 같을 때 쓰고, 어긋나면 비운다. 한 곳만 주면 그 값을 쓰되
+    어디서 왔는지 listedSrc 에 남긴다. 둘 다 못 받으면 지난 실행 값을 이어 쓴다.
   · 표준 라이브러리만 쓴다. 이 세션 샌드박스에서는 네이버·KIS 가 막혀 있으므로
     실제 수집은 GitHub Actions 러너에서 돈다(.github/workflows/semi-metrics.yml).
 
@@ -28,10 +29,11 @@ import os
 import re
 import sys
 import time
+import urllib.request
 from datetime import datetime, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from fetch_kr_prices_naver import _get, _num, fetch_one, KST  # noqa: E402
+from fetch_kr_prices_naver import _get, _num, fetch_one, KST, UA  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HTML = os.path.join(ROOT, 'semi-supply-chain.html')
@@ -187,35 +189,80 @@ def same_name(a, b):
 
 
 # ─────────────────────────────────────────────────────────────────────
-# 상장일 — KIS 상품기본조회(주식). 키가 없거나 안 되면 비운다.
+# 상장일 — KIND 상장법인목록(한 번 받음) + 다음 시세 API(종목마다) 대조.
+# 저장소 KIS 키는 모의투자용이라 상품기본조회(CTPF1002R)를 못 쓴다(EGW02004·EGW02006).
+# KIND 는 2026-09 엔 러너에 403 이었으나 2026-10-30 정찰에서 200 으로 열렸다.
 # ─────────────────────────────────────────────────────────────────────
 
-def make_kis():
-    if not (os.environ.get('KIS_APP_KEY') and os.environ.get('KIS_APP_SECRET')):
-        return None, 'KIS 키 없음'
+KIND_URL = 'https://kind.krx.co.kr/corpgeneral/corpList.do?method=download&searchType=13&marketType='
+DAUM_URL = 'https://finance.daum.net/api/quotes/A%s?summary=false'
+DATE_RE = re.compile(r'(19|20)\d\d-[01]\d-[0-3]\d')
+
+
+def parse_kind(html):
+    """KIND 내려받기 표 → {코드: (회사명, 'YYYY-MM-DD' 또는 None)}. 대문자 태그로 올 때가 있다."""
+    out = {}
+    for tr in re.findall(r'<tr[^>]*>(.*?)</tr>', html, re.S | re.I):
+        tds = [re.sub(r'<[^>]+>', '', td).replace('&amp;', '&').replace('&nbsp;', ' ').strip()
+               for td in re.findall(r'<td[^>]*>(.*?)</td>', tr, re.S | re.I)]
+        if len(tds) < 5 or not re.fullmatch(r'\d{6}', tds[1]):
+            continue
+        out[tds[1]] = (tds[0], tds[4] if DATE_RE.fullmatch(tds[4]) else None)
+    return out
+
+
+def fetch_kind():
     try:
-        from kis_lib import KisClient
-        return KisClient(env=os.environ.get('KIS_ENV') or 'prod'), None
+        req = urllib.request.Request(KIND_URL, headers={'User-Agent': UA})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            rows = parse_kind(r.read().decode('euc-kr', 'replace'))
+        return rows, ('KIND %d사' % len(rows)) if rows else 'KIND 응답에 표 없음'
     except Exception as e:                                       # noqa: BLE001
-        return None, 'KIS 준비 실패: %s' % type(e).__name__
+        return {}, 'KIND 못 받음: %s' % (str(e)[:60] or type(e).__name__)
 
 
-def kis_listing_date(kis, code, market):
-    j = kis.get('/uapi/domestic-stock/v1/quotations/search-stock-info', 'CTPF1002R',
-                {'PRDT_TYPE_CD': '300', 'PDNO': code})
-    o = (j or {}).get('output') or {}
-    keys = (['kosdaq_mket_lstg_dt', 'scts_mket_lstg_dt'] if market == 'KOSDAQ'
-            else ['scts_mket_lstg_dt', 'kosdaq_mket_lstg_dt'])
-    for k in keys:
-        v = str(o.get(k) or '').strip()
-        if re.fullmatch(r'(19|20)\d{6}', v):
-            return '%s-%s-%s' % (v[:4], v[4:6], v[6:])
-    return None
+def parse_daum(doc):
+    """다음 시세 API 응답 → (종목명, 상장일)."""
+    v = str(doc.get('listingDate') or '').strip()[:10]
+    return doc.get('name'), (v if DATE_RE.fullmatch(v) else None)
+
+
+def fetch_daum(code):
+    req = urllib.request.Request(DAUM_URL % code, headers={
+        'User-Agent': UA, 'Accept': 'application/json',
+        'Referer': 'https://finance.daum.net/quotes/A%s' % code})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return parse_daum(json.loads(r.read().decode('utf-8', 'replace')))
+
+
+def decide_listed(name, kind_row, daum, old):
+    """(값, 출처, 오류) — 어긋나면 비우고, 회사명이 다른 응답은 버린다."""
+    errs = []
+    k = d = None
+    if kind_row:
+        if same_name(kind_row[0], name):
+            k = kind_row[1]
+        else:
+            errs.append('KIND 사명 불일치(%s) — 상장일 버림' % kind_row[0])
+    if daum:
+        if not daum[0] or same_name(daum[0], name):
+            d = daum[1]
+        else:
+            errs.append('다음 종목명 불일치(%s) — 상장일 버림' % daum[0])
+    if k and d:
+        if k == d:
+            return k, 'kind+daum', errs
+        return None, None, errs + ['상장일 어긋남: KIND %s / 다음 %s — 비움' % (k, d)]
+    if k:
+        return k, 'kind', errs
+    if d:
+        return d, 'daum', errs
+    return old, ('prev' if old else None), errs
 
 
 # ─────────────────────────────────────────────────────────────────────
 
-def collect_one(name, code, market, today, span, kis, old_listed):
+def collect_one(name, code, market, today, span, kind, old_listed):
     rec = {'code': code, 'market': market, 'errors': []}
     vals_i, raw_i, nm_i = {}, {}, None
     vals_b, nm_b = {}, None
@@ -265,12 +312,14 @@ def collect_one(name, code, market, today, span, kis, old_listed):
         'raw': raw_i,
     })
 
-    rec['listed'] = old_listed
-    if not old_listed and kis is not None and not mismatch:
-        try:
-            rec['listed'] = kis_listing_date(kis, code, market)
-        except Exception as e:                                   # noqa: BLE001
-            rec['errors'].append('kis listed: %s' % (str(e)[:80] or type(e).__name__))
+    daum = None
+    try:
+        daum = fetch_daum(code)
+    except Exception as e:                                       # noqa: BLE001
+        rec['errors'].append('daum: %s' % (str(e)[:60] or type(e).__name__))
+    time.sleep(SLEEP)
+    rec['listed'], rec['listedSrc'], errs = decide_listed(name, kind.get(code), daum, old_listed)
+    rec['errors'] += errs
     return rec
 
 
@@ -324,11 +373,12 @@ def main(argv):
         targets = targets[:a.limit]
     today = datetime.now(KST)
     span = ((today - timedelta(days=420)).strftime('%Y%m%d'), today.strftime('%Y%m%d'))
-    kis, kis_note = make_kis()
+    kind, kind_note = fetch_kind()
+    print(kind_note, flush=True)
 
     co, lines = {}, []
     for i, (name, code, market) in enumerate(targets, 1):
-        rec = collect_one(name, code, market, today, span, kis,
+        rec = collect_one(name, code, market, today, span, kind,
                           (old.get(name) or {}).get('listed'))
         co[name] = rec
         filled = sum(rec.get(k) is not None for k in ('price', 'mcap', 'per', 'pbr', 'frgn', 'r1m', 'pos52'))
@@ -345,7 +395,7 @@ def main(argv):
         'sources': {
             'quote': 'm.stock.naver.com/api/stock/<코드>/basic · /integration',
             'candle': '네이버 증권 일봉 (fetch_kr_prices_naver.fetch_one)',
-            'listed': '한국투자증권 Open API 상품기본조회(CTPF1002R)' + (' — %s' % kis_note if kis_note else ''),
+            'listed': 'KIND 상장법인목록(kind.krx.co.kr) · 다음 금융 시세 API 대조 — %s' % kind_note,
         },
         'co': co,
     }
@@ -360,7 +410,11 @@ def main(argv):
     sample = FIRST_RAW[0] if FIRST_RAW else None
     with open(REPORT, 'w', encoding='utf-8') as f:
         f.write('# 반도체 소부장 지표 수집 %s\n\n' % payload['generated'])
-        f.write('기준 거래일 %s · 대상 %d곳 · %s\n\n' % (payload['asOf'], n, kis_note or 'KIS 사용'))
+        f.write('기준 거래일 %s · 대상 %d곳 · %s\n\n' % (payload['asOf'], n, kind_note))
+        srcs = {}
+        for r in co.values():
+            srcs[r.get('listedSrc')] = srcs.get(r.get('listedSrc'), 0) + 1
+        f.write('상장일 출처: %s\n\n' % ' · '.join('%s %d' % (k or '없음', v) for k, v in sorted(srcs.items(), key=lambda x: str(x[0]))))
         f.write('| 항목 | 채움 |\n|---|---|\n')
         for k in ('price', 'chgPct', 'mcap', 'per', 'pbr', 'eps', 'bps', 'frgn',
                   'pos52', 'r1m', 'r3m', 'rytd', 'listed'):
