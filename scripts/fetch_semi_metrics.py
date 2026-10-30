@@ -200,14 +200,20 @@ DATE_RE = re.compile(r'(19|20)\d\d-[01]\d-[0-3]\d')
 
 
 def parse_kind(html):
-    """KIND 내려받기 표 → {코드: (회사명, 'YYYY-MM-DD' 또는 None)}. 대문자 태그로 올 때가 있다."""
+    """KIND 내려받기 표 → {코드: (회사명, 'YYYY-MM-DD' 또는 None)}. 대문자 태그로 올 때가 있다.
+
+    열 순서가 바뀐 적이 있다(시장구분 열이 끼어듦) — 칸 번호 대신 첫 6자리 숫자 칸을
+    종목코드로, 그 뒤 첫 날짜 칸을 상장일로 읽는다. 회사명은 첫 칸.
+    """
     out = {}
     for tr in re.findall(r'<tr[^>]*>(.*?)</tr>', html, re.S | re.I):
         tds = [re.sub(r'<[^>]+>', '', td).replace('&amp;', '&').replace('&nbsp;', ' ').strip()
                for td in re.findall(r'<td[^>]*>(.*?)</td>', tr, re.S | re.I)]
-        if len(tds) < 5 or not re.fullmatch(r'\d{6}', tds[1]):
+        ci = next((i for i, t in enumerate(tds) if i and re.fullmatch(r'\d{6}', t)), None)
+        if ci is None:
             continue
-        out[tds[1]] = (tds[0], tds[4] if DATE_RE.fullmatch(tds[4]) else None)
+        day = next((t for t in tds[ci + 1:] if DATE_RE.fullmatch(t)), None)
+        out[tds[ci]] = (tds[0], day)
     return out
 
 
@@ -215,8 +221,13 @@ def fetch_kind():
     try:
         req = urllib.request.Request(KIND_URL, headers={'User-Agent': UA})
         with urllib.request.urlopen(req, timeout=30) as r:
-            rows = parse_kind(r.read().decode('euc-kr', 'replace'))
-        return rows, ('KIND %d사' % len(rows)) if rows else 'KIND 응답에 표 없음'
+            html = r.read().decode('euc-kr', 'replace')
+        rows = parse_kind(html)
+        if rows:
+            return rows, 'KIND %d사' % len(rows)
+        tr = re.search(r'<tr[^>]*>.*?</tr>.*?<tr[^>]*>(.*?)</tr>', html, re.S | re.I)
+        snip = re.sub(r'\s+', ' ', tr.group(1) if tr else html[:300])[:300].replace('|', '/')
+        return {}, 'KIND 응답(%d자)에 표 없음 — 둘째 행: %s' % (len(html), snip)
     except Exception as e:                                       # noqa: BLE001
         return {}, 'KIND 못 받음: %s' % (str(e)[:60] or type(e).__name__)
 
