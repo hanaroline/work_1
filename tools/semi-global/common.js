@@ -153,14 +153,14 @@ const NOTE_COMMON={
  ko:[
   '공정 배치(어느 기업이 어느 칸에 있는지)는 각 기업이 공개한 사업 내용을 바탕으로 이 화면이 직접 분류한 것입니다. 국내 맵처럼 운용사 자료를 옮긴 것이 아니며, 각 기업의 매출 구성 전체를 뜻하지 않습니다.',
   '기업 설명·리스크·이벤트·HBM·AI 노출도는 공개 자료를 바탕으로 한 정성 요약입니다(2026년 10월 작성). 매출·점유율 같은 수치와 일정은 확인 없이 싣지 않기 위해 일부러 넣지 않았습니다.',
-  '「주요 지표」는 야후 파이낸스에서 매 거래일 장 마감 뒤 자동 수집합니다. 현재가·시가총액·PER·PBR·EPS·BPS·배당수익률은 야후 시세, 1개월·3개월·연초 대비 수익률과 52주 범위는 야후 일봉 종가로 계산합니다. PER은 최근 12개월 실적 기준이며 적자이거나 야후가 주지 않으면 비어 있습니다. 배당수익률은 야후가 보여 주는 예상 연간 배당 기준이며 무배당이면 비어 있습니다. 받아 오지 못한 값은 빈칸(–)으로 둡니다.',
+  '「주요 지표」는 야후 파이낸스에서 매 거래일 장 마감 뒤 자동 수집합니다. 현재가·시가총액·PER·PBR·EPS·BPS·배당수익률은 야후 시세, 1개월·3개월·연초 대비 수익률과 52주 범위는 야후 일봉 종가로 계산합니다. PER은 최근 12개월 실적 기준이며 적자이거나 야후가 주지 않으면 비어 있습니다. 배당수익률은 야후가 보여 주는 예상 연간 배당 기준이며, 무배당이거나 야후 값이 0·없음이면 비어 있습니다. 받아 오지 못한 값은 빈칸(–)으로 둡니다.',
   '시가총액은 현지 통화 그대로 적었고 원화로 바꾸지 않았습니다. 나라 사이 비교에는 환율을 따로 적용하십시오.',
   '「주요 고객」은 널리 알려진 경우만 적었고, 모르는 곳은 비워 두었습니다. 비어 있다고 고객이 없다는 뜻이 아닙니다.',
   '이 화면은 개별 종목이나 주식에 대한 추천이 아닙니다. 해외 주식은 환율·현지 세금·거래 시간이 다릅니다. 사내 교육·참고용입니다.'],
  en:[
   'Step placement (which company sits in which column) is this page\'s own classification based on each company\'s public business description. Unlike the Korea map it is not taken from an asset manager\'s chart, and it does not reflect each company\'s full revenue mix.',
   'Descriptions, risks, events and HBM/AI exposure are qualitative summaries from public information (written October 2026). Revenue, share figures and dates are deliberately omitted rather than printed unverified.',
-  '"Key metrics" are collected automatically from Yahoo Finance after each trading day\'s close: price, market cap, PER, PBR, EPS, BPS and dividend yield from Yahoo quotes; 1M/3M/YTD returns and the 52-week range computed from Yahoo daily closes. PER is trailing twelve months and blank for loss-makers or when Yahoo does not provide it. Dividend yield is Yahoo\'s forward annual basis and blank for non-payers. Values not retrieved are left blank (–).',
+  '"Key metrics" are collected automatically from Yahoo Finance after each trading day\'s close: price, market cap, PER, PBR, EPS, BPS and dividend yield from Yahoo quotes; 1M/3M/YTD returns and the 52-week range computed from Yahoo daily closes. PER is trailing twelve months and blank for loss-makers or when Yahoo does not provide it. Dividend yield is Yahoo\'s forward annual basis and blank for non-payers or when Yahoo returns zero or nothing. Values not retrieved are left blank (–).',
   'Market capitalization is shown in local currency, not converted to KRW. Apply exchange rates separately when comparing across countries.',
   '"Key customers" lists only widely known relationships; blank does not mean none.',
   'This page is not a recommendation of any individual stock. Overseas equities differ in currency, local taxes and trading hours. For internal training and reference only.']
