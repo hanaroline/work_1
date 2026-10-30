@@ -361,6 +361,23 @@ scripts/embed_semi_fonts.py           # 화면이 쓰는 글자만 담은 Noto S
 .github/workflows/semi-metrics.yml    # 평일 16:40 KST 자동 갱신 (수동 실행 가능, schedule 은 main 에서만)
 data/semi-metrics.json                # 수집 결과 원본 · data/semi-metrics-report.md 채움 현황 보고
 
+semi-us.html · semi-jp.html · semi-cn.html
+                       # 해외 반도체 소부장 맵 — 미국 31 · 일본 44 · 중국 38개사, 화면 틀은 국내 맵과 같다
+                       # (KO/EN, 공정별 표, 상세 창, 오프라인 단일 파일). 기업 목록·핵심사업은
+                       # tools/semi-global/common.js(공통 틀) + us.js·jp.js·cn.js(나라별)에서 고친다
+scripts/build_semi_global.py          # 국내 맵의 CSS·본문·동작 스크립트 + 위 데이터로 세 파일을 짓는다.
+                                      # 들어 있던 시세·글꼴 블록은 그대로 둔다. --check 로 커밋본과 같은지 확인
+scripts/fetch_semi_global.py          # 야후 v7 시세 + 2년 일봉 → 시총·현재가·PER·PBR·EPS·BPS·배당수익률·
+                                      # 52주 위치·1/3개월·연초 대비. 회사명이 다르거나 통화(USD·JPY·CNY)가 다르거나
+                                      # 마지막 거래일이 7일 넘게 묵은 종목은 통째로 비운다(틀린 값보다 빈칸)
+                                      # --market us|jp|cn|all · --limit N(찍기만) · --selftest
+.github/workflows/semi-global-metrics.yml
+                                      # 평일 자동 갱신: 미국 06:30 KST(화~토) · 일본·중국 16:20 KST. 샌드박스는
+                                      # 야후에 못 붙으므로 러너가 돈다(schedule 은 main 에서만, 수동 실행 가능)
+data/semi-global-<cc>.json            # 수집 결과 원본 · data/semi-global-<cc>-report.md 채움 현황·비운 종목
+                                      # 글꼴: python3 scripts/embed_semi_fonts.py --html semi-jp.html
+                                      #       (일본은 Noto Sans JP, 중국은 Noto Sans SC 를 더 담는다)
+
 scripts/             # 그 밖의 수집·빌드·탐색 스크립트
 ```
 
