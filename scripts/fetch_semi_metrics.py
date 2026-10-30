@@ -92,8 +92,9 @@ INFO_KEYS = {
     'pbr':   (('pbr',), ('PBR',), parse_unit),
     'bps':   (('bps',), ('BPS',), parse_unit),
     'frgn':  (('foreignRate',), ('외인소진율', '외국인소진율', '외국인 소진율'), parse_unit),
-    'hi52':  (('highPriceOf52Weeks',), ('52주 최고',), parse_unit),
-    'lo52':  (('lowPriceOf52Weeks',), ('52주 최저',), parse_unit),
+    # highPriceOf52Weeks 는 '원주가 기준'(수정 전)이다. 액면분할·병합 뒤엔 크게 어긋난다
+    'hi52':  (('highPriceOf52WeeksAdjusted',), ('52주 최고',), parse_unit),
+    'lo52':  (('lowPriceOf52WeeksAdjusted',), ('52주 최저',), parse_unit),
 }
 
 
