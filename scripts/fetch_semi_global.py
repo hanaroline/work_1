@@ -46,7 +46,7 @@ MARKETS = {
     'cn': {'cur': 'CNY', 'tz': 8, 'name': '중국'},
 }
 EX_LABEL = {'NMS': 'NASDAQ', 'NGM': 'NASDAQ', 'NCM': 'NASDAQ', 'NYQ': 'NYSE', 'ASE': 'NYSE American',
-            'JPX': 'TSE', 'SHH': 'SSE', 'SHZ': 'SZSE'}
+            'JPX': 'TSE', 'SHH': 'SSE', 'SHZ': 'SZSE', 'HKG': 'HKEX'}
 STALE_DAYS = 7
 CHUNK = 40
 CO_RE = re.compile(r"^'([^']+)':\{y:'([^']+)',c:'([^']*)',m:'[^']*',e:'([^']*)'", re.M)
@@ -192,8 +192,10 @@ def collect(cc, limit=0):
         if not same_company(r['e'], q.get('longName'), q.get('shortName')):
             co[r['n']] = blank('이름 불일치: 데이터 파일 "%s" ↔ 야후 "%s"' % (r['e'], yname))
             continue
-        if q.get('currency') != cfg['cur']:
-            co[r['n']] = blank('통화 %s (기대 %s)' % (q.get('currency'), cfg['cur']))
+        # 중국 맵의 홍콩 상장 빅테크는 홍콩달러
+        exp = 'HKD' if r['y'].endswith('.HK') else cfg['cur']
+        if q.get('currency') != exp:
+            co[r['n']] = blank('통화 %s (기대 %s)' % (q.get('currency'), exp))
             continue
         cand = []
         try:
@@ -201,7 +203,7 @@ def collect(cc, limit=0):
         except Exception as e:                   # noqa: BLE001
             errors.append('chart %s: %s' % (r['y'], e))
         time.sleep(Y.PAUSE)
-        co[r['n']] = shape(q, cand, cfg['cur'])
+        co[r['n']] = shape(q, cand, exp)
         co[r['n']]['_state'] = q.get('marketState')
 
     # 시장의 가장 최근 거래일 — 그보다 7일 넘게 뒤처진 종목은 비운다
@@ -322,6 +324,15 @@ def selftest():
         ('Japan Electronic Materials', 'Japan Electronic Materials Corporation', True),
         ('Japan Electronic Materials', 'Japan Material Co., Ltd.', False),
         ('Suzhou Jinhong Gas', 'Guangdong Huate Gas Co., Ltd', False),
+        ('NTT (Nippon Telegraph and Telephone)', 'NTT, Inc.', True),
+        ('NTT (Nippon Telegraph and Telephone)', 'Nippon Telegraph and Telephone Corporation', True),
+        ('OmniVision Integrated Circuits Group (formerly Will Semiconductor)', 'Will Semiconductor Co., Ltd. Shanghai', True),
+        ('Semiconductor Manufacturing International (SMIC)', 'Semiconductor Manufacturing International Corporation', True),
+        ('Advanced Micro Devices', 'Advanced Micro Devices, Inc.', True),
+        ('Micron Technology', 'Advanced Micro Devices, Inc.', False),
+        ('Shenzhen Longsys Electronics', 'Shenzhen Longsys Electronics Co., Ltd.', True),
+        ('iFlytek', 'iFLYTEK CO.,LTD', True),
+        ('Alibaba Group Holding', 'Alibaba Group Holding Limited', True),
     ]
     for a, b, want in pairs:
         got = same_company(a, b)
