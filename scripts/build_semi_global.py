@@ -30,7 +30,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KR = os.path.join(ROOT, 'semi-supply-chain.html')
 DATA_DIR = os.path.join(ROOT, 'tools', 'semi-global')
 COUNTRIES = ('us', 'jp', 'cn')
-TITLE = {'us': '미국 반도체 소부장 맵', 'jp': '일본 반도체 소부장 맵', 'cn': '중국 반도체 소부장 맵'}
+TITLE = {'us': '미국 반도체 밸류체인 맵', 'jp': '일본 반도체 밸류체인 맵', 'cn': '중국 반도체 밸류체인 맵'}
 
 METRICS_RE = re.compile(r'/\*METRICS-BEGIN\*/.*?/\*METRICS-END\*/', re.S)
 FONTS_RE = re.compile(r'<style>\n/\*FONTS-BEGIN\*/.*?/\*FONTS-END\*/\n</style>\n', re.S)
@@ -52,9 +52,9 @@ def google_links(cc):
 # (찾을 문자열, 바꿀 문자열) — 동작 스크립트에 적용. 나라별 데이터 파일이 CFG 를 정의한다.
 PATCHES = [
     # 가격·EPS·BPS 소수 자리(국내는 원 단위 정수)
-    ("const fWon=v=>v==null?DASH:T('won')(fNum(v));",
-     "const fWon=v=>v==null?DASH:T('won')(Number(v).toLocaleString(lang==='en'?'en-US':'ko-KR',"
-     "{minimumFractionDigits:CFG.pxmin,maximumFractionDigits:CFG.pxd}));"),
+    ("const fWon=(v,cu)=>v==null?DASH:T('won')(fNum(v),cu);",
+     "const fWon=(v,cu)=>v==null?DASH:T('won')(Number(v).toLocaleString(lang==='en'?'en-US':'ko-KR',"
+     "{minimumFractionDigits:CFG.pxmin,maximumFractionDigits:CFG.pxd}),cu);"),
     # 외국인 소진율 칸 → 배당수익률(해외 시세 원천에 소진율이 없다)
     ("cell(T('mFrgn'),m.frgn==null?DASH:fNum(m.frgn,2)+'%')",
      "cell(T('mFrgn'),m.dy==null?DASH:fNum(m.dy,2)+'%')"),
@@ -62,7 +62,7 @@ PATCHES = [
     ("cell(T('mListed'),esc(m.listed||DASH))",
      "cell(T('mListed'),esc(CFG.slot(m,n)||DASH))"),
     # 문서 제목
-    ("document.title=lang==='en'?'Semiconductor Supply Chain Map':'반도체 소부장 맵';",
+    ("document.title=lang==='en'?'Semiconductor Value Chain Map':'반도체 밸류체인 맵';",
      "document.title=T('docTitle');"),
     # 바깥 링크(네이버·DART → 나라별)
     ("const links=c.c?`<a class=\"btn\" target=\"_blank\" rel=\"noopener\" href=\"https://finance.naver.com/item/main.naver?code=${c.c}\">${T('naver')}</a>\n"
@@ -71,12 +71,6 @@ PATCHES = [
     # 상세 창 둘째 줄: 한국어 모드는 영문명 · 현지 표기, 영문 모드는 현지 표기만(국내 맵의 '원어 이름' 자리)
     ("$('#dEn').textContent=lang==='en'?n:c.e;",
      "$('#dEn').textContent=lang==='en'?(c.l&&c.l!==c.e?c.l:''):[c.e,c.l&&c.l!==c.e?c.l:''].filter(Boolean).join(' · ');"),
-    # 공정 흐름의 전·후공정 구분선 — 국내는 7칸째 고정, 해외는 단계가 바뀌는 곳
-    ("$('#flow').innerHTML=COLS.map((c,i)=>(i===7?",
-     "$('#flow').innerHTML=COLS.map((c,i)=>(i&&COLS[i-1].st!==c.st?"),
-    # 칸 수가 단계마다 달라 격자 열 수를 단계별로
-    ("<div class=\"cols\">${\n    COLS.filter(c=>c.st===s)",
-     "<div class=\"cols\" style=\"--n:${COLS.filter(c=>c.st===s).length}\">${\n    COLS.filter(c=>c.st===s)"),
     # 검색에 현지 표기·심볼도 걸리게
     ("const hay=[n,c.e,c.c,",
      "const hay=[n,c.e,c.l,c.y,c.c,"),
@@ -90,8 +84,6 @@ CSS_PATCHES = [
      "--font-kr:'Spoqa Han Sans Neo','Noto Sans KR','Noto Sans JP','Noto Sans SC',sans-serif;"),
     (".dh .en{font-family:var(--font-en);",
      ".dh .en{font-family:'Inter',var(--font-kr);"),
-    (".cols{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}",
-     ".cols{display:grid;grid-template-columns:repeat(var(--n,7),minmax(0,1fr));gap:10px}"),
 ]
 # 본문의 국내 전용 문구 — 비워 두면 동작 스크립트가 data-i18n 으로 채운다
 BODY_PATCHES = [

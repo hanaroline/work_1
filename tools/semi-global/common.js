@@ -1,11 +1,13 @@
-/* 해외 소부장 맵 공통 정의 — tools/semi-global/<cc>.js 앞에 붙어 한 덩어리로 들어간다.
+/* 해외 반도체 밸류체인 맵 공통 정의 — tools/semi-global/<cc>.js 앞에 붙어 한 덩어리로 들어간다.
  * 칸(공정) 정의와 테마·문구 바탕은 세 나라가 같고, 나라 파일이 MEMBERS·CO·EXTRA 와
  * 나라별 문구(제목·출처·통화 표기·주석)를 채운다. scripts/build_semi_global.py 가 묶는다. */
 const TYPES = {
   eq:  {ko:'장비', en:'Equipment'},
   etc: {ko:'기타 장비', en:'Other equip.'},
   mat: {ko:'소재/부품', en:'Materials/Parts'},
-  svc: {ko:'서비스·설계', en:'Services/Design'}
+  svc: {ko:'서비스·설계', en:'Services/Design'},
+  mk:  {ko:'칩 제조·설계', en:'Chipmaker'},
+  big: {ko:'AI 빅테크', en:'AI big tech'}
 };
 const TAGS_BASE = {
   hbm:  {ko:'HBM', en:'HBM'},
@@ -85,7 +87,27 @@ const COLS_ALL = [
   d:'칩 설계 소프트웨어(EDA), 설계자산(IP) 라이선스, 맞춤형 칩 설계 서비스.',
   de:'Chip design software (EDA), design IP licensing and custom-chip design services.',
   w:'AI 칩 설계 착수 건수, 선단 공정 전환, 수출 통제가 고객 범위에 주는 영향.',
-  we:'AI chip design starts, leading-node migration, and how export controls affect the customer base.'}
+  we:'AI chip design starts, leading-node migration, and how export controls affect the customer base.'},
+ {id:'d1',st:'D',ko:'메모리',en:'Memory',
+  d:'D램·낸드·HBM을 직접 설계하거나 만드는 회사. 위 소부장 기업의 큰 고객입니다.',
+  de:'Companies that design or make DRAM, NAND and HBM—major customers of the suppliers above.',
+  w:'메모리 가격과 재고, HBM·서버용 제품 비중, 설비투자 계획. 이들의 투자 방향이 위 소부장 칸의 업황을 정합니다.',
+  we:'Memory prices and inventory, the mix of HBM and server products, and capex plans—their spending sets the cycle for the supplier columns above.'},
+ {id:'d2',st:'D',ko:'파운드리',en:'Foundry',
+  d:'다른 회사가 설계한 칩을 위탁받아 웨이퍼로 만들어 주는 회사(자체 칩과 위탁 생산을 함께 하는 곳 포함).',
+  de:'Contract manufacturers that turn other companies\' designs into wafers (including firms that also make their own chips).',
+  w:'선단·성숙 공정별 가동률, 대형 고객 수주, 수율과 단가.',
+  we:'Utilization by leading-edge vs. mature nodes, big customer wins, yields and pricing.'},
+ {id:'d3',st:'D',ko:'시스템반도체·팹리스',en:'Logic, Fabless & IDM',
+  d:'AI 가속기·CPU·통신칩·아날로그·차량용 칩 등 메모리가 아닌 반도체를 설계하거나 직접 만드는 회사.',
+  de:'Designers and makers of non-memory chips—AI accelerators, CPUs, connectivity, analog and automotive chips.',
+  w:'AI 가속기 수요와 고객 채택, 전방 제품(스마트폰·자동차·산업) 수요, 수출 통제.',
+  we:'AI accelerator demand and design wins, end demand (phones, cars, industrial), and export controls.'},
+ {id:'d4',st:'D',ko:'AI 빅테크·클라우드',en:'AI Big Tech & Cloud',
+  d:'AI 모델·클라우드·데이터센터를 운영해 AI 반도체와 HBM을 사들이는 수요처. 자체 AI 칩을 설계하는 곳도 있습니다.',
+  de:'Operators of AI models, cloud and data centers—the buyers of AI chips and HBM. Some also design their own AI chips.',
+  w:'데이터센터 설비투자 계획, AI 서비스 수익화, 자체 칩 개발 진척.',
+  we:'Data-center capex plans, AI monetization and progress on in-house chips.'}
 ];
 const BASKETS_ALL = [
  {tag:'hbm',ko:'HBM 밸류체인',en:'HBM value chain',
@@ -110,9 +132,9 @@ const mkI18N=(s)=>{
   sProc:'공정 해설과 관전 포인트',sProcSub:'각 공정이 하는 일, 업황을 볼 때 무엇을 보면 되는지. 공정 이름을 누르면 그 공정만 걸러집니다.',
   sTheme:'테마별 묶음',sThemeSub:'공정을 가로질러 같은 수요에 묶이는 기업들. 이름을 누르면 상세가 열립니다.',
   sMulti:'여러 공정에 걸친 기업',sMultiSub:'두 칸 이상에 이름을 올린 기업. 한 공정의 업황만으로 판단하면 안 되는 곳들입니다.',
-  sNote:'읽기 전에',stage:'단계',all:'전체',F:'전공정',B:'후공정',type:'유형',theme:'테마',
-  stCo:'수록 기업',stF:'전공정 기업',stB:'후공정 기업',stP:'공정 칸',
-  fsub:'웨이퍼 위에 회로를 만드는 단계',bsub:'만든 칩을 자르고 붙이고 검사하는 단계',
+  sNote:'읽기 전에',stage:'단계',all:'전체',F:'전공정',B:'후공정',D:'완성·수요',type:'유형',theme:'테마',
+  stCo:'수록 기업',stF:'전공정 기업',stB:'후공정 기업',stD:'완성·수요 기업',stP:'공정 칸',
+  fsub:'웨이퍼 위에 회로를 만드는 단계',bsub:'만든 칩을 자르고 붙이고 검사하는 단계',dsub:'칩을 설계·생산하는 회사와 AI 반도체를 사들이는 회사',
   cnt:n=>`${n}개사`,co:'기업',code:'티커',mkt:'시장',proc:'공정',summ:'한줄 요약',
   one:'한줄 요약',biz:'핵심사업 · 사업부문',pt:'특징 · 체크포인트',cu:'주요 고객',tg:'테마',peers:'같은 공정의 다른 기업',
   unlisted:'비상장',unv:'티커를 대조하지 못했습니다. 거래 전 직접 확인하십시오.',
@@ -129,9 +151,9 @@ const mkI18N=(s)=>{
   sProc:'Process guide & what to watch',sProcSub:'What each step does and what to watch. Click a step name to filter the map.',
   sTheme:'Theme baskets',sThemeSub:'Companies across steps tied to the same demand. Click a name for details.',
   sMulti:'Companies in multiple steps',sMultiSub:'Placed in two or more columns—don\'t judge them on one step\'s cycle.',
-  sNote:'Before you read',stage:'Stage',all:'All',F:'Front-end',B:'Back-end',type:'Type',theme:'Theme',
-  stCo:'Companies',stF:'Front-end',stB:'Back-end',stP:'Process steps',
-  fsub:'Building circuits on the wafer',bsub:'Cutting, joining and testing finished chips',
+  sNote:'Before you read',stage:'Stage',all:'All',F:'Front-end',B:'Back-end',D:'Chipmakers & AI demand',type:'Type',theme:'Theme',
+  stCo:'Companies',stF:'Front-end',stB:'Back-end',stD:'Chipmakers & demand',stP:'Process steps',
+  fsub:'Building circuits on the wafer',bsub:'Cutting, joining and testing finished chips',dsub:'Companies that design and make chips, and those that buy AI chips',
   cnt:n=>`${n} cos.`,co:'Company',code:'Ticker',mkt:'Market',proc:'Step',summ:'Summary',
   one:'Summary',biz:'Core business · Segments',pt:'Notes & checkpoints',cu:'Key customers',tg:'Themes',peers:'Others in the same step',
   unlisted:'Unlisted',unv:'Ticker not cross-checked. Verify before trading.',
@@ -152,6 +174,7 @@ const capEn=(v,p)=>v>=1e6?`${p}${(v/1e6).toLocaleString('en-US',{maximumFraction
 const NOTE_COMMON={
  ko:[
   '공정 배치(어느 기업이 어느 칸에 있는지)는 각 기업이 공개한 사업 내용을 바탕으로 이 화면이 직접 분류한 것입니다. 국내 맵처럼 운용사 자료를 옮긴 것이 아니며, 각 기업의 매출 구성 전체를 뜻하지 않습니다.',
+  '「완성·수요」 단계는 칩을 설계·생산하는 회사(메모리 · 파운드리 · 시스템반도체·팹리스)와 AI 반도체를 사들이는 AI 빅테크·클라우드입니다. 대표 상장사만 골랐으며 전체 목록이 아닙니다. 이 단계의 「HBM · AI 노출도」는 직접 = AI 반도체·HBM을 만들거나 AI 데이터센터를 운영해 AI 반도체를 사들임, 간접 = AI 관련 사업이 있으나 매출의 중심은 아님으로 읽습니다.',
   '기업 설명·리스크·이벤트·HBM·AI 노출도는 공개 자료를 바탕으로 한 정성 요약입니다(2026년 10월 작성). 매출·점유율 같은 수치와 일정은 확인 없이 싣지 않기 위해 일부러 넣지 않았습니다.',
   '「주요 지표」는 야후 파이낸스에서 매 거래일 장 마감 뒤 자동 수집합니다. 현재가·시가총액·PER·PBR·EPS·BPS·배당수익률은 야후 시세, 1개월·3개월·연초 대비 수익률과 52주 범위는 야후 일봉 종가로 계산합니다. PER은 최근 12개월 실적 기준이며 적자이거나 야후가 주지 않으면 비어 있습니다. 배당수익률은 야후가 보여 주는 예상 연간 배당 기준이며, 무배당이거나 야후 값이 0·없음이면 비어 있습니다. 받아 오지 못한 값은 빈칸(–)으로 둡니다.',
   '시가총액은 현지 통화 그대로 적었고 원화로 바꾸지 않았습니다. 나라 사이 비교에는 환율을 따로 적용하십시오.',
@@ -159,6 +182,7 @@ const NOTE_COMMON={
   '이 화면은 개별 종목이나 주식에 대한 추천이 아닙니다. 해외 주식은 환율·현지 세금·거래 시간이 다릅니다. 사내 교육·참고용입니다.'],
  en:[
   'Step placement (which company sits in which column) is this page\'s own classification based on each company\'s public business description. Unlike the Korea map it is not taken from an asset manager\'s chart, and it does not reflect each company\'s full revenue mix.',
+  'The "Chipmakers & AI demand" stage covers companies that design and make chips (Memory · Foundry · Logic, Fabless & IDM) and the AI big tech and cloud operators that buy AI chips. It lists representative listed companies only, not a complete list. In this stage, "HBM · AI exposure" reads Direct = makes AI chips/HBM or runs AI data centers that buy AI chips, Indirect = has AI-related business that is not its revenue core.',
   'Descriptions, risks, events and HBM/AI exposure are qualitative summaries from public information (written October 2026). Revenue, share figures and dates are deliberately omitted rather than printed unverified.',
   '"Key metrics" are collected automatically from Yahoo Finance after each trading day\'s close: price, market cap, PER, PBR, EPS, BPS and dividend yield from Yahoo quotes; 1M/3M/YTD returns and the 52-week range computed from Yahoo daily closes. PER is trailing twelve months and blank for loss-makers or when Yahoo does not provide it. Dividend yield is Yahoo\'s forward annual basis and blank for non-payers or when Yahoo returns zero or nothing. Values not retrieved are left blank (–).',
   'Market capitalization is shown in local currency, not converted to KRW. Apply exchange rates separately when comparing across countries.',

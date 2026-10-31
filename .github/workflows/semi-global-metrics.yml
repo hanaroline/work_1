@@ -1,6 +1,6 @@
-name: 해외 반도체 소부장 맵 지표 갱신
+name: 해외 반도체 밸류체인 맵 지표 갱신
 
-# semi-us.html · semi-jp.html · semi-cn.html 의 기업별 시장 지표(현재가·시총·PER·PBR·
+# semi-us.html · semi-jp.html · semi-cn.html(반도체 밸류체인 맵)의 기업별 시장 지표(현재가·시총·PER·PBR·
 # EPS·BPS·배당수익률·수익률·52주 위치)를 각 시장 마감 뒤에 한 번 받아 넣는다.
 #
 # 클로드 세션에서는 야후에 못 붙는다. 그래서 러너 몫이다.
@@ -13,8 +13,10 @@ on:
   schedule:
     # 미국: 평일 21:30 UTC — 16:00 ET 마감(서머타임 20:00 · 평시 21:00 UTC) 뒤
     - cron: '30 21 * * 1-5'
-    # 일본·중국: 평일 07:20 UTC — 도쿄 15:30 JST(06:30 UTC)·상하이/선전 15:00 CST(07:00 UTC) 마감 뒤
+    # 일본: 평일 07:20 UTC — 도쿄 15:30 JST(06:30 UTC) 마감 뒤
     - cron: '20 7 * * 1-5'
+    # 중국: 평일 08:20 UTC — 상하이/선전 15:00(07:00 UTC)·홍콩 16:00(08:00 UTC) 마감 뒤
+    - cron: '20 8 * * 1-5'
   workflow_dispatch:
     inputs:
       market:
@@ -36,7 +38,7 @@ concurrency:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    # 113곳 × (일봉 1회 + 쉼) + quote 묶음 몇 번 ≈ 2~3분.
+    # 155곳 × (일봉 1회 + 쉼) + quote 묶음 몇 번 ≈ 2~3분.
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -52,7 +54,8 @@ jobs:
         run: |
           case "${{ github.event.schedule }}" in
             '30 21 * * 1-5') m=us ;;
-            '20 7 * * 1-5')  m='jp cn' ;;
+            '20 7 * * 1-5')  m=jp ;;
+            '20 8 * * 1-5')  m=cn ;;
             *)               m="${{ inputs.market || 'all' }}" ;;
           esac
           [ "$m" = all ] && m='us jp cn'
@@ -92,7 +95,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "### 해외 반도체 소부장 맵 지표 갱신"
+            echo "### 해외 반도체 밸류체인 맵 지표 갱신"
             for m in ${{ steps.pick.outputs.markets }}; do
               echo ""
               if [ -f "data/semi-global-$m-report.md" ]; then
