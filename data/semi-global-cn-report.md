@@ -1,24 +1,24 @@
 # 중국 반도체 소부장 맵 — 지표 수집 보고
 
-- 기준 거래일: 2026-10-30 · 수집: 2026-10-30 23:17 KST
+- 기준 거래일: 2026-10-30 · 수집: 2026-10-31 15:37 KST
 - 원천: Yahoo Finance v7 quote / Yahoo Finance v8 chart (2y, 1d)
 
 ## 칸별로 채운 수
 
 | 칸 | 채움 | 빈칸 |
 |---|---:|---:|
-| price | 38 | 0 |
-| mcap | 38 | 0 |
-| per | 32 | 6 |
-| pbr | 38 | 0 |
-| eps | 38 | 0 |
-| bps | 38 | 0 |
-| dy | 33 | 5 |
-| r1m | 38 | 0 |
-| r3m | 38 | 0 |
-| rytd | 38 | 0 |
-| hi52 | 38 | 0 |
-| pos52 | 38 | 0 |
+| price | 52 | 0 |
+| mcap | 52 | 0 |
+| per | 44 | 8 |
+| pbr | 52 | 0 |
+| eps | 52 | 0 |
+| bps | 52 | 0 |
+| dy | 42 | 10 |
+| r1m | 52 | 0 |
+| r3m | 52 | 0 |
+| rytd | 52 | 0 |
+| hi52 | 52 | 0 |
+| pos52 | 52 | 0 |
 
 ## 통째로 비운 회사 (0)
 
@@ -26,9 +26,9 @@
 
 ## 칸별 빈 회사
 
-- per: 정범과기, 지순과기, 호규산업, 중과비측, 개륜전자, 베리실리콘
+- per: 정범과기, 지순과기, 호규산업, 중과비측, 개륜전자, 베리실리콘, 룽손, 바이두
 - pbr: 없음
-- dy: 지순과기, 호규산업, 선도기전, 중과비측, 베리실리콘
+- dy: 지순과기, 호규산업, 선도기전, 중과비측, 베리실리콘, SMIC, 화홍반도체, 넥스칩, 룽손, 바이두
 - r3m: 없음
 - hi52: 없음
 
@@ -78,3 +78,17 @@
 | 화대구천 | 301269.SZ | Empyrean Technology Co., Ltd. | SHZ | CNY |
 | 개륜전자 | 688206.SS | Primarius Technologies Co., Ltd. | SHH | CNY |
 | 베리실리콘 | 688521.SS | VeriSilicon Microelectronics (Shanghai) Co., Ltd. | SHH | CNY |
+| 기가디바이스 | 603986.SS | GigaDevice Semiconductor Inc. | SHH | CNY |
+| 롱시스 | 301308.SZ | Shenzhen Longsys Electronics Co., Ltd. | SHZ | CNY |
+| SMIC | 688981.SS | Semiconductor Manufacturing International Corporation | SHH | CNY |
+| 화홍반도체 | 688347.SS | Hua Hong Grace Semiconductor Limited | SHH | CNY |
+| 넥스칩 | 688249.SS | Nexchip Semiconductor Corporation | SHH | CNY |
+| 캠브리콘 | 688256.SS | Cambricon Technologies Corporation Limited | SHH | CNY |
+| 하이곤 | 688041.SS | Hygon Information Technology Co., Ltd. | SHH | CNY |
+| 룽손 | 688047.SS | Loongson Technology Corporation Limited | SHH | CNY |
+| 몬타지 테크놀로지 | 688008.SS | Montage Technology Co., Ltd. | SHH | CNY |
+| 옴니비전 | 603501.SS | OmniVision Integrated Circuits Group, Inc. | SHH | CNY |
+| 알리바바 | 9988.HK | Alibaba Group Holding Limited | HKG | HKD |
+| 텐센트 | 0700.HK | Tencent Holdings Limited | HKG | HKD |
+| 바이두 | 9888.HK | Baidu, Inc. | HKG | HKD |
+| 아이플라이텍 | 002230.SZ | iFLYTEK CO.,LTD | SHZ | CNY |

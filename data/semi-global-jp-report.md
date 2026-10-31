@@ -1,24 +1,24 @@
 # 일본 반도체 소부장 맵 — 지표 수집 보고
 
-- 기준 거래일: 2026-10-30 · 수집: 2026-10-30 23:17 KST
+- 기준 거래일: 2026-10-30 · 수집: 2026-10-31 15:36 KST
 - 원천: Yahoo Finance v7 quote / Yahoo Finance v8 chart (2y, 1d)
 
 ## 칸별로 채운 수
 
 | 칸 | 채움 | 빈칸 |
 |---|---:|---:|
-| price | 44 | 0 |
-| mcap | 44 | 0 |
-| per | 42 | 2 |
-| pbr | 44 | 0 |
-| eps | 44 | 0 |
-| bps | 44 | 0 |
-| dy | 43 | 1 |
-| r1m | 44 | 0 |
-| r3m | 44 | 0 |
-| rytd | 44 | 0 |
-| hi52 | 44 | 0 |
-| pos52 | 44 | 0 |
+| price | 55 | 0 |
+| mcap | 55 | 0 |
+| per | 52 | 3 |
+| pbr | 55 | 0 |
+| eps | 55 | 0 |
+| bps | 55 | 0 |
+| dy | 53 | 2 |
+| r1m | 55 | 0 |
+| r3m | 55 | 0 |
+| rytd | 55 | 0 |
+| hi52 | 55 | 0 |
+| pos52 | 55 | 0 |
 
 ## 통째로 비운 회사 (0)
 
@@ -26,9 +26,9 @@
 
 ## 칸별 빈 회사
 
-- per: 섬코, 니콘
+- per: 섬코, 니콘, 로옴
 - pbr: 없음
-- dy: 다이요 홀딩스
+- dy: 다이요 홀딩스, 키옥시아
 - r3m: 없음
 - hi52: 없음
 
@@ -84,3 +84,14 @@
 | 소시오넥스트 | 6526.T | Socionext Inc. | JPX | JPY |
 | 후지필름 | 4901.T | FUJIFILM Holdings Corporation | JPX | JPY |
 | 텍센드 포토마스크 | 429A.T | Tekscend Photomask Corp. | JPX | JPY |
+| 키옥시아 | 285A.T | Kioxia Holdings Corporation | JPX | JPY |
+| 르네사스 | 6723.T | Renesas Electronics Corporation | JPX | JPY |
+| 소니그룹 | 6758.T | Sony Group Corporation | JPX | JPY |
+| 로옴 | 6963.T | ROHM Co., Ltd. | JPX | JPY |
+| 미쓰비시전기 | 6503.T | Mitsubishi Electric Corporation | JPX | JPY |
+| 소프트뱅크그룹 | 9984.T | SoftBank Group Corp. | JPX | JPY |
+| NTT | 9432.T | NTT, Inc. | JPX | JPY |
+| KDDI | 9433.T | KDDI Corporation | JPX | JPY |
+| 후지쯔 | 6702.T | Fujitsu Limited | JPX | JPY |
+| NEC | 6701.T | NEC Corporation | JPX | JPY |
+| 사쿠라인터넷 | 3778.T | SAKURA Internet Inc. | JPX | JPY |
