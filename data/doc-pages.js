@@ -6,7 +6,7 @@
  */
 (function (g) {
   g.DOC_PAGES = {
- "updatedAt": "2026-10-29T23:45:17.987Z",
+ "updatedAt": "2026-11-01T23:45:50.669Z",
  "source": "securities.miraeasset.com /public/editor/elsdls/<ISIN>.pdf",
  "docLabel": "간이투자설명서 및 투자설명서 (교부본)",
  "anchors": [
@@ -431,6 +431,353 @@
   "KR6MD00093F7": {
    "name": "미래에셋증권(ELB)4113",
    "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD00093F7.pdf",
+   "pages": 73,
+   "briefUntil": 19,
+   "at": {
+    "payoff": 11,
+    "payoffChart": 12,
+    "sim": 14,
+    "midRedeem": 16,
+    "caution": 17,
+    "prospectus": 20,
+    "riskFactors": 54,
+    "offering": 24,
+    "fundUse": 68
+   }
+  },
+  "KR6MD0009406": {
+   "name": "미래에셋증권(ELS)38253e",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD0009406.pdf",
+   "pages": 84,
+   "briefUntil": 24,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "payoff": 14,
+    "payoffChart": 16,
+    "lossCase": 17,
+    "sim": 19,
+    "midRedeem": 21,
+    "caution": 22,
+    "prospectus": 25,
+    "riskFactors": 65,
+    "offering": 30,
+    "fundUse": 79
+   }
+  },
+  "KR6MD0009448": {
+   "name": "미래에셋증권(ELS)38257e",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD0009448.pdf",
+   "pages": 76,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "fixDate": 12,
+    "payoff": 13,
+    "payoffChart": 14,
+    "lossCase": 15,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 58,
+    "offering": 27,
+    "fundUse": 71
+   }
+  },
+  "KR6MD0009430": {
+   "name": "미래에셋증권(ELS)38256e",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD0009430.pdf",
+   "pages": 77,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "fixDate": 12,
+    "payoff": 13,
+    "payoffChart": 14,
+    "lossCase": 15,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 59,
+    "offering": 27,
+    "fundUse": 72
+   }
+  },
+  "KR6MD00093X0": {
+   "name": "미래에셋증권(ELS)38250",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD00093X0.pdf",
+   "pages": 77,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "payoff": 13,
+    "payoffChart": 14,
+    "lossCase": 15,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 58,
+    "offering": 27,
+    "fundUse": 72
+   }
+  },
+  "KR6MD00093Z5": {
+   "name": "미래에셋증권(ELS)38252e",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD00093Z5.pdf",
+   "pages": 77,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "fixDate": 12,
+    "payoff": 13,
+    "payoffChart": 14,
+    "lossCase": 15,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 58,
+    "offering": 27,
+    "fundUse": 72
+   }
+  },
+  "KR6MD0009422": {
+   "name": "미래에셋증권(ELS)38255e",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD0009422.pdf",
+   "pages": 76,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "fixDate": 12,
+    "payoff": 13,
+    "payoffChart": 14,
+    "lossCase": 15,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 58,
+    "offering": 27,
+    "fundUse": 71
+   }
+  },
+  "KR6MD0009414": {
+   "name": "미래에셋증권(ELS)38254e",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD0009414.pdf",
+   "pages": 76,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "fixDate": 12,
+    "payoff": 13,
+    "payoffChart": 14,
+    "lossCase": 15,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 58,
+    "offering": 27,
+    "fundUse": 71
+   }
+  },
+  "KR6MD00093W2": {
+   "name": "미래에셋증권(ELS)38249",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD00093W2.pdf",
+   "pages": 76,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "fixDate": 12,
+    "payoff": 13,
+    "payoffChart": 14,
+    "lossCase": 15,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 59,
+    "offering": 27,
+    "fundUse": 71
+   }
+  },
+  "KR6MD00093V4": {
+   "name": "미래에셋증권(ELS)38248",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD00093V4.pdf",
+   "pages": 77,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "payoff": 13,
+    "payoffChart": 14,
+    "lossCase": 15,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 58,
+    "offering": 27,
+    "fundUse": 72
+   }
+  },
+  "KR6MD00093T8": {
+   "name": "미래에셋증권(ELS)38247",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD00093T8.pdf",
+   "pages": 77,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "fixDate": 12,
+    "payoff": 13,
+    "payoffChart": 14,
+    "lossCase": 15,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 59,
+    "offering": 27,
+    "fundUse": 72
+   }
+  },
+  "KR6MD00093S0": {
+   "name": "미래에셋증권(ELS)38246",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD00093S0.pdf",
+   "pages": 77,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "fixDate": 12,
+    "payoff": 13,
+    "payoffChart": 14,
+    "lossCase": 15,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 59,
+    "offering": 27,
+    "fundUse": 72
+   }
+  },
+  "KR6MD00093R2": {
+   "name": "미래에셋증권(ELS)38245",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD00093R2.pdf",
+   "pages": 75,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "fixDate": 12,
+    "payoff": 13,
+    "payoffChart": 14,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 58,
+    "offering": 27,
+    "fundUse": 70
+   }
+  },
+  "KR6MD00093Y8": {
+   "name": "미래에셋증권(ELS)38251e",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD00093Y8.pdf",
+   "pages": 77,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "fixDate": 12,
+    "payoff": 13,
+    "payoffChart": 14,
+    "lossCase": 15,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 59,
+    "offering": 27,
+    "fundUse": 72
+   }
+  },
+  "KR6MD00093Q4": {
+   "name": "미래에셋증권(ELS)38244",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD00093Q4.pdf",
+   "pages": 77,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "fixDate": 12,
+    "payoff": 13,
+    "payoffChart": 14,
+    "lossCase": 15,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 59,
+    "offering": 27,
+    "fundUse": 72
+   }
+  },
+  "KR6MD00093P6": {
+   "name": "미래에셋증권(ELS)38243",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD00093P6.pdf",
+   "pages": 77,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "fixDate": 12,
+    "payoff": 13,
+    "payoffChart": 14,
+    "lossCase": 15,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 59,
+    "offering": 27,
+    "fundUse": 72
+   }
+  },
+  "KR6MD00093N1": {
+   "name": "미래에셋증권(ELS)38242",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD00093N1.pdf",
+   "pages": 72,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "payoff": 13,
+    "payoffChart": 14,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 58,
+    "offering": 27,
+    "fundUse": 67
+   }
+  },
+  "KR6MD0009455": {
+   "name": "미래에셋증권(ELB)4115",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD0009455.pdf",
    "pages": 73,
    "briefUntil": 19,
    "at": {
