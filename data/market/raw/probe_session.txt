@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-11-02 16:15:20 KST
+세션을 지닌 채 API 부르기 2026-11-03 01:34:15 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 130880 bytes
@@ -16,27 +16,27 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 121113 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8842 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"008","officeHname":"머니투데이","articleId":"0005435335","title":"코스피 2% 반등…5600대에서 연기금·금투·기타법인 반발 매수","datetime":"2026-11-02 16:05:31","type":"1","subcontent":"미국 반도체주 급락 여파로 하락 
+        HTTP 200 · 8861 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"023","officeHname":"조선일보","articleId":"0004007360","title":"주식 판 돈, 이젠 하루 만에 받는다","datetime":"2026-11-03 00:33:07","type":"1","subcontent":"50여 년 만에 결제 주기 단축 주식을 판 돈이 계좌에 들어오
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8842 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"008","officeHname":"머니투데이","articleId":"0005435335","title":"코스피 2% 반등…5600대에서 연기금·금투·기타법인 반발 매수","datetime":"2026-11-02 16:05:31","type":"1","subcontent":"미국 반도체주 급락 여파로 하락 
+        HTTP 200 · 8861 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"023","officeHname":"조선일보","articleId":"0004007360","title":"주식 판 돈, 이젠 하루 만에 받는다","datetime":"2026-11-03 00:33:07","type":"1","subcontent":"50여 년 만에 결제 주기 단축 주식을 판 돈이 계좌에 들어오
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 127576 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26534 bytes · JSON!
+        HTTP 200 · 26533 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
         HTTP 200 · 2411 bytes · JSON!
-        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
+        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","s
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
-        HTTP 200 · 5037 bytes · JSON!
+        HTTP 200 · 5038 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
