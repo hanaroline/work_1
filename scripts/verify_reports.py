@@ -254,7 +254,9 @@ def verify(path):
         tp = r.get("target_price")
         if not tp:
             continue
-        hay = sq((r.get("excerpt") or "") + (r.get("summary") or "") + (r.get("title") or ""))
+        # 뽑을 때 본문에서 떠 둔 근거 문구(「목표주가 16만원 유지」)도 본문이다.
+        hay = sq((r.get("excerpt") or "") + (r.get("summary") or "") + (r.get("title") or "")
+                 + (r.get("target_move_src") or ""))
         forms = {sq("%d" % tp), sq("{:,}".format(tp))}
         if tp % 10000 == 0:
             forms.add(sq("%d만" % (tp // 10000)))

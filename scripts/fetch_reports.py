@@ -918,7 +918,7 @@ def fetch_detail(rep, dump_dir=None, alien=()):
         move, src = tp_move(body + " " + rep["title"])
         if move:
             rep["target_move"], rep["target_move_src"] = move, src
-    return rep
+    return target_from_src(rep)
 
 
 # ---------------------------------------------------------------- 요약
@@ -1132,6 +1132,39 @@ def tp_move(text):
         if not turns or d in turns:
             return d, src
     return None, None
+
+
+# 근거 문구 속 가격. 「기존 22만원에서 16만원으로 27% 하향」처럼 옛 값이
+# 앞에 오므로 **방향어에 가장 가까운 것(마지막)** 이 지금 목표주가다.
+_SRC_PRICE = re.compile(r"(\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)\s*(만|억)?\s*원")
+
+
+def src_price(src):
+    """근거 문구(「목표주가 16만원 유지」)가 적은 목표주가. 없으면 None."""
+    ms = list(_SRC_PRICE.finditer(src or ""))
+    if not ms:
+        return None
+    m = ms[-1]
+    v = int(round(float(m.group(1).replace(",", "")) * _UNIT.get(m.group(2) or "", 1)))
+    return v if 100 <= v <= 100_000_000 else None
+
+
+def target_from_src(r):
+    """본문이 목표주가를 **제 문장으로** 적었으면 그 수를 쓴다.
+
+    네이버 칸(`goalPrice`)이 본문과 다른 일이 있다. 11/2 유진 기아는 본문이
+    「투자의견 매수와 목표주가 16만원 유지함」인데 칸은 150,000 이었다 —
+    같은 증권사가 10/12 에 22만원에서 16만원으로 내린 뒤라 본문 쪽이 맞다.
+    지난 판 전량에서 근거 문구와 칸이 함께 있는 105건 중 어긋난 것은 이
+    한 건뿐이었다. 칸 값은 지우지 않고 `target_price_api` 로 남긴다.
+    """
+    v = src_price(r.get("target_move_src"))
+    if not v or v == r.get("target_price"):
+        return r
+    if r.get("target_price") and r.get("target_from") == "api":
+        r["target_price_api"] = r["target_price"]
+    r["target_price"], r["target_from"] = v, "본문"
+    return r
 
 
 _TP_BARE = re.compile(r"(?:목표\s*(?:주가|가)|TP)[^\d\n]{0,6}?"
@@ -1702,10 +1735,12 @@ def drop_unsourced(r):
         else:
             r.pop("target_move", None)
             r.pop("target_move_src", None)
+    target_from_src(r)
 
     tp = r.get("target_price")
     if tp and r.get("target_from") != "api":
-        hay = _SQ_NUM.sub("", (r.get("excerpt") or "") + " " + (r.get("title") or ""))
+        hay = _SQ_NUM.sub("", " ".join((r.get("excerpt") or "", r.get("title") or "",
+                                        r.get("target_move_src") or "")))
         forms = {str(tp), "%d" % tp, format(tp, ",").replace(",", "")}
         if tp % 10000 == 0:
             forms.add("%d만" % (tp // 10000))
