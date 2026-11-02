@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-11-02 10:06:18 KST
+세션을 지닌 채 API 부르기 2026-11-02 10:31:04 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 130880 bytes
@@ -16,19 +16,19 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 121113 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8724 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"421","officeHname":"뉴스1","articleId":"0009263755","title":"조선주, 장 초반 동반 강세…한화오션·삼성重 7%↑[핫종목]","datetime":"2026-11-02 09:53:32","type":"1","subcontent":"조선주가 2일 장 초반 동반 강세다. 최
+        HTTP 200 · 8706 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"020","officeHname":"동아일보","articleId":"0003759333","title":"“AI 호황 끝났나?”…모건스탠리 “9% 하락해도 큰 매수 기회”","datetime":"2026-11-02 10:24:09","type":"1","subcontent":"인공지능(AI) 투자 확대에 따른
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8724 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"421","officeHname":"뉴스1","articleId":"0009263755","title":"조선주, 장 초반 동반 강세…한화오션·삼성重 7%↑[핫종목]","datetime":"2026-11-02 09:53:32","type":"1","subcontent":"조선주가 2일 장 초반 동반 강세다. 최
+        HTTP 200 · 8706 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"020","officeHname":"동아일보","articleId":"0003759333","title":"“AI 호황 끝났나?”…모건스탠리 “9% 하락해도 큰 매수 기회”","datetime":"2026-11-02 10:24:09","type":"1","subcontent":"인공지능(AI) 투자 확대에 따른
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 127576 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26523 bytes · JSON!
+        HTTP 200 · 26528 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
@@ -36,7 +36,7 @@
         앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
-        HTTP 200 · 5033 bytes · JSON!
+        HTTP 200 · 5037 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
