@@ -328,6 +328,26 @@ const TAGS_BASE = {
   mem:  {ko:'메모리 투자', en:'Memory capex'}
 };
 const COLS_ALL = [
+ {id:'d1',st:'D',ko:'메모리',en:'Memory',
+  d:'D램·낸드·HBM을 직접 설계하거나 만드는 회사. 아래 소부장 기업의 큰 고객입니다.',
+  de:'Companies that design or make DRAM, NAND and HBM—major customers of the suppliers below.',
+  w:'메모리 가격과 재고, HBM·서버용 제품 비중, 설비투자 계획. 이들의 투자 방향이 아래 소부장 칸의 업황을 정합니다.',
+  we:'Memory prices and inventory, the mix of HBM and server products, and capex plans—their spending sets the cycle for the supplier columns below.'},
+ {id:'d2',st:'D',ko:'파운드리',en:'Foundry',
+  d:'다른 회사가 설계한 칩을 위탁받아 웨이퍼로 만들어 주는 회사(자체 칩과 위탁 생산을 함께 하는 곳 포함).',
+  de:'Contract manufacturers that turn other companies\' designs into wafers (including firms that also make their own chips).',
+  w:'선단·성숙 공정별 가동률, 대형 고객 수주, 수율과 단가.',
+  we:'Utilization by leading-edge vs. mature nodes, big customer wins, yields and pricing.'},
+ {id:'d3',st:'D',ko:'시스템반도체·팹리스',en:'Logic, Fabless & IDM',
+  d:'AI 가속기·CPU·통신칩·아날로그·차량용 칩 등 메모리가 아닌 반도체를 설계하거나 직접 만드는 회사.',
+  de:'Designers and makers of non-memory chips—AI accelerators, CPUs, connectivity, analog and automotive chips.',
+  w:'AI 가속기 수요와 고객 채택, 전방 제품(스마트폰·자동차·산업) 수요, 수출 통제.',
+  we:'AI accelerator demand and design wins, end demand (phones, cars, industrial), and export controls.'},
+ {id:'d4',st:'D',ko:'AI 빅테크·클라우드',en:'AI Big Tech & Cloud',
+  d:'AI 모델·클라우드·데이터센터를 운영해 AI 반도체와 HBM을 사들이는 수요처. 자체 AI 칩을 설계하는 곳도 있습니다.',
+  de:'Operators of AI models, cloud and data centers—the buyers of AI chips and HBM. Some also design their own AI chips.',
+  w:'데이터센터 설비투자 계획, AI 서비스 수익화, 자체 칩 개발 진척.',
+  we:'Data-center capex plans, AI monetization and progress on in-house chips.'},
  {id:'f1',st:'F',ko:'인프라·부품',en:'Infra & Parts',
   d:'팹을 돌리는 클린룸·자동반송·진공·전원·가스 공급 장치와, 공정 장비 안에 들어가는 서브시스템·핵심 부품.',
   de:'Cleanroom, automation, vacuum, power and gas-delivery systems that run a fab, plus subsystems and critical parts inside process tools.',
@@ -397,27 +417,7 @@ const COLS_ALL = [
   d:'칩 설계 소프트웨어(EDA), 설계자산(IP) 라이선스, 맞춤형 칩 설계 서비스.',
   de:'Chip design software (EDA), design IP licensing and custom-chip design services.',
   w:'AI 칩 설계 착수 건수, 선단 공정 전환, 수출 통제가 고객 범위에 주는 영향.',
-  we:'AI chip design starts, leading-node migration, and how export controls affect the customer base.'},
- {id:'d1',st:'D',ko:'메모리',en:'Memory',
-  d:'D램·낸드·HBM을 직접 설계하거나 만드는 회사. 위 소부장 기업의 큰 고객입니다.',
-  de:'Companies that design or make DRAM, NAND and HBM—major customers of the suppliers above.',
-  w:'메모리 가격과 재고, HBM·서버용 제품 비중, 설비투자 계획. 이들의 투자 방향이 위 소부장 칸의 업황을 정합니다.',
-  we:'Memory prices and inventory, the mix of HBM and server products, and capex plans—their spending sets the cycle for the supplier columns above.'},
- {id:'d2',st:'D',ko:'파운드리',en:'Foundry',
-  d:'다른 회사가 설계한 칩을 위탁받아 웨이퍼로 만들어 주는 회사(자체 칩과 위탁 생산을 함께 하는 곳 포함).',
-  de:'Contract manufacturers that turn other companies\' designs into wafers (including firms that also make their own chips).',
-  w:'선단·성숙 공정별 가동률, 대형 고객 수주, 수율과 단가.',
-  we:'Utilization by leading-edge vs. mature nodes, big customer wins, yields and pricing.'},
- {id:'d3',st:'D',ko:'시스템반도체·팹리스',en:'Logic, Fabless & IDM',
-  d:'AI 가속기·CPU·통신칩·아날로그·차량용 칩 등 메모리가 아닌 반도체를 설계하거나 직접 만드는 회사.',
-  de:'Designers and makers of non-memory chips—AI accelerators, CPUs, connectivity, analog and automotive chips.',
-  w:'AI 가속기 수요와 고객 채택, 전방 제품(스마트폰·자동차·산업) 수요, 수출 통제.',
-  we:'AI accelerator demand and design wins, end demand (phones, cars, industrial), and export controls.'},
- {id:'d4',st:'D',ko:'AI 빅테크·클라우드',en:'AI Big Tech & Cloud',
-  d:'AI 모델·클라우드·데이터센터를 운영해 AI 반도체와 HBM을 사들이는 수요처. 자체 AI 칩을 설계하는 곳도 있습니다.',
-  de:'Operators of AI models, cloud and data centers—the buyers of AI chips and HBM. Some also design their own AI chips.',
-  w:'데이터센터 설비투자 계획, AI 서비스 수익화, 자체 칩 개발 진척.',
-  we:'Data-center capex plans, AI monetization and progress on in-house chips.'}
+  we:'AI chip design starts, leading-node migration, and how export controls affect the customer base.'}
 ];
 const BASKETS_ALL = [
  {tag:'hbm',ko:'HBM 밸류체인',en:'HBM value chain',
@@ -968,7 +968,7 @@ const EXTRA = {
 };
 const _N=Object.keys(CO).length,_ND=COLS.filter(c=>c.st==='D').length,_NP=COLS.length-_ND;
 const I18N=mkI18N({
- ko:{title:'미국 반도체 밸류체인 맵 — 소부장 · 완성 · 수요',docTitle:'미국 반도체 밸류체인 맵',
+ ko:{title:'미국 반도체 밸류체인 맵 — 완성 · 수요 · 소부장',docTitle:'미국 반도체 밸류체인 맵',
   lead:`반도체가 만들어지는 순서대로 ${_NP}개 공정에 미국 상장 소재·부품·장비·설계 기업을 나누고, 그 칩을 만드는 메모리·파운드리·팹리스 기업과 AI 반도체를 사들이는 AI 빅테크까지 ${_ND}칸을 더해 모두 ${_N}곳의 핵심사업과 특징을 정리했습니다. 기업을 누르면 상세가 열립니다.`,
   ph:'기업명·티커·사업 키워드 검색 (예: HBM, 식각, NVDA)',filing:'SEC 공시(EDGAR)',
   warn:'기업 설명·리스크·이벤트는 공개 자료를 바탕으로 한 정성 요약입니다. 시장 지표 밖의 수치(매출·점유율 등)는 싣지 않았으니 SEC 공시(10-K·10-Q)로 확인하십시오.',
@@ -980,7 +980,7 @@ const I18N=mkI18N({
    'Axcelis(ACLS)와 Veeco(VECO)는 2025년 합병을 발표했습니다. 진행 상황과 그 뒤 티커 변화는 SEC 공시로 확인하십시오.',
    'Qnity Electronics(Q)는 DuPont의 전자소재 부문이 2025년 분리 상장한 회사입니다. ACM Research(ACMR)의 주력 자회사 ACM 상해(盛美上海)는 중국 상해 과창판에 따로 상장돼 있어 중국 맵에도 실었습니다.',
    NOTE_COMMON.ko[NOTE_COMMON.ko.length-1]]},
- en:{title:'US Semiconductor Value Chain Map — Suppliers · Chipmakers · Demand',docTitle:'US Semiconductor Value Chain Map',
+ en:{title:'US Semiconductor Value Chain Map — Chipmakers · Demand · Suppliers',docTitle:'US Semiconductor Value Chain Map',
   lead:`${_NP} process steps in manufacturing order with the US-listed materials, parts, equipment and design companies in each, plus ${_ND} columns for the memory, foundry and fabless chipmakers and the AI big tech that buys AI chips—${_N} companies in all. Click a company for details.`,
   ph:'Search company, ticker or keyword (e.g., HBM, etch, NVDA)',filing:'SEC filings (EDGAR)',
   warn:'Descriptions, risks and events are qualitative summaries from public information. Figures other than market metrics (revenue, share, etc.) are not included; check SEC filings (10-K, 10-Q).',

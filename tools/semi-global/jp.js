@@ -527,7 +527,7 @@ const EXTRA = {
 };
 const _N=Object.keys(CO).length,_ND=COLS.filter(c=>c.st==='D').length,_NP=COLS.length-_ND;
 const I18N=mkI18N({
- ko:{title:'일본 반도체 밸류체인 맵 — 소부장 · 완성 · 수요',docTitle:'일본 반도체 밸류체인 맵',
+ ko:{title:'일본 반도체 밸류체인 맵 — 완성 · 수요 · 소부장',docTitle:'일본 반도체 밸류체인 맵',
   lead:`반도체가 만들어지는 순서대로 ${_NP}개 공정에 일본 상장 소재·부품·장비·설계 기업을 나누고, 칩을 만드는 메모리·시스템반도체 기업과 AI 반도체를 사들이는 AI 빅테크·클라우드까지 ${_ND}칸을 더해 모두 ${_N}곳의 핵심사업과 특징을 정리했습니다. 기업을 누르면 상세가 열립니다.`,
   ph:'기업명·증권코드·사업 키워드 검색 (예: HBM, 세정, 8035)',filing:'닛케이 기업정보',code:'증권코드',
   warn:'기업 설명·리스크·이벤트는 공개 자료를 바탕으로 한 정성 요약입니다. 시장 지표 밖의 수치(매출·점유율 등)는 싣지 않았으니 각 기업의 유가증권보고서·결산단신으로 확인하십시오.',
@@ -540,7 +540,7 @@ const I18N=mkI18N({
    '「완성·수요」 단계에 파운드리 칸이 없는 것은 일본 거래소에 상장된 파운드리 전업사가 없기 때문입니다(라피더스는 비상장, 구마모토의 JASM은 TSMC 자회사). 소니그룹·미쓰비시전기·NTT처럼 반도체·데이터센터가 사업의 일부인 그룹도 넣었으며, 주가와 시가총액은 그룹 전체의 값입니다.',
    '텍센드 포토마스크(429A)는 상장 이력이 짧아 1개월·3개월·연초 대비 수익률과 52주 범위가 비거나 짧은 기간 값일 수 있습니다.',
    NOTE_COMMON.ko[NOTE_COMMON.ko.length-1]]},
- en:{title:'Japan Semiconductor Value Chain Map — Suppliers · Chipmakers · Demand',docTitle:'Japan Semiconductor Value Chain Map',
+ en:{title:'Japan Semiconductor Value Chain Map — Chipmakers · Demand · Suppliers',docTitle:'Japan Semiconductor Value Chain Map',
   lead:`${_NP} process steps in manufacturing order with the Japan-listed materials, parts, equipment and design companies in each, plus ${_ND} columns for the memory and logic chipmakers and the AI big tech and cloud companies that buy AI chips—${_N} companies in all. Click a company for details.`,
   ph:'Search company, code or keyword (e.g., HBM, cleaning, 8035)',filing:'Nikkei company info',code:'Code',
   warn:'Descriptions, risks and events are qualitative summaries from public information. Figures other than market metrics (revenue, share, etc.) are not included; check each company\'s securities report and earnings releases.',

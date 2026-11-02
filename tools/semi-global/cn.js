@@ -503,7 +503,7 @@ const EXTRA = {
 };
 const _N=Object.keys(CO).length,_ND=COLS.filter(c=>c.st==='D').length,_NP=COLS.length-_ND;
 const I18N=mkI18N({
- ko:{title:'중국 반도체 밸류체인 맵 — 소부장 · 완성 · 수요',docTitle:'중국 반도체 밸류체인 맵',
+ ko:{title:'중국 반도체 밸류체인 맵 — 완성 · 수요 · 소부장',docTitle:'중국 반도체 밸류체인 맵',
   lead:`반도체가 만들어지는 순서대로 ${_NP}개 공정에 중국 본토 상장(A주) 소재·부품·장비·설계 기업을 나누고, 칩을 만드는 메모리·파운드리·시스템반도체 기업과 AI 반도체를 사들이는 AI 빅테크까지 ${_ND}칸을 더해 모두 ${_N}곳(빅테크 일부는 홍콩 상장)의 핵심사업과 특징을 정리했습니다. 기업을 누르면 상세가 열립니다.`,
   ph:'기업명·종목코드·사업 키워드 검색 (예: 식각, 파운드리, 002371)',filing:'공시(cninfo)',code:'종목코드',
   warn:'기업 설명·리스크·이벤트는 공개 자료를 바탕으로 한 정성 요약입니다. 시장 지표 밖의 수치(매출·점유율 등)는 싣지 않았으니 각 기업의 정기보고서(cninfo 공시)로 확인하십시오.',
@@ -519,7 +519,7 @@ const I18N=mkI18N({
    'A주는 하루 가격 제한폭이 있고(시장에 따라 다름), 외국인은 후구퉁·선구퉁 등 정해진 경로로만 거래할 수 있습니다. 종목별 거래 가능 여부는 거래 전 확인하십시오.',
    '적자이거나 야후가 주지 않는 종목은 PER이 비어 있습니다.',
    NOTE_COMMON.ko[NOTE_COMMON.ko.length-1]]},
- en:{title:'China Semiconductor Value Chain Map — Suppliers · Chipmakers · Demand',docTitle:'China Semiconductor Value Chain Map',
+ en:{title:'China Semiconductor Value Chain Map — Chipmakers · Demand · Suppliers',docTitle:'China Semiconductor Value Chain Map',
   lead:`${_NP} process steps in manufacturing order with the mainland-listed (A-share) materials, parts, equipment and design companies in each, plus ${_ND} columns for the memory, foundry and logic chipmakers and the AI big tech companies that buy AI chips—${_N} companies in all (some big tech listed in Hong Kong). Click a company for details.`,
   ph:'Search company, code or keyword (e.g., etch, foundry, 002371)',filing:'Filings (cninfo)',code:'Code',
   warn:'Descriptions, risks and events are qualitative summaries from public information. Figures other than market metrics (revenue, share, etc.) are not included; check each company\'s periodic reports on cninfo.',

@@ -226,7 +226,7 @@ td.r,th.r{text-align:right}
 <header class="top">
   <div>
     <span class="tag" data-i18n="tag">사내 참고용 · 투자권유 아님</span>
-    <h1 data-i18n="title">국내 반도체 밸류체인 맵 — 소부장 · 완성 · 수요</h1>
+    <h1 data-i18n="title">국내 반도체 밸류체인 맵 — 완성 · 수요 · 소부장</h1>
     <p class="lead" data-i18n="lead">반도체가 만들어지는 순서대로 14개 공정에 국내 소재·부품·장비·서비스 기업을 나누고, 그 칩을 만드는 메모리·파운드리·팹리스 기업과 AI 반도체를 사들이는 AI 빅테크까지 4칸을 더해 핵심사업과 특징을 정리했습니다. 기업을 누르면 상세가 열립니다.</p>
   </div>
   <div class="lang" role="radiogroup" aria-label="Language">
@@ -337,6 +337,26 @@ const TAGS = {
   mem:  {ko:'메모리 투자', en:'Memory capex'}
 };
 const COLS = [
+ {id:'d1',st:'D',ko:'메모리',en:'Memory',
+  d:'D램·낸드·HBM을 직접 설계하고 만드는 회사. 소부장 기업의 가장 큰 고객입니다.',
+  de:'Companies that design and make DRAM, NAND and HBM themselves—the largest customers of the equipment and materials makers below.',
+  w:'메모리 가격과 재고, HBM 세대 전환과 고객 인증, 설비투자 계획. 이들의 투자 방향이 아래 소부장 칸의 업황을 정합니다.',
+  we:'Memory prices and inventory, HBM generation changes and customer qualification, and capex plans—their spending sets the cycle for the supplier columns below.'},
+ {id:'d2',st:'D',ko:'파운드리',en:'Foundry',
+  d:'다른 회사가 설계한 칩을 위탁받아 웨이퍼로 만들어 주는 회사.',
+  de:'Contract manufacturers that turn other companies\' chip designs into wafers.',
+  w:'선단·성숙 공정별 가동률, 대형 고객 수주, 수율. 국내는 선단(삼성)과 성숙 공정(DB하이텍)이 나뉩니다.',
+  we:'Utilization by leading-edge vs. mature nodes, big customer wins and yields. In Korea, leading-edge (Samsung) and mature nodes (DB HiTek) are separate stories.'},
+ {id:'d3',st:'D',ko:'시스템반도체·팹리스',en:'Logic & Fabless',
+  d:'모바일 AP·이미지센서·구동칩·차량용 칩 등 메모리가 아닌 반도체를 설계하거나 만드는 회사.',
+  de:'Designers and makers of non-memory chips—mobile APs, image sensors, display drivers, automotive chips.',
+  w:'전방 제품(스마트폰·TV·자동차) 수요와 고객 채택, 파운드리 단가.',
+  we:'End demand (phones, TVs, cars), design wins and foundry pricing.'},
+ {id:'d4',st:'D',ko:'AI 빅테크·클라우드',en:'AI Big Tech & Cloud',
+  d:'AI 모델·클라우드·데이터센터를 운영해 AI 반도체와 HBM을 사들이는 수요처.',
+  de:'Operators of AI models, cloud and data centers—the buyers of AI chips and HBM.',
+  w:'AI 데이터센터 투자 계획, 자체 AI 모델·서비스 성과, GPU 확보.',
+  we:'AI data-center investment plans, results of in-house AI models and services, and GPU procurement.'},
  {id:'f1',st:'F',ko:'인프라/보조설비',en:'Infra & Sub-fab',
   d:'팹을 돌리는 데 필요한 클린룸·배기·진공·가스/케미컬 공급·폐가스 처리 설비. 공정 장비 옆에서 함께 깔립니다.',
   de:'Cleanrooms, exhaust, vacuum, gas/chemical supply and abatement that keep a fab running; installed alongside process tools.',
@@ -406,27 +426,7 @@ const COLS = [
   d:'칩 설계에 쓰이는 설계자산(IP)을 팔거나, 팹리스의 설계를 파운드리 공정에 맞게 옮겨 주는 회사, 그리고 팹리스.',
   de:'Firms licensing design IP, those porting fabless designs to foundry processes (design houses), and fabless chipmakers.',
   w:'AI 칩 설계 수요, 삼성 파운드리·TSMC 생태계 내 위치, 개발 용역에서 양산 매출로 넘어가는 시점.',
-  we:'AI-chip design demand, position in Samsung Foundry/TSMC ecosystems, and the shift from NRE to mass-production revenue.'},
- {id:'d1',st:'D',ko:'메모리',en:'Memory',
-  d:'D램·낸드·HBM을 직접 설계하고 만드는 회사. 소부장 기업의 가장 큰 고객입니다.',
-  de:'Companies that design and make DRAM, NAND and HBM themselves—the largest customers of the equipment and materials makers above.',
-  w:'메모리 가격과 재고, HBM 세대 전환과 고객 인증, 설비투자 계획. 이들의 투자 방향이 위 소부장 칸의 업황을 정합니다.',
-  we:'Memory prices and inventory, HBM generation changes and customer qualification, and capex plans—their spending sets the cycle for the supplier columns above.'},
- {id:'d2',st:'D',ko:'파운드리',en:'Foundry',
-  d:'다른 회사가 설계한 칩을 위탁받아 웨이퍼로 만들어 주는 회사.',
-  de:'Contract manufacturers that turn other companies\' chip designs into wafers.',
-  w:'선단·성숙 공정별 가동률, 대형 고객 수주, 수율. 국내는 선단(삼성)과 성숙 공정(DB하이텍)이 나뉩니다.',
-  we:'Utilization by leading-edge vs. mature nodes, big customer wins and yields. In Korea, leading-edge (Samsung) and mature nodes (DB HiTek) are separate stories.'},
- {id:'d3',st:'D',ko:'시스템반도체·팹리스',en:'Logic & Fabless',
-  d:'모바일 AP·이미지센서·구동칩·차량용 칩 등 메모리가 아닌 반도체를 설계하거나 만드는 회사.',
-  de:'Designers and makers of non-memory chips—mobile APs, image sensors, display drivers, automotive chips.',
-  w:'전방 제품(스마트폰·TV·자동차) 수요와 고객 채택, 파운드리 단가.',
-  we:'End demand (phones, TVs, cars), design wins and foundry pricing.'},
- {id:'d4',st:'D',ko:'AI 빅테크·클라우드',en:'AI Big Tech & Cloud',
-  d:'AI 모델·클라우드·데이터센터를 운영해 AI 반도체와 HBM을 사들이는 수요처.',
-  de:'Operators of AI models, cloud and data centers—the buyers of AI chips and HBM.',
-  w:'AI 데이터센터 투자 계획, 자체 AI 모델·서비스 성과, GPU 확보.',
-  we:'AI data-center investment plans, results of in-house AI models and services, and GPU procurement.'}
+  we:'AI-chip design demand, position in Samsung Foundry/TSMC ecosystems, and the shift from NRE to mass-production revenue.'}
 ];
 /* 자료 칸별 배치와 칸 안의 색(유형) — 자료에 적힌 순서 그대로 */
 const MEMBERS = {
@@ -1237,7 +1237,7 @@ const EXTRA = {
 };
 
 const I18N = {
- ko:{tag:'사내 참고용 · 투자권유 아님',title:'국내 반도체 밸류체인 맵 — 소부장 · 완성 · 수요',
+ ko:{tag:'사내 참고용 · 투자권유 아님',title:'국내 반도체 밸류체인 맵 — 완성 · 수요 · 소부장',
   lead:'반도체가 만들어지는 순서대로 14개 공정에 국내 소재·부품·장비·서비스 기업을 나누고, 그 칩을 만드는 메모리·파운드리·팹리스 기업과 AI 반도체를 사들이는 AI 빅테크까지 4칸을 더해 핵심사업과 특징을 정리했습니다. 기업을 누르면 상세가 열립니다.',
   ph:'기업명·종목코드·사업 키워드 검색 (예: HBM, 펠리클, 042700)',vMap:'맵 보기',vTable:'표 보기',reset:'필터 지우기',
   sProc:'공정 해설과 관전 포인트',sProcSub:'각 공정이 하는 일, 업황을 볼 때 무엇을 보면 되는지. 공정 이름을 누르면 그 공정만 걸러집니다.',
@@ -1272,7 +1272,7 @@ const I18N = {
    '후공정 「패키징 소켓」 칸 마지막 기업은 원 자료 인쇄가 흐려 「티에프이」로 판독했습니다. 원 자료로 한 번 더 확인하십시오.',
    '이 화면은 개별 종목이나 주식에 대한 추천이 아닙니다. 사내 교육·참고용입니다.'
   ]},
- en:{tag:'Internal reference · Not investment advice',title:'Korea Semiconductor Value Chain Map — Suppliers · Chipmakers · Demand',
+ en:{tag:'Internal reference · Not investment advice',title:'Korea Semiconductor Value Chain Map — Chipmakers · Demand · Suppliers',
   lead:'Fourteen process steps in manufacturing order with the Korean materials, parts, equipment and service companies in each, plus four columns for the memory, foundry and fabless chipmakers and the AI big tech that buys AI chips. Click a company for details.',
   ph:'Search company, ticker or keyword (e.g., HBM, pellicle, 042700)',vMap:'Map',vTable:'Table',reset:'Clear filters',
   sProc:'Process guide & what to watch',sProcSub:'What each step does and what to watch. Click a step name to filter the map.',
