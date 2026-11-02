@@ -467,7 +467,7 @@ const EXTRA = {
 };
 const _N=Object.keys(CO).length,_ND=COLS.filter(c=>c.st==='D').length,_NP=COLS.length-_ND;
 const I18N=mkI18N({
- ko:{title:'미국 반도체 밸류체인 맵 — 소부장 · 완성 · 수요',docTitle:'미국 반도체 밸류체인 맵',
+ ko:{title:'미국 반도체 밸류체인 맵 — 완성 · 수요 · 소부장',docTitle:'미국 반도체 밸류체인 맵',
   lead:`반도체가 만들어지는 순서대로 ${_NP}개 공정에 미국 상장 소재·부품·장비·설계 기업을 나누고, 그 칩을 만드는 메모리·파운드리·팹리스 기업과 AI 반도체를 사들이는 AI 빅테크까지 ${_ND}칸을 더해 모두 ${_N}곳의 핵심사업과 특징을 정리했습니다. 기업을 누르면 상세가 열립니다.`,
   ph:'기업명·티커·사업 키워드 검색 (예: HBM, 식각, NVDA)',filing:'SEC 공시(EDGAR)',
   warn:'기업 설명·리스크·이벤트는 공개 자료를 바탕으로 한 정성 요약입니다. 시장 지표 밖의 수치(매출·점유율 등)는 싣지 않았으니 SEC 공시(10-K·10-Q)로 확인하십시오.',
@@ -479,7 +479,7 @@ const I18N=mkI18N({
    'Axcelis(ACLS)와 Veeco(VECO)는 2025년 합병을 발표했습니다. 진행 상황과 그 뒤 티커 변화는 SEC 공시로 확인하십시오.',
    'Qnity Electronics(Q)는 DuPont의 전자소재 부문이 2025년 분리 상장한 회사입니다. ACM Research(ACMR)의 주력 자회사 ACM 상해(盛美上海)는 중국 상해 과창판에 따로 상장돼 있어 중국 맵에도 실었습니다.',
    NOTE_COMMON.ko[NOTE_COMMON.ko.length-1]]},
- en:{title:'US Semiconductor Value Chain Map — Suppliers · Chipmakers · Demand',docTitle:'US Semiconductor Value Chain Map',
+ en:{title:'US Semiconductor Value Chain Map — Chipmakers · Demand · Suppliers',docTitle:'US Semiconductor Value Chain Map',
   lead:`${_NP} process steps in manufacturing order with the US-listed materials, parts, equipment and design companies in each, plus ${_ND} columns for the memory, foundry and fabless chipmakers and the AI big tech that buys AI chips—${_N} companies in all. Click a company for details.`,
   ph:'Search company, ticker or keyword (e.g., HBM, etch, NVDA)',filing:'SEC filings (EDGAR)',
   warn:'Descriptions, risks and events are qualitative summaries from public information. Figures other than market metrics (revenue, share, etc.) are not included; check SEC filings (10-K, 10-Q).',
