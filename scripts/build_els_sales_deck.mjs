@@ -703,8 +703,10 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
   // 그보다 많으면 나머지는 카드 밑에 한 줄로 적는다 — 빼먹으면 "권하지 않는 N종" 과 어긋난다.
   const SHOW = CAU.slice(0, 5), MORE = CAU.slice(5);
   const tight = SHOW.length >= 5;
-  const CH = tight ? 0.80 : SHOW.length >= 4 ? 1.005 : 1.34, CB = CH - (tight ? 0.08 : 0.16);
-  const dy = tight ? -0.05 : 0, my = tight ? -0.11 : 0;   // 제목 줄·작은 표 줄을 끌어올리는 폭
+  // 다섯 칸이면 기초자산 이름이 두 줄로 꺾여도 아래 작은 표와 겹치지 않게 글씨를 줄이고
+  // 표를 칸 아래쪽으로 붙인다(2026-11-02 첫 판에서 "(온라인 전용)" 이 라벨을 덮었다).
+  const CH = tight ? 0.84 : SHOW.length >= 4 ? 1.005 : 1.34, CB = CH - (tight ? 0.06 : 0.16);
+  const dy = tight ? -0.04 : 0, my = tight ? -0.03 : 0;   // 제목 줄·작은 표 줄을 옮기는 폭
   SHOW.forEach((it, i) => {
     const y = y0 + i * CH + dy;
     s.addShape(pres.ShapeType.rect, { x: M, y, w: cw, h: CB, fill: { color: 'FDF3F3' }, line: { color: 'F0C9C9', width: 1 } });
@@ -712,7 +714,7 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
     // 한 줄에 회차 · 기초자산 · 제외 사유 · 수익률이 겹치지 않게 폭을 나눠 잡는다.
     // 사유를 칩으로 그리면 종목 수가 많은 상품에서 기초자산 이름을 덮는다.
     s.addText(`제${it.no}회`, { x: M + 0.24, y: y + 0.09, w: 1.30, h: 0.28, fontFace: F, fontSize: 14.5, bold: true, color: BAD, margin: 0 });
-    s.addText(it.underlyings.join(' · ') + onl(it), { x: M + 1.58, y: y + 0.12, w: 2.35, h: 0.24, fontFace: F, fontSize: 10, color: INK, margin: 0 });
+    s.addText(it.underlyings.join(' · ') + onl(it), { x: M + 1.58, y: y + (tight ? 0.07 : 0.12), w: 2.35, h: tight ? 0.32 : 0.24, fontFace: F, fontSize: tight ? 8.5 : 10, color: INK, valign: 'top', margin: 0 });
     s.addText([
       { text: '사유 ', options: { color: MUTED, bold: false } },
       { text: reasonsOf(it).join(' · '), options: { color: BAD, bold: true } },
@@ -727,8 +729,8 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
     ];
     mini.forEach(([k, v, c], j) => {
       const mx = M + 0.24 + j * 1.72;
-      s.addText(k, { x: mx, y: y + 0.42 + my, w: 1.66, h: 0.2, fontFace: F, fontSize: 8, color: MUTED, margin: 0 });
-      s.addText(v, { x: mx, y: y + 0.60 + my, w: 1.66, h: 0.28, fontFace: F, fontSize: tight ? 12 : 13, bold: true, color: c, margin: 0 });
+      s.addText(k, { x: mx, y: y + 0.42 + my, w: 1.66, h: 0.2, fontFace: F, fontSize: tight ? 7.5 : 8, color: MUTED, margin: 0 });
+      s.addText(v, { x: mx, y: y + (tight ? 0.55 : 0.60), w: 1.66, h: tight ? 0.22 : 0.28, fontFace: F, fontSize: tight ? 11.5 : 13, bold: true, color: c, margin: 0 });
     });
   });
   if (MORE.length) {
