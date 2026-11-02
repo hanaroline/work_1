@@ -728,7 +728,7 @@ function defence(it) {
       { x: x + 0.2, y: y0 + 1.12, w: cw - 0.4, h: five ? 0.42 : 0.3, fontFace: F, fontSize: five ? 11.5 : 13, lineSpacing: five ? 15 : undefined, valign: 'top', margin: 0 });
     const rs = reasons(it);
     s.addText(rs.map((t, j) => ({ text: t, options: { bullet: true, breakLine: j < rs.length - 1 } })), {
-      x: x + 0.2, y: y0 + (five ? 1.6 : 1.5), w: cw - 0.4, h: five ? 1.96 : 1.94, fontFace: F, fontSize: fs5, color: BODY, valign: 'top', lineSpacing: fs5 + 3.5, paraSpaceAfter: 7, margin: 0,
+      x: x + 0.2, y: y0 + (five ? 1.6 : 1.5), w: cw - 0.4, h: five ? 1.96 : 1.94, fontFace: F, fontSize: fs5, color: BODY, valign: 'top', lineSpacing: fs5 + 3.5, paraSpaceAfter: five ? 3 : 7, margin: 0,
     });
   });
   s.addShape(pres.ShapeType.rect, { x: M, y: y0 + 3.76, w: CW, h: 0.88, fill: { color: SURF }, line: { color: HAIR, width: 1 } });
