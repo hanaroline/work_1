@@ -127,6 +127,12 @@ tbody tr{cursor:pointer}
 tbody tr:hover{background:var(--subtle)}
 td.num{font-family:var(--font-en);font-variant-numeric:tabular-nums;white-space:nowrap}
 td.nm{font-weight:700;color:var(--ink);white-space:nowrap}
+/* td.sm, td.tgs: min-width so long text does not wrap every few chars; table scrolls sideways */
+td.sm{min-width:340px;line-height:1.5}
+td.tgs{min-width:200px}
+#tbl th:first-child,#tbl td.nm{position:sticky;left:0;z-index:1;background:#fff;box-shadow:1px 0 0 var(--hair-soft)}
+#tbl th:first-child{background:var(--orange-soft);z-index:2}
+tbody tr:hover td.nm{background:var(--subtle)}
 .pill{display:inline-block;font-size:12px;padding:1px 7px;border-radius:2px;margin:1px 3px 1px 0;white-space:nowrap;border:1px solid var(--hair);color:var(--body);background:#fff}
 .pill.t-eq{background:var(--eq);border-color:var(--eq);color:#fff}
 .pill.t-etc{background:var(--etc);border-color:var(--etc);color:#fff}
@@ -243,7 +249,8 @@ td.r,th.r{text-align:right}
   table{min-width:0;font-size:8pt;page-break-inside:auto}
   thead{display:table-header-group}tr{break-inside:avoid}
   th,td{padding:4px 5px}th{white-space:normal;cursor:auto}
-  #tbl td:nth-last-child(2){min-width:58mm}
+  #tbl td.sm{min-width:58mm}#tbl td.tgs{min-width:0}
+  #tbl th:first-child,#tbl td.nm{position:static;box-shadow:none}
   .co.dim{opacity:1}
 }
 </style>
@@ -1156,8 +1163,8 @@ function renderTable(){
     <td>${typesOf(r.n).map(t=>`<span class="pill t-${t}">${TYPES[t][lang]}</span>`).join('')}</td>
     ${(m=>`<td class="num r">${fCap(m.mcap,m.cur)}</td><td class="num r">${fX(m.per)}</td><td class="num r">${fX(m.pbr)}</td><td class="num r ${cls(m.r1m)}">${fPct(m.r1m,1)}</td><td class="num r ${cls(m.rytd)}">${fPct(m.rytd,1)}</td><td class="num r">${m.pos52==null?DASH:fNum(m.pos52)+'%'}</td>`)(mt(r.n)||{})}
     <td>${xBadge(r.n)}</td>
-    <td>${esc(L(r.c,'s'))}</td>
-    <td>${r.c.tg.map(t=>`<span class="pill tg">${TAGS[t][lang]}</span>`).join('')}</td></tr>`).join('');
+    <td class="sm">${esc(L(r.c,'s'))}</td>
+    <td class="tgs">${r.c.tg.map(t=>`<span class="pill tg">${TAGS[t][lang]}</span>`).join('')}</td></tr>`).join('');
   return rows.length;
 }
 
