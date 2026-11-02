@@ -723,12 +723,12 @@ function defence(it) {
     s.addText(`제${it.no}회`, { x: x + 0.2, y: y0 + 0.22, w: cw - 0.4, h: 0.34, fontFace: F, fontSize: 17, bold: true, color: INK, margin: 0 });
     s.addText(it.underlyings.join(' · '), { x: x + 0.2, y: y0 + 0.58, w: cw - 0.4, h: 0.52, fontFace: F, fontSize: 11, color: MUTED, lineSpacing: 15, margin: 0 });
     // 다섯 칸이면 폭이 좁아 "연 … 손해 …" 가 두 줄로 꺾여 아래 글을 덮었다 — 글씨를 줄이고 사이를 좁힌다.
-    s.addText([{ text: `연 ${f1(it.annualRate)}%`, options: { bold: true, color: ACTIVE } },
-               { text: `${five ? ' · ' : '   '}손해 ${f1(it.mcLoss)}%`, options: { bold: true, color: BAD } }],
-      { x: x + 0.2, y: y0 + 1.14, w: cw - 0.4, h: 0.3, fontFace: F, fontSize: five ? 11 : 13, margin: 0 });
+    s.addText([{ text: `연 ${f1(it.annualRate)}%`, options: { bold: true, color: ACTIVE, breakLine: five } },
+               { text: `${five ? '' : '   '}손해 ${f1(it.mcLoss)}%`, options: { bold: true, color: BAD } }],
+      { x: x + 0.2, y: y0 + 1.12, w: cw - 0.4, h: five ? 0.42 : 0.3, fontFace: F, fontSize: five ? 11.5 : 13, lineSpacing: five ? 15 : undefined, valign: 'top', margin: 0 });
     const rs = reasons(it);
     s.addText(rs.map((t, j) => ({ text: t, options: { bullet: true, breakLine: j < rs.length - 1 } })), {
-      x: x + 0.2, y: y0 + 1.5, w: cw - 0.4, h: five ? 2.06 : 1.94, fontFace: F, fontSize: fs5, color: BODY, valign: 'top', lineSpacing: fs5 + 3.5, paraSpaceAfter: 7, margin: 0,
+      x: x + 0.2, y: y0 + (five ? 1.6 : 1.5), w: cw - 0.4, h: five ? 1.96 : 1.94, fontFace: F, fontSize: fs5, color: BODY, valign: 'top', lineSpacing: fs5 + 3.5, paraSpaceAfter: 7, margin: 0,
     });
   });
   s.addShape(pres.ShapeType.rect, { x: M, y: y0 + 3.76, w: CW, h: 0.88, fill: { color: SURF }, line: { color: HAIR, width: 1 } });
