@@ -50,7 +50,11 @@ h1{font-size:34px;line-height:1.25;letter-spacing:-.3px;color:var(--ink);margin:
 .asof:empty{display:none}
 @media (max-width:768px){h1{font-size:26px}.lead{font-size:16px}}
 .lang{display:inline-flex;border:1px solid var(--hair);border-radius:2px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;flex:none}
-@media (max-width:640px){.top{display:block;position:relative}.top .lang{position:absolute;top:28px;right:0}.top .tag{margin-bottom:24px}}
+.tools{display:flex;gap:8px;flex:none;align-items:flex-start}
+.pbtn{border:1px solid var(--hair);background:#fff;color:var(--body);border-radius:2px;font-size:14px;font-weight:500;padding:9px 14px;line-height:18px;box-shadow:0 2px 8px rgba(0,0,0,.06);cursor:pointer;white-space:nowrap}
+.pbtn:hover{background:var(--subtle);color:var(--ink)}
+.pbtn:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
+@media (max-width:640px){.top{flex-direction:column-reverse;align-items:stretch;gap:12px;padding-top:16px}.top .tools{justify-content:flex-end}}
 .lang button{border:0;background:#fff;color:var(--muted);font-family:var(--font-en);font-size:14px;font-weight:500;letter-spacing:.5px;padding:9px 17px}
 .lang button+button{border-left:1px solid var(--hair)}
 .lang button:hover{background:var(--subtle);color:var(--ink)}
@@ -173,7 +177,9 @@ footer{margin:64px 0 40px;border-top:1px solid var(--hair);padding-top:16px}
 .dh{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--hair-soft);padding:18px 22px 14px;z-index:1}
 .dh .x{position:absolute;right:14px;top:12px;border:1px solid var(--hair);background:#fff;border-radius:2px;width:36px;height:36px;font-size:20px;line-height:1;color:var(--muted)}
 .dh .x:hover{color:var(--ink);background:var(--subtle)}
-.dh h3{margin:0;font-size:26px;color:var(--ink);line-height:1.25;padding-right:44px}
+.dh h3{margin:0;font-size:26px;color:var(--ink);line-height:1.25;padding-right:120px}
+.dh .pbtn{position:absolute;right:58px;top:12px;height:36px;padding:0 12px;font-size:13px;box-shadow:none}
+.pmeta{display:none}
 .dh .en{font-family:'Inter',var(--font-kr);color:var(--muted);font-size:14px}
 .dh .meta{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
 .db{padding:6px 22px 30px}
@@ -217,11 +223,28 @@ td.r,th.r{text-align:right}
 .db .warn{font-size:13px;color:var(--muted);margin-top:16px;border-top:1px solid var(--hair-soft);padding-top:10px}
 .hidden{display:none!important}
 
+@page{size:A4 landscape;margin:12mm}
+@page co{size:A4 portrait;margin:14mm}
 @media print{
-  .lang,.toolbar,.drawer,.scrim{display:none!important}
+  html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .tools,.toolbar,.drawer,.scrim{display:none!important}
+  body.print-co .page{display:none!important}
+  body.print-co .drawer{display:block!important;page:co;position:static;transform:none;width:auto;height:auto;overflow:visible;border:0;box-shadow:none}
+  body.print-co .dh{position:static;padding:0 0 12px}
+  body.print-co .dh .x,body.print-co .dh .pbtn{display:none!important}
+  body.print-co .dh h3{padding-right:0}
+  body.print-co .db{padding:6px 0 0}
+  body.print-co .pmeta{display:block;font-size:10pt;color:#6C6C6C;margin:0 0 10px}
+  body.print-co .pmeta .tag{margin:0 8px 0 0}
   body{font-size:11pt}.page{max-width:100%;padding:0}
   .section{margin-top:24px;page-break-inside:auto}
-  .stage,.card,.bk,table{page-break-inside:avoid}
+  .card,.bk{page-break-inside:avoid}
+  .stage{page-break-inside:auto}.stage h3{break-after:avoid}
+  .tbl-wrap{overflow:visible;border:0}
+  table{min-width:0;font-size:8pt;page-break-inside:auto}
+  thead{display:table-header-group}tr{break-inside:avoid}
+  th,td{padding:4px 5px}th{white-space:normal;cursor:auto}
+  #tbl td:nth-last-child(2){min-width:58mm}
   .co.dim{opacity:1}
 }
 .dh .en{font-family:'Inter','Noto Sans JP',var(--font-kr)}
@@ -237,9 +260,12 @@ td.r,th.r{text-align:right}
     <p class="lead" data-i18n="lead"></p>
     <p class="asof" id="asof"></p>
   </div>
-  <div class="lang" role="radiogroup" aria-label="Language">
-    <button role="radio" data-lang="ko" aria-checked="true">KO</button>
-    <button role="radio" data-lang="en" aria-checked="false">EN</button>
+  <div class="tools">
+    <button class="pbtn" id="pPage" data-i18n="pr">인쇄 · PDF</button>
+    <div class="lang" role="radiogroup" aria-label="Language">
+      <button role="radio" data-lang="ko" aria-checked="true">KO</button>
+      <button role="radio" data-lang="en" aria-checked="false">EN</button>
+    </div>
   </div>
 </header>
 
@@ -307,7 +333,9 @@ td.r,th.r{text-align:right}
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-labelledby="dName">
   <div class="dh">
+    <div class="pmeta" id="dPrint"></div>
     <button class="x" id="dClose" aria-label="close">×</button>
+    <button class="pbtn" id="pCo" data-i18n="pr">인쇄 · PDF</button>
     <h3 id="dName"></h3>
     <div class="en" id="dEn"></div>
     <div class="meta" id="dMeta"></div>
@@ -461,7 +489,7 @@ const mkI18N=(s)=>{
   mT:'주요 지표',mPrice:'현재가',mCap:'시가총액',mPer:'PER',mPbr:'PBR',mEps:'EPS',mBps:'BPS',mFrgn:'배당수익률',
   m1m:'1개월',m3m:'3개월',mYtd:'연초 대비',m52:'52주 범위 · 현재 위치',mListed:'거래소 · 통화',
   mAsof:(d,g)=>g?`${g} 수집 · 장중 값(종가 아님)`:`기준 ${d} 종가(현지 거래일)`,
-  asof:(d,w,g,i)=>i?`시세 <b>${g} 수집 장중 값</b> · 종가 아님 · 실시간 아님`:`시세 기준 <b>${d}(${w}) 종가</b>(현지 거래일) · 수집 ${g} · 실시간 아님`,wd:['일','월','화','수','목','금','토'],
+  asof:(d,w,g,i)=>i?`시세 <b>${g} 수집 장중 값</b> · 종가 아님 · 실시간 아님`:`시세 기준 <b>${d}(${w}) 종가</b>(현지 거래일) · 수집 ${g} · 실시간 아님`,wd:['일','월','화','수','목','금','토'],pr:'인쇄 · PDF',
   mUnl:'비상장 기업이라 시장 지표가 없습니다.',mNoCo:'이 종목은 이번 수집에서 값을 받지 못했습니다.',
   xT:'HBM · AI 노출도',x:{d:'직접',i:'간접',l:'낮음'},rT:'핵심 리스크',evT:'앞으로 볼 이벤트',
   ptT:'같은 공정 지표 비교',pkT:'같은 공정의 다른 기업',
@@ -481,7 +509,7 @@ const mkI18N=(s)=>{
   mT:'Key metrics',mPrice:'Price',mCap:'Market cap',mPer:'PER',mPbr:'PBR',mEps:'EPS',mBps:'BPS',mFrgn:'Dividend yield',
   m1m:'1M',m3m:'3M',mYtd:'YTD',m52:'52-week range · position',mListed:'Exchange · Currency',
   mAsof:(d,g)=>g?`Collected ${g} · intraday (not a close)`:`Close as of ${d} (local trading day)`,
-  asof:(d,w,g,i)=>i?`Prices <b>intraday, collected ${g}</b> · not a close · not real-time`:`Prices as of <b>${d} (${w}) close</b> (local trading day) · collected ${g} · not real-time`,wd:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+  asof:(d,w,g,i)=>i?`Prices <b>intraday, collected ${g}</b> · not a close · not real-time`:`Prices as of <b>${d} (${w}) close</b> (local trading day) · collected ${g} · not real-time`,wd:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],pr:'Print · PDF',
   mUnl:'Unlisted company — no market metrics.',mNoCo:'No values were retrieved for this ticker in the latest run.',
   xT:'HBM · AI exposure',x:{d:'Direct',i:'Indirect',l:'Low'},rT:'Key risks',evT:'Events to watch',
   ptT:'Metrics vs. same-step peers',pkT:'Others in the same step',
@@ -1124,6 +1152,7 @@ function renderAsof(){
   let h='';
   if(d){const w=/^\d{4}-\d{2}-\d{2}$/.test(d)?T('wd')[new Date(d+'T00:00:00Z').getUTCDay()]:'';
     h=T('asof')(esc(d),w,esc(g),!!M.intraday);}
+  const dp=$('#dPrint');if(dp)dp.innerHTML=`<span class="tag">${esc(T('tag'))}</span>${esc(T('title'))}${h?`<p class="asof${M.intraday?' live':''}" style="margin:6px 0 0">${h}</p>`:''}`;
   ['#asof','#asofT'].forEach(q=>{const el=$(q);if(!el)return;el.innerHTML=h;el.classList.toggle('live',!!M.intraday);});
 }
 function renderStatic(){
@@ -1279,10 +1308,13 @@ document.addEventListener('click',e=>{
   if(t.dataset.sort){const k=t.dataset.sort;st.sort=st.sort.k===k?{k,dir:-st.sort.dir}:{k,dir:NUMK.has(k)?-1:1};renderTable();return;}
   if(t.id==='reset'){st.q='';$('#q').value='';st.stage='all';st.types.clear();st.tags.clear();st.col=null;render();return;}
   if(t.id==='dClose'){closeCo();return;}
+  if(t.id==='pPage'){document.body.classList.remove('print-co');window.print();return;}
+  if(t.id==='pCo'){document.body.classList.add('print-co');window.print();return;}
 });
 // 공정 해설 카드 제목 → 그 공정만 걸러 맵으로
 document.addEventListener('click',e=>{const h=e.target.closest('.card h4');if(!h)return;const id=h.parentElement.id.slice(2);st.col=id;st.view='map';render();$('#toolbar').scrollIntoView({behavior:'smooth'});});
 $('#scrim').addEventListener('click',closeCo);
+window.addEventListener('afterprint',()=>document.body.classList.remove('print-co'));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&openName)closeCo();if(e.key==='Enter'&&e.target.matches('tr[data-co]'))openCo(e.target.dataset.co);});
 $('#q').addEventListener('input',e=>{st.q=e.target.value.trim();render();});
 
