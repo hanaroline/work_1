@@ -708,8 +708,16 @@ function defence(it) {
     if (better) r.push(`기준 자산이 똑같은 제${better.no}회가 수익률은 더 높고(연 ${f1(better.annualRate)}%) 손해 볼 가능성은 더 낮습니다(${f1(better.mcLoss)}%) — ${it.every}개월마다 보는 이 상품과 달리 ${better.every}개월마다 끝날 기회가 옵니다`);
     return r.slice(0, 3);
   };
-  const cw = (CW - 0.26 * 3) / 4;
-  A.caution.forEach((it, i) => {
+  // 다섯 종까지 칸으로 그리고 나머지는 기준 상자 위에 한 줄로 적는다(2026-11-02 첫 다섯 종).
+  const SHOW = A.caution.slice(0, 5), MORE = A.caution.slice(5);
+  const n = Math.max(4, SHOW.length), fs5 = SHOW.length >= 5 ? 9.5 : 10.5;
+  const cw = (CW - 0.26 * (n - 1)) / n;
+  if (MORE.length) {
+    s.addText(`그 밖에 제${MORE.map((c) => c.no).join('·')}회도 같은 기준으로 권하지 않습니다.`, {
+      x: M, y: y0 + 3.52, w: CW, h: 0.22, fontFace: F, fontSize: 10, bold: true, color: BAD, margin: 0,
+    });
+  }
+  SHOW.forEach((it, i) => {
     const x = M + i * (cw + 0.26);
     s.addShape(pres.ShapeType.rect, { x, y: y0, w: cw, h: 3.5, fill: { color: WHITE }, line: { color: HAIR, width: 1 } });
     s.addText(`제${it.no}회`, { x: x + 0.2, y: y0 + 0.22, w: cw - 0.4, h: 0.34, fontFace: F, fontSize: 17, bold: true, color: INK, margin: 0 });
@@ -719,7 +727,7 @@ function defence(it) {
       { x: x + 0.2, y: y0 + 1.14, w: cw - 0.4, h: 0.3, fontFace: F, fontSize: 13, margin: 0 });
     const rs = reasons(it);
     s.addText(rs.map((t, j) => ({ text: t, options: { bullet: true, breakLine: j < rs.length - 1 } })), {
-      x: x + 0.2, y: y0 + 1.5, w: cw - 0.4, h: 1.94, fontFace: F, fontSize: 10.5, color: BODY, valign: 'top', lineSpacing: 14, paraSpaceAfter: 7, margin: 0,
+      x: x + 0.2, y: y0 + 1.5, w: cw - 0.4, h: 1.94, fontFace: F, fontSize: fs5, color: BODY, valign: 'top', lineSpacing: fs5 + 3.5, paraSpaceAfter: 7, margin: 0,
     });
   });
   s.addShape(pres.ShapeType.rect, { x: M, y: y0 + 3.76, w: CW, h: 0.88, fill: { color: SURF }, line: { color: HAIR, width: 1 } });

@@ -699,9 +699,14 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
   const cw = 7.2;
   // 주의 종목은 회차마다 3~4종으로 달라진다. 칸 높이를 종목 수에 맞춰 잡지 않으면
   // 넷째 카드가 아래 파란 상자를 덮는다.
-  const CH = CAU.length >= 4 ? 1.005 : 1.34, CB = CH - 0.16;
-  CAU.forEach((it, i) => {
-    const y = y0 + i * CH;
+  // 다섯 종까지 카드로 그린다. 다섯이면 칸을 줄이고 글씨 자리를 당긴다(2026-11-02 첫 사례).
+  // 그보다 많으면 나머지는 카드 밑에 한 줄로 적는다 — 빼먹으면 "권하지 않는 N종" 과 어긋난다.
+  const SHOW = CAU.slice(0, 5), MORE = CAU.slice(5);
+  const tight = SHOW.length >= 5;
+  const CH = tight ? 0.80 : SHOW.length >= 4 ? 1.005 : 1.34, CB = CH - (tight ? 0.08 : 0.16);
+  const dy = tight ? -0.05 : 0, my = tight ? -0.11 : 0;   // 제목 줄·작은 표 줄을 끌어올리는 폭
+  SHOW.forEach((it, i) => {
+    const y = y0 + i * CH + dy;
     s.addShape(pres.ShapeType.rect, { x: M, y, w: cw, h: CB, fill: { color: 'FDF3F3' }, line: { color: 'F0C9C9', width: 1 } });
     s.addShape(pres.ShapeType.rect, { x: M, y, w: 0.05, h: CB, fill: { color: BAD }, line: { width: 0 } });
     // 한 줄에 회차 · 기초자산 · 제외 사유 · 수익률이 겹치지 않게 폭을 나눠 잡는다.
@@ -722,10 +727,15 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
     ];
     mini.forEach(([k, v, c], j) => {
       const mx = M + 0.24 + j * 1.72;
-      s.addText(k, { x: mx, y: y + 0.42, w: 1.66, h: 0.2, fontFace: F, fontSize: 8, color: MUTED, margin: 0 });
-      s.addText(v, { x: mx, y: y + 0.60, w: 1.66, h: 0.28, fontFace: F, fontSize: 13, bold: true, color: c, margin: 0 });
+      s.addText(k, { x: mx, y: y + 0.42 + my, w: 1.66, h: 0.2, fontFace: F, fontSize: 8, color: MUTED, margin: 0 });
+      s.addText(v, { x: mx, y: y + 0.60 + my, w: 1.66, h: 0.28, fontFace: F, fontSize: tight ? 12 : 13, bold: true, color: c, margin: 0 });
     });
   });
+  if (MORE.length) {
+    s.addText(`그 밖에 제${MORE.map((c) => c.no).join('·')}회도 같은 기준으로 권하지 않습니다.`, {
+      x: M, y: y0 + SHOW.length * CH + dy, w: cw, h: 0.24, fontFace: F, fontSize: 9.5, bold: true, color: BAD, margin: 0,
+    });
+  }
 
   // 우: 이유 세 가지
   const rx = M + cw + 0.24, rw = CW - cw - 0.24;

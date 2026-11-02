@@ -549,8 +549,10 @@ export async function analyze(rcpNo) {
 
   const caution = items
     .filter((it) => (it.fairValueGap ?? 0) <= -10 || it.tier === 2 || it.simShort)
-    .sort((a, b) => (b.mcLoss ?? 0) - (a.mcLoss ?? 0))
-    .slice(0, 4);
+    .sort((a, b) => (b.mcLoss ?? 0) - (a.mcLoss ?? 0));
+  // 예전에는 4종에서 잘랐다. 그러면 기준에 걸린 다섯째 상품이 "그 외" 로 빠지고,
+  // "제…회만 7,745원 이하로 깎였습니다" 같은 문장이 거짓이 된다(2026-11-02 제38254회).
+  // 걸리는 것은 다 넣고, 칸이 모자라면 빌더가 나머지를 한 줄로 적는다.
 
   // 위험 한 단위당 받는 수익 — 종목형을 권할 때 근거로 쓴다
   const perRisk = perRiskOf;
