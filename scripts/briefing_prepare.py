@@ -683,10 +683,22 @@ def _fallbacks(C):
     C["us_stk_foot_en"] = ("<strong>These are regular-session closes</strong> &mdash; after-hours moves and "
                            "post-close results are not in them. <strong>Read alongside the results section.</strong> "
                            + RANK_NOTE_EN)
+    # 선물 투자자별을 받은 날에는 「받지 못한다」고 적으면 본문과 어긋난다(11-03 재검증).
+    _fut = ((C["D"].get("futures") or {}).get("investors") or {})
+    _fut = _fut if isinstance(_fut.get("foreign"), (int, float)) else None
+    if _fut:
+        _fut_ko = ("<strong>선물 외국인 " + ("+" if _fut["foreign"] >= 0 else "&minus;")
+                   + format(abs(int(round(_fut["foreign"]))), ",") + "억원</strong>(표에는 싣지 않음) &mdash; "
+                   "프로그램 비차익과 함께 보십시오 ")
+        _fut_en = ("<strong>Foreign futures " + ("+" if _fut["foreign"] >= 0 else "&minus;")
+                   + format(abs(int(round(_fut["foreign"]))), ",") + "억 KRW</strong> (not in the table) &mdash; "
+                   "read with non-arb programme trading ")
     C["flow_foot_ko"] = (FLOW_LEGEND_KO + " 세 주체 합이 0 이 아닌 것은 <strong>기타법인이 빠져 있기 때문</strong>입니다. "
-                         "<strong>선물 외국인은 받지 못하므로 프로그램 비차익을 대용</strong>으로 봅니다 " + VF_1 + ".")
+                         + (_fut_ko if _fut else
+                            "<strong>선물 외국인은 받지 못하므로 프로그램 비차익을 대용</strong>으로 봅니다 ") + VF_1 + ".")
     C["flow_foot_en"] = (FLOW_LEGEND_EN + " The columns do not sum to zero because <strong>other corporates are excluded</strong>. "
-                         "<strong>Foreign futures flow is unavailable; non-arb programme trading stands in</strong> "
+                         + (_fut_en if _fut else
+                            "<strong>Foreign futures flow is unavailable; non-arb programme trading stands in</strong> ")
                          + VF_1 + ".")
 
     C["fb_talking"] = [
