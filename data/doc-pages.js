@@ -6,7 +6,7 @@
  */
 (function (g) {
   g.DOC_PAGES = {
- "updatedAt": "2026-11-02T23:45:36.776Z",
+ "updatedAt": "2026-11-03T23:46:16.216Z",
  "source": "securities.miraeasset.com /public/editor/elsdls/<ISIN>.pdf",
  "docLabel": "간이투자설명서 및 투자설명서 (교부본)",
  "anchors": [
@@ -650,6 +650,25 @@
     "riskFactors": 59,
     "offering": 27,
     "fundUse": 72
+   }
+  },
+  "KR6MD00094G3": {
+   "name": "미래에셋증권(ELS)38263",
+   "url": "https://securities.miraeasset.com/public/editor/elsdls/KR6MD00094G3.pdf",
+   "pages": 71,
+   "briefUntil": 21,
+   "at": {
+    "docStart": 5,
+    "target": 9,
+    "payoff": 13,
+    "payoffChart": 14,
+    "sim": 16,
+    "midRedeem": 18,
+    "caution": 19,
+    "prospectus": 22,
+    "riskFactors": 57,
+    "offering": 26,
+    "fundUse": 66
    }
   },
   "KR6MD00093S0": {
