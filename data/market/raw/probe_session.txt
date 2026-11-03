@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-11-03 16:18:07 KST
+세션을 지닌 채 API 부르기 2026-11-03 23:40:26 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 130880 bytes
@@ -16,31 +16,31 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 121113 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8846 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"366","officeHname":"조선비즈","articleId":"0001202276","title":"유통 주식수 10%대 ‘품절주’ 한진칼... “지분경쟁할 물량도 없다”","datetime":"2026-11-03 15:57:13","type":"1","subcontent":"주요 주주가 보유한 물량만 
+        HTTP 200 · 8795 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"016","officeHname":"헤럴드경제","articleId":"0002718385","title":"“4000억이나 베팅했는데” 티맵 매각 추진에 사모펀드도 복잡한 투자금 회수 셈법","datetime":"2026-11-03 22:41:21","type":"1","subcontent":"국내 1위 내비
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8846 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"366","officeHname":"조선비즈","articleId":"0001202276","title":"유통 주식수 10%대 ‘품절주’ 한진칼... “지분경쟁할 물량도 없다”","datetime":"2026-11-03 15:57:13","type":"1","subcontent":"주요 주주가 보유한 물량만 
+        HTTP 200 · 8795 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"016","officeHname":"헤럴드경제","articleId":"0002718385","title":"“4000억이나 베팅했는데” 티맵 매각 추진에 사모펀드도 복잡한 투자금 회수 셈법","datetime":"2026-11-03 22:41:21","type":"1","subcontent":"국내 1위 내비
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 127576 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26537 bytes · JSON!
+        HTTP 200 · 26536 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
         HTTP 200 · 2414 bytes · JSON!
-        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
+        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","s
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
-        HTTP 200 · 5049 bytes · JSON!
+        HTTP 200 · 5045 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
-        HTTP 200 · 7371 bytes · JSON!
+        HTTP 200 · 7368 bytes · JSON!
         앞머리: [{"categoryType":"bond","stockExchangeType":null,"reutersCode":"US10YT=RR","symbolCode":null,"name":"미국 국채 10년","fullName":null,"nameEng":null,"itemLogoUrl":null,"itemLogoPngUrl":null,"delayTime":0,"d
         남김: data/market/raw/session_bond.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dminte
