@@ -1,4 +1,4 @@
-네이버 API 탐색 2026-11-03 12:07:45 KST
+네이버 API 탐색 2026-11-03 12:29:35 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
@@ -18,28 +18,28 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 16314 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
+    쓸모 · 16315 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
     남김: data/market/raw/probe_03_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"5,859.08"},{"code":"openPrice","key":"시가","value":"5,715.19","compareToPreviousPrice":{"code":"5",
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/price?pageSize=5&page=1
     쓸모 · 1284 bytes · 걸린 낱말 ['상승']
     남김: data/market/raw/probe_04_internals.txt
-    앞머리: [{"localTradedAt":"2026-11-03","closePrice":"5,669.39","compareToPreviousClosePrice":"-189.69","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-3.24","openPrice":"5,715.19","highPrice":"5,735.92","low
+    앞머리: [{"localTradedAt":"2026-11-03","closePrice":"5,656.17","compareToPreviousClosePrice":"-202.91","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-3.46","openPrice":"5,715.19","highPrice":"5,735.92","low
 
 [sectors] https://m.stock.naver.com/api/stocks/industry
-    쓸모 · 2249 bytes · 걸린 낱말 ['changeRate']
+    쓸모 · 2252 bytes · 걸린 낱말 ['changeRate']
     남김: data/market/raw/probe_05_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":305,"name":"항공사","totalCount":9,"changeRate":"15.71","riseCount":8,"fallCount":1,"steadyCount":0},{"no":318,"name":"종이와목재","totalCount":14,"changeRate":"1.97","riseCount":4,"fallCount":10,"ste
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":305,"name":"항공사","totalCount":9,"changeRate":"15.87","riseCount":8,"fallCount":1,"steadyCount":0},{"no":318,"name":"종이와목재","totalCount":14,"changeRate":"2.12","riseCount":5,"fallCount":8,"stea
 
 [sectors] https://api.stock.naver.com/industry
     실패 · 36 bytes · 걸린 낱말 없음
     응답 앞머리: HTTPError: HTTP Error 404: Not Found
 
 [sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
-    쓸모 · 8669 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 8668 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_07_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":305,"name":"항공사","totalCount":9,"changeRate":"15.71","riseCount":8,"fallCount":1,"steadyCount":0},{"no":318,"name":"종이와목재","totalCount":14,"changeRate":"1.97","riseCount":4,"fallCount":10,"ste
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":305,"name":"항공사","totalCount":9,"changeRate":"15.79","riseCount":8,"fallCount":1,"steadyCount":0},{"no":318,"name":"종이와목재","totalCount":14,"changeRate":"2.12","riseCount":5,"fallCount":8,"stea
 
 [money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
     실패 · 30 bytes · 걸린 낱말 없음
