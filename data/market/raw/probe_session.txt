@@ -1,11 +1,11 @@
-세션을 지닌 채 API 부르기 2026-11-05 00:18:32 KST
+세션을 지닌 채 API 부르기 2026-11-05 07:45:21 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 130880 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
-        HTTP 200 · 11579 bytes · JSON!
-        앞머리: {"content":[{"bizdate":"20261102","customerDeposit":"904629","customerDepositDiff":"2278","customerDepositDiffAbs":"2278","creditLoan":"288117","creditLoanDiff":"1539","creditLoanDiffAbs":"1539","bene
+        HTTP 200 · 11585 bytes · JSON!
+        앞머리: {"content":[{"bizdate":"20261103","customerDeposit":"882413","customerDepositDiff":"-22216","customerDepositDiffAbs":"22216","creditLoan":"285446","creditLoanDiff":"-2670","creditLoanDiffAbs":"2670","
         남김: data/market/raw/session_trendDeposit.json
     API https://stock.naver.com/api/domestic/market/trendDeposit/chart?startDate=20260801&endDate=20260911
         HTTP 200 · 22502 bytes · JSON!
@@ -16,19 +16,19 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 121113 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8807 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"018","officeHname":"이데일리","articleId":"0006403853","title":"\"113% 올랐었는데\"…15만원→5만원대 된 풍산, 매수해도 될까 [종목e슈]","datetime":"2026-11-05 00:02:07","type":"1","subcontent":"풍산(103140
+        HTTP 200 · 8850 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"366","officeHname":"조선비즈","articleId":"0001202676","title":"스페이스X·테슬라 합병한다는데… 단계별 주가 시나리오[투자노트]","datetime":"2026-11-05 07:27:13","type":"1","subcontent":"일론 머스크 테슬라 최고경영자(CE
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8807 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"018","officeHname":"이데일리","articleId":"0006403853","title":"\"113% 올랐었는데\"…15만원→5만원대 된 풍산, 매수해도 될까 [종목e슈]","datetime":"2026-11-05 00:02:07","type":"1","subcontent":"풍산(103140
+        HTTP 200 · 8850 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"366","officeHname":"조선비즈","articleId":"0001202676","title":"스페이스X·테슬라 합병한다는데… 단계별 주가 시나리오[투자노트]","datetime":"2026-11-05 07:27:13","type":"1","subcontent":"일론 머스크 테슬라 최고경영자(CE
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 127576 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26536 bytes · JSON!
+        HTTP 200 · 26553 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
@@ -40,7 +40,7 @@
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
-        HTTP 200 · 7375 bytes · JSON!
+        HTTP 200 · 7377 bytes · JSON!
         앞머리: [{"categoryType":"bond","stockExchangeType":null,"reutersCode":"US10YT=RR","symbolCode":null,"name":"미국 국채 10년","fullName":null,"nameEng":null,"itemLogoUrl":null,"itemLogoPngUrl":null,"delayTime":0,"d
         남김: data/market/raw/session_bond.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dminte
