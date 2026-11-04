@@ -999,10 +999,27 @@ for (const [i, row] of universe.entries()) {
   // 두 기준이 크게 갈리므로, 기준이 다른 값끼리 견주어 멀쩡한 종목을 떨어뜨릴
   // 수 있다. 그래서 차이는 반드시 적어 두되(사람이 볼 수 있게) 제외는 하지
   // 않는다. 모르는 것을 근거로 버리는 것도 모르는 것을 사실로 적는 것만큼 나쁘다.
+  //
+  // 대조는 **분배율이 아니라 12개월 분배금 합계**로 한다. 우리가 틀릴 수 있는
+  // 것은 분자(어느 분배를 창에 넣었나)다. 분모인 현재가는 양쪽이 다른 날 것을
+  // 쓴다 — 2026-10-01·10-03 두 판에서 0.15%p 를 넘은 월·주배당은 하나도 빠짐없이
+  // 합계가 원 단위까지 같았고, 차이는 전부 ETFCHECK 쪽이 묵은 가격으로 나눈 데서
+  // 왔다(우리 현재가는 순자산과 ±1.3% 안). 분배율 절대 허용치는 분배율이 높을수록
+  // 같은 가격 차로도 쉽게 넘어서, 연 10~26%대 종목만 골라 떨어뜨렸다.
+  // 합계를 못 받은 종목은 예전처럼 분배율 0.15%p 로 본다.
   let mismatch = null;
+  let mismatchExcludes = false;
   if (ttmRate !== null && theirRate !== null && Math.abs(ttmRate - theirRate) > 0.15) {
     mismatch = `연분배율 계산 ${ttmRate.toFixed(4)}% vs ETFCHECK ${theirRate.toFixed(4)}%`;
-    if (payoutFreq === '월배당' || payoutFreq === '주배당') why.push(`분배율 대조 불일치(${mismatch})`);
+    mismatchExcludes = !Number.isFinite(theirSum);
+  }
+  if (ttmSum !== null && Number.isFinite(theirSum) && Math.abs(ttmSum - theirSum) > 0.5) {
+    const sumGap = `12개월 분배금 합계 ${ttmSum}원 vs ETFCHECK ${theirSum}원`;
+    mismatch = mismatch ? `${sumGap}; ${mismatch}` : sumGap;
+    mismatchExcludes = true;
+  }
+  if (mismatchExcludes && (payoutFreq === '월배당' || payoutFreq === '주배당')) {
+    why.push(`분배율 대조 불일치(${mismatch})`);
   }
 
   items.push({
@@ -1143,7 +1160,9 @@ const out = {
       '기준일이 **1년 전 오늘 이후**인 분배금의 합계 ÷ 현재가 × 100. 창의 시작일은 항목마다 ' +
       'distTtmFrom 에, 더한 건수는 distTtmCount 에 적는다. 예전에는 "최근 12회" 로 냈는데, ' +
       '월배당만 담을 때는 12회가 곧 12개월이라 맞았지만 분기배당의 12회는 3년치, 연배당의 ' +
-      '12회는 12년치라 주기를 넓히는 순간 거짓이 된다. ETFCHECK 의 DIV_RATE_REAL 과 대조한 ' +
+      '12회는 12년치라 주기를 넓히는 순간 거짓이 된다. ETFCHECK 의 DIV_AMT_YEAR(12개월 ' +
+      '분배금 합계)와 1원 이상 어긋나면 제외하고, 그 값이 없을 때만 DIV_RATE_REAL 과 0.15%p ' +
+      '로 대조한다 — 분배율은 양쪽이 다른 날 가격으로 나누므로 분배율 차이만으로는 걸지 않는다. ' +
       '차이는 distTtmMismatch 에 남기되, 제외 사유로 거는 것은 월·주배당뿐이다 — 그쪽 값이 ' +
       '어떤 창으로 낸 것인지 관찰로 확인하지 못했고, 기준이 다른 값끼리 견주어 멀쩡한 종목을 ' +
       '떨어뜨릴 수는 없다.',
