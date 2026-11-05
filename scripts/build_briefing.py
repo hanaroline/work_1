@@ -873,6 +873,8 @@ def sec_deep(C):
     if not isinstance(dp, dict) or not dp.get("title_ko"):
         return None
     N.used.add("deep")
+    if CORE[0] and dp.get("full_only"):
+        return None   # 전체판 전용 특별판 — 핵심판에서는 뺀다
     blocks = [lede(dp.get("lede_ko", ""), dp.get("lede_en", ""))]
     for row in dp.get("blocks", []):
         blocks.append(card(row.get("q_ko", ""), row.get("q_en", ""),
