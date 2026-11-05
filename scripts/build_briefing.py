@@ -879,7 +879,8 @@ def sec_deep(C):
     for row in dp.get("blocks", []):
         blocks.append(card(row.get("q_ko", ""), row.get("q_en", ""),
                            row.get("a_ko", ""), row.get("a_en", "")))
-    if CORE[0]:
+    if CORE[0] and not dp.get("core_all"):
+        # core_all: 특별판처럼 꼭지를 전부 핵심판에도 싣기로 한 날만 켠다.
         # 핵심본에서도 **그날의 이슈와 실적은 남긴다.** 요약이 「무엇이 움직였나」만
         # 말하고 「그래서 이것이 무슨 뜻인가」를 말하지 않으면, 받아 보는 쪽이 다시
         # 물어야 한다. 카드는 넷까지, 딸린 표는 접어 두지 않고 그대로 싣는다.
