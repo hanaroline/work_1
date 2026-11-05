@@ -71551,5 +71551,174 @@
         "targetMarket": null
       }
     ]
+  },
+  "20261104000122": {
+    "rcpNo": "20261104000122",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261104000122",
+    "range": "4120~4120",
+    "offer": "2026-11-13 ~ 2026-11-13",
+    "count": 1,
+    "items": [
+      {
+        "title": "미래에셋증권 제4120회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
+        "no": 4120,
+        "riskLabel": "낮은위험",
+        "riskGrade": 5,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
+        "underlyings": [
+          "SK하이닉스"
+        ],
+        "issueSize": 14925000000,
+        "offerStart": "2026-11-13",
+        "offerEnd": "2026-11-13",
+        "coolStart": null,
+        "coolEnd": null,
+        "coolingFrom": null,
+        "coolingTo": null,
+        "confirmBy": null,
+        "confirmNote": null,
+        "payDate": "2026-11-13",
+        "minAmount": 4975000,
+        "minAmountCcy": "KRW",
+        "recordingRight": false,
+        "riskSummaryDoc": false,
+        "maxLossNotice": false,
+        "issueDate": "2026-11-13",
+        "maturityDate": "2029-11-15",
+        "maturityEvalDate": "2029-11-13",
+        "baseDate": "2026-11-13",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9885.04,
+        "fairValueDate": "2026-11-02",
+        "fairValueGap": -1.15,
+        "volatility": [
+          {
+            "asset": "SK하이닉스",
+            "vol": 53.79
+          }
+        ],
+        "correlation": [],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-05-14",
+            "payout": 100,
+            "barrier": 80
+          },
+          {
+            "step": 2,
+            "date": "2027-11-15",
+            "payout": 100,
+            "barrier": 80
+          },
+          {
+            "step": 3,
+            "date": "2028-05-15",
+            "payout": 100,
+            "barrier": 80
+          },
+          {
+            "step": 4,
+            "date": "2028-11-13",
+            "payout": 100,
+            "barrier": 80
+          },
+          {
+            "step": 5,
+            "date": "2029-05-14",
+            "payout": 100,
+            "barrier": 80
+          }
+        ],
+        "lizard": null,
+        "monthlyIncome": {
+          "barrier": 65,
+          "rate": 0.47,
+          "count": 36,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일"
+        },
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 80,
+        "maturityRate": 0,
+        "maturityPayLabel": "액면금액",
+        "maturityPrincipalOnly": true,
+        "knockIn": null,
+        "knockInBasis": null,
+        "annualRate": 5.64,
+        "docMaxRate": 0.47,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "~2.82%",
+            "count": 4427,
+            "share": 86.18
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "~5.64%",
+            "count": 320,
+            "share": 6.23
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "~8.46%",
+            "count": 217,
+            "share": 4.22
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "~11.28%",
+            "count": 99,
+            "share": 1.93
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "~14.10%",
+            "count": 13,
+            "share": 0.25
+          },
+          {
+            "label": "만기상환",
+            "ret": "~16.92%",
+            "count": 1,
+            "share": 0.02
+          },
+          {
+            "label": "만기상환",
+            "ret": "0%(원금지급)",
+            "count": 60,
+            "share": 1.17
+          },
+          {
+            "label": "손실",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 5137,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-10-27"
+        },
+        "simRuns": 5137,
+        "simFirst": 86.18,
+        "simLoss": 0,
+        "targetMarket": null
+      }
+    ]
   }
 }
