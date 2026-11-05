@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-11-05 11:18:58 KST
+세션을 지닌 채 API 부르기 2026-11-05 16:16:24 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 130880 bytes
@@ -16,19 +16,19 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 121113 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8773 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"001","officeHname":"연합뉴스","articleId":"0016423554","title":"증시 급락에 \"오늘이 바닥이길\"…레버리지에 대거 베팅 개미들 한숨","datetime":"2026-11-05 11:05:32","type":"1","subcontent":"한달 개인 순매수액 1·2위는
+        HTTP 200 · 8794 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"366","officeHname":"조선비즈","articleId":"0001202871","title":"美 ‘블루웨이브’ 여파에 코스피 5% 폭락… 5380선 ‘털썩’[마켓뷰]","datetime":"2026-11-05 16:06:22","type":"1","subcontent":"코스닥, 5.1% 내린 6
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8773 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"001","officeHname":"연합뉴스","articleId":"0016423554","title":"증시 급락에 \"오늘이 바닥이길\"…레버리지에 대거 베팅 개미들 한숨","datetime":"2026-11-05 11:05:32","type":"1","subcontent":"한달 개인 순매수액 1·2위는
+        HTTP 200 · 8794 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"366","officeHname":"조선비즈","articleId":"0001202871","title":"美 ‘블루웨이브’ 여파에 코스피 5% 폭락… 5380선 ‘털썩’[마켓뷰]","datetime":"2026-11-05 16:06:22","type":"1","subcontent":"코스닥, 5.1% 내린 6
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 127576 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26534 bytes · JSON!
+        HTTP 200 · 26537 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
@@ -36,11 +36,11 @@
         앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
-        HTTP 200 · 5039 bytes · JSON!
+        HTTP 200 · 5042 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
-        HTTP 200 · 7379 bytes · JSON!
+        HTTP 200 · 7378 bytes · JSON!
         앞머리: [{"categoryType":"bond","stockExchangeType":null,"reutersCode":"US10YT=RR","symbolCode":null,"name":"미국 국채 10년","fullName":null,"nameEng":null,"itemLogoUrl":null,"itemLogoPngUrl":null,"delayTime":0,"d
         남김: data/market/raw/session_bond.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dminte
