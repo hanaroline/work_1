@@ -1,6 +1,6 @@
-# 반도체 소부장 지표 수집 2026-11-05 00:44 KST
+# 반도체 소부장 지표 수집 2026-11-06 00:48 KST
 
-기준 거래일 2026-11-04 · 대상 87곳 · KIND 2691사
+기준 거래일 2026-11-05 · 대상 87곳 · KIND 2691사
 
 상장일 출처: daum 1 · kind+daum 86
 
@@ -20,7 +20,7 @@
 | rytd | 87/87 |
 | listed | 87/87 |
 
-첫 응답 integration totalInfos 원문(키 이름 확인용): `{"name": "신성이엔지", "totalInfos": [{"code": "lastClosePrice", "key": "전일", "value": "12,890"}, {"code": "openPrice", "key": "시가", "value": "13,190", "compareToPreviousPrice": {"code": "2", "text": "상승", "name": "RISING"}}, {"code": "highPrice", "key": "고가", "value": "14,040", "compareToPreviousPrice": {"code": "2", "text": "상승", "name": "RISING"}}, {"code": "lowPrice", "key": "저가", "value": "12,760", "compareToPreviousPrice": {"code": "5", "text": "하락", "name": "FALLING"}}, {"code": "accumulatedTradingVolume", "key": "거래량", "value": "406,017"}, {"code": "accumulatedTradingValue", "key": "대금", "value": "53.8억"}, {"code": "marketValue", "key": "시총", "value": "2,835억"}, {"code": "foreignRate", "key": "외인소진율", "value": "0.00%"}, {"code": "highPriceOf52WeeksAdjusted", "key": "52주 최고", "value": "49,700"}, {"code": "highPriceOf52Weeks", "key": "원주가 기준", "value": "49,000"}, {"code": "lowPriceOf52WeeksAdjusted", "key": "52주 최저", "value": "11,300"}, {"code": "lowPriceOf52Weeks", "key": "원주가 기준", "value": "1,470"}, {"code": "per", "key": "PER", "value": "N/A", "valueDesc": "2026.06."}, {"code": "eps", "key": "EPS", "value": "-226원", "valueDesc": "2026.06."}, {"code": "cnsPer", "key": "추정PER", "value": "N/A"}, {"code": "cnsEps", "key": "추정EPS", "value": "N/A"}, {"code": "pbr", "key": "PBR", "value": "1.30배", "valueDesc": "2026.06."}, {"code": "bps", "key": "BPS", "value": "10,759원", "valueDesc": "2026.06."}, {"code": "dividendYieldRatio", "key": "배당수익률", "value": "N/A"}, {"code": "dividend", "key": "주당배당금", "value": "N/A"}]}`
+첫 응답 integration totalInfos 원문(키 이름 확인용): `{"name": "신성이엔지", "totalInfos": [{"code": "lastClosePrice", "key": "전일", "value": "13,690"}, {"code": "openPrice", "key": "시가", "value": "13,990", "compareToPreviousPrice": {"code": "2", "text": "상승", "name": "RISING"}}, {"code": "highPrice", "key": "고가", "value": "14,000", "compareToPreviousPrice": {"code": "2", "text": "상승", "name": "RISING"}}, {"code": "lowPrice", "key": "저가", "value": "12,400", "compareToPreviousPrice": {"code": "5", "text": "하락", "name": "FALLING"}}, {"code": "accumulatedTradingVolume", "key": "거래량", "value": "407,133"}, {"code": "accumulatedTradingValue", "key": "대금", "value": "52.4억"}, {"code": "marketValue", "key": "시총", "value": "2,575억"}, {"code": "foreignRate", "key": "외인소진율", "value": "0.00%"}, {"code": "highPriceOf52WeeksAdjusted", "key": "52주 최고", "value": "49,700"}, {"code": "highPriceOf52Weeks", "key": "원주가 기준", "value": "49,000"}, {"code": "lowPriceOf52WeeksAdjusted", "key": "52주 최저", "value": "11,300"}, {"code": "lowPriceOf52Weeks", "key": "원주가 기준", "value": "1,470"}, {"code": "per", "key": "PER", "value": "N/A", "valueDesc": "2026.06."}, {"code": "eps", "key": "EPS", "value": "-226원", "valueDesc": "2026.06."}, {"code": "cnsPer", "key": "추정PER", "value": "N/A"}, {"code": "cnsEps", "key": "추정EPS", "value": "N/A"}, {"code": "pbr", "key": "PBR", "value": "1.18배", "valueDesc": "2026.06."}, {"code": "bps", "key": "BPS", "value": "10,759원", "valueDesc": "2026.06."}, {"code": "dividendYieldRatio", "key": "배당수익률", "value": "N/A"}, {"code": "dividend", "key": "주당배당금", "value": "N/A"}]}`
 
 | 회사 | 코드 | 채움 | 오류 |
 |---|---|---|---|
