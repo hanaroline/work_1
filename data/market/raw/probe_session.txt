@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-11-06 10:52:47 KST
+세션을 지닌 채 API 부르기 2026-11-06 11:17:44 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 132835 bytes
@@ -16,19 +16,19 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 123592 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8796 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"277","officeHname":"아시아경제","articleId":"0005839050","title":"코스피 5000붕괴 '검은 금요일'…블루쓰나미 후폭풍","datetime":"2026-11-06 10:31:24","type":"1","subcontent":"미국 중간선거에서 민주당이 압승하는 '블루웨
+        HTTP 200 · 8812 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"003","officeHname":"뉴시스","articleId":"0014305760","title":"\"어제가 바닥 아니었어?\"…코스피 9개월 만에 5000선 붕괴, 서킷·사이드카 발동(종합)","datetime":"2026-11-06 11:09:00","type":"1","subcontent":"국내 
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8796 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"277","officeHname":"아시아경제","articleId":"0005839050","title":"코스피 5000붕괴 '검은 금요일'…블루쓰나미 후폭풍","datetime":"2026-11-06 10:31:24","type":"1","subcontent":"미국 중간선거에서 민주당이 압승하는 '블루웨
+        HTTP 200 · 8812 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"003","officeHname":"뉴시스","articleId":"0014305760","title":"\"어제가 바닥 아니었어?\"…코스피 9개월 만에 5000선 붕괴, 서킷·사이드카 발동(종합)","datetime":"2026-11-06 11:09:00","type":"1","subcontent":"국내 
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 130816 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26560 bytes · JSON!
+        HTTP 200 · 26558 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
