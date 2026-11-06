@@ -129,12 +129,12 @@ def num(v, nd):
 
 
 def with_quote_close(q, cand, price):
-    """정규장이 끝난 종가가 일봉에 아직 없으면 시세(quote)의 종가를 그날 봉으로 붙인다.
+    """If the regular session is over and its daily bar is not out yet, add the quote close as that day's bar.
 
-    야후는 장 마감 직후 몇 시간 동안 그날 일봉을 비워 두곤 한다(미국 2026-11-05 종가,
-    11/06 10:08 KST 수집 — 48곳 모두 일봉은 11/04 까지, 시세는 11/05 종가). 그대로 두면
-    화면은 11/04 기준이라 적고 값은 11/05 종가를 보여 주며 수익률·52주는 11/04 까지로
-    셈한다. 장중(REGULAR)에는 붙이지 않는다 — 그때 값은 종가가 아니다.
+    Yahoo can leave the day's bar empty for hours after the close (US 2026-11-05 close,
+    collected 11/06 10:08 KST: bars ended 11/04 for all 48, quotes held the 11/05 close).
+    The page then labelled 11/04 while showing 11/05 prices, and returns/52w stopped at 11/04.
+    Not during REGULAR - an intraday price is not a close.
     """
     if not cand or price is None or q.get('marketState') == 'REGULAR':
         return cand
