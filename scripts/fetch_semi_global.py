@@ -128,6 +128,29 @@ def num(v, nd):
     return round(v, nd)
 
 
+def with_quote_close(q, cand, price):
+    """정규장이 끝난 종가가 일봉에 아직 없으면 시세(quote)의 종가를 그날 봉으로 붙인다.
+
+    야후는 장 마감 직후 몇 시간 동안 그날 일봉을 비워 두곤 한다(미국 2026-11-05 종가,
+    11/06 10:08 KST 수집 — 48곳 모두 일봉은 11/04 까지, 시세는 11/05 종가). 그대로 두면
+    화면은 11/04 기준이라 적고 값은 11/05 종가를 보여 주며 수익률·52주는 11/04 까지로
+    셈한다. 장중(REGULAR)에는 붙이지 않는다 — 그때 값은 종가가 아니다.
+    """
+    if not cand or price is None or q.get('marketState') == 'REGULAR':
+        return cand
+    t, off = q.get('regularMarketTime'), q.get('gmtOffSetMilliseconds')
+    if not isinstance(t, (int, float)) or not isinstance(off, (int, float)):
+        return cand
+    day = datetime.fromtimestamp(t + off / 1000, timezone.utc).strftime('%Y-%m-%d')
+    if day <= max(x['d'] for x in cand):
+        return cand
+    hi = num(q.get('regularMarketDayHigh'), 4)
+    lo = num(q.get('regularMarketDayLow'), 4)
+    return cand + [{'d': day, 'c': price,
+                    'h': max(hi, price) if hi is not None else price,
+                    'l': min(lo, price) if lo is not None else price}]
+
+
 def shape(q, cand, cur):
     """야후 원문 한 종목 → 화면 칸. 값이 없거나 이상하면 None."""
     price = num(q.get('regularMarketPrice'), 4)
@@ -151,6 +174,7 @@ def shape(q, cand, cur):
     t = q.get('regularMarketTime')
     if isinstance(t, (int, float)):
         r['tradedAt'] = datetime.fromtimestamp(t, KST).strftime('%Y-%m-%d %H:%M KST')
+    cand = with_quote_close(q, cand, price)
     c = calc_from_candles(cand, None) if cand else {}
     r['r1m'], r['r3m'], r['rytd'] = c.get('r1m'), c.get('r3m'), c.get('rytd')
     r['hi52'], r['lo52'] = c.get('hi52c'), c.get('lo52c')
