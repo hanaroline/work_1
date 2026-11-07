@@ -230,7 +230,14 @@ for (const e of ETFS) {
     // 적은 것이라 합이 100 을 넘는 게 맞다.
     const geared = (e.flags || []).some((f) => f === 'leverage' || f === 'inverse' || f === 'synthetic')
                 || /선물|레버리지|인버스/.test(e.name || '');
-    const cap = geared ? 310 : 100.5;
+    // 커버드콜(바이라이트)도 합이 100 을 조금 넘는다. 콜옵션을 **매도**한
+    // 몫이 음수 비중으로 잡히는데, 그 줄은 상위 목록에 들지 않는다. 그래서
+    // 기초자산 + 현금만 보이고 합이 100 위로 올라간다. 2026-11-05·06 마감
+    // 수집이 TLTW(기초 TLT ETF 100% + 현금 0.68%) 하나 때문에 통째로 막혔다
+    // — 11/4 에도 이미 100.17% 였다. 이 규칙이 잡으려는 것은 두 배로 읽힌
+    // 파싱 사고이므로, 커버드콜은 105% 까지만 너그럽게 둔다.
+    const buywrite = /buy-?write|covered\s*call|커버드콜/i.test(e.name || '');
+    const cap = geared ? 310 : buywrite ? 105 : 100.5;
     if (known.length && sum > cap) {
       flag('error', '보유비중-합초과', e, `상위 ${hs.length}개 비중 합 ${sum.toFixed(2)}% (한도 ${cap}%)`, { sumWeight: +sum.toFixed(2) });
     }
@@ -299,7 +306,11 @@ for (const e of ETFS) {
     // 그래서 현금·파생이 아닌 칸이 음수일 때만 오류로 본다.
     // 음수로 잡히는 현금이 국가표에서는 KR, 섹터표에서는 UNCLASSIFIED 로
     // 나타난다(해외 ETF 의 KR=-0.21 등). 같은 한 줄이 표마다 다른 이름을
-    // 쓸 뿐이므로 이것도 구조에 속한다. 1%p 안쪽의 음수는 넘긴다.
+    // 쓸 뿐이므로 이것도 구조에 속한다. 2%p 안쪽의 음수는 넘긴다.
+    // (처음에는 1%p 였다. 2026-11-06 마감 수집이 0128D0 PLUS 차이나항셍테크
+    // 위클리타겟커버드콜의 BOND=-1.16 하나로 막혔다 — 11/4 에 -0.65 였고, 같은
+    // 날 자산표에 음수 칸이 있는 종목이 287개다. 1%p 대의 음수는 원천의
+    // 정산 잔액이지 자릿수 사고가 아니다.)
     // 국가표에는 현금 줄이 따로 없다. 그래서 음수 현금·차입·숏 노출이
     // **어느 나라 칸에든** 들어간다 — 해외 ETF 의 KR=-5.97(원화 미수금),
     // KODEX 200선물인버스2X 의 KR=-76.27(숏 노출)이 그것이다. 나라 이름이
@@ -308,7 +319,7 @@ for (const e of ETFS) {
       ? null
       : new Set(['CASH', 'DERIVATIVES', 'OTHERS', 'UNCLASSIFIED', 'MISC']);
     const negBad = NEG_OK
-      ? Object.entries(obj).filter(([k, v]) => Number(v) < 0 && !NEG_OK.has(k) && Number(v) < -1)
+      ? Object.entries(obj).filter(([k, v]) => Number(v) < 0 && !NEG_OK.has(k) && Number(v) < -2)
       : [];
     const negInfo = !NEG_OK && Object.entries(obj).some(([, v]) => Number(v) < -1);
     if (negInfo) flag('info', '국가비중-음수', e, JSON.stringify(obj).slice(0, 120));
