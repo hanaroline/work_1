@@ -157,7 +157,7 @@
 "kOp": 7,
 "revCut": 549971281040.0,
 "opCut": 31274194110.0,
-"peAgg": 12.88,
+"peAgg": 12.89,
 "peMean": 103.78,
 "peMedian": 9.89
 },
@@ -292,14 +292,14 @@
 "n": 47,
 "nRev": 47,
 "nOp": 47,
-"nPe": 19,
+"nPe": 20,
 "kRev": 5,
 "kOp": 5,
 "revCut": 1009688950320.0,
 "opCut": 68010518020.0,
-"peAgg": 13.02,
-"peMean": 50.32,
-"peMedian": 15.46
+"peAgg": 13.24,
+"peMean": 48.49,
+"peMedian": 14.61
 },
 "Furnishings, Fixtures & Appliances": {
 "sec": "Consumer Cyclical",
@@ -502,14 +502,14 @@
 "n": 77,
 "nRev": 75,
 "nOp": 75,
-"nPe": 35,
+"nPe": 36,
 "kRev": 8,
 "kOp": 8,
 "revCut": 951530278860.0,
 "opCut": 73354935370.0,
 "peAgg": 4.64,
-"peMean": 36.24,
-"peMedian": 9.66
+"peMean": 36.19,
+"peMedian": 10.02
 },
 "Software—Infrastructure": {
 "sec": "Technology",
@@ -572,14 +572,14 @@
 "n": 13,
 "nRev": 13,
 "nOp": 13,
-"nPe": 8,
+"nPe": 9,
 "kRev": 2,
 "kOp": 2,
 "revCut": 17577313000000.0,
 "opCut": 1775115000000.0,
-"peAgg": 9.89,
-"peMean": 10.48,
-"peMedian": 7.56
+"peAgg": 10.69,
+"peMean": 10.72,
+"peMedian": 8.17
 },
 "Tobacco": {
 "sec": "Consumer Defensive",
@@ -594,6 +594,20 @@
 "peAgg": 14.17,
 "peMean": 14.17,
 "peMedian": 14.17
+},
+"Utilities—Regulated Electric": {
+"sec": "Utilities",
+"n": 4,
+"nRev": 4,
+"nOp": 4,
+"nPe": 3,
+"kRev": 1,
+"kOp": 1,
+"revCut": 97572563000000.0,
+"opCut": 12441442000000.0,
+"peAgg": 2.61,
+"peMean": 26.31,
+"peMedian": 10.51
 }
 },
 "co": [
@@ -1061,7 +1075,7 @@
 "capRank": 21,
 "sym": "035420.KS",
 "name": "NAVER Corporation",
-"nameKo": null,
+"nameKo": "NAVER",
 "ind": "Internet Content & Information",
 "sec": "Communication Services",
 "ex": "KSE",
@@ -1176,7 +1190,7 @@
 "capRank": 26,
 "sym": "011200.KS",
 "name": "HMM Co.,Ltd",
-"nameKo": null,
+"nameKo": "HMM",
 "ind": "Marine Shipping",
 "sec": "Industrials",
 "ex": "KSE",
@@ -1222,7 +1236,7 @@
 "capRank": 28,
 "sym": "033780.KS",
 "name": "KT&G Corporation",
-"nameKo": null,
+"nameKo": "KT&G",
 "ind": "Tobacco",
 "sec": "Consumer Defensive",
 "ex": "KSE",
@@ -1266,6 +1280,29 @@
 },
 {
 "capRank": 30,
+"sym": "015760.KS",
+"name": "Korea Electric Power Corporation",
+"nameKo": "한국전력",
+"ind": "Utilities—Regulated Electric",
+"sec": "Utilities",
+"ex": "KSE",
+"cap": 19515707940800.0,
+"rev": 97572563000000.0,
+"op": 12441442000000.0,
+"pe": 2.567033,
+"peNeg": false,
+"rRev": 1,
+"rOp": 1,
+"okRev": true,
+"okOp": true,
+"cheap": {
+"agg": true,
+"mean": true,
+"median": true
+}
+},
+{
+"capRank": 31,
 "sym": "096770.KS",
 "name": "SK Innovation Co., Ltd.",
 "nameKo": "SK이노베이션",
@@ -1288,7 +1325,7 @@
 }
 },
 {
-"capRank": 31,
+"capRank": 32,
 "sym": "051910.KS",
 "name": "LG Chem, Ltd.",
 "nameKo": "LG화학",
@@ -1311,10 +1348,10 @@
 }
 },
 {
-"capRank": 32,
+"capRank": 33,
 "sym": "010120.KS",
 "name": "LS ELECTRIC Co., Ltd.",
-"nameKo": null,
+"nameKo": "LS ELECTRIC",
 "ind": "Electrical Equipment & Parts",
 "sec": "Industrials",
 "ex": "KSE",
@@ -1334,7 +1371,7 @@
 }
 },
 {
-"capRank": 33,
+"capRank": 34,
 "sym": "009540.KS",
 "name": "HD Korea Shipbuilding & Offshore Engineering Co., Ltd.",
 "nameKo": "HD한국조선해양",
@@ -1357,7 +1394,7 @@
 }
 },
 {
-"capRank": 34,
+"capRank": 35,
 "sym": "018260.KS",
 "name": "Samsung SDS Co., Ltd.",
 "nameKo": "삼성에스디에스",
@@ -1380,7 +1417,7 @@
 }
 },
 {
-"capRank": 35,
+"capRank": 36,
 "sym": "017670.KS",
 "name": "SK Telecom Co., Ltd.",
 "nameKo": "SK텔레콤",
@@ -1403,7 +1440,7 @@
 }
 },
 {
-"capRank": 36,
+"capRank": 37,
 "sym": "024110.KS",
 "name": "Industrial Bank of Korea",
 "nameKo": "기업은행",
@@ -1426,7 +1463,7 @@
 }
 },
 {
-"capRank": 37,
+"capRank": 38,
 "sym": "042700.KS",
 "name": "HANMI Semiconductor Co., Ltd.",
 "nameKo": "한미반도체",
@@ -1449,7 +1486,7 @@
 }
 },
 {
-"capRank": 38,
+"capRank": 39,
 "sym": "086280.KS",
 "name": "Hyundai Glovis Co., Ltd.",
 "nameKo": "현대글로비스",
@@ -1472,7 +1509,7 @@
 }
 },
 {
-"capRank": 39,
+"capRank": 40,
 "sym": "298040.KS",
 "name": "Hyosung Heavy Industries Corporation",
 "nameKo": "효성중공업",
@@ -1495,7 +1532,7 @@
 }
 },
 {
-"capRank": 40,
+"capRank": 41,
 "sym": "042660.KS",
 "name": "Hanwha Ocean Co., Ltd.",
 "nameKo": "한화오션",
@@ -1518,7 +1555,7 @@
 }
 },
 {
-"capRank": 41,
+"capRank": 42,
 "sym": "003670.KS",
 "name": "Posco Future M Co., Ltd.",
 "nameKo": "포스코퓨처엠",
@@ -1541,7 +1578,7 @@
 }
 },
 {
-"capRank": 42,
+"capRank": 43,
 "sym": "035720.KS",
 "name": "Kakao Corp.",
 "nameKo": "카카오",
@@ -1564,10 +1601,10 @@
 }
 },
 {
-"capRank": 43,
+"capRank": 44,
 "sym": "003550.KS",
 "name": "LG Corp.",
-"nameKo": null,
+"nameKo": "LG",
 "ind": "Consumer Electronics",
 "sec": "Technology",
 "ex": "KSE",
@@ -1587,7 +1624,7 @@
 }
 },
 {
-"capRank": 44,
+"capRank": 45,
 "sym": "196170.KQ",
 "name": "ALTEOGEN Inc.",
 "nameKo": "알테오젠",
@@ -1610,7 +1647,7 @@
 }
 },
 {
-"capRank": 45,
+"capRank": 46,
 "sym": "010140.KS",
 "name": "Samsung Heavy Industries Co., Ltd.",
 "nameKo": "삼성중공업",
@@ -1633,7 +1670,7 @@
 }
 },
 {
-"capRank": 46,
+"capRank": 47,
 "sym": "180640.KS",
 "name": "Hanjin Kal",
 "nameKo": "한진칼",
@@ -1656,7 +1693,7 @@
 }
 },
 {
-"capRank": 47,
+"capRank": 48,
 "sym": "267260.KS",
 "name": "HD Hyundai Electric Co., Ltd.",
 "nameKo": "HD현대일렉트릭",
@@ -1679,7 +1716,7 @@
 }
 },
 {
-"capRank": 48,
+"capRank": 49,
 "sym": "006800.KS",
 "name": "Mirae Asset Securities Co., Ltd.",
 "nameKo": "미래에셋증권",
@@ -1702,10 +1739,10 @@
 }
 },
 {
-"capRank": 49,
+"capRank": 50,
 "sym": "030200.KS",
 "name": "KT Corporation",
-"nameKo": null,
+"nameKo": "KT",
 "ind": "Telecom Services",
 "sec": "Communication Services",
 "ex": "KSE",
@@ -1725,10 +1762,10 @@
 }
 },
 {
-"capRank": 50,
+"capRank": 51,
 "sym": "010950.KS",
 "name": "S-Oil Corporation",
-"nameKo": null,
+"nameKo": "S-Oil",
 "ind": "Oil & Gas Refining & Marketing",
 "sec": "Energy",
 "ex": "KSE",
@@ -1748,7 +1785,7 @@
 }
 },
 {
-"capRank": 51,
+"capRank": 52,
 "sym": "028050.KS",
 "name": "Samsung E&A Co., Ltd.",
 "nameKo": "삼성E&A",
@@ -1771,7 +1808,7 @@
 }
 },
 {
-"capRank": 52,
+"capRank": 53,
 "sym": "000150.KS",
 "name": "Doosan Corporation",
 "nameKo": "두산",
@@ -1794,7 +1831,7 @@
 }
 },
 {
-"capRank": 53,
+"capRank": 54,
 "sym": "003490.KS",
 "name": "Korean Airlines Co.,Ltd.",
 "nameKo": "대한항공",
@@ -1817,7 +1854,7 @@
 }
 },
 {
-"capRank": 54,
+"capRank": 55,
 "sym": "005830.KS",
 "name": "DB Insurance Co., Ltd.",
 "nameKo": "DB손해보험",
@@ -1840,7 +1877,7 @@
 }
 },
 {
-"capRank": 55,
+"capRank": 56,
 "sym": "047810.KS",
 "name": "Korea Aerospace Industries, Ltd.",
 "nameKo": "한국항공우주",
@@ -1863,7 +1900,7 @@
 }
 },
 {
-"capRank": 56,
+"capRank": 57,
 "sym": "323410.KS",
 "name": "KakaoBank Corp.",
 "nameKo": "카카오뱅크",
@@ -1886,7 +1923,7 @@
 }
 },
 {
-"capRank": 57,
+"capRank": 58,
 "sym": "259960.KS",
 "name": "KRAFTON, Inc.",
 "nameKo": "크래프톤",
@@ -1909,7 +1946,7 @@
 }
 },
 {
-"capRank": 58,
+"capRank": 59,
 "sym": "278470.KS",
 "name": "APR Co., Ltd.",
 "nameKo": "에이피알",
@@ -1932,7 +1969,7 @@
 }
 },
 {
-"capRank": 59,
+"capRank": 60,
 "sym": "272210.KS",
 "name": "Hanwha Systems Co., Ltd.",
 "nameKo": "한화시스템",
@@ -1955,7 +1992,7 @@
 }
 },
 {
-"capRank": 60,
+"capRank": 61,
 "sym": "003230.KS",
 "name": "Samyang Foods Co., Ltd.",
 "nameKo": "삼양식품",
@@ -1978,7 +2015,7 @@
 }
 },
 {
-"capRank": 61,
+"capRank": 62,
 "sym": "090430.KS",
 "name": "Amorepacific Corporation",
 "nameKo": "아모레퍼시픽",
@@ -2001,7 +2038,7 @@
 }
 },
 {
-"capRank": 62,
+"capRank": 63,
 "sym": "086520.KQ",
 "name": "Ecopro Co., Ltd.",
 "nameKo": "에코프로",
@@ -2024,7 +2061,7 @@
 }
 },
 {
-"capRank": 63,
+"capRank": 64,
 "sym": "247540.KQ",
 "name": "EcoPro BM Co., Ltd.",
 "nameKo": "에코프로비엠",
@@ -2047,7 +2084,7 @@
 }
 },
 {
-"capRank": 64,
+"capRank": 65,
 "sym": "005940.KS",
 "name": "NH Investment & Securities Co., Ltd.",
 "nameKo": "NH투자증권",
@@ -2070,7 +2107,7 @@
 }
 },
 {
-"capRank": 65,
+"capRank": 66,
 "sym": "000720.KS",
 "name": "Hyundai Engineering & Construction Co.,Ltd.",
 "nameKo": "현대건설",
@@ -2093,7 +2130,7 @@
 }
 },
 {
-"capRank": 66,
+"capRank": 67,
 "sym": "267250.KS",
 "name": "HD Hyundai Co., Ltd.",
 "nameKo": "HD현대",
@@ -2116,7 +2153,7 @@
 }
 },
 {
-"capRank": 67,
+"capRank": 68,
 "sym": "0126Z0.KS",
 "name": "Samsung Epis Holdings Co., Ltd.",
 "nameKo": "삼성에피스홀딩스",
@@ -2139,7 +2176,7 @@
 }
 },
 {
-"capRank": 68,
+"capRank": 69,
 "sym": "047050.KS",
 "name": "Posco International Corporation",
 "nameKo": "포스코인터내셔널",
@@ -2162,7 +2199,7 @@
 }
 },
 {
-"capRank": 69,
+"capRank": 70,
 "sym": "064350.KS",
 "name": "Hyundai Rotem Company",
 "nameKo": "현대로템",
@@ -2185,7 +2222,7 @@
 }
 },
 {
-"capRank": 70,
+"capRank": 71,
 "sym": "161390.KS",
 "name": "Hankook Tire & Technology Co., Ltd.",
 "nameKo": "한국타이어앤테크놀로지",
@@ -2208,7 +2245,7 @@
 }
 },
 {
-"capRank": 71,
+"capRank": 72,
 "sym": "021240.KS",
 "name": "COWAY Co., Ltd.",
 "nameKo": "코웨이",
@@ -2231,7 +2268,7 @@
 }
 },
 {
-"capRank": 72,
+"capRank": 73,
 "sym": "307950.KS",
 "name": "Hyundai Autoever Corporation",
 "nameKo": "현대오토에버",
@@ -2254,10 +2291,10 @@
 }
 },
 {
-"capRank": 73,
+"capRank": 74,
 "sym": "078930.KS",
 "name": "GS Holdings Corp.",
-"nameKo": null,
+"nameKo": "GS",
 "ind": "Conglomerates",
 "sec": "Industrials",
 "ex": "KSE",
@@ -2277,7 +2314,7 @@
 }
 },
 {
-"capRank": 74,
+"capRank": 75,
 "sym": "443060.KS",
 "name": "HD Hyundai Marine Solution CO.,LTD.",
 "nameKo": "HD현대마린솔루션",
@@ -2300,7 +2337,7 @@
 }
 },
 {
-"capRank": 75,
+"capRank": 76,
 "sym": "064400.KS",
 "name": "LG CNS Co., Ltd.",
 "nameKo": "LG씨엔에스",
@@ -2323,7 +2360,7 @@
 }
 },
 {
-"capRank": 76,
+"capRank": 77,
 "sym": "079550.KS",
 "name": "LIG Defense&Aerospace Co., Ltd.",
 "nameKo": "LIG디펜스앤에어로스페이스",
@@ -2346,7 +2383,30 @@
 }
 },
 {
-"capRank": 77,
+"capRank": 78,
+"sym": "032640.KS",
+"name": "LG Uplus Corp.",
+"nameKo": "LG유플러스",
+"ind": "Telecom Services",
+"sec": "Communication Services",
+"ex": "KSE",
+"cap": 7113408788320.0,
+"rev": 15357932000000.0,
+"op": 948943000000.0,
+"pe": 12.687957,
+"peNeg": false,
+"rRev": 3,
+"rOp": 3,
+"okRev": false,
+"okOp": false,
+"cheap": {
+"agg": false,
+"mean": false,
+"median": false
+}
+},
+{
+"capRank": 79,
 "sym": "071050.KS",
 "name": "Korea Investment Holdings Co., Ltd.",
 "nameKo": "한국금융지주",
@@ -2369,7 +2429,7 @@
 }
 },
 {
-"capRank": 78,
+"capRank": 80,
 "sym": "326030.KS",
 "name": "SK Biopharmaceuticals Co., Ltd.",
 "nameKo": "SK바이오팜",
@@ -2392,7 +2452,7 @@
 }
 },
 {
-"capRank": 79,
+"capRank": 81,
 "sym": "016360.KS",
 "name": "Samsung Securities Co.,Ltd.",
 "nameKo": "삼성증권",
@@ -2415,7 +2475,7 @@
 }
 },
 {
-"capRank": 80,
+"capRank": 82,
 "sym": "011070.KS",
 "name": "LG Innotek Co., Ltd.",
 "nameKo": "LG이노텍",
@@ -2438,7 +2498,7 @@
 }
 },
 {
-"capRank": 81,
+"capRank": 83,
 "sym": "277810.KQ",
 "name": "Rainbow Robotics Co.,Ltd.",
 "nameKo": "레인보우로보틱스",
@@ -2461,7 +2521,7 @@
 }
 },
 {
-"capRank": 82,
+"capRank": 84,
 "sym": "352820.KS",
 "name": "HYBE Co., Ltd.",
 "nameKo": "하이브",
@@ -2484,7 +2544,7 @@
 }
 },
 {
-"capRank": 83,
+"capRank": 85,
 "sym": "036930.KQ",
 "name": "JUSUNG ENGINEERING Co.,Ltd.",
 "nameKo": "주성엔지니어링",
@@ -2507,7 +2567,7 @@
 }
 },
 {
-"capRank": 84,
+"capRank": 86,
 "sym": "000100.KS",
 "name": "Yuhan Corporation",
 "nameKo": "유한양행",
@@ -2530,7 +2590,7 @@
 }
 },
 {
-"capRank": 85,
+"capRank": 87,
 "sym": "128940.KS",
 "name": "Hanmi Pharm. Co., Ltd.",
 "nameKo": "한미약품",
@@ -2553,7 +2613,7 @@
 }
 },
 {
-"capRank": 86,
+"capRank": 88,
 "sym": "009830.KS",
 "name": "Hanwha Solutions Corporation",
 "nameKo": "한화솔루션",
@@ -2576,7 +2636,7 @@
 }
 },
 {
-"capRank": 87,
+"capRank": 89,
 "sym": "000880.KS",
 "name": "Hanwha Corporation",
 "nameKo": "한화",
@@ -2599,7 +2659,7 @@
 }
 },
 {
-"capRank": 88,
+"capRank": 90,
 "sym": "000500.KS",
 "name": "GAON CABLE Co., Ltd.",
 "nameKo": "가온전선",
@@ -2622,7 +2682,7 @@
 }
 },
 {
-"capRank": 89,
+"capRank": 91,
 "sym": "175330.KS",
 "name": "JB Financial Group Co., Ltd.",
 "nameKo": "JB금융지주",
@@ -2645,7 +2705,7 @@
 }
 },
 {
-"capRank": 90,
+"capRank": 92,
 "sym": "039490.KS",
 "name": "Kiwoom Securities Co., Ltd.",
 "nameKo": "키움증권",
@@ -2668,10 +2728,10 @@
 }
 },
 {
-"capRank": 91,
+"capRank": 93,
 "sym": "006260.KS",
 "name": "LS Corp.",
-"nameKo": null,
+"nameKo": "LS",
 "ind": "Electrical Equipment & Parts",
 "sec": "Industrials",
 "ex": "KSE",
@@ -2691,7 +2751,7 @@
 }
 },
 {
-"capRank": 92,
+"capRank": 94,
 "sym": "271560.KS",
 "name": "ORION Corp.",
 "nameKo": "오리온",
@@ -2714,7 +2774,7 @@
 }
 },
 {
-"capRank": 93,
+"capRank": 95,
 "sym": "007660.KS",
 "name": "ISU Petasys Co., Ltd.",
 "nameKo": "이수페타시스",
@@ -2737,7 +2797,7 @@
 }
 },
 {
-"capRank": 94,
+"capRank": 96,
 "sym": "029780.KS",
 "name": "Samsung Card Co., Ltd.",
 "nameKo": "삼성카드",
@@ -2760,7 +2820,7 @@
 }
 },
 {
-"capRank": 95,
+"capRank": 97,
 "sym": "377300.KS",
 "name": "Kakao Pay Corp.",
 "nameKo": "카카오페이",
@@ -2783,7 +2843,7 @@
 }
 },
 {
-"capRank": 96,
+"capRank": 98,
 "sym": "047040.KS",
 "name": "Daewoo Engineering & Construction Co., Ltd.",
 "nameKo": "대우건설",
@@ -2806,10 +2866,10 @@
 }
 },
 {
-"capRank": 97,
+"capRank": 99,
 "sym": "028300.KQ",
 "name": "HLB Co., Ltd.",
-"nameKo": null,
+"nameKo": "HLB",
 "ind": "Building Products & Equipment",
 "sec": "Industrials",
 "ex": "KOSDAQ",
@@ -2829,10 +2889,10 @@
 }
 },
 {
-"capRank": 98,
+"capRank": 100,
 "sym": "036570.KS",
 "name": "NC Corporation",
-"nameKo": null,
+"nameKo": "NC",
 "ind": "Electronic Gaming & Multimedia",
 "sec": "Communication Services",
 "ex": "KSE",
@@ -2850,52 +2910,6 @@
 "mean": true,
 "median": true
 }
-},
-{
-"capRank": 99,
-"sym": "000250.KQ",
-"name": "Sam Chun Dang Pharm. Co., Ltd",
-"nameKo": "삼천당제약",
-"ind": "Drug Manufacturers—Specialty & Generic",
-"sec": "Healthcare",
-"ex": "KOSDAQ",
-"cap": 3981609966600.0,
-"rev": 259899581960.0,
-"op": 17704560610.0,
-"pe": 231.704737,
-"peNeg": false,
-"rRev": 33,
-"rOp": 33,
-"okRev": false,
-"okOp": false,
-"cheap": {
-"agg": false,
-"mean": false,
-"median": false
-}
-},
-{
-"capRank": 100,
-"sym": "138930.KS",
-"name": "BNK Financial Group Inc.",
-"nameKo": "BNK금융지주",
-"ind": "Banks—Regional",
-"sec": "Financial Services",
-"ex": "KSE",
-"cap": 3958232787900.0,
-"rev": 3387487167863.0,
-"op": 938351260654.0,
-"pe": null,
-"peNeg": false,
-"rRev": 5,
-"rOp": 7,
-"okRev": false,
-"okOp": false,
-"cheap": {
-"agg": false,
-"mean": false,
-"median": false
-}
 }
 ]
 },
@@ -2904,14 +2918,14 @@
 "currency": "USD",
 "asOf": "2026-11-06",
 "screenerTotal": 7270,
-"population": 5289,
+"population": 5288,
 "industries": 145,
 "gaps": {
 "noQuote": 0,
 "foreignCurrency": 508,
-"noIndustry": 253,
-"dupClass": 782,
-"unknownCurrency": 438,
+"noIndustry": 255,
+"dupClass": 784,
+"unknownCurrency": 435,
 "assumedCurrency": 0,
 "assumedCurrencyWithRevenue": 0
 },
@@ -2923,11 +2937,11 @@
 "BABA(CNY)",
 "SAP(EUR)",
 "TM(JPY)",
+"QH(CNY)",
 "MUFG(JPY)",
 "TD(CAD)",
 "NVO(DKK)",
-"SAN(EUR)",
-"SONY(JPY)"
+"SAN(EUR)"
 ],
 "skipped": [
 {
@@ -3027,7 +3041,7 @@
 "kOp": 4,
 "revCut": 3113921000.0,
 "opCut": 285536000.0,
-"peAgg": 24.61,
+"peAgg": 24.64,
 "peMean": 76.04,
 "peMedian": 23.88
 },
@@ -3041,7 +3055,7 @@
 "kOp": 9,
 "revCut": 18026000000.0,
 "opCut": 2733000000.0,
-"peAgg": 27.73,
+"peAgg": 27.74,
 "peMean": 42.42,
 "peMedian": 28.25
 },
@@ -3055,7 +3069,7 @@
 "kOp": 3,
 "revCut": 15326000000.0,
 "opCut": 1844275000.0,
-"peAgg": 20.31,
+"peAgg": 20.32,
 "peMean": 18.72,
 "peMedian": 13.67
 },
@@ -3064,13 +3078,13 @@
 "n": 361,
 "nRev": 339,
 "nOp": 340,
-"nPe": 237,
+"nPe": 295,
 "kRev": 34,
 "kOp": 34,
 "revCut": 633571000.0,
 "opCut": 298221000.0,
-"peAgg": 15.7,
-"peMean": 20.85,
+"peAgg": 15.25,
+"peMean": 19.51,
 "peMedian": 11.25
 },
 "Auto Manufacturers": {
@@ -3117,15 +3131,15 @@
 },
 "Biotechnology": {
 "sec": "Healthcare",
-"n": 564,
-"nRev": 350,
-"nOp": 499,
+"n": 563,
+"nRev": 348,
+"nOp": 498,
 "nPe": 51,
 "kRev": 35,
 "kOp": 50,
 "revCut": 669495000.0,
 "opCut": -1574796.0,
-"peAgg": 18.0,
+"peAgg": 18.01,
 "peMean": 61.51,
 "peMedian": 14.85
 },
@@ -3167,7 +3181,7 @@
 "kOp": 4,
 "revCut": 28971000000.0,
 "opCut": 5587000000.0,
-"peAgg": 15.4,
+"peAgg": 15.41,
 "peMean": 28.16,
 "peMedian": 19.81
 },
@@ -3237,7 +3251,7 @@
 "kOp": 1,
 "revCut": 735840000000.0,
 "opCut": 28980000000.0,
-"peAgg": 41.26,
+"peAgg": 41.25,
 "peMean": 28.01,
 "peMedian": 22.59
 },
@@ -3321,7 +3335,7 @@
 "kOp": 5,
 "revCut": 12027000000.0,
 "opCut": 6037100000.0,
-"peAgg": 13.35,
+"peAgg": 13.36,
 "peMean": 23.46,
 "peMedian": 11.79
 },
@@ -3400,14 +3414,14 @@
 "n": 47,
 "nRev": 45,
 "nOp": 45,
-"nPe": 40,
+"nPe": 41,
 "kRev": 5,
 "kOp": 5,
 "revCut": 18782000000.0,
 "opCut": 3347000000.0,
-"peAgg": 11.11,
-"peMean": 23.66,
-"peMedian": 12.4
+"peAgg": 11.07,
+"peMean": 23.26,
+"peMedian": 12.37
 },
 "Internet Content & Information": {
 "sec": "Communication Services",
@@ -3419,7 +3433,7 @@
 "kOp": 5,
 "revCut": 3088880000.0,
 "opCut": 438725000.0,
-"peAgg": 16.29,
+"peAgg": 16.28,
 "peMean": 52.44,
 "peMedian": 12.14
 },
@@ -3442,14 +3456,14 @@
 "n": 136,
 "nRev": 122,
 "nOp": 124,
-"nPe": 34,
+"nPe": 35,
 "kRev": 13,
 "kOp": 13,
 "revCut": 3436671000.0,
 "opCut": 319800000.0,
-"peAgg": 29.77,
-"peMean": 58.81,
-"peMedian": 26.33
+"peAgg": 29.78,
+"peMean": 75.52,
+"peMedian": 26.59
 },
 "Medical Distribution": {
 "sec": "Healthcare",
@@ -3484,13 +3498,13 @@
 "n": 73,
 "nRev": 66,
 "nOp": 67,
-"nPe": 39,
+"nPe": 41,
 "kRev": 7,
 "kOp": 7,
 "revCut": 10061000000.0,
 "opCut": 3160000000.0,
-"peAgg": 11.28,
-"peMean": 12.39,
+"peAgg": 11.27,
+"peMean": 12.24,
 "peMedian": 9.4
 },
 "Oil & Gas Integrated": {
@@ -3554,13 +3568,13 @@
 "n": 47,
 "nRev": 44,
 "nOp": 44,
-"nPe": 29,
+"nPe": 30,
 "kRev": 5,
 "kOp": 5,
 "revCut": 12709000000.0,
 "opCut": 1870804000.0,
 "peAgg": 24.5,
-"peMean": 40.51,
+"peMean": 39.73,
 "peMedian": 26.18
 },
 "Semiconductor Equipment & Materials": {
@@ -3601,7 +3615,7 @@
 "kOp": 20,
 "revCut": 4397000000.0,
 "opCut": 642000000.0,
-"peAgg": 29.92,
+"peAgg": 29.93,
 "peMean": 53.9,
 "peMedian": 29.23
 },
@@ -3814,7 +3828,7 @@
 "ind": "Aerospace & Defense",
 "sec": "Industrials",
 "ex": "NasdaqGS",
-"cap": 1822035556934.7808,
+"cap": 1823529482231.9941,
 "rev": 32043000000.0,
 "op": 575000000.0,
 "pe": null,
@@ -3952,7 +3966,7 @@
 "ind": "Discount Stores",
 "sec": "Consumer Defensive",
 "ex": "NasdaqGS",
-"cap": 998898068820.8567,
+"cap": 995843801537.2607,
 "rev": 735840000000.0,
 "op": 28980000000.0,
 "pe": 46.282053,
@@ -5424,7 +5438,7 @@
 "ind": "Apparel Retail",
 "sec": "Consumer Cyclical",
 "ex": "NYSE",
-"cap": 148826493810.15442,
+"cap": 149466514915.09042,
 "rev": 62363000000.0,
 "op": 7584000000.0,
 "pe": 25.652705,
@@ -5930,7 +5944,7 @@
 "ind": "Computer Hardware",
 "sec": "Technology",
 "ex": "NasdaqGS",
-"cap": 118818732506.31927,
+"cap": 118820156789.51385,
 "rev": 28971000000.0,
 "op": 21056000000.0,
 "pe": 6.487913,
@@ -6007,7 +6021,7 @@
 "dupClass": 9,
 "unknownCurrency": 0,
 "assumedCurrency": 79,
-"assumedCurrencyWithRevenue": 5
+"assumedCurrencyWithRevenue": 3
 },
 "foreignExamples": [
 "1773.T(MYR)",
@@ -6252,8 +6266,8 @@
 "kOp": 5,
 "revCut": 430040000000.0,
 "opCut": 31726000000.0,
-"peAgg": 17.52,
-"peMean": 19.75,
+"peAgg": 17.42,
+"peMean": 19.52,
 "peMedian": 12.75
 },
 "Electronic Components": {
@@ -6317,14 +6331,14 @@
 "n": 10,
 "nRev": 10,
 "nOp": 10,
-"nPe": 6,
+"nPe": 7,
 "kRev": 1,
 "kOp": 1,
 "revCut": 942601000000.0,
 "opCut": 181876000000.0,
-"peAgg": 28.82,
-"peMean": 23.9,
-"peMedian": 20.73
+"peAgg": 28.35,
+"peMean": 23.01,
+"peMedian": 17.7
 },
 "Grocery Stores": {
 "sec": "Consumer Defensive",
@@ -6583,14 +6597,14 @@
 "n": 36,
 "nRev": 36,
 "nOp": 36,
-"nPe": 30,
+"nPe": 31,
 "kRev": 4,
 "kOp": 4,
 "revCut": 177472000000.0,
 "opCut": 20385000000.0,
-"peAgg": 27.56,
-"peMean": 20.15,
-"peMedian": 14.14
+"peAgg": 27.54,
+"peMean": 19.91,
+"peMedian": 14.08
 },
 "Security & Protection Services": {
 "sec": "Industrials",
@@ -6639,28 +6653,28 @@
 "n": 182,
 "nRev": 178,
 "nOp": 178,
-"nPe": 143,
+"nPe": 142,
 "kRev": 18,
 "kOp": 18,
 "revCut": 37752000000.0,
-"opCut": 6593897000.0,
-"peAgg": 23.95,
-"peMean": 30.34,
-"peMedian": 16.46
+"opCut": 6254000000.0,
+"peAgg": 24.11,
+"peMean": 30.43,
+"peMedian": 16.26
 },
 "Specialty Chemicals": {
 "sec": "Basic Materials",
 "n": 114,
 "nRev": 113,
 "nOp": 113,
-"nPe": 100,
+"nPe": 101,
 "kRev": 12,
 "kOp": 12,
 "revCut": 602968000000.0,
 "opCut": 47978000000.0,
-"peAgg": 14.49,
-"peMean": 13.12,
-"peMedian": 11.27
+"peAgg": 14.51,
+"peMean": 13.24,
+"peMedian": 11.44
 },
 "Specialty Industrial Machinery": {
 "sec": "Industrials",
@@ -7179,7 +7193,7 @@
 "ind": "Drug Manufacturers—General",
 "sec": "Healthcare",
 "ex": "Tokyo",
-"cap": 11199798198602.0,
+"cap": 11201063359136.0,
 "rev": 1414375000000.0,
 "op": 682867000000.0,
 "pe": 23.489916,
@@ -7478,7 +7492,7 @@
 "ind": "Auto Manufacturers",
 "sec": "Consumer Cyclical",
 "ex": "Tokyo",
-"cap": 7128113363473.0,
+"cap": 7127314787471.0,
 "rev": 22517856000000.0,
 "op": -79421000000.0,
 "pe": null,
@@ -8168,7 +8182,7 @@
 "ind": "Auto Manufacturers",
 "sec": "Consumer Cyclical",
 "ex": "Tokyo",
-"cap": 4237650114760.5,
+"cap": 4237650415681.0,
 "rev": 6600966000000.0,
 "op": 620480000000.0,
 "pe": 8.422274,
@@ -8835,7 +8849,7 @@
 "ind": "Drug Manufacturers—Specialty & Generic",
 "sec": "Healthcare",
 "ex": "Tokyo",
-"cap": 2537783441365.5,
+"cap": 2537183265415.5,
 "rev": 637089000000.0,
 "op": 118662000000.0,
 "pe": 11.241492,
@@ -9069,7 +9083,7 @@
 "kOp": 6,
 "revCut": 25758110150.0,
 "opCut": 786728202.0,
-"peAgg": 32.45,
+"peAgg": 32.46,
 "peMean": 168.04,
 "peMedian": 81.96
 },
@@ -9111,7 +9125,7 @@
 "kOp": 22,
 "revCut": 15453612627.0,
 "opCut": 951131335.0,
-"peAgg": 24.56,
+"peAgg": 24.58,
 "peMean": 85.63,
 "peMedian": 31.85
 },
@@ -9120,14 +9134,14 @@
 "n": 5,
 "nRev": 5,
 "nOp": 5,
-"nPe": 4,
+"nPe": 5,
 "kRev": 1,
 "kOp": 1,
 "revCut": 699803000000.0,
 "opCut": 451285000000.0,
-"peAgg": 6.68,
-"peMean": 6.74,
-"peMedian": 6.77
+"peAgg": 6.74,
+"peMean": 6.78,
+"peMedian": 6.85
 },
 "Banks—Regional": {
 "sec": "Financial Services",
@@ -9148,28 +9162,28 @@
 "n": 28,
 "nRev": 28,
 "nOp": 28,
-"nPe": 16,
+"nPe": 17,
 "kRev": 3,
 "kOp": 3,
 "revCut": 34175739921.0,
 "opCut": 12461600566.0,
-"peAgg": 23.53,
-"peMean": 103.43,
-"peMedian": 31.31
+"peAgg": 22.55,
+"peMean": 98.65,
+"peMedian": 30.07
 },
 "Capital Markets": {
 "sec": "Financial Services",
 "n": 45,
 "nRev": 45,
 "nOp": 45,
-"nPe": 44,
+"nPe": 45,
 "kRev": 5,
 "kOp": 5,
 "revCut": 41140905663.0,
 "opCut": 25484983757.0,
-"peAgg": 10.62,
-"peMean": 70.29,
-"peMedian": 16.05
+"peAgg": 10.48,
+"peMean": 68.91,
+"peMedian": 15.95
 },
 "Chemicals": {
 "sec": "Basic Materials",
@@ -9181,7 +9195,7 @@
 "kOp": 15,
 "revCut": 20009755537.0,
 "opCut": 2010043523.0,
-"peAgg": 16.98,
+"peAgg": 16.97,
 "peMean": 152.73,
 "peMedian": 28.37
 },
@@ -9237,7 +9251,7 @@
 "kOp": 18,
 "revCut": 9147628893.0,
 "opCut": 1198492943.0,
-"peAgg": 22.91,
+"peAgg": 22.89,
 "peMean": 97.66,
 "peMedian": 29.75
 },
@@ -9274,14 +9288,14 @@
 "n": 144,
 "nRev": 125,
 "nOp": 125,
-"nPe": 69,
+"nPe": 70,
 "kRev": 13,
 "kOp": 13,
 "revCut": 83714612685.0,
 "opCut": 3280419352.0,
-"peAgg": 9.29,
-"peMean": 50.42,
-"peMedian": 22.91
+"peAgg": 9.3,
+"peMean": 50.47,
+"peMedian": 23.7
 },
 "Farm & Heavy Construction Machinery": {
 "sec": "Industrials",
@@ -9344,28 +9358,28 @@
 "n": 9,
 "nRev": 9,
 "nOp": 9,
-"nPe": 8,
+"nPe": 9,
 "kRev": 1,
 "kOp": 1,
 "revCut": 378332285134.0,
 "opCut": 115551950461.0,
-"peAgg": 12.7,
-"peMean": 17.72,
-"peMedian": 16.91
+"peAgg": 13.59,
+"peMean": 19.82,
+"peMedian": 18.11
 },
 "Insurance—Life": {
 "sec": "Financial Services",
 "n": 5,
 "nRev": 5,
 "nOp": 5,
-"nPe": 4,
+"nPe": 5,
 "kRev": 1,
 "kOp": 1,
 "revCut": 904047000000.0,
 "opCut": 166530000000.0,
-"peAgg": 7.8,
-"peMean": 9.48,
-"peMedian": 7.75
+"peAgg": 8.76,
+"peMean": 9.73,
+"peMedian": 8.15
 },
 "Insurance—Property & Casualty": {
 "sec": "Financial Services",
@@ -9391,7 +9405,7 @@
 "kOp": 4,
 "revCut": 75293980506.0,
 "opCut": 3086640458.0,
-"peAgg": 13.12,
+"peAgg": 13.11,
 "peMean": 55.52,
 "peMedian": 23.86
 },
@@ -9456,14 +9470,14 @@
 "n": 57,
 "nRev": 56,
 "nOp": 56,
-"nPe": 51,
+"nPe": 52,
 "kRev": 6,
 "kOp": 6,
 "revCut": 73032703589.0,
 "opCut": 6333112562.0,
-"peAgg": 14.96,
-"peMean": 47.06,
-"peMedian": 22.25
+"peAgg": 14.83,
+"peMean": 46.34,
+"peMedian": 22.02
 },
 "Packaged Foods": {
 "sec": "Consumer Defensive",
@@ -9484,14 +9498,14 @@
 "n": 39,
 "nRev": 36,
 "nOp": 36,
-"nPe": 32,
+"nPe": 33,
 "kRev": 4,
 "kOp": 4,
 "revCut": 34691337150.0,
 "opCut": 4508005462.0,
-"peAgg": 15.65,
-"peMean": 86.96,
-"peMedian": 46.68
+"peAgg": 15.13,
+"peMean": 84.74,
+"peMedian": 46.63
 },
 "Scientific & Technical Instruments": {
 "sec": "Technology",
@@ -9503,7 +9517,7 @@
 "kOp": 7,
 "revCut": 3526234726.0,
 "opCut": 320523926.0,
-"peAgg": 58.0,
+"peAgg": 57.89,
 "peMean": 361.06,
 "peMedian": 58.38
 },
@@ -9526,14 +9540,14 @@
 "n": 123,
 "nRev": 116,
 "nOp": 116,
-"nPe": 89,
+"nPe": 90,
 "kRev": 12,
 "kOp": 12,
 "revCut": 11416173749.0,
 "opCut": 2050385360.0000002,
-"peAgg": 21.66,
-"peMean": 100.32,
-"peMedian": 59.74
+"peAgg": 21.41,
+"peMean": 99.3,
+"peMedian": 58.81
 },
 "Specialty Chemicals": {
 "sec": "Basic Materials",
@@ -9545,37 +9559,23 @@
 "kOp": 25,
 "revCut": 17347392840.0,
 "opCut": 1283321510.0,
-"peAgg": 19.14,
+"peAgg": 19.15,
 "peMean": 130.67,
 "peMedian": 37.29
-},
-"Specialty Industrial Machinery": {
-"sec": "Industrials",
-"n": 415,
-"nRev": 378,
-"nOp": 378,
-"nPe": 275,
-"kRev": 38,
-"kOp": 38,
-"revCut": 9215848358.0,
-"opCut": 658370001.0,
-"peAgg": 30.59,
-"peMean": 135.88,
-"peMedian": 42.28
 },
 "Telecom Services": {
 "sec": "Communication Services",
 "n": 19,
 "nRev": 16,
 "nOp": 16,
-"nPe": 11,
+"nPe": 12,
 "kRev": 2,
 "kOp": 2,
 "revCut": 509754564594.0,
 "opCut": 33317591525.000004,
-"peAgg": 12.56,
-"peMean": 810.99,
-"peMedian": 289.76
+"peAgg": 12.81,
+"peMean": 745.29,
+"peMedian": 244.18
 },
 "Thermal Coal": {
 "sec": "Energy",
@@ -9615,7 +9615,7 @@
 "kOp": 4,
 "revCut": 37465981841.0,
 "opCut": 5738834271.0,
-"peAgg": 22.85,
+"peAgg": 22.84,
 "peMean": 38.83,
 "peMedian": 25.63
 },
@@ -9653,7 +9653,7 @@
 "okRev": false,
 "okOp": false,
 "cheap": {
-"agg": false,
+"agg": true,
 "mean": true,
 "median": true
 }
@@ -9706,6 +9706,29 @@
 },
 {
 "capRank": 4,
+"sym": "601288.SS",
+"name": "Agricultural Bank of China Limited",
+"nameKo": null,
+"ind": "Banks—Diversified",
+"sec": "Financial Services",
+"ex": "Shanghai",
+"cap": 2547876560024.8027,
+"rev": 646750000000.0,
+"op": 360022000000.0,
+"pe": 6.931873,
+"peNeg": false,
+"rRev": 2,
+"rOp": 3,
+"okRev": false,
+"okOp": false,
+"cheap": {
+"agg": false,
+"mean": false,
+"median": false
+}
+},
+{
+"capRank": 5,
 "sym": "601857.SS",
 "name": "PetroChina Company Limited",
 "nameKo": null,
@@ -9728,7 +9751,7 @@
 }
 },
 {
-"capRank": 5,
+"capRank": 6,
 "sym": "600941.SS",
 "name": "China Mobile Limited",
 "nameKo": null,
@@ -9751,7 +9774,7 @@
 }
 },
 {
-"capRank": 6,
+"capRank": 7,
 "sym": "601988.SS",
 "name": "Bank of China Limited",
 "nameKo": null,
@@ -9774,7 +9797,30 @@
 }
 },
 {
-"capRank": 7,
+"capRank": 8,
+"sym": "600519.SS",
+"name": "Kweichow Moutai Co., Ltd.",
+"nameKo": null,
+"ind": "Beverages—Wineries & Distilleries",
+"sec": "Consumer Defensive",
+"ex": "Shanghai",
+"cap": 1816368566253.0,
+"rev": 171355138508.0,
+"op": 110642574867.0,
+"pe": 22.115821,
+"peNeg": false,
+"rRev": 1,
+"rOp": 1,
+"okRev": true,
+"okOp": true,
+"cheap": {
+"agg": true,
+"mean": true,
+"median": true
+}
+},
+{
+"capRank": 9,
 "sym": "600938.SS",
 "name": "CNOOC Limited",
 "nameKo": null,
@@ -9797,7 +9843,7 @@
 }
 },
 {
-"capRank": 8,
+"capRank": 10,
 "sym": "300750.SZ",
 "name": "Contemporary Amperex Technology Co., Limited",
 "nameKo": null,
@@ -9820,7 +9866,7 @@
 }
 },
 {
-"capRank": 9,
+"capRank": 11,
 "sym": "600036.SS",
 "name": "China Merchants Bank Co., Ltd.",
 "nameKo": null,
@@ -9843,7 +9889,7 @@
 }
 },
 {
-"capRank": 10,
+"capRank": 12,
 "sym": "601088.SS",
 "name": "China Shenhua Energy Company Limited",
 "nameKo": null,
@@ -9866,7 +9912,7 @@
 }
 },
 {
-"capRank": 11,
+"capRank": 13,
 "sym": "601628.SS",
 "name": "China Life Insurance Company Limited",
 "nameKo": null,
@@ -9883,13 +9929,36 @@
 "okRev": false,
 "okOp": false,
 "cheap": {
-"agg": false,
+"agg": true,
 "mean": true,
 "median": false
 }
 },
 {
-"capRank": 12,
+"capRank": 14,
+"sym": "601318.SS",
+"name": "Ping An Insurance (Group) Company of China, Ltd.",
+"nameKo": null,
+"ind": "Insurance—Life",
+"sec": "Financial Services",
+"ex": "Shanghai",
+"cap": 986866488727.5,
+"rev": 904047000000.0,
+"op": 166530000000.0,
+"pe": 10.74618,
+"peNeg": false,
+"rRev": 1,
+"rOp": 1,
+"okRev": true,
+"okOp": true,
+"cheap": {
+"agg": false,
+"mean": false,
+"median": false
+}
+},
+{
+"capRank": 15,
 "sym": "601138.SS",
 "name": "Foxconn Industrial Internet Co., Ltd.",
 "nameKo": null,
@@ -9912,7 +9981,7 @@
 }
 },
 {
-"capRank": 13,
+"capRank": 16,
 "sym": "002594.SZ",
 "name": "BYD Company Limited",
 "nameKo": null,
@@ -9935,7 +10004,7 @@
 }
 },
 {
-"capRank": 14,
+"capRank": 17,
 "sym": "601899.SS",
 "name": "Zijin Mining Group Company Limited",
 "nameKo": null,
@@ -9958,7 +10027,7 @@
 }
 },
 {
-"capRank": 15,
+"capRank": 18,
 "sym": "601328.SS",
 "name": "Bank of Communications Co., Ltd.",
 "nameKo": null,
@@ -9977,11 +10046,11 @@
 "cheap": {
 "agg": false,
 "mean": false,
-"median": false
+"median": true
 }
 },
 {
-"capRank": 16,
+"capRank": 19,
 "sym": "600900.SS",
 "name": "China Yangtze Power Co., Ltd.",
 "nameKo": null,
@@ -10004,7 +10073,7 @@
 }
 },
 {
-"capRank": 17,
+"capRank": 20,
 "sym": "600028.SS",
 "name": "China Petroleum & Chemical Corporation",
 "nameKo": null,
@@ -10027,7 +10096,7 @@
 }
 },
 {
-"capRank": 18,
+"capRank": 21,
 "sym": "000333.SZ",
 "name": "Midea Group Co., Ltd.",
 "nameKo": null,
@@ -10050,7 +10119,7 @@
 }
 },
 {
-"capRank": 19,
+"capRank": 22,
 "sym": "601658.SS",
 "name": "Postal Savings Bank of China Co., Ltd.",
 "nameKo": null,
@@ -10073,7 +10142,7 @@
 }
 },
 {
-"capRank": 20,
+"capRank": 23,
 "sym": "601728.SS",
 "name": "China Telecom Corporation Limited",
 "nameKo": null,
@@ -10096,14 +10165,14 @@
 }
 },
 {
-"capRank": 21,
+"capRank": 24,
 "sym": "300308.SZ",
 "name": "Zhongji Innolight Co., Ltd.",
 "nameKo": null,
 "ind": "Communication Equipment",
 "sec": "Technology",
 "ex": "Shenzhen",
-"cap": 524041119168.0,
+"cap": 527703519168.0,
 "rev": 82782192511.0,
 "op": 33564301810.999996,
 "pe": 21.416824,
@@ -10119,7 +10188,7 @@
 }
 },
 {
-"capRank": 22,
+"capRank": 25,
 "sym": "601998.SS",
 "name": "China CITIC Bank Corporation Limited",
 "nameKo": null,
@@ -10142,7 +10211,7 @@
 }
 },
 {
-"capRank": 23,
+"capRank": 26,
 "sym": "688256.SS",
 "name": "Cambricon Technologies Corporation Limited",
 "nameKo": null,
@@ -10165,7 +10234,7 @@
 }
 },
 {
-"capRank": 24,
+"capRank": 27,
 "sym": "603259.SS",
 "name": "WuXi AppTec Co., Ltd.",
 "nameKo": null,
@@ -10188,7 +10257,7 @@
 }
 },
 {
-"capRank": 25,
+"capRank": 28,
 "sym": "688041.SS",
 "name": "Hygon Information Technology Co., Ltd.",
 "nameKo": null,
@@ -10211,7 +10280,7 @@
 }
 },
 {
-"capRank": 26,
+"capRank": 29,
 "sym": "601166.SS",
 "name": "Industrial Bank Co., Ltd.",
 "nameKo": null,
@@ -10234,7 +10303,7 @@
 }
 },
 {
-"capRank": 27,
+"capRank": 30,
 "sym": "002371.SZ",
 "name": "NAURA Technology Group Co., Ltd.",
 "nameKo": null,
@@ -10257,7 +10326,7 @@
 }
 },
 {
-"capRank": 28,
+"capRank": 31,
 "sym": "600030.SS",
 "name": "CITIC Securities Company Limited",
 "nameKo": null,
@@ -10274,13 +10343,13 @@
 "okRev": true,
 "okOp": true,
 "cheap": {
-"agg": true,
+"agg": false,
 "mean": true,
 "median": true
 }
 },
 {
-"capRank": 29,
+"capRank": 32,
 "sym": "002475.SZ",
 "name": "Luxshare Precision Industry Co., Ltd.",
 "nameKo": null,
@@ -10303,7 +10372,7 @@
 }
 },
 {
-"capRank": 30,
+"capRank": 33,
 "sym": "600276.SS",
 "name": "Jiangsu Hengrui Pharmaceuticals Co.,Ltd",
 "nameKo": null,
@@ -10326,7 +10395,7 @@
 }
 },
 {
-"capRank": 31,
+"capRank": 34,
 "sym": "600000.SS",
 "name": "Shanghai Pudong Development Bank Co., Ltd.",
 "nameKo": null,
@@ -10349,7 +10418,7 @@
 }
 },
 {
-"capRank": 32,
+"capRank": 35,
 "sym": "002415.SZ",
 "name": "Hangzhou Hikvision Digital Technology Co., Ltd.",
 "nameKo": null,
@@ -10372,7 +10441,7 @@
 }
 },
 {
-"capRank": 33,
+"capRank": 36,
 "sym": "601319.SS",
 "name": "The People's Insurance Company (Group) of China Limited",
 "nameKo": null,
@@ -10395,7 +10464,7 @@
 }
 },
 {
-"capRank": 34,
+"capRank": 37,
 "sym": "601601.SS",
 "name": "China Pacific Insurance (Group) Co., Ltd.",
 "nameKo": null,
@@ -10418,7 +10487,7 @@
 }
 },
 {
-"capRank": 35,
+"capRank": 38,
 "sym": "300059.SZ",
 "name": "East Money Information Co.,Ltd.",
 "nameKo": null,
@@ -10441,7 +10510,7 @@
 }
 },
 {
-"capRank": 36,
+"capRank": 39,
 "sym": "000858.SZ",
 "name": "Wuliangye Yibin Co.,Ltd.",
 "nameKo": null,
@@ -10464,14 +10533,14 @@
 }
 },
 {
-"capRank": 37,
+"capRank": 40,
 "sym": "601211.SS",
 "name": "Guotai Haitong Securities Co., Ltd.",
 "nameKo": null,
 "ind": "Capital Markets",
 "sec": "Financial Services",
 "ex": "Shanghai",
-"cap": 289384197728.14075,
+"cap": 290170758026.13116,
 "rev": 75376992951.0,
 "op": 41230585777.0,
 "pe": 9.749684,
@@ -10487,7 +10556,7 @@
 }
 },
 {
-"capRank": 38,
+"capRank": 41,
 "sym": "603993.SS",
 "name": "CMOC Group Limited",
 "nameKo": null,
@@ -10510,7 +10579,7 @@
 }
 },
 {
-"capRank": 39,
+"capRank": 42,
 "sym": "601919.SS",
 "name": "COSCO SHIPPING Holdings Co., Ltd.",
 "nameKo": null,
@@ -10533,7 +10602,7 @@
 }
 },
 {
-"capRank": 40,
+"capRank": 43,
 "sym": "688836.SS",
 "name": "Yushu Technology Co., Ltd.",
 "nameKo": null,
@@ -10556,7 +10625,7 @@
 }
 },
 {
-"capRank": 41,
+"capRank": 44,
 "sym": "600150.SS",
 "name": "China CSSC Holdings Limited",
 "nameKo": null,
@@ -10579,7 +10648,7 @@
 }
 },
 {
-"capRank": 42,
+"capRank": 45,
 "sym": "601816.SS",
 "name": "Beijing-Shanghai High-Speed Railway Co., Ltd.",
 "nameKo": null,
@@ -10602,7 +10671,7 @@
 }
 },
 {
-"capRank": 43,
+"capRank": 46,
 "sym": "002714.SZ",
 "name": "Muyuan Foods Group Co., Ltd.",
 "nameKo": null,
@@ -10625,7 +10694,7 @@
 }
 },
 {
-"capRank": 44,
+"capRank": 47,
 "sym": "601225.SS",
 "name": "Shaanxi Coal Industry Company Limited",
 "nameKo": null,
@@ -10648,7 +10717,7 @@
 }
 },
 {
-"capRank": 45,
+"capRank": 48,
 "sym": "688012.SS",
 "name": "Advanced Micro-Fabrication Equipment Inc. China",
 "nameKo": null,
@@ -10671,7 +10740,7 @@
 }
 },
 {
-"capRank": 46,
+"capRank": 49,
 "sym": "300502.SZ",
 "name": "Eoptolink Technology Inc., Ltd.",
 "nameKo": null,
@@ -10694,7 +10763,7 @@
 }
 },
 {
-"capRank": 47,
+"capRank": 50,
 "sym": "003816.SZ",
 "name": "CGN Power Co., Ltd.",
 "nameKo": null,
@@ -10717,7 +10786,7 @@
 }
 },
 {
-"capRank": 48,
+"capRank": 51,
 "sym": "600919.SS",
 "name": "Bank of Jiangsu Co., Ltd.",
 "nameKo": null,
@@ -10740,7 +10809,7 @@
 }
 },
 {
-"capRank": 49,
+"capRank": 52,
 "sym": "000001.SZ",
 "name": "Ping An Bank Co., Ltd.",
 "nameKo": null,
@@ -10763,7 +10832,7 @@
 }
 },
 {
-"capRank": 50,
+"capRank": 53,
 "sym": "600309.SS",
 "name": "Wanhua Chemical Group Co., Ltd.",
 "nameKo": null,
@@ -10786,7 +10855,7 @@
 }
 },
 {
-"capRank": 51,
+"capRank": 54,
 "sym": "002142.SZ",
 "name": "Bank of Ningbo Co., Ltd.",
 "nameKo": null,
@@ -10809,7 +10878,7 @@
 }
 },
 {
-"capRank": 52,
+"capRank": 55,
 "sym": "300760.SZ",
 "name": "Shenzhen Mindray Bio-Medical Electronics Co., Ltd.",
 "nameKo": null,
@@ -10832,7 +10901,7 @@
 }
 },
 {
-"capRank": 53,
+"capRank": 56,
 "sym": "601995.SS",
 "name": "China International Capital Corporation Limited",
 "nameKo": null,
@@ -10855,7 +10924,7 @@
 }
 },
 {
-"capRank": 54,
+"capRank": 57,
 "sym": "000651.SZ",
 "name": "Gree Electric Appliances, Inc. of Zhuhai",
 "nameKo": null,
@@ -10878,7 +10947,7 @@
 }
 },
 {
-"capRank": 55,
+"capRank": 58,
 "sym": "603288.SS",
 "name": "Foshan Haitian Flavouring and Food Company Ltd.",
 "nameKo": null,
@@ -10901,7 +10970,7 @@
 }
 },
 {
-"capRank": 56,
+"capRank": 59,
 "sym": "600025.SS",
 "name": "Huaneng Lancang River Hydropower Inc.",
 "nameKo": null,
@@ -10924,7 +10993,7 @@
 }
 },
 {
-"capRank": 57,
+"capRank": 60,
 "sym": "600690.SS",
 "name": "Haier Smart Home Co., Ltd.",
 "nameKo": null,
@@ -10947,7 +11016,7 @@
 }
 },
 {
-"capRank": 58,
+"capRank": 61,
 "sym": "600887.SS",
 "name": "Inner Mongolia Yili Industrial Group Co., Ltd.",
 "nameKo": null,
@@ -10970,7 +11039,7 @@
 }
 },
 {
-"capRank": 59,
+"capRank": 62,
 "sym": "601985.SS",
 "name": "China National Nuclear Power Co., Ltd.",
 "nameKo": null,
@@ -10993,7 +11062,7 @@
 }
 },
 {
-"capRank": 60,
+"capRank": 63,
 "sym": "601869.SS",
 "name": "Yangtze Optical Fibre And Cable Joint Stock Limited Company",
 "nameKo": null,
@@ -11016,7 +11085,7 @@
 }
 },
 {
-"capRank": 61,
+"capRank": 64,
 "sym": "688802.SS",
 "name": "MetaX Integrated Circuits (Shanghai) Co., Ltd.",
 "nameKo": null,
@@ -11039,7 +11108,7 @@
 }
 },
 {
-"capRank": 62,
+"capRank": 65,
 "sym": "601668.SS",
 "name": "China State Construction Engineering Corporation Limited",
 "nameKo": null,
@@ -11062,7 +11131,7 @@
 }
 },
 {
-"capRank": 63,
+"capRank": 66,
 "sym": "002379.SZ",
 "name": "Shandong Hongqiao Aluminum Industry Holding Company Limited",
 "nameKo": null,
@@ -11085,7 +11154,7 @@
 }
 },
 {
-"capRank": 64,
+"capRank": 67,
 "sym": "600406.SS",
 "name": "NARI Technology Co., Ltd.",
 "nameKo": null,
@@ -11108,7 +11177,30 @@
 }
 },
 {
-"capRank": 65,
+"capRank": 68,
+"sym": "601766.SS",
+"name": "CRRC Corporation Limited",
+"nameKo": null,
+"ind": "Railroads",
+"sec": "Industrials",
+"ex": "Shanghai",
+"cap": 187977565250.27393,
+"rev": 283877023000.0,
+"op": 18974611000.0,
+"pe": 13.596048,
+"peNeg": false,
+"rRev": 1,
+"rOp": 2,
+"okRev": true,
+"okOp": true,
+"cheap": {
+"agg": true,
+"mean": true,
+"median": true
+}
+},
+{
+"capRank": 69,
 "sym": "302132.SZ",
 "name": "AVIC Chengdu Aircraft Company Limited",
 "nameKo": null,
@@ -11131,7 +11223,7 @@
 }
 },
 {
-"capRank": 66,
+"capRank": 70,
 "sym": "601818.SS",
 "name": "China Everbright Bank Company Limited",
 "nameKo": null,
@@ -11154,7 +11246,7 @@
 }
 },
 {
-"capRank": 67,
+"capRank": 71,
 "sym": "688008.SS",
 "name": "Montage Technology Co., Ltd.",
 "nameKo": null,
@@ -11177,7 +11269,7 @@
 }
 },
 {
-"capRank": 68,
+"capRank": 72,
 "sym": "600031.SS",
 "name": "Sany Heavy Industry Co.,Ltd",
 "nameKo": null,
@@ -11200,7 +11292,7 @@
 }
 },
 {
-"capRank": 69,
+"capRank": 73,
 "sym": "002352.SZ",
 "name": "S.F. Holding Co., Ltd.",
 "nameKo": null,
@@ -11223,7 +11315,7 @@
 }
 },
 {
-"capRank": 70,
+"capRank": 74,
 "sym": "200725.SZ",
 "name": "BOE Technology Group Company Limited",
 "nameKo": null,
@@ -11246,7 +11338,7 @@
 }
 },
 {
-"capRank": 71,
+"capRank": 75,
 "sym": "600183.SS",
 "name": "Shengyi Technology Co.,Ltd.",
 "nameKo": null,
@@ -11269,7 +11361,7 @@
 }
 },
 {
-"capRank": 72,
+"capRank": 76,
 "sym": "601898.SS",
 "name": "China Coal Energy Company Limited",
 "nameKo": null,
@@ -11292,7 +11384,7 @@
 }
 },
 {
-"capRank": 73,
+"capRank": 77,
 "sym": "300274.SZ",
 "name": "Sungrow Power Supply Co., Ltd.",
 "nameKo": null,
@@ -11315,37 +11407,14 @@
 }
 },
 {
-"capRank": 74,
-"sym": "603986.SS",
-"name": "GigaDevice Semiconductor Inc.",
-"nameKo": null,
-"ind": "Semiconductors",
-"sec": "Technology",
-"ex": "Shanghai",
-"cap": 168594120919.26056,
-"rev": 22669200056.0,
-"op": 11450380914.0,
-"pe": 15.771988,
-"peNeg": false,
-"rRev": 7,
-"rOp": 3,
-"okRev": true,
-"okOp": true,
-"cheap": {
-"agg": true,
-"mean": true,
-"median": true
-}
-},
-{
-"capRank": 75,
+"capRank": 78,
 "sym": "600188.SS",
 "name": "Yankuang Energy Group Company Limited",
 "nameKo": null,
 "ind": "Thermal Coal",
 "sec": "Energy",
 "ex": "Shanghai",
-"cap": 168217642152.45312,
+"cap": 168228176214.83698,
 "rev": 156892159000.0,
 "op": 24450455000.0,
 "pe": 7.403361,
@@ -11361,7 +11430,30 @@
 }
 },
 {
-"capRank": 76,
+"capRank": 79,
+"sym": "603986.SS",
+"name": "GigaDevice Semiconductor Inc.",
+"nameKo": null,
+"ind": "Semiconductors",
+"sec": "Technology",
+"ex": "Shanghai",
+"cap": 168060922047.4606,
+"rev": 22669200056.0,
+"op": 11450380914.0,
+"pe": 15.771988,
+"peNeg": false,
+"rRev": 7,
+"rOp": 3,
+"okRev": true,
+"okOp": true,
+"cheap": {
+"agg": true,
+"mean": true,
+"median": true
+}
+},
+{
+"capRank": 80,
 "sym": "600930.SS",
 "name": "Huadian New Energy Group Corporation Limited",
 "nameKo": null,
@@ -11384,7 +11476,7 @@
 }
 },
 {
-"capRank": 77,
+"capRank": 81,
 "sym": "601336.SS",
 "name": "New China Life Insurance Company Ltd.",
 "nameKo": null,
@@ -11407,7 +11499,7 @@
 }
 },
 {
-"capRank": 78,
+"capRank": 82,
 "sym": "601688.SS",
 "name": "Huatai Securities Co., Ltd.",
 "nameKo": null,
@@ -11430,7 +11522,7 @@
 }
 },
 {
-"capRank": 79,
+"capRank": 83,
 "sym": "600809.SS",
 "name": "Shanxi Xinghuacun Fen Wine Factory Co.,Ltd.",
 "nameKo": null,
@@ -11453,7 +11545,7 @@
 }
 },
 {
-"capRank": 80,
+"capRank": 84,
 "sym": "000338.SZ",
 "name": "Weichai Power Co., Ltd.",
 "nameKo": null,
@@ -11476,7 +11568,7 @@
 }
 },
 {
-"capRank": 81,
+"capRank": 85,
 "sym": "688795.SS",
 "name": "Moore Threads Technology Co., Ltd.",
 "nameKo": null,
@@ -11499,7 +11591,7 @@
 }
 },
 {
-"capRank": 82,
+"capRank": 86,
 "sym": "002384.SZ",
 "name": "Suzhou Dongshan Precision Manufacturing Co., Ltd.",
 "nameKo": null,
@@ -11522,7 +11614,7 @@
 }
 },
 {
-"capRank": 83,
+"capRank": 87,
 "sym": "600989.SS",
 "name": "Ningxia Baofeng Energy Group Co., Ltd.",
 "nameKo": null,
@@ -11545,7 +11637,7 @@
 }
 },
 {
-"capRank": 84,
+"capRank": 88,
 "sym": "601600.SS",
 "name": "Aluminum Corporation of China Limited",
 "nameKo": null,
@@ -11568,7 +11660,7 @@
 }
 },
 {
-"capRank": 85,
+"capRank": 89,
 "sym": "300124.SZ",
 "name": "Shenzhen Inovance Technology Co.,Ltd",
 "nameKo": null,
@@ -11591,7 +11683,7 @@
 }
 },
 {
-"capRank": 86,
+"capRank": 90,
 "sym": "300033.SZ",
 "name": "Hithink RoyalFlush Information Network Co., Ltd.",
 "nameKo": null,
@@ -11614,7 +11706,7 @@
 }
 },
 {
-"capRank": 87,
+"capRank": 91,
 "sym": "688820.SS",
 "name": "SJ Semiconductor Corporation",
 "nameKo": null,
@@ -11637,7 +11729,7 @@
 }
 },
 {
-"capRank": 88,
+"capRank": 92,
 "sym": "603268.SS",
 "name": "Guangdong Songfa Ceramics Co.,Ltd.",
 "nameKo": null,
@@ -11660,7 +11752,7 @@
 }
 },
 {
-"capRank": 89,
+"capRank": 93,
 "sym": "601009.SS",
 "name": "Bank of Nanjing Co., Ltd.",
 "nameKo": null,
@@ -11683,7 +11775,30 @@
 }
 },
 {
-"capRank": 90,
+"capRank": 94,
+"sym": "000776.SZ",
+"name": "GF Securities Co., Ltd.",
+"nameKo": null,
+"ind": "Capital Markets",
+"sec": "Financial Services",
+"ex": "Shenzhen",
+"cap": 149454552245.0417,
+"rev": 46882001979.0,
+"op": 25940193844.0,
+"pe": 8.400756,
+"peNeg": false,
+"rRev": 3,
+"rOp": 4,
+"okRev": true,
+"okOp": true,
+"cheap": {
+"agg": true,
+"mean": true,
+"median": true
+}
+},
+{
+"capRank": 95,
 "sym": "600016.SS",
 "name": "China Minsheng Banking Corp., Ltd.",
 "nameKo": null,
@@ -11706,7 +11821,7 @@
 }
 },
 {
-"capRank": 91,
+"capRank": 96,
 "sym": "600660.SS",
 "name": "Fuyao Glass Industry Group Co., Ltd.",
 "nameKo": null,
@@ -11729,7 +11844,7 @@
 }
 },
 {
-"capRank": 92,
+"capRank": 97,
 "sym": "300408.SZ",
 "name": "Chaozhou Three-Circle (Group) Co.,Ltd.",
 "nameKo": null,
@@ -11752,7 +11867,7 @@
 }
 },
 {
-"capRank": 93,
+"capRank": 98,
 "sym": "688072.SS",
 "name": "Piotech Inc.",
 "nameKo": null,
@@ -11775,7 +11890,7 @@
 }
 },
 {
-"capRank": 94,
+"capRank": 99,
 "sym": "601066.SS",
 "name": "CSC Financial Co., Ltd.",
 "nameKo": null,
@@ -11798,7 +11913,7 @@
 }
 },
 {
-"capRank": 95,
+"capRank": 100,
 "sym": "001248.SZ",
 "name": "China Resources New Energy Holdings Company Limited",
 "nameKo": null,
@@ -11819,126 +11934,11 @@
 "mean": false,
 "median": false
 }
-},
-{
-"capRank": 96,
-"sym": "300433.SZ",
-"name": "Lens Technology Co., Ltd.",
-"nameKo": null,
-"ind": "Electronic Components",
-"sec": "Technology",
-"ex": "Shenzhen",
-"cap": 142578792106.9079,
-"rev": 68649021150.0,
-"op": 3701307223.0,
-"pe": 56.871574,
-"peNeg": false,
-"rRev": 4,
-"rOp": 11,
-"okRev": true,
-"okOp": true,
-"cheap": {
-"agg": false,
-"mean": true,
-"median": false
-}
-},
-{
-"capRank": 97,
-"sym": "300999.SZ",
-"name": "Yihai Kerry Arawana Holdings Co., Ltd",
-"nameKo": null,
-"ind": "Packaged Foods",
-"sec": "Consumer Defensive",
-"ex": "Shenzhen",
-"cap": 142099909194.9447,
-"rev": 252664496000.0,
-"op": 3385180000.0,
-"pe": 44.753828,
-"peNeg": false,
-"rRev": 1,
-"rOp": 5,
-"okRev": true,
-"okOp": true,
-"cheap": {
-"agg": false,
-"mean": true,
-"median": false
-}
-},
-{
-"capRank": 98,
-"sym": "002050.SZ",
-"name": "Zhejiang Sanhua Intelligent Controls Co.,Ltd",
-"nameKo": null,
-"ind": "Specialty Industrial Machinery",
-"sec": "Industrials",
-"ex": "Shenzhen",
-"cap": 141683821486.34637,
-"rev": 32255941122.0,
-"op": 5101053051.0,
-"pe": 37.717608,
-"peNeg": false,
-"rRev": 8,
-"rOp": 1,
-"okRev": true,
-"okOp": true,
-"cheap": {
-"agg": false,
-"mean": true,
-"median": true
-}
-},
-{
-"capRank": 99,
-"sym": "002463.SZ",
-"name": "Wus Printed Circuit (Kunshan) Co., Ltd.",
-"nameKo": null,
-"ind": "Electronic Components",
-"sec": "Technology",
-"ex": "Shenzhen",
-"cap": 141189533357.97485,
-"rev": 28658270701.0,
-"op": 8027985571.0,
-"pe": 23.419962,
-"peNeg": false,
-"rRev": 13,
-"rOp": 3,
-"okRev": true,
-"okOp": true,
-"cheap": {
-"agg": true,
-"mean": true,
-"median": true
-}
-},
-{
-"capRank": 100,
-"sym": "600999.SS",
-"name": "China Merchants Securities Co., Ltd.",
-"nameKo": null,
-"ind": "Capital Markets",
-"sec": "Financial Services",
-"ex": "Shanghai",
-"cap": 140970691563.35193,
-"rev": 41140905663.0,
-"op": 26054738619.0,
-"pe": 6.999127,
-"peNeg": false,
-"rRev": 5,
-"rOp": 3,
-"okRev": true,
-"okOp": true,
-"cheap": {
-"agg": true,
-"mean": true,
-"median": true
-}
 }
 ]
 }
 },
-"generated": "2026-11-07 10:07 KST",
+"generated": "2026-11-07 10:10 KST",
 "source": "Yahoo Finance screener (LTM revenue / operating income / PER, industry)",
 "rule": {
 "share": 0.1,
