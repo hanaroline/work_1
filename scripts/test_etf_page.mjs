@@ -540,7 +540,19 @@ check('설정액 순위에 잣대가 다른 값이 없다',
 // ── 랭킹에서 ETF 를 누르면 탭을 옮기지 않고 그 자리에서 상세가 열린다
 const rankGridTopBefore = await page.evaluate(() =>
   document.querySelector('#rank-body .grid').getBoundingClientRect().top + window.scrollY);
-await page.locator('#rank-body tbody tr[data-id]').first().click();
+// 편입종목이 있는 첫 줄을 누른다. 그냥 1위를 누르면 자료에 따라 편입종목을
+// 안 주는 상품(중국 본토 상장 등)이 걸려 "상세가 안 열린다" 로 읽힌다 —
+// 2026-11-07 수집에서 실제로 그랬다. 시험하려는 것은 상세가 열리는가이지
+// 1위가 무엇인가가 아니다.
+const rankPickIdx = await page.evaluate(() => {
+  const all = window.ETF_DATA?.etfs || [];
+  const rows = [...document.querySelectorAll('#rank-body tbody tr[data-id]')];
+  return rows.findIndex((tr) => {
+    const e = all.find((x) => x.id === tr.getAttribute('data-id'));
+    return e && e.holdingCount;
+  });
+});
+await page.locator('#rank-body tbody tr[data-id]').nth(Math.max(0, rankPickIdx)).click();
 await page.waitForTimeout(300);
 const stillRank = await page.locator('.tabs button[data-tab="rank"]')
   .getAttribute('aria-selected');
