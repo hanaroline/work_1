@@ -35,48 +35,29 @@ def res(j):
 
 reg = lambda r: {"operator": "eq", "operands": ["region", r]}
 
-print("=== 1. quote keys per region ===")
-for r in ["kr", "us", "jp", "cn", "hk"]:
-    j = q([reg(r)])
-    R, err = res(j)
-    if err: print(r, "ERR", err); continue
-    qs = R.get("quotes") or []
-    print(r, "total", R.get("total"), "first", [x.get("symbol") for x in qs])
-    if qs and r == "us":
-        print("  keys:", sorted(qs[0].keys()))
-    if qs:
-        x = qs[0]
-        print("  sample", {k: x.get(k) for k in ["symbol", "shortName", "marketCap", "trailingPE", "forwardPE", "sector", "industry", "exchange", "financialCurrency", "currency"]})
-
-print("=== 2. industry / sector filter ===")
-for f, v in [("industry", "Semiconductors"), ("sector", "Technology"), ("industry", "semiconductors")]:
-    R, err = res(q([reg("us"), {"operator": "eq", "operands": [f, v]}]))
-    print(f, v, err or (R.get("total"), [x.get("symbol") for x in R.get("quotes") or []]))
-
-print("=== 3. revenue/op income fields as sort and gt filter ===")
-for fld in ["totalrevenues.lasttwelvemonths", "operatingincome.lasttwelvemonths", "ebit.lasttwelvemonths",
-            "peratio.lasttwelvemonths", "netincomeis.lasttwelvemonths"]:
-    R, err = res(q([reg("us")], sort=fld))
-    print("sort", fld, err or (R.get("total"), [x.get("symbol") for x in R.get("quotes") or []]))
-    R, err = res(q([reg("us"), {"operator": "gt", "operands": [fld, 1e10 if 'pe' not in fld else 0]}]))
-    print("  gt", fld, err or (R.get("total"),))
-
-print("=== 4. records response with includeFields ===")
 inc = ["ticker", "companyshortname", "intradaymarketcap", "industry", "sector",
-       "totalrevenues.lasttwelvemonths", "operatingincome.lasttwelvemonths",
-       "peratio.lasttwelvemonths", "ebit.lasttwelvemonths"]
-for extra in ["&useRecordsResponse=true", "&useRecordsResponse=true&formatted=false"]:
-    j = q([reg("kr")], size=3, extra=extra, includeFields=inc)
-    R, err = res(j)
-    if err: print(extra, "ERR", err); continue
-    print(extra, "keys", sorted(R.keys()))
-    recs = R.get("records") or R.get("quotes") or []
-    for x in recs[:3]:
-        print("  ", json.dumps(x, ensure_ascii=False)[:900])
-
-print("=== 5. industry values seen (kr top 50 via records) ===")
-j = q([reg("kr")], size=50, extra="&useRecordsResponse=true", includeFields=inc)
-R, err = res(j)
-if not err:
-    for x in (R.get("records") or [])[:50]:
-        print("  ", x.get("ticker"), x.get("companyShortName") or x.get("companyshortname"), "|", x.get("industry"), "|", x.get("sector"))
+       "totalrevenues.lasttwelvemonths", "operatingincome.lasttwelvemonths", "peratio.lasttwelvemonths"]
+X = "&useRecordsResponse=true"
+print("=== A. extra field names ===")
+for f in ["exchange", "currency", "financialcurrency", "country", "region", "quotetype", "netincomeis.lasttwelvemonths", "dilutedeps.lasttwelvemonths", "lastclosemarketcap.lasttwelvemonths", "eodprice"]:
+    R, err = res(q([reg("us")], size=2, extra=X, includeFields=inc + [f]))
+    recs = (R or {}).get("records") or []
+    print(f, err or [{k: v for k, v in r.items() if k not in ("companyName", "sector")} for r in recs[:2]])
+print("=== B. page size ===")
+for sz in [100, 250, 500]:
+    R, err = res(q([reg("jp")], size=sz, extra=X, includeFields=inc))
+    print(sz, err or (R.get("count"), len(R.get("records") or [])))
+print("=== C. us exchange filter ===")
+ex = {"operator": "or", "operands": [{"operator": "eq", "operands": ["exchange", e]} for e in ["NMS", "NYQ", "NGM", "NCM", "ASE"]]}
+R, err = res(q([reg("us"), ex], size=5, extra=X, includeFields=inc))
+print(err or (R.get("total"), [r.get("ticker") for r in R.get("records")]))
+R, err = res(q([reg("us"), ex, {"operator": "eq", "operands": ["industry", "Semiconductors"]}], size=10, extra=X, includeFields=inc + ["exchange"]))
+print(err or (R.get("total"), [(r.get("ticker"), r.get("totalRevenueLtm")) for r in R.get("records")]))
+print("=== D. ADR currency check: TSM, ASML, BABA, TM revenue ===")
+for t in ["TSM", "ASML", "BABA", "TM", "NVDA"]:
+    R, err = res(q([{"operator": "eq", "operands": ["ticker", t]}], size=1, extra=X, includeFields=inc))
+    print(t, err or [(r.get("ticker"), r.get("totalRevenueLtm"), r.get("peRatioLtm"), r.get("marketCap")) for r in R.get("records") or []])
+print("=== E. cn / jp / hk sample ===")
+for r_ in ["cn", "jp", "hk"]:
+    R, err = res(q([reg(r_)], size=5, extra=X, includeFields=inc))
+    print(r_, err or [(r.get("ticker"), r.get("companyName"), r.get("industry"), r.get("totalRevenueLtm"), r.get("operatingIncomeLtm"), r.get("peRatioLtm")) for r in R.get("records")])
