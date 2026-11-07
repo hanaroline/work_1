@@ -171,9 +171,9 @@ tr.pick td{background:#FFF6EE}
     <div class="ctl">
       <label for="basis"><span data-l="ko">업종 평균 PER 기준</span><span data-l="en">Industry P/E basis</span></label>
       <select id="basis">
-        <option value="agg">시가총액 가중 / Cap-weighted</option>
-        <option value="mean">단순 평균 / Simple mean</option>
-        <option value="median">중앙값 / Median</option>
+        <option value="agg">시가총액 가중</option>
+        <option value="mean">단순 평균</option>
+        <option value="median">중앙값</option>
       </select>
     </div>
     <div class="asof" id="asof"></div>
@@ -340,7 +340,9 @@ function render(){
   tabs.innerHTML=MK.map(function(m){
     return '<button type="button" role="tab" data-mk="'+m+'" aria-selected="'+(m===state.mk)+'">'+MKN[m][state.lang==="ko"?0:1]+'</button>';
   }).join("");
-  document.getElementById("basis").value=state.basis;
+  var sel=document.getElementById("basis");
+  Array.prototype.forEach.call(sel.options,function(o){o.textContent=basisName(o.value);});
+  sel.value=state.basis;
   var d=D&&D.markets&&D.markets[state.mk];
   document.getElementById("foot").innerHTML=D?esc(L("생성 ","Generated "))+esc(D.generated||"")+" · "+esc(D.source||""):"";
   if(!d){
