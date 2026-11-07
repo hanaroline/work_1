@@ -53,7 +53,9 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/value-leaders.json data/value-leaders-report.md value-leaders.html 2>/dev/null || true
+          for f in data/value-leaders.json data/value-leaders-report.md value-leaders.html; do
+            [ -f "$f" ] && git add "$f"
+          done
           if git diff --cached --quiet; then
             echo "바뀐 것이 없다 — 커밋 생략"
             exit 0

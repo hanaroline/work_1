@@ -176,7 +176,8 @@ def build(mk):
         print("   %d symbols missing from quotes pass -> v7 fallback" % len(missing), flush=True)
         qmap.update(v7_quotes(missing, m["lang"]))
 
-    gaps = {"noQuote": 0, "foreignCurrency": 0, "noIndustry": 0, "dupClass": 0, "unknownCurrency": 0}
+    gaps = {"noQuote": 0, "foreignCurrency": 0, "noIndustry": 0, "dupClass": 0, "unknownCurrency": 0,
+            "assumedCurrency": 0, "assumedCurrencyWithRevenue": 0}
     foreign_examples = []
     rows = {}
     for r in recs:
@@ -189,8 +190,17 @@ def build(mk):
             continue
         fc = q.get("financialCurrency")
         if not fc:
-            gaps["unknownCurrency"] += 1
-            continue
+            # Yahoo leaves financialCurrency empty for many domestic listings (about 30% in CN).
+            # Outside the US a home-exchange listing reports in the home currency, so assume it
+            # and count it; in the US (ADRs, foreign filers) the row is dropped instead.
+            if m["exch"] is None:
+                fc = m["cur"]
+                gaps["assumedCurrency"] += 1
+                if r.get("totalRevenueLtm") is not None:
+                    gaps["assumedCurrencyWithRevenue"] += 1
+            else:
+                gaps["unknownCurrency"] += 1
+                continue
         if fc != m["cur"]:
             gaps["foreignCurrency"] += 1
             if len(foreign_examples) < 12:

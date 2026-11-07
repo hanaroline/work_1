@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>저평가 업종 선두 종목 맵</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --or:#F58220;--or-a:#CB6015;--or-s:#FAB072;--or-t:#FDE6D2;--bl:#043B72;
+  --hl:#D7D7D7;--soft:#ECEFF4;--sub:#F7F8FA;--hair:#CDCECB;--hair-s:#E5E4E1;
+  --ink:#1A1A1A;--body:#3D3D3D;--mut:#6C6C6C;--mut2:#84888B;--err:#C62828;
+  --f-ko:'Spoqa Han Sans Neo','Noto Sans KR',sans-serif;
+  --f-en:'Inter','Aptos','Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:var(--body)}
+html[lang="ko"] body{font-family:var(--f-ko)}
+html[lang="en"] body{font-family:var(--f-en)}
+body{font-size:19px;line-height:1.65}
+.page{max-width:1200px;margin:0 auto;padding:0 32px 80px}
+.num{font-variant-numeric:tabular-nums}
+[data-l]{display:none}
+html[lang="ko"] [data-l="ko"],html[lang="en"] [data-l="en"]{display:inline}
+html[lang="ko"] div[data-l="ko"],html[lang="en"] div[data-l="en"],
+html[lang="ko"] p[data-l="ko"],html[lang="en"] p[data-l="en"],
+html[lang="ko"] li[data-l="ko"],html[lang="en"] li[data-l="en"],
+html[lang="ko"] ul[data-l="ko"],html[lang="en"] ul[data-l="en"]{display:block}
+html[lang="ko"] li[data-l="ko"],html[lang="en"] li[data-l="en"]{display:list-item}
+
+/* header */
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:28px 0 8px}
+.tag{font-size:14px;color:var(--mut);letter-spacing:.2px}
+h1{font-size:34px;line-height:1.25;letter-spacing:-.3px;color:var(--ink);margin:6px 0 10px;font-weight:700}
+.lead{font-size:19px;color:var(--body);margin:0 0 6px;max-width:900px}
+.lang-toggle{display:inline-flex;border:1px solid var(--hair);border-radius:2px;box-shadow:0 2px 8px rgba(0,0,0,.06);flex:none}
+.lang-toggle button{font-family:var(--f-en);font-size:14px;font-weight:500;letter-spacing:.5px;padding:10px 17px;border:0;background:#fff;color:var(--mut);cursor:pointer}
+.lang-toggle button+button{border-left:1px solid var(--hair)}
+.lang-toggle button[aria-checked="true"]{background:var(--or);color:#fff}
+.lang-toggle button[aria-checked="false"]:hover{background:var(--sub);color:var(--ink)}
+button:focus-visible,select:focus-visible,.tile:focus-visible{outline:2px solid var(--or);outline-offset:2px}
+
+/* controls */
+.controls{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:center;margin:28px 0 8px}
+.tabs{display:inline-flex;border:1px solid var(--hair);border-radius:2px}
+.tabs button{font:inherit;font-size:17px;font-weight:500;padding:9px 20px;border:0;background:#fff;color:var(--mut);cursor:pointer}
+.tabs button+button{border-left:1px solid var(--hair)}
+.tabs button[aria-selected="true"]{background:var(--or);color:#fff}
+.tabs button[aria-selected="false"]:hover{background:var(--sub);color:var(--ink)}
+.ctl{display:flex;align-items:center;gap:10px;font-size:17px;color:var(--body)}
+.ctl select{font:inherit;font-size:17px;padding:8px 10px;border:1px solid var(--hair);border-radius:2px;background:#fff;color:var(--ink)}
+.asof{font-size:14px;color:var(--mut)}
+
+/* section */
+.section{margin-top:56px}
+.rule{height:1px;background:var(--or);margin-bottom:19px}
+h2{font-size:26px;font-weight:700;color:var(--ink);margin:0 0 8px;line-height:1.3}
+.sub{font-size:17px;color:var(--mut);margin:0 0 20px}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat{border:1px solid var(--hair);border-radius:4px;padding:18px 20px}
+.stat .lb{font-size:16px;font-weight:500;letter-spacing:.6px;color:var(--mut)}
+.stat .v{font-size:48px;font-weight:700;line-height:1.05;letter-spacing:-.6px;color:var(--ink);margin-top:6px}
+.stat .v.or{color:var(--or)}
+.stat .v.bl{color:var(--bl)}
+.stat .ft{font-size:14px;color:var(--mut);margin-top:6px}
+
+/* map */
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14px;color:var(--body);margin:0 0 16px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:2px;vertical-align:-2px;margin-right:6px;border:1px solid var(--hair)}
+.sector{margin-bottom:14px}
+.sector h3{font-size:16px;font-weight:600;color:var(--ink);margin:0 0 6px;letter-spacing:.2px}
+.sector h3 .c{color:var(--mut);font-weight:400;margin-left:6px}
+.tiles{display:flex;flex-wrap:wrap;gap:4px}
+.tile{position:relative;border:1px solid var(--hair);border-radius:2px;padding:6px 8px;min-height:58px;background:#fff;cursor:pointer;
+  display:flex;flex-direction:column;justify-content:space-between;font-size:14px;line-height:1.3;color:var(--ink);overflow:hidden}
+.tile .nm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .mk{font-size:12px;letter-spacing:.3px;color:var(--mut)}
+.tile.s3{background:var(--or);border-color:var(--or);color:#fff}
+.tile.s3 .mk{color:#fff}
+.tile.s2{background:var(--or-s);border-color:var(--or-s)}
+.tile.s2 .mk{color:var(--ink)}
+.tile.s1{background:var(--sub)}
+.tile.s0{background:#fff;color:var(--mut)}
+.tile.sel{outline:2px solid var(--bl);outline-offset:1px}
+.tile:hover{border-color:var(--bl)}
+.w4{flex:0 0 calc(25% - 3px)}.w3{flex:0 0 calc(16.66% - 4px)}.w2{flex:0 0 calc(12.5% - 4px)}.w1{flex:0 0 calc(10% - 4px)}
+
+/* detail */
+.detail{border:1px solid var(--hair);border-radius:4px;padding:20px 24px;margin-top:20px;background:#fff}
+.detail h3{font-size:22px;font-weight:600;color:var(--ink);margin:0 0 2px}
+.detail .meta{font-size:14px;color:var(--mut);margin-bottom:14px}
+.checks{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.chk{border:1px solid var(--hair-s);border-radius:4px;padding:12px 14px;font-size:16px;line-height:1.5}
+.chk .h{font-size:14px;font-weight:600;letter-spacing:.3px;color:var(--mut);margin-bottom:4px}
+.chk .r{font-size:22px;font-weight:700;color:var(--ink)}
+.chk.ok{border-color:var(--or);background:#FFF6EE}
+.chk.ok .r{color:var(--or-a)}
+.chk.no .r{color:var(--mut2)}
+.pevs{font-size:14px;color:var(--body);margin-top:6px}
+
+/* tables */
+.tw{overflow-x:auto;border:1px solid var(--hair)}
+table{border-collapse:collapse;width:100%;font-size:16px;line-height:1.45}
+th{background:var(--or-s);color:var(--ink);font-weight:700;text-align:left;padding:9px 10px;white-space:nowrap;border-bottom:1px solid var(--hair)}
+td{padding:8px 10px;border-top:1px solid var(--hair-s);vertical-align:top}
+tbody tr:hover{background:var(--sub)}
+tbody tr{cursor:pointer}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td .s{display:block;font-size:13px;color:var(--mut)}
+tr.pick td{background:#FFF6EE}
+.ok{color:var(--or-a);font-weight:700}
+.no{color:var(--mut2)}
+.na{color:var(--mut2)}
+.filters{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;margin-bottom:12px;font-size:16px}
+.filters label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.empty{padding:28px;text-align:center;color:var(--mut);font-size:17px;border:1px dashed var(--hair);border-radius:4px}
+
+/* notes */
+.notes{font-size:15px;line-height:1.65;color:var(--body)}
+.notes li{margin-bottom:6px}
+.notes code{font-size:14px;background:var(--sub);padding:0 4px;border-radius:2px}
+.foot{margin-top:40px;font-size:14px;color:var(--mut)}
+
+@media (max-width:1023px){.w4{flex-basis:calc(33.3% - 3px)}.w3{flex-basis:calc(25% - 3px)}.w2{flex-basis:calc(20% - 4px)}.w1{flex-basis:calc(16.66% - 4px)}}
+@media (max-width:768px){
+  .page{padding:0 20px 60px}
+  h1{font-size:26px}
+  h2{font-size:22px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stat .v{font-size:36px}
+  .checks{grid-template-columns:1fr}
+  .w4{flex-basis:calc(50% - 2px)}.w3{flex-basis:calc(33.3% - 3px)}.w2,.w1{flex-basis:calc(25% - 3px)}
+  .tabs button{padding:9px 14px}
+}
+@media (max-width:420px){.w3,.w2,.w1{flex-basis:calc(33.3% - 3px)}}
+@media print{
+  .lang-toggle,.controls .ctl select,.filters{display:none!important}
+  body{font-size:11pt;line-height:1.4}
+  .page{max-width:100%;padding:0}
+  .section{margin-top:20px;page-break-inside:auto}
+  h2{page-break-after:avoid}
+  .tile{min-height:40px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  th,.tile.s3,.tile.s2,.tile.s1,tr.pick td{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .tw{overflow:visible;border:0}
+  tr{page-break-inside:avoid}
+  .detail{display:none}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top">
+    <div>
+      <div class="tag"><span data-l="ko">[사내한] 종목 스크리닝 · 한국 · 미국 · 일본 · 중국</span><span data-l="en">[Internal] Equity screen · Korea · US · Japan · China</span></div>
+      <h1><span data-l="ko">저평가 업종 선두 종목 맵</span><span data-l="en">Undervalued Industry Leaders</span></h1>
+      <p class="lead" data-l="ko">시가총액 상위 100 종목 가운데 <b>매출과 영업이익이 모두 같은 나라 같은 세부 업종 상장사 전체의 상위 10%</b>이면서 <b>PER이 업종 평균보다 낮은</b> 종목입니다.</p>
+      <p class="lead" data-l="en">Among each country's 100 largest companies by market cap: those whose <b>revenue and operating income both rank in the top 10% of all listed peers in the same industry</b> and whose <b>P/E is below the industry average</b>.</p>
+    </div>
+    <div class="lang-toggle" role="radiogroup" aria-label="Language">
+      <button type="button" role="radio" data-set="ko" aria-checked="true">KO</button>
+      <button type="button" role="radio" data-set="en" aria-checked="false">EN</button>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div class="ctl">
+      <label for="basis"><span data-l="ko">업종 평균 PER 기준</span><span data-l="en">Industry P/E basis</span></label>
+      <select id="basis">
+        <option value="agg">시가총액 가중 / Cap-weighted</option>
+        <option value="mean">단순 평균 / Simple mean</option>
+        <option value="median">중앙값 / Median</option>
+      </select>
+    </div>
+    <div class="asof" id="asof"></div>
+  </div>
+
+  <div id="app"></div>
+
+  <section class="section" id="method">
+    <div class="rule"></div>
+    <h2><span data-l="ko">기준과 한계</span><span data-l="en">Method and limits</span></h2>
+    <ul class="notes" data-l="ko">
+      <li data-l="ko"><b>대상</b>: 나라별 시가총액 상위 100. 한국은 코스피·코스닥, 미국은 NYSE·나스닥·NYSE American 상장 미국 본사 기업, 일본은 일본 거래소, 중국은 상하이·선전 A주입니다. 홍콩에만 상장된 중국 기업(텐센트·알리바바 등)은 중국 모집단에 들어가지 않습니다.</li>
+      <li data-l="ko"><b>비교 대상</b>: 같은 나라에 상장된 같은 세부 업종(야후 파이낸스 업종 분류, 약 145개) 전체 종목입니다. 재무제표 통화가 그 나라 통화가 아닌 종목(예: 미국 상장 대만 TSMC, 대만달러 보고)은 금액 비교가 맞지 않아 모집단에서 뺍니다. 우선주·복수 상장 종목은 회사 이름이 같으면 시가총액이 큰 쪽 하나만 셉니다.</li>
+      <li data-l="ko"><b>상위 10%</b>: 업종에서 해당 수치가 있는 종목 수 N 의 10% 를 올림한 순위(최소 1위)까지입니다. N 이 10 이하인 업종은 1위만 통과합니다. 순위는 그 값보다 큰 종목 수 + 1 입니다.</li>
+      <li data-l="ko"><b>수치</b>: 최근 4분기 합산(LTM) 매출·영업이익과 LTM PER, 모두 야후 파이낸스 스크리너 값입니다. 영업이익 정의는 야후 기준이라 회사 공시의 영업이익과 다를 수 있습니다. PER 이 음수이거나 비어 있으면 저평가 판정을 하지 않습니다.</li>
+      <li data-l="ko"><b>업종 평균 PER</b>: PER 이 양수인 업종 종목만으로 계산합니다. 시가총액 가중은 Σ시가총액 ÷ Σ(시가총액÷PER), 즉 업종 전체를 한 회사로 본 PER 입니다. 단순 평균은 적자 직전 종목의 높은 PER 에 끌려 올라가기 쉬워 통과가 쉬워집니다.</li>
+      <li data-l="ko"><b>보지 않은 것</b>: 성장률·부채·일회성 손익·지배구조. 이 맵은 후보를 좁히는 1차 거르기이며 매수 추천이 아닙니다. 고객 자료로 쓰기 전에 공시 재무제표로 수치를 확인하십시오.</li>
+    </ul>
+    <ul class="notes" data-l="en">
+      <li data-l="en"><b>Universe</b>: the 100 largest companies by market cap per country. Korea = KOSPI/KOSDAQ; US = US-headquartered companies on NYSE, Nasdaq, NYSE American; Japan = Japanese exchanges; China = Shanghai/Shenzhen A-shares. Hong Kong-only Chinese listings (Tencent, Alibaba) are not in the China population.</li>
+      <li data-l="en"><b>Peer group</b>: every listed company of the same country in the same Yahoo Finance industry (~145 industries). Companies reporting in a foreign currency (e.g. TSMC ADR, reports in TWD) are dropped so amounts compare like with like. Share classes of one company are counted once (larger market cap kept).</li>
+      <li data-l="en"><b>Top 10%</b>: rank ≤ ceil(N × 10%), at least 1, where N is the number of peers with that figure. Industries with N ≤ 10 pass only the #1 company. Rank = 1 + number of peers with a larger value.</li>
+      <li data-l="en"><b>Figures</b>: trailing-twelve-month revenue, operating income and P/E from the Yahoo Finance screener. Operating income follows Yahoo's definition and may differ from the company's own. Negative or missing P/E is never judged cheap.</li>
+      <li data-l="en"><b>Industry P/E</b>: peers with positive P/E only. Cap-weighted = Σ market cap ÷ Σ (market cap ÷ P/E), the P/E of the industry as one company. The simple mean is pulled up by near-loss companies with very high P/E, so more names pass.</li>
+      <li data-l="en"><b>Not considered</b>: growth, leverage, one-off items, governance. This is a first-pass screen, not a recommendation. Check figures against filed statements before client use.</li>
+    </ul>
+    <div class="foot" id="foot"></div>
+  </section>
+</div>
+
+<script>
+/*DATA-BEGIN*/window.VALUE_DATA=null;/*DATA-END*/
+</script>
+<script>
+(function(){
+"use strict";
+var D = window.VALUE_DATA;
+var MK = ["kr","us","jp","cn"];
+var MKN = {kr:["한국","Korea"],us:["미국","US"],jp:["일본","Japan"],cn:["중국","China"]};
+var SEC = {
+ "Technology":["기술","Technology"],"Financial Services":["금융","Financial Services"],
+ "Healthcare":["헬스케어","Healthcare"],"Consumer Cyclical":["경기소비재","Consumer Cyclical"],
+ "Consumer Defensive":["필수소비재","Consumer Defensive"],"Industrials":["산업재","Industrials"],
+ "Communication Services":["커뮤니케이션","Communication Services"],"Energy":["에너지","Energy"],
+ "Basic Materials":["소재","Basic Materials"],"Real Estate":["부동산","Real Estate"],"Utilities":["유틸리티","Utilities"]
+};
+var SEC_ORDER = ["Technology","Financial Services","Communication Services","Consumer Cyclical","Industrials",
+ "Healthcare","Consumer Defensive","Energy","Basic Materials","Utilities","Real Estate"];
+// Yahoo industry -> Korean label. Unknown names fall back to the English original.
+var IND = {
+ "Semiconductors":"반도체","Semiconductor Equipment & Materials":"반도체 장비·소재",
+ "Consumer Electronics":"가전·전자기기","Electronic Components":"전자부품",
+ "Communication Equipment":"통신장비","Computer Hardware":"컴퓨터 하드웨어",
+ "Scientific & Technical Instruments":"계측·과학기기","Electronics & Computer Distribution":"전자·컴퓨터 유통",
+ "Software—Infrastructure":"인프라 소프트웨어","Software—Application":"응용 소프트웨어",
+ "Software - Infrastructure":"인프라 소프트웨어","Software - Application":"응용 소프트웨어",
+ "Information Technology Services":"IT 서비스","Solar":"태양광",
+ "Internet Content & Information":"인터넷 콘텐츠·정보","Telecom Services":"통신 서비스",
+ "Entertainment":"엔터테인먼트","Electronic Gaming & Multimedia":"게임·멀티미디어",
+ "Advertising Agencies":"광고","Broadcasting":"방송","Publishing":"출판",
+ "Banks—Diversified":"은행(대형·종합)","Banks—Regional":"은행(지역)",
+ "Banks - Diversified":"은행(대형·종합)","Banks - Regional":"은행(지역)",
+ "Insurance—Life":"생명보험","Insurance—Property & Casualty":"손해보험","Insurance—Diversified":"종합보험",
+ "Insurance—Reinsurance":"재보험","Insurance—Specialty":"특수보험","Insurance Brokers":"보험중개",
+ "Insurance - Life":"생명보험","Insurance - Property & Casualty":"손해보험","Insurance - Diversified":"종합보험",
+ "Insurance - Reinsurance":"재보험","Insurance - Specialty":"특수보험",
+ "Capital Markets":"증권·자본시장","Asset Management":"자산운용","Credit Services":"신용·카드·결제",
+ "Financial Data & Stock Exchanges":"금융데이터·거래소","Financial Conglomerates":"금융지주(복합)",
+ "Mortgage Finance":"모기지 금융","Shell Companies":"스팩·페이퍼컴퍼니",
+ "Drug Manufacturers—General":"제약(대형)","Drug Manufacturers—Specialty & Generic":"제약(특수·제네릭)",
+ "Drug Manufacturers - General":"제약(대형)","Drug Manufacturers - Specialty & Generic":"제약(특수·제네릭)",
+ "Biotechnology":"바이오","Medical Devices":"의료기기","Medical Instruments & Supplies":"의료기구·소모품",
+ "Diagnostics & Research":"진단·연구","Healthcare Plans":"건강보험","Medical Care Facilities":"의료시설",
+ "Medical Distribution":"의약품 유통","Health Information Services":"헬스케어 정보","Pharmaceutical Retailers":"약국 체인",
+ "Auto Manufacturers":"자동차","Auto Parts":"자동차 부품","Auto & Truck Dealerships":"자동차 판매",
+ "Recreational Vehicles":"레저 차량","Internet Retail":"온라인 유통","Specialty Retail":"전문 소매",
+ "Department Stores":"백화점","Home Improvement Retail":"주택용품 소매","Apparel Retail":"의류 소매",
+ "Apparel Manufacturing":"의류 제조","Footwear & Accessories":"신발·잡화","Luxury Goods":"명품",
+ "Textile Manufacturing":"섬유","Restaurants":"외식","Lodging":"숙박","Resorts & Casinos":"리조트·카지노",
+ "Gambling":"게임·복권","Leisure":"레저","Travel Services":"여행 서비스","Personal Services":"개인 서비스",
+ "Residential Construction":"주택 건설","Furnishings, Fixtures & Appliances":"가구·가전",
+ "Packaging & Containers":"포장·용기",
+ "Aerospace & Defense":"항공우주·방산","Specialty Industrial Machinery":"산업기계",
+ "Farm & Heavy Construction Machinery":"농기계·건설기계","Electrical Equipment & Parts":"전기장비·부품",
+ "Engineering & Construction":"건설·엔지니어링","Building Products & Equipment":"건축자재·설비",
+ "Industrial Distribution":"산업재 유통","Conglomerates":"복합기업","Railroads":"철도",
+ "Airlines":"항공","Airports & Air Services":"공항·항공서비스","Marine Shipping":"해운",
+ "Trucking":"트럭 운송","Integrated Freight & Logistics":"물류","Rental & Leasing Services":"렌탈·리스",
+ "Specialty Business Services":"전문 비즈니스 서비스","Consulting Services":"컨설팅",
+ "Staffing & Employment Services":"인력 서비스","Security & Protection Services":"보안 서비스",
+ "Waste Management":"폐기물 처리","Pollution & Treatment Controls":"환경 설비",
+ "Tools & Accessories":"공구","Metal Fabrication":"금속가공","Business Equipment & Supplies":"사무기기·용품",
+ "Infrastructure Operations":"인프라 운영",
+ "Discount Stores":"할인점","Grocery Stores":"식료품점","Packaged Foods":"가공식품",
+ "Beverages—Non-Alcoholic":"음료","Beverages—Brewers":"맥주","Beverages—Wineries & Distilleries":"주류(와인·증류주)",
+ "Beverages - Non-Alcoholic":"음료","Beverages - Brewers":"맥주","Beverages - Wineries & Distilleries":"주류(와인·증류주)",
+ "Confectioners":"제과","Farm Products":"농산물","Food Distribution":"식품 유통",
+ "Household & Personal Products":"생활용품·화장품","Tobacco":"담배","Education & Training Services":"교육",
+ "Oil & Gas Integrated":"석유·가스(통합)","Oil & Gas E&P":"석유·가스 탐사·생산","Oil & Gas Midstream":"석유·가스 운송",
+ "Oil & Gas Refining & Marketing":"정유","Oil & Gas Equipment & Services":"유전 장비·서비스",
+ "Oil & Gas Drilling":"시추","Thermal Coal":"석탄","Uranium":"우라늄",
+ "Specialty Chemicals":"특수화학","Chemicals":"화학","Agricultural Inputs":"비료·농약",
+ "Steel":"철강","Aluminum":"알루미늄","Copper":"구리","Gold":"금","Silver":"은",
+ "Other Industrial Metals & Mining":"비철금속·광업","Other Precious Metals & Mining":"귀금속 광업",
+ "Building Materials":"건축자재(시멘트 등)","Lumber & Wood Production":"목재","Paper & Paper Products":"제지",
+ "Coking Coal":"원료탄",
+ "Utilities—Regulated Electric":"전력(규제)","Utilities—Diversified":"유틸리티(복합)",
+ "Utilities—Regulated Gas":"가스(규제)","Utilities—Renewable":"신재생 발전",
+ "Utilities—Independent Power Producers":"민자 발전","Utilities—Regulated Water":"수도",
+ "Utilities - Regulated Electric":"전력(규제)","Utilities - Diversified":"유틸리티(복합)",
+ "Utilities - Regulated Gas":"가스(규제)","Utilities - Renewable":"신재생 발전",
+ "Utilities - Independent Power Producers":"민자 발전","Utilities - Regulated Water":"수도",
+ "REIT—Specialty":"리츠(특수)","REIT—Industrial":"리츠(산업)","REIT—Retail":"리츠(리테일)",
+ "REIT—Residential":"리츠(주거)","REIT—Office":"리츠(오피스)","REIT—Healthcare Facilities":"리츠(헬스케어)",
+ "REIT—Diversified":"리츠(복합)","REIT—Hotel & Motel":"리츠(호텔)","REIT—Mortgage":"리츠(모기지)",
+ "REIT - Specialty":"리츠(특수)","REIT - Industrial":"리츠(산업)","REIT - Retail":"리츠(리테일)",
+ "REIT - Residential":"리츠(주거)","REIT - Office":"리츠(오피스)","REIT - Healthcare Facilities":"리츠(헬스케어)",
+ "REIT - Diversified":"리츠(복합)","REIT - Hotel & Motel":"리츠(호텔)","REIT - Mortgage":"리츠(모기지)",
+ "Real Estate Services":"부동산 서비스","Real Estate—Development":"부동산 개발","Real Estate—Diversified":"부동산(복합)",
+ "Real Estate - Development":"부동산 개발","Real Estate - Diversified":"부동산(복합)"
+};
+// money units per market: [divisor, KO suffix, EN prefix, EN suffix, decimals]
+var UNIT = {
+ KRW:{d:1e12,ko:"조원",enP:"₩",enD:1e12,enS:"tn",dec:1},
+ USD:{d:1e8,ko:"억달러",enP:"$",enD:1e9,enS:"bn",dec:0},
+ JPY:{d:1e8,ko:"억엔",enP:"¥",enD:1e9,enS:"bn",dec:0},
+ CNY:{d:1e8,ko:"억위안",enP:"CN¥",enD:1e9,enS:"bn",dec:0}
+};
+
+var LS = function(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}};
+var state = {lang: LS("vl-lang")==="en"?"en":"ko", mk: LS("vl-mk")||"kr", basis: LS("vl-basis")||"agg", sel:null, onlyPick:false};
+if(MK.indexOf(state.mk)<0) state.mk="kr";
+if(["agg","mean","median"].indexOf(state.basis)<0) state.basis="agg";
+
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function L(ko,en){return state.lang==="ko"?ko:en;}
+function fmtN(v,dec){return v.toLocaleString("en-US",{minimumFractionDigits:dec,maximumFractionDigits:dec});}
+function money(v,cur){
+  if(v==null) return '<span class="na">–</span>';
+  var u=UNIT[cur]; if(!u) return fmtN(v,0);
+  if(state.lang==="ko"){var x=v/u.d, dec=Math.abs(x)<10&&u.dec===0?1:u.dec; return fmtN(x,dec)+u.ko;}
+  var y=v/u.enD; return (y<0?"−":"")+u.enP+fmtN(Math.abs(y),Math.abs(y)<10?1:0)+u.enS;
+}
+function pe(v){return v==null?'<span class="na">–</span>':fmtN(v,1)+L("배","x");}
+function indName(i){return state.lang==="ko"?(IND[i]||i):i;}
+function secName(s){var x=SEC[s];return x?(state.lang==="ko"?x[0]:x[1]):(s||L("미분류","Unclassified"));}
+function coName(c){return state.lang==="ko"&&c.nameKo?c.nameKo:c.name;}
+function avgKey(b){return {agg:"peAgg",mean:"peMean",median:"peMedian"}[b];}
+function score(c){return (c.okRev?1:0)+(c.okOp?1:0)+(c.cheap[state.basis]?1:0);}
+function isPick(c){return c.okRev&&c.okOp&&c.cheap[state.basis];}
+function basisName(b){return {agg:L("시가총액 가중","cap-weighted"),mean:L("단순 평균","simple mean"),median:L("중앙값","median")}[b];}
+
+function setLang(l){
+  state.lang=l; LS("vl-lang",l);
+  document.documentElement.lang=l;
+  document.title=l==="ko"?"저평가 업종 선두 종목 맵":"Undervalued Industry Leaders";
+  document.querySelectorAll(".lang-toggle button").forEach(function(b){b.setAttribute("aria-checked",b.dataset.set===l?"true":"false");});
+  render();
+}
+
+function render(){
+  var app=document.getElementById("app");
+  var tabs=document.getElementById("tabs");
+  tabs.innerHTML=MK.map(function(m){
+    return '<button type="button" role="tab" data-mk="'+m+'" aria-selected="'+(m===state.mk)+'">'+MKN[m][state.lang==="ko"?0:1]+'</button>';
+  }).join("");
+  document.getElementById("basis").value=state.basis;
+  var d=D&&D.markets&&D.markets[state.mk];
+  document.getElementById("foot").innerHTML=D?esc(L("생성 ","Generated "))+esc(D.generated||"")+" · "+esc(D.source||""):"";
+  if(!d){
+    document.getElementById("asof").textContent="";
+    app.innerHTML='<div class="empty">'+L("이 나라 데이터가 아직 없습니다. 수집 워크플로를 돌려 주십시오.","No data for this country yet. Run the collection workflow.")+'</div>';
+    return;
+  }
+  document.getElementById("asof").innerHTML=esc(L("기준일 ","As of "))+esc(d.asOf||"–")+" · "+esc(L("통화 ","Currency "))+esc(d.currency);
+  var co=d.co, picks=co.filter(isPick);
+  var two=co.filter(function(c){return !isPick(c)&&score(c)===2;});
+  var lead=co.filter(function(c){return c.okRev&&c.okOp;});
+  var h="";
+
+  // ---- stats
+  h+='<section class="section" id="summary"><div class="rule"></div><h2>'+L("요약","Summary")+'</h2>';
+  h+='<p class="sub">'+L("업종 평균 PER 기준: ","Industry P/E basis: ")+basisName(state.basis)+'</p>';
+  h+='<div class="stats">'
+   +stat(L("선정 종목","Picks"),picks.length,"or",L("세 조건 모두","All three tests"))
+   +stat(L("업종 선두","Industry leaders"),lead.length,"bl",L("매출·영업이익 모두 상위 10%","Revenue & op. income both top 10%"))
+   +stat(L("두 조건 충족","Two of three"),two.length,"",L("한 조건만 모자람","One test short"))
+   +stat(L("비교 모집단","Peer population"),fmtN(d.population,0),"",fmtN(d.industries,0)+L("개 업종","industries"))
+   +'</div></section>';
+
+  // ---- map
+  h+='<section class="section" id="map"><div class="rule"></div><h2>'+L("시가총액 상위 100 맵","Top-100 map")+'</h2>';
+  h+='<p class="sub">'+L("섹터별로 묶고 시가총액 순으로 놓았습니다. 칸 크기는 시가총액 순위 구간입니다. 칸을 누르면 업종 비교가 나옵니다.","Grouped by sector, ordered by market cap; tile size follows cap-rank band. Click a tile for the industry comparison.")+'</p>';
+  h+='<div class="legend"><span><i style="background:#F58220;border-color:#F58220"></i>'+L("세 조건 모두 (선정)","All three (pick)")+'</span>'
+   +'<span><i style="background:#FAB072;border-color:#FAB072"></i>'+L("두 조건","Two")+'</span>'
+   +'<span><i style="background:#F7F8FA"></i>'+L("한 조건","One")+'</span>'
+   +'<span><i style="background:#fff"></i>'+L("없음","None")+'</span>'
+   +'<span>'+L("칸 아래 표시: 매 = 매출 상위 10%, 영 = 영업이익 상위 10%, P = PER 업종 평균 미만","Marks: R = revenue top 10%, O = op. income top 10%, P = P/E below industry avg")+'</span></div>';
+  var bySec={};
+  co.forEach(function(c){(bySec[c.sec||""]=bySec[c.sec||""]||[]).push(c);});
+  var secs=Object.keys(bySec).sort(function(a,b){
+    var ca=bySec[a].reduce(function(s,c){return s+(c.cap||0);},0), cb=bySec[b].reduce(function(s,c){return s+(c.cap||0);},0);
+    return cb-ca;});
+  secs.forEach(function(s){
+    var xs=bySec[s];
+    var np=xs.filter(isPick).length;
+    h+='<div class="sector"><h3>'+esc(secName(s))+'<span class="c">'+xs.length+L("종목","")+(np?" · "+L("선정 ","picks ")+np:"")+'</span></h3><div class="tiles">';
+    xs.forEach(function(c){
+      var sc=score(c), w=c.capRank<=10?"w4":c.capRank<=30?"w3":c.capRank<=60?"w2":"w1";
+      var mk=[c.okRev?L("매","R"):"",c.okOp?L("영","O"):"",c.cheap[state.basis]?"P":""].filter(Boolean).join(" ");
+      h+='<div class="tile s'+sc+' '+w+(state.sel===c.sym?" sel":"")+'" tabindex="0" role="button" data-sym="'+esc(c.sym)+'" title="'+esc(coName(c)+" · "+indName(c.ind))+'">'
+        +'<span class="nm">'+esc(coName(c))+'</span><span class="mk">#'+c.capRank+(mk?" · "+mk:"")+'</span></div>';
+    });
+    h+='</div></div>';
+  });
+  h+='<div id="detail"></div></section>';
+
+  // ---- picks table
+  h+='<section class="section" id="picks"><div class="rule"></div><h2>'+L("선정 종목","Picks")+'</h2>';
+  h+='<p class="sub">'+L("매출 순위·영업이익 순위는 ‘순위 / 업종 종목 수’, 괄호는 통과 기준 순위입니다.","Ranks read ‘rank / peers’; the cut-off rank is in brackets.")+'</p>';
+  h+=picks.length?table(picks,d,true):'<div class="empty">'+L("이 기준으로는 세 조건을 모두 채운 종목이 없습니다.","No company passes all three tests on this basis.")+'</div>';
+  h+='</section>';
+
+  // ---- full table
+  h+='<section class="section" id="all"><div class="rule"></div><h2>'+L("상위 100 전체","All top-100")+'</h2>';
+  h+='<div class="filters"><label><input type="checkbox" id="onlyLead"'+(state.onlyPick?" checked":"")+'> '+L("업종 선두(매출·영업이익 모두 상위 10%)만","Industry leaders only (revenue & op. income top 10%)")+'</label></div>';
+  h+=table(state.onlyPick?lead:co,d,false);
+  h+=gapsNote(d);
+  h+='</section>';
+
+  app.innerHTML=h;
+  if(state.sel) showDetail(state.sel);
+}
+
+function stat(lb,v,cls,ft){return '<div class="stat"><div class="lb">'+lb+'</div><div class="v num '+cls+'">'+v+'</div><div class="ft">'+ft+'</div></div>';}
+
+function rk(r,st,n,k,ok){
+  if(r==null) return '<span class="na">–</span>';
+  return '<span class="'+(ok?"ok":"no")+'">'+r+' / '+n+'</span><span class="s">('+L("기준 ","cut ")+k+L("위","")+')</span>';
+}
+
+function table(rows,d,compact){
+  var ak=avgKey(state.basis);
+  var h='<div class="tw"><table><thead><tr>'
+   +'<th class="n">'+L("시총순위","Cap #")+'</th><th>'+L("종목","Company")+'</th><th>'+L("세부 업종","Industry")+'</th>'
+   +'<th class="n">'+L("시가총액","Mkt cap")+'</th><th class="n">'+L("매출(LTM)","Revenue (LTM)")+'</th><th class="n">'+L("매출 순위","Rev. rank")+'</th>'
+   +'<th class="n">'+L("영업이익(LTM)","Op. income (LTM)")+'</th><th class="n">'+L("영업이익 순위","Op. inc. rank")+'</th>'
+   +'<th class="n">PER</th><th class="n">'+L("업종 PER","Industry P/E")+'</th>'+(compact?'':'<th>'+L("판정","Result")+'</th>')
+   +'</tr></thead><tbody>';
+  rows.forEach(function(c){
+    var st=d.ind[c.ind]||{}, avg=st[ak], cheap=c.cheap[state.basis], p=isPick(c);
+    var peCell=c.pe==null?(c.peNeg?'<span class="na">'+L("적자","neg.")+'</span>':'<span class="na">–</span>'):'<span class="'+(cheap?"ok":"no")+'">'+pe(c.pe)+'</span>';
+    var res=p?'<span class="ok">'+L("선정","Pick")+'</span>':'<span class="no">'+score(c)+'/3</span>';
+    h+='<tr class="'+(p&&!compact?"pick":"")+'" data-sym="'+esc(c.sym)+'">'
+     +'<td class="n">'+c.capRank+'</td>'
+     +'<td>'+esc(coName(c))+'<span class="s">'+esc(c.sym)+(c.countryUnverified?" · "+L("본사국 미확인","HQ unverified"):"")+'</span></td>'
+     +'<td>'+esc(indName(c.ind))+'<span class="s">'+esc(secName(c.sec))+'</span></td>'
+     +'<td class="n">'+money(c.cap,d.currency)+'</td>'
+     +'<td class="n">'+money(c.rev,d.currency)+'</td>'
+     +'<td class="n">'+rk(c.rRev,st,st.nRev,st.kRev,c.okRev)+'</td>'
+     +'<td class="n">'+money(c.op,d.currency)+'</td>'
+     +'<td class="n">'+rk(c.rOp,st,st.nOp,st.kOp,c.okOp)+'</td>'
+     +'<td class="n">'+peCell+'</td>'
+     +'<td class="n">'+pe(avg)+'</td>'
+     +(compact?'':'<td>'+res+'</td>')
+     +'</tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+
+function gapsNote(d){
+  var g=d.gaps||{}, out=[];
+  out.push(L("야후 스크리너 전체 ","Screener rows ")+fmtN(d.screenerTotal||0,0)+L("개 중 비교 모집단 "," → peer population ")+fmtN(d.population,0)+L("개",""));
+  if(g.foreignCurrency) out.push(L("외화 재무제표로 뺀 종목 ","Dropped, foreign-currency financials: ")+g.foreignCurrency+(d.foreignExamples&&d.foreignExamples.length?" ("+esc(d.foreignExamples.slice(0,6).join(", "))+" …)":""));
+  if(g.assumedCurrency) out.push(L("재무 통화 표기가 없어 자국 통화로 본 종목 ","No reporting currency in source, home currency assumed: ")+g.assumedCurrency);
+  if(g.dupClass) out.push(L("같은 회사 다른 주식(우선주 등) 합침 ","Share classes merged: ")+g.dupClass);
+  if(g.noIndustry) out.push(L("업종 분류 없음 ","No industry: ")+g.noIndustry);
+  if(g.noQuote||g.unknownCurrency) out.push(L("시세·통화 정보 없음 ","No quote / currency: ")+((g.noQuote||0)+(g.unknownCurrency||0)));
+  if(d.skipped&&d.skipped.length) out.push(L("상위 100에서 뺀 종목 ","Excluded from top-100: ")+esc(d.skipped.map(function(s){return s.name+" ("+s.why+")";}).join(", ")));
+  return '<ul class="notes" style="margin-top:14px">'+out.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ul>';
+}
+
+function showDetail(sym){
+  var d=D.markets[state.mk], c=null;
+  d.co.forEach(function(x){if(x.sym===sym)c=x;});
+  var el=document.getElementById("detail"); if(!c||!el) return;
+  var st=d.ind[c.ind]||{}, ak=avgKey(state.basis), cheap=c.cheap[state.basis];
+  var h='<div class="detail" id="detail-card"><h3>'+esc(coName(c))+' <span class="asof">'+esc(c.sym)+' · '+L("시총 ","cap #")+c.capRank+L("위","")+'</span></h3>'
+   +'<div class="meta">'+esc(indName(c.ind))+' · '+esc(secName(c.sec))+' · '+L("같은 나라 같은 업종 상장사 ","listed peers in this country: ")+st.n+L("곳","")+'</div>'
+   +'<div class="checks">'
+   +chk(L("매출 순위","Revenue rank"),c.okRev,c.rRev==null?"–":c.rRev+" / "+st.nRev,
+        money(c.rev,d.currency)+" · "+L("상위 10% 기준 ","top-10% cut: ")+st.kRev+L("위 (","th (")+money(st.revCut,d.currency)+")")
+   +chk(L("영업이익 순위","Op. income rank"),c.okOp,c.rOp==null?"–":c.rOp+" / "+st.nOp,
+        money(c.op,d.currency)+" · "+L("상위 10% 기준 ","top-10% cut: ")+st.kOp+L("위 (","th (")+money(st.opCut,d.currency)+")")
+   +chk("PER",cheap,c.pe==null?(c.peNeg?L("적자","neg."):"–"):pe(c.pe),
+        L("업종 PER ","Industry P/E ")+"("+basisName(state.basis)+") "+pe(st[ak])+" · "+L("PER 있는 종목 ","peers with P/E ")+st.nPe
+        +'<div class="pevs">'+L("시총가중 ","cap-wtd ")+pe(st.peAgg)+" · "+L("평균 ","mean ")+pe(st.peMean)+" · "+L("중앙값 ","median ")+pe(st.peMedian)+'</div>')
+   +'</div></div>';
+  el.innerHTML=h;
+}
+function chk(h,ok,r,txt){return '<div class="chk '+(ok?"ok":"no")+'"><div class="h">'+h+' · '+(ok?L("통과","pass"):L("미달","fail"))+'</div><div class="r num">'+r+'</div><div>'+txt+'</div></div>';}
+
+function pickSym(sym, scroll){
+  state.sel=sym;
+  document.querySelectorAll(".tile").forEach(function(t){t.classList.toggle("sel",t.dataset.sym===sym);});
+  showDetail(sym);
+  if(scroll){var e=document.getElementById("detail-card"); if(e) e.scrollIntoView({behavior:"smooth",block:"center"});}
+}
+
+document.addEventListener("click",function(e){
+  var t=e.target.closest("[data-set]"); if(t){setLang(t.dataset.set);return;}
+  t=e.target.closest("[data-mk]"); if(t){state.mk=t.dataset.mk;state.sel=null;LS("vl-mk",state.mk);render();return;}
+  t=e.target.closest(".tile"); if(t){pickSym(t.dataset.sym,false);return;}
+  t=e.target.closest("tr[data-sym]"); if(t){pickSym(t.dataset.sym,true);return;}
+});
+document.addEventListener("keydown",function(e){
+  var t=e.target.closest&&e.target.closest(".tile");
+  if(t&&(e.key==="Enter"||e.key===" ")){e.preventDefault();pickSym(t.dataset.sym,false);}
+});
+document.addEventListener("change",function(e){
+  if(e.target.id==="basis"){state.basis=e.target.value;LS("vl-basis",state.basis);render();}
+  if(e.target.id==="onlyLead"){state.onlyPick=e.target.checked;render();}
+});
+setLang(state.lang);
+})();
+</script>
+</body>
+</html>
