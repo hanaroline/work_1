@@ -173,7 +173,7 @@ def naver_name(code):
         except Exception:  # noqa: BLE001
             continue
         v = (doc or {}).get("stockName")
-        if isinstance(v, str) and HANGUL.search(v):
+        if isinstance(v, str) and v.strip():
             return v.strip()
     return None
 
