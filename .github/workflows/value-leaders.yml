@@ -1,0 +1,72 @@
+name: 저평가 업종 선두 종목 맵 갱신
+
+# value-leaders.html — 한국·미국·일본·중국 시가총액 상위 100 안에서
+# 매출·영업이익이 모두 같은 나라 같은 세부 업종(야후 industry) 상위 10% 이고
+# PER 이 업종 평균보다 낮은 종목을 고른다.
+#
+# 클로드 세션에서는 야후에 못 붙는다. 그래서 러너 몫이다.
+# 수집기는 scripts/fetch_value_leaders.py — 못 받은 값은 비워 두고 지어내지 않는다.
+#
+# schedule 은 기본 가지(main)에서만 발동한다.
+
+on:
+  schedule:
+    # 평일 22:10 UTC(07:10 KST) — 미국 마감 뒤, 아시아 개장 전. 네 나라를 한 번에.
+    - cron: '10 22 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      market:
+        description: '나라 (kr,us,jp,cn 중 쉼표로 · all)'
+        required: false
+        default: 'all'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: value-leaders-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 수집
+        run: python3 scripts/fetch_value_leaders.py --market "${{ inputs.market || 'all' }}"
+
+      - name: 결과 커밋
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for f in data/value-leaders.json data/value-leaders-report.md value-leaders.html; do
+            [ -f "$f" ] && git add "$f"
+          done
+          if git diff --cached --quiet; then
+            echo "바뀐 것이 없다 — 커밋 생략"
+            exit 0
+          fi
+          git commit -m "data(value-leaders): 저평가 업종 선두 종목 갱신 ($(date -u +%Y-%m-%d\ %H:%M))"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+          done
+          exit 1
+
+      - name: 요약
+        if: always()
+        run: |
+          {
+            echo "### 저평가 업종 선두 종목 맵"
+            cat data/value-leaders-report.md 2>/dev/null || echo "보고서가 없습니다 — 수집 단계 로그를 보세요."
+          } >> "$GITHUB_STEP_SUMMARY"
