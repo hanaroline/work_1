@@ -1,18 +1,18 @@
 {
-  "at": "2026-11-02T07:19:01.054Z",
+  "at": "2026-11-07T01:09:07.753Z",
   "findings": [],
   "errors": [],
   "filters": [
     {
       "label": "투자지역 국내",
-      "shown": 1504,
-      "recomputed": 1504,
+      "shown": 1505,
+      "recomputed": 1505,
       "ok": true
     },
     {
       "label": "투자지역 해외",
-      "shown": 1318,
-      "recomputed": 1318,
+      "shown": 1319,
+      "recomputed": 1319,
       "ok": true
     },
     {
@@ -53,38 +53,38 @@
     },
     {
       "label": "설정액 1조 이상",
-      "shown": 47,
-      "recomputed": 47,
+      "shown": 46,
+      "recomputed": 46,
       "ok": true
     },
     {
       "label": "설정액 100억 미만",
-      "shown": 1824,
-      "recomputed": 1824,
+      "shown": 1828,
+      "recomputed": 1828,
       "ok": true
     },
     {
       "label": "위험등급 매우 높은 위험",
-      "shown": 292,
-      "recomputed": 292,
+      "shown": 321,
+      "recomputed": 321,
       "ok": true
     },
     {
       "label": "총보수 0.3% 미만",
-      "shown": 635,
-      "recomputed": 635,
+      "shown": 600,
+      "recomputed": 600,
       "ok": true
     },
     {
       "label": "총보수 1.2% 이상",
-      "shown": 249,
-      "recomputed": 249,
+      "shown": 240,
+      "recomputed": 240,
       "ok": true
     },
     {
       "label": "검색 \"삼성\"",
-      "shown": 1438,
-      "recomputed": 1438,
+      "shown": 1437,
+      "recomputed": 1437,
       "ok": true
     },
     {
@@ -106,33 +106,40 @@
       "okTop": true,
       "okBottom": true,
       "okAum": true,
-      "n": 2887
+      "n": 2900
     },
     {
       "label": "해외주식형 1y",
       "okTop": true,
       "okBottom": true,
       "okAum": true,
-      "n": 745
+      "n": 746
     },
     {
       "label": "국내주식형 3m",
       "okTop": true,
       "okBottom": true,
       "okAum": true,
-      "n": 611
+      "n": 612
     },
     {
       "label": "전체 5y",
       "okTop": true,
       "okBottom": true,
       "okAum": true,
-      "n": 2257
+      "n": 2259
     }
   ],
   "overlap": [
     {
       "a": "KR5209676463",
+      "b": "KR5236665083",
+      "shown": "24.3%20종목",
+      "recomputed": 24.27,
+      "ok": true
+    },
+    {
+      "a": "KR5209676463",
       "b": "K55301CW6375",
       "shown": "17.2%6종목",
       "recomputed": 17.19,
@@ -146,10 +153,24 @@
       "ok": true
     },
     {
-      "a": "KR5209676463",
-      "b": "KR5105534006",
-      "shown": "21.9%39종목",
-      "recomputed": 21.87,
+      "a": "KR5236665083",
+      "b": "KR5209676463",
+      "shown": "24.3%20종목",
+      "recomputed": 24.27,
+      "ok": true
+    },
+    {
+      "a": "KR5236665083",
+      "b": "K55301CW6375",
+      "shown": "65.6%18종목",
+      "recomputed": 65.57,
+      "ok": true
+    },
+    {
+      "a": "KR5236665083",
+      "b": "KR5301A74903",
+      "shown": "60.3%26종목",
+      "recomputed": 60.29,
       "ok": true
     },
     {
@@ -161,16 +182,16 @@
     },
     {
       "a": "K55301CW6375",
-      "b": "KR5301A74903",
-      "shown": "49.0%5종목",
-      "recomputed": 48.97,
+      "b": "KR5236665083",
+      "shown": "65.6%18종목",
+      "recomputed": 65.57,
       "ok": true
     },
     {
       "a": "K55301CW6375",
-      "b": "KR5105534006",
-      "shown": "54.2%17종목",
-      "recomputed": 54.23,
+      "b": "KR5301A74903",
+      "shown": "49.0%5종목",
+      "recomputed": 48.97,
       "ok": true
     },
     {
@@ -182,37 +203,16 @@
     },
     {
       "a": "KR5301A74903",
-      "b": "K55301CW6375",
-      "shown": "49.0%5종목",
-      "recomputed": 48.97,
+      "b": "KR5236665083",
+      "shown": "60.3%26종목",
+      "recomputed": 60.29,
       "ok": true
     },
     {
       "a": "KR5301A74903",
-      "b": "KR5105534006",
-      "shown": "54.0%40종목",
-      "recomputed": 54.01,
-      "ok": true
-    },
-    {
-      "a": "KR5105534006",
-      "b": "KR5209676463",
-      "shown": "21.9%39종목",
-      "recomputed": 21.87,
-      "ok": true
-    },
-    {
-      "a": "KR5105534006",
       "b": "K55301CW6375",
-      "shown": "54.2%17종목",
-      "recomputed": 54.23,
-      "ok": true
-    },
-    {
-      "a": "KR5105534006",
-      "b": "KR5301A74903",
-      "shown": "54.0%40종목",
-      "recomputed": 54.01,
+      "shown": "49.0%5종목",
+      "recomputed": 48.97,
       "ok": true
     }
   ],
