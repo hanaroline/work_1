@@ -162,6 +162,22 @@ def country_of(sym):
     return "?"
 
 
+def naver_name(code):
+    """Korean listing name from Naver mobile API; None when it cannot be read (never guessed)."""
+    for path in ("basic", "integration"):
+        req = urllib.request.Request("https://m.stock.naver.com/api/stock/%s/%s" % (code, path),
+                                     headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=20) as r:
+                doc = json.loads(r.read().decode("utf-8", "replace"))
+        except Exception:  # noqa: BLE001
+            continue
+        v = (doc or {}).get("stockName")
+        if isinstance(v, str) and HANGUL.search(v):
+            return v.strip()
+    return None
+
+
 def build(mk):
     m = MARKETS[mk]
     print("== %s: records sweep" % mk, flush=True)
@@ -291,6 +307,18 @@ def build(mk):
                 continue
             x["countryUnverified"] = (c == "?")
         top.append(x)
+
+    if mk == "kr":
+        got = 0
+        for x in top:
+            if x["nameKo"]:
+                continue
+            nm = naver_name(x["sym"].split(".")[0])
+            if nm:
+                x["nameKo"] = nm
+                got += 1
+            time.sleep(0.15)
+        print("   Korean names from Naver: %d" % got, flush=True)
 
     co = []
     for i, x in enumerate(top, 1):
