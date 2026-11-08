@@ -309,6 +309,7 @@ def build(mk, prev_top=()):
     gaps = {"noQuote": 0, "foreignCurrency": 0, "noIndustry": 0, "dupClass": 0, "unknownCurrency": 0,
             "assumedCurrency": 0, "assumedCurrencyWithRevenue": 0}
     foreign_examples = []
+    why = {}            # ticker -> reason it left the population (reported for last run's top-100)
     rows = {}
     for r in recs:
         sym = r.get("ticker")
@@ -317,6 +318,7 @@ def build(mk, prev_top=()):
         q = qmap.get(sym)
         if not q:
             gaps["noQuote"] += 1
+            why[sym] = "noQuote"
             continue
         fc = q.get("financialCurrency")
         if not fc:
@@ -330,15 +332,18 @@ def build(mk, prev_top=()):
                     gaps["assumedCurrencyWithRevenue"] += 1
             else:
                 gaps["unknownCurrency"] += 1
+                why[sym] = "unknownCurrency"
                 continue
         if fc != m["cur"]:
             gaps["foreignCurrency"] += 1
             if len(foreign_examples) < 12:
                 foreign_examples.append("%s(%s)" % (sym, fc))
+            why[sym] = "currency %s" % fc
             continue
         ind = r.get("industry")
         if not ind:
             gaps["noIndustry"] += 1
+            why[sym] = "noIndustry (sector %s, rev %s)" % (r.get("sector"), r.get("totalRevenueLtm"))
             continue
         cap = num(r.get("marketCap")) or num(q.get("marketCap"))
         pe = num(r.get("peRatioLtm"))
@@ -372,9 +377,15 @@ def build(mk, prev_top=()):
             gaps["dupClass"] += 1
             prev["dup"] = row["dup"] = True
             if (prev["cap"] or 0) >= (cap or 0):
+                why[sym] = "dup of %s" % prev["sym"]
                 continue
+            why[prev["sym"]] = "dup of %s" % sym
         rows[key] = row
     pop = list(rows.values())
+    in_pop = {x["sym"] for x in pop}
+    for t in prev_top:
+        if t not in in_pop:
+            print("   last top-100 %s not in population: %s" % (t, why.get(t, "not returned")), flush=True)
     print("   population %d  gaps %s" % (len(pop), gaps), flush=True)
 
     # ---- check that price / screener EPS reproduces Yahoo's own PER where it has one
