@@ -324,7 +324,7 @@ function srcName(k){return {eps:L("주가 ÷ 최근 4분기 희석 EPS","price �
 function calcMark(c){return c.peSrc==="calc"?'<sup class="calc" title="'+L("야후 PER 이 비어 직접 계산","computed: Yahoo P/E missing")+'">†</sup>':"";}
 function peNote(c){
   if(c.peSrc==="calc"&&c.peChk) return '<div class="pevs">† '+L("야후 PER 이 비어 직접 계산: ","Computed, Yahoo P/E missing: ")+esc(srcName(c.peChk.by))
-    +(c.pe!=null?" · "+L("확인 ","checked by ")+esc(srcName(c.peChk.x))+" "+pe(c.peChk.xv):" · "+L("확인 ","checked by ")+esc(srcName(c.peChk.x))+L(" 도 적자"," also negative"))+'</div>';
+    +(c.pe!=null?" · "+L("확인 ","checked by ")+esc(srcName(c.peChk.x))+" "+pe(c.peChk.xv):" · "+L("확인 ","checked by ")+esc(srcName(c.peChk.x))+L("도 적자"," also negative"))+'</div>';
   if(c.pe==null&&!c.peNeg&&c.peCands){
     var ks=Object.keys(c.peCands);
     if(!ks.length) return '<div class="pevs">'+L("PER 을 계산할 이익 자료가 없어 비웠습니다","No earnings figure to compute P/E — left blank")+'</div>';
