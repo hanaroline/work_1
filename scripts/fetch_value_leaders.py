@@ -257,7 +257,25 @@ def fill_pe(x):
     return "single" if len(order) == 1 else "conflict"
 
 
-def build(mk):
+def by_tickers(m, syms, records):
+    """Screener rows for an explicit ticker list (rows the paginated sweep dropped)."""
+    out = []
+    for i in range(0, len(syms), 50):
+        chunk = syms[i:i + 50]
+        body = {"size": len(chunk), "offset": 0, "sortField": "intradaymarketcap", "sortType": "DESC",
+                "quoteType": "EQUITY", "userId": "", "userIdType": "guid",
+                "query": {"operator": "or", "operands": [{"operator": "eq", "operands": ["ticker", t]} for t in chunk]}}
+        extra = ""
+        if records:
+            body["includeFields"] = INCLUDE
+            extra = "&useRecordsResponse=true"
+        r = post(body, extra, m["lang"] if not records else "en-US")
+        out.extend((r.get("records") if records else r.get("quotes")) or [])
+        time.sleep(0.35)
+    return out
+
+
+def build(mk, prev_top=()):
     m = MARKETS[mk]
     print("== %s: records sweep" % mk, flush=True)
     recs, total_r = sweep(m, True)
@@ -265,6 +283,23 @@ def build(mk):
     print("== %s: quotes sweep" % mk, flush=True)
     quotes, total_q = sweep(m, False)
     print("   %d rows (total %s)" % (len(quotes), total_q), flush=True)
+    # offset paging is not a stable snapshot: rows can slip between pages. Re-ask for last run's
+    # top-100 names that did not come back, so a leader never drops out just because of paging.
+    seen = {r.get("ticker") for r in recs}
+    lost = [t for t in prev_top if t not in seen]
+    if lost:
+        got = by_tickers(m, lost, True)
+        recs.extend(got)
+        print("   %d previous top-100 tickers missing from sweep, recovered %d: %s"
+              % (len(lost), len(got), ",".join(lost)), flush=True)
+        qs = {q.get("symbol") for q in quotes}
+        quotes.extend(q for q in by_tickers(m, [r.get("ticker") for r in got], False) if q.get("symbol") not in qs)
+    uniq = {}
+    for r in recs:
+        uniq.setdefault(r.get("ticker"), r)
+    if len(uniq) != len(recs):
+        print("   %d duplicate rows from paging dropped" % (len(recs) - len(uniq)), flush=True)
+    recs = list(uniq.values())
     qmap = {q.get("symbol"): q for q in quotes if q.get("symbol")}
     missing = [r.get("ticker") for r in recs if r.get("ticker") and r.get("ticker") not in qmap]
     if missing:
@@ -398,28 +433,33 @@ def build(mk):
     gaps["peFill"] = fill
 
     # ---- industry statistics over the whole population (after the fill, so computed PERs count)
-    ind_stats = {}
-    for ind, xs in by_ind.items():
-        revs = sorted([x["rev"] for x in xs if x["rev"] is not None], reverse=True)
-        ops = sorted([x["op"] for x in xs if x["op"] is not None], reverse=True)
-        pes = [x for x in xs if x["pe"] is not None and x["cap"]]
-        k_rev = max(1, math.ceil(len(revs) * SHARE)) if revs else None
-        k_op = max(1, math.ceil(len(ops) * SHARE)) if ops else None
-        st = {
-            "sec": xs[0]["sec"],
-            "n": len(xs), "nRev": len(revs), "nOp": len(ops), "nPe": len(pes),
-            "kRev": k_rev, "kOp": k_op,
-            "revCut": revs[k_rev - 1] if revs else None,
-            "opCut": ops[k_op - 1] if ops else None,
-            "peAgg": None, "peMean": None, "peMedian": None,
-        }
-        if pes:
-            pv = [x["pe"] for x in pes]
-            st["peMean"] = round(statistics.fmean(pv), 2)
-            st["peMedian"] = round(statistics.median(pv), 2)
-            earn = sum(x["cap"] / x["pe"] for x in pes)
-            st["peAgg"] = round(sum(x["cap"] for x in pes) / earn, 2) if earn > 0 else None
-        ind_stats[ind] = st
+    def stats(pe_of):
+        ind_stats = {}
+        for ind, xs in by_ind.items():
+            revs = sorted([x["rev"] for x in xs if x["rev"] is not None], reverse=True)
+            ops = sorted([x["op"] for x in xs if x["op"] is not None], reverse=True)
+            pes = [x for x in xs if pe_of(x) is not None and x["cap"]]
+            k_rev = max(1, math.ceil(len(revs) * SHARE)) if revs else None
+            k_op = max(1, math.ceil(len(ops) * SHARE)) if ops else None
+            st = {
+                "sec": xs[0]["sec"],
+                "n": len(xs), "nRev": len(revs), "nOp": len(ops), "nPe": len(pes),
+                "kRev": k_rev, "kOp": k_op,
+                "revCut": revs[k_rev - 1] if revs else None,
+                "opCut": ops[k_op - 1] if ops else None,
+                "peAgg": None, "peMean": None, "peMedian": None,
+            }
+            if pes:
+                pv = [pe_of(x) for x in pes]
+                st["peMean"] = round(statistics.fmean(pv), 2)
+                st["peMedian"] = round(statistics.median(pv), 2)
+                earn = sum(x["cap"] / pe_of(x) for x in pes)
+                st["peAgg"] = round(sum(x["cap"] for x in pes) / earn, 2) if earn > 0 else None
+            ind_stats[ind] = st
+        return ind_stats
+
+    ind_stats = stats(lambda x: x["pe"])
+    base_stats = stats(lambda x: x["pe"] if x["peSrc"] == "yahoo" else None)  # without the fill
 
 
     if mk == "kr":
@@ -467,12 +507,26 @@ def build(mk):
         t, off = max(times)
         as_of = datetime.fromtimestamp(t + (off or 0) / 1000, timezone.utc).strftime("%Y-%m-%d")
     picks = [c for c in co if c["okRev"] and c["okOp"] and c["cheap"]["agg"]]
+    # what the PER fill alone changes (same run, same prices): picks with Yahoo-only PERs vs now
+    effect = {}
+    for b, k in (("agg", "peAgg"), ("mean", "peMean"), ("median", "peMedian")):
+        before, after = set(), set()
+        for x, c in zip(top, co):
+            if not (c["okRev"] and c["okOp"]):
+                continue
+            bs, pe0 = base_stats[x["ind"]], (x["pe"] if x["peSrc"] == "yahoo" else None)
+            if pe0 is not None and bs[k] is not None and pe0 < bs[k]:
+                before.add(c["sym"])
+            if c["cheap"][b]:
+                after.add(c["sym"])
+        effect[b] = {"same": len(before & after), "new": sorted(after - before), "lost": sorted(before - after)}
+    print("   PER fill effect on picks: %s" % effect, flush=True)
     print("   top %d, picks(agg) %d, skipped %d" % (len(co), len(picks), len(skipped)), flush=True)
     return {
         "market": mk, "currency": m["cur"], "asOf": as_of,
         "screenerTotal": total_r, "population": len(pop), "industries": len(by_ind),
         "gaps": gaps, "foreignExamples": foreign_examples, "skipped": skipped,
-        "ind": {k: ind_stats[k] for k in used}, "co": co,
+        "ind": {k: ind_stats[k] for k in used}, "co": co, "peFillEffect": effect,
     }
 
 
@@ -520,7 +574,8 @@ def main():
     rc = 0
     for mk in mks:
         try:
-            data["markets"][mk] = build(mk)
+            prev = [c["sym"] for c in ((data.get("markets") or {}).get(mk) or {}).get("co", [])]
+            data["markets"][mk] = build(mk, prev)
         except Exception as e:  # noqa: BLE001  keep the previous market data rather than write a half one
             print("!! %s failed: %s" % (mk, e), flush=True)
             rc = 1
