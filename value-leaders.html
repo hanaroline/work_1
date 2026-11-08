@@ -115,6 +115,7 @@ tr.pick td{background:#FFF6EE}
 .ok{color:var(--or-a);font-weight:700}
 .no{color:var(--mut2)}
 .na{color:var(--mut2)}
+sup.calc{font-size:11px;color:var(--mut2);margin-left:1px;vertical-align:4px}
 .filters{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;margin-bottom:12px;font-size:16px}
 .filters label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
 .empty{padding:28px;text-align:center;color:var(--mut);font-size:17px;border:1px dashed var(--hair);border-radius:4px}
@@ -188,7 +189,7 @@ tr.pick td{background:#FFF6EE}
       <li data-l="ko"><b>대상</b>: 나라별 시가총액 상위 100. 한국은 코스피·코스닥, 미국은 NYSE·나스닥·NYSE American 상장 미국 본사 기업, 일본은 일본 거래소, 중국은 상하이·선전 A주입니다. 홍콩에만 상장된 중국 기업(텐센트·알리바바 등)은 중국 모집단에 들어가지 않습니다.</li>
       <li data-l="ko"><b>비교 대상</b>: 같은 나라에 상장된 같은 세부 업종(야후 파이낸스 업종 분류, 약 145개) 전체 종목입니다. 재무제표 통화가 그 나라 통화가 아닌 종목(예: 미국 상장 대만 TSMC, 대만달러 보고)은 금액 비교가 맞지 않아 모집단에서 뺍니다. 우선주·복수 상장 종목은 회사 이름이 같으면 시가총액이 큰 쪽 하나만 셉니다.</li>
       <li data-l="ko"><b>상위 10%</b>: 업종에서 해당 수치가 있는 종목 수 N 의 10% 를 올림한 순위(최소 1위)까지입니다. N 이 10 이하인 업종은 1위만 통과합니다. 순위는 그 값보다 큰 종목 수 + 1 입니다.</li>
-      <li data-l="ko"><b>수치</b>: 최근 4분기 합산(LTM) 매출·영업이익과 LTM PER, 모두 야후 파이낸스 스크리너 값입니다. 영업이익 정의는 야후 기준이라 회사 공시의 영업이익과 다를 수 있습니다. PER 이 음수이거나 비어 있으면 저평가 판정을 하지 않습니다.</li>
+      <li data-l="ko"><b>수치</b>: 최근 4분기 합산(LTM) 매출·영업이익과 LTM PER, 모두 야후 파이낸스 스크리너 값입니다. 영업이익 정의는 야후 기준이라 회사 공시의 영업이익과 다를 수 있습니다. 야후 PER 이 비어 있으면 주가 ÷ 최근 4분기 희석 EPS 로 직접 계산하되(야후도 이 식으로 PER 을 냅니다), 시가총액 ÷ 순이익이나 분기 공시 합산 EPS 같은 다른 값과 15% 안에서 맞을 때만 채우고 <b>†</b> 로 표시합니다. 둘 다 음수면 적자로, 서로 맞지 않으면 빈칸으로 둡니다. 직접 계산한 PER 도 업종 평균에 들어갑니다. PER 이 음수이거나 비어 있으면 저평가 판정을 하지 않습니다.</li>
       <li data-l="ko"><b>업종 평균 PER</b>: PER 이 양수인 업종 종목만으로 계산합니다. 시가총액 가중은 Σ시가총액 ÷ Σ(시가총액÷PER), 즉 업종 전체를 한 회사로 본 PER 입니다. 단순 평균은 적자 직전 종목의 높은 PER 에 끌려 올라가기 쉬워 통과가 쉬워집니다.</li>
       <li data-l="ko"><b>보지 않은 것</b>: 성장률·부채·일회성 손익·지배구조. 이 맵은 후보를 좁히는 1차 거르기이며 매수 추천이 아닙니다. 고객 자료로 쓰기 전에 공시 재무제표로 수치를 확인하십시오.</li>
     </ul>
@@ -196,7 +197,7 @@ tr.pick td{background:#FFF6EE}
       <li data-l="en"><b>Universe</b>: the 100 largest companies by market cap per country. Korea = KOSPI/KOSDAQ; US = US-headquartered companies on NYSE, Nasdaq, NYSE American; Japan = Japanese exchanges; China = Shanghai/Shenzhen A-shares. Hong Kong-only Chinese listings (Tencent, Alibaba) are not in the China population.</li>
       <li data-l="en"><b>Peer group</b>: every listed company of the same country in the same Yahoo Finance industry (~145 industries). Companies reporting in a foreign currency (e.g. TSMC ADR, reports in TWD) are dropped so amounts compare like with like. Share classes of one company are counted once (larger market cap kept).</li>
       <li data-l="en"><b>Top 10%</b>: rank ≤ ceil(N × 10%), at least 1, where N is the number of peers with that figure. Industries with N ≤ 10 pass only the #1 company. Rank = 1 + number of peers with a larger value.</li>
-      <li data-l="en"><b>Figures</b>: trailing-twelve-month revenue, operating income and P/E from the Yahoo Finance screener. Operating income follows Yahoo's definition and may differ from the company's own. Negative or missing P/E is never judged cheap.</li>
+      <li data-l="en"><b>Figures</b>: trailing-twelve-month revenue, operating income and P/E from the Yahoo Finance screener. Operating income follows Yahoo's definition and may differ from the company's own. When Yahoo leaves P/E empty it is computed as price ÷ LTM diluted EPS (Yahoo's own formula) and filled, marked <b>†</b>, only when another figure — market cap ÷ net income, or EPS summed from filings — agrees within 15%. Both negative counts as a loss; disagreement stays blank. Computed P/Es also enter the industry averages. Negative or missing P/E is never judged cheap.</li>
       <li data-l="en"><b>Industry P/E</b>: peers with positive P/E only. Cap-weighted = Σ market cap ÷ Σ (market cap ÷ P/E), the P/E of the industry as one company. The simple mean is pulled up by near-loss companies with very high P/E, so more names pass.</li>
       <li data-l="en"><b>Not considered</b>: growth, leverage, one-off items, governance. This is a first-pass screen, not a recommendation. Check figures against filed statements before client use.</li>
     </ul>
@@ -318,6 +319,20 @@ function money(v,cur){
   var y=v/u.enD; return (y<0?"−":"")+u.enP+fmtN(Math.abs(y),Math.abs(y)<10?1:0)+u.enS;
 }
 function pe(v){return v==null?'<span class="na">–</span>':fmtN(v,1)+L("배","x");}
+function srcName(k){return {eps:L("주가 ÷ 최근 4분기 희석 EPS","price ÷ LTM diluted EPS"),ni:L("시가총액 ÷ 최근 4분기 순이익","market cap ÷ LTM net income"),
+  tsEps:L("주가 ÷ 분기 공시 합산 EPS","price ÷ TTM EPS (filings)"),tsNi:L("시가총액 ÷ 분기 공시 합산 순이익","market cap ÷ TTM net income (filings)")}[k]||k;}
+function calcMark(c){return c.peSrc==="calc"?'<sup class="calc" title="'+L("야후 PER 이 비어 직접 계산","computed: Yahoo P/E missing")+'">†</sup>':"";}
+function peNote(c){
+  if(c.peSrc==="calc"&&c.peChk) return '<div class="pevs">† '+L("야후 PER 이 비어 직접 계산: ","Computed, Yahoo P/E missing: ")+esc(srcName(c.peChk.by))
+    +(c.pe!=null?" · "+L("확인 ","checked by ")+esc(srcName(c.peChk.x))+" "+pe(c.peChk.xv):" · "+L("확인 ","checked by ")+esc(srcName(c.peChk.x))+L(" 도 적자"," also negative"))+'</div>';
+  if(c.pe==null&&!c.peNeg&&c.peCands){
+    var ks=Object.keys(c.peCands);
+    if(!ks.length) return '<div class="pevs">'+L("PER 을 계산할 이익 자료가 없어 비웠습니다","No earnings figure to compute P/E — left blank")+'</div>';
+    return '<div class="pevs">'+L("계산값이 서로 맞지 않아 비웠습니다: ","Computed figures disagree — left blank: ")
+      +ks.map(function(k){var v=c.peCands[k];return esc(srcName(k))+" "+(v<0?L("적자","neg."):pe(v));}).join(" · ")+'</div>';
+  }
+  return "";
+}
 function indName(i){return state.lang==="ko"?(IND[i]||i):i;}
 function secName(s){var x=SEC[s];return x?(state.lang==="ko"?x[0]:x[1]):(s||L("미분류","Unclassified"));}
 function coName(c){return state.lang==="ko"&&c.nameKo?c.nameKo:c.name;}
@@ -427,7 +442,7 @@ function table(rows,d,compact){
    +'</tr></thead><tbody>';
   rows.forEach(function(c){
     var st=d.ind[c.ind]||{}, avg=st[ak], cheap=c.cheap[state.basis], p=isPick(c);
-    var peCell=c.pe==null?(c.peNeg?'<span class="na">'+L("적자","neg.")+'</span>':'<span class="na">–</span>'):'<span class="'+(cheap?"ok":"no")+'">'+pe(c.pe)+'</span>';
+    var peCell=c.pe==null?(c.peNeg?'<span class="na">'+L("적자","neg.")+calcMark(c)+'</span>':'<span class="na">–</span>'):'<span class="'+(cheap?"ok":"no")+'">'+pe(c.pe)+calcMark(c)+'</span>';
     var res=p?'<span class="ok">'+L("선정","Pick")+'</span>':'<span class="no">'+score(c)+'/3</span>';
     h+='<tr class="'+(p&&!compact?"pick":"")+'" data-sym="'+esc(c.sym)+'">'
      +'<td class="n">'+c.capRank+'</td>'
@@ -454,6 +469,14 @@ function gapsNote(d){
   if(g.dupClass) out.push(L("같은 회사 다른 주식(우선주 등) 합침 ","Share classes merged: ")+g.dupClass);
   if(g.noIndustry) out.push(L("업종 분류 없음 ","No industry: ")+g.noIndustry);
   if(g.noQuote||g.unknownCurrency) out.push(L("시세·통화 정보 없음 ","No quote / currency: ")+((g.noQuote||0)+(g.unknownCurrency||0)));
+  var pf=g.peFill;
+  if(pf){
+    var rs=pf.tsRescue||{}, calc=(pf.calc||0)+(rs.calc||0), neg=(pf.neg||0)+(rs.neg||0);
+    var cc=d.co.filter(function(c){return c.peSrc==="calc";}), un=d.co.filter(function(c){return c.pe==null&&!c.peNeg;});
+    out.push(L("야후 PER 이 빈 종목 직접 계산(두 값이 15% 안에서 맞을 때만): 채움 ","Missing P/E computed when two figures agree within 15%: filled ")+calc+L(" · 적자 ",", loss ")+neg
+      +L(" (상위 100 중 "," (top-100: ")+cc.length+L("곳)",")")
+      +(un.length?L(" · 상위 100 중 비운 곳: ","; top-100 left blank: ")+esc(un.map(coName).join(", ")):""));
+  }
   if(d.skipped&&d.skipped.length) out.push(L("상위 100에서 뺀 종목 ","Excluded from top-100: ")+esc(d.skipped.map(function(s){return s.name+" ("+s.why+")";}).join(", ")));
   return '<ul class="notes" style="margin-top:14px">'+out.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ul>';
 }
@@ -470,9 +493,9 @@ function showDetail(sym){
         money(c.rev,d.currency)+" · "+L("상위 10% 기준 ","top-10% cut: ")+st.kRev+L("위 (","th (")+money(st.revCut,d.currency)+")")
    +chk(L("영업이익 순위","Op. income rank"),c.okOp,c.rOp==null?"–":c.rOp+" / "+st.nOp,
         money(c.op,d.currency)+" · "+L("상위 10% 기준 ","top-10% cut: ")+st.kOp+L("위 (","th (")+money(st.opCut,d.currency)+")")
-   +chk("PER",cheap,c.pe==null?(c.peNeg?L("적자","neg."):"–"):pe(c.pe),
+   +chk("PER",cheap,(c.pe==null?(c.peNeg?L("적자","neg."):"–"):pe(c.pe))+calcMark(c),
         L("업종 PER ","Industry P/E ")+"("+basisName(state.basis)+") "+pe(st[ak])+" · "+L("PER 있는 종목 ","peers with P/E ")+st.nPe
-        +'<div class="pevs">'+L("시총가중 ","cap-wtd ")+pe(st.peAgg)+" · "+L("평균 ","mean ")+pe(st.peMean)+" · "+L("중앙값 ","median ")+pe(st.peMedian)+'</div>')
+        +'<div class="pevs">'+L("시총가중 ","cap-wtd ")+pe(st.peAgg)+" · "+L("평균 ","mean ")+pe(st.peMean)+" · "+L("중앙값 ","median ")+pe(st.peMedian)+'</div>'+peNote(c))
    +'</div></div>';
   el.innerHTML=h;
 }

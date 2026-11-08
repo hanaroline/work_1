@@ -7,6 +7,14 @@ same country in the same Yahoo industry** (the ~145 fine-grained industries, not
   2. LTM operating income is in the industry's top 10%
   3. LTM PER is positive and below the industry average PER
 
+When the screener leaves PER empty (Hyundai Motor and ~30 other top-100 names), PER is computed
+here, but only when two independent figures agree (see fill_pe):
+  eps  = price / screener LTM diluted EPS        (this is how Yahoo builds peRatioLtm itself)
+  ni   = market cap / screener LTM net income
+  tsEps, tsNi = the same from Yahoo fundamentals-timeseries TTM values (top-100 only)
+The first available figure is used when another one has the same sign and, if positive, lies
+within 15% of it. Both negative -> loss-maker (no PER). Anything else stays blank and is listed.
+
 "Industry average PER" is reported three ways and the page lets the reader pick the basis:
   agg    = sum(market cap) / sum(market cap / PER) over members with PER > 0
            (cap-weighted, the usual "industry PER"; default)
@@ -69,7 +77,10 @@ MARKETS = {
 
 INCLUDE = ["ticker", "companyshortname", "intradaymarketcap", "industry", "sector",
            "totalrevenues.lasttwelvemonths", "operatingincome.lasttwelvemonths",
-           "peratio.lasttwelvemonths", "exchange"]
+           "peratio.lasttwelvemonths", "exchange",
+           "netepsdiluted.lasttwelvemonths", "netincomeis.lasttwelvemonths"]
+PE_TOL = 1.15       # max/min of two PER figures that count as agreeing
+PE_ORDER = ("eps", "ni", "tsEps", "tsNi")
 
 # not operating companies -- kept in their own industry population, never top-100 candidates
 NOT_COMPANY_IND = {"Shell Companies"}
@@ -178,6 +189,74 @@ def naver_name(code):
     return None
 
 
+def ts_ttm(sym, cur):
+    """Latest TTM diluted EPS and common net income from fundamentals-timeseries (None if absent)."""
+    now = int(time.time())
+    path = ("/ws/fundamentals-timeseries/v1/finance/timeseries/%s?type=trailingDilutedEPS,"
+            "trailingNetIncomeCommonStockholders&period1=%d&period2=%d" % (urllib.parse.quote(sym), now - 3 * 365 * 86400, now)
+            + ("&crumb=" + urllib.parse.quote(F.CRUMB) if F.CRUMB else ""))
+    out = {}
+    for attempt in range(2):
+        try:
+            j = F.yget(path)
+            break
+        except Exception:  # noqa: BLE001
+            time.sleep(1.5)
+    else:
+        return out
+    for res in ((j.get("timeseries") or {}).get("result") or []):
+        t = ((res.get("meta") or {}).get("type") or ["?"])[0]
+        vals = [v for v in (res.get(t) or []) if v and v.get("periodType") == "TTM"
+                and v.get("currencyCode") == cur and num((v.get("reportedValue") or {}).get("raw")) is not None]
+        if not vals:
+            continue
+        v = max(vals, key=lambda v: v.get("asOfDate") or "")
+        key = {"trailingDilutedEPS": "tsEps", "trailingNetIncomeCommonStockholders": "tsNi"}.get(t)
+        if key:
+            out[key] = (num(v["reportedValue"]["raw"]), v.get("asOfDate"))
+    return out
+
+
+def pe_cands(x):
+    """Signed PER figures {source: value} from what the row carries."""
+    c = {}
+    p, cap = x.get("price"), x.get("cap")
+    if p and x.get("eps"):
+        c["eps"] = p / x["eps"]
+    if cap and x.get("ni"):
+        c["ni"] = cap / x["ni"]
+    ts = x.get("ts") or {}
+    if p and (ts.get("tsEps") or (None,))[0]:
+        c["tsEps"] = p / ts["tsEps"][0]
+    if cap and (ts.get("tsNi") or (None,))[0]:
+        c["tsNi"] = cap / ts["tsNi"][0]
+    return c
+
+
+def fill_pe(x):
+    """Fill PER for a row Yahoo left empty. Returns 'calc' / 'neg' / 'conflict' / 'single' / 'none'."""
+    c = pe_cands(x)
+    x["peCands"] = {k: round(v, 2) for k, v in c.items()}
+    order = [k for k in PE_ORDER if k in c]
+    # cap / net income undercounts cap when share classes were merged -> never the figure we print
+    prim = [k for k in order if not (k in ("ni", "tsNi") and x.get("dup"))]
+    if not prim:
+        return "single" if order else "none"
+    k0 = prim[0]
+    v0 = c[k0]
+    for k in order:
+        if k == k0:
+            continue
+        v = c[k]
+        if v0 > 0 and v > 0 and max(v0, v) / min(v0, v) <= PE_TOL:
+            x["pe"], x["peSrc"], x["peChk"] = v0, "calc", {"by": k0, "x": k, "xv": round(v, 2)}
+            return "calc"
+        if v0 < 0 and v < 0:
+            x["peNeg"], x["peSrc"], x["peChk"] = True, "calc", {"by": k0, "x": k}
+            return "neg"
+    return "single" if len(order) == 1 else "conflict"
+
+
 def build(mk):
     m = MARKETS[mk]
     print("== %s: records sweep" % mk, flush=True)
@@ -228,6 +307,7 @@ def build(mk):
             continue
         cap = num(r.get("marketCap")) or num(q.get("marketCap"))
         pe = num(r.get("peRatioLtm"))
+        price = num(q.get("regularMarketPrice")) if q.get("currency") == m["cur"] else None
         row = {
             "sym": sym,
             "name": r.get("companyName") or q.get("longName") or q.get("shortName") or sym,
@@ -239,6 +319,10 @@ def build(mk):
             "op": num(r.get("operatingIncomeLtm")),
             "pe": pe if (pe is not None and pe > 0) else None,
             "peRaw": pe,
+            "peNeg": pe is not None and pe <= 0,
+            "peSrc": "yahoo" if pe is not None else None,
+            "price": price, "eps": num(r.get("netEpsDilutedLtm")), "ni": num(r.get("netIncomeIsLtm")),
+            "dup": False,
             "t": q.get("regularMarketTime"),
             "off": q.get("gmtOffSetMilliseconds"),
         }
@@ -251,38 +335,30 @@ def build(mk):
         prev = rows.get(key)
         if prev is not None:
             gaps["dupClass"] += 1
+            prev["dup"] = row["dup"] = True
             if (prev["cap"] or 0) >= (cap or 0):
                 continue
         rows[key] = row
     pop = list(rows.values())
     print("   population %d  gaps %s" % (len(pop), gaps), flush=True)
 
-    # ---- industry statistics over the whole population
+    # ---- check that price / screener EPS reproduces Yahoo's own PER where it has one
+    chk = [x["peRaw"] / (x["price"] / x["eps"]) for x in pop
+           if x["peRaw"] and x["peRaw"] > 0 and x["price"] and x["eps"] and x["eps"] > 0]
+    within = sum(1 for r_ in chk if abs(r_ - 1) <= 0.01)
+    gaps["peCheck"] = {"n": len(chk), "within1pct": within}
+    print("   PER check: price/EPS within 1%% of Yahoo PER on %d of %d rows" % (within, len(chk)), flush=True)
+
+    # ---- PER fill, whole population, screener figures only
+    fill = {"calc": 0, "neg": 0, "conflict": 0, "single": 0, "none": 0}
+    for x in pop:
+        if x["peRaw"] is None:
+            fill[fill_pe(x)] += 1
+    print("   PER fill (screener): %s" % fill, flush=True)
+
     by_ind = {}
     for x in pop:
         by_ind.setdefault(x["ind"], []).append(x)
-    ind_stats = {}
-    for ind, xs in by_ind.items():
-        revs = sorted([x["rev"] for x in xs if x["rev"] is not None], reverse=True)
-        ops = sorted([x["op"] for x in xs if x["op"] is not None], reverse=True)
-        pes = [x for x in xs if x["pe"] is not None and x["cap"]]
-        k_rev = max(1, math.ceil(len(revs) * SHARE)) if revs else None
-        k_op = max(1, math.ceil(len(ops) * SHARE)) if ops else None
-        st = {
-            "sec": xs[0]["sec"],
-            "n": len(xs), "nRev": len(revs), "nOp": len(ops), "nPe": len(pes),
-            "kRev": k_rev, "kOp": k_op,
-            "revCut": revs[k_rev - 1] if revs else None,
-            "opCut": ops[k_op - 1] if ops else None,
-            "peAgg": None, "peMean": None, "peMedian": None,
-        }
-        if pes:
-            pv = [x["pe"] for x in pes]
-            st["peMean"] = round(statistics.fmean(pv), 2)
-            st["peMedian"] = round(statistics.median(pv), 2)
-            earn = sum(x["cap"] / x["pe"] for x in pes)
-            st["peAgg"] = round(sum(x["cap"] for x in pes) / earn, 2) if earn > 0 else None
-        ind_stats[ind] = st
 
     def rank(x, field):
         v = x[field]
@@ -308,6 +384,44 @@ def build(mk):
             x["countryUnverified"] = (c == "?")
         top.append(x)
 
+    # ---- top-100 rows still without PER: add the timeseries TTM figures and try again
+    rescue = {"calc": 0, "neg": 0, "conflict": 0, "single": 0, "none": 0}
+    for x in top:
+        if x["peRaw"] is None and x["peSrc"] is None:
+            x["ts"] = ts_ttm(x["sym"], m["cur"])
+            time.sleep(0.25)
+            rescue[fill_pe(x)] += 1
+            fill_left = x["peSrc"] is None
+            print("   ts %s %s -> %s" % (x["sym"], x["peCands"], "blank" if fill_left else x["peSrc"]), flush=True)
+    print("   PER fill (timeseries rescue, top-100): %s" % rescue, flush=True)
+    fill["tsRescue"] = rescue
+    gaps["peFill"] = fill
+
+    # ---- industry statistics over the whole population (after the fill, so computed PERs count)
+    ind_stats = {}
+    for ind, xs in by_ind.items():
+        revs = sorted([x["rev"] for x in xs if x["rev"] is not None], reverse=True)
+        ops = sorted([x["op"] for x in xs if x["op"] is not None], reverse=True)
+        pes = [x for x in xs if x["pe"] is not None and x["cap"]]
+        k_rev = max(1, math.ceil(len(revs) * SHARE)) if revs else None
+        k_op = max(1, math.ceil(len(ops) * SHARE)) if ops else None
+        st = {
+            "sec": xs[0]["sec"],
+            "n": len(xs), "nRev": len(revs), "nOp": len(ops), "nPe": len(pes),
+            "kRev": k_rev, "kOp": k_op,
+            "revCut": revs[k_rev - 1] if revs else None,
+            "opCut": ops[k_op - 1] if ops else None,
+            "peAgg": None, "peMean": None, "peMedian": None,
+        }
+        if pes:
+            pv = [x["pe"] for x in pes]
+            st["peMean"] = round(statistics.fmean(pv), 2)
+            st["peMedian"] = round(statistics.median(pv), 2)
+            earn = sum(x["cap"] / x["pe"] for x in pes)
+            st["peAgg"] = round(sum(x["cap"] for x in pes) / earn, 2) if earn > 0 else None
+        ind_stats[ind] = st
+
+
     if mk == "kr":
         got = 0
         for x in top:
@@ -329,13 +443,19 @@ def build(mk):
             "capRank": i, "sym": x["sym"], "name": x["name"], "nameKo": x["nameKo"],
             "ind": x["ind"], "sec": x["sec"], "ex": x["ex"],
             "cap": x["cap"], "rev": x["rev"], "op": x["op"], "pe": pe,
-            "peNeg": x["peRaw"] is not None and x["peRaw"] <= 0,
+            "peNeg": bool(x["peNeg"]), "peSrc": x["peSrc"],
             "rRev": rr, "rOp": ro,
             "okRev": rr is not None and rr <= st["kRev"],
             "okOp": ro is not None and ro <= st["kOp"],
             "cheap": {b: (pe is not None and st[k] is not None and pe < st[k])
                       for b, k in (("agg", "peAgg"), ("mean", "peMean"), ("median", "peMedian"))},
         }
+        if x["peSrc"] == "calc":
+            item["peChk"] = x["peChk"]
+        if x["peSrc"] is None and x.get("peCands"):
+            item["peCands"] = x["peCands"]
+        if x["peSrc"] is None and x.get("ts"):
+            item["tsAsOf"] = max(v[1] or "" for v in x["ts"].values())
         if x.get("countryUnverified"):
             item["countryUnverified"] = True
         co.append(item)
@@ -405,7 +525,8 @@ def main():
             print("!! %s failed: %s" % (mk, e), flush=True)
             rc = 1
     data["generated"] = datetime.now(KST).strftime("%Y-%m-%d %H:%M KST")
-    data["source"] = "Yahoo Finance screener (LTM revenue / operating income / PER, industry)"
+    data["source"] = ("Yahoo Finance screener (LTM revenue / operating income / PER, industry);"
+                      " missing PER computed from screener EPS / net income and fundamentals-timeseries TTM")
     data["rule"] = {"share": SHARE, "topN": TOP_N}
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     json.dump(data, open(OUT_JSON, "w", encoding="utf-8"), ensure_ascii=False, indent=0)
