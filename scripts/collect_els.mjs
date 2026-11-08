@@ -294,6 +294,15 @@ async function main() {
   const riskByName = {};
   for (const r of rendered.rows) if (r.grade) riskByName[r.name] = r.grade;
   console.log(`화면 렌더링 목록 ${rendered.count}건 / 위험등급 ${Object.keys(riskByName).length}건 확인`);
+  // 화면이 0건이면(새벽·주말 점검 등) 위험등급이 통째로 null 이 된다(2026-11-09 08:08).
+  // 등급은 상품마다 고정이므로 직전 화면 캡처의 등급을 이월한다.
+  if (!rendered.count) {
+    try {
+      const last = JSON.parse(await readFile('tools/discovery/rendered_list.json', 'utf8'));
+      for (const r of last.rows || []) if (r.grade && !riskByName[r.name]) riskByName[r.name] = r.grade;
+      console.log(`위험등급 ${Object.keys(riskByName).length}건을 직전 화면 캡처(${last.capturedAt})에서 이월`);
+    } catch { console.log('직전 화면 캡처가 없어 위험등급을 이월하지 못했습니다.'); }
+  }
 
   await browser.close();
 
