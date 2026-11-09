@@ -346,6 +346,7 @@ def build(mk, prev_top=()):
             why[sym] = "noIndustry (sector %s, rev %s)" % (r.get("sector"), r.get("totalRevenueLtm"))
             continue
         cap = num(r.get("marketCap")) or num(q.get("marketCap"))
+        cap_r, cap_q = num(r.get("marketCap")), num(q.get("marketCap"))
         pe = num(r.get("peRatioLtm"))
         price = num(q.get("regularMarketPrice")) if q.get("currency") == m["cur"] else None
         row = {
@@ -362,7 +363,7 @@ def build(mk, prev_top=()):
             "peNeg": pe is not None and pe <= 0,
             "peSrc": "yahoo" if pe is not None else None,
             "price": price, "eps": num(r.get("netEpsDilutedLtm")), "ni": num(r.get("netIncomeIsLtm")),
-            "dup": False,
+            "dup": False, "capR": cap_r, "capQ": cap_q,
             "t": q.get("regularMarketTime"),
             "off": q.get("gmtOffSetMilliseconds"),
         }
@@ -429,6 +430,12 @@ def build(mk, prev_top=()):
                 continue
             x["countryUnverified"] = (c == "?")
         top.append(x)
+    in_top = {x["sym"] for x in top}
+    pos = {x["sym"]: i for i, x in enumerate(ranked, 1)}
+    for x in pop:
+        if x["sym"] in prev_top and x["sym"] not in in_top:
+            print("   last top-100 %s out of top: cap %s (r %s, q %s) cap-rank %s"
+                  % (x["sym"], x["cap"], x.get("capR"), x.get("capQ"), pos.get(x["sym"])), flush=True)
 
     # ---- top-100 rows still without PER: add the timeseries TTM figures and try again
     rescue = {"calc": 0, "neg": 0, "conflict": 0, "single": 0, "none": 0}
