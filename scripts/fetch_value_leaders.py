@@ -389,6 +389,35 @@ def build(mk, prev_top=()):
             print("   last top-100 %s not in population: %s" % (t, why.get(t, "not returned")), flush=True)
     print("   population %d  gaps %s" % (len(pop), gaps), flush=True)
 
+    # ---- market cap missing: the screener returns marketCap 0 for some large names (KEPCO,
+    # Kweichow Moutai, Ping An ...) and the quotes pass has none. Ask v7 quote for them; if it
+    # still has no marketCap, use price x sharesOutstanding from that same quote.
+    nocap = [x for x in pop if not x["cap"]]
+    capfill = {"asked": len(nocap), "v7": 0, "calc": 0, "none": 0}
+    if nocap:
+        vq = v7_quotes([x["sym"] for x in nocap], m["lang"])
+        for x in nocap:
+            q = vq.get(x["sym"]) or {}
+            same = q.get("currency") == m["cur"]
+            mc = num(q.get("marketCap")) if same else None
+            px = num(q.get("regularMarketPrice")) if same else None
+            sh = num(q.get("sharesOutstanding"))
+            if mc and mc > 0:
+                x["cap"], x["capSrc"] = mc, "v7"
+                capfill["v7"] += 1
+            elif px and sh and px > 0 and sh > 0:
+                x["cap"], x["capSrc"] = px * sh, "calc"
+                capfill["calc"] += 1
+            else:
+                capfill["none"] += 1
+            if x["price"] is None and px:
+                x["price"] = px
+            if x["sym"] in prev_top:
+                print("   cap fill %s: v7 marketCap %s, price %s x shares %s -> %s"
+                      % (x["sym"], mc, px, sh, x["cap"]), flush=True)
+    gaps["capFill"] = capfill
+    print("   cap fill: %s" % capfill, flush=True)
+
     # ---- check that price / screener EPS reproduces Yahoo's own PER where it has one
     chk = [x["peRaw"] / (x["price"] / x["eps"]) for x in pop
            if x["peRaw"] and x["peRaw"] > 0 and x["price"] and x["eps"] and x["eps"] > 0]
@@ -510,6 +539,8 @@ def build(mk, prev_top=()):
         }
         if x["peSrc"] == "calc":
             item["peChk"] = x["peChk"]
+        if x.get("capSrc"):
+            item["capSrc"] = x["capSrc"]
         if x["peSrc"] is None and x.get("peCands"):
             item["peCands"] = x["peCands"]
         if x["peSrc"] is None and x.get("ts"):
