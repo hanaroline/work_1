@@ -1,14 +1,13 @@
-네이버 API 탐색 2026-11-08 10:19:43 KST
+네이버 API 탐색 2026-11-09 09:57:55 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
-    빈손 · 3165 bytes · 걸린 낱말 없음
-    응답 앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","symbolCode":"KOSPI","stockName":"코스피","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/
+    쓸모 · 3160 bytes · 걸린 낱말 ['상승']
     남김: data/market/raw/probe_00_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","symbolCode":"KOSPI","stockName":"코스피","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/logo/index/IndexKOSPI.svg","itemLogoPngUrl":"https://ssl.pstatic.net/imgstock/fn
 
 [internals] https://m.stock.naver.com/api/index/KOSDAQ/basic
-    빈손 · 3195 bytes · 걸린 낱말 없음
+    빈손 · 3193 bytes · 걸린 낱말 없음
     응답 앞머리: {"stockEndType":"index","itemCode":"KOSDAQ","reutersCode":"KOSDAQ","symbolCode":"KOSDAQ","stockName":"코스닥","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/re
     남김: data/market/raw/probe_01_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSDAQ","reutersCode":"KOSDAQ","symbolCode":"KOSDAQ","stockName":"코스닥","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/logo/index/IndexKOSDAQ.svg","itemLogoPngUrl":"https://ssl.pstatic.net/imgstoc
@@ -18,28 +17,28 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 16355 bytes · 걸린 낱말 ['riseCount', 'fallCount']
+    쓸모 · 16262 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
     남김: data/market/raw/probe_03_internals.txt
-    앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"5,383.80"},{"code":"openPrice","key":"시가","value":"5,263.26","compareToPreviousPrice":{"code":"5",
+    앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"5,059.69"},{"code":"openPrice","key":"시가","value":"5,034.20","compareToPreviousPrice":{"code":"5",
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/price?pageSize=5&page=1
-    쓸모 · 1284 bytes · 걸린 낱말 ['상승']
+    쓸모 · 1283 bytes · 걸린 낱말 ['상승']
     남김: data/market/raw/probe_04_internals.txt
-    앞머리: [{"localTradedAt":"2026-11-06","closePrice":"5,059.69","compareToPreviousClosePrice":"-324.11","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-6.02","openPrice":"5,263.26","highPrice":"5,269.10","low
+    앞머리: [{"localTradedAt":"2026-11-09","closePrice":"5,074.16","compareToPreviousClosePrice":"14.47","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"0.29","openPrice":"5,034.20","highPrice":"5,082.07","lowPric
 
 [sectors] https://m.stock.naver.com/api/stocks/industry
-    쓸모 · 2299 bytes · 걸린 낱말 ['changeRate']
+    쓸모 · 2264 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_05_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":329,"name":"도로와철도운송","totalCount":8,"changeRate":"5.73","riseCount":3,"fallCount":5,"steadyCount":0},{"no":271,"name":"레저용장비와제품","totalCount":13,"changeRate":"2.40","riseCount":4,"fallCount":8
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":305,"name":"항공사","totalCount":9,"changeRate":"3.81","riseCount":6,"fallCount":3,"steadyCount":0},{"no":332,"name":"문구류","totalCount":1,"changeRate":"3.61","riseCount":1,"fallCount":0,"steadyCo
 
 [sectors] https://api.stock.naver.com/industry
     실패 · 36 bytes · 걸린 낱말 없음
     응답 앞머리: HTTPError: HTTP Error 404: Not Found
 
 [sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
-    쓸모 · 8679 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 8649 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_07_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":329,"name":"도로와철도운송","totalCount":8,"changeRate":"5.73","riseCount":3,"fallCount":5,"steadyCount":0},{"no":271,"name":"레저용장비와제품","totalCount":13,"changeRate":"2.40","riseCount":4,"fallCount":8
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":305,"name":"항공사","totalCount":9,"changeRate":"3.81","riseCount":6,"fallCount":3,"steadyCount":0},{"no":332,"name":"문구류","totalCount":1,"changeRate":"3.61","riseCount":1,"fallCount":0,"steadyCo
 
 [money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
     실패 · 30 bytes · 걸린 낱말 없음
