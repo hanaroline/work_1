@@ -160,7 +160,8 @@ def verify(path):
     check("나6 여러 곳이 함께 본 종목", crowd_shown == crowd_re,
           "실린 %d건 · 다시 센 %d건" % (len(crowd_shown), len(crowd_re)))
 
-    mv_re = [r for r in todays if r.get("target_move")][:20]
+    # 자르지 않는다 — 실린 목록이 잘리면 여기서 걸려야 한다.
+    mv_re = [r for r in todays if r.get("target_move")]
     check("나7 목표주가 변경 건수", len(S["target_moves"]) == len(mv_re),
           "실린 %d · 다시 센 %d" % (len(S["target_moves"]), len(mv_re)))
     mv_bad = [m for m in S["target_moves"]
@@ -183,8 +184,10 @@ def verify(path):
         want.append("%d건으로 가장 많습니다" % top[1])
     for t in th_re[:3]:
         want.append("%s %d건" % (t["theme"], t["count"]))
-    ups = [m for m in S["target_moves"] if m["move"] == "상향"]
-    dns = [m for m in S["target_moves"] if m["move"] == "하향"]
+    # 실린 목록이 아니라 **다시 센 것**과 맞춘다 — 실린 목록이 잘려 있으면
+    # 문장도 같이 틀리므로, 실린 것끼리 맞추면 둘 다 틀린 채 통과한다.
+    ups = [r for r in mv_re if r["target_move"] == "상향"]
+    dns = [r for r in mv_re if r["target_move"] == "하향"]
     if ups:
         want.append("%d건 상향" % len(ups))
     if dns:

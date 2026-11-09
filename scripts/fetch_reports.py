@@ -1521,10 +1521,13 @@ def digest(reports, day):
     # 여러 증권사가 같은 날 같은 종목을 함께 다뤘다면 그날의 이야깃거리다.
     crowd = sorted((e for e in stocks.values() if e["count"] >= 2),
                    key=lambda e: -e["count"])[:12]
+    # 목표주가를 건드린 리포트는 **모두** 싣는다. 예전에는 20건에서 잘라
+    # 실적 시즌(11/9 판 23건)에 현대백화점 하향이 총평의 「N건 하향」과
+    # 화면 목록에서 함께 빠졌다. 하루 수십 건이라 잘라야 할 만큼 많지 않다.
     moves = [{"title": r["title"], "broker": r.get("broker"), "url": r["url"],
               "stock": (r.get("stock") or {}).get("name"),
               "target_price": r.get("target_price"), "move": r["target_move"]}
-             for r in base if r.get("target_move")][:20]
+             for r in base if r.get("target_move")]
     return {
         "report_date": day,
         "count_report_date": len(todays),
