@@ -477,6 +477,7 @@ function gapsNote(d){
       +L(" (상위 100 중 "," (top-100: ")+cc.length+L("곳)",")")
       +(un.length?L(" · 상위 100 중 비운 곳: ","; top-100 left blank: ")+esc(un.map(coName).join(", ")):""));
   }
+  if(g.capMissing&&g.capMissing.length) out.push('<b>'+L("야후가 시가총액을 비워 순위에 넣지 못한 종목(지난 상위 100): ","Yahoo returned no market cap, so not ranked (last run's top-100): ")+'</b>'+esc(g.capMissing.map(coName).join(", ")));
   if(d.skipped&&d.skipped.length) out.push(L("상위 100에서 뺀 종목 ","Excluded from top-100: ")+esc(d.skipped.map(function(s){return s.name+" ("+s.why+")";}).join(", ")));
   return '<ul class="notes" style="margin-top:14px">'+out.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ul>';
 }

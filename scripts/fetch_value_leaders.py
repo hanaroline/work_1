@@ -423,6 +423,10 @@ def build(mk, prev_top=()):
                 print("   cap fill %s: re-ask %s, v7 marketCap %s (v7 keys %d, currency %s) -> %s"
                       % (x["sym"], again.get(x["sym"]), mc, len(q), q.get("currency"), x["cap"]), flush=True)
     gaps["capFill"] = capfill
+    # last run's top-100 (and names already listed here last run) that Yahoo now gives no cap:
+    # they cannot be ranked, so they are listed on the page instead of silently disappearing.
+    gaps["capMissing"] = [{"sym": x["sym"], "name": x["name"], "nameKo": x["nameKo"], "rev": x["rev"]}
+                          for x in pop if not x["cap"] and x["sym"] in prev_top]
     print("   cap fill: %s" % capfill, flush=True)
 
     # ---- check that price / screener EPS reproduces Yahoo's own PER where it has one
@@ -630,7 +634,9 @@ def main():
     rc = 0
     for mk in mks:
         try:
-            prev = [c["sym"] for c in ((data.get("markets") or {}).get(mk) or {}).get("co", [])]
+            pm = (data.get("markets") or {}).get(mk) or {}
+            prev = ([c["sym"] for c in pm.get("co", [])]
+                    + [c["sym"] for c in (pm.get("gaps") or {}).get("capMissing", [])])
             data["markets"][mk] = build(mk, prev)
         except Exception as e:  # noqa: BLE001  keep the previous market data rather than write a half one
             print("!! %s failed: %s" % (mk, e), flush=True)
