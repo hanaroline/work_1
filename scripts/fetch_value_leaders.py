@@ -522,7 +522,7 @@ def build(mk, prev_top=()):
 
     if mk == "kr":
         got = 0
-        for x in top:
+        for x in top + gaps["capMissing"]:
             if x["nameKo"]:
                 continue
             nm = naver_name(x["sym"].split(".")[0])
