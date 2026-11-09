@@ -394,20 +394,34 @@ def build(mk, prev_top=()):
     # No price x sharesOutstanding fallback: for preferred / secondary lines sharesOutstanding is
     # the common count (USB-PA came out as a top-100 name), so a missing cap stays missing.
     nocap = [x for x in pop if not x["cap"]]
-    capfill = {"asked": len(nocap), "v7": 0, "none": 0}
+    capfill = {"asked": len(nocap), "screener": 0, "v7": 0, "none": 0}
     if nocap:
-        vq = v7_quotes([x["sym"] for x in nocap], m["lang"])
+        syms = [x["sym"] for x in nocap]
+        again = {}
+        for rec in (True, False):           # the same screener, asked by ticker (records, quotes)
+            for r_ in by_tickers(m, syms, rec):
+                v = r_.get("marketCap")
+                v = num(v.get("raw") if isinstance(v, dict) else v)
+                t = r_.get("ticker") if rec else r_.get("symbol")
+                if v and v > 0 and t and t not in again:
+                    again[t] = v
+        vq = v7_quotes([t for t in syms if t not in again], m["lang"])
+        shown = 0
         for x in nocap:
             q = vq.get(x["sym"]) or {}
-            same = q.get("currency") == m["cur"]
-            mc = num(q.get("marketCap")) if same else None
-            if mc and mc > 0:
+            mc = num(q.get("marketCap")) if q.get("currency") == m["cur"] else None
+            if again.get(x["sym"]):
+                x["cap"], x["capSrc"] = again[x["sym"]], "screener"
+                capfill["screener"] += 1
+            elif mc and mc > 0:
                 x["cap"], x["capSrc"] = mc, "v7"
                 capfill["v7"] += 1
             else:
                 capfill["none"] += 1
-            if x["sym"] in prev_top:
-                print("   cap fill %s: v7 marketCap %s -> %s" % (x["sym"], mc, x["cap"]), flush=True)
+            if x["sym"] in prev_top or (shown < 3 and q):
+                shown += 1
+                print("   cap fill %s: re-ask %s, v7 marketCap %s (v7 keys %d, currency %s) -> %s"
+                      % (x["sym"], again.get(x["sym"]), mc, len(q), q.get("currency"), x["cap"]), flush=True)
     gaps["capFill"] = capfill
     print("   cap fill: %s" % capfill, flush=True)
 
