@@ -1,11 +1,11 @@
-세션을 지닌 채 API 부르기 2026-11-11 00:31:59 KST
+세션을 지닌 채 API 부르기 2026-11-11 07:46:37 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 132835 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
-        HTTP 200 · 11593 bytes · JSON!
-        앞머리: {"content":[{"bizdate":"20261106","customerDeposit":"903342","customerDepositDiff":"18004","customerDepositDiffAbs":"18004","creditLoan":"279708","creditLoanDiff":"-3838","creditLoanDiffAbs":"3838","b
+        HTTP 200 · 11589 bytes · JSON!
+        앞머리: {"content":[{"bizdate":"20261109","customerDeposit":"882540","customerDepositDiff":"-20802","customerDepositDiffAbs":"20802","creditLoan":"276458","creditLoanDiff":"-3251","creditLoanDiffAbs":"3251","
         남김: data/market/raw/session_trendDeposit.json
     API https://stock.naver.com/api/domestic/market/trendDeposit/chart?startDate=20260801&endDate=20260911
         HTTP 200 · 22502 bytes · JSON!
@@ -16,23 +16,23 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 123592 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8821 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"018","officeHname":"이데일리","articleId":"0006407815","title":"16% 급락 뒤 반등한 알테오젠…美 약가 인하 전 '10억달러' 다 받을까[종목e슈]","datetime":"2026-11-11 00:02:20","type":"1","subcontent":"미국 약가 규
+        HTTP 200 · 8890 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"277","officeHname":"아시아경제","articleId":"0005840843","title":"상법개정에 '찬밥신세' 우선주 줄어들까[우선주 디스카운트]③","datetime":"2026-11-11 07:34:00","type":"1","subcontent":"미래에셋증권은 지난 6월17일 역대 
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8821 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"018","officeHname":"이데일리","articleId":"0006407815","title":"16% 급락 뒤 반등한 알테오젠…美 약가 인하 전 '10억달러' 다 받을까[종목e슈]","datetime":"2026-11-11 00:02:20","type":"1","subcontent":"미국 약가 규
+        HTTP 200 · 8890 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"277","officeHname":"아시아경제","articleId":"0005840843","title":"상법개정에 '찬밥신세' 우선주 줄어들까[우선주 디스카운트]③","datetime":"2026-11-11 07:34:00","type":"1","subcontent":"미래에셋증권은 지난 6월17일 역대 
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 130816 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26544 bytes · JSON!
+        HTTP 200 · 26567 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
-        HTTP 200 · 2411 bytes · JSON!
+        HTTP 200 · 2412 bytes · JSON!
         앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
@@ -40,7 +40,7 @@
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
-        HTTP 200 · 7371 bytes · JSON!
+        HTTP 200 · 7377 bytes · JSON!
         앞머리: [{"categoryType":"bond","stockExchangeType":null,"reutersCode":"US10YT=RR","symbolCode":null,"name":"미국 국채 10년","fullName":null,"nameEng":null,"itemLogoUrl":null,"itemLogoPngUrl":null,"delayTime":0,"d
         남김: data/market/raw/session_bond.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dminte
