@@ -141,13 +141,14 @@ dialog .db{padding:12px 16px 16px;max-height:75vh;overflow:auto}
         <input type="password" id="lPw" autocomplete="current-password" required>
         <div class="row" style="margin-top:12px"><button class="btn primary grow" type="submit">입장</button></div>
         <div class="msg err" id="loginMsg" role="alert"></div>
+        <p class="s" style="margin-top:10px">한 번 들어오면 이 기기에서는 다음부터 바로 열립니다(로그아웃하기 전까지).</p>
       </form>
       <form id="joinForm" class="hidden" autocomplete="off">
         <label class="f" for="jName">이름 (관리자가 등록한 그대로)</label>
         <input type="text" id="jName" autocomplete="username" required>
         <label class="f" for="jCode">초대 코드 (8자리)</label>
         <input type="text" id="jCode" autocomplete="one-time-code" required style="text-transform:uppercase;letter-spacing:2px">
-        <label class="f" for="jPw">새 비밀번호 (8자 이상)</label>
+        <label class="f" for="jPw">새 비밀번호 (8자 이상, 영문+숫자, 이름 넣지 않기)</label>
         <input type="password" id="jPw" autocomplete="new-password" minlength="8" required>
         <label class="f" for="jPw2">새 비밀번호 확인</label>
         <input type="password" id="jPw2" autocomplete="new-password" minlength="8" required>
@@ -202,12 +203,17 @@ dialog .db{padding:12px 16px 16px;max-height:75vh;overflow:auto}
   <div class="db">
     <form id="pwForm">
       <label class="f" for="pOld">지금 비밀번호</label><input type="password" id="pOld" autocomplete="current-password" required>
-      <label class="f" for="pNew">새 비밀번호 (8자 이상)</label><input type="password" id="pNew" autocomplete="new-password" minlength="8" required>
+      <label class="f" for="pNew">새 비밀번호 (8자 이상, 영문+숫자)</label><input type="password" id="pNew" autocomplete="new-password" minlength="8" required>
       <div class="row" style="margin-top:10px"><button class="btn" type="submit">비밀번호 바꾸기</button></div>
       <div class="msg" id="pwMsg" role="status"></div>
     </form>
     <hr style="border:0;border-top:1px solid var(--line);margin:14px 0">
-    <button class="btn" type="button" id="logoutBtn">로그아웃</button>
+    <p class="s" style="margin:0 0 8px">이 기기는 열 때마다 로그인이 이어집니다. 휴대폰을 잃어버렸다면 아래로 다른 기기를 모두 내보내세요.</p>
+    <div class="row" style="gap:6px;flex-wrap:wrap">
+      <button class="btn" type="button" id="logoutOthersBtn">다른 기기 모두 로그아웃</button>
+      <button class="btn" type="button" id="logoutBtn">이 기기 로그아웃</button>
+    </div>
+    <div class="msg" id="sessMsg" role="status"></div>
   </div>
 </dialog>
 
@@ -307,6 +313,7 @@ $("#joinForm").onsubmit = async ev => {
 
 async function boot() {
   const r = await api("/api/me");
+  if (r.invite_label) state.inviteLabel = r.invite_label;
   if (!r.user) { showAuth(); if (location.hash.startsWith("#join")) setTab(true); return; }
   state.me = r.user; state.cats = r.categories || [];
   $("#authView").classList.add("hidden");
@@ -567,7 +574,12 @@ function stopPolling() { clearTimeout(state.polling); }
 document.addEventListener("visibilitychange", () => { if (!document.hidden && state.me) { loadFeed(); } });
 
 // ── 계정 ──
-$("#menuBtn").onclick = () => { $("#pwMsg").textContent = ""; $("#acctDlg").showModal(); };
+$("#menuBtn").onclick = () => { $("#pwMsg").textContent = $("#sessMsg").textContent = ""; $("#acctDlg").showModal(); };
+$("#logoutOthersBtn").onclick = async () => {
+  if (!confirm("지금 이 기기만 남기고 다른 모든 기기에서 로그아웃할까요?")) return;
+  try { const r = await api("/api/logout-others", { method: "POST" }); $("#sessMsg").textContent = `다른 기기 ${r.removed}곳을 로그아웃했습니다.`; }
+  catch (e) { $("#sessMsg").textContent = e.message; }
+};
 $("#logoutBtn").onclick = async () => { await api("/api/logout", { method: "POST" }).catch(() => {}); $("#acctDlg").close(); showAuth(); };
 $("#pwForm").onsubmit = async ev => {
   ev.preventDefault();
@@ -577,15 +589,16 @@ $("#pwForm").onsubmit = async ev => {
 
 // ── 관리 ──
 $("#adminBtn").onclick = async () => { $("#invOut").textContent = ""; await loadAdmin(); $("#adminDlg").showModal(); };
-function showCode(name, code) {
+function showCode(name, code, valid) {
+  valid = valid || state.inviteLabel || "3일";
   const box = $("#invOut"); box.textContent = "";
-  const msg = `[${document.title}] ${name} 님 초대 코드: ${code}\n주소: ${location.origin}/#join\n7일 안에 이름과 이 코드로 처음 입장해 비밀번호를 정하세요.`;
+  const msg = `[${document.title}] ${name} 님 초대 코드: ${code}\n주소: ${location.origin}/#join\n${valid} 안에 이름과 이 코드로 처음 입장해 비밀번호를 정하세요(한 번만 쓸 수 있고, 5번 틀리면 무효).\n한 번 들어오면 그 기기에서는 다음부터 바로 열립니다.`;
   box.append(h("div", { class: "note" }, h("div", { text: `${name} 님 코드 (지금 한 번만 보입니다)` }), h("div", { class: "code", text: code }),
     h("button", { class: "btn small", type: "button", text: "안내문 복사", onclick: () => copyText(msg) })));
 }
 $("#invForm").onsubmit = async ev => {
   ev.preventDefault();
-  try { const r = await api("/api/admin/invites", { method: "POST", body: { name: $("#invName").value, role: $("#invRole").value } }); showCode(r.name, r.code); $("#invName").value = ""; loadAdmin(); }
+  try { const r = await api("/api/admin/invites", { method: "POST", body: { name: $("#invName").value, role: $("#invRole").value } }); showCode(r.name, r.code, r.valid); $("#invName").value = ""; loadAdmin(); }
   catch (e) { toast(e.message); }
 };
 async function loadAdmin() {
@@ -601,7 +614,7 @@ async function loadAdmin() {
   ul.append(h("table", {}, h("thead", {}, h("tr", {}, ["이름", "권한", "글", "최근 접속", ""].map(t => h("th", { text: t })))),
     h("tbody", {}, r.users.map(u => {
       const self = u.id === state.me.id;
-      const act = (body, msg) => async () => { if (msg && !confirm(msg)) return; try { const x = await api("/api/admin/users/" + u.id, { method: "POST", body }); if (x.code) showCode(x.name, x.code); loadAdmin(); } catch (e) { toast(e.message); } };
+      const act = (body, msg) => async () => { if (msg && !confirm(msg)) return; try { const x = await api("/api/admin/users/" + u.id, { method: "POST", body }); if (x.code) showCode(x.name, x.code, x.valid); loadAdmin(); } catch (e) { toast(e.message); } };
       return h("tr", { style: u.active ? "" : "opacity:.5" }, h("td", { text: u.name + (u.active ? "" : " (정지)") }), h("td", { text: u.role === "admin" ? "관리자" : "직원" }),
         h("td", { text: u.posts }), h("td", { text: u.last_login ? ago(u.last_login) : "-" }),
         h("td", { class: "row", style: "gap:4px" },

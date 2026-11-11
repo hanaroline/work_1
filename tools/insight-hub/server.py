@@ -57,8 +57,13 @@ ANTHROPIC_VERSION = "2026-10-21"
 ANTHROPIC_BASE = os.environ.get("ANTHROPIC_BASE_URL", "https://api.anthropic.com").rstrip("/")
 GEMINI_BASE = os.environ.get("INSIGHT_GEMINI_BASE_URL", "https://generativelanguage.googleapis.com").rstrip("/")
 
-SESSION_DAYS = 30
-INVITE_DAYS = 7
+# 한 번 들어온 기기는 쓰는 동안 계속 로그인 상태가 이어진다(쓸 때마다 기한이 다시 늘어남).
+# 이 기간 동안 한 번도 열지 않은 기기만 다시 비밀번호를 묻는다.
+SESSION_DAYS = max(1, int(os.environ.get("INSIGHT_SESSION_DAYS", "180")))
+SESSION_RENEW_SEC = 86400            # 기한 연장은 하루에 한 번만 기록한다(매 요청마다 쓰지 않음)
+# 첫 가입은 엄격하게: 초대 코드는 짧게 살고, 그 이름으로 5번 틀리면 코드가 무효가 된다.
+INVITE_HOURS = max(1, int(os.environ.get("INSIGHT_INVITE_HOURS", "72")))
+INVITE_MAX_FAIL = 5
 MAX_UPLOAD = 20 * 1024 * 1024        # 첨부 한 건 상한
 MAX_FETCH = 20 * 1024 * 1024         # 링크에서 받아 올 상한
 MAX_TEXT_CHARS = 150_000             # AI에 넘길 본문 상한 — 넘으면 화면에 그 사실을 적는다
@@ -102,7 +107,8 @@ CREATE TABLE IF NOT EXISTS invites (
   created_by INTEGER,
   created_at INTEGER NOT NULL,
   expires_at INTEGER NOT NULL,
-  used_at INTEGER
+  used_at INTEGER,
+  fails INTEGER NOT NULL DEFAULT 0                -- 이 초대에 틀린 코드를 넣은 횟수
 );
 CREATE TABLE IF NOT EXISTS sessions (
   token_hash TEXT PRIMARY KEY,
@@ -171,6 +177,9 @@ def db() -> sqlite3.Connection:
         conn.execute("PRAGMA journal_mode=WAL")
         conn.execute("PRAGMA foreign_keys=ON")
         conn.executescript(SCHEMA)
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(invites)")}
+        if "fails" not in cols:  # 이전 판 DB 이어 쓰기
+            conn.execute("ALTER TABLE invites ADD COLUMN fails INTEGER NOT NULL DEFAULT 0")
         _db = conn
     return _db
 
@@ -230,9 +239,32 @@ def new_invite(name: str, role: str = "member", created_by: int | None = None) -
     x("UPDATE invites SET used_at=? WHERE name=? AND used_at IS NULL", (now(), name))
     x(
         "INSERT INTO invites(name, code_hash, role, created_by, created_at, expires_at) VALUES (?,?,?,?,?,?)",
-        (name, sha(code), role, created_by, now(), now() + INVITE_DAYS * 86400),
+        (name, sha(code), role, created_by, now(), now() + INVITE_HOURS * 3600),
     )
     return code
+
+
+def invite_label() -> str:
+    return f"{INVITE_HOURS // 24}일" if INVITE_HOURS % 24 == 0 else f"{INVITE_HOURS}시간"
+
+
+WEAK_PASSWORDS = {"password", "password1", "qwer1234", "qwerty123", "abcd1234", "asdf1234", "1q2w3e4r",
+                  "1q2w3e4r5t", "a1234567", "a12345678", "zxcv1234", "test1234", "admin123", "miraeasset1"}
+
+
+def password_problem(pw: str, name: str) -> str | None:
+    """비밀번호 규칙: 8자 이상, 영문과 숫자를 모두, 이름이 들어가지 않게, 흔한 것은 거절."""
+    if len(pw) < 8:
+        return "비밀번호는 8자 이상이어야 합니다"
+    if len(pw) > 128:
+        return "비밀번호가 너무 깁니다"
+    if not re.search(r"[A-Za-z]", pw) or not re.search(r"[0-9]", pw):
+        return "비밀번호에 영문과 숫자를 모두 넣어 주세요"
+    if name and name.lower() in pw.lower():
+        return "비밀번호에 이름을 넣을 수 없습니다"
+    if pw.lower() in WEAK_PASSWORDS or len(set(pw)) < 4:
+        return "너무 흔하거나 단순한 비밀번호입니다"
+    return None
 
 
 def login_blocked(key: str) -> bool:
@@ -789,6 +821,9 @@ class Handler(BaseHTTPRequestHandler):
         return isinstance(self.connection, ssl.SSLSocket) or os.environ.get("INSIGHT_COOKIE_SECURE") == "1"
 
     def send_json(self, code: int, obj, cookie: str | None = None) -> None:
+        if cookie is None:
+            cookie = getattr(self, "_renew_cookie", None)
+        self._renew_cookie = None
         body = json.dumps(obj, ensure_ascii=False).encode()
         self.send_response(code)
         self.send_header("Content-Type", "application/json; charset=utf-8")
@@ -823,13 +858,26 @@ class Handler(BaseHTTPRequestHandler):
             raise HTTPError_(400, "요청 형식이 잘못되었습니다")
         return d
 
-    def current_user(self):
-        c = SimpleCookie(self.headers.get("Cookie", ""))
+    def session_token(self) -> str | None:
+        try:
+            c = SimpleCookie(self.headers.get("Cookie", ""))
+        except Exception:
+            return None
         tok = c.get("ih_session")
+        return tok.value if tok and tok.value else None
+
+    def current_user(self):
+        tok = self.session_token()
         if not tok:
             return None
-        row = q("SELECT u.* FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>? AND u.active=1",
-                (sha(tok.value), now()), one=True)
+        th = sha(tok)
+        row = q("SELECT u.*, s.expires_at AS s_exp FROM sessions s JOIN users u ON u.id=s.user_id "
+                "WHERE s.token_hash=? AND s.expires_at>? AND u.active=1", (th, now()), one=True)
+        if row and row["s_exp"] < now() + SESSION_DAYS * 86400 - SESSION_RENEW_SEC:
+            # 쓰는 기기는 기한을 다시 늘리고 쿠키도 새로 준다 → 앱을 누르면 바로 피드
+            x("UPDATE sessions SET expires_at=? WHERE token_hash=?", (now() + SESSION_DAYS * 86400, th))
+            x("UPDATE users SET last_login=? WHERE id=?", (now(), row["id"]))
+            self._renew_cookie = self.cookie(tok, SESSION_DAYS * 86400)
         return row
 
     def need_user(self, admin=False):
@@ -864,6 +912,7 @@ class Handler(BaseHTTPRequestHandler):
         parts = urllib.parse.urlsplit(self.path)
         path = parts.path
         qs = urllib.parse.parse_qs(parts.query)
+        self._renew_cookie = None
         try:
             if method == "GET" and path in STATIC_FILES:
                 return self.static(*STATIC_FILES[path])
@@ -913,9 +962,9 @@ class Handler(BaseHTTPRequestHandler):
     def api_me(self, qs):
         u = self.current_user()
         if not u:
-            return self.send_json(200, {"user": None, "center": CENTER_NAME})
+            return self.send_json(200, {"user": None, "center": CENTER_NAME, "invite_label": invite_label()})
         self.send_json(200, {"user": {"id": u["id"], "name": u["name"], "role": u["role"]}, "center": CENTER_NAME,
-                             "categories": CATEGORIES})
+                             "categories": CATEGORIES, "session_days": SESSION_DAYS, "invite_label": invite_label()})
 
     def api_login(self, qs):
         d = self.body_json()
@@ -940,13 +989,23 @@ class Handler(BaseHTTPRequestHandler):
         key = f"join|{self.client_ip()}"
         if login_blocked(key):
             raise HTTPError_(429, "여러 번 틀려 15분간 막혔습니다")
-        if len(pw) < 8:
-            raise HTTPError_(400, "비밀번호는 8자 이상이어야 합니다")
-        inv = q("SELECT * FROM invites WHERE name=? AND code_hash=? AND used_at IS NULL AND expires_at>?",
-                (name, sha(code), now()), one=True)
-        if not inv:
+        if not name or not code:
+            raise HTTPError_(400, "이름과 초대 코드를 넣어 주세요")
+        bad = password_problem(pw, name)
+        if bad:
+            raise HTTPError_(400, bad)
+        live = q("SELECT * FROM invites WHERE name=? AND used_at IS NULL AND expires_at>? ORDER BY id DESC",
+                 (name, now()), one=True)
+        if not live or not hmac.compare_digest(live["code_hash"], sha(code)):
             login_failed(key)
-            raise HTTPError_(401, "이름과 초대 코드가 맞지 않거나, 이미 쓰였거나 기한(7일)이 지났습니다")
+            if live:
+                # 이 이름의 코드를 계속 틀리면 코드 자체를 없앤다 → 관리자에게 새 코드를 받아야 함
+                x("UPDATE invites SET fails=fails+1 WHERE id=?", (live["id"],))
+                if live["fails"] + 1 >= INVITE_MAX_FAIL:
+                    x("UPDATE invites SET used_at=? WHERE id=?", (now(), live["id"]))
+                    raise HTTPError_(401, f"초대 코드를 {INVITE_MAX_FAIL}번 틀려 코드가 무효가 되었습니다. 관리자에게 새 코드를 받으세요.")
+            raise HTTPError_(401, f"이름과 초대 코드가 맞지 않거나, 이미 쓰였거나 기한({invite_label()})이 지났습니다")
+        inv = live
         with _db_lock:
             x("UPDATE invites SET used_at=? WHERE id=?", (now(), inv["id"]))
             u = q("SELECT * FROM users WHERE name=?", (name,), one=True)
@@ -961,18 +1020,27 @@ class Handler(BaseHTTPRequestHandler):
         self.send_json(200, {"ok": True}, cookie=self.cookie(tok, SESSION_DAYS * 86400))
 
     def api_logout(self, qs):
-        c = SimpleCookie(self.headers.get("Cookie", ""))
-        if c.get("ih_session"):
-            x("DELETE FROM sessions WHERE token_hash=?", (sha(c["ih_session"].value),))
+        tok = self.session_token()
+        if tok:
+            x("DELETE FROM sessions WHERE token_hash=?", (sha(tok),))
         self.send_json(200, {"ok": True}, cookie=self.cookie("", 0))
+
+    def api_logout_others(self, qs):
+        """휴대폰을 잃어버렸을 때 등: 지금 이 기기만 남기고 모든 기기를 로그아웃."""
+        u = self.need_user()
+        n = q("SELECT COUNT(*) AS n FROM sessions WHERE user_id=? AND token_hash<>?",
+              (u["id"], sha(self.session_token() or "")), one=True)["n"]
+        x("DELETE FROM sessions WHERE user_id=? AND token_hash<>?", (u["id"], sha(self.session_token() or "")))
+        self.send_json(200, {"ok": True, "removed": n})
 
     def api_password(self, qs):
         u = self.need_user()
         d = self.body_json()
         if not check_pw(d.get("old", ""), u["pw_hash"]):
             raise HTTPError_(401, "지금 비밀번호가 맞지 않습니다")
-        if len(d.get("new", "")) < 8:
-            raise HTTPError_(400, "비밀번호는 8자 이상이어야 합니다")
+        bad = password_problem(d.get("new", ""), u["name"])
+        if bad:
+            raise HTTPError_(400, bad)
         x("UPDATE users SET pw_hash=? WHERE id=?", (hash_pw(d["new"]), u["id"]))
         x("DELETE FROM sessions WHERE user_id=?", (u["id"],))
         tok = new_session(u["id"])
@@ -1198,7 +1266,7 @@ class Handler(BaseHTTPRequestHandler):
             code = new_invite(d.get("name", ""), role, me["id"])
         except ValueError as e:
             raise HTTPError_(400, str(e))
-        self.send_json(201, {"name": norm_name(d.get("name", "")), "code": code, "days": INVITE_DAYS})
+        self.send_json(201, {"name": norm_name(d.get("name", "")), "code": code, "valid": invite_label()})
 
     def api_admin_user(self, qs, uid):
         me = self.need_user(admin=True)
@@ -1218,6 +1286,7 @@ class Handler(BaseHTTPRequestHandler):
         if d.get("reset"):
             out["code"] = new_invite(u["name"], u["role"], me["id"])
             out["name"] = u["name"]
+            out["valid"] = invite_label()
         self.send_json(200, out)
 
     def api_admin_invite_delete(self, qs, iid):
@@ -1232,6 +1301,7 @@ ROUTES = {
     ("POST", r"/api/join"): Handler.api_join,
     ("POST", r"/api/logout"): Handler.api_logout,
     ("POST", r"/api/password"): Handler.api_password,
+    ("POST", r"/api/logout-others"): Handler.api_logout_others,
     ("GET", r"/api/posts"): Handler.api_posts,
     ("POST", r"/api/posts"): Handler.api_post_create,
     ("GET", r"/api/posts/(\d+)"): Handler.api_post_get,
@@ -1276,7 +1346,7 @@ def cmd_serve(a) -> None:
 def cmd_invite(a) -> None:
     db()
     code = new_invite(a.name, "admin" if a.admin else "member")
-    print(f"이름: {norm_name(a.name)}  초대 코드: {code}  ({INVITE_DAYS}일 안에 한 번만 쓸 수 있음"
+    print(f"이름: {norm_name(a.name)}  초대 코드: {code}  ({invite_label()} 안에 한 번만 쓸 수 있음"
           f"{', 관리자' if a.admin else ''})")
 
 
