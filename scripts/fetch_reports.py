@@ -1139,9 +1139,18 @@ def tp_move(text):
 _SRC_PRICE = re.compile(r"(\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)\s*(만|억)?\s*원")
 
 
+# 옛 값임을 밝힌 가격. 「목표주가 35만원(기존 28만원)으로 상향」처럼 옛 값이
+# **뒤 괄호**에 오면 「마지막 것」 규칙이 옛 값을 집는다 — 11/11 미래에셋
+# 셀트리온이 그렇게 맞는 네이버 칸(35만)을 28만으로 덮었다. 「기존·종전·
+# 직전·이전」 바로 뒤의 가격은 지금 목표주가 후보에서 뺀다.
+_SRC_OLD = re.compile(r"(?:기존|종전|직전|이전)\s*(?:목표\s*주가\s*)?$")
+
+
 def src_price(src):
     """근거 문구(「목표주가 16만원 유지」)가 적은 목표주가. 없으면 None."""
-    ms = list(_SRC_PRICE.finditer(src or ""))
+    src = src or ""
+    ms = [m for m in _SRC_PRICE.finditer(src)
+          if not _SRC_OLD.search(src[max(0, m.start() - 12):m.start()])]
     if not ms:
         return None
     m = ms[-1]
