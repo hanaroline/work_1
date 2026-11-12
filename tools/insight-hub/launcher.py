@@ -6,6 +6,7 @@
 
   serve   API 키 확인(없으면 한 번 물어 이 PC 사용자 환경변수에 저장) → 첫 관리자가 없으면
           초대 코드 발급 → 비어 있는 포트로 서버 시작 → 브라우저 열기 → 같은 망 접속 주소 안내
+          → cloudflared 가 곁에 있으면 휴대폰용 공개 HTTPS 주소(https://….trycloudflare.com)를 연다
   invite  직원 초대 코드(또는 비밀번호 재설정 코드) 발급
 
 키는 저장소 파일이나 이 폴더에 쓰지 않습니다. 윈도우에서는 `setx`(사용자 환경변수)에,
@@ -15,6 +16,8 @@ from __future__ import annotations
 
 import getpass
 import os
+import re
+import shutil
 import socket
 import subprocess
 import sys
@@ -92,6 +95,62 @@ def lan_ips() -> list[str]:
     return sorted(i for i in ips if not i.startswith("127."))
 
 
+TUNNEL_RE = re.compile(r"https://[a-z0-9-]+\.trycloudflare\.com")
+
+
+def find_cloudflared() -> str | None:
+    here = os.path.dirname(os.path.abspath(__file__))
+    for cand in (os.path.join(here, "..", "cloudflared.exe"), os.path.join(here, "cloudflared.exe"),
+                 os.path.join(here, "..", "cloudflared"), os.path.join(here, "cloudflared")):
+        if os.path.isfile(cand):
+            return os.path.abspath(cand)
+    return shutil.which("cloudflared")
+
+
+def start_tunnel(port: int, data_dir) -> None:
+    """휴대폰이 어디서든(회사 망 밖, LTE) 들어오도록 Cloudflare 임시 터널을 연다.
+
+    계정·공유기 설정이 필요 없고 HTTPS 라서 휴대폰에 '앱 설치'가 된다. 다만 주소가 켤 때마다
+    바뀐다 — 새 주소는 창에 찍고 데이터 폴더의 휴대폰-접속주소.txt 에도 적는다.
+    """
+    exe = find_cloudflared()
+    if not exe:
+        print("  (휴대폰 공개 주소 없음 — cloudflared 가 없어 같은 망에서만 들어올 수 있습니다)")
+        return
+    cmd = [exe, "tunnel", "--no-autoupdate", "--url", f"http://localhost:{port}"]
+    try:
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                             encoding="utf-8", errors="replace")
+    except OSError as e:
+        print(f"  (휴대폰 공개 주소를 열지 못함: {e})")
+        return
+
+    def pump():
+        shown = False
+        for line in p.stdout:  # 끝까지 읽어 줘야 cloudflared 가 막히지 않는다
+            m = None if shown else TUNNEL_RE.search(line)
+            if m:
+                shown = True
+                url = m.group(0) + "/"
+                try:
+                    (data_dir / "휴대폰-접속주소.txt").write_text(url + "\n", encoding="utf-8")
+                except OSError:
+                    pass
+                print("\n" + "=" * 60)
+                print(f"  휴대폰 접속 주소 : {url}")
+                print(f"  직원 가입 주소   : {url}#join")
+                print("  이 주소를 메신저로 보내면 직원이 휴대폰에서 열고")
+                print("  [홈 화면에 추가]/[앱 설치] 로 앱처럼 깔아 씁니다.")
+                print("  ※ 이 창을 다시 켜면 주소가 바뀝니다 — 그때 새 주소를 다시 보내 주세요.")
+                print("=" * 60 + "\n")
+        if not shown:
+            print("  (휴대폰 공개 주소를 받지 못했습니다 — 인터넷 연결이나 회사 방화벽을 확인하세요)")
+
+    threading.Thread(target=pump, daemon=True).start()
+    import atexit
+    atexit.register(lambda: p.poll() is None and p.terminate())
+
+
 def first_admin(server) -> bool:
     """사용자도, 살아 있는 초대 코드도 없으면 첫 관리자 코드를 만든다. 만들었으면 True."""
     server.db()
@@ -141,6 +200,9 @@ def cmd_serve(port: int) -> None:
 
     if os.environ.get("INSIGHT_NO_BROWSER") != "1":
         threading.Thread(target=open_browser, daemon=True).start()
+    if os.environ.get("INSIGHT_TUNNEL", "1") != "0":
+        print("휴대폰용 공개 주소를 여는 중… (10초쯤 걸립니다)")
+        start_tunnel(port, server.DATA_DIR)
     server.main(["serve", "--host", "0.0.0.0", "--port", str(port)])
 
 

@@ -799,6 +799,8 @@ STATIC_FILES = {
     "/manifest.webmanifest": ("manifest.webmanifest", "application/manifest+json"),
     "/sw.js": ("sw.js", "text/javascript; charset=utf-8"),
     "/icon.svg": ("icon.svg", "image/svg+xml"),
+    "/icon-192.png": ("icon-192.png", "image/png"),
+    "/icon-512.png": ("icon-512.png", "image/png"),
 }
 
 
@@ -810,15 +812,25 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         sys.stderr.write("%s %s\n" % (time.strftime("%m-%d %H:%M:%S"), fmt % args))
 
+    def via_local_tunnel(self) -> bool:
+        """같은 PC의 터널(cloudflared)이 넘겨준 요청인가 — 루프백에서 왔고 HTTPS 표시가 붙어 있다."""
+        return (self.client_address[0] in ("127.0.0.1", "::1")
+                and self.headers.get("X-Forwarded-Proto", "").lower() == "https")
+
     def client_ip(self) -> str:
-        if os.environ.get("INSIGHT_TRUST_PROXY") == "1":
+        if self.via_local_tunnel():
+            cf = self.headers.get("Cf-Connecting-Ip", "").strip()
+            if cf:
+                return cf
+        if os.environ.get("INSIGHT_TRUST_PROXY") == "1" or self.via_local_tunnel():
             fwd = self.headers.get("X-Forwarded-For", "").split(",")[0].strip()
             if fwd:
                 return fwd
         return self.client_address[0]
 
     def secure(self) -> bool:
-        return isinstance(self.connection, ssl.SSLSocket) or os.environ.get("INSIGHT_COOKIE_SECURE") == "1"
+        return (isinstance(self.connection, ssl.SSLSocket) or os.environ.get("INSIGHT_COOKIE_SECURE") == "1"
+                or self.via_local_tunnel())
 
     def send_json(self, code: int, obj, cookie: str | None = None) -> None:
         if cookie is None:

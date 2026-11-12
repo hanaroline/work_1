@@ -5,7 +5,8 @@
 x64)의 tools/ 폴더를 통째로 함께 넣는다. 표준 라이브러리만 쓴다.
 
   python3 scripts/build_insight_hub_windows.py --nupkg python.3.13.17.nupkg --out dist/
-  python3 scripts/build_insight_hub_windows.py --out dist/     # NuGet 에서 받아 옴
+  python3 scripts/build_insight_hub_windows.py --out dist/     # NuGet·GitHub 에서 받아 옴
+  --cloudflared cloudflared-windows-amd64.exe  미리 받아 둔 터널 프로그램 (--no-tunnel 이면 넣지 않음)
 
 결과: <out>/CenterInsight-windows.zip  (API 키는 넣지 않는다 — 처음 실행 때 PC에서 묻는다)
 """
@@ -22,6 +23,8 @@ ROOT = Path(__file__).resolve().parent.parent
 APP = ROOT / "tools" / "insight-hub"
 PY_VERSION = "3.13.17"
 NUGET = "https://api.nuget.org/v3-flatcontainer/python/{v}/python.{v}.nupkg"
+# 휴대폰이 어디서든 HTTPS 로 들어오게 하는 Cloudflare 터널 프로그램(공식 배포본). 꾸러미에 함께 넣는다.
+CLOUDFLARED = "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe"
 TOP = "CenterInsight"
 
 # 배치 파일은 ASCII 만 쓴다(cmd 가 UTF-8 한글 줄을 잘못 읽는 일이 있어서). 안내 문구는 파이썬이 찍는다.
@@ -57,12 +60,21 @@ README = """센터 인사이트 — 윈도우용 실행 꾸러미
    - 키는 이 PC 사용자 환경변수(setx)에 저장되어 다음부터 묻지 않습니다.
      이 폴더나 zip 에는 키가 들어가지 않습니다.
 
-2. 직원 초대
-   - Invite.bat → 직원 이름 → 코드를 메신저로 전달.
+2. 직원 초대 — 휴대폰 앱으로 (Claude 계정 필요 없음)
+   - Invite.bat → 직원 이름 → 초대 코드가 나옵니다.
      (또는 앱 화면 오른쪽 위 [관리] → [직원 초대])
-   - 직원은 Start.bat 창에 찍힌 "같은 망 직원" 주소 뒤에 #join 을 붙여 들어옵니다.
-     예) http://10.1.2.3:8080/#join
-   - 윈도우 방화벽 창이 뜨면 [허용]을 눌러야 다른 PC·휴대폰에서 들어옵니다.
+   - Start.bat 창에 "휴대폰 접속 주소 https://….trycloudflare.com/" 이 찍힙니다.
+     직원에게 메신저로 [가입 주소(끝에 #join) + 이름 + 초대 코드] 를 보냅니다.
+   - 직원은 휴대폰에서 그 주소를 열어 이름·코드·새 비밀번호로 가입한 뒤
+       · 안드로이드(크롬): 메뉴 ⋮ → [앱 설치] 또는 [홈 화면에 추가]
+       · 아이폰(사파리): 공유 버튼 → [홈 화면에 추가]
+     → 홈 화면에 "센터 인사이트" 아이콘이 생기고 앱처럼 전체 화면으로 열립니다.
+   - 회사 망 밖(LTE·집)에서도 들어옵니다. HTTPS 라 주소창 경고도 없습니다.
+   ⚠ 이 임시 주소는 Start.bat 을 다시 켤 때마다 바뀝니다. 바뀌면 새 주소를 다시
+     보내고, 직원은 새 주소로 한 번 더 [홈 화면에 추가] 합니다(가입·자료는 그대로).
+     주소를 고정하려면 Cloudflare 계정 + 도메인으로 '이름 있는 터널'을 만들어야 합니다.
+   - 같은 사무실 PC 는 "같은 망 직원" 주소(http://10.x.x.x:8080)로도 들어옵니다.
+     윈도우 방화벽 창이 뜨면 [허용].
 
 3. 쓰는 동안
    - Start.bat 검은 창을 닫으면 앱이 멈춥니다. 쓰는 동안 켜 두세요.
@@ -80,6 +92,8 @@ README = """센터 인사이트 — 윈도우용 실행 꾸러미
 
 포함된 파이썬: {pyver} (python.org 의 NuGet 'python' 패키지, x64)
   원본 sha256: {pysha}
+포함된 cloudflared.exe (Cloudflare 공식 배포본, 휴대폰용 HTTPS 주소)
+  sha256: {cfsha}
 """
 
 
@@ -87,7 +101,7 @@ def crlf(s: str) -> bytes:
     return s.replace("\r\n", "\n").replace("\n", "\r\n").encode("utf-8")
 
 
-def build(nupkg: bytes, out: Path) -> Path:
+def build(nupkg: bytes, out: Path, cloudflared: bytes | None = None) -> Path:
     out.mkdir(parents=True, exist_ok=True)
     dest = out / f"{TOP}-windows.zip"
     pysha = hashlib.sha256(nupkg).hexdigest()
@@ -112,9 +126,13 @@ def build(nupkg: bytes, out: Path) -> Path:
         for f in sorted((APP / "static").iterdir()):
             if f.is_file():
                 z.write(f, f"{TOP}/app/static/{f.name}")
+        if cloudflared:
+            z.writestr(f"{TOP}/cloudflared.exe", cloudflared)
         z.writestr(f"{TOP}/Start.bat", crlf(START_BAT))
         z.writestr(f"{TOP}/Invite.bat", crlf(INVITE_BAT))
-        z.writestr(f"{TOP}/README.txt", b"\xef\xbb\xbf" + crlf(README.format(pyver=PY_VERSION, pysha=pysha)))
+        z.writestr(f"{TOP}/README.txt", b"\xef\xbb\xbf" + crlf(README.format(
+            pyver=PY_VERSION, pysha=pysha,
+            cfsha=hashlib.sha256(cloudflared).hexdigest() if cloudflared else "(넣지 않음)")))
     return dest
 
 
@@ -122,13 +140,24 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--nupkg", help=f"미리 받아 둔 python.{PY_VERSION}.nupkg (없으면 NuGet 에서 받음)")
     ap.add_argument("--out", default="dist", help="결과 폴더 (기본 dist/)")
+    ap.add_argument("--cloudflared", help="미리 받아 둔 cloudflared-windows-amd64.exe (없으면 GitHub 에서 받음)")
+    ap.add_argument("--no-tunnel", action="store_true", help="cloudflared 를 넣지 않음(같은 망에서만 사용)")
     a = ap.parse_args()
     if a.nupkg:
         data = Path(a.nupkg).read_bytes()
     else:
         with urllib.request.urlopen(NUGET.format(v=PY_VERSION), timeout=120) as r:
             data = r.read()
-    dest = build(data, Path(a.out))
+    cf = None
+    if not a.no_tunnel:
+        if a.cloudflared:
+            cf = Path(a.cloudflared).read_bytes()
+        else:
+            with urllib.request.urlopen(CLOUDFLARED, timeout=300) as r:
+                cf = r.read()
+        if cf[:2] != b"MZ":
+            raise SystemExit("cloudflared 가 윈도우 실행 파일이 아니다")
+    dest = build(data, Path(a.out), cf)
     print(f"{dest}  {dest.stat().st_size / 1e6:.1f}MB")
 
 
