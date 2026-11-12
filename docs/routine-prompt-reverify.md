@@ -15,7 +15,10 @@
   끝난 뒤에 들어갑니다.
 - 기계 검증은 저장소의 **`scripts/reverify_briefing.sh <morning|close> [날짜]`** 한 줄로
   돕니다(폭 훑기 · recheck 두 벌 · audit_numbers · dupcheck · stale · PDF 빈 띠
-  `scripts/pdf_bands.py`). 끝 상태 0 = 오류 없음 · 1 = 오류 · 2 = 그날 판 없음.
+  `scripts/pdf_bands.py` · ⑦ 매번 지킬 것: 특별판 유무, 고객 응대 전체 8+·핵심 5+, charset 첫 줄,
+  readability 스타일, 단독 HTML BOM). 끝 상태 0 = 오류 없음 · 1 = 오류 · 2 = 그날 판 없음.
+  `--pre` 를 앞에 붙이면 아직 없는 아티팩트 주소만 봐줍니다 — 브리핑 실행이 보내고
+  발행하기 **전에** 이것으로 오류 0 을 확인합니다(2026-11-13).
 - 결과 기록은 `data/briefing/reverify/<날짜>-<morning|close>.txt` 입니다. 이 파일이
   있으면 같은 날 다시 떠도 「이미 재검증했습니다」로 끝납니다.
 - 장마감 서술 파일은 접미사가 없습니다(`narrative-<날짜>.json`). 프롬프트의
