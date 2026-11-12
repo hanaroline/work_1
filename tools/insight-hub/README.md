@@ -29,6 +29,17 @@ python3 server.py serve --port 8080
 (코드는 **3일 안에 한 번만** 쓸 수 있고, DB에는 해시만 남습니다).
 비밀번호를 잊은 직원은 관리자가 **비번 재설정**으로 새 코드를 만들어 줍니다.
 
+## 윈도우 PC에서 더블클릭으로 (설치 없이)
+
+`python3 scripts/build_insight_hub_windows.py --out dist/` 가 **`CenterInsight-windows.zip`**(약 13MB)을 만듭니다.
+윈도우용 파이썬(NuGet `python` 패키지, x64)이 함께 들어 있어 센터 PC에 아무것도 깔 필요가 없습니다.
+
+1. zip 을 풀고 **`Start.bat`** 더블클릭 → 처음 한 번 Claude·Gemini 키(이 PC 사용자 환경변수 `setx` 에 저장)와 관리자 이름을 묻고, 초대 코드를 보여 준 뒤 브라우저를 엽니다.
+2. 직원 초대는 **`Invite.bat`** 또는 화면의 관리 → 직원 초대. 직원은 창에 찍힌 "같은 망 직원" 주소 + `#join` 으로 가입합니다.
+3. 자료는 `%USERPROFILE%\.insight-hub` 에 남으므로, 새 판은 폴더만 바꿔 풀면 이어집니다.
+
+실행기는 `launcher.py`(빈 포트 찾기·첫 관리자 코드·접속 주소 안내). zip 에 키는 들어가지 않습니다.
+
 ## 입장 방식 — 처음은 엄격하게, 그다음은 바로
 
 | | 처음 (가입) | 그다음 (같은 기기) |
