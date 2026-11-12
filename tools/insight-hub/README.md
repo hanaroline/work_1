@@ -40,6 +40,47 @@ python3 server.py serve --port 8080
 
 실행기는 `launcher.py`(빈 포트 찾기·첫 관리자 코드·접속 주소 안내). zip 에 키는 들어가지 않습니다.
 
+## 클라우드(Vercel)에 올려 고정 주소로 (PC 없이 24시간)
+
+PC를 켜 둘 필요 없이 `https://<이름>.vercel.app` 고정 주소로 돌립니다. 직원은 휴대폰에서
+그 주소를 열고 「홈 화면에 추가」(안드로이드는 「앱 설치」)만 누르면 앱처럼 씁니다.
+Claude 계정은 필요 없습니다.
+
+이 폴더에 Vercel 용 파일이 들어 있습니다 — `api/index.py`(입구), `vercel.json`,
+`requirements.txt`(Postgres 접속용 `psycopg` 하나). 화면·API 는 `server.py` 그대로입니다.
+
+**한 번만 하는 설정** (vercel.com, 모두 화면에서 누르기만 합니다)
+
+1. **Add New → Project** → GitHub 저장소 `work_1` 을 **Import**.
+2. **Root Directory** 를 `tools/insight-hub` 로 바꿉니다(Framework Preset 은 *Other*).
+3. **Environment Variables** 에 넣습니다(값은 저장소에 두지 않습니다).
+
+   | 이름 | 값 |
+   |---|---|
+   | `ANTHROPIC_API_KEY` | Claude API 키 (글·PDF·캡처 정리) |
+   | `GEMINI_API_KEY` | Gemini API 키 (유튜브 정리) |
+   | `INSIGHT_ADMIN_NAME` | 첫 관리자 이름 (예: 홍길동) |
+   | `INSIGHT_SETUP_CODE` | 첫 관리자가 넣을 코드, 8자 이상 아무 문자열 |
+   | `INSIGHT_CENTER_NAME` | (선택) 화면에 보일 센터 이름 |
+
+4. **Deploy**. 아직 DB 가 없어 입장하려 하면 「데이터베이스가 아직 연결되지 않았습니다」가 뜹니다 — 정상입니다.
+5. 프로젝트의 **Storage → Create Database → Neon(Postgres)** → 이 프로젝트에 **Connect**.
+   `DATABASE_URL` 이 저절로 들어갑니다. **Deployments → 맨 위 ⋯ → Redeploy**.
+6. 이 코드가 `main` 이 아닌 가지에만 있으면 **Settings → Git → Production Branch** 를 그
+   가지 이름으로 바꾸거나, `main` 에 병합한 뒤 다시 배포합니다.
+
+**첫 입장**: 휴대폰에서 `https://<이름>.vercel.app/#join` → 이름에 `INSIGHT_ADMIN_NAME`,
+초대 코드에 `INSIGHT_SETUP_CODE`, 새 비밀번호. 들어오면 관리자입니다. 이 길은 사용자가
+한 명이라도 생기면 저절로 닫히고, 이후 직원은 ⚙ 관리 화면에서 초대 코드를 받아 들어옵니다.
+
+**클라우드판에서 달라지는 것**
+
+- 첨부는 한 건 **3MB** 까지입니다(Vercel 요청 크기 제한). 큰 PDF 는 링크로 올리거나 필요한 쪽만 캡처해 주세요.
+- 서버가 뒤에서 일하지 못하므로 올린 화면이 정리를 부릅니다. 올린 직후 앱을 닫아도
+  다음에 누가 피드를 열면 남은 글을 이어서 정리합니다.
+- AI 응답은 240초 안에 끝나야 합니다(함수 최대 300초).
+- Vercel 무료(Hobby) 요금제는 비영리·개인용이 원칙입니다. 업무용으로 오래 쓸 거면 Pro 를 검토하십시오.
+
 ## 휴대폰 앱으로 (Claude 계정 없는 직원)
 
 윈도우 꾸러미에는 Cloudflare 공식 `cloudflared.exe` 가 들어 있습니다. `Start.bat` 을 켜면

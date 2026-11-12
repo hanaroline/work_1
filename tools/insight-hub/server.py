@@ -45,6 +45,16 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 STATIC = HERE / "static"
 DATA_DIR = Path(os.environ.get("INSIGHT_DATA_DIR", Path.home() / ".insight-hub")).expanduser()
+# Vercel 등 클라우드에 올리면 데이터는 Postgres 에 둔다(주소가 환경 변수로 들어온다).
+DATABASE_URL = (os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
+                or os.environ.get("INSIGHT_DATABASE_URL") or "")
+# 서버리스(Vercel): 요청이 끝나면 프로세스가 멈출 수 있어 뒤에서 도는 일꾼을 못 쓴다.
+# 그래서 글을 올린 화면이 /api/posts/{id}/run 을 불러 그 요청 안에서 정리한다.
+SERVERLESS = bool(os.environ.get("VERCEL")) or os.environ.get("INSIGHT_SERVERLESS") == "1"
+# 처음 띄운 클라우드 서버에서 첫 관리자가 들어오는 길(사용자가 한 명도 없을 때만 통함).
+# 값은 저장소가 아니라 Vercel 환경 변수에만 둔다.
+BOOT_ADMIN = os.environ.get("INSIGHT_ADMIN_NAME", "")
+BOOT_CODE = os.environ.get("INSIGHT_SETUP_CODE", "")
 DB_PATH = DATA_DIR / "insight.db"
 UPLOAD_DIR = DATA_DIR / "uploads"
 
@@ -64,7 +74,10 @@ SESSION_RENEW_SEC = 86400            # 기한 연장은 하루에 한 번만 기
 # 첫 가입은 엄격하게: 초대 코드는 짧게 살고, 그 이름으로 5번 틀리면 코드가 무효가 된다.
 INVITE_HOURS = max(1, int(os.environ.get("INSIGHT_INVITE_HOURS", "72")))
 INVITE_MAX_FAIL = 5
-MAX_UPLOAD = 20 * 1024 * 1024        # 첨부 한 건 상한
+# 첨부 한 건 상한 — Vercel 은 요청 본문이 4.5MB 까지라(base64 로 1.37배 불어남) 3MB 로 둔다
+MAX_UPLOAD = (3 if SERVERLESS else 20) * 1024 * 1024
+AI_TIMEOUT_CAP = 240 if SERVERLESS else 600   # 서버리스 함수는 300초 안에 끝나야 한다
+STALE_WORK_SEC = 330                          # 이보다 오래 '정리 중'이면 멈춘 것으로 보고 다시 시킨다
 MAX_FETCH = 20 * 1024 * 1024         # 링크에서 받아 올 상한
 MAX_TEXT_CHARS = 150_000             # AI에 넘길 본문 상한 — 넘으면 화면에 그 사실을 적는다
 MIN_TEXT_CHARS = 300                 # 이보다 짧으면 "본문을 읽지 못함"으로 본다
@@ -87,7 +100,8 @@ USER_AGENT = "Mozilla/5.0 (compatible; CenterInsightBot/1.0)"
 # ───────────────────────────── 저장소(SQLite) ─────────────────────────────
 
 _db_lock = threading.RLock()
-_db: sqlite3.Connection | None = None
+_db = None
+USE_PG = bool(DATABASE_URL)
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS users (
@@ -162,10 +176,41 @@ CREATE TABLE IF NOT EXISTS comments (
 CREATE INDEX IF NOT EXISTS comments_post ON comments(post_id);
 """
 
+# Postgres 에서는 첨부도 DB 에 둔다(서버리스엔 오래 남는 디스크가 없다)
+PG_EXTRA = "CREATE TABLE IF NOT EXISTS files (name TEXT PRIMARY KEY, data BYTEA NOT NULL)"
+_RETURNING_ID = re.compile(r"^\s*INSERT\s+INTO\s+(users|invites|posts|comments)\b", re.I)
 
-def db() -> sqlite3.Connection:
+
+def _pg_schema() -> list[str]:
+    sql = re.sub(r"--[^\n]*", "", SCHEMA)
+    sql = sql.replace("INTEGER PRIMARY KEY", "BIGSERIAL PRIMARY KEY").replace("INTEGER", "BIGINT")
+    return [st.strip() for st in sql.split(";") if st.strip()] + [PG_EXTRA]
+
+
+def _pg_sql(sql: str) -> str:
+    # SQLite 문장을 Postgres 로: 자리표시자 ? → %s, LIKE → ILIKE(대소문자 무시는 SQLite 와 같게)
+    return re.sub(r"\bLIKE\b", "ILIKE", sql).replace("?", "%s")
+
+
+def _pg_connect():
+    import psycopg  # 클라우드(Postgres)에서만 필요하다 — 로컬·Windows 판은 표준 라이브러리만 쓴다
+    from psycopg.rows import dict_row
+    conn = psycopg.connect(DATABASE_URL, autocommit=True, row_factory=dict_row, connect_timeout=15)
+    with conn.cursor() as cur:
+        for st in _pg_schema():
+            cur.execute(st)
+    return conn
+
+
+def db():
     global _db
     if _db is None:
+        if USE_PG:
+            _db = _pg_connect()
+            return _db
+        if SERVERLESS:  # 서버리스 디스크는 요청이 끝나면 사라진다 — 거기에 SQLite 를 두지 않는다
+            raise HTTPError_(503, "데이터베이스가 아직 연결되지 않았습니다. Vercel 의 Storage 에서 Postgres(Neon)를 "
+                                  "이 프로젝트에 연결한 뒤 다시 배포하세요.")
         DATA_DIR.mkdir(parents=True, exist_ok=True)
         UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
         try:
@@ -184,17 +229,77 @@ def db() -> sqlite3.Connection:
     return _db
 
 
-def q(sql: str, args=(), one=False):
+def _run(sql: str, args, fetch: str):
+    """한 문장을 실행한다. fetch: rows | id | count."""
+    global _db
     with _db_lock:
-        cur = db().execute(sql, args)
-        rows = cur.fetchall()
+        if not USE_PG:
+            cur = db().execute(sql, args)
+            return cur.fetchall() if fetch == "rows" else (cur.lastrowid if fetch == "id" else cur.rowcount)
+        psql = _pg_sql(sql)
+        if fetch == "id" and _RETURNING_ID.match(sql):
+            psql += " RETURNING id"
+        for attempt in (0, 1):
+            try:
+                with db().cursor() as cur:
+                    cur.execute(psql, tuple(args))
+                    if fetch == "rows":
+                        return cur.fetchall() if cur.description else []
+                    if fetch == "id":
+                        r = cur.fetchone() if cur.description else None
+                        return r["id"] if r else None
+                    return cur.rowcount
+            except Exception as e:
+                # 서버리스가 쉬는 동안 DB 연결이 끊겼으면 한 번 다시 잇는다
+                import psycopg
+                if attempt or not isinstance(e, (psycopg.OperationalError, psycopg.InterfaceError)):
+                    raise
+                try:
+                    _db.close()
+                except Exception:
+                    pass
+                _db = None
+
+
+def q(sql: str, args=(), one=False):
+    rows = _run(sql, args, "rows")
     return (rows[0] if rows else None) if one else rows
 
 
 def x(sql: str, args=()) -> int:
-    with _db_lock:
-        cur = db().execute(sql, args)
-        return cur.lastrowid
+    return _run(sql, args, "id")
+
+
+def xn(sql: str, args=()) -> int:
+    """바뀐 줄 수를 돌려준다."""
+    return _run(sql, args, "count")
+
+
+# ── 첨부 보관: 로컬은 폴더, Postgres 는 files 표 ──
+def blob_put(name: str, data: bytes) -> None:
+    if USE_PG:
+        x("INSERT INTO files(name, data) VALUES (?,?)", (name, data))
+    else:
+        (UPLOAD_DIR / name).write_bytes(data)
+
+
+def blob_get(name: str) -> bytes:
+    if USE_PG:
+        r = q("SELECT data FROM files WHERE name=?", (name,), one=True)
+        if not r:
+            raise FileNotFoundError(name)
+        return bytes(r["data"])
+    return (UPLOAD_DIR / name).read_bytes()
+
+
+def blob_del(name: str) -> None:
+    if USE_PG:
+        x("DELETE FROM files WHERE name=?", (name,))
+    else:
+        try:
+            (UPLOAD_DIR / name).unlink()
+        except FileNotFoundError:
+            pass
 
 
 def now() -> int:
@@ -244,6 +349,26 @@ def new_invite(name: str, role: str = "member", created_by: int | None = None) -
     return code
 
 
+def bootstrap_invite(name: str) -> None:
+    """클라우드에 처음 올린 뒤 첫 관리자가 들어오는 길.
+
+    INSIGHT_ADMIN_NAME·INSIGHT_SETUP_CODE 환경 변수가 있고 사용자가 아직 한 명도 없을 때만,
+    그 이름으로 관리자 초대를 하나 만들어 둔다(코드는 환경 변수 값). 그 뒤 확인은 보통 초대와 같다 —
+    틀린 횟수 제한·IP 잠금도 그대로 걸린다. 누군가 한 명이라도 가입하면 이 길은 닫힌다.
+    """
+    code = re.sub(r"[\s-]", "", BOOT_CODE).upper()
+    if not BOOT_ADMIN or len(code) < 8 or norm_name(BOOT_ADMIN) != name:
+        return
+    if q("SELECT 1 FROM users LIMIT 1", one=True):
+        return
+    if q("SELECT 1 FROM invites WHERE name=? AND ((used_at IS NULL AND expires_at>?) OR fails>=?)",
+         (name, now(), INVITE_MAX_FAIL), one=True):
+        return  # 이미 만들어 둔 것이 있거나, 틀린 횟수로 막혔다(막힌 뒤엔 다시 만들지 않는다)
+    t = now()
+    x("INSERT INTO invites(name, code_hash, role, created_by, created_at, expires_at) VALUES (?,?,?,?,?,?)",
+      (name, sha(code), "admin", None, t, t + INVITE_HOURS * 3600))
+
+
 def invite_label() -> str:
     return f"{INVITE_HOURS // 24}일" if INVITE_HOURS % 24 == 0 else f"{INVITE_HOURS}시간"
 
@@ -282,7 +407,8 @@ def login_failed(key: str) -> None:
     if row and now() - row["first_at"] <= LOGIN_LOCK_SEC:
         x("UPDATE login_fail SET count=count+1 WHERE key=?", (key,))
     else:
-        x("INSERT OR REPLACE INTO login_fail(key, count, first_at) VALUES (?,?,?)", (key, 1, now()))
+        x("INSERT INTO login_fail(key, count, first_at) VALUES (?,?,?) "
+          "ON CONFLICT(key) DO UPDATE SET count=excluded.count, first_at=excluded.first_at", (key, 1, now()))
 
 
 def new_session(user_id: int) -> str:
@@ -529,6 +655,7 @@ class AIError(Exception):
 
 
 def _post_json(url: str, headers: dict, body: dict, timeout: int = 300) -> dict:
+    timeout = min(timeout, AI_TIMEOUT_CAP)
     req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
                                  headers={"content-type": "application/json", **headers})
     try:
@@ -681,7 +808,7 @@ def process(pid: int) -> None:
             meta = {"주소": p["url"] or "", "제목": p["source_title"] or "", "매체": p["source_site"] or "",
                     "게시일": p["source_published"] or ""}
             if p["file_path"]:
-                raw = (UPLOAD_DIR / p["file_path"]).read_bytes()
+                raw = blob_get(p["file_path"])
                 b64 = base64.b64encode(raw).decode()
                 if p["file_type"] == "application/pdf":
                     content.append({"type": "document", "source": {"type": "base64", "media_type": "application/pdf", "data": b64}})
@@ -749,6 +876,26 @@ def worker() -> None:
             jobs.task_done()
 
 
+def enqueue(pid: int) -> None:
+    # 서버리스에선 줄을 세우지 않는다 — 화면이 곧바로 /run 을 부른다
+    if not SERVERLESS:
+        jobs.put(pid)
+
+
+def queue_size() -> int:
+    if SERVERLESS:
+        return q("SELECT COUNT(*) AS n FROM posts WHERE status IN ('queued','working')", one=True)["n"]
+    return jobs.qsize()
+
+
+def claim(pid: int) -> bool:
+    """정리할 차례를 가져온다. 대기 중이거나, 정리 중인데 너무 오래 멈춰 있는 글만."""
+    t = now()
+    return xn("UPDATE posts SET status='working', status_msg='AI가 읽는 중', updated_at=? "
+              "WHERE id=? AND (status='queued' OR (status='working' AND updated_at<?))",
+              (t, pid, t - STALE_WORK_SEC)) == 1
+
+
 def start_workers(n: int = 3) -> None:
     # 서버가 꺼졌다 켜지면 하다 만 일을 다시 줄 세운다
     for r in q("SELECT id FROM posts WHERE status IN ('queued','working') ORDER BY id"):
@@ -773,7 +920,7 @@ def post_row(r: sqlite3.Row, me: int, full: bool = False) -> dict:
         "status": r["status"], "status_msg": r["status_msg"],
         "summary": json.loads(r["summary_json"]) if r["summary_json"] else None,
         "category": r["category"], "sentiment": r["sentiment"], "model": r["model"],
-        "created_at": r["created_at"], "author": r["author"], "author_id": r["user_id"],
+        "created_at": r["created_at"], "updated_at": r["updated_at"], "author": r["author"], "author_id": r["user_id"],
         "likes": r["likes"], "liked": bool(r["liked"]), "comments": r["ncomments"], "mine": r["user_id"] == me,
     }
     if full:
@@ -860,7 +1007,7 @@ class Handler(BaseHTTPRequestHandler):
     def body_json(self) -> dict:
         n = int(self.headers.get("Content-Length") or 0)
         if n > MAX_UPLOAD * 1.4 + 100_000:
-            raise HTTPError_(413, "파일이 너무 큽니다(20MB 이하)")
+            raise HTTPError_(413, f"파일이 너무 큽니다({MAX_UPLOAD // 1048576}MB 이하)")
         raw = self.rfile.read(n) if n else b"{}"
         try:
             d = json.loads(raw or b"{}")
@@ -976,7 +1123,8 @@ class Handler(BaseHTTPRequestHandler):
         if not u:
             return self.send_json(200, {"user": None, "center": CENTER_NAME, "invite_label": invite_label()})
         self.send_json(200, {"user": {"id": u["id"], "name": u["name"], "role": u["role"]}, "center": CENTER_NAME,
-                             "categories": CATEGORIES, "session_days": SESSION_DAYS, "invite_label": invite_label()})
+                             "categories": CATEGORIES, "session_days": SESSION_DAYS, "invite_label": invite_label(),
+                             "serverless": SERVERLESS, "max_upload": MAX_UPLOAD, "now": now()})
 
     def api_login(self, qs):
         d = self.body_json()
@@ -1006,6 +1154,7 @@ class Handler(BaseHTTPRequestHandler):
         bad = password_problem(pw, name)
         if bad:
             raise HTTPError_(400, bad)
+        bootstrap_invite(name)
         live = q("SELECT * FROM invites WHERE name=? AND used_at IS NULL AND expires_at>? ORDER BY id DESC",
                  (name, now()), one=True)
         if not live or not hmac.compare_digest(live["code_hash"], sha(code)):
@@ -1135,13 +1284,13 @@ class Handler(BaseHTTPRequestHandler):
             except ValueError:
                 raise HTTPError_(400, "파일을 읽지 못했습니다")
             if len(raw) > MAX_UPLOAD:
-                raise HTTPError_(413, "파일이 20MB를 넘습니다")
+                raise HTTPError_(413, f"파일이 {MAX_UPLOAD // 1048576}MB를 넘습니다")
             if ftype == "application/pdf" and not raw.startswith(b"%PDF-"):
                 raise HTTPError_(400, "PDF 파일이 아닙니다")
             file_type = ftype
             file_name = re.sub(r"[\\/\x00-\x1f]", "_", (f.get("name") or "file"))[:150]
             file_path = f"{secrets.token_hex(16)}{ALLOWED_UPLOAD[ftype]}"
-            (UPLOAD_DIR / file_path).write_bytes(raw)
+            blob_put(file_path, raw)
             kind = "pdf" if ftype == "application/pdf" else "image"
             title = title or re.sub(r"\.[^.]+$", "", file_name)
         elif pasted and not url:
@@ -1155,7 +1304,7 @@ class Handler(BaseHTTPRequestHandler):
                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                 (u["id"], url or None, kind, engine, note, pasted or None, file_name, file_path, file_type,
                  title, site, "queued", t, t))
-        jobs.put(pid)
+        enqueue(pid)
         self.send_json(201, {"id": pid})
 
     def api_post_delete(self, qs, pid):
@@ -1166,10 +1315,7 @@ class Handler(BaseHTTPRequestHandler):
         if p["user_id"] != u["id"] and u["role"] != "admin":
             raise HTTPError_(403, "올린 사람이나 관리자만 지울 수 있습니다")
         if p["file_path"]:
-            try:
-                (UPLOAD_DIR / p["file_path"]).unlink()
-            except FileNotFoundError:
-                pass
+            blob_del(p["file_path"])
         with _db_lock:
             x("DELETE FROM likes WHERE post_id=?", (pid,))
             x("DELETE FROM comments WHERE post_id=?", (pid,))
@@ -1192,8 +1338,19 @@ class Handler(BaseHTTPRequestHandler):
             x("UPDATE posts SET pasted_text=?, engine='claude', kind=CASE WHEN kind='video' THEN 'text' ELSE kind END WHERE id=?",
               (text, pid))
         set_status(pid, "queued", "")
-        jobs.put(pid)
+        enqueue(pid)
         self.send_json(200, {"ok": True})
+
+    def api_post_run(self, qs, pid):
+        """서버리스용: 이 요청 안에서 글을 정리한다. 일꾼이 도는 보통 서버에선 할 일이 없다."""
+        self.need_user()
+        if not SERVERLESS:
+            return self.send_json(200, {"ok": True, "ran": False})
+        if not claim(pid):
+            return self.send_json(200, {"ok": True, "ran": False})
+        process(pid)
+        r = q("SELECT status FROM posts WHERE id=?", (pid,), one=True)
+        self.send_json(200, {"ok": True, "ran": True, "status": r["status"] if r else None})
 
     def api_like(self, qs, pid):
         u = self.need_user()
@@ -1235,7 +1392,10 @@ class Handler(BaseHTTPRequestHandler):
         p = q("SELECT file_path, file_type, file_name FROM posts WHERE id=?", (pid,), one=True)
         if not p or not p["file_path"]:
             raise HTTPError_(404, "파일이 없습니다")
-        data = (UPLOAD_DIR / p["file_path"]).read_bytes()
+        try:
+            data = blob_get(p["file_path"])
+        except FileNotFoundError:
+            raise HTTPError_(404, "파일이 없습니다")
         self.send_response(200)
         self.send_header("Content-Type", p["file_type"])
         self.send_header("Content-Disposition", "inline; filename*=UTF-8''" + urllib.parse.quote(p["file_name"] or "file"))
@@ -1268,7 +1428,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_json(200, {"users": users, "invites": invites, "ai": {
             "claude": bool(os.environ.get("ANTHROPIC_API_KEY")), "claude_model": CLAUDE_MODEL,
             "gemini": bool(os.environ.get("GEMINI_API_KEY")), "gemini_model": GEMINI_MODEL},
-            "queue": jobs.qsize()})
+            "queue": queue_size()})
 
     def api_admin_invite(self, qs):
         me = self.need_user(admin=True)
@@ -1319,6 +1479,7 @@ ROUTES = {
     ("GET", r"/api/posts/(\d+)"): Handler.api_post_get,
     ("DELETE", r"/api/posts/(\d+)"): Handler.api_post_delete,
     ("POST", r"/api/posts/(\d+)/retry"): Handler.api_post_update,
+    ("POST", r"/api/posts/(\d+)/run"): Handler.api_post_run,
     ("POST", r"/api/posts/(\d+)/like"): Handler.api_like,
     ("POST", r"/api/posts/(\d+)/comments"): Handler.api_comment,
     ("DELETE", r"/api/comments/(\d+)"): Handler.api_comment_delete,

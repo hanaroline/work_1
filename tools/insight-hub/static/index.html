@@ -316,6 +316,8 @@ async function boot() {
   if (r.invite_label) state.inviteLabel = r.invite_label;
   if (!r.user) { showAuth(); if (location.hash.startsWith("#join")) setTab(true); return; }
   state.me = r.user; state.cats = r.categories || [];
+  state.serverless = !!r.serverless; state.maxUpload = r.max_upload || 20 * 1024 * 1024;
+  state.skew = r.now ? r.now - Date.now() / 1000 : 0;
   $("#authView").classList.add("hidden");
   for (const id of ["#feedView", "#fab", "#meName", "#menuBtn"]) $(id).classList.remove("hidden");
   $("#adminBtn").classList.toggle("hidden", r.user.role !== "admin");
@@ -348,7 +350,8 @@ $("#composeForm").onsubmit = async ev => {
   const body = { url: $("#cUrl").value.trim(), note: $("#cNote").value.trim(), text: $("#cText").value.trim() };
   const f = $("#cFile").files[0];
   if (f) {
-    if (f.size > 20 * 1024 * 1024) { $("#cMsg").textContent = "파일이 20MB를 넘습니다"; return; }
+    const lim = state.maxUpload || 20 * 1024 * 1024;
+    if (f.size > lim) { $("#cMsg").textContent = `파일이 ${Math.round(lim / 1048576)}MB를 넘습니다. 화면을 캡처해 올리거나 링크로 올려 주세요.`; return; }
     body.file = { name: f.name, type: f.type, data: await readFile(f) };
   }
   if (!body.url && !body.file && !body.text) { $("#cMsg").textContent = "링크나 파일, 본문 중 하나를 넣어 주세요"; return; }
@@ -360,7 +363,8 @@ $("#composeForm").onsubmit = async ev => {
 
 async function submitPost(body) {
   try {
-    await api("/api/posts", { method: "POST", body });
+    const r = await api("/api/posts", { method: "POST", body });
+    if (r && r.id) runPost(r.id);
     $("#composeForm").reset(); $("#cMore").open = false; $("#cUrl").dispatchEvent(new Event("input"));
     toast("올렸습니다. AI가 정리하는 동안 잠시 기다려 주세요.");
     loadFeed();
@@ -398,12 +402,30 @@ function qs(extra = {}) {
   return p.toString();
 }
 
+// 클라우드(서버리스)판: 서버가 뒤에서 일하지 못하므로 화면이 "이 글 정리해" 하고 부른다.
+// 정리는 그 요청 안에서 끝까지 돈다(최대 몇 분). 여러 화면이 동시에 불러도 서버가 하나만 맡긴다.
+const running = new Map();
+function runPost(id) {
+  if (!state.serverless || running.has(id)) return;
+  running.set(id, Date.now());
+  api(`/api/posts/${id}/run`, { method: "POST" }).catch(() => {}).finally(() => { running.delete(id); refreshOne(id); });
+}
+function kickStale(posts) {
+  if (!state.serverless) return;
+  const t = Date.now() / 1000 + (state.skew || 0);
+  for (const p of posts) {
+    // 올린 화면이 닫혀 대기로 남은 글, 또는 정리 도중 멈춘 글을 이어서 맡긴다
+    if ((p.status === "queued" && t - (p.updated_at || p.created_at) > 20) ||
+        (p.status === "working" && t - (p.updated_at || p.created_at) > 340)) runPost(p.id);
+  }
+}
+
 async function loadFeed(more = false) {
   const extra = more && state.posts.length && state.filters.sort !== "popular" ? { before: state.posts[state.posts.length - 1].id } : {};
   try {
     const r = await api("/api/posts?" + qs(extra));
     state.posts = more ? state.posts.concat(r.posts) : r.posts;
-    renderFeed();
+    renderFeed(); kickStale(r.posts);
     $("#loadMore").classList.toggle("hidden", r.posts.length < 30 || state.filters.sort === "popular");
   } catch (e) { if (e.status !== 401) toast(e.message); }
 }
@@ -465,7 +487,7 @@ function postCard(p, full) {
       const ta = h("textarea", { rows: 3, placeholder: "본문(또는 영상 대본)을 붙여넣고 다시 정리", "aria-label": "본문 붙여넣기" });
       box.append(h("div", { style: "margin-top:6px" }, ta, h("div", { class: "row", style: "margin-top:6px" },
         h("button", { class: "btn small primary", type: "button", text: "다시 정리", onclick: async () => {
-          try { await api(`/api/posts/${p.id}/retry`, { method: "POST", body: { text: ta.value } }); toast("다시 정리합니다"); refreshOne(p.id); } catch (e) { toast(e.message); } } }))));
+          try { await api(`/api/posts/${p.id}/retry`, { method: "POST", body: { text: ta.value } }); toast("다시 정리합니다"); runPost(p.id); refreshOne(p.id); } catch (e) { toast(e.message); } } }))));
     }
     card.append(box);
   }
