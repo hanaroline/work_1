@@ -1,4 +1,4 @@
-네이버 API 탐색 2026-11-12 16:18:34 KST
+네이버 API 탐색 2026-11-13 00:36:13 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
@@ -18,7 +18,7 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 16312 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
+    쓸모 · 16322 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
     남김: data/market/raw/probe_03_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"5,375.36"},{"code":"openPrice","key":"시가","value":"5,385.94","compareToPreviousPrice":{"code":"2",
 
@@ -28,18 +28,18 @@
     앞머리: [{"localTradedAt":"2026-11-12","closePrice":"5,342.73","compareToPreviousClosePrice":"-32.63","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-0.61","openPrice":"5,385.94","highPrice":"5,458.84","lowP
 
 [sectors] https://m.stock.naver.com/api/stocks/industry
-    쓸모 · 2257 bytes · 걸린 낱말 ['changeRate']
+    쓸모 · 2259 bytes · 걸린 낱말 ['changeRate']
     남김: data/market/raw/probe_05_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":312,"name":"가스유틸리티","totalCount":12,"changeRate":"8.18","riseCount":3,"fallCount":9,"steadyCount":0},{"no":285,"name":"방송과엔터테인먼트","totalCount":58,"changeRate":"4.89","riseCount":29,"fallCount"
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":285,"name":"방송과엔터테인먼트","totalCount":58,"changeRate":"5.23","riseCount":29,"fallCount":19,"steadyCount":10},{"no":323,"name":"해운사","totalCount":11,"changeRate":"4.37","riseCount":5,"fallCount":
 
 [sectors] https://api.stock.naver.com/industry
     실패 · 36 bytes · 걸린 낱말 없음
     응답 앞머리: HTTPError: HTTP Error 404: Not Found
 
 [sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
-    쓸모 · 8661 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 8660 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_07_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":312,"name":"가스유틸리티","totalCount":12,"changeRate":"8.12","riseCount":3,"fallCount":9,"steadyCount":0},{"no":285,"name":"방송과엔터테인먼트","totalCount":58,"changeRate":"4.93","riseCount":29,"fallCount"
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":285,"name":"방송과엔터테인먼트","totalCount":58,"changeRate":"5.23","riseCount":29,"fallCount":19,"steadyCount":10},{"no":323,"name":"해운사","totalCount":11,"changeRate":"4.37","riseCount":5,"fallCount":
 
 [money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
     실패 · 30 bytes · 걸린 낱말 없음
@@ -101,7 +101,7 @@
     응답 앞머리: HTTPError: HTTP Error 404: 404
 
 [money_flow] https://finance.naver.com/sise/sise_deposit.naver
-    셸 · 132835 bytes · 걸린 낱말 ['예탁금', 'deposit']
+    셸 · 133875 bytes · 걸린 낱말 ['예탁금', 'deposit']
     남김: data/market/raw/probe_21_money_flow.txt
     앞머리: <!DOCTYPE html><html lang="ko" class="" data-theme="light"><head><meta charSet="utf-8"/><meta name="viewport" content="width=1366, initial-scale=1.0, user-scalable=yes"/><meta name="viewport" content="width=device-width, initial-scale=1"/><
 

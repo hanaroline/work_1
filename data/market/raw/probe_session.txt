@@ -1,7 +1,7 @@
-세션을 지닌 채 API 부르기 2026-11-12 16:18:58 KST
+세션을 지닌 채 API 부르기 2026-11-13 00:36:30 KST
 
 ### 증시자금동향
-    페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 132835 bytes
+    페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 133875 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
         HTTP 200 · 11591 bytes · JSON!
@@ -13,22 +13,22 @@
         남김: data/market/raw/session_chart.json
 
 ### 증시 기사
-    페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 123592 bytes
+    페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 124632 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8817 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"014","officeHname":"파이낸셜뉴스","articleId":"0005603509","title":"'시총미달 상폐 가처분' 27일 심리 종결...이르면 이달말 결론","datetime":"2026-11-12 16:01:17","type":"1","subcontent":"주연테크와 케이엠제약의 상장폐
+        HTTP 200 · 8823 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"277","officeHname":"아시아경제","articleId":"0005842031","title":"젠슨 황 사임 여파로 AI 관련주 약세…일제히 하락[뉴욕증시]","datetime":"2026-11-13 00:24:50","type":"1","subcontent":"12일(현지시간) 뉴욕증시의 3대 
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8817 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"014","officeHname":"파이낸셜뉴스","articleId":"0005603509","title":"'시총미달 상폐 가처분' 27일 심리 종결...이르면 이달말 결론","datetime":"2026-11-12 16:01:17","type":"1","subcontent":"주연테크와 케이엠제약의 상장폐
+        HTTP 200 · 8823 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"277","officeHname":"아시아경제","articleId":"0005842031","title":"젠슨 황 사임 여파로 AI 관련주 약세…일제히 하락[뉴욕증시]","datetime":"2026-11-13 00:24:50","type":"1","subcontent":"12일(현지시간) 뉴욕증시의 3대 
         남김: data/market/raw/session_list.json
 
 ### 시장지표
-    페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 130816 bytes
+    페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 132260 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26538 bytes · JSON!
+        HTTP 200 · 26535 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
@@ -40,7 +40,7 @@
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
-        HTTP 200 · 7373 bytes · JSON!
+        HTTP 200 · 7370 bytes · JSON!
         앞머리: [{"categoryType":"bond","stockExchangeType":null,"reutersCode":"US10YT=RR","symbolCode":null,"name":"미국 국채 10년","fullName":null,"nameEng":null,"itemLogoUrl":null,"itemLogoPngUrl":null,"delayTime":0,"d
         남김: data/market/raw/session_bond.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dminte
