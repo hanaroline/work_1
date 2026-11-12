@@ -1625,6 +1625,11 @@ def main():
     html = html.replace(NUSED, str(len(N.used))).replace(NFB, str(len(set(N.missing))))
     assert NUSED not in html and NFB not in html
 
+    # 읽기 편하게 — 인코딩 선언 · 화면 글자 바닥 · 진한 회색(scripts/readability.py).
+    # 핵심본 CSS 뒤, 맨 마지막 <style> 로 들어가야 이긴다.
+    from readability import apply as _readable
+    html = _readable(html)
+
     out = a.out or (ROOT + "/docs/briefings/%s-%s%s.html"
                     % (today.isoformat(), a.kind, "-core" if CORE[0] else ""))
     io.open(out, "w", encoding="utf-8").write(html)
