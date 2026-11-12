@@ -943,8 +943,15 @@ def sec_calendar(C):
     return body
 
 
+# 고객 응대는 심층 분석 수준으로 — 전체 판은 써 둔 문항을 모두(최대 10),
+# 핵심본은 앞의 5문항까지 싣는다. 예전에는 4·3 으로 잘려 9문항을 써도
+# 절반이 버려졌다(2026-11-12).
+TALK_FULL, TALK_CORE = 10, 5
+
+
 def sec_talking(C):
-    """09 고객 응대 — 질문 넷. **이 판의 표에서 나온 숫자로만** 답한다."""
+    """09 고객 응대 — 서술 파일의 `talking` 을 전체 판 10·핵심본 5문항까지 싣는다.
+    **이 판의 표와 기사에서 나온 숫자로만** 답한다."""
     N = C["N"]
     qs = N.d.get("talking") or []
     if qs:
@@ -952,7 +959,7 @@ def sec_talking(C):
     else:
         qs = C["fb_talking"]
     cards = "\n".join(card("Q. " + q.get("q_ko", ""), "Q. " + q.get("q_en", ""),
-                           q.get("a_ko", ""), q.get("a_en", "")) for q in qs[:3 if CORE[0] else 4])
+                           q.get("a_ko", ""), q.get("a_en", "")) for q in qs[:TALK_CORE if CORE[0] else TALK_FULL])
     a, b = N.get("talking_lede",
                  "아래 답변은 <strong>모두 이 판의 표에서 나온 숫자로만</strong> 만들었습니다. "
                  "<strong>확정된 투자 판단이 아닙니다.</strong>",
