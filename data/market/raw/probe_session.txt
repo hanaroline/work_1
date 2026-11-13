@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-11-13 11:11:02 KST
+세션을 지닌 채 API 부르기 2026-11-13 11:35:43 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 133875 bytes
@@ -16,12 +16,12 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 124632 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8765 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"018","officeHname":"이데일리","articleId":"0006409388","title":"\"난 쓰레기…아내가 걱정\" 젠슨 황 사임 직전 무슨 일이","datetime":"2026-11-13 10:43:09","type":"1","subcontent":"중국 스파이 의혹을 받는 여성과 불륜 
+        HTTP 200 · 8788 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"215","officeHname":"한국경제TV","articleId":"0001272642","title":"주가 폭락하자 '덥석?'…삼성전자는 왜 냉각기업을 원할까 [B급기자의 B급리포트]","datetime":"2026-11-13 11:26:12","type":"1","subcontent":"삼성전자가 미
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8765 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"018","officeHname":"이데일리","articleId":"0006409388","title":"\"난 쓰레기…아내가 걱정\" 젠슨 황 사임 직전 무슨 일이","datetime":"2026-11-13 10:43:09","type":"1","subcontent":"중국 스파이 의혹을 받는 여성과 불륜 
+        HTTP 200 · 8788 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"215","officeHname":"한국경제TV","articleId":"0001272642","title":"주가 폭락하자 '덥석?'…삼성전자는 왜 냉각기업을 원할까 [B급기자의 B급리포트]","datetime":"2026-11-13 11:26:12","type":"1","subcontent":"삼성전자가 미
         남김: data/market/raw/session_list.json
 
 ### 시장지표
@@ -33,7 +33,7 @@
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
         HTTP 200 · 2414 bytes · JSON!
-        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
+        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","s
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
         HTTP 200 · 5049 bytes · JSON!
