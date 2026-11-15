@@ -43,7 +43,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # ubuntu-latest 가 26.04 로 바뀌어 playwright 1.56.1 이 크로미움을 못 깐다(2026-11-16)
     steps:
       - uses: actions/checkout@v4
         with:
