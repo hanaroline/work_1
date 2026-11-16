@@ -1546,6 +1546,7 @@ class Handler(BaseHTTPRequestHandler):
             title = title or re.sub(r"\.[^.]+$", "", file_name)
         elif pasted and not url:
             kind = "text"
+            title = re.sub(r"\s+", " ", (d.get("title") or "")).strip()[:200]
         if kind == "video" and pasted:
             engine = text_engine()  # 영상 대본을 붙여넣었으면 글로 정리한다
             kind = "text"

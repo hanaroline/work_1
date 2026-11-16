@@ -186,8 +186,8 @@ textarea.field{min-height:130px;resize:vertical;line-height:1.55}
 .author .avatar{width:42px;height:42px;font-size:17px}
 .author .nm{flex:1;font-size:16px}
 .author .lock{font-size:12.5px;color:var(--faint)}
-.seg{display:grid;grid-template-columns:repeat(4,1fr);background:var(--seg);border:1px solid var(--line);border-radius:18px;padding:5px;gap:4px}
-.seg button{border:0;background:none;border-radius:14px;padding:9px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-weight:600;font-size:14px;color:var(--ink)}
+.seg{display:grid;grid-template-columns:repeat(5,1fr);background:var(--seg);border:1px solid var(--line);border-radius:18px;padding:5px;gap:4px}
+.seg button{border:0;background:none;border-radius:14px;padding:9px 1px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-weight:600;font-size:13px;white-space:nowrap;letter-spacing:-.3px;color:var(--ink)}
 .seg button svg{width:22px;height:22px}
 .seg button[aria-pressed="true"]{background:var(--card);color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .drop{border:2px dashed var(--line);background:var(--drop);border-radius:18px;padding:20px 16px;text-align:center}
@@ -343,6 +343,7 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
       <button type="button" data-k="youtube" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="4"/><path d="M10 9l5 3-5 3z" fill="currentColor"/></svg>유튜브</button>
       <button type="button" data-k="image" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 16l-5-5-9 9"/></svg>스크린샷</button>
       <button type="button" data-k="pdf" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>기타(PDF)</button>
+      <button type="button" data-k="text" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>텍스트</button>
     </div>
 
     <div data-for="article">
@@ -351,6 +352,13 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
       <div class="lbl"><label for="aText">기사 본문</label> <small>(선택)</small></div>
       <textarea class="field" id="aText" placeholder="유료·로그인 기사는 본문을 전체 선택해 붙여넣어 주세요"></textarea>
       <div class="hint" id="aHint">주소만 넣으면 AI가 기사를 직접 읽고 정리합니다. 사이트가 막혀 있으면 카드에 ‘본문 붙여 AI 정리’ 칸이 생깁니다. 주소 없이 본문만 넣어도 됩니다.</div>
+    </div>
+    <div data-for="text" class="hidden">
+      <div class="lbl"><label for="tTitle">제목</label> <small>(선택)</small></div>
+      <input class="field" type="text" id="tTitle" maxlength="200" placeholder="비워 두면 AI가 제목을 붙입니다">
+      <div class="lbl"><label for="tText">본문</label> <small id="tCount"></small></div>
+      <textarea class="field" id="tText" rows="10" style="min-height:220px" placeholder="메모, 카톡·메일로 받은 글, 회의 내용 등을 쓰거나 붙여넣어 주세요"></textarea>
+      <div class="hint">링크나 파일 없이 글만 올립니다. AI가 이 글을 읽고 요약·핵심 정리를 붙입니다. 고객 이름·계좌번호 같은 개인정보는 넣지 마세요.</div>
     </div>
     <div data-for="youtube" class="hidden">
       <div class="lbl"><label for="yUrl">유튜브 주소</label></div>
@@ -393,7 +401,7 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
     <button class="cta" id="submit" type="button" disabled><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M10 3l1.8 5.2L17 10l-5.2 1.8L10 17l-1.8-5.2L3 10l5.2-1.8z"/><path d="M18 14l.9 2.1L21 17l-2.1.9L18 20l-.9-2.1L15 17l2.1-.9z"/></svg><span>올리고 AI 요약 받기</span></button>
     <div class="status" id="status" aria-live="polite"></div>
 
-    <div class="foot"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg><div id="footText">AI가 기사, 스크린샷, 유튜브, PDF를 읽고 핵심을 정리해 직원들과 공유합니다. 자료에 없는 내용은 지어내지 않고, 읽지 못하면 그 이유를 카드에 알려 드립니다.</div></div>
+    <div class="foot"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg><div id="footText">AI가 기사, 스크린샷, 유튜브, PDF, 직접 쓴 글을 읽고 핵심을 정리해 직원들과 공유합니다. 자료에 없는 내용은 지어내지 않고, 읽지 못하면 그 이유를 카드에 알려 드립니다.</div></div>
   </div>
 </div>
 
@@ -724,6 +732,7 @@ function aiLine(p) {
   return `${who}가 ${what} 정리했어요`;
 }
 function titleOf(p, s) {
+  if (p.kind === "text" && !p.url && p.source_title) return p.source_title;  // 직원이 직접 붙인 제목
   if (s.title) return s.title;
   if (p.source_title) return p.source_title;
   if (p.file_name) return p.file_name;
@@ -980,10 +989,12 @@ function hasMaterial() {
   if (kind === "article") return !!($("#aUrl").value.trim() || $("#aText").value.trim());
   if (kind === "youtube") return !!$("#yUrl").value.trim();
   if (kind === "image") return !!imgFile;
+  if (kind === "text") return $("#tText").value.trim().length > 0;
   return !!pdf;
 }
 function validate() { $("#submit").disabled = sending || !$("#agree").checked || !hasMaterial(); }
-for (const id of ["#aUrl", "#yUrl", "#aText", "#yText"]) $(id).addEventListener("input", validate);
+for (const id of ["#aUrl", "#yUrl", "#aText", "#yText", "#tText"]) $(id).addEventListener("input", validate);
+$("#tText").addEventListener("input", () => { const n = $("#tText").value.trim().length; $("#tCount").textContent = n ? `${n.toLocaleString()}자` : ""; });
 $("#agree").addEventListener("change", validate);
 function say(msg, err) { const s = $("#status"); s.textContent = msg; s.className = "status" + (err ? " err" : ""); }
 function readFile(f) {
@@ -1023,6 +1034,7 @@ $("#submit").onclick = async () => {
   if (sending) return;
   const body = { note: $("#wm").value.trim() };
   if (kind === "article") { body.url = $("#aUrl").value.trim(); body.text = $("#aText").value.trim(); }
+  else if (kind === "text") { body.text = $("#tText").value.trim(); body.title = $("#tTitle").value.trim(); }
   else if (kind === "youtube") {
     body.url = $("#yUrl").value.trim(); body.text = $("#yText").value.trim();
     if (!isYT(body.url)) { say("유튜브 주소가 아닙니다. (youtube.com/watch?v=… 또는 youtu.be/…)", true); return; }
@@ -1054,12 +1066,13 @@ async function submitPost(body) {
   }
 }
 function resetForm() {
-  for (const id of ["#aUrl", "#aText", "#yUrl", "#yText", "#wm"]) $(id).value = "";
+  for (const id of ["#aUrl", "#aText", "#yUrl", "#yText", "#tTitle", "#tText", "#wm"]) $(id).value = "";
+  $("#tCount").textContent = "";
   if (imgUrl) URL.revokeObjectURL(imgUrl); imgFile = imgUrl = null; drawPreview();
   pdf = null; $("#pdfFile").value = ""; $("#pdfLine").classList.add("hidden");
   $("#agree").checked = false; say(""); validate();
 }
-try { const k = localStorage.getItem("ih_kind"); if (["article", "youtube", "image", "pdf"].includes(k)) setKind(k); } catch (_) {}
+try { const k = localStorage.getItem("ih_kind"); if (["article", "youtube", "image", "pdf", "text"].includes(k)) setKind(k); } catch (_) {}
 
 // ── 계정 ──
 $("#menuBtn").onclick = () => { $("#pwMsg").textContent = $("#sessMsg").textContent = ""; $("#acctDlg").showModal(); };
