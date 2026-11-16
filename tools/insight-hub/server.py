@@ -757,16 +757,27 @@ class AIError(Exception):
     pass
 
 
+# 글 하나를 정리하는 데 쓸 수 있는 시간. 서버리스 함수는 300초에 끊기므로 그 안에서 끝낸다.
+RUN_BUDGET_SEC = 280 if SERVERLESS else 900
+AI_ATTEMPT_SEC = 150 if SERVERLESS else 600    # 한 번 부를 때 기다리는 최대 시간 — 넘으면 끊고 다시 부른다
+_run_ctx = threading.local()
+
+
 def _post_json(url: str, headers: dict, body: dict, timeout: int = 300) -> dict:
-    timeout = min(timeout, AI_TIMEOUT_CAP)
     req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
                                  headers={"content-type": "application/json", **headers})
-    # 429(한도)·5xx(과부하)는 잠깐 뒤 다시 부르면 대개 된다 — 두 번까지 저절로 다시 부른다.
-    # 시간 초과는 다시 부르지 않는다(이미 오래 기다렸고 함수 시간 300초를 넘길 수 있다).
-    for attempt, wait in enumerate((2, 6, None)):
+    deadline = getattr(_run_ctx, "deadline", None) or time.time() + RUN_BUDGET_SEC
+    # 429(한도)·5xx(과부하)·응답 없음은 다시 부르면 대개 된다 — 남은 시간 안에서 두 번까지 다시 부른다.
+    # 한 번에 오래 매달리지 않게 시도마다 상한(AI_ATTEMPT_SEC)을 둔다: 응답 없이 멈춘 요청 하나가
+    # 함수 시간을 다 써 버리던 일(240초 대기 후 실패)을 막는다.
+    for attempt, wait in enumerate((2, 5, None)):
         t0 = time.time()
+        left = deadline - t0
+        if left < 25:
+            raise AIError("시간 초과: AI가 정해진 시간 안에 답하지 않았습니다")
+        per_try = max(20, min(timeout, AI_TIMEOUT_CAP, AI_ATTEMPT_SEC if attempt == 0 else left, left - 3))
         try:
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
+            with urllib.request.urlopen(req, timeout=per_try) as resp:
                 out = json.loads(resp.read())
             print(f"[ai] {url.rsplit('/', 1)[-1]} {time.time() - t0:.1f}s (시도 {attempt + 1})", file=sys.stderr)
             return out
@@ -778,7 +789,12 @@ def _post_json(url: str, headers: dict, body: dict, timeout: int = 300) -> dict:
                 continue
             raise AIError(f"HTTP {e.code}: {detail}") from None
         except (urllib.error.URLError, TimeoutError, socket.timeout) as e:
-            print(f"[ai] 연결 실패 {time.time() - t0:.1f}s: {e}", file=sys.stderr)
+            print(f"[ai] 연결 실패 {time.time() - t0:.1f}s (시도 {attempt + 1}): {e}", file=sys.stderr)
+            timed_out = isinstance(e, (TimeoutError, socket.timeout)) or "timed out" in str(e)
+            if timed_out and wait is not None and deadline - time.time() > 40:
+                continue
+            if timed_out:
+                raise AIError("시간 초과: AI가 정해진 시간 안에 답하지 않았습니다") from None
             raise AIError(f"연결 실패: {e}") from None
 
 
@@ -916,9 +932,11 @@ def call_gemini_blocks(content: list[dict]) -> tuple[dict, str]:
     url = f"{GEMINI_BASE}/v1beta/models/{urllib.parse.quote(GEMINI_MODEL)}:generateContent"
     # 글 정리는 깊이 생각할 일이 아니다 — 생각 수준을 낮춰 기다림을 줄인다.
     # 모델이 그 설정을 모르면(HTTP 400) 설정 없이 한 번 더 부른다.
-    # 기본은 가장 낮은 "minimal". 모델이 모르면(HTTP 400) "low" → 설정 없음 순으로 내려간다.
-    level = os.environ.get("INSIGHT_GEMINI_THINKING", "minimal").strip()
+    # 기본은 "low"(gemini-3.8-flash 는 "minimal" 을 받지 않는다 — 2026-11-16 서버 기록).
+    # 모델이 모르면(HTTP 400) "low" → 설정 없음 순으로 내려가고, 통한 수준을 기억해 다음부터 바로 쓴다.
+    level = os.environ.get("INSIGHT_GEMINI_THINKING", "low").strip()
     levels = [lv for lv in dict.fromkeys([level, "low"] if level else []) if lv] + [None]
+    levels = levels[levels.index(_gemini_level_ok[0]):] if _gemini_level_ok and _gemini_level_ok[0] in levels else levels
     for i, lv in enumerate(levels):
         if lv:
             body["generationConfig"]["thinkingConfig"] = {"thinkingLevel": lv}
@@ -926,6 +944,7 @@ def call_gemini_blocks(content: list[dict]) -> tuple[dict, str]:
             body["generationConfig"].pop("thinkingConfig", None)
         try:
             resp = _post_json(url, {"x-goog-api-key": key}, body)
+            _gemini_level_ok[:] = [lv]
             break
         except AIError as e:
             if i == len(levels) - 1 or not str(e).startswith("HTTP 400"):
@@ -939,6 +958,9 @@ def call_gemini_blocks(content: list[dict]) -> tuple[dict, str]:
     parts_out = (cands[0].get("content") or {}).get("parts") or []
     text = "".join(p.get("text", "") for p in parts_out if not p.get("thought"))
     return parse_json(text), resp.get("modelVersion", GEMINI_MODEL)
+
+
+_gemini_level_ok: list = []   # 이 서버에서 통한 생각 수준(첫 원소)
 
 
 def parse_json(text: str) -> dict:
@@ -1012,10 +1034,18 @@ def set_status(pid: int, status: str, msg: str = "", **cols) -> None:
 
 
 def process(pid: int) -> None:
+    try:
+        _process(pid)
+    finally:
+        _run_ctx.deadline = None   # 같은 스레드의 다음 요청이 지난 마감을 물려받지 않게
+
+
+def _process(pid: int) -> None:
     p = q("SELECT * FROM posts WHERE id=?", (pid,), one=True)
     if not p:
         return
     set_status(pid, "working", "AI가 읽는 중")
+    _run_ctx.deadline = time.time() + RUN_BUDGET_SEC
     notes: list[str] = []
     note = p["note"] or ""
     user_hint = f"\n\n올린 직원의 메모(참고용, 자료 내용이 아님): {note}" if note else ""
@@ -1056,6 +1086,7 @@ def process(pid: int) -> None:
                           (art["title"], art["site"], art["published"], pid))
                         meta.update({"제목": art["title"], "매체": art["site"], "게시일": art["published"]})
                         if len(text) < MIN_TEXT_CHARS:
+                            print(f"[run {pid}] 본문 짧음 {len(text)}자 — 읽지 못함으로 멈춤", file=sys.stderr)
                             set_status(pid, "blocked",
                                        "이 페이지에서 본문을 읽지 못했습니다(로그인·유료 기사이거나 화면을 스크립트로 그리는 사이트). "
                                        "본문을 복사해 붙여넣거나 스크린샷·PDF로 올려 주세요.")
@@ -1082,8 +1113,8 @@ def process(pid: int) -> None:
     except AIError as e:
         print(f"[run {pid}] AI 실패: {str(e)[:300]}", file=sys.stderr)
         msg = str(e)
-        if re.match(r"HTTP (429|5\d\d)", msg):
-            msg = "AI 서버가 붐벼 세 번 불러도 답하지 않았습니다. 잠시 뒤 「다시 시도」를 눌러 주세요. (" + msg[:80] + ")"
+        if re.match(r"HTTP (429|5\d\d)|시간 초과", msg):
+            msg = "AI 서버가 붐벼 여러 번 불러도 제때 답하지 않았습니다. 잠시 뒤 「다시 시도」를 눌러 주세요. (" + msg[:80] + ")"
         set_status(pid, "failed", msg)
     except urllib.error.HTTPError as e:
         set_status(pid, "blocked", f"원문 사이트가 접근을 거절했습니다(HTTP {e.code}). 본문을 붙여넣거나 스크린샷·PDF로 올려 주세요.")
