@@ -323,7 +323,7 @@ def blob_names(prefix: str) -> list[str]:
     return [f.name for f in UPLOAD_DIR.glob(prefix + "*")]
 
 
-DB_LIMIT_MB = int(os.environ.get("INSIGHT_DB_LIMIT_MB", "512"))  # 화면에 비교해 보일 한도(Neon 무료 요금제 기준)
+DB_LIMIT_MB = int(os.environ.get("INSIGHT_DB_LIMIT_MB", "1024"))  # 화면에 비교해 보일 한도(Neon 무료 요금제: 2026-10 부터 프로젝트당 1GB)
 
 
 def storage_usage() -> dict:
