@@ -711,14 +711,25 @@ def _post_json(url: str, headers: dict, body: dict, timeout: int = 300) -> dict:
     timeout = min(timeout, AI_TIMEOUT_CAP)
     req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
                                  headers={"content-type": "application/json", **headers})
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return json.loads(resp.read())
-    except urllib.error.HTTPError as e:
-        detail = e.read().decode("utf-8", "replace")[:600]
-        raise AIError(f"HTTP {e.code}: {detail}") from None
-    except (urllib.error.URLError, TimeoutError, socket.timeout) as e:
-        raise AIError(f"연결 실패: {e}") from None
+    # 429(한도)·5xx(과부하)는 잠깐 뒤 다시 부르면 대개 된다 — 두 번까지 저절로 다시 부른다.
+    # 시간 초과는 다시 부르지 않는다(이미 오래 기다렸고 함수 시간 300초를 넘길 수 있다).
+    for attempt, wait in enumerate((2, 6, None)):
+        t0 = time.time()
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                out = json.loads(resp.read())
+            print(f"[ai] {url.rsplit('/', 1)[-1]} {time.time() - t0:.1f}s (시도 {attempt + 1})", file=sys.stderr)
+            return out
+        except urllib.error.HTTPError as e:
+            detail = e.read().decode("utf-8", "replace")[:600]
+            print(f"[ai] HTTP {e.code} {time.time() - t0:.1f}s (시도 {attempt + 1}): {detail[:200]}", file=sys.stderr)
+            if e.code in (429, 500, 502, 503, 504) and wait is not None:
+                time.sleep(wait)
+                continue
+            raise AIError(f"HTTP {e.code}: {detail}") from None
+        except (urllib.error.URLError, TimeoutError, socket.timeout) as e:
+            print(f"[ai] 연결 실패 {time.time() - t0:.1f}s: {e}", file=sys.stderr)
+            raise AIError(f"연결 실패: {e}") from None
 
 
 def gemini_upload(raw: bytes, mime: str, key: str) -> str:
@@ -855,16 +866,20 @@ def call_gemini_blocks(content: list[dict]) -> tuple[dict, str]:
     url = f"{GEMINI_BASE}/v1beta/models/{urllib.parse.quote(GEMINI_MODEL)}:generateContent"
     # 글 정리는 깊이 생각할 일이 아니다 — 생각 수준을 낮춰 기다림을 줄인다.
     # 모델이 그 설정을 모르면(HTTP 400) 설정 없이 한 번 더 부른다.
-    level = os.environ.get("INSIGHT_GEMINI_THINKING", "low").strip()
-    if level:
-        body["generationConfig"]["thinkingConfig"] = {"thinkingLevel": level}
-    try:
-        resp = _post_json(url, {"x-goog-api-key": key}, body)
-    except AIError as e:
-        if not level or not str(e).startswith("HTTP 400"):
-            raise
-        body["generationConfig"].pop("thinkingConfig", None)
-        resp = _post_json(url, {"x-goog-api-key": key}, body)
+    # 기본은 가장 낮은 "minimal". 모델이 모르면(HTTP 400) "low" → 설정 없음 순으로 내려간다.
+    level = os.environ.get("INSIGHT_GEMINI_THINKING", "minimal").strip()
+    levels = [lv for lv in dict.fromkeys([level, "low"] if level else []) if lv] + [None]
+    for i, lv in enumerate(levels):
+        if lv:
+            body["generationConfig"]["thinkingConfig"] = {"thinkingLevel": lv}
+        else:
+            body["generationConfig"].pop("thinkingConfig", None)
+        try:
+            resp = _post_json(url, {"x-goog-api-key": key}, body)
+            break
+        except AIError as e:
+            if i == len(levels) - 1 or not str(e).startswith("HTTP 400"):
+                raise
     cands = resp.get("candidates") or []
     if not cands:
         reason = (resp.get("promptFeedback") or {}).get("blockReason", "응답 없음")
@@ -977,7 +992,9 @@ def process(pid: int) -> None:
                 text = p["pasted_text"] or ""
                 label = "직원이_붙여넣은_본문"
                 if not text and p["url"]:
+                    t_fetch = time.time()
                     data, ctype, final = fetch(p["url"])
+                    print(f"[run {pid}] 원문 받기 {time.time() - t_fetch:.1f}s, {len(data):,}바이트", file=sys.stderr)
                     if "pdf" in ctype.lower() or data[:5] == b"%PDF-":
                         content.append({"type": "document", "source": {"type": "base64", "media_type": "application/pdf",
                                                                         "data": base64.b64encode(data).decode()}})
@@ -998,7 +1015,9 @@ def process(pid: int) -> None:
                     notes += n
                     content.append({"type": "text", "text": blk})
                 content.append({"type": "text", "text": "위 자료를 정리하십시오." + user_hint})
+            t_ai = time.time()
             summary, model = (call_gemini_blocks(content) if text_engine() == "gemini" else call_claude(content))
+            print(f"[run {pid}] AI 정리 {time.time() - t_ai:.1f}s ({model})", file=sys.stderr)
         summary["notes"] = notes
         if not summary["readable"]:
             set_status(pid, "blocked", "AI가 자료 본문을 읽을 수 없다고 판단했습니다: " + summary["one_line"],
@@ -1011,7 +1030,11 @@ def process(pid: int) -> None:
     except BlockedURL as e:
         set_status(pid, "failed", str(e))
     except AIError as e:
-        set_status(pid, "failed", str(e))
+        print(f"[run {pid}] AI 실패: {str(e)[:300]}", file=sys.stderr)
+        msg = str(e)
+        if re.match(r"HTTP (429|5\d\d)", msg):
+            msg = "AI 서버가 붐벼 세 번 불러도 답하지 않았습니다. 잠시 뒤 「다시 시도」를 눌러 주세요. (" + msg[:80] + ")"
+        set_status(pid, "failed", msg)
     except urllib.error.HTTPError as e:
         set_status(pid, "blocked", f"원문 사이트가 접근을 거절했습니다(HTTP {e.code}). 본문을 붙여넣거나 스크린샷·PDF로 올려 주세요.")
     except (urllib.error.URLError, TimeoutError, socket.timeout) as e:
