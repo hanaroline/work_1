@@ -42,6 +42,7 @@ header.top{display:flex;align-items:center;gap:8px;margin:4px 0 14px}
 header.top h1{font-size:21px;margin:0;flex:1;display:flex;align-items:center;gap:8px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 header.top h1::before,.sheet h2::before,.auth h2::before{content:"";flex:none;width:4px;height:20px;border-radius:2px;background:var(--accent)}
 .who{font-size:13px;color:var(--sub);white-space:nowrap}
+@media (max-width:440px){.who{display:none}}
 .hbtn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:5px 10px;font-size:13px;cursor:pointer;color:var(--sub)}
 .btn{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:8px 14px;cursor:pointer}
 .btn:disabled{opacity:.45;cursor:default}
@@ -238,6 +239,15 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
 .admin th{color:var(--sub);font-weight:500;font-size:12px}
 .note{background:var(--chip);border-radius:10px;padding:8px 10px;font-size:13.5px;margin:6px 0;white-space:pre-wrap}
 .code{font:600 20px/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:2px;background:var(--chip);border-radius:10px;padding:10px;text-align:center;margin:8px 0;user-select:all}
+.inst ol{margin:8px 0 4px;padding-left:22px}.inst li{margin:6px 0}
+.inst .k{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:0 6px;font-weight:700;background:var(--chip)}
+.inst .ib{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.inst .ib img{width:56px;height:56px;border-radius:14px}
+.inst .tabs{margin:10px 0 4px}
+.installbar{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--accent);border-radius:16px;padding:10px 12px;margin:0 0 12px}
+.installbar img{width:36px;height:36px;border-radius:9px;flex:none}
+.installbar div{flex:1;font-size:13.5px;color:var(--sub)}.installbar b{display:block;color:var(--ink);font-size:14.5px}
+.installbar .x{border:0;background:none;color:var(--faint);font-size:18px;cursor:pointer;padding:4px}
 .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:var(--ink);color:var(--card);padding:8px 14px;border-radius:10px;font-size:13.5px;z-index:50;max-width:90vw}
 </style>
 </head>
@@ -246,6 +256,7 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
   <header class="top">
     <h1 id="centerName">{{CENTER_NAME}}</h1>
     <span class="who hidden" id="who"></span>
+    <button class="hbtn hidden" id="installBtn" type="button">앱 설치</button>
     <button class="hbtn hidden" id="adminBtn" type="button">관리</button>
     <button class="hbtn hidden" id="menuBtn" type="button" aria-label="내 계정">계정</button>
   </header>
@@ -267,6 +278,7 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
         <button class="cta" type="submit" style="margin-top:14px;font-size:16px;padding:13px">입장</button>
         <div class="msg err" id="loginMsg" role="alert"></div>
         <p class="s" style="margin-top:10px">한 번 들어오면 이 기기에서는 다음부터 바로 열립니다(로그아웃하기 전까지).</p>
+        <button class="btn" type="button" data-install style="width:100%;margin-top:4px">📲 휴대폰 바탕화면에 앱으로 설치하기</button>
       </form>
       <form id="joinForm" class="hidden" autocomplete="off">
         <label class="f" for="jName">이름 (관리자가 등록한 그대로)</label>
@@ -285,6 +297,7 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
 
   <!-- 피드 -->
   <section id="feedView" class="hidden">
+    <div class="installbar hidden" id="installBar"><img src="/icon-192.png" alt=""><div><b>바탕화면에 앱으로 설치</b>아이콘 한 번으로 바로 열립니다</div><button class="btn primary small" type="button" data-install>설치</button><button class="x" type="button" id="installBarX" aria-label="닫기">×</button></div>
     <div class="intro"><b>읽고, 정리하고, 공유까지 AI가</b>기사·유튜브·캡처·PDF를 올리면 AI가 읽고 정리해 센터 모두가 함께 봅니다.</div>
     <div class="kchips" id="fKind" role="group" aria-label="자료 종류">
       <button type="button" data-k="" aria-pressed="true">전체</button>
@@ -421,6 +434,33 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
   </div>
 </dialog>
 
+<dialog id="instDlg" class="inst">
+  <div class="dh"><h2>휴대폰에 앱 설치</h2><button class="xbtn" type="button" data-close aria-label="닫기">×</button></div>
+  <div class="db">
+    <div class="ib"><img src="/icon-192.png" alt=""><div><b id="instName"></b><div style="font-size:13px;color:var(--sub)">앱스토어 없이 바탕화면에 아이콘으로 설치됩니다. 설치 후에는 주소창 없이 앱처럼 열리고, 새 기능은 저절로 반영됩니다.</div></div></div>
+    <div id="instInapp" class="warnbox hidden"></div>
+    <div class="tabs" role="tablist"><button type="button" role="tab" id="instA" aria-selected="true">안드로이드 (갤럭시)</button><button type="button" role="tab" id="instI" aria-selected="false">아이폰</button></div>
+    <div id="instAndroid">
+      <button class="cta hidden" type="button" id="instGo" style="font-size:16px;padding:13px;margin:10px 0">📲 지금 설치하기</button>
+      <ol>
+        <li><b>크롬</b> 또는 <b>삼성 인터넷</b>으로 이 주소를 엽니다.</li>
+        <li>오른쪽 위 <span class="k">⋮</span> (삼성 인터넷은 아래 <span class="k">≡</span>) 를 누릅니다.</li>
+        <li><b>「홈 화면에 추가」</b> 또는 <b>「앱 설치」</b>를 누르고 <b>설치</b>를 누릅니다.</li>
+        <li>바탕화면에 생긴 주황 그래프 아이콘으로 엽니다.</li>
+      </ol>
+    </div>
+    <div id="instIos" class="hidden">
+      <ol>
+        <li>반드시 <b>사파리(Safari)</b>로 이 주소를 엽니다. (카카오톡·네이버 앱 안에서는 안 됩니다)</li>
+        <li>아래 가운데 <span class="k">공유 □↑</span> 버튼을 누릅니다.</li>
+        <li>목록을 내려 <b>「홈 화면에 추가」</b>를 누르고, 오른쪽 위 <b>추가</b>를 누릅니다.</li>
+        <li>바탕화면에 생긴 아이콘으로 엽니다. 처음 한 번은 다시 로그인해야 할 수 있습니다.</li>
+      </ol>
+    </div>
+    <div class="row" style="margin-top:10px"><button class="btn small" type="button" id="instCopy">설치 안내 주소 복사</button><span style="font-size:12.5px;color:var(--sub)">직원에게 보내면 이 안내가 바로 열립니다</span></div>
+  </div>
+</dialog>
+
 <dialog id="postDlg">
   <div class="dh"><h2>자료</h2><button class="xbtn" type="button" data-close aria-label="닫기">×</button></div>
   <div class="db"></div>
@@ -479,7 +519,7 @@ function showAuth() {
   state.me = null;
   $("#authView").classList.remove("hidden");
   for (const id of ["#feedView", "#fab", "#who", "#menuBtn", "#adminBtn"]) $(id).classList.add("hidden");
-  closeSheet(true); stopPolling();
+  closeSheet(true); stopPolling(); showInstallUi();
 }
 function setTab(join) {
   $("#tabLogin").setAttribute("aria-selected", !join); $("#tabJoin").setAttribute("aria-selected", join);
@@ -519,7 +559,7 @@ async function boot() {
   const lim = Math.round(state.maxUpload / 1048576);
   $("#pdfLimit").textContent = `리포트·자료 PDF 1개 · ${lim}MB까지`;
   $("#agreeSub").textContent = `올린 내용은 AI 요약을 위해 외부 서비스(글·사진·PDF는 ${textAI() === "Gemini" ? "Google Gemini" : "Anthropic Claude"}, 유튜브는 Google Gemini)로 전송됩니다.`;
-  fillSelects(); loadFeed(); loadTags(); startPolling();
+  fillSelects(); loadFeed(); loadTags(); startPolling(); showInstallUi();
 }
 
 // ── 필터 ──
@@ -1004,7 +1044,7 @@ $("#pwForm").onsubmit = async ev => {
 $("#adminBtn").onclick = async () => { $("#invOut").textContent = ""; await loadAdmin(); $("#adminDlg").showModal(); };
 function showCode(name, code, valid) {
   valid = valid || state.inviteLabel || "3일";
-  const msg = `[${document.title}] ${name} 님 초대 코드: ${code}\n주소: ${location.origin}/#join\n${valid} 안에 이름과 이 코드로 처음 입장해 비밀번호를 정하세요(한 번만 쓸 수 있고, 5번 틀리면 무효).\n한 번 들어오면 그 기기에서는 다음부터 바로 열립니다.`;
+  const msg = `[${document.title}] ${name} 님 초대 코드: ${code}\n주소: ${location.origin}/#join\n${valid} 안에 이름과 이 코드로 처음 입장해 비밀번호를 정하세요(한 번만 쓸 수 있고, 5번 틀리면 무효).\n한 번 들어오면 그 기기에서는 다음부터 바로 열립니다.\n휴대폰 바탕화면에 앱으로 설치: 입장 후 위쪽 「앱 설치」를 누르세요.`;
   $("#invOut").replaceChildren(h("div", { class: "note" }, h("div", { text: `${name} 님 코드 (지금 한 번만 보입니다)` }), h("div", { class: "code", text: code }),
     h("button", { class: "btn small", type: "button", text: "안내문 복사", onclick: () => copyText(msg) })));
 }
@@ -1035,9 +1075,56 @@ async function loadAdmin() {
     }))));
 }
 
+// ── 앱 설치 ──
+const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+const UA = navigator.userAgent, isIOS = /iPhone|iPad|iPod/.test(UA) || (/Macintosh/.test(UA) && navigator.maxTouchPoints > 1);
+const inApp = (UA.match(/KAKAOTALK|NAVER\(inapp|Instagram|FBAN|FBAV|Line\/|everytimeApp|DaumApps|band/i) || [])[0];
+let deferredInstall = null;
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredInstall = e; $("#instGo").classList.remove("hidden"); showInstallUi(); });
+window.addEventListener("appinstalled", () => { deferredInstall = null; showInstallUi(); toast("설치했습니다. 바탕화면 아이콘으로 여세요."); });
+function showInstallUi() {
+  const on = !standalone();
+  let off = false; try { off = localStorage.getItem("ih_instbar") === "off"; } catch (_) {}
+  $("#installBar").classList.toggle("hidden", !on || off || !state.me);
+  $("#installBtn").classList.toggle("hidden", !on || !state.me || !off);
+  for (const b of document.querySelectorAll("[data-install]")) b.classList.toggle("hidden", !on);
+}
+function instTab(ios) {
+  $("#instA").setAttribute("aria-selected", !ios); $("#instI").setAttribute("aria-selected", ios);
+  $("#instAndroid").classList.toggle("hidden", ios); $("#instIos").classList.toggle("hidden", !ios);
+}
+$("#instA").onclick = () => instTab(false); $("#instI").onclick = () => instTab(true);
+function openExternal() {
+  const url = location.origin + "/#install";
+  if (/KAKAOTALK/i.test(UA)) location.href = "kakaotalk://web/openExternal?url=" + encodeURIComponent(url);
+  else if (!isIOS) location.href = "intent://" + location.host + "/#install#Intent;scheme=https;package=com.android.chrome;end";
+}
+function openInstall() {
+  $("#instName").textContent = document.title;
+  instTab(isIOS);
+  const w = $("#instInapp");
+  if (inApp) {
+    w.replaceChildren(h("div", { text: `지금은 ${/KAKAOTALK/i.test(inApp) ? "카카오톡" : "다른 앱"} 안의 브라우저라 설치가 되지 않습니다. ${isIOS ? "사파리" : "크롬"}로 열어 주세요.` }),
+      (isIOS && !/KAKAOTALK/i.test(inApp)) ? h("div", { style: "margin-top:6px", text: "오른쪽 아래(또는 위) ⋯ 메뉴 → 「Safari로 열기」 / 「다른 브라우저로 열기」" })
+        : h("button", { class: "btn small", type: "button", style: "margin-top:8px", text: (isIOS ? "사파리" : "크롬") + "로 열기", onclick: openExternal }));
+    w.classList.remove("hidden");
+  } else w.classList.add("hidden");
+  $("#instDlg").showModal();
+}
+document.addEventListener("click", async e => {
+  if (!e.target.closest("[data-install]")) return;
+  if (deferredInstall && !inApp) { deferredInstall.prompt(); const r = await deferredInstall.userChoice.catch(() => null); deferredInstall = null; if (!r || r.outcome !== "accepted") openInstall(); }
+  else openInstall();
+});
+$("#installBtn").onclick = openInstall;
+$("#instGo").onclick = async () => { if (!deferredInstall) return; deferredInstall.prompt(); await deferredInstall.userChoice.catch(() => {}); deferredInstall = null; $("#instGo").classList.add("hidden"); };
+$("#installBarX").onclick = () => { try { localStorage.setItem("ih_instbar", "off"); } catch (_) {} showInstallUi(); };
+$("#instDlg").addEventListener("close", () => { if (location.hash === "#install") history.replaceState(null, "", location.pathname); });
+$("#instCopy").onclick = () => copyText(location.origin + "/#install");
+
 // ── 시작 ──
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("/sw.js").catch(() => {});
-const fromHash = () => { const m = location.hash.match(/^#p(\d+)$/); if (m && state.me) openPost(+m[1]); };
+const fromHash = () => { showInstallUi(); if (location.hash === "#install") { openInstall(); return; } const m = location.hash.match(/^#p(\d+)$/); if (m && state.me) openPost(+m[1]); };
 window.addEventListener("hashchange", fromHash);
 boot().then(fromHash).catch(e => { toast(e.message); });
 </script>
