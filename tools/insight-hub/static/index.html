@@ -483,7 +483,7 @@ function postCard(p, full) {
 
   if (p.status === "queued" || p.status === "working") {
     card.append(h("div", { class: "status" }, h("span", { class: "spin", "aria-hidden": "true" }),
-      p.status === "queued" ? "정리 대기 중…" : (p.engine === "gemini" ? "Gemini가 영상을 보는 중… (몇 분 걸릴 수 있습니다)" : "Claude가 읽는 중…")));
+      p.status === "queued" ? "정리 대기 중…" : (p.kind === "video" ? "Gemini가 영상을 보는 중… (몇 분 걸릴 수 있습니다)" : (p.engine === "gemini" ? "Gemini" : "Claude") + "가 읽는 중… (보통 1분 안팎)")));
   } else if (p.status === "blocked" || p.status === "failed") {
     const box = h("div", { class: "status " + p.status }, h("div", { text: (p.status === "blocked" ? "⚠ " : "✕ ") + (p.status_msg || "정리하지 못했습니다") }));
     if (p.mine || state.me.role === "admin") {

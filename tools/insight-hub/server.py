@@ -750,7 +750,18 @@ def call_gemini_blocks(content: list[dict]) -> tuple[dict, str]:
         "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2},
     }
     url = f"{GEMINI_BASE}/v1beta/models/{urllib.parse.quote(GEMINI_MODEL)}:generateContent"
-    resp = _post_json(url, {"x-goog-api-key": key}, body)
+    # 글 정리는 깊이 생각할 일이 아니다 — 생각 수준을 낮춰 기다림을 줄인다.
+    # 모델이 그 설정을 모르면(HTTP 400) 설정 없이 한 번 더 부른다.
+    level = os.environ.get("INSIGHT_GEMINI_THINKING", "low").strip()
+    if level:
+        body["generationConfig"]["thinkingConfig"] = {"thinkingLevel": level}
+    try:
+        resp = _post_json(url, {"x-goog-api-key": key}, body)
+    except AIError as e:
+        if not level or not str(e).startswith("HTTP 400"):
+            raise
+        body["generationConfig"].pop("thinkingConfig", None)
+        resp = _post_json(url, {"x-goog-api-key": key}, body)
     cands = resp.get("candidates") or []
     if not cands:
         reason = (resp.get("promptFeedback") or {}).get("blockReason", "응답 없음")
