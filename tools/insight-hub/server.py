@@ -659,7 +659,10 @@ SYSTEM_PROMPT = f"""당신은 증권사 WM 센터의 리서치 보조입니다. 
 - 본문을 읽을 수 없거나(로그인 벽, 빈 페이지, 오류 화면) 투자와 무관한 자료라면 readable 을 false 로 하고 one_line 에 그 이유를 적습니다.
 - 매수·매도 권유 문장을 쓰지 않습니다. implications 에는 "자료가 말하는 시사점"을 자료의 주장으로서 적습니다(예: "필자는 ~로 본다").
 - 의견과 사실을 구분합니다. 근거가 약한 주장, 출처 없는 루머는 unverified 에 적습니다.
-- 한국어로, 짧고 단정한 문장으로 씁니다. key_points 는 3~6개, tags 는 3~6개(종목명·테마·지표 위주, '#' 없이).
+- 한국어로, 짧고 단정한 문장으로 씁니다. 직원이 1분 안에 읽을 분량이 목표입니다.
+- 개수 상한: key_points 3~5개, implications 1~3개, figures 최대 5개, risks 최대 3개, unverified 최대 3개, related 최대 8개, tags 3~6개(종목명·테마·지표 위주, '#' 없이).
+- figures 에는 자료의 핵심 주장을 뒷받침하는 숫자만 고릅니다. 곁가지 숫자, 같은 뜻을 되풀이하는 숫자는 넣지 않습니다. 기간·시점은 as_of 에만 쓰고 label 에 되풀이하지 않습니다.
+- 상한을 채우려고 억지로 늘리지 않습니다. 중요한 것이 적으면 적게 씁니다.
 - category 는 다음 중 하나: {", ".join(CATEGORIES)}.
 """
 
@@ -723,12 +726,26 @@ def call_gemini(video_url: str, note: str) -> tuple[dict, str]:
         raise AIError("GEMINI_API_KEY 가 설정되지 않았습니다 — 영상 정리는 Gemini 키가 있어야 합니다")
     prompt = (SYSTEM_PROMPT + "\n\n위 영상을 정리하십시오. key_points 의 at 에는 해당 내용이 나오는 영상 시각(mm:ss)을 적습니다."
               + (f"\n올린 직원의 메모: {note}" if note else "") + JSON_INSTRUCTION)
+    # 긴 영상도 제한 시간(서버리스 240초) 안에 끝나게: 화면은 낮은 해상도·드문 프레임으로 보고
+    # (말로 하는 영상은 소리가 핵심), 생각은 짧게. 이 설정을 모르는 모델이면 400 → 기본값으로 다시.
+    fast = {"mediaResolution": "MEDIA_RESOLUTION_LOW", "thinkingConfig": {"thinkingLevel": "low"}}
+    vpart = {"file_data": {"file_uri": video_url}}
     body = {
-        "contents": [{"parts": [{"file_data": {"file_uri": video_url}}, {"text": prompt}]}],
-        "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2},
+        "contents": [{"parts": [{**vpart, "videoMetadata": {"fps": 0.25}}, {"text": prompt}]}],
+        "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2, **fast},
     }
     url = f"{GEMINI_BASE}/v1beta/models/{urllib.parse.quote(GEMINI_MODEL)}:generateContent"
-    resp = _post_json(url, {"x-goog-api-key": key}, body, timeout=600)
+    try:
+        resp = _post_json(url, {"x-goog-api-key": key}, body, timeout=600)
+    except AIError as e:
+        if "HTTP 400" not in str(e):
+            if "timed out" in str(e) or "시간" in str(e):
+                raise AIError("영상이 길어 제한 시간 안에 다 보지 못했습니다. 「자막 붙여 AI 정리」로 유튜브 자막(스크립트)을 붙여 넣어 주세요.") from None
+            raise
+        body["contents"][0]["parts"][0] = vpart
+        for k in fast:
+            body["generationConfig"].pop(k)
+        resp = _post_json(url, {"x-goog-api-key": key}, body, timeout=600)
     cands = resp.get("candidates") or []
     if not cands:
         reason = (resp.get("promptFeedback") or {}).get("blockReason", "응답 없음")
@@ -821,15 +838,15 @@ def normalize_summary(d: dict) -> dict:
         "readable": bool(d.get("readable", True)),
         "title": str(d.get("title") or "").strip()[:300],
         "one_line": str(d.get("one_line") or "").strip()[:500],
-        "key_points": objs(d.get("key_points"), ["point", "at"]),
-        "implications": strs(d.get("implications")),
-        "related": objs(d.get("related"), ["name", "kind", "code"], 20),
-        "figures": objs(d.get("figures"), ["label", "value", "as_of"], 20),
-        "risks": strs(d.get("risks")),
+        "key_points": objs(d.get("key_points"), ["point", "at"], 5),
+        "implications": strs(d.get("implications"), 3),
+        "related": objs(d.get("related"), ["name", "kind", "code"], 8),
+        "figures": objs(d.get("figures"), ["label", "value", "as_of"], 5),
+        "risks": strs(d.get("risks"), 3),
         "category": cat,
         "sentiment": sen,
         "tags": tags,
-        "unverified": strs(d.get("unverified")),
+        "unverified": strs(d.get("unverified"), 3),
     }
 
 

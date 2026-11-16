@@ -789,7 +789,7 @@ function postCard(p, inDialog = false) {
     sec("자료가 말하는 시사점", s.implications);
     if (s.figures && s.figures.length) {
       det.append(h("div", { class: "sec", text: "자료에 나온 숫자 (원문 그대로)" }),
-        h("div", { class: "nums" }, s.figures.map(f => h("div", { class: "nr" }, f.label ? h("div", { class: "nl", text: f.label }) : null,
+        h("div", { class: "nums" }, s.figures.slice(0, 5).map(f => h("div", { class: "nr" }, f.label ? h("div", { class: "nl", text: f.label }) : null,
           h("div", { class: "nv", text: f.value || "" }), h("div", { class: "nb", text: f.as_of ? "기준: " + f.as_of : "기준 시점 표기 없음" })))));
     }
     if (s.related && s.related.length) det.append(h("div", { class: "sec", text: "자료에 나온 종목·자산" }),
@@ -823,6 +823,10 @@ function postCard(p, inDialog = false) {
       if (inDialog) return;
       if (openComments.has(p.id)) openComments.delete(p.id); else { openComments.add(p.id); loadFull(p.id); }
       renderFeed(); } }));
+  if (bad && canEdit(p)) acts.append(h("button", { type: "button", class: "btn", text: "↻ 다시 시도", onclick: async e => {
+    const btn = e.currentTarget; btn.disabled = true;
+    try { await api(`/api/posts/${p.id}/retry`, { method: "POST", body: {} }); toast("다시 정리합니다"); runPost(p.id); refreshOne(p.id); }
+    catch (err) { toast(err.message); btn.disabled = false; } } }));
   if (bad && canEdit(p)) acts.append(h("button", { type: "button", class: "btn", text: p.kind === "video" ? "자막 붙여 AI 정리" : "본문 붙여 AI 정리",
     onclick: () => { openFill.has(p.id) ? openFill.delete(p.id) : openFill.add(p.id); inDialog ? openPost(p.id) : renderFeed(); } }));
   acts.append(h("span", { class: "sp" }), h("button", { type: "button", class: "btn", text: "링크 복사", onclick: () => copyText(location.origin + "/#p" + p.id) }));
