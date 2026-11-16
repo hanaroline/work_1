@@ -1,6 +1,6 @@
 {
- "builtAt": "2026-11-16 10:10 KST",
- "builtAtUtc": "2026-11-16T01:10:51Z",
+ "builtAt": "2026-11-16 19:28 KST",
+ "builtAtUtc": "2026-11-16T10:28:55Z",
  "window": {
   "from": "2026-10-02",
   "to": "2028-03-30"
@@ -97,26 +97,26 @@
    "series_days": 400
   },
   "fed_implied": {
-   "contract_price": 95.83,
-   "implied_rate_pct": 4.17,
+   "contract_price": 95.825,
+   "implied_rate_pct": 4.175,
    "quote_date": "2026-11-16",
    "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 — 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
    "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
    "effr_pct": 3.88,
    "vs_effr_bp": 29,
    "perf": {
-    "w1": 28.8,
+    "w1": 29.8,
     "m1": 28.8,
-    "m3": 54.0,
-    "m6": 54.0,
+    "m3": 54.9,
+    "m6": 54.9,
     "y1": 29.8,
-    "ytd": 44.3,
+    "ytd": 45.3,
     "unit": "bp",
     "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
    }
   },
   "rates_kr": {
-   "call": 3.061,
+   "call": 3.055,
    "cd91": 3.37,
    "cofix_new": 3.43,
    "cofix_balance": 3.15,
@@ -171,9 +171,9 @@
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "call": {
-     "w1": 2.7,
-     "m1": 1.8,
-     "m3": 30.1,
+     "w1": 2.1,
+     "m1": 1.2,
+     "m3": 29.5,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
@@ -195,7 +195,7 @@
     }
    }
   },
-  "asof_kst": "2026-11-16 10:03:54"
+  "asof_kst": "2026-11-16 16:15:41"
  },
  "holidays": [
   {
@@ -890,11 +890,11 @@
    "market": "kr",
    "sector": "hold"
   },
-  "009150.KS": {
-   "ko": "삼성전기",
-   "en": "Samsung Electro-Mechanics",
+  "373220.KS": {
+   "ko": "LG에너지솔루션",
+   "en": "LG Energy Solution",
    "market": "kr",
-   "sector": "elec"
+   "sector": "bat"
   },
   "005380.KS": {
    "ko": "현대차",
@@ -902,17 +902,17 @@
    "market": "kr",
    "sector": "auto"
   },
-  "373220.KS": {
-   "ko": "LG에너지솔루션",
-   "en": "LG Energy Solution",
-   "market": "kr",
-   "sector": "bat"
-  },
   "207940.KS": {
    "ko": "삼성바이오로직스",
    "en": "Samsung Biologics",
    "market": "kr",
    "sector": "bio"
+  },
+  "009150.KS": {
+   "ko": "삼성전기",
+   "en": "Samsung Electro-Mechanics",
+   "market": "kr",
+   "sector": "elec"
   },
   "105560.KS": {
    "ko": "KB금융",
@@ -920,17 +920,17 @@
    "market": "kr",
    "sector": "fin"
   },
+  "068270.KS": {
+   "ko": "셀트리온",
+   "en": "Celltrion",
+   "market": "kr",
+   "sector": "bio"
+  },
   "028260.KS": {
    "ko": "삼성물산",
    "en": "Samsung C&T",
    "market": "kr",
    "sector": "hold"
-  },
-  "012450.KS": {
-   "ko": "한화에어로스페이스",
-   "en": "Hanwha Aerospace",
-   "market": "kr",
-   "sector": "heavy"
   },
   "032830.KS": {
    "ko": "삼성생명",
@@ -938,35 +938,11 @@
    "market": "kr",
    "sector": "fin"
   },
-  "034020.KS": {
-   "ko": "두산에너빌리티",
-   "en": "Doosan Enerbility",
-   "market": "kr",
-   "sector": "heavy"
-  },
   "055550.KS": {
    "ko": "신한지주",
    "en": "Shinhan Financial Group",
    "market": "kr",
    "sector": "fin"
-  },
-  "329180.KS": {
-   "ko": "HD현대중공업",
-   "en": "HD Hyundai Heavy Industries",
-   "market": "kr",
-   "sector": "heavy"
-  },
-  "000270.KS": {
-   "ko": "기아",
-   "en": "Kia",
-   "market": "kr",
-   "sector": "auto"
-  },
-  "068270.KS": {
-   "ko": "셀트리온",
-   "en": "Celltrion",
-   "market": "kr",
-   "sector": "bio"
   },
   "006400.KS": {
    "ko": "삼성SDI",
@@ -974,11 +950,11 @@
    "market": "kr",
    "sector": "bat"
   },
-  "066570.KS": {
-   "ko": "LG전자",
-   "en": "LG Electronics",
+  "000270.KS": {
+   "ko": "기아",
+   "en": "Kia",
    "market": "kr",
-   "sector": "elec"
+   "sector": "auto"
   },
   "086790.KS": {
    "ko": "하나금융지주",
@@ -986,11 +962,29 @@
    "market": "kr",
    "sector": "fin"
   },
+  "012450.KS": {
+   "ko": "한화에어로스페이스",
+   "en": "Hanwha Aerospace",
+   "market": "kr",
+   "sector": "heavy"
+  },
   "012330.KS": {
    "ko": "현대모비스",
    "en": "Hyundai Mobis",
    "market": "kr",
    "sector": "auto"
+  },
+  "034020.KS": {
+   "ko": "두산에너빌리티",
+   "en": "Doosan Enerbility",
+   "market": "kr",
+   "sector": "heavy"
+  },
+  "329180.KS": {
+   "ko": "HD현대중공업",
+   "en": "HD Hyundai Heavy Industries",
+   "market": "kr",
+   "sector": "heavy"
   },
   "034730.KS": {
    "ko": "SK",
@@ -998,21 +992,51 @@
    "market": "kr",
    "sector": "hold"
   },
-  "010120.KS": {
-   "ko": "LS일렉트릭",
-   "en": "LS Electric",
-   "market": "kr",
-   "sector": "heavy"
-  },
   "035420.KS": {
    "ko": "NAVER",
    "en": "NAVER",
    "market": "kr",
    "sector": "it"
   },
+  "066570.KS": {
+   "ko": "LG전자",
+   "en": "LG Electronics",
+   "market": "kr",
+   "sector": "elec"
+  },
+  "316140.KS": {
+   "ko": "우리금융지주",
+   "en": "Woori Financial Group",
+   "market": "kr",
+   "sector": "fin"
+  },
   "000810.KS": {
    "ko": "삼성화재",
    "en": "Samsung Fire & Marine",
+   "market": "kr",
+   "sector": "fin"
+  },
+  "005490.KS": {
+   "ko": "POSCO홀딩스",
+   "en": "POSCO Holdings",
+   "market": "kr",
+   "sector": "steel"
+  },
+  "011200.KS": {
+   "ko": "HMM",
+   "en": "HMM",
+   "market": "kr",
+   "sector": "infra"
+  },
+  "015760.KS": {
+   "ko": "한국전력",
+   "en": "Korea Electric Power",
+   "market": "kr",
+   "sector": "infra"
+  },
+  "138040.KS": {
+   "ko": "메리츠금융지주",
+   "en": "Meritz Financial Group",
    "market": "kr",
    "sector": "fin"
   },
@@ -1022,101 +1046,11 @@
    "market": "kr",
    "sector": "chem"
   },
-  "298040.KS": {
-   "ko": "효성중공업",
-   "en": "Hyosung Heavy Industries",
+  "010120.KS": {
+   "ko": "LS일렉트릭",
+   "en": "LS Electric",
    "market": "kr",
    "sector": "heavy"
-  },
-  "042700.KS": {
-   "ko": "한미반도체",
-   "en": "Hanmi Semiconductor",
-   "market": "kr",
-   "sector": "semi"
-  },
-  "267260.KS": {
-   "ko": "HD현대일렉트릭",
-   "en": "HD Hyundai Electric",
-   "market": "kr",
-   "sector": "heavy"
-  },
-  "316140.KS": {
-   "ko": "우리금융지주",
-   "en": "Woori Financial Group",
-   "market": "kr",
-   "sector": "fin"
-  },
-  "042660.KS": {
-   "ko": "한화오션",
-   "en": "Hanwha Ocean",
-   "market": "kr",
-   "sector": "heavy"
-  },
-  "005490.KS": {
-   "ko": "POSCO홀딩스",
-   "en": "POSCO Holdings",
-   "market": "kr",
-   "sector": "steel"
-  },
-  "009540.KS": {
-   "ko": "HD한국조선해양",
-   "en": "HD Korea Shipbuilding & Offshore",
-   "market": "kr",
-   "sector": "heavy"
-  },
-  "000150.KS": {
-   "ko": "두산",
-   "en": "Doosan",
-   "market": "kr",
-   "sector": "hold"
-  },
-  "010130.KS": {
-   "ko": "고려아연",
-   "en": "Korea Zinc",
-   "market": "kr",
-   "sector": "steel"
-  },
-  "138040.KS": {
-   "ko": "메리츠금융지주",
-   "en": "Meritz Financial Group",
-   "market": "kr",
-   "sector": "fin"
-  },
-  "051910.KS": {
-   "ko": "LG화학",
-   "en": "LG Chem",
-   "market": "kr",
-   "sector": "chem"
-  },
-  "011200.KS": {
-   "ko": "HMM",
-   "en": "HMM",
-   "market": "kr",
-   "sector": "infra"
-  },
-  "010950.KS": {
-   "ko": "에쓰오일",
-   "en": "S-Oil",
-   "market": "kr",
-   "sector": "chem"
-  },
-  "015760.KS": {
-   "ko": "한국전력",
-   "en": "Korea Electric Power",
-   "market": "kr",
-   "sector": "infra"
-  },
-  "017670.KS": {
-   "ko": "SK텔레콤",
-   "en": "SK Telecom",
-   "market": "kr",
-   "sector": "tel"
-  },
-  "006800.KS": {
-   "ko": "미래에셋증권",
-   "en": "Mirae Asset Securities",
-   "market": "kr",
-   "sector": "fin"
   },
   "033780.KS": {
    "ko": "KT&G",
@@ -1124,23 +1058,11 @@
    "market": "kr",
    "sector": "cons"
   },
-  "196170.KQ": {
-   "ko": "알테오젠",
-   "en": "Alteogen",
+  "051910.KS": {
+   "ko": "LG화학",
+   "en": "LG Chem",
    "market": "kr",
-   "sector": "bio"
-  },
-  "003550.KS": {
-   "ko": "LG",
-   "en": "LG Corp.",
-   "market": "kr",
-   "sector": "hold"
-  },
-  "010140.KS": {
-   "ko": "삼성중공업",
-   "en": "Samsung Heavy Industries",
-   "market": "kr",
-   "sector": "heavy"
+   "sector": "chem"
   },
   "018260.KS": {
    "ko": "삼성에스디에스",
@@ -1148,9 +1070,33 @@
    "market": "kr",
    "sector": "it"
   },
-  "079550.KS": {
-   "ko": "LIG넥스원",
-   "en": "LIG Nex1",
+  "017670.KS": {
+   "ko": "SK텔레콤",
+   "en": "SK Telecom",
+   "market": "kr",
+   "sector": "tel"
+  },
+  "010130.KS": {
+   "ko": "고려아연",
+   "en": "Korea Zinc",
+   "market": "kr",
+   "sector": "steel"
+  },
+  "042700.KS": {
+   "ko": "한미반도체",
+   "en": "Hanmi Semiconductor",
+   "market": "kr",
+   "sector": "semi"
+  },
+  "298040.KS": {
+   "ko": "효성중공업",
+   "en": "Hyosung Heavy Industries",
+   "market": "kr",
+   "sector": "heavy"
+  },
+  "009540.KS": {
+   "ko": "HD한국조선해양",
+   "en": "HD Korea Shipbuilding & Offshore",
    "market": "kr",
    "sector": "heavy"
   },
@@ -1160,23 +1106,35 @@
    "market": "kr",
    "sector": "bat"
   },
+  "086280.KS": {
+   "ko": "현대글로비스",
+   "en": "Hyundai Glovis",
+   "market": "kr",
+   "sector": "infra"
+  },
   "024110.KS": {
    "ko": "기업은행",
    "en": "Industrial Bank of Korea",
    "market": "kr",
    "sector": "fin"
   },
-  "272210.KS": {
-   "ko": "한화시스템",
-   "en": "Hanwha Systems",
+  "267260.KS": {
+   "ko": "HD현대일렉트릭",
+   "en": "HD Hyundai Electric",
    "market": "kr",
    "sector": "heavy"
   },
-  "086280.KS": {
-   "ko": "현대글로비스",
-   "en": "Hyundai Glovis",
+  "042660.KS": {
+   "ko": "한화오션",
+   "en": "Hanwha Ocean",
    "market": "kr",
-   "sector": "infra"
+   "sector": "heavy"
+  },
+  "010140.KS": {
+   "ko": "삼성중공업",
+   "en": "Samsung Heavy Industries",
+   "market": "kr",
+   "sector": "heavy"
   },
   "035720.KS": {
    "ko": "카카오",
@@ -1184,23 +1142,59 @@
    "market": "kr",
    "sector": "it"
   },
-  "267250.KS": {
-   "ko": "HD현대",
-   "en": "HD Hyundai",
+  "180640.KS": {
+   "ko": "한진칼",
+   "en": "Hanjin KAL",
    "market": "kr",
    "sector": "hold"
   },
-  "278470.KS": {
-   "ko": "에이피알",
-   "en": "APR",
+  "028050.KS": {
+   "ko": "삼성E&A",
+   "en": "Samsung E&A",
    "market": "kr",
-   "sector": "cons"
+   "sector": "infra"
   },
-  "011070.KS": {
-   "ko": "LG이노텍",
-   "en": "LG Innotek",
+  "003550.KS": {
+   "ko": "LG",
+   "en": "LG Corp.",
    "market": "kr",
-   "sector": "elec"
+   "sector": "hold"
+  },
+  "006800.KS": {
+   "ko": "미래에셋증권",
+   "en": "Mirae Asset Securities",
+   "market": "kr",
+   "sector": "fin"
+  },
+  "196170.KQ": {
+   "ko": "알테오젠",
+   "en": "Alteogen",
+   "market": "kr",
+   "sector": "bio"
+  },
+  "010950.KS": {
+   "ko": "에쓰오일",
+   "en": "S-Oil",
+   "market": "kr",
+   "sector": "chem"
+  },
+  "030200.KS": {
+   "ko": "KT",
+   "en": "KT",
+   "market": "kr",
+   "sector": "tel"
+  },
+  "003490.KS": {
+   "ko": "대한항공",
+   "en": "Korean Air",
+   "market": "kr",
+   "sector": "infra"
+  },
+  "000150.KS": {
+   "ko": "두산",
+   "en": "Doosan",
+   "market": "kr",
+   "sector": "hold"
   },
   "047810.KS": {
    "ko": "한국항공우주",
@@ -1208,23 +1202,23 @@
    "market": "kr",
    "sector": "heavy"
   },
-  "000720.KS": {
-   "ko": "현대건설",
-   "en": "Hyundai Engineering & Construction",
-   "market": "kr",
-   "sector": "infra"
-  },
-  "064350.KS": {
-   "ko": "현대로템",
-   "en": "Hyundai Rotem",
+  "272210.KS": {
+   "ko": "한화시스템",
+   "en": "Hanwha Systems",
    "market": "kr",
    "sector": "heavy"
   },
-  "030200.KS": {
-   "ko": "KT",
-   "en": "KT",
+  "005830.KS": {
+   "ko": "DB손해보험",
+   "en": "DB Insurance",
    "market": "kr",
-   "sector": "tel"
+   "sector": "fin"
+  },
+  "323410.KS": {
+   "ko": "카카오뱅크",
+   "en": "KakaoBank",
+   "market": "kr",
+   "sector": "fin"
   },
   "086520.KQ": {
    "ko": "에코프로",
@@ -1238,77 +1232,11 @@
    "market": "kr",
    "sector": "bat"
   },
-  "003490.KS": {
-   "ko": "대한항공",
-   "en": "Korean Air",
+  "000720.KS": {
+   "ko": "현대건설",
+   "en": "Hyundai Engineering & Construction",
    "market": "kr",
    "sector": "infra"
-  },
-  "005830.KS": {
-   "ko": "DB손해보험",
-   "en": "DB Insurance",
-   "market": "kr",
-   "sector": "fin"
-  },
-  "036930.KQ": {
-   "ko": "주성엔지니어링",
-   "en": "Jusung Engineering",
-   "market": "kr",
-   "sector": "semi"
-  },
-  "071050.KS": {
-   "ko": "한국금융지주",
-   "en": "Korea Investment Holdings",
-   "market": "kr",
-   "sector": "fin"
-  },
-  "307950.KS": {
-   "ko": "현대오토에버",
-   "en": "Hyundai AutoEver",
-   "market": "kr",
-   "sector": "it"
-  },
-  "443060.KS": {
-   "ko": "HD현대마린솔루션",
-   "en": "HD Hyundai Marine Solution",
-   "market": "kr",
-   "sector": "heavy"
-  },
-  "005940.KS": {
-   "ko": "NH투자증권",
-   "en": "NH Investment & Securities",
-   "market": "kr",
-   "sector": "fin"
-  },
-  "078930.KS": {
-   "ko": "GS",
-   "en": "GS Holdings",
-   "market": "kr",
-   "sector": "hold"
-  },
-  "047050.KS": {
-   "ko": "포스코인터내셔널",
-   "en": "POSCO International",
-   "market": "kr",
-   "sector": "chem"
-  },
-  "323410.KS": {
-   "ko": "카카오뱅크",
-   "en": "KakaoBank",
-   "market": "kr",
-   "sector": "fin"
-  },
-  "028050.KS": {
-   "ko": "삼성E&A",
-   "en": "Samsung E&A",
-   "market": "kr",
-   "sector": "infra"
-  },
-  "090430.KS": {
-   "ko": "아모레퍼시픽",
-   "en": "Amorepacific",
-   "market": "kr",
-   "sector": "cons"
   },
   "003230.KS": {
    "ko": "삼양식품",
@@ -1316,29 +1244,29 @@
    "market": "kr",
    "sector": "cons"
   },
-  "007660.KS": {
-   "ko": "이수페타시스",
-   "en": "Isu Petasys",
+  "005940.KS": {
+   "ko": "NH투자증권",
+   "en": "NH Investment & Securities",
    "market": "kr",
-   "sector": "elec"
+   "sector": "fin"
   },
-  "180640.KS": {
-   "ko": "한진칼",
-   "en": "Hanjin KAL",
+  "278470.KS": {
+   "ko": "에이피알",
+   "en": "APR",
+   "market": "kr",
+   "sector": "cons"
+  },
+  "267250.KS": {
+   "ko": "HD현대",
+   "en": "HD Hyundai",
    "market": "kr",
    "sector": "hold"
   },
-  "277810.KQ": {
-   "ko": "레인보우로보틱스",
-   "en": "Rainbow Robotics",
+  "090430.KS": {
+   "ko": "아모레퍼시픽",
+   "en": "Amorepacific",
    "market": "kr",
-   "sector": "heavy"
-  },
-  "000880.KS": {
-   "ko": "한화",
-   "en": "Hanwha",
-   "market": "kr",
-   "sector": "hold"
+   "sector": "cons"
   },
   "259960.KS": {
    "ko": "크래프톤",
@@ -1346,29 +1274,47 @@
    "market": "kr",
    "sector": "it"
   },
-  "006260.KS": {
-   "ko": "LS",
-   "en": "LS Corp.",
-   "market": "kr",
-   "sector": "hold"
-  },
-  "009830.KS": {
-   "ko": "한화솔루션",
-   "en": "Hanwha Solutions",
+  "047050.KS": {
+   "ko": "포스코인터내셔널",
+   "en": "POSCO International",
    "market": "kr",
    "sector": "chem"
   },
-  "016360.KS": {
-   "ko": "삼성증권",
-   "en": "Samsung Securities",
+  "078930.KS": {
+   "ko": "GS",
+   "en": "GS Holdings",
    "market": "kr",
-   "sector": "fin"
+   "sector": "hold"
   },
-  "353200.KS": {
-   "ko": "대덕전자",
-   "en": "DaeduckElectronics",
+  "036930.KQ": {
+   "ko": "주성엔지니어링",
+   "en": "Jusung Engineering",
    "market": "kr",
-   "sector": "elec"
+   "sector": "semi"
+  },
+  "443060.KS": {
+   "ko": "HD현대마린솔루션",
+   "en": "HD Hyundai Marine Solution",
+   "market": "kr",
+   "sector": "heavy"
+  },
+  "307950.KS": {
+   "ko": "현대오토에버",
+   "en": "Hyundai AutoEver",
+   "market": "kr",
+   "sector": "it"
+  },
+  "064350.KS": {
+   "ko": "현대로템",
+   "en": "Hyundai Rotem",
+   "market": "kr",
+   "sector": "heavy"
+  },
+  "079550.KS": {
+   "ko": "LIG넥스원",
+   "en": "LIG Nex1",
+   "market": "kr",
+   "sector": "heavy"
   },
   "161390.KS": {
    "ko": "한국타이어앤테크놀로지",
@@ -1376,11 +1322,17 @@
    "market": "kr",
    "sector": "auto"
   },
-  "047040.KS": {
-   "ko": "대우건설",
-   "en": "Daewoo E&C",
+  "064400.KS": {
+   "ko": "LG CNS",
+   "en": "LG CNS",
    "market": "kr",
-   "sector": "infra"
+   "sector": "it"
+  },
+  "071050.KS": {
+   "ko": "한국금융지주",
+   "en": "Korea Investment Holdings",
+   "market": "kr",
+   "sector": "fin"
   },
   "021240.KS": {
    "ko": "코웨이",
@@ -1388,51 +1340,9 @@
    "market": "kr",
    "sector": "cons"
   },
-  "064400.KS": {
-   "ko": "LG CNS",
-   "en": "LG CNS",
-   "market": "kr",
-   "sector": "it"
-  },
-  "062040.KS": {
-   "ko": "산일전기",
-   "en": "Sanil Electric",
-   "market": "kr",
-   "sector": "heavy"
-  },
-  "039490.KS": {
-   "ko": "키움증권",
-   "en": "Kiwoom Securities",
-   "market": "kr",
-   "sector": "fin"
-  },
-  "352820.KS": {
-   "ko": "하이브",
-   "en": "HYBE",
-   "market": "kr",
-   "sector": "tel"
-  },
-  "039030.KQ": {
-   "ko": "이오테크닉스",
-   "en": "EO Technics",
-   "market": "kr",
-   "sector": "semi"
-  },
-  "128940.KS": {
-   "ko": "한미약품",
-   "en": "Hanmi Pharm",
-   "market": "kr",
-   "sector": "bio"
-  },
-  "032640.KS": {
-   "ko": "LG유플러스",
-   "en": "LG Uplus",
-   "market": "kr",
-   "sector": "tel"
-  },
-  "001440.KS": {
-   "ko": "대한전선",
-   "en": "Taihan Cable & Solution",
+  "277810.KQ": {
+   "ko": "레인보우로보틱스",
+   "en": "Rainbow Robotics",
    "market": "kr",
    "sector": "heavy"
   },
@@ -1442,11 +1352,41 @@
    "market": "kr",
    "sector": "bio"
   },
-  "267270.KS": {
-   "ko": "HD현대건설기계",
-   "en": "HD Hyundai Construction Equipment",
+  "011070.KS": {
+   "ko": "LG이노텍",
+   "en": "LG Innotek",
+   "market": "kr",
+   "sector": "elec"
+  },
+  "352820.KS": {
+   "ko": "하이브",
+   "en": "HYBE",
+   "market": "kr",
+   "sector": "tel"
+  },
+  "016360.KS": {
+   "ko": "삼성증권",
+   "en": "Samsung Securities",
+   "market": "kr",
+   "sector": "fin"
+  },
+  "007660.KS": {
+   "ko": "이수페타시스",
+   "en": "Isu Petasys",
+   "market": "kr",
+   "sector": "elec"
+  },
+  "000500.KS": {
+   "ko": "가온전선",
+   "en": "GAONCABLE",
    "market": "kr",
    "sector": "heavy"
+  },
+  "032640.KS": {
+   "ko": "LG유플러스",
+   "en": "LG Uplus",
+   "market": "kr",
+   "sector": "tel"
   },
   "000100.KS": {
    "ko": "유한양행",
@@ -1454,11 +1394,41 @@
    "market": "kr",
    "sector": "bio"
   },
-  "377300.KS": {
-   "ko": "카카오페이",
-   "en": "Kakao Pay",
+  "128940.KS": {
+   "ko": "한미약품",
+   "en": "Hanmi Pharm",
+   "market": "kr",
+   "sector": "bio"
+  },
+  "009830.KS": {
+   "ko": "한화솔루션",
+   "en": "Hanwha Solutions",
+   "market": "kr",
+   "sector": "chem"
+  },
+  "039490.KS": {
+   "ko": "키움증권",
+   "en": "Kiwoom Securities",
    "market": "kr",
    "sector": "fin"
+  },
+  "006260.KS": {
+   "ko": "LS",
+   "en": "LS Corp.",
+   "market": "kr",
+   "sector": "hold"
+  },
+  "241560.KS": {
+   "ko": "두산밥캣",
+   "en": "Doosan Bobcat",
+   "market": "kr",
+   "sector": "heavy"
+  },
+  "000880.KS": {
+   "ko": "한화",
+   "en": "Hanwha",
+   "market": "kr",
+   "sector": "hold"
   },
   "175330.KS": {
    "ko": "JB금융지주",
@@ -1466,9 +1436,39 @@
    "market": "kr",
    "sector": "fin"
   },
-  "241560.KS": {
-   "ko": "두산밥캣",
-   "en": "Doosan Bobcat",
+  "047040.KS": {
+   "ko": "대우건설",
+   "en": "Daewoo E&C",
+   "market": "kr",
+   "sector": "infra"
+  },
+  "353200.KS": {
+   "ko": "대덕전자",
+   "en": "DaeduckElectronics",
+   "market": "kr",
+   "sector": "elec"
+  },
+  "267270.KS": {
+   "ko": "HD현대건설기계",
+   "en": "HD Hyundai Construction Equipment",
+   "market": "kr",
+   "sector": "heavy"
+  },
+  "039030.KQ": {
+   "ko": "이오테크닉스",
+   "en": "EO Technics",
+   "market": "kr",
+   "sector": "semi"
+  },
+  "377300.KS": {
+   "ko": "카카오페이",
+   "en": "Kakao Pay",
+   "market": "kr",
+   "sector": "fin"
+  },
+  "062040.KS": {
+   "ko": "산일전기",
+   "en": "Sanil Electric",
    "market": "kr",
    "sector": "heavy"
   },
@@ -7399,84 +7399,6 @@
    ]
   },
   {
-   "id": "earnings-011200.KS-2026-11-13",
-   "date": "2026-11-13",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "HMM 실적발표",
-   "title_en": "HMM earnings",
-   "org": "011200.KS",
-   "org_en": "011200.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/011200.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "011200.KS"
-   ]
-  },
-  {
-   "id": "earnings-034730.KS-2026-11-13",
-   "date": "2026-11-13",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "SK 실적발표",
-   "title_en": "SK Inc. earnings",
-   "org": "034730.KS",
-   "org_en": "034730.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/034730.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "034730.KS"
-   ]
-  },
-  {
-   "id": "earnings-402340.KS-2026-11-13",
-   "date": "2026-11-13",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "SK스퀘어 실적발표",
-   "title_en": "SK Square earnings",
-   "org": "402340.KS",
-   "org_en": "402340.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/402340.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "402340.KS"
-   ]
-  },
-  {
    "id": "indicator-us-ppi-2026-11-13",
    "date": "2026-11-13",
    "end_date": null,
@@ -7525,6 +7447,58 @@
     "conference",
     "bio",
     "obesityweek"
+   ]
+  },
+  {
+   "id": "earnings-034730.KS-2026-11-16",
+   "date": "2026-11-16",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "SK 실적발표",
+   "title_en": "SK Inc. earnings",
+   "org": "034730.KS",
+   "org_en": "034730.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/034730.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "034730.KS"
+   ]
+  },
+  {
+   "id": "earnings-402340.KS-2026-11-16",
+   "date": "2026-11-16",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "SK스퀘어 실적발표",
+   "title_en": "SK Square earnings",
+   "org": "402340.KS",
+   "org_en": "402340.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/402340.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "402340.KS"
    ]
   },
   {
@@ -14747,6 +14721,32 @@
    "tags": [
     "indicator",
     "us-cpi"
+   ]
+  },
+  {
+   "id": "earnings-011200.KS-2027-02-10",
+   "date": "2027-02-10",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "HMM 실적발표",
+   "title_en": "HMM earnings",
+   "org": "011200.KS",
+   "org_en": "011200.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/011200.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "011200.KS"
    ]
   },
   {
