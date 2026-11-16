@@ -1,5 +1,5 @@
 {
-  "ranAt": "2026-11-09T01:19:49Z",
+  "ranAt": "2026-11-16T01:10:46Z",
   "note": "발표기관 원문에서 확정 날짜를 받아 seed 를 갱신한 결과. ok=false 인 경로는 seed 를 손대지 않았다 — 검색으로 확인해 둔 날짜가 그대로 남아 있다.",
   "dryRun": false,
   "sources": {
@@ -9,9 +9,12 @@
       ],
       "ok": true,
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
-      "bytes": 168451,
+      "bytes": 168039,
       "count": 12,
-      "changes": []
+      "changes": [
+        "seed 에만 있던 2027-12-08 (공식 페이지에 없다 — 바뀌었는지 확인)",
+        "새로 확인한 2027-11-17"
+      ]
     },
     "ecb": {
       "urls": [
@@ -41,7 +44,7 @@
       ],
       "ok": true,
       "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
-      "bytes": 41786,
+      "bytes": 41861,
       "count": 12,
       "changes": []
     },
