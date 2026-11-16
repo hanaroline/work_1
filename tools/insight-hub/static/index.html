@@ -112,6 +112,12 @@ header.top h1::before,.sheet h2::before,.auth h2::before{content:"";flex:none;wi
 .head .sp{flex:1}
 .head .del{border:0;background:none;color:var(--sub);text-decoration:underline;cursor:pointer;font-size:14px;padding:4px;white-space:nowrap}
 .kb{border-radius:10px;padding:2px 10px;font-weight:700;font-size:13px;white-space:nowrap}
+.golink{display:inline-flex;align-items:center;gap:7px;max-width:100%;margin:2px 0 12px;padding:8px 14px 8px 10px;border:1.5px solid var(--accent);border-radius:999px;background:var(--accent-soft);color:var(--accent);text-decoration:none;font-size:14.5px;line-height:1.2}
+.golink .gi{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;flex:none}
+.golink b{font-weight:800;white-space:nowrap}
+.golink .gs{color:var(--sub);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.golink.yt{border-color:var(--kb-yt);background:var(--kb-yt-bg);color:var(--kb-yt)}.golink.yt .gi{background:var(--kb-yt)}
+.golink:active{transform:scale(.98)}
 .kb.video{background:var(--kb-yt-bg);color:var(--kb-yt)}.kb.image{background:var(--accent-soft);color:var(--accent)}
 .kb.article,.kb.text{background:var(--kb-ar-bg);color:var(--kb-ar)}.kb.pdf{background:var(--kb-pdf-bg);color:var(--kb-pdf)}
 .aiby{display:flex;align-items:center;gap:8px;color:var(--accent);font-weight:700;font-size:14.5px;margin:12px 0 6px}
@@ -742,6 +748,18 @@ function titleOf(p, s) {
   if (u) { try { return (p.kind === "video" ? "유튜브 영상 · " : "기사 · ") + new URL(u).hostname.replace(/^www\./, ""); } catch (_) {} }
   return "(제목 없음)";
 }
+// 원문으로 바로 가는 단추 — 기사는 「원문 보기」, 유튜브는 「영상 보기」, 올린 PDF 는 「PDF 보기」
+function sourceLink(p, url) {
+  let href = url, label, icon, site = "";
+  if (url) {
+    try { site = new URL(url).hostname.replace(/^www\.|^m\./, ""); } catch (_) {}
+    if (p.kind === "video" || ytId(url)) { label = "영상 보기"; icon = "▶"; site = "유튜브"; }
+    else { label = "원문 보기"; icon = "↗"; site = p.source_site || site; }
+  } else if (p.kind === "pdf" && p.has_file) { href = "/api/files/" + p.id; label = "PDF 보기"; icon = "📄"; site = ""; }
+  else return null;
+  return h("a", { class: "golink" + (label === "영상 보기" ? " yt" : ""), href, target: "_blank", rel: "noopener noreferrer" },
+    h("span", { class: "gi", text: icon }), h("b", { text: label }), site ? h("span", { class: "gs", text: site }) : null);
+}
 const canEdit = p => p.mine || (state.me && state.me.role === "admin");
 
 function postCard(p, inDialog = false) {
@@ -783,6 +801,9 @@ function postCard(p, inDialog = false) {
       p.sentiment ? h("span", { class: "chip" + (p.sentiment === "긍정" ? " pos" : p.sentiment === "부정" ? " neg" : ""), text: "논조 " + p.sentiment }) : null,
       src ? h("span", { text: src }) : null));
   }
+
+  const go = sourceLink(p, url);
+  if (go) body.append(go);
 
   const open = inDialog || openMore.has(p.id);
   if (done) {
