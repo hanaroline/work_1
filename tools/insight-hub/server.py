@@ -1945,14 +1945,16 @@ class Handler(BaseHTTPRequestHandler):
         self.send_json(200, {"ok": True})
 
     def api_post_title(self, qs, pid):
-        """관리자가 글 제목을 고친다. 빈칸으로 보내면 원래 제목으로 되돌린다."""
+        """올린 사람이나 관리자가 글 제목을 고친다. 빈칸으로 보내면 원래 제목으로 되돌린다."""
         u = self.need_user()
-        if u["role"] != "admin":
-            raise HTTPError_(403, "제목은 관리자만 고칠 수 있습니다")
+        p = q("SELECT user_id FROM posts WHERE id=?", (pid,), one=True)
+        if not p:
+            raise HTTPError_(404, "글이 없습니다")
+        if p["user_id"] != u["id"] and u["role"] != "admin":
+            raise HTTPError_(403, "제목은 올린 사람이나 관리자만 고칠 수 있습니다")
         d = self.body_json()
         title = re.sub(r"\s+", " ", str(d.get("title") or "")).strip()[:200]
-        if not xn("UPDATE posts SET title_edit=? WHERE id=?", (title or None, pid)):
-            raise HTTPError_(404, "글이 없습니다")
+        x("UPDATE posts SET title_edit=? WHERE id=?", (title or None, pid))
         print(f"[title] post={pid} by={u['id']} {'set' if title else 'cleared'}", file=sys.stderr)
         self.send_json(200, {"ok": True, "title_edit": title or None})
 

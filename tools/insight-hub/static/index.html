@@ -800,7 +800,7 @@ function postCard(p, inDialog = false) {
   if (busy) body.append(h("div", { class: "prog" }, h("i")));
 
   const h3 = h("h3", { text: titleOf(p, s) });
-  if (state.me && state.me.role === "admin") h3.append(h("button", { type: "button", class: "ttl-ed", title: "제목 고치기(관리자)", "aria-label": "제목 고치기", text: "✎",
+  if (canEdit(p)) h3.append(h("button", { type: "button", class: "ttl-ed", title: "제목 고치기(올린 사람·관리자)", "aria-label": "제목 고치기", text: "✎",
     onclick: e => { e.stopPropagation(); h3.replaceWith(titleEditor(p, s, h3)); } }));
   body.append(h3);
   if (done) {
