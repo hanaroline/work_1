@@ -44,6 +44,20 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 STATIC = HERE / "static"
+
+
+def _build_id() -> str:
+    """화면 파일이 바뀌면 달라지는 판 번호 — 열려 있는 화면이 새 판을 알아채 스스로 새로고침하게 한다."""
+    h = hashlib.sha256()
+    for n in ("index.html", "sw.js"):
+        try:
+            h.update((STATIC / n).read_bytes())
+        except OSError:
+            pass
+    return h.hexdigest()[:12]
+
+
+BUILD_ID = _build_id()
 DATA_DIR = Path(os.environ.get("INSIGHT_DATA_DIR", Path.home() / ".insight-hub")).expanduser()
 # Vercel 등 클라우드에 올리면 데이터는 Postgres 에 둔다(주소가 환경 변수로 들어온다).
 DATABASE_URL = (os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
@@ -1316,6 +1330,7 @@ class Handler(BaseHTTPRequestHandler):
         data = (STATIC / name).read_bytes()
         if name == "index.html":
             data = data.replace(b"{{CENTER_NAME}}", html.escape(CENTER_NAME).encode())
+            data = data.replace(b"{{BUILD_ID}}", BUILD_ID.encode())
         if name == "manifest.webmanifest":
             data = data.replace(b"{{CENTER_NAME}}", json.dumps(CENTER_NAME, ensure_ascii=False)[1:-1].encode())
         self.send_response(200)
@@ -1331,6 +1346,9 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     # ── 인증 ──
+    def api_version(self, qs):
+        self.send_json(200, {"build": BUILD_ID})
+
     def api_me(self, qs):
         u = self.current_user()
         if not u:
@@ -1764,6 +1782,7 @@ class Handler(BaseHTTPRequestHandler):
 
 ROUTES = {
     ("GET", r"/api/me"): Handler.api_me,
+    ("GET", r"/api/version"): Handler.api_version,
     ("POST", r"/api/login"): Handler.api_login,
     ("POST", r"/api/join"): Handler.api_join,
     ("POST", r"/api/logout"): Handler.api_logout,

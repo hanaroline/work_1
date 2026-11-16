@@ -929,7 +929,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden && st
 // ── 올리기 시트 ──
 let kind = "article", imgFile = null, imgUrl = null, pdf = null, sending = false;
 function openSheet() { $("#scrim").classList.remove("hidden"); document.body.style.overflow = "hidden"; say(""); validate(); }
-function closeSheet(force) { if (sending && !force) return; $("#scrim").classList.add("hidden"); document.body.style.overflow = ""; }
+function closeSheet(force) { if (sending && !force) return; $("#scrim").classList.add("hidden"); document.body.style.overflow = ""; setTimeout(() => window.applyUpdate && applyUpdate(), 800); }
 $("#openSheet").onclick = openSheet;
 $("#closeSheet").onclick = () => closeSheet();
 $("#scrim").addEventListener("click", e => { if (e.target === $("#scrim")) closeSheet(); });
@@ -1189,6 +1189,40 @@ $("#instCopy").onclick = () => copyText(location.origin + "/#install");
 
 // ── 시작 ──
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("/sw.js").catch(() => {});
+
+// ── 새 판 자동 반영 ── 설치해 켜 둔 앱도 서버에 새 판이 올라오면 스스로 새로고침한다.
+// 쓰던 글·열린 창이 있으면 기다렸다가, 손을 뗀 뒤에 바꾼다.
+const BUILD = "{{BUILD_ID}}";
+let newBuild = false, lastCheck = 0;
+function busyEditing() {
+  if (sending || !$("#scrim").classList.contains("hidden")) return true;
+  if (document.querySelector("dialog[open]")) return true;
+  const a = document.activeElement;
+  if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.id !== "fQ") return true;
+  for (const t of document.querySelectorAll("textarea")) if (t.value.trim()) return true;
+  return false;
+}
+function applyUpdate() {
+  if (!newBuild || busyEditing()) return;
+  if (navigator.serviceWorker && navigator.serviceWorker.getRegistration)
+    navigator.serviceWorker.getRegistration().then(r => r && r.update()).catch(() => {});
+  location.reload();
+}
+async function checkBuild() {
+  if (BUILD.startsWith("{{") || Date.now() - lastCheck < 60e3) return applyUpdate();
+  lastCheck = Date.now();
+  try {
+    const r = await fetch("/api/version", { headers: { "X-Insight": "1" }, cache: "no-store", credentials: "same-origin" });
+    const j = r.ok ? await r.json() : null;
+    if (j && j.build && j.build !== BUILD) newBuild = true;
+  } catch (_) {}
+  applyUpdate();
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden) checkBuild(); });
+window.addEventListener("focus", checkBuild);
+setInterval(() => { if (!document.hidden) checkBuild(); }, 10 * 60e3);
+// 쓰던 것을 마치면(창 닫기·올리기 끝) 미뤄 둔 새로고침을 한다
+document.addEventListener("close", () => setTimeout(applyUpdate, 800), true);
 const fromHash = () => { showInstallUi(); if (location.hash === "#install") { openInstall(); return; } const m = location.hash.match(/^#p(\d+)$/); if (m && state.me) openPost(+m[1]); };
 window.addEventListener("hashchange", fromHash);
 boot().then(fromHash).catch(e => { toast(e.message); });
