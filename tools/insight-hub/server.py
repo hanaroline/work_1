@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""센터 인사이트 — 링크만 올리면 AI가 읽고 정리해 센터 전체가 함께 보는 공간.
+"""인사이트룸 — 링크만 올리면 AI가 읽고 정리해 센터 전체가 함께 보는 공간.
 
 표준 라이브러리만 씁니다(설치할 것 없음). 데이터는 저장소 밖
 (`INSIGHT_DATA_DIR`, 기본 ~/.insight-hub)의 SQLite 한 파일과 첨부 폴더에 둡니다.
@@ -58,7 +58,7 @@ BOOT_CODE = os.environ.get("INSIGHT_SETUP_CODE", "")
 DB_PATH = DATA_DIR / "insight.db"
 UPLOAD_DIR = DATA_DIR / "uploads"
 
-CENTER_NAME = os.environ.get("INSIGHT_CENTER_NAME", "센터 인사이트")
+CENTER_NAME = os.environ.get("INSIGHT_CENTER_NAME", "인사이트룸")
 CLAUDE_MODEL = os.environ.get("INSIGHT_CLAUDE_MODEL", "claude-opus-5-5")
 CLAUDE_EFFORT = os.environ.get("INSIGHT_CLAUDE_EFFORT", "medium")
 GEMINI_MODEL = os.environ.get("INSIGHT_GEMINI_MODEL", "gemini-3.8-flash")

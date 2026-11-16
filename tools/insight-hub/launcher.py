@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""센터 인사이트 — 센터 PC에서 더블클릭으로 띄우는 실행기.
+"""인사이트룸 — 센터 PC에서 더블클릭으로 띄우는 실행기.
 
 윈도우 꾸러미(`scripts/build_insight_hub_windows.py` 가 만듦)의 Start.bat · Invite.bat 이
 이 파일을 부릅니다. 하는 일:

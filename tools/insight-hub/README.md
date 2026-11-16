@@ -1,4 +1,4 @@
-# 센터 인사이트 (insight-hub)
+# 인사이트룸 (insight-hub)
 
 직원이 **링크만 올리면 AI가 읽고 정리해**, 센터 직원 전체가 함께 보는 투자 인사이트 공간입니다.
 초대받은 직원만 **이름 + 비밀번호**로 들어오고, 자료는 **센터 PC(서버) 안**에만 저장됩니다.
@@ -126,7 +126,7 @@ Claude 계정은 필요 없습니다.
 | 이름 | 기본값 | 뜻 |
 |---|---|---|
 | `INSIGHT_DATA_DIR` | `~/.insight-hub` | DB(`insight.db`)와 첨부(`uploads/`)가 놓이는 곳. **저장소 밖**. 백업은 이 폴더 통째로 |
-| `INSIGHT_CENTER_NAME` | `센터 인사이트` | 화면 제목·앱 이름 |
+| `INSIGHT_CENTER_NAME` | `인사이트룸` | 화면 제목·앱 이름 |
 | `INSIGHT_CLAUDE_MODEL` | `claude-opus-5-5` | 글 정리 모델 |
 | `INSIGHT_CLAUDE_EFFORT` | `medium` | `low`로 낮추면 빠르고 싸짐 |
 | `INSIGHT_GEMINI_MODEL` | `gemini-3.8-flash` | 영상 정리 모델. **쓰는 계정에서 사용 가능한 이름인지 먼저 확인하십시오** |
