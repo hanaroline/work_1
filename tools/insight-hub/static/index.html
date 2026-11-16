@@ -130,6 +130,10 @@ header.top h1::before,.sheet h2::before,.auth h2::before{content:"";flex:none;wi
 @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
 @media (prefers-reduced-motion:reduce){.prog i{animation:none;width:100%;opacity:.5}}
 .post h3{font-size:19px;font-weight:800;margin:6px 0 8px;line-height:1.45}
+.ttl-ed{margin-left:6px;border:0;background:none;color:var(--sub);font-size:14px;cursor:pointer;padding:2px 6px;border-radius:6px;vertical-align:middle}
+.ttl-ed:hover{background:var(--line)}
+.ttl-box{margin:6px 0 8px}.ttl-box input{width:100%;font-size:16px;font-weight:700;padding:8px 10px;box-sizing:border-box;border:1px solid var(--line);background:var(--field);border-radius:10px}
+.ttl-act{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
 .meta{font-size:12.5px;color:var(--sub);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .chip{background:var(--chip);border-radius:999px;padding:1px 9px;font-size:12px;color:var(--sub)}
 .chip.cat{background:var(--accent-soft);color:var(--accent);font-weight:600}
@@ -740,6 +744,7 @@ function aiLine(p) {
   return `${who}가 ${what} 정리했어요`;
 }
 function titleOf(p, s) {
+  if (p.title_edit) return p.title_edit;  // 관리자가 고친 제목
   if (p.kind === "text" && !p.url && p.source_title) return p.source_title;  // 직원이 직접 붙인 제목
   if (s.title) return s.title;
   if (p.source_title) return p.source_title;
@@ -794,7 +799,10 @@ function postCard(p, inDialog = false) {
   body.append(ai);
   if (busy) body.append(h("div", { class: "prog" }, h("i")));
 
-  body.append(h("h3", { text: titleOf(p, s) }));
+  const h3 = h("h3", { text: titleOf(p, s) });
+  if (state.me && state.me.role === "admin") h3.append(h("button", { type: "button", class: "ttl-ed", title: "제목 고치기(관리자)", "aria-label": "제목 고치기", text: "✎",
+    onclick: e => { e.stopPropagation(); h3.replaceWith(titleEditor(p, s, h3)); } }));
+  body.append(h3);
   if (done) {
     const src = [p.source_site, p.source_published && p.source_published.slice(0, 10)].filter(Boolean).join(" · ");
     body.append(h("div", { class: "meta" }, h("span", { class: "chip cat", text: p.category || s.category || "기타" }),
@@ -927,6 +935,23 @@ async function openPost(id) {
 postDlg.addEventListener("close", () => { if (location.hash.startsWith("#p")) history.replaceState(null, "", location.pathname); renderFeed(); });
 document.addEventListener("click", e => { if (e.target.matches("[data-close]")) e.target.closest("dialog").close(); });
 for (const d of document.querySelectorAll("dialog")) d.addEventListener("click", e => { if (e.target === d) d.close(); });
+
+function titleEditor(p, s, h3) {
+  const inp = h("input", { type: "text", maxlength: "200", value: titleOf(p, s), "aria-label": "새 제목" });
+  const save = async (val) => {
+    try { const r = await api(`/api/posts/${p.id}/title`, { method: "POST", body: { title: val } });
+      p.title_edit = r.title_edit; toast(r.title_edit ? "제목을 고쳤습니다" : "원래 제목으로 되돌렸습니다"); refreshOne(p.id); }
+    catch (e) { toast(e.message); }
+  };
+  const box = h("div", { class: "ttl-box" }, inp,
+    h("div", { class: "ttl-act" },
+      h("button", { type: "button", class: "btn primary", text: "저장", onclick: () => save(inp.value.trim()) }),
+      h("button", { type: "button", class: "btn", text: "취소", onclick: () => box.replaceWith(h3) }),
+      p.title_edit ? h("button", { type: "button", class: "btn", text: "원래 제목으로", onclick: () => save("") }) : null));
+  inp.addEventListener("keydown", e => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); save(inp.value.trim()); } else if (e.key === "Escape") { e.stopPropagation(); box.replaceWith(h3); } });
+  setTimeout(() => { inp.focus(); inp.select(); }, 0);
+  return box;
+}
 
 async function refreshOne(id) {
   try {

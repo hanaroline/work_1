@@ -176,6 +176,7 @@ CREATE TABLE IF NOT EXISTS posts (
   file_path TEXT,
   file_type TEXT,
   source_title TEXT,
+  title_edit TEXT,                    -- 관리자가 고친 제목(있으면 이것을 보인다, AI 가 다시 정리해도 남는다)
   source_site TEXT,
   source_published TEXT,
   status TEXT NOT NULL,               -- queued | working | done | failed | blocked
@@ -218,14 +219,15 @@ CREATE TABLE IF NOT EXISTS ai_cache (
 """
 
 # Postgres 에서는 첨부도 DB 에 둔다(서버리스엔 오래 남는 디스크가 없다)
-PG_EXTRA = "CREATE TABLE IF NOT EXISTS files (name TEXT PRIMARY KEY, data BYTEA NOT NULL)"
+PG_EXTRA = ["CREATE TABLE IF NOT EXISTS files (name TEXT PRIMARY KEY, data BYTEA NOT NULL)",
+            "ALTER TABLE posts ADD COLUMN IF NOT EXISTS title_edit TEXT"]  # 이전 판 DB 이어 쓰기
 _RETURNING_ID = re.compile(r"^\s*INSERT\s+INTO\s+(users|invites|posts|comments)\b", re.I)
 
 
 def _pg_schema() -> list[str]:
     sql = re.sub(r"--[^\n]*", "", SCHEMA)
     sql = sql.replace("INTEGER PRIMARY KEY", "BIGSERIAL PRIMARY KEY").replace("INTEGER", "BIGINT")
-    return [st.strip() for st in sql.split(";") if st.strip()] + [PG_EXTRA]
+    return [st.strip() for st in sql.split(";") if st.strip()] + PG_EXTRA
 
 
 def _pg_sql(sql: str) -> str:
@@ -268,6 +270,8 @@ def db():
         cols = {r[1] for r in conn.execute("PRAGMA table_info(invites)")}
         if "fails" not in cols:  # 이전 판 DB 이어 쓰기
             conn.execute("ALTER TABLE invites ADD COLUMN fails INTEGER NOT NULL DEFAULT 0")
+        if "title_edit" not in {r[1] for r in conn.execute("PRAGMA table_info(posts)")}:
+            conn.execute("ALTER TABLE posts ADD COLUMN title_edit TEXT")
         _db = conn
     return _db
 
@@ -1454,7 +1458,7 @@ def post_row(r: sqlite3.Row, me: int, full: bool = False, admin: bool = False) -
     d = {
         "id": r["id"], "url": r["url"], "kind": r["kind"], "engine": r["engine"], "note": r["note"],
         "file_name": r["file_name"], "has_file": bool(r["file_path"]),
-        "source_title": r["source_title"], "source_site": r["source_site"], "source_published": r["source_published"],
+        "source_title": r["source_title"], "title_edit": r["title_edit"], "source_site": r["source_site"], "source_published": r["source_published"],
         "status": r["status"], "status_msg": r["status_msg"],
         "summary": json.loads(r["summary_json"]) if r["summary_json"] else None,
         "category": r["category"], "sentiment": r["sentiment"], "model": r["model"],
@@ -1801,8 +1805,8 @@ class Handler(BaseHTTPRequestHandler):
             where.append("p.created_at>?"); args.append(now() - int(rng) * 86400)
         if g("q"):
             like = f"%{g('q')}%"
-            where.append("(p.source_title LIKE ? OR p.summary_json LIKE ? OR p.note LIKE ? OR p.url LIKE ? OR u.name LIKE ?)")
-            args += [like] * 5
+            where.append("(p.source_title LIKE ? OR p.title_edit LIKE ? OR p.summary_json LIKE ? OR p.note LIKE ? OR p.url LIKE ? OR u.name LIKE ?)")
+            args += [like] * 6
         if g("before").isdigit():
             where.append("p.id<?"); args.append(int(g("before")))
         order = "likes DESC, nviews DESC, ncomments DESC, p.id DESC" if g("sort") == "popular" else "p.id DESC"
@@ -1940,6 +1944,18 @@ class Handler(BaseHTTPRequestHandler):
         enqueue(pid)
         self.send_json(200, {"ok": True})
 
+    def api_post_title(self, qs, pid):
+        """관리자가 글 제목을 고친다. 빈칸으로 보내면 원래 제목으로 되돌린다."""
+        u = self.need_user()
+        if u["role"] != "admin":
+            raise HTTPError_(403, "제목은 관리자만 고칠 수 있습니다")
+        d = self.body_json()
+        title = re.sub(r"\s+", " ", str(d.get("title") or "")).strip()[:200]
+        if not xn("UPDATE posts SET title_edit=? WHERE id=?", (title or None, pid)):
+            raise HTTPError_(404, "글이 없습니다")
+        print(f"[title] post={pid} by={u['id']} {'set' if title else 'cleared'}", file=sys.stderr)
+        self.send_json(200, {"ok": True, "title_edit": title or None})
+
     def api_post_run(self, qs, pid):
         """서버리스용: 이 요청 안에서 글을 정리한다. 일꾼이 도는 보통 서버에선 할 일이 없다."""
         self.need_user()
@@ -2058,7 +2074,7 @@ class Handler(BaseHTTPRequestHandler):
     def _brief_rows(self):
         t = now()
         start = kst_day_start(t)
-        sel = "SELECT id, summary_json, source_title, sentiment, tags FROM posts WHERE status='done' AND created_at>=? ORDER BY id DESC LIMIT 40"
+        sel = "SELECT id, summary_json, source_title, title_edit, sentiment, tags FROM posts WHERE status='done' AND created_at>=? ORDER BY id DESC LIMIT 40"
         rows, scope = q(sel, (start,)), "today"
         if not rows:
             rows, scope = q(sel, (start - 2 * 86400,)), "recent"
@@ -2107,6 +2123,8 @@ class Handler(BaseHTTPRequestHandler):
                 sm = json.loads(r["summary_json"] or "{}")
                 if not sm.get("readable", True):
                     continue
+                if r["title_edit"]:
+                    sm["title"] = r["title_edit"]
                 ids.add(r["id"])
                 items.append(f"[{r['id']}] {sm.get('title') or r['source_title'] or ''}\n"
                              f"한 줄: {sm.get('one_line', '')}\n논조: {r['sentiment'] or ''} · 태그: {', '.join(sm.get('tags') or [])}")
@@ -2177,7 +2195,7 @@ class Handler(BaseHTTPRequestHandler):
         cache_put(rk, "", used + 1)
         if used == 0:
             xn("DELETE FROM ai_cache WHERE key LIKE ? AND created_at<?", ("askrl:%", now() - 7200))
-        sql = ("SELECT id, summary_json, source_title, created_at, tags FROM posts "
+        sql = ("SELECT id, summary_json, source_title, title_edit, created_at, tags FROM posts "
                "WHERE status='done' AND created_at>?" + (" AND tags LIKE ?" if tag else "") + " ORDER BY id DESC LIMIT 300")
         rows = q(sql, (now() - 60 * 86400,) + ((f"%,{tag},%",) if tag else ()))
         words = [w for w in re.findall(r"[0-9A-Za-z가-힣]+", question) if len(w) >= 2]
@@ -2186,6 +2204,8 @@ class Handler(BaseHTTPRequestHandler):
             sm = json.loads(r["summary_json"] or "{}")
             if not sm.get("readable", True):
                 continue
+            if r["title_edit"]:
+                sm["title"] = r["title_edit"]
             hay = (summary_brief(sm) + " " + (r["source_title"] or "")).lower()
             sc = sum(hay.count(w.lower()) for w in words)
             scored.append((sc, r["id"], r, sm))
@@ -2276,6 +2296,7 @@ ROUTES = {
     ("GET", r"/api/posts/(\d+)"): Handler.api_post_get,
     ("DELETE", r"/api/posts/(\d+)"): Handler.api_post_delete,
     ("POST", r"/api/posts/(\d+)/retry"): Handler.api_post_update,
+    ("POST", r"/api/posts/(\d+)/title"): Handler.api_post_title,
     ("POST", r"/api/posts/(\d+)/run"): Handler.api_post_run,
     ("POST", r"/api/posts/(\d+)/like"): Handler.api_like,
     ("POST", r"/api/posts/(\d+)/comments"): Handler.api_comment,
