@@ -800,8 +800,13 @@ def _retry_after(detail: str) -> int:
     return int(m.group(1)) + 30 if m else 3600
 
 
-def quota_message(err: str) -> str:
-    """'QUOTA:<until>:<limit>' → 직원이 읽을 안내."""
+QUOTA_MSG_HEAD = "오늘 쓸 수 있는 AI 무료 사용량"   # 이 머리말로 시작하는 실패 글은 한도가 풀리면 저절로 다시 돈다
+AUTO_RETRY_DAYS = 3        # 이보다 오래된 실패 글은 저절로 다시 돌리지 않는다
+AUTO_RETRY_BATCH = 10      # 한 번 훑을 때 다시 줄 세우는 글 수 — 풀리자마자 한도를 몰아 쓰지 않게
+
+
+def quota_message(err: str, auto: bool = False) -> str:
+    """'QUOTA:<until>:<limit>' → 직원이 읽을 안내. auto=True 는 자료 정리 실패용(저절로 다시 돈다)."""
     try:
         _, until, limit = err.split(":", 2)
         until = int(until)
@@ -809,13 +814,46 @@ def quota_message(err: str) -> str:
         lim = f"(하루 {limit}회)" if limit.isdigit() else ""
     except ValueError:
         at, lim = "몇 시간 뒤", ""
-    return (f"오늘 쓸 수 있는 AI 무료 사용량{lim}을 다 썼습니다. {at}쯤부터 다시 됩니다 — "
+    if auto:
+        return (f"{QUOTA_MSG_HEAD}{lim}을 다 썼습니다. {at}쯤 한도가 풀리면 저절로 다시 정리합니다 — "
+                "누르지 않으셔도 됩니다. 자주 막히면 관리자에게 알려 주세요.")
+    return (f"{QUOTA_MSG_HEAD}{lim}을 다 썼습니다. {at}쯤부터 다시 됩니다 — "
             "그때 「다시 시도」를 눌러 주세요. 자주 막히면 관리자에게 알려 주세요.")
 
 
-def ai_error_text(e: Exception) -> str:
+def ai_error_text(e: Exception, auto: bool = False) -> str:
     m = str(e)
-    return quota_message(m) if m.startswith(QUOTA_TAG) else ""
+    return quota_message(m, auto) if m.startswith(QUOTA_TAG) else ""
+
+
+def requeue_quota_failures() -> int:
+    """하루 한도가 풀린 뒤, 한도 때문에 실패한 글을 다시 줄 세운다(화면이 목록을 불러올 때 함께 돈다).
+    한도가 풀리는 시각(until) 전에 실패한 글만 고른다 — 풀린 뒤 또 막힌 글은 새 until 이 지나야 다시 돈다."""
+    try:
+        qc = cache_get(_quota_key(GEMINI_BASE))
+        if not qc:
+            return 0
+        until = int(json.loads(qc["body"]).get("until", 0))
+        if not until or until > now():
+            return 0
+        rows = q("SELECT id FROM posts WHERE status='failed' AND status_msg LIKE ? AND updated_at<? AND updated_at>? "
+                 "ORDER BY id LIMIT ?", (QUOTA_MSG_HEAD + "%", until, now() - AUTO_RETRY_DAYS * 86400, AUTO_RETRY_BATCH))
+        if not rows or not lock_take("autoretry", 30):
+            return 0
+        n = 0
+        # 서버리스에선 화면이 20초 넘게 대기 중인 글을 /run 으로 부른다 — 곧바로 불리게 시각을 앞당겨 둔다
+        t = now() - (30 if SERVERLESS else 0)
+        for r in rows:
+            if xn("UPDATE posts SET status='queued', status_msg='한도가 풀려 다시 정리합니다', updated_at=? "
+                  "WHERE id=? AND status='failed'", (t, r["id"])) == 1:
+                enqueue(r["id"])
+                n += 1
+        if n:
+            print(f"[autoretry] 한도 풀림 — {n}건 다시 줄 세움", file=sys.stderr)
+        return n
+    except Exception:
+        traceback.print_exc()
+        return 0
 
 
 def _post_json(url: str, headers: dict, body: dict, timeout: int = 300) -> dict:
@@ -1348,7 +1386,7 @@ def _process(pid: int) -> None:
         set_status(pid, "failed", str(e))
     except AIError as e:
         print(f"[run {pid}] AI 실패: {str(e)[:300]}", file=sys.stderr)
-        msg = ai_error_text(e) or str(e)
+        msg = ai_error_text(e, auto=True) or str(e)
         if re.match(r"HTTP (429|5\d\d)|시간 초과", msg):
             msg = "AI 서버가 붐벼 여러 번 불러도 제때 답하지 않았습니다. 잠시 뒤 「다시 시도」를 눌러 주세요. (" + msg[:80] + ")"
         set_status(pid, "failed", msg)
@@ -1726,6 +1764,7 @@ class Handler(BaseHTTPRequestHandler):
     # ── 글 ──
     def api_posts(self, qs):
         u = self.need_user()
+        requeue_quota_failures()
         where, args = [], [u["id"]]
         g = lambda k: (qs.get(k) or [""])[0].strip()
         if g("category"):
