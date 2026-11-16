@@ -46,7 +46,7 @@ PC를 켜 둘 필요 없이 `https://<이름>.vercel.app` 고정 주소로 돌�
 그 주소를 열고 「홈 화면에 추가」(안드로이드는 「앱 설치」)만 누르면 앱처럼 씁니다.
 Claude 계정은 필요 없습니다.
 
-**지금 올라가 있는 곳: https://center-insight.vercel.app** (Vercel 프로젝트 `center-insight`,
+**지금 올라가 있는 곳: https://insightroom-wm.vercel.app** (예전 주소 https://center-insight.vercel.app 도 같은 앱으로 열림. Vercel 프로젝트 `center-insight`,
 싱가포르 `sin1`, DB 는 Neon Postgres `insight-db`).
 
 이 폴더에 Vercel 용 파일이 들어 있습니다 — `api/index.py`(입구), `vercel.json`,
