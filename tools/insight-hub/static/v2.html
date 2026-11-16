@@ -133,6 +133,12 @@ header.top h1{font-size:21px;margin:0;flex:1;display:flex;align-items:center;gap
 @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
 @media (prefers-reduced-motion:reduce){.prog i{animation:none;width:100%;opacity:.5}}
 .post h3{font-size:19px;font-weight:800;margin:6px 0 8px;line-height:1.45}
+.vcnt{font-size:13px;color:var(--sub)}
+.vcnt.on{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px;padding:6px 4px}
+.viewers{margin:8px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:13.5px}
+.viewers b{display:block;margin-bottom:4px}
+.viewers .vr{display:flex;justify-content:space-between;gap:10px;padding:3px 0}
+.viewers .t{color:var(--sub);font-size:12.5px}
 .ttl-ed{margin-left:6px;border:0;background:none;color:var(--sub);font-size:14px;cursor:pointer;padding:2px 6px;border-radius:6px;vertical-align:middle}
 .ttl-ed:hover{background:var(--line)}
 .ttl-box{margin:6px 0 8px}.ttl-box input{width:100%;font-size:16px;font-weight:700;padding:8px 10px;box-sizing:border-box;border:1px solid var(--line);background:var(--field);border-radius:10px}
@@ -1044,9 +1050,21 @@ function postCard(p, inDialog = false) {
     catch (err) { toast(err.message); btn.disabled = false; } } }));
   if (bad && canEdit(p)) acts.append(h("button", { type: "button", class: "btn", text: p.kind === "video" ? "자막 붙여 AI 정리" : "본문 붙여 AI 정리",
     onclick: () => { openFill.has(p.id) ? openFill.delete(p.id) : openFill.add(p.id); inDialog ? openPost(p.id) : renderFeed(); } }));
-  acts.append(h("span", { style: "font-size:13px;color:var(--sub)", title: "열어 본 직원 수(올린 사람 제외, 한 사람은 한 번만 셉니다)", text: "👁 본 사람 " + (p.views || 0) + "명" }));
+  const isAdm = state.me.role === "admin" && p.views;
+  const viewList = isAdm ? h("div", { class: "viewers", hidden: true }) : null;
+  acts.append(h("span", { class: isAdm ? "vcnt on" : "vcnt", title: isAdm ? "눌러서 누가 봤는지 보기(관리자에게만 보임)" : "열어 본 직원 수(올린 사람 제외, 한 사람은 한 번만 셉니다)",
+    role: isAdm ? "button" : null, tabindex: isAdm ? "0" : null, text: "👁 본 사람 " + (p.views || 0) + "명",
+    onclick: isAdm ? async () => {  // 관리자만: 눌러서 명단을 펼친다. 명단을 보는 것은 조회로 세지 않는다(?view=1 없이 부름)
+      if (!viewList.hidden) { viewList.hidden = true; return; }
+      viewList.hidden = false; viewList.textContent = "불러오는 중…";
+      try {
+        const vs = (await api("/api/posts/" + p.id)).viewers || [];
+        viewList.replaceChildren(h("b", { text: "본 사람 " + vs.length + "명 (관리자에게만 보임)" }));
+        for (const v of vs) viewList.append(h("div", { class: "vr" }, h("span", { text: v.name }), h("span", { class: "t", text: ago(v.created_at) })));
+      } catch (e) { viewList.textContent = e.message; } } : null }));
   acts.append(h("span", { class: "sp" }), h("button", { type: "button", class: "btn", text: "링크 복사", onclick: () => copyText(location.origin + "/#p" + p.id) }));
   body.append(acts);
+  if (viewList) body.append(viewList);
   if (bad && canEdit(p) && openFill.has(p.id)) body.append(fillBox(p));
   if (cOpen) body.append(commentBox(p, inDialog));
   return card;
