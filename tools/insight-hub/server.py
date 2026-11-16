@@ -1656,6 +1656,8 @@ class Handler(BaseHTTPRequestHandler):
         if is_html:
             data = data.replace(b"{{CENTER_NAME}}", html.escape(CENTER_NAME).encode())
             data = data.replace(b"{{APP_NAME}}", html.escape(V2_NAME).encode())
+            # 바탕화면 아이콘·창 제목은 어느 화면에서 설치해도 앱 이름(manifest 와 같은 이름)으로
+            data = data.replace(b"{{INSTALL_NAME}}", html.escape(APP_NAME).encode())
             data = data.replace(b"{{BUILD_ID}}", BUILD_ID.encode())
         if name == "manifest.webmanifest":
             data = data.replace(b"{{CENTER_NAME}}", json.dumps(APP_NAME, ensure_ascii=False)[1:-1].encode())
