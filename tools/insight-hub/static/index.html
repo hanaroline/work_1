@@ -420,6 +420,8 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
   <div class="dh"><h2>관리</h2><button class="xbtn" type="button" data-close aria-label="닫기">×</button></div>
   <div class="db">
     <div id="aiStatus" class="note"></div>
+    <div class="sec">저장 공간</div>
+    <div id="dbUsage"></div>
     <div class="sec">직원 초대</div>
     <form id="invForm" class="row">
       <input type="text" class="grow" id="invName" placeholder="이름" required aria-label="초대할 이름" style="width:auto">
@@ -1086,9 +1088,24 @@ $("#invForm").onsubmit = async ev => {
   try { const r = await api("/api/admin/invites", { method: "POST", body: { name: $("#invName").value, role: $("#invRole").value } }); showCode(r.name, r.code, r.valid); $("#invName").value = ""; loadAdmin(); }
   catch (e) { toast(e.message); }
 };
+const fmtB = b => b >= 1073741824 ? (b / 1073741824).toFixed(2) + "GB" : b >= 1048576 ? (b / 1048576).toFixed(1) + "MB" : Math.max(1, Math.round(b / 1024)) + "KB";
+function showUsage(s) {
+  const el = $("#dbUsage"); el.textContent = "";
+  if (!s) return;
+  const pct = Math.min(100, s.total / s.limit * 100), color = pct >= 90 ? "#d33" : pct >= 70 ? "#e8a200" : "var(--accent, #2a6df4)";
+  el.append(
+    h("div", { class: "row", style: "justify-content:space-between;font-size:14px" },
+      h("b", { text: `${fmtB(s.total)} / ${fmtB(s.limit)} (${pct.toFixed(pct < 10 ? 1 : 0)}%)` }),
+      h("span", { class: "caution", text: pct >= 90 ? "곧 가득 찹니다" : pct >= 70 ? "70% 넘음" : "여유 있음" })),
+    h("div", { style: "height:10px;border-radius:5px;background:rgba(128,128,128,.2);overflow:hidden;margin:6px 0" },
+      h("div", { style: `height:100%;width:${pct}%;background:${color}` })),
+    h("div", { class: "caution", text: `첨부 파일 ${s.files_n}개 ${fmtB(s.files)} · 글 ${s.posts_n}건 본문·요약 ${fmtB(s.posts)}` }),
+    h("div", { class: "caution", text: s.pg ? "DB가 잡은 크기 기준입니다. Neon 청구 용량은 변경 이력이 더해져 조금 다를 수 있습니다 — 정확한 값은 Neon 대시보드에서 보세요." : "이 서버의 데이터 폴더 기준입니다." }));
+}
 async function loadAdmin() {
   const r = await api("/api/admin/users"), ai = r.ai;
   $("#aiStatus").textContent = `Claude: ${ai.claude ? "연결됨" : "키 없음"} (${ai.claude_model}) · Gemini: ${ai.gemini ? "연결됨" : "키 없음"} (${ai.gemini_model}) · 대기 ${r.queue}건`;
+  showUsage(r.storage);
   const il = $("#invList"); il.textContent = "";
   if (!r.invites.length) il.append(h("div", { class: "caution", text: "없음" }));
   else il.append(h("table", {}, h("tbody", {}, r.invites.map(i => h("tr", {}, h("td", { text: i.name }), h("td", { text: i.role === "admin" ? "관리자" : "직원" }),

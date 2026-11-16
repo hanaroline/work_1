@@ -323,6 +323,24 @@ def blob_names(prefix: str) -> list[str]:
     return [f.name for f in UPLOAD_DIR.glob(prefix + "*")]
 
 
+DB_LIMIT_MB = int(os.environ.get("INSIGHT_DB_LIMIT_MB", "512"))  # 화면에 비교해 보일 한도(Neon 무료 요금제 기준)
+
+
+def storage_usage() -> dict:
+    """관리 화면용 저장 공간 사용량. 첨부·글·전체를 바이트로 돌려준다."""
+    posts = q("SELECT COUNT(*) AS n, COALESCE(SUM(LENGTH(COALESCE(pasted_text,''))+LENGTH(COALESCE(summary_json,''))),0) AS b FROM posts", one=True)
+    if USE_PG:
+        f = q("SELECT COUNT(*) AS n, COALESCE(SUM(octet_length(data)),0) AS b FROM files WHERE name NOT LIKE ?", ("up-%",), one=True)
+        total = q("SELECT pg_database_size(current_database()) AS b", one=True)["b"]
+        files_n, files_b = f["n"], f["b"]
+    else:
+        fs = [p for p in UPLOAD_DIR.iterdir() if p.is_file() and not p.name.startswith("up-")] if UPLOAD_DIR.exists() else []
+        files_n, files_b = len(fs), sum(p.stat().st_size for p in fs)
+        total = files_b + (DB_PATH.stat().st_size if DB_PATH.exists() else 0)
+    return {"total": int(total), "files": int(files_b), "files_n": int(files_n), "posts": int(posts["b"]),
+            "posts_n": int(posts["n"]), "limit": DB_LIMIT_MB * 1024 * 1024, "pg": USE_PG}
+
+
 def upload_gc() -> None:
     """하루 넘게 묶이지 않은 올림 조각(up-<사용자>-<시각>-…)을 치운다."""
     cut = now() - 86400
@@ -1702,7 +1720,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_json(200, {"users": users, "invites": invites, "ai": {
             "claude": bool(os.environ.get("ANTHROPIC_API_KEY")), "claude_model": CLAUDE_MODEL,
             "gemini": bool(os.environ.get("GEMINI_API_KEY")), "gemini_model": GEMINI_MODEL},
-            "queue": queue_size()})
+            "queue": queue_size(), "storage": storage_usage()})
 
     def api_admin_invite(self, qs):
         me = self.need_user(admin=True)
