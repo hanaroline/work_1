@@ -318,6 +318,8 @@ async function boot() {
   state.me = r.user; state.cats = r.categories || [];
   state.serverless = !!r.serverless; state.maxUpload = r.max_upload || 20 * 1024 * 1024;
   state.skew = r.now ? r.now - Date.now() / 1000 : 0;
+  state.textEngine = r.text_engine || "claude";
+  $("#cUrl").dispatchEvent(new Event("input"));
   $("#authView").classList.add("hidden");
   for (const id of ["#feedView", "#fab", "#meName", "#menuBtn"]) $(id).classList.remove("hidden");
   $("#adminBtn").classList.toggle("hidden", r.user.role !== "admin");
@@ -326,13 +328,14 @@ async function boot() {
 }
 
 // ── 올리기 ──
+const textAI = () => (state.textEngine === "gemini") ? "Gemini" : "Claude";
 const isYT = u => /(?:youtube\.com\/(?:watch|shorts|live|embed)|youtu\.be\/)/i.test(u);
 $("#cUrl").addEventListener("input", () => {
   const u = $("#cUrl").value.trim();
   $("#cHint").innerHTML = "";
-  if (!u) $("#cHint").append("링크만 올리면 AI가 읽고 정리합니다. 글·PDF·스크린샷은 ", h("b", { text: "Claude" }), ", 유튜브 영상은 ", h("b", { text: "Gemini" }), "가 맡습니다.");
+  if (!u) $("#cHint").append("링크만 올리면 AI가 읽고 정리합니다. 글·PDF·스크린샷은 ", h("b", { text: textAI() }), ", 유튜브 영상은 ", h("b", { text: "Gemini" }), "가 맡습니다.");
   else if (isYT(u)) $("#cHint").append(h("span", { class: "engine", text: "영상 → Gemini" }), " 공개 영상만 읽을 수 있습니다. 비공개·일부공개는 대본을 붙여넣어 주세요.");
-  else $("#cHint").append(h("span", { class: "engine", text: "글 → Claude" }), " 유료·로그인 기사는 본문을 붙여넣거나 캡처로 올려 주세요.");
+  else $("#cHint").append(h("span", { class: "engine", text: "글 → " + textAI() }), " 유료·로그인 기사는 본문을 붙여넣거나 캡처로 올려 주세요.");
 });
 
 function readFile(f) {

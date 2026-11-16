@@ -724,6 +724,44 @@ def call_gemini(video_url: str, note: str) -> tuple[dict, str]:
     return parse_json(text), resp.get("modelVersion", GEMINI_MODEL)
 
 
+def text_engine() -> str:
+    """글·PDF·캡처를 누가 정리하나: Claude 키가 있으면 Claude, 없고 Gemini 키만 있으면 Gemini."""
+    if not os.environ.get("ANTHROPIC_API_KEY") and os.environ.get("GEMINI_API_KEY"):
+        return "gemini"
+    return "claude"
+
+
+def call_gemini_blocks(content: list[dict]) -> tuple[dict, str]:
+    """Claude 형식의 내용 블록(글·PDF·이미지)을 Gemini 로 정리한다 — Claude 키가 없을 때의 대체 길."""
+    key = os.environ.get("GEMINI_API_KEY")
+    if not key:
+        raise AIError("GEMINI_API_KEY 가 설정되지 않았습니다")
+    parts: list[dict] = []
+    for b in content:
+        if b.get("type") in ("document", "image"):
+            src = b["source"]
+            parts.append({"inline_data": {"mime_type": src["media_type"], "data": src["data"]}})
+        elif b.get("type") == "text":
+            parts.append({"text": b["text"]})
+    parts.append({"text": JSON_INSTRUCTION})
+    body = {
+        "system_instruction": {"parts": [{"text": SYSTEM_PROMPT}]},
+        "contents": [{"role": "user", "parts": parts}],
+        "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2},
+    }
+    url = f"{GEMINI_BASE}/v1beta/models/{urllib.parse.quote(GEMINI_MODEL)}:generateContent"
+    resp = _post_json(url, {"x-goog-api-key": key}, body)
+    cands = resp.get("candidates") or []
+    if not cands:
+        reason = (resp.get("promptFeedback") or {}).get("blockReason", "응답 없음")
+        raise AIError(f"Gemini 가 응답하지 않았습니다 ({reason})")
+    if cands[0].get("finishReason") == "MAX_TOKENS":
+        raise AIError("응답이 길이 상한에서 잘렸습니다")
+    parts_out = (cands[0].get("content") or {}).get("parts") or []
+    text = "".join(p.get("text", "") for p in parts_out if not p.get("thought"))
+    return parse_json(text), resp.get("modelVersion", GEMINI_MODEL)
+
+
 def parse_json(text: str) -> dict:
     text = text.strip()
     text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text)
@@ -846,7 +884,7 @@ def process(pid: int) -> None:
                     notes += n
                     content.append({"type": "text", "text": blk})
                 content.append({"type": "text", "text": "위 자료를 정리하십시오." + user_hint})
-            summary, model = call_claude(content)
+            summary, model = (call_gemini_blocks(content) if text_engine() == "gemini" else call_claude(content))
         summary["notes"] = notes
         if not summary["readable"]:
             set_status(pid, "blocked", "AI가 자료 본문을 읽을 수 없다고 판단했습니다: " + summary["one_line"],
@@ -1126,7 +1164,8 @@ class Handler(BaseHTTPRequestHandler):
             return self.send_json(200, {"user": None, "center": CENTER_NAME, "invite_label": invite_label()})
         self.send_json(200, {"user": {"id": u["id"], "name": u["name"], "role": u["role"]}, "center": CENTER_NAME,
                              "categories": CATEGORIES, "session_days": SESSION_DAYS, "invite_label": invite_label(),
-                             "serverless": SERVERLESS, "max_upload": MAX_UPLOAD, "now": now()})
+                             "serverless": SERVERLESS, "max_upload": MAX_UPLOAD, "now": now(),
+                             "text_engine": text_engine()})
 
     def api_login(self, qs):
         d = self.body_json()
@@ -1252,7 +1291,7 @@ class Handler(BaseHTTPRequestHandler):
         f = d.get("file")
         if not url and not f and not pasted:
             raise HTTPError_(400, "링크, 파일, 본문 중 하나는 있어야 합니다")
-        kind, engine, title, site = "article", "claude", "", ""
+        kind, engine, title, site = "article", text_engine(), "", ""
         file_name = file_path = file_type = None
         if url:
             if not re.match(r"^https?://", url, re.I):
@@ -1298,7 +1337,7 @@ class Handler(BaseHTTPRequestHandler):
         elif pasted and not url:
             kind = "text"
         if kind == "video" and pasted:
-            engine = "claude"  # 영상 대본을 붙여넣었으면 글로 정리한다
+            engine = text_engine()  # 영상 대본을 붙여넣었으면 글로 정리한다
             kind = "text"
         t = now()
         pid = x("""INSERT INTO posts(user_id, url, kind, engine, note, pasted_text, file_name, file_path, file_type,
@@ -1337,8 +1376,8 @@ class Handler(BaseHTTPRequestHandler):
         d = self.body_json()
         text = (d.get("text") or "").strip()[:400_000]
         if text:
-            x("UPDATE posts SET pasted_text=?, engine='claude', kind=CASE WHEN kind='video' THEN 'text' ELSE kind END WHERE id=?",
-              (text, pid))
+            x("UPDATE posts SET pasted_text=?, engine=?, kind=CASE WHEN kind='video' THEN 'text' ELSE kind END WHERE id=?",
+              (text, text_engine(), pid))
         set_status(pid, "queued", "")
         enqueue(pid)
         self.send_json(200, {"ok": True})
