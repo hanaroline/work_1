@@ -429,6 +429,18 @@ class BlockedURL(Exception):
     pass
 
 
+def looks_like_url(s: str) -> bool:
+    """링크 칸에 든 것이 주소인가. 띄어쓰기가 있거나 점 있는 호스트가 없으면 주소가 아니다."""
+    if re.search(r"\s", s):
+        return False
+    t = s if re.match(r"^https?://", s, re.I) else "https://" + s
+    try:
+        host = urllib.parse.urlsplit(t).hostname or ""
+    except ValueError:
+        return False
+    return "." in host and bool(re.fullmatch(r"[\w.-]+", host))
+
+
 def check_public_url(url: str) -> urllib.parse.SplitResult:
     """내부망 주소를 읽어 오는 일(SSRF)을 막는다. 공인 주소만 허용."""
     parts = urllib.parse.urlsplit(url)
@@ -439,6 +451,8 @@ def check_public_url(url: str) -> urllib.parse.SplitResult:
         raise BlockedURL("번역 프록시 주소(translate.goog)는 회사 망에서 막혀 있습니다 — 원문 주소를 올려 주세요")
     try:
         infos = socket.getaddrinfo(host, parts.port or (443 if parts.scheme == "https" else 80))
+    except (UnicodeError, ValueError):
+        raise BlockedURL("주소 형식이 올바르지 않습니다 — 링크 칸에는 주소만 넣어 주세요")
     except socket.gaierror:
         # 프록시 뒤라 직접 이름풀이가 안 되는 환경: IP 문자열만 걸러 낸다
         try:
@@ -1300,6 +1314,11 @@ class Handler(BaseHTTPRequestHandler):
         note = (d.get("note") or "").strip()[:1000]
         pasted = (d.get("text") or "").strip()[:400_000]
         f = d.get("file")
+        if url and not looks_like_url(url):
+            # 링크 칸에 제목·본문을 넣은 경우: 주소로 읽지 않고 붙여넣은 글로 다룬다
+            if url not in pasted:
+                pasted = (url + "\n\n" + pasted).strip()[:400_000]
+            url = ""
         if not url and not f and not pasted:
             raise HTTPError_(400, "링크, 파일, 본문 중 하나는 있어야 합니다")
         kind, engine, title, site = "article", text_engine(), "", ""
