@@ -195,7 +195,9 @@ def _pg_sql(sql: str) -> str:
 def _pg_connect():
     import psycopg  # 클라우드(Postgres)에서만 필요하다 — 로컬·Windows 판은 표준 라이브러리만 쓴다
     from psycopg.rows import dict_row
-    conn = psycopg.connect(DATABASE_URL, autocommit=True, row_factory=dict_row, connect_timeout=15)
+    # 연결 풀(pgbouncer, 거래 단위)을 거치므로 서버 쪽 준비문(prepared statement)을 쓰지 않는다
+    conn = psycopg.connect(DATABASE_URL, autocommit=True, row_factory=dict_row, connect_timeout=15,
+                           prepare_threshold=None)
     with conn.cursor() as cur:
         for st in _pg_schema():
             cur.execute(st)

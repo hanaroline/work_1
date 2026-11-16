@@ -46,8 +46,13 @@ PC를 켜 둘 필요 없이 `https://<이름>.vercel.app` 고정 주소로 돌�
 그 주소를 열고 「홈 화면에 추가」(안드로이드는 「앱 설치」)만 누르면 앱처럼 씁니다.
 Claude 계정은 필요 없습니다.
 
+**지금 올라가 있는 곳: https://center-insight.vercel.app** (Vercel 프로젝트 `center-insight`,
+싱가포르 `sin1`, DB 는 Neon Postgres `insight-db`).
+
 이 폴더에 Vercel 용 파일이 들어 있습니다 — `api/index.py`(입구), `vercel.json`,
-`requirements.txt`(Postgres 접속용 `psycopg` 하나). 화면·API 는 `server.py` 그대로입니다.
+`pyproject.toml`·`requirements.txt`(Postgres 접속용 `psycopg` 하나). 화면·API 는 `server.py` 그대로입니다.
+`pyproject.toml` 의 `[tool.vercel] entrypoint = "api.index:app"` 를 지우지 마십시오 — 없으면 Vercel 이
+루트의 `server.py` 를 입구로 잘못 집어 모든 주소가 404 가 됩니다.
 
 **한 번만 하는 설정** (vercel.com, 모두 화면에서 누르기만 합니다)
 

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import io
 import sys
+import urllib.parse
 from email.message import Message
 from pathlib import Path
 
@@ -26,6 +27,12 @@ class _Handler(server.Handler):
         method = environ.get("REQUEST_METHOD", "GET").upper()
         path = environ.get("PATH_INFO", "/") or "/"
         query = environ.get("QUERY_STRING", "")
+        # vercel.json 의 rewrite 가 모든 주소를 /api/index 로 보내면서 원래 경로를 __path 로 붙여 준다
+        pairs = urllib.parse.parse_qsl(query, keep_blank_values=True)
+        orig = [v for k, v in pairs if k == "__path"]
+        if orig:
+            path = "/" + orig[0].lstrip("/")
+            query = urllib.parse.urlencode([(k, v) for k, v in pairs if k != "__path"])
         self.command = method
         self.path = path + ("?" + query if query else "")
         self.request_version = "HTTP/1.1"
