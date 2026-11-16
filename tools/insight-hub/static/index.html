@@ -863,6 +863,7 @@ function postCard(p, inDialog = false) {
     catch (err) { toast(err.message); btn.disabled = false; } } }));
   if (bad && canEdit(p)) acts.append(h("button", { type: "button", class: "btn", text: p.kind === "video" ? "자막 붙여 AI 정리" : "본문 붙여 AI 정리",
     onclick: () => { openFill.has(p.id) ? openFill.delete(p.id) : openFill.add(p.id); inDialog ? openPost(p.id) : renderFeed(); } }));
+  acts.append(h("span", { style: "font-size:13px;color:var(--sub)", title: "열어 본 직원 수(올린 사람 제외, 한 사람은 한 번만 셉니다)", text: "👁 본 사람 " + (p.views || 0) + "명" }));
   acts.append(h("span", { class: "sp" }), h("button", { type: "button", class: "btn", text: "링크 복사", onclick: () => copyText(location.origin + "/#p" + p.id) }));
   body.append(acts);
   if (bad && canEdit(p) && openFill.has(p.id)) body.append(fillBox(p));
@@ -892,6 +893,7 @@ function commentBox(p, inDialog) {
   if (!f) box.append(h("div", { class: "caution", text: "댓글 불러오는 중…" }));
   else {
     if (f.liker_names && f.liker_names.length) box.append(h("div", { class: "caution", style: "margin:0 0 6px", text: "도움돼요: " + f.liker_names.join(", ") }));
+    if (f.viewers && f.viewers.length) box.append(h("div", { class: "caution", style: "margin:0 0 6px", text: "👁 본 사람(관리자에게만 보임): " + f.viewers.map(v => v.name).join(", ") }));
     for (const c of f.comment_list || []) box.append(h("div", { class: "cmt" }, h("b", { text: c.author }), h("span", { class: "t", text: ago(c.created_at) }),
       (c.mine || state.me.role === "admin") ? h("button", { class: "x", type: "button", text: "삭제", onclick: async () => {
         try { await api("/api/comments/" + c.id, { method: "DELETE" }); await loadFull(p.id); inDialog ? openPost(p.id) : refreshOne(p.id); } catch (e) { toast(e.message); } } }) : null,
@@ -916,7 +918,7 @@ function copyText(t) {
 const postDlg = $("#postDlg");
 async function openPost(id) {
   try {
-    const p = await api("/api/posts/" + id); full[id] = p;
+    const p = await api("/api/posts/" + id + "?view=1"); full[id] = p;
     $(".db", postDlg).replaceChildren(postCard(p, true));
     if (!postDlg.open) postDlg.showModal();
     if (location.hash !== "#p" + id) history.replaceState(null, "", "#p" + id);

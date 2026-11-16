@@ -195,6 +195,12 @@ CREATE TABLE IF NOT EXISTS likes (
   created_at INTEGER NOT NULL,
   PRIMARY KEY (post_id, user_id)
 );
+CREATE TABLE IF NOT EXISTS post_views (    -- 누가 어느 글을 처음 열어 봤나(사람당 한 줄, 올린 본인은 넣지 않음)
+  post_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  created_at INTEGER NOT NULL,
+  PRIMARY KEY (post_id, user_id)
+);
 CREATE TABLE IF NOT EXISTS comments (
   id INTEGER PRIMARY KEY,
   post_id INTEGER NOT NULL,
@@ -1444,7 +1450,7 @@ class HTTPError_(Exception):
         self.code, self.msg, self.extra = code, msg, extra or {}
 
 
-def post_row(r: sqlite3.Row, me: int, full: bool = False) -> dict:
+def post_row(r: sqlite3.Row, me: int, full: bool = False, admin: bool = False) -> dict:
     d = {
         "id": r["id"], "url": r["url"], "kind": r["kind"], "engine": r["engine"], "note": r["note"],
         "file_name": r["file_name"], "has_file": bool(r["file_path"]),
@@ -1454,6 +1460,7 @@ def post_row(r: sqlite3.Row, me: int, full: bool = False) -> dict:
         "category": r["category"], "sentiment": r["sentiment"], "model": r["model"],
         "created_at": r["created_at"], "updated_at": r["updated_at"], "author": r["author"], "author_id": r["user_id"],
         "likes": r["likes"], "liked": bool(r["liked"]), "comments": r["ncomments"], "mine": r["user_id"] == me,
+        "views": r["nviews"],
     }
     if full:
         d["comment_list"] = [dict(c) | {"mine": c["user_id"] == me} for c in q(
@@ -1461,6 +1468,10 @@ def post_row(r: sqlite3.Row, me: int, full: bool = False) -> dict:
             "WHERE c.post_id=? ORDER BY c.id", (r["id"],))]
         d["liker_names"] = [x_["name"] for x_ in q(
             "SELECT u.name FROM likes l JOIN users u ON u.id=l.user_id WHERE l.post_id=? ORDER BY l.created_at", (r["id"],))]
+        if admin:  # 본 사람 명단은 관리자에게만 — 직원끼리는 수만 보인다
+            d["viewers"] = [dict(v) for v in q(
+                "SELECT u.name, v.created_at FROM post_views v JOIN users u ON u.id=v.user_id "
+                "WHERE v.post_id=? AND v.user_id<>? ORDER BY v.created_at", (r["id"], r["user_id"]))]
     return d
 
 
@@ -1468,7 +1479,8 @@ POST_SELECT = """
 SELECT p.*, u.name AS author,
   (SELECT COUNT(*) FROM likes l WHERE l.post_id=p.id) AS likes,
   (SELECT COUNT(*) FROM likes l WHERE l.post_id=p.id AND l.user_id=?) AS liked,
-  (SELECT COUNT(*) FROM comments c WHERE c.post_id=p.id) AS ncomments
+  (SELECT COUNT(*) FROM comments c WHERE c.post_id=p.id) AS ncomments,
+  (SELECT COUNT(*) FROM post_views v WHERE v.post_id=p.id AND v.user_id<>p.user_id) AS nviews
 FROM posts p JOIN users u ON u.id=p.user_id
 """
 
@@ -1793,17 +1805,20 @@ class Handler(BaseHTTPRequestHandler):
             args += [like] * 5
         if g("before").isdigit():
             where.append("p.id<?"); args.append(int(g("before")))
-        order = "likes DESC, ncomments DESC, p.id DESC" if g("sort") == "popular" else "p.id DESC"
+        order = "likes DESC, nviews DESC, ncomments DESC, p.id DESC" if g("sort") == "popular" else "p.id DESC"
         sql = POST_SELECT + (" WHERE " + " AND ".join(where) if where else "") + f" ORDER BY {order} LIMIT 30"
         rows = q(sql, args)
         self.send_json(200, {"posts": [post_row(r, u["id"]) for r in rows]})
 
     def api_post_get(self, qs, pid):
         u = self.need_user()
+        if (qs.get("view") or [""])[0] == "1":  # 화면에서 글을 열었을 때만 센다(새로 고침·자동 갱신은 세지 않음)
+            xn("INSERT INTO post_views(post_id, user_id, created_at) SELECT id, ?, ? FROM posts WHERE id=? AND user_id<>? "
+               "ON CONFLICT(post_id, user_id) DO NOTHING", (u["id"], now(), pid, u["id"]))
         r = q(POST_SELECT + " WHERE p.id=?", (u["id"], pid), one=True)
         if not r:
             raise HTTPError_(404, "글이 없습니다")
-        self.send_json(200, post_row(r, u["id"], full=True))
+        self.send_json(200, post_row(r, u["id"], full=True, admin=u["role"] == "admin"))
 
     def api_post_create(self, qs):
         u = self.need_user()
@@ -1902,6 +1917,7 @@ class Handler(BaseHTTPRequestHandler):
         with _db_lock:
             x("DELETE FROM likes WHERE post_id=?", (pid,))
             x("DELETE FROM comments WHERE post_id=?", (pid,))
+            x("DELETE FROM post_views WHERE post_id=?", (pid,))
             x("DELETE FROM posts WHERE id=?", (pid,))
         self.send_json(200, {"ok": True})
 
