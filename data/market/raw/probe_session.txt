@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-11-16 10:09:49 KST
+세션을 지닌 채 API 부르기 2026-11-16 10:28:00 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 133875 bytes
@@ -16,19 +16,19 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 124632 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8828 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"138","officeHname":"디지털데일리","articleId":"0002248651","title":"“젠슨 황 사임 충격에 반도체주 약세”…코스피, 외국인 매도에 5300선 붕괴","datetime":"2026-11-16 09:45:09","type":"1","subcontent":"코스피가 외국인 
+        HTTP 200 · 8813 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"215","officeHname":"한국경제TV","articleId":"0001272869","title":"\"엔비디아 왜 없나\"…빅테크 빠진 美 토큰주식 시장 23일 개장[쩐널리즘]","datetime":"2026-11-16 10:17:55","type":"1","subcontent":"미국 주식과 상장
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8828 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"138","officeHname":"디지털데일리","articleId":"0002248651","title":"“젠슨 황 사임 충격에 반도체주 약세”…코스피, 외국인 매도에 5300선 붕괴","datetime":"2026-11-16 09:45:09","type":"1","subcontent":"코스피가 외국인 
+        HTTP 200 · 8813 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"215","officeHname":"한국경제TV","articleId":"0001272869","title":"\"엔비디아 왜 없나\"…빅테크 빠진 美 토큰주식 시장 23일 개장[쩐널리즘]","datetime":"2026-11-16 10:17:55","type":"1","subcontent":"미국 주식과 상장
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 132260 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26535 bytes · JSON!
+        HTTP 200 · 26543 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
