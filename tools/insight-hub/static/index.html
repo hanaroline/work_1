@@ -1099,9 +1099,10 @@ async function loadAdmin() {
     h("tbody", {}, r.users.map(u => {
       const self = u.id === state.me.id;
       const act = (body, msg) => async () => { if (msg && !confirm(msg)) return; try { const x = await api("/api/admin/users/" + u.id, { method: "POST", body }); if (x.code) showCode(x.name, x.code, x.valid); loadAdmin(); } catch (e) { toast(e.message); } };
-      return h("tr", { style: u.active ? "" : "opacity:.5" }, h("td", { text: u.name + (u.active ? "" : " (정지)") }), h("td", { text: u.role === "admin" ? "관리자" : "직원" }),
+      return h("tr", { style: u.active ? "" : "opacity:.5" }, h("td", { text: u.name + (u.active ? "" : " (정지)") + (u.locked ? " 🔒잠김" : "") }), h("td", { text: u.role === "admin" ? "관리자" : "직원" }),
         h("td", { text: u.posts }), h("td", { text: u.last_login ? ago(u.last_login) : "-" }),
         h("td", { class: "row", style: "gap:4px" },
+          u.locked ? h("button", { class: "btn small", type: "button", text: "잠금 풀기", onclick: act({ unlock: true }, `${u.name} 님의 계정 잠금을 풀까요?\n비밀번호가 짧은 시간에 여러 번 틀렸습니다. 본인이 틀린 것이 맞는지 먼저 확인해 주세요.`) }) : null,
           h("button", { class: "btn small", type: "button", text: "비번 재설정", onclick: act({ reset: true }, `${u.name} 님의 비밀번호 재설정 코드를 만들까요?`) }),
           self ? null : h("button", { class: "btn small", type: "button", text: u.active ? "정지" : "복구", onclick: act({ active: !u.active }, u.active ? `${u.name} 님을 정지할까요? 바로 로그아웃됩니다.` : null) }),
           self ? null : h("button", { class: "btn small", type: "button", text: u.role === "admin" ? "직원으로" : "관리자로", onclick: act({ role: u.role === "admin" ? "member" : "admin" }) })));

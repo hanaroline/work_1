@@ -88,6 +88,10 @@ MAX_TEXT_CHARS = 150_000             # AI에 넘길 본문 상한 — 넘으면 
 MIN_TEXT_CHARS = 300                 # 이보다 짧으면 "본문을 읽지 못함"으로 본다
 LOGIN_MAX_FAIL = 5
 LOGIN_LOCK_SEC = 15 * 60
+# 계정 하나에 걸리는 전체 상한 — 여러 IP를 돌려 가며 비밀번호를 맞혀 보는 것을 막는다.
+# 본인이 헷갈려 틀리는 정도(IP당 5번 차단)로는 닿지 않게 넉넉히 잡는다. 관리자가 풀 수 있다.
+ACCT_MAX_FAIL = 20
+ACCT_LOCK_SEC = 60 * 60
 PBKDF2_ROUNDS = 310_000
 
 CATEGORIES = ["국내주식", "해외주식", "채권·금리", "환율", "원자재", "매크로", "부동산", "상품·전략", "기타"]
@@ -428,19 +432,32 @@ def password_problem(pw: str, name: str) -> str | None:
     return None
 
 
-def login_blocked(key: str) -> bool:
+def login_blocked(key: str, limit: int = LOGIN_MAX_FAIL, window: int = LOGIN_LOCK_SEC) -> bool:
     row = q("SELECT count, first_at FROM login_fail WHERE key=?", (key,), one=True)
     if not row:
         return False
-    if now() - row["first_at"] > LOGIN_LOCK_SEC:
+    if now() - row["first_at"] > window:
         x("DELETE FROM login_fail WHERE key=?", (key,))
         return False
-    return row["count"] >= LOGIN_MAX_FAIL
+    return row["count"] >= limit
 
 
-def login_failed(key: str) -> None:
+def acct_key(name: str) -> str:
+    return f"acct|{name}"
+
+
+def acct_locked(name: str) -> bool:
+    return login_blocked(acct_key(name), ACCT_MAX_FAIL, ACCT_LOCK_SEC)
+
+
+def acct_unlock(name: str) -> None:
+    """계정 잠금과, 그 이름에 걸린 IP별 차단을 모두 푼다."""
+    x("DELETE FROM login_fail WHERE key=? OR substr(key, 1, ?)=?", (acct_key(name), len(name) + 1, name + "|"))
+
+
+def login_failed(key: str, window: int = LOGIN_LOCK_SEC) -> None:
     row = q("SELECT count, first_at FROM login_fail WHERE key=?", (key,), one=True)
-    if row and now() - row["first_at"] <= LOGIN_LOCK_SEC:
+    if row and now() - row["first_at"] <= window:
         x("UPDATE login_fail SET count=count+1 WHERE key=?", (key,))
     else:
         x("INSERT INTO login_fail(key, count, first_at) VALUES (?,?,?) "
@@ -1312,13 +1329,19 @@ class Handler(BaseHTTPRequestHandler):
         d = self.body_json()
         name, pw = norm_name(d.get("name", "")), d.get("password", "")
         key = f"{name}|{self.client_ip()}"
+        if acct_locked(name):
+            raise HTTPError_(429, "이 계정은 짧은 시간에 비밀번호가 너무 많이 틀려 1시간 잠겼습니다. "
+                                  "본인이 아니라면 관리자에게 알려 주시고, 급하면 관리자에게 잠금 풀기를 요청하세요.")
         if login_blocked(key):
             raise HTTPError_(429, "여러 번 틀려 15분간 막혔습니다. 잠시 뒤 다시 시도하거나 관리자에게 문의하세요.")
         u = q("SELECT * FROM users WHERE name=?", (name,), one=True)
         if not u or not u["active"] or not check_pw(pw, u["pw_hash"]):
             login_failed(key)
+            login_failed(acct_key(name), ACCT_LOCK_SEC)
+            if acct_locked(name):
+                print(f"[보안] 계정 잠김: 로그인 실패 {ACCT_MAX_FAIL}회 (마지막 IP {self.client_ip()})", file=sys.stderr)
             raise HTTPError_(401, "이름 또는 비밀번호가 맞지 않습니다")
-        x("DELETE FROM login_fail WHERE key=?", (key,))
+        x("DELETE FROM login_fail WHERE key=? OR key=?", (key, acct_key(name)))
         tok = new_session(u["id"])
         self.send_json(200, {"ok": True}, cookie=self.cookie(tok, SESSION_DAYS * 86400))
 
@@ -1352,6 +1375,7 @@ class Handler(BaseHTTPRequestHandler):
         with _db_lock:
             x("UPDATE invites SET used_at=? WHERE id=?", (now(), inv["id"]))
             u = q("SELECT * FROM users WHERE name=?", (name,), one=True)
+            acct_unlock(name)  # 관리자가 준 코드로 새 비밀번호를 정했으니 잠금도 푼다
             if u:  # 비밀번호 재설정용 초대
                 x("UPDATE users SET pw_hash=?, active=1 WHERE id=?", (hash_pw(pw), u["id"]))
                 x("DELETE FROM sessions WHERE user_id=?", (u["id"],))
@@ -1670,6 +1694,8 @@ class Handler(BaseHTTPRequestHandler):
         users = [dict(r) for r in q(
             "SELECT u.id, u.name, u.role, u.active, u.created_at, u.last_login, "
             "(SELECT COUNT(*) FROM posts p WHERE p.user_id=u.id) AS posts FROM users u ORDER BY u.name")]
+        for u in users:
+            u["locked"] = acct_locked(u["name"])
         invites = [dict(r) for r in q(
             "SELECT id, name, role, created_at, expires_at FROM invites WHERE used_at IS NULL AND expires_at>? ORDER BY id DESC",
             (now(),))]
@@ -1702,6 +1728,8 @@ class Handler(BaseHTTPRequestHandler):
                 x("DELETE FROM sessions WHERE user_id=?", (uid,))
         if d.get("role") in ("admin", "member"):
             x("UPDATE users SET role=? WHERE id=?", (d["role"], uid))
+        if d.get("unlock"):
+            acct_unlock(u["name"])
         out = {"ok": True}
         if d.get("reset"):
             out["code"] = new_invite(u["name"], u["role"], me["id"])
