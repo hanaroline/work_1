@@ -546,7 +546,7 @@ async function boot() {
   if (r.invite_label) state.inviteLabel = r.invite_label;
   if (!r.user) { showAuth(); if (location.hash.startsWith("#join")) setTab(true); return; }
   state.me = r.user; state.cats = r.categories || [];
-  state.serverless = !!r.serverless; state.maxUpload = r.max_upload || 20 * 1024 * 1024;
+  state.serverless = !!r.serverless; state.maxUpload = r.max_upload || 20 * 1024 * 1024; state.chunk = r.upload_chunk || 2560000;
   state.skew = r.now ? r.now - Date.now() / 1000 : 0;
   state.textEngine = r.text_engine || "claude";
   state.authors = r.authors || [];
@@ -797,14 +797,14 @@ function postCard(p, inDialog = false) {
     sec("위험 요인", s.risks);
     sec("근거가 약하거나 확인되지 않은 주장", s.unverified);
     if (url) det.append(h("a", { class: "src", href: url, target: "_blank", rel: "noopener noreferrer", text: "원문: " + url }));
-    if (p.has_file) det.append(h("a", { class: "src", href: "/api/files/" + p.id, target: "_blank", rel: "noopener", text: "📄 첨부 보기: " + (p.file_name || "파일") }));
+    if (p.has_file) det.append(h("a", { class: "src", href: "/api/files/" + p.id, target: "_blank", rel: "noopener", onclick: e => openFile(e, p.id), text: "📄 첨부 보기: " + (p.file_name || "파일") }));
     det.append(h("div", { class: "caution" }, ...(s.notes || []).map(n => h("div", { text: "· " + n })),
       h("div", { text: "· AI 정리입니다. 고객에게 전달하기 전에 원문과 숫자를 꼭 확인하세요." }),
       p.model ? h("div", { text: "· 정리한 모델: " + p.model }) : null));
     body.append(det);
   } else if (!done) {
     if (url) body.append(h("a", { class: "src", href: url, target: "_blank", rel: "noopener noreferrer", text: "원문: " + url }));
-    else if (p.has_file && p.kind !== "image") body.append(h("a", { class: "src", href: "/api/files/" + p.id, target: "_blank", rel: "noopener", text: "📄 " + (p.file_name || "첨부") }));
+    else if (p.has_file && p.kind !== "image") body.append(h("a", { class: "src", href: "/api/files/" + p.id, target: "_blank", rel: "noopener", onclick: e => openFile(e, p.id), text: "📄 " + (p.file_name || "첨부") }));
   }
   if (done && s.tags && s.tags.length) body.append(h("div", { class: "tags" }, s.tags.map(t => h("button", { type: "button", text: "#" + t, onclick: () => { $("#postDlg").open && $("#postDlg").close(); setTag(t); } }))));
   if (done && !inDialog) body.append(h("button", { class: "more", type: "button", text: open ? "접기 ⌃" : "더보기 ⌄", onclick: () => { open ? openMore.delete(p.id) : openMore.add(p.id); renderFeed(); } }));
@@ -987,6 +987,34 @@ function say(msg, err) { const s = $("#status"); s.textContent = msg; s.classNam
 function readFile(f) {
   return new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(",")[1]); r.onerror = () => no(new Error("파일을 읽지 못했습니다")); r.readAsDataURL(f); });
 }
+// 서버가 요청 한 번에 받는 크기가 정해져 있어 파일을 조각으로 나눠 올린다
+async function uploadFile(f) {
+  const CH = state.chunk || 2560000, n = Math.max(1, Math.ceil(f.size / CH));
+  let id = null;
+  for (let i = 0; i < n; i++) {
+    say(n > 1 ? `파일 올리는 중… ${Math.round(i / n * 100)}%` : "파일 올리는 중…");
+    const data = await readFile(f.slice(i * CH, (i + 1) * CH));
+    id = (await api("/api/uploads", { method: "POST", body: { i, id, data } })).id;
+  }
+  return { name: f.name, type: f.type, upload: id, parts: n };
+}
+// 첨부 열기 — 클라우드 서버는 응답 한 번 크기도 정해져 있어 조각으로 받아 이어 붙인다
+async function openFile(e, id) {
+  if (!state.serverless) return;
+  e.preventDefault();
+  const w = window.open("", "_blank");
+  try {
+    const parts = []; let n = 1, type = "";
+    for (let i = 0; i < n; i++) {
+      const r = await fetch(`/api/files/${id}?part=${i}`, { credentials: "same-origin" });
+      if (!r.ok) throw new Error("첨부를 열지 못했습니다");
+      n = +r.headers.get("X-File-Parts") || 1; type = r.headers.get("X-File-Type") || "";
+      parts.push(await r.blob());
+    }
+    const url = URL.createObjectURL(new Blob(parts, { type }));
+    if (w) w.location.href = url; else location.href = url;
+  } catch (err) { if (w) w.close(); toast(err.message); }
+}
 const isYT = u => /(?:youtube\.com\/(?:watch|shorts|live|embed)|youtu\.be\/)/i.test(u);
 
 $("#submit").onclick = async () => {
@@ -999,8 +1027,9 @@ $("#submit").onclick = async () => {
   } else {
     const f = kind === "image" ? imgFile : pdf;
     if (f.size > (state.maxUpload || 3e6)) { say(`파일이 ${Math.round(state.maxUpload / 1048576)}MB를 넘습니다.`, true); return; }
-    say("파일 읽는 중…");
-    body.file = { name: f.name, type: f.type, data: await readFile(f) };
+    sending = true; validate();
+    try { body.file = await uploadFile(f); }
+    catch (e) { say(e.message, true); sending = false; validate(); return; }
   }
   if (body.url && /translate\.goog/i.test(body.url)) { say("번역 프록시 주소(translate.goog)는 쓸 수 없습니다. 원문 주소를 넣어 주세요.", true); return; }
   sending = true; validate(); say("올리는 중…");

@@ -74,8 +74,13 @@ SESSION_RENEW_SEC = 86400            # 기한 연장은 하루에 한 번만 기
 # 첫 가입은 엄격하게: 초대 코드는 짧게 살고, 그 이름으로 5번 틀리면 코드가 무효가 된다.
 INVITE_HOURS = max(1, int(os.environ.get("INSIGHT_INVITE_HOURS", "72")))
 INVITE_MAX_FAIL = 5
-# 첨부 한 건 상한 — Vercel 은 요청 본문이 4.5MB 까지라(base64 로 1.37배 불어남) 3MB 로 둔다
-MAX_UPLOAD = (3 if SERVERLESS else 20) * 1024 * 1024
+# 첨부 한 건 상한. Vercel 은 요청·응답 한 번이 4.5MB 까지라, 파일은 조각(UPLOAD_CHUNK)으로 나눠
+# 올리고(/api/uploads) 나눠 받는다(/api/files/<id>?part=N). base64 로 1.37배 불어나도 3.4MB 라 안에 든다.
+MAX_UPLOAD = 20 * 1024 * 1024
+UPLOAD_CHUNK = 2_560_000
+MAX_PARTS = -(-MAX_UPLOAD // UPLOAD_CHUNK)
+# Gemini 에 본문째(inline) 넣는 상한 — 요청 전체가 20MB 를 넘으면 안 되므로, 그보다 크면 Files API 로 먼저 올린다
+GEMINI_INLINE_MAX = 12 * 1024 * 1024
 AI_TIMEOUT_CAP = 240 if SERVERLESS else 600   # 서버리스 함수는 300초 안에 끝나야 한다
 STALE_WORK_SEC = 330                          # 이보다 오래 '정리 중'이면 멈춘 것으로 보고 다시 시킨다
 MAX_FETCH = 20 * 1024 * 1024         # 링크에서 받아 올 상한
@@ -292,6 +297,35 @@ def blob_get(name: str) -> bytes:
             raise FileNotFoundError(name)
         return bytes(r["data"])
     return (UPLOAD_DIR / name).read_bytes()
+
+
+def blob_slice(name: str, start: int, n: int) -> tuple[bytes, int]:
+    """첨부의 start 부터 n 바이트와 전체 크기 — 큰 파일을 조각으로 내려보낼 때 쓴다."""
+    if USE_PG:
+        r = q("SELECT substring(data from ? for ?) AS d, octet_length(data) AS n FROM files WHERE name=?",
+              (start + 1, n, name), one=True)
+        if not r:
+            raise FileNotFoundError(name)
+        return bytes(r["d"]), int(r["n"])
+    path = UPLOAD_DIR / name
+    with open(path, "rb") as fh:
+        fh.seek(start)
+        return fh.read(n), path.stat().st_size
+
+
+def blob_names(prefix: str) -> list[str]:
+    if USE_PG:
+        return [r["name"] for r in q("SELECT name FROM files WHERE name LIKE ?", (prefix + "%",))]
+    return [f.name for f in UPLOAD_DIR.glob(prefix + "*")]
+
+
+def upload_gc() -> None:
+    """하루 넘게 묶이지 않은 올림 조각(up-<사용자>-<시각>-…)을 치운다."""
+    cut = now() - 86400
+    for nm in blob_names("up-"):
+        m = re.match(r"up-\d+-(\d+)-", nm)
+        if m and int(m.group(1)) < cut:
+            blob_del(nm)
 
 
 def blob_del(name: str) -> None:
@@ -687,6 +721,39 @@ def _post_json(url: str, headers: dict, body: dict, timeout: int = 300) -> dict:
         raise AIError(f"연결 실패: {e}") from None
 
 
+def gemini_upload(raw: bytes, mime: str, key: str) -> str:
+    """Gemini Files API(재개형 올리기)로 파일을 올리고 file_uri 를 돌려준다. 파일은 48시간 뒤 저절로 지워진다."""
+    def call(req, timeout):
+        try:
+            with urllib.request.urlopen(req, timeout=min(timeout, AI_TIMEOUT_CAP)) as resp:
+                return resp.headers, json.loads(resp.read() or b"{}")
+        except urllib.error.HTTPError as e:
+            raise AIError(f"HTTP {e.code}: 파일 올리기 실패 {e.read().decode('utf-8', 'replace')[:300]}") from None
+        except (urllib.error.URLError, TimeoutError, socket.timeout) as e:
+            raise AIError(f"연결 실패(파일 올리기): {e}") from None
+    hdrs, _ = call(urllib.request.Request(
+        f"{GEMINI_BASE}/upload/v1beta/files", method="POST",
+        data=json.dumps({"file": {"display_name": "insight-upload"}}).encode(),
+        headers={"x-goog-api-key": key, "content-type": "application/json",
+                 "X-Goog-Upload-Protocol": "resumable", "X-Goog-Upload-Command": "start",
+                 "X-Goog-Upload-Header-Content-Length": str(len(raw)),
+                 "X-Goog-Upload-Header-Content-Type": mime}), 60)
+    up = hdrs.get("X-Goog-Upload-URL")
+    if not up:
+        raise AIError("Gemini 가 파일 올릴 주소를 주지 않았습니다")
+    _, info = call(urllib.request.Request(up, data=raw, method="POST", headers={
+        "x-goog-api-key": key, "Content-Length": str(len(raw)),
+        "X-Goog-Upload-Offset": "0", "X-Goog-Upload-Command": "upload, finalize"}), 180)
+    f = info.get("file") or {}
+    t0 = time.time()
+    while f.get("state") == "PROCESSING" and time.time() - t0 < 90:
+        time.sleep(3)
+        _, f = call(urllib.request.Request(f"{GEMINI_BASE}/v1beta/{f['name']}", headers={"x-goog-api-key": key}), 30)
+    if f.get("state") not in (None, "ACTIVE") or not f.get("uri"):
+        raise AIError(f"Gemini 가 파일을 받지 못했습니다({f.get('state') or '주소 없음'})")
+    return f["uri"]
+
+
 def call_claude(content: list[dict]) -> tuple[dict, str]:
     """Claude Messages API(raw HTTP — 저장소 규칙상 외부 패키지를 쓰지 않는다)."""
     key = os.environ.get("ANTHROPIC_API_KEY")
@@ -768,10 +835,15 @@ def call_gemini_blocks(content: list[dict]) -> tuple[dict, str]:
     if not key:
         raise AIError("GEMINI_API_KEY 가 설정되지 않았습니다")
     parts: list[dict] = []
+    big = sum(len(b["source"]["data"]) for b in content if b.get("type") in ("document", "image")) > GEMINI_INLINE_MAX * 4 // 3
     for b in content:
         if b.get("type") in ("document", "image"):
             src = b["source"]
-            parts.append({"inline_data": {"mime_type": src["media_type"], "data": src["data"]}})
+            if big:  # 요청 한 번에 담기엔 커서 Files API 로 먼저 올리고 주소만 넘긴다
+                uri = gemini_upload(base64.b64decode(src["data"]), src["media_type"], key)
+                parts.append({"file_data": {"mime_type": src["media_type"], "file_uri": uri}})
+            else:
+                parts.append({"inline_data": {"mime_type": src["media_type"], "data": src["data"]}})
         elif b.get("type") == "text":
             parts.append({"text": b["text"]})
     parts.append({"text": JSON_INSTRUCTION})
@@ -1206,7 +1278,7 @@ class Handler(BaseHTTPRequestHandler):
             return self.send_json(200, {"user": None, "center": CENTER_NAME, "invite_label": invite_label()})
         self.send_json(200, {"user": {"id": u["id"], "name": u["name"], "role": u["role"]}, "center": CENTER_NAME,
                              "categories": CATEGORIES, "session_days": SESSION_DAYS, "invite_label": invite_label(),
-                             "serverless": SERVERLESS, "max_upload": MAX_UPLOAD, "now": now(),
+                             "serverless": SERVERLESS, "max_upload": MAX_UPLOAD, "upload_chunk": UPLOAD_CHUNK, "now": now(),
                              "text_engine": text_engine(),
                              "authors": [dict(r) for r in q(
                                  "SELECT u.id, u.name FROM users u WHERE EXISTS (SELECT 1 FROM posts p WHERE p.user_id=u.id) "
@@ -1379,10 +1451,23 @@ class Handler(BaseHTTPRequestHandler):
             ftype = (f.get("type") or "").lower()
             if ftype not in ALLOWED_UPLOAD:
                 raise HTTPError_(400, "PDF 또는 이미지(PNG·JPG·WEBP·GIF)만 올릴 수 있습니다")
-            try:
-                raw = base64.b64decode(f.get("data") or "", validate=True)
-            except ValueError:
-                raise HTTPError_(400, "파일을 읽지 못했습니다")
+            if f.get("upload"):  # 조각으로 먼저 올린 파일을 이어 붙인다
+                up, n = f.get("upload"), f.get("parts")
+                if not isinstance(up, str) or not re.fullmatch(r"\d+-[0-9a-f]{16}", up) \
+                        or not isinstance(n, int) or not 1 <= n <= MAX_PARTS:
+                    raise HTTPError_(400, "파일 조각 정보가 맞지 않습니다")
+                names = [f"up-{u['id']}-{up}-{i:03d}" for i in range(n)]
+                try:
+                    raw = b"".join(blob_get(nm) for nm in names)
+                except FileNotFoundError:
+                    raise HTTPError_(400, "파일 조각이 빠졌습니다. 다시 올려 주세요")
+                for nm in names:
+                    blob_del(nm)
+            else:
+                try:
+                    raw = base64.b64decode(f.get("data") or "", validate=True)
+                except ValueError:
+                    raise HTTPError_(400, "파일을 읽지 못했습니다")
             if len(raw) > MAX_UPLOAD:
                 raise HTTPError_(413, f"파일이 {MAX_UPLOAD // 1048576}MB를 넘습니다")
             if ftype == "application/pdf" and not raw.startswith(b"%PDF-"):
@@ -1487,11 +1572,50 @@ class Handler(BaseHTTPRequestHandler):
         x("DELETE FROM comments WHERE id=?", (cid,))
         self.send_json(200, {"ok": True})
 
+    def api_upload(self, qs):
+        """파일 조각 하나를 받아 둔다. 첫 조각(i=0)이 올림 번호를 받고, 나머지는 그 번호로 잇는다."""
+        u = self.need_user()
+        d = self.body_json()
+        i, up = d.get("i"), d.get("id")
+        if not isinstance(i, int) or not 0 <= i < MAX_PARTS:
+            raise HTTPError_(400, "파일 조각 번호가 맞지 않습니다")
+        try:
+            raw = base64.b64decode(d.get("data") or "", validate=True)
+        except ValueError:
+            raise HTTPError_(400, "파일 조각을 읽지 못했습니다")
+        if not raw or len(raw) > UPLOAD_CHUNK:
+            raise HTTPError_(400, "파일 조각 크기가 맞지 않습니다")
+        if i == 0:
+            upload_gc()
+            up = f"{int(now())}-{secrets.token_hex(8)}"
+        elif not isinstance(up, str) or not re.fullmatch(r"\d+-[0-9a-f]{16}", up):
+            raise HTTPError_(400, "파일 조각 정보가 맞지 않습니다")
+        name = f"up-{u['id']}-{up}-{i:03d}"
+        blob_del(name)
+        blob_put(name, raw)
+        self.send_json(200, {"id": up})
+
     def api_file(self, qs, pid):
         self.need_user()
         p = q("SELECT file_path, file_type, file_name FROM posts WHERE id=?", (pid,), one=True)
         if not p or not p["file_path"]:
             raise HTTPError_(404, "파일이 없습니다")
+        part = (qs.get("part") or [""])[0]
+        if part.isdigit():  # 조각으로 내려받기 — 화면이 이어 붙여 연다
+            try:
+                data, size = blob_slice(p["file_path"], int(part) * UPLOAD_CHUNK, UPLOAD_CHUNK)
+            except FileNotFoundError:
+                raise HTTPError_(404, "파일이 없습니다")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/octet-stream")
+            self.send_header("X-File-Parts", str(max(1, -(-size // UPLOAD_CHUNK))))
+            self.send_header("X-File-Type", p["file_type"])
+            self.send_header("Cache-Control", "private, no-store")
+            self._sec_headers()
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
         try:
             data = blob_get(p["file_path"])
         except FileNotFoundError:
@@ -1584,6 +1708,7 @@ ROUTES = {
     ("POST", r"/api/posts/(\d+)/comments"): Handler.api_comment,
     ("DELETE", r"/api/comments/(\d+)"): Handler.api_comment_delete,
     ("GET", r"/api/files/(\d+)"): Handler.api_file,
+    ("POST", r"/api/uploads"): Handler.api_upload,
     ("GET", r"/api/tags"): Handler.api_tags,
     ("GET", r"/api/admin/users"): Handler.api_admin_users,
     ("POST", r"/api/admin/invites"): Handler.api_admin_invite,
