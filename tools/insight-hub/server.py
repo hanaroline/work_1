@@ -1190,7 +1190,10 @@ class Handler(BaseHTTPRequestHandler):
         self.send_json(200, {"user": {"id": u["id"], "name": u["name"], "role": u["role"]}, "center": CENTER_NAME,
                              "categories": CATEGORIES, "session_days": SESSION_DAYS, "invite_label": invite_label(),
                              "serverless": SERVERLESS, "max_upload": MAX_UPLOAD, "now": now(),
-                             "text_engine": text_engine()})
+                             "text_engine": text_engine(),
+                             "authors": [dict(r) for r in q(
+                                 "SELECT u.id, u.name FROM users u WHERE EXISTS (SELECT 1 FROM posts p WHERE p.user_id=u.id) "
+                                 "ORDER BY u.name")]})
 
     def api_login(self, qs):
         d = self.body_json()
@@ -1286,6 +1289,15 @@ class Handler(BaseHTTPRequestHandler):
             where.append("p.user_id=?"); args.append(u["id"])
         if g("liked") == "1":
             where.append("EXISTS (SELECT 1 FROM likes l WHERE l.post_id=p.id AND l.user_id=?)"); args.append(u["id"])
+        kinds = [k for k in g("kind").split(",") if k in ("article", "pdf", "image", "video", "text")]
+        if kinds:
+            where.append("p.kind IN (" + ",".join("?" * len(kinds)) + ")"); args += kinds
+        if g("author").isdigit():
+            where.append("p.user_id=?"); args.append(int(g("author")))
+        if g("since").isdigit():
+            where.append("p.created_at>=?"); args.append(int(g("since")))
+        if g("until").isdigit():
+            where.append("p.created_at<?"); args.append(int(g("until")))
         rng = g("range")
         if rng in ("1", "7", "30"):
             where.append("p.created_at>?"); args.append(now() - int(rng) * 86400)
