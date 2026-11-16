@@ -781,7 +781,53 @@ AI_ATTEMPT_SEC = 150 if SERVERLESS else 600    # 한 번 부를 때 기다리는
 _run_ctx = threading.local()
 
 
+QUOTA_TAG = "QUOTA:"   # 하루 한도 소진 — AIError 메시지 머리말
+
+
+def _quota_key(url: str) -> str:
+    return "aiquota:" + urllib.parse.urlsplit(url).netloc
+
+
+def _retry_after(detail: str) -> int:
+    """구글 429 본문의 'retry in 1h3m12.2s' / retryDelay '3792s' 를 초로."""
+    m = re.search(r"retry in ((?:\d+h)?(?:\d+m)?(?:[\d.]+s)?)", detail)
+    if m and m.group(1):
+        t = m.group(1)
+        sec = sum(float(v or 0) * k for v, k in zip(re.match(r"(?:(\d+)h)?(?:(\d+)m)?(?:([\d.]+)s)?", t).groups(), (3600, 60, 1)))
+        if sec > 0:
+            return int(sec) + 30
+    m = re.search(r'"retryDelay":\s*"(\d+)s"', detail)
+    return int(m.group(1)) + 30 if m else 3600
+
+
+def quota_message(err: str) -> str:
+    """'QUOTA:<until>:<limit>' → 직원이 읽을 안내."""
+    try:
+        _, until, limit = err.split(":", 2)
+        until = int(until)
+        at = time.strftime("%H:%M", time.gmtime(until + KST))
+        lim = f"(하루 {limit}회)" if limit.isdigit() else ""
+    except ValueError:
+        at, lim = "몇 시간 뒤", ""
+    return (f"오늘 쓸 수 있는 AI 무료 사용량{lim}을 다 썼습니다. {at}쯤부터 다시 됩니다 — "
+            "그때 「다시 시도」를 눌러 주세요. 자주 막히면 관리자에게 알려 주세요.")
+
+
+def ai_error_text(e: Exception) -> str:
+    m = str(e)
+    return quota_message(m) if m.startswith(QUOTA_TAG) else ""
+
+
 def _post_json(url: str, headers: dict, body: dict, timeout: int = 300) -> dict:
+    # 하루 한도를 다 쓴 상태면 구글을 부르지 않는다 — 부를수록 실패만 쌓인다.
+    try:
+        qc = cache_get(_quota_key(url))
+    except Exception:
+        qc = None
+    if qc:
+        b = json.loads(qc["body"])
+        if b.get("until", 0) > now():
+            raise AIError(f"{QUOTA_TAG}{b['until']}:{b.get('limit', '')}")
     req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
                                  headers={"content-type": "application/json", **headers})
     deadline = getattr(_run_ctx, "deadline", None) or time.time() + RUN_BUDGET_SEC
@@ -800,8 +846,17 @@ def _post_json(url: str, headers: dict, body: dict, timeout: int = 300) -> dict:
             print(f"[ai] {url.rsplit('/', 1)[-1]} {time.time() - t0:.1f}s (시도 {attempt + 1})", file=sys.stderr)
             return out
         except urllib.error.HTTPError as e:
-            detail = e.read().decode("utf-8", "replace")[:600]
+            detail = e.read().decode("utf-8", "replace")[:3000]
             print(f"[ai] HTTP {e.code} {time.time() - t0:.1f}s (시도 {attempt + 1}): {detail[:200]}", file=sys.stderr)
+            if e.code == 429 and re.search(r"per ?day|PerDay", detail):
+                # 하루 한도 소진: 다시 불러도 소용없다. 풀릴 때까지 모두 멈춘다.
+                until = now() + _retry_after(detail)
+                lm = re.search(r"limit: (\d+)", detail)
+                try:
+                    cache_put(_quota_key(url), "", {"until": until, "limit": lm.group(1) if lm else ""})
+                except Exception:
+                    pass
+                raise AIError(f"{QUOTA_TAG}{until}:{lm.group(1) if lm else ''}") from None
             if e.code in (429, 500, 502, 503, 504) and wait is not None:
                 time.sleep(wait)
                 continue
@@ -1293,7 +1348,7 @@ def _process(pid: int) -> None:
         set_status(pid, "failed", str(e))
     except AIError as e:
         print(f"[run {pid}] AI 실패: {str(e)[:300]}", file=sys.stderr)
-        msg = str(e)
+        msg = ai_error_text(e) or str(e)
         if re.match(r"HTTP (429|5\d\d)|시간 초과", msg):
             msg = "AI 서버가 붐벼 여러 번 불러도 제때 답하지 않았습니다. 잠시 뒤 「다시 시도」를 눌러 주세요. (" + msg[:80] + ")"
         set_status(pid, "failed", msg)
@@ -1986,6 +2041,9 @@ class Handler(BaseHTTPRequestHandler):
         out = self._brief_out(rows, scope, today_n, date, c)
         if not out["needs_gen"]:
             return self.send_json(200, out)
+        bf = cache_get(f"brieffail:{date}")
+        if bf and now() - bf["created_at"] < 900:   # 실패 뒤 15분은 다시 부르지 않는다 (화면 열 때마다 한도를 갉아먹지 않게)
+            return self.send_json(200, out | {"error": json.loads(bf["body"])})
         if not lock_take(key, 100):
             return self.send_json(200, out | {"busy": True})
         try:
@@ -2009,8 +2067,9 @@ class Handler(BaseHTTPRequestHandler):
             cache_put(key, ",".join(str(r["id"]) for r in rows), body)
             self.send_json(200, self._brief_out(rows, scope, today_n, date, cache_get(key)))
         except AIError as e:
-            print(f"[briefing] {e}", file=sys.stderr)
-            self.send_json(200, out | {"error": "브리핑을 만들지 못했습니다. 잠시 뒤 다시 열어 보세요."})
+            print(f"[briefing] {str(e)[:300]}", file=sys.stderr)
+            cache_put(f"brieffail:{date}", "", ai_error_text(e) or "브리핑을 만들지 못했습니다. 잠시 뒤 다시 열어 보세요.")
+            self.send_json(200, out | {"error": ai_error_text(e) or "브리핑을 만들지 못했습니다. 잠시 뒤 다시 열어 보세요."})
         finally:
             lock_drop(key)
 
@@ -2040,8 +2099,8 @@ class Handler(BaseHTTPRequestHandler):
                 x("UPDATE posts SET summary_json=? WHERE id=?", (json.dumps(sm2, ensure_ascii=False), pid))
             self.send_json(200, {"client_talk": ct, "counterpoint": cp})
         except AIError as e:
-            print(f"[extras] {pid}: {e}", file=sys.stderr)
-            raise HTTPError_(502, "AI가 지금 답하지 않습니다. 잠시 뒤 다시 눌러 주세요.")
+            print(f"[extras] {pid}: {str(e)[:300]}", file=sys.stderr)
+            raise HTTPError_(502, ai_error_text(e) or "AI가 지금 답하지 않습니다. 잠시 뒤 다시 눌러 주세요.")
         finally:
             lock_drop(name)
 
@@ -2086,8 +2145,9 @@ class Handler(BaseHTTPRequestHandler):
         try:
             res = ai_json(ASK_SYSTEM, f"질문: {question}\n\n룸 자료:\n\n" + "\n\n".join(blocks), ASK_SCHEMA, budget=110)
         except AIError as e:
-            print(f"[ask] {e}", file=sys.stderr)
-            raise HTTPError_(502, "AI가 지금 답하지 않습니다. 잠시 뒤 다시 해 주세요.")
+            print(f"[ask] {str(e)[:300]}", file=sys.stderr)
+            cache_put(rk, "", used)   # 실패한 질문은 횟수에서 빼 준다
+            raise HTTPError_(502, ai_error_text(e) or "AI가 지금 답하지 않습니다. 잠시 뒤 다시 해 주세요.")
         valid = {r["id"]: (sm.get("title") or r["source_title"] or "") for _, _, r, sm in top}
         cites = [{"id": i, "title": valid[i]} for i in dict.fromkeys(res.get("cites") or []) if isinstance(i, int) and i in valid]
         self.send_json(200, {"answer": str(res.get("answer") or "").strip()[:2000], "enough": bool(res.get("enough")),

@@ -356,6 +356,7 @@ dialog#postDlg{max-width:min(680px,calc(100vw - 16px))}
 .box-op h4{color:var(--op-ink)}
 .box .ld{font-size:13.5px;color:var(--sub)}
 .box .again{margin-top:6px}
+.mkx{margin-top:12px;width:100%;justify-content:center}
 
 /* 종목 흐름 */
 #tagView{padding:0 0 110px}
@@ -1143,7 +1144,9 @@ function extrasBox(p) {
         h("button", { class: "btn small again", type: "button", text: "다시 시도", onclick: () => { tries = 0; load(); } })));
     }
   };
-  load();
+  // 글을 열기만 해도 AI를 부르면 하루 한도를 금방 다 쓴다 — 필요한 사람이 눌렀을 때만 만든다.
+  wrap.append(h("button", { class: "btn small mkx", type: "button", onclick: () => load() },
+    "💬 고객 말투 · 다르게 볼 점 만들기"));
   return wrap;
 }
 
@@ -1166,7 +1169,7 @@ function drawBrief(b, making) {
       : pt.text))));
   } else if (making) kids.push(h("div", { class: "wait", text: `${scopeTxt} 자료 ${b.n}건으로 브리핑을 만드는 중…` }), h("div", { class: "prog" }, h("i")));
   else if (!b.ai) kids.push(h("div", { class: "wait", text: `${scopeTxt} 정리된 자료 ${b.n}건. (AI 키가 없어 브리핑 문장은 만들지 않습니다)` }));
-  else kids.push(h("div", { class: "wait", text: `${scopeTxt} 정리된 자료 ${b.n}건` }));
+  else kids.push(h("div", { class: "wait", text: b.error ? `${scopeTxt} 정리된 자료 ${b.n}건 · ${b.error}` : `${scopeTxt} 정리된 자료 ${b.n}건` }));
   const sen = b.sentiment || {}, tot = Object.values(sen).reduce((x, y) => x + y, 0);
   if (b.themes && b.themes.length) kids.push(h("div", { class: "themes" }, b.themes.map(x => h("button", { type: "button", onclick: () => openTag(x.tag) }, "#" + x.tag, h("b", { text: x.n })))));
   if (tot) {
