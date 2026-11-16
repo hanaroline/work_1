@@ -586,7 +586,7 @@ dialog#postDlg{max-width:min(680px,calc(100vw - 16px))}
       <button class="btn" type="button" id="logoutBtn">이 기기 로그아웃</button>
     </div>
     <div class="msg" id="sessMsg" role="status"></div>
-    <a class="classic" href="/classic">이전 화면(클래식)으로 보기 →</a>
+    <a class="classic hidden" id="classicLink" href="/classic">이전 화면(클래식)으로 보기 · 관리자 →</a>
   </div>
 </dialog>
 
@@ -743,6 +743,7 @@ async function boot() {
   $("#authView").classList.add("hidden");
   for (const id of ["#feedView", "#fab", "#who", "#menuBtn"]) $(id).classList.remove("hidden");
   $("#adminBtn").classList.toggle("hidden", r.user.role !== "admin");
+  $("#classicLink").classList.toggle("hidden", r.user.role !== "admin");
   $("#who").textContent = r.user.name + " 님";
   $("#myName").textContent = r.user.name;
   $("#myAvatar").textContent = r.user.name.slice(0, 1); $("#myAvatar").style.background = colorOf(r.user.id);
