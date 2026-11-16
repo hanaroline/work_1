@@ -127,6 +127,9 @@ Claude 계정은 필요 없습니다.
 |---|---|---|
 | `INSIGHT_DATA_DIR` | `~/.insight-hub` | DB(`insight.db`)와 첨부(`uploads/`)가 놓이는 곳. **저장소 밖**. 백업은 이 폴더 통째로 |
 | `INSIGHT_CENTER_NAME` | `인사이트룸` | 화면 제목·앱 이름 |
+| `INSIGHT_UI` | `v2` | 첫 화면. `v2`=새 화면(브리핑룸), `classic`=이전 화면(인사이트룸). 둘 다 늘 `/new`·`/classic` 으로도 열림 |
+| `INSIGHT_V2_NAME` | `브리핑룸` | 새 화면의 제목·앱 이름 |
+| `INSIGHT_ASK_PER_HOUR` | `20` | 「룸 자료로 물어보기」 한 사람당 시간당 횟수 |
 | `INSIGHT_CLAUDE_MODEL` | `claude-opus-5-5` | 글 정리 모델 |
 | `INSIGHT_CLAUDE_EFFORT` | `medium` | `low`로 낮추면 빠르고 싸짐 |
 | `INSIGHT_GEMINI_MODEL` | `gemini-3.8-flash` | 영상 정리 모델. **쓰는 계정에서 사용 가능한 이름인지 먼저 확인하십시오** |
@@ -135,6 +138,19 @@ Claude 계정은 필요 없습니다.
 | `INSIGHT_INVITE_HOURS` | `72` | 초대·비번 재설정 코드 유효 시간 |
 | `INSIGHT_COOKIE_SECURE=1` | | HTTPS 리버스 프록시 뒤에서 돌릴 때 |
 | `INSIGHT_TRUST_PROXY=1` | | 프록시가 넘기는 `X-Forwarded-For`를 로그인 잠금에 씀 |
+
+## 새 화면(브리핑룸)과 이전 화면(클래식)
+
+- **새 화면** `static/v2.html` — 남색 #13294b · 청록 #0e9f9a. 오늘의 브리핑(오늘 정리된 자료를 AI가 3줄로,
+  없으면 최근 3일), 밑줄 탭 목록, 오른쪽 아래 둥근 ＋ 「자료 공유」, 자세히 창의 「고객에게 이렇게 말해 보세요」(복사)와
+  「다르게 볼 수 있는 점」, 태그를 누르면 열리는 **종목 흐름**(논조 막대 + 시간순), **룸 자료로 물어보기**
+  (최근 60일 자료의 AI 정리만 근거로 답하고 근거 자료 번호를 붙임).
+- **이전 화면** `static/index.html` — 손대지 않았습니다. 언제든 `/classic` 으로 열리고, 계정 창 아래
+  「이전 화면(클래식)으로 보기」로도 갑니다.
+- **첫 화면을 이전 것으로 되돌리기**: Vercel 환경변수 `INSIGHT_UI=classic` 을 넣고 다시 배포. 새 기능의 서버 API는
+  남아 있어도 이전 화면은 부르지 않으므로 그대로 동작합니다.
+- 브리핑·고객 말투는 한 번 만든 것을 DB(`ai_cache`, 요약 JSON)에 저장해 다시 부르지 않습니다. 브리핑은 자료가 바뀌고
+  5분이 지나야 새로 만듭니다.
 
 ## 앱처럼 쓰기 (PWA)
 

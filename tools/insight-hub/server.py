@@ -49,7 +49,7 @@ STATIC = HERE / "static"
 def _build_id() -> str:
     """화면 파일이 바뀌면 달라지는 판 번호 — 열려 있는 화면이 새 판을 알아채 스스로 새로고침하게 한다."""
     h = hashlib.sha256()
-    for n in ("index.html", "sw.js"):
+    for n in ("index.html", "v2.html", "sw.js"):
         try:
             h.update((STATIC / n).read_bytes())
         except OSError:
@@ -73,6 +73,12 @@ DB_PATH = DATA_DIR / "insight.db"
 UPLOAD_DIR = DATA_DIR / "uploads"
 
 CENTER_NAME = os.environ.get("INSIGHT_CENTER_NAME", "인사이트룸")
+# 새 화면(v2)의 이름과 기본으로 보여 줄 화면. 이전 화면은 /classic 에서 언제든 열린다.
+# INSIGHT_UI=classic 으로 두면 첫 화면이 예전 그대로 돌아간다.
+V2_NAME = os.environ.get("INSIGHT_V2_NAME", "브리핑룸")
+ASK_PER_HOUR = int(os.environ.get("INSIGHT_ASK_PER_HOUR", "20"))
+UI_DEFAULT = "classic" if os.environ.get("INSIGHT_UI", "v2").strip().lower() == "classic" else "v2"
+APP_NAME = V2_NAME if UI_DEFAULT == "v2" else CENTER_NAME
 CLAUDE_MODEL = os.environ.get("INSIGHT_CLAUDE_MODEL", "claude-opus-5-5")
 CLAUDE_EFFORT = os.environ.get("INSIGHT_CLAUDE_EFFORT", "medium")
 GEMINI_MODEL = os.environ.get("INSIGHT_GEMINI_MODEL", "gemini-3.8-flash")
@@ -197,6 +203,12 @@ CREATE TABLE IF NOT EXISTS comments (
   created_at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS comments_post ON comments(post_id);
+CREATE TABLE IF NOT EXISTS ai_cache (
+  key TEXT PRIMARY KEY,
+  sig TEXT,
+  body TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+);
 """
 
 # Postgres 에서는 첨부도 DB 에 둔다(서버리스엔 오래 남는 디스크가 없다)
@@ -705,7 +717,8 @@ SUMMARY_SCHEMA = {
     "type": "object",
     "additionalProperties": False,
     "required": ["readable", "title", "one_line", "key_points", "implications", "related",
-                 "figures", "risks", "category", "sentiment", "tags", "unverified"],
+                 "figures", "risks", "category", "sentiment", "tags", "unverified",
+                 "client_talk", "counterpoint"],
     "properties": {
         "readable": {"type": "boolean", "description": "자료 본문을 실제로 읽고 정리할 수 있었는가"},
         "title": {"type": "string"},
@@ -729,7 +742,10 @@ SUMMARY_SCHEMA = {
         "sentiment": {"type": "string", "enum": SENTIMENTS},
         "tags": {"type": "array", "items": {"type": "string"}},
         "unverified": {"type": "array", "items": {"type": "string"},
-                       "description": "자료 안에서 근거가 약하거나 출처가 밝혀지지 않은 주장"}},
+                       "description": "자료 안에서 근거가 약하거나 출처가 밝혀지지 않은 주장"},
+        "client_talk": {"type": "string", "description": "고객에게 이 자료를 소개할 때 쓸 2~3문장. 자료의 주장으로서 전한다"},
+        "counterpoint": {"type": "array", "items": {"type": "string"},
+                         "description": "자료 안에서 찾은 반대 근거·전제 조건·논리의 빈틈"}},
 }
 
 SYSTEM_PROMPT = f"""당신은 증권사 WM 센터의 리서치 보조입니다. 직원이 올린 자료(기사·보고서·PDF·스크린샷·영상)를
@@ -748,6 +764,8 @@ SYSTEM_PROMPT = f"""당신은 증권사 WM 센터의 리서치 보조입니다. 
 - figures 에는 자료의 핵심 주장을 뒷받침하는 숫자만 고릅니다. 곁가지 숫자, 같은 뜻을 되풀이하는 숫자는 넣지 않습니다. 기간·시점은 as_of 에만 쓰고 label 에 되풀이하지 않습니다.
 - 상한을 채우려고 억지로 늘리지 않습니다. 중요한 것이 적으면 적게 씁니다.
 - category 는 다음 중 하나: {", ".join(CATEGORIES)}.
+- client_talk: 직원이 고객에게 이 자료를 소개할 때 그대로 읽을 수 있는 2~3문장의 존댓말. 반드시 자료의 주장으로서 전합니다(예: "~라는 분석이 나왔습니다", "~로 본다는 의견입니다"). "오를 것입니다" 같은 단정, "사시는 게 좋습니다" 같은 권유, 수익 보장 표현은 쓰지 않습니다. readable 이 false 면 빈 문자열입니다.
+- counterpoint: 자료를 다르게 볼 수 있는 점 최대 3개 — 자료 안에 있는 반대 근거, 주장이 성립하려면 필요한 전제·조건, 논리의 빈틈. 자료 밖의 사실이나 시세를 끌어오지 않습니다. 찾을 것이 없으면 빈 배열입니다.
 """
 
 JSON_INSTRUCTION = "\n\n다음 JSON 스키마에 맞춘 JSON 객체 하나만 출력하십시오. 앞뒤 설명이나 코드펜스를 붙이지 마십시오.\n" + json.dumps(SUMMARY_SCHEMA, ensure_ascii=False)
@@ -963,6 +981,167 @@ def call_gemini_blocks(content: list[dict]) -> tuple[dict, str]:
 _gemini_level_ok: list = []   # 이 서버에서 통한 생각 수준(첫 원소)
 
 
+# ───────────────────── 짧은 AI 일(브리핑·고객 말투·물어보기) ─────────────────────
+
+def ai_ready() -> bool:
+    return bool(os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("GEMINI_API_KEY"))
+
+
+def ai_json(system: str, user_text: str, schema: dict, budget: int = 100, max_tokens: int = 4000) -> dict:
+    """정해진 JSON 모양으로 짧게 답을 받는다. 엔진은 글 정리와 같은 규칙(text_engine)을 따른다."""
+    _run_ctx.deadline = time.time() + budget
+    try:
+        if text_engine() == "claude":
+            key = os.environ.get("ANTHROPIC_API_KEY")
+            if not key:
+                raise AIError("AI 키가 설정되지 않았습니다")
+            body = {"model": CLAUDE_MODEL, "max_tokens": max_tokens, "system": system,
+                    "output_config": {"effort": "low", "format": {"type": "json_schema", "schema": schema}},
+                    "messages": [{"role": "user", "content": user_text}]}
+            resp = _post_json(f"{ANTHROPIC_BASE}/v1/messages",
+                              {"x-api-key": key, "anthropic-version": ANTHROPIC_VERSION}, body, timeout=budget)
+            if resp.get("stop_reason") in ("refusal", "max_tokens"):
+                raise AIError("AI가 답을 끝내지 못했습니다")
+            text = "".join(b.get("text", "") for b in resp.get("content", []) if b.get("type") == "text")
+        else:
+            key = os.environ.get("GEMINI_API_KEY")
+            body = {"system_instruction": {"parts": [{"text": system}]},
+                    "contents": [{"role": "user", "parts": [{"text": user_text + "\n\n다음 JSON 스키마에 맞춘 JSON 객체 하나만 출력하십시오.\n"
+                                                                     + json.dumps(schema, ensure_ascii=False)}]}],
+                    "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2}}
+            url = f"{GEMINI_BASE}/v1beta/models/{urllib.parse.quote(GEMINI_MODEL)}:generateContent"
+            levels = (["low"] if not _gemini_level_ok or _gemini_level_ok[0] else []) + [None]
+            for i, lv in enumerate(levels):
+                if lv:
+                    body["generationConfig"]["thinkingConfig"] = {"thinkingLevel": lv}
+                else:
+                    body["generationConfig"].pop("thinkingConfig", None)
+                try:
+                    resp = _post_json(url, {"x-goog-api-key": key}, body, timeout=budget)
+                    break
+                except AIError as e:
+                    if i == len(levels) - 1 or not str(e).startswith("HTTP 400"):
+                        raise
+            cands = resp.get("candidates") or []
+            if not cands:
+                raise AIError("AI가 응답하지 않았습니다")
+            text = "".join(p_.get("text", "") for p_ in ((cands[0].get("content") or {}).get("parts") or [])
+                           if not p_.get("thought"))
+        text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip())
+        try:
+            out = json.loads(text)
+        except json.JSONDecodeError:
+            m = re.search(r"\{.*\}", text, re.S)
+            if not m:
+                raise AIError("AI 응답을 해석하지 못했습니다")
+            out = json.loads(m.group(0))
+        if not isinstance(out, dict):
+            raise AIError("AI 응답을 해석하지 못했습니다")
+        return out
+    finally:
+        _run_ctx.deadline = None
+
+
+def cache_get(key: str):
+    return q("SELECT sig, body, created_at FROM ai_cache WHERE key=?", (key,), one=True)
+
+
+def cache_put(key: str, sig: str, body) -> None:
+    xn("INSERT INTO ai_cache(key, sig, body, created_at) VALUES (?,?,?,?) "
+       "ON CONFLICT(key) DO UPDATE SET sig=excluded.sig, body=excluded.body, created_at=excluded.created_at",
+       (key, sig, json.dumps(body, ensure_ascii=False), now()))
+
+
+def lock_take(name: str, hold: int = 120) -> bool:
+    """같은 AI 일이 동시에 여러 번 돌지 않게 하는 짧은 자물쇠."""
+    k = "lock:" + name
+    xn("DELETE FROM ai_cache WHERE key=? AND created_at<?", (k, now() - hold))
+    return xn("INSERT INTO ai_cache(key, sig, body, created_at) VALUES (?,?,?,?) ON CONFLICT(key) DO NOTHING",
+              (k, "", "1", now())) == 1
+
+
+def lock_drop(name: str) -> None:
+    xn("DELETE FROM ai_cache WHERE key=?", ("lock:" + name,))
+
+
+KST = 9 * 3600
+
+
+def kst_day_start(ts: int) -> int:
+    return ts - (ts + KST) % 86400
+
+
+BRIEF_SCHEMA = {
+    "type": "object", "additionalProperties": False, "required": ["headline", "points"],
+    "properties": {
+        "headline": {"type": "string"},
+        "points": {"type": "array", "items": {
+            "type": "object", "additionalProperties": False, "required": ["text", "ids"],
+            "properties": {"text": {"type": "string"}, "ids": {"type": "array", "items": {"type": "integer"}}}}}},
+}
+BRIEF_SYSTEM = """당신은 증권사 WM 센터의 리서치 보조입니다. 직원들이 공유한 자료의 요약 목록을 받아,
+직원이 30초 안에 훑어볼 '오늘의 브리핑'을 만듭니다.
+
+반드시 지킬 것:
+- 목록에 있는 내용만 씁니다. 바깥 지식, 최신 시세, 전망을 덧붙이지 않습니다.
+- 숫자·종목명은 목록에 적힌 그대로 옮깁니다.
+- 매수·매도 권유, 단정적 전망을 쓰지 않습니다. 자료의 주장은 자료의 주장으로 전합니다.
+- headline: 자료 전체를 꿰는 한 문장(40자 안팎, 마침표 없이).
+- points: 서로 다른 흐름 최대 3개. 각 text 는 한 문장(60자 안팎). ids 에는 그 문장의 근거가 된 자료 번호를 넣습니다.
+- 자료가 한두 건이면 그만큼만 씁니다. 억지로 늘리지 않습니다."""
+
+EXTRA_SCHEMA = {
+    "type": "object", "additionalProperties": False, "required": ["client_talk", "counterpoint"],
+    "properties": {"client_talk": {"type": "string"},
+                   "counterpoint": {"type": "array", "items": {"type": "string"}}},
+}
+EXTRA_SYSTEM = """당신은 증권사 WM 센터의 리서치 보조입니다. 이미 정리된 자료 요약을 받아 두 가지를 씁니다.
+
+- client_talk: 직원이 고객에게 이 자료를 소개할 때 그대로 읽을 수 있는 2~3문장의 존댓말.
+  반드시 자료의 주장으로서 전합니다(예: "~라는 분석이 나왔습니다", "~로 본다는 의견입니다").
+  단정("오를 것입니다"), 권유("사시는 게 좋습니다"), 수익 보장 표현은 쓰지 않습니다.
+- counterpoint: 이 자료를 다르게 볼 수 있는 점 최대 3개 — 요약 안에 있는 반대 근거·위험,
+  주장이 성립하려면 필요한 전제·조건, 논리의 빈틈. 요약 밖의 사실이나 시세를 끌어오지 않습니다.
+  찾을 것이 없으면 빈 배열입니다.
+- 숫자·종목명은 요약에 적힌 그대로 옮깁니다. 한국어로 씁니다."""
+
+ASK_SCHEMA = {
+    "type": "object", "additionalProperties": False, "required": ["answer", "enough", "cites"],
+    "properties": {"answer": {"type": "string"}, "enough": {"type": "boolean"},
+                   "cites": {"type": "array", "items": {"type": "integer"}}},
+}
+ASK_SYSTEM = """당신은 증권사 WM 센터 자료실의 도우미입니다. 직원의 질문에, 함께 받은 '룸 자료' 목록만 근거로 답합니다.
+
+반드시 지킬 것:
+- 룸 자료에 있는 내용만 씁니다. 당신이 아는 바깥 지식, 최신 시세, 추정을 쓰지 않습니다.
+- 자료로 답하기에 부족하면 enough 를 false 로 하고, 무엇이 부족한지 answer 에 분명히 적습니다. 지어내지 않습니다.
+- answer 는 3~6문장의 한국어. 자료의 주장은 "~라는 자료가 있습니다", "~로 본다는 분석입니다"처럼 전합니다.
+- 숫자·날짜·종목명은 자료에 적힌 그대로 옮깁니다.
+- 매수·매도 권유, 단정적 전망을 쓰지 않습니다.
+- cites 에는 답의 근거로 쓴 자료 번호만 넣습니다."""
+
+
+def summary_brief(sm: dict) -> str:
+    """AI에 다시 넘길 요약 한 덩어리(저장된 요약만 쓴다 — 원문을 다시 읽지 않는다)."""
+    lines = [f"제목: {sm.get('title', '')}", f"한 줄: {sm.get('one_line', '')}"]
+    kp = [k.get("point", "") for k in sm.get("key_points") or [] if isinstance(k, dict)]
+    if kp:
+        lines.append("핵심: " + " / ".join(kp))
+    if sm.get("implications"):
+        lines.append("시사점: " + " / ".join(sm["implications"]))
+    fg = [f"{f.get('label', '')} {f.get('value', '')}" + (f"({f['as_of']})" if f.get("as_of") else "")
+          for f in sm.get("figures") or [] if isinstance(f, dict)]
+    if fg:
+        lines.append("수치: " + " / ".join(fg))
+    if sm.get("risks"):
+        lines.append("위험: " + " / ".join(sm["risks"]))
+    if sm.get("unverified"):
+        lines.append("확인 안 된 주장: " + " / ".join(sm["unverified"]))
+    if sm.get("tags"):
+        lines.append("태그: " + ", ".join(sm["tags"]))
+    return "\n".join(lines)
+
+
 def parse_json(text: str) -> dict:
     text = text.strip()
     text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text)
@@ -1006,6 +1185,8 @@ def normalize_summary(d: dict) -> dict:
         "sentiment": sen,
         "tags": tags,
         "unverified": strs(d.get("unverified"), 3),
+        "client_talk": str(d.get("client_talk") or "").strip()[:800],
+        "counterpoint": strs(d.get("counterpoint"), 3),
     }
 
 
@@ -1199,8 +1380,11 @@ FROM posts p JOIN users u ON u.id=p.user_id
 """
 
 STATIC_FILES = {
-    "/": ("index.html", "text/html; charset=utf-8"),
+    "/": ("v2.html" if UI_DEFAULT == "v2" else "index.html", "text/html; charset=utf-8"),
     "/index.html": ("index.html", "text/html; charset=utf-8"),
+    "/classic": ("index.html", "text/html; charset=utf-8"),      # 이전 화면은 늘 여기서 열린다
+    "/new": ("v2.html", "text/html; charset=utf-8"),
+    "/v2.html": ("v2.html", "text/html; charset=utf-8"),
     "/manifest.webmanifest": ("manifest.webmanifest", "application/manifest+json"),
     "/sw.js": ("sw.js", "text/javascript; charset=utf-8"),
     "/icon.svg": ("icon.svg", "image/svg+xml"),
@@ -1359,15 +1543,19 @@ class Handler(BaseHTTPRequestHandler):
 
     def static(self, name: str, ctype: str):
         data = (STATIC / name).read_bytes()
-        if name == "index.html":
+        is_html = name in ("index.html", "v2.html")
+        if is_html:
             data = data.replace(b"{{CENTER_NAME}}", html.escape(CENTER_NAME).encode())
+            data = data.replace(b"{{APP_NAME}}", html.escape(V2_NAME).encode())
             data = data.replace(b"{{BUILD_ID}}", BUILD_ID.encode())
         if name == "manifest.webmanifest":
-            data = data.replace(b"{{CENTER_NAME}}", json.dumps(CENTER_NAME, ensure_ascii=False)[1:-1].encode())
+            data = data.replace(b"{{CENTER_NAME}}", json.dumps(APP_NAME, ensure_ascii=False)[1:-1].encode())
+            if UI_DEFAULT == "v2":
+                data = data.replace(b'"#f4f5f7"', b'"#13294b"')
         self.send_response(200)
         self.send_header("Content-Type", ctype)
         self.send_header("Cache-Control", "no-cache")
-        if name == "index.html":
+        if is_html:
             self.send_header("Content-Security-Policy",
                              "default-src 'self'; img-src 'self' data: https://i.ytimg.com; style-src 'self' 'unsafe-inline'; "
                              "script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'")
@@ -1387,7 +1575,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_json(200, {"user": {"id": u["id"], "name": u["name"], "role": u["role"]}, "center": CENTER_NAME,
                              "categories": CATEGORIES, "session_days": SESSION_DAYS, "invite_label": invite_label(),
                              "serverless": SERVERLESS, "max_upload": MAX_UPLOAD, "upload_chunk": UPLOAD_CHUNK, "now": now(),
-                             "text_engine": text_engine(),
+                             "text_engine": text_engine(), "app_name": V2_NAME, "ui": UI_DEFAULT,
                              "authors": [dict(r) for r in q(
                                  "SELECT u.id, u.name FROM users u WHERE EXISTS (SELECT 1 FROM posts p WHERE p.user_id=u.id) "
                                  "ORDER BY u.name")]})
@@ -1756,6 +1944,155 @@ class Handler(BaseHTTPRequestHandler):
         top = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:20]
         self.send_json(200, {"tags": [{"tag": t, "n": n} for t, n in top]})
 
+    # ── 새 화면(v2): 오늘의 브리핑 · 고객 말투 · 룸 자료로 물어보기 ──
+    def _brief_rows(self):
+        t = now()
+        start = kst_day_start(t)
+        sel = "SELECT id, summary_json, source_title, sentiment, tags FROM posts WHERE status='done' AND created_at>=? ORDER BY id DESC LIMIT 40"
+        rows, scope = q(sel, (start,)), "today"
+        if not rows:
+            rows, scope = q(sel, (start - 2 * 86400,)), "recent"
+        today_n = q("SELECT COUNT(*) AS n FROM posts WHERE created_at>=?", (start,), one=True)["n"]
+        return rows, scope, today_n, time.strftime("%Y-%m-%d", time.gmtime(start + KST))
+
+    def _brief_out(self, rows, scope, today_n, date, c):
+        counts: dict[str, int] = {}
+        sen = {"긍정": 0, "중립": 0, "부정": 0, "혼재": 0}
+        for r in rows:
+            for tg in (r["tags"] or "").strip(",").split(","):
+                if tg:
+                    counts[tg] = counts.get(tg, 0) + 1
+            if r["sentiment"] in sen:
+                sen[r["sentiment"]] += 1
+        themes = [{"tag": k, "n": v} for k, v in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:6]]
+        sig = ",".join(str(r["id"]) for r in rows)
+        body = json.loads(c["body"]) if c else {}
+        need = bool(rows) and ai_ready() and (not c or (c["sig"] != sig and now() - c["created_at"] >= 300))
+        return {"date": date, "scope": scope if rows else "none", "today": today_n, "n": len(rows),
+                "headline": body.get("headline", ""), "points": body.get("points", []),
+                "themes": themes, "sentiment": sen, "generated_at": c["created_at"] if c else None,
+                "needs_gen": need, "ai": ai_ready()}
+
+    def api_briefing(self, qs):
+        self.need_user()
+        rows, scope, today_n, date = self._brief_rows()
+        self.send_json(200, self._brief_out(rows, scope, today_n, date, cache_get(f"briefing:{date}")))
+
+    def api_briefing_make(self, qs):
+        self.need_user()
+        rows, scope, today_n, date = self._brief_rows()
+        key = f"briefing:{date}"
+        c = cache_get(key)
+        out = self._brief_out(rows, scope, today_n, date, c)
+        if not out["needs_gen"]:
+            return self.send_json(200, out)
+        if not lock_take(key, 100):
+            return self.send_json(200, out | {"busy": True})
+        try:
+            items, ids = [], set()
+            for r in rows[:30]:
+                sm = json.loads(r["summary_json"] or "{}")
+                if not sm.get("readable", True):
+                    continue
+                ids.add(r["id"])
+                items.append(f"[{r['id']}] {sm.get('title') or r['source_title'] or ''}\n"
+                             f"한 줄: {sm.get('one_line', '')}\n논조: {r['sentiment'] or ''} · 태그: {', '.join(sm.get('tags') or [])}")
+            if not items:
+                return self.send_json(200, out)
+            res = ai_json(BRIEF_SYSTEM, "자료 목록:\n\n" + "\n\n".join(items), BRIEF_SCHEMA, budget=90)
+            pts = []
+            for pt in (res.get("points") or [])[:3]:
+                if isinstance(pt, dict) and str(pt.get("text", "")).strip():
+                    pts.append({"text": str(pt["text"]).strip()[:200],
+                                "ids": [i for i in (pt.get("ids") or []) if isinstance(i, int) and i in ids][:4]})
+            body = {"headline": str(res.get("headline") or "").strip()[:120], "points": pts}
+            cache_put(key, ",".join(str(r["id"]) for r in rows), body)
+            self.send_json(200, self._brief_out(rows, scope, today_n, date, cache_get(key)))
+        except AIError as e:
+            print(f"[briefing] {e}", file=sys.stderr)
+            self.send_json(200, out | {"error": "브리핑을 만들지 못했습니다. 잠시 뒤 다시 열어 보세요."})
+        finally:
+            lock_drop(key)
+
+    def api_post_extras(self, qs, pid):
+        self.need_user()
+        r = q("SELECT id, status, summary_json FROM posts WHERE id=?", (pid,), one=True)
+        if not r:
+            raise HTTPError_(404, "글이 없습니다")
+        if r["status"] != "done" or not r["summary_json"]:
+            raise HTTPError_(409, "AI 정리가 끝난 뒤에 볼 수 있습니다")
+        sm = json.loads(r["summary_json"])
+        if sm.get("client_talk") or sm.get("extras_at"):
+            return self.send_json(200, {"client_talk": sm.get("client_talk", ""), "counterpoint": sm.get("counterpoint", [])})
+        if not sm.get("readable", True) or not ai_ready():
+            return self.send_json(200, {"client_talk": "", "counterpoint": []})
+        name = f"extras:{pid}"
+        if not lock_take(name, 100):
+            return self.send_json(202, {"pending": True})
+        try:
+            res = ai_json(EXTRA_SYSTEM, "자료 요약:\n\n" + summary_brief(sm), EXTRA_SCHEMA, budget=90)
+            ct = str(res.get("client_talk") or "").strip()[:800]
+            cp = [str(v).strip() for v in (res.get("counterpoint") or []) if str(v).strip()][:3]
+            cur = q("SELECT summary_json FROM posts WHERE id=?", (pid,), one=True)
+            if cur and cur["summary_json"]:
+                sm2 = json.loads(cur["summary_json"])
+                sm2["client_talk"], sm2["counterpoint"], sm2["extras_at"] = ct, cp, now()
+                x("UPDATE posts SET summary_json=? WHERE id=?", (json.dumps(sm2, ensure_ascii=False), pid))
+            self.send_json(200, {"client_talk": ct, "counterpoint": cp})
+        except AIError as e:
+            print(f"[extras] {pid}: {e}", file=sys.stderr)
+            raise HTTPError_(502, "AI가 지금 답하지 않습니다. 잠시 뒤 다시 눌러 주세요.")
+        finally:
+            lock_drop(name)
+
+    def api_ask(self, qs):
+        u = self.need_user()
+        d = self.body_json()
+        question = re.sub(r"\s+", " ", str(d.get("question") or "")).strip()[:300]
+        tag = str(d.get("tag") or "").strip()[:30]
+        if len(question) < 2:
+            raise HTTPError_(400, "질문을 적어 주세요")
+        if not ai_ready():
+            raise HTTPError_(503, "AI 키가 설정되지 않았습니다")
+        hour = now() // 3600
+        rk = f"askrl:{u['id']}:{hour}"
+        c = cache_get(rk)
+        used = int(c["body"]) if c else 0
+        if used >= ASK_PER_HOUR:
+            raise HTTPError_(429, f"물어보기는 한 시간에 {ASK_PER_HOUR}번까지입니다. 잠시 뒤 다시 해 주세요.")
+        cache_put(rk, "", used + 1)
+        if used == 0:
+            xn("DELETE FROM ai_cache WHERE key LIKE ? AND created_at<?", ("askrl:%", now() - 7200))
+        sql = ("SELECT id, summary_json, source_title, created_at, tags FROM posts "
+               "WHERE status='done' AND created_at>?" + (" AND tags LIKE ?" if tag else "") + " ORDER BY id DESC LIMIT 300")
+        rows = q(sql, (now() - 60 * 86400,) + ((f"%,{tag},%",) if tag else ()))
+        words = [w for w in re.findall(r"[0-9A-Za-z가-힣]+", question) if len(w) >= 2]
+        scored = []
+        for r in rows:
+            sm = json.loads(r["summary_json"] or "{}")
+            if not sm.get("readable", True):
+                continue
+            hay = (summary_brief(sm) + " " + (r["source_title"] or "")).lower()
+            sc = sum(hay.count(w.lower()) for w in words)
+            scored.append((sc, r["id"], r, sm))
+        top = [t_ for t_ in sorted(scored, key=lambda t_: (-t_[0], -t_[1])) if t_[0] > 0][:12]
+        if not top:
+            top = sorted(scored, key=lambda t_: -t_[1])[:12]
+        if not top:
+            return self.send_json(200, {"answer": "아직 룸에 정리된 자료가 없어 답할 수 없습니다.", "enough": False,
+                                        "cites": [], "used": 0, "left": ASK_PER_HOUR - used - 1})
+        blocks = [f"[{r['id']}] {time.strftime('%Y-%m-%d', time.gmtime(r['created_at'] + KST))}\n{summary_brief(sm)}"
+                  for _, _, r, sm in top]
+        try:
+            res = ai_json(ASK_SYSTEM, f"질문: {question}\n\n룸 자료:\n\n" + "\n\n".join(blocks), ASK_SCHEMA, budget=110)
+        except AIError as e:
+            print(f"[ask] {e}", file=sys.stderr)
+            raise HTTPError_(502, "AI가 지금 답하지 않습니다. 잠시 뒤 다시 해 주세요.")
+        valid = {r["id"]: (sm.get("title") or r["source_title"] or "") for _, _, r, sm in top}
+        cites = [{"id": i, "title": valid[i]} for i in dict.fromkeys(res.get("cites") or []) if isinstance(i, int) and i in valid]
+        self.send_json(200, {"answer": str(res.get("answer") or "").strip()[:2000], "enough": bool(res.get("enough")),
+                             "cites": cites[:6], "used": len(top), "left": ASK_PER_HOUR - used - 1})
+
     # ── 관리 ──
     def api_admin_users(self, qs):
         self.need_user(admin=True)
@@ -1831,6 +2168,10 @@ ROUTES = {
     ("GET", r"/api/files/(\d+)"): Handler.api_file,
     ("POST", r"/api/uploads"): Handler.api_upload,
     ("GET", r"/api/tags"): Handler.api_tags,
+    ("GET", r"/api/briefing"): Handler.api_briefing,
+    ("POST", r"/api/briefing"): Handler.api_briefing_make,
+    ("POST", r"/api/posts/(\d+)/extras"): Handler.api_post_extras,
+    ("POST", r"/api/ask"): Handler.api_ask,
     ("GET", r"/api/admin/users"): Handler.api_admin_users,
     ("POST", r"/api/admin/invites"): Handler.api_admin_invite,
     ("DELETE", r"/api/admin/invites/(\d+)"): Handler.api_admin_invite_delete,
