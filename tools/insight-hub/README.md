@@ -1,4 +1,4 @@
-# 센터 인사이트 (insight-hub)
+# 인사이트룸 (insight-hub)
 
 직원이 **링크만 올리면 AI가 읽고 정리해**, 센터 직원 전체가 함께 보는 투자 인사이트 공간입니다.
 초대받은 직원만 **이름 + 비밀번호**로 들어오고, 자료는 **센터 PC(서버) 안**에만 저장됩니다.
@@ -29,6 +29,81 @@ python3 server.py serve --port 8080
 (코드는 **3일 안에 한 번만** 쓸 수 있고, DB에는 해시만 남습니다).
 비밀번호를 잊은 직원은 관리자가 **비번 재설정**으로 새 코드를 만들어 줍니다.
 
+## 윈도우 PC에서 더블클릭으로 (설치 없이)
+
+`python3 scripts/build_insight_hub_windows.py --out dist/` 가 **`CenterInsight-windows.zip`**(약 13MB)을 만듭니다.
+윈도우용 파이썬(NuGet `python` 패키지, x64)이 함께 들어 있어 센터 PC에 아무것도 깔 필요가 없습니다.
+
+1. zip 을 풀고 **`Start.bat`** 더블클릭 → 처음 한 번 Claude·Gemini 키(이 PC 사용자 환경변수 `setx` 에 저장)와 관리자 이름을 묻고, 초대 코드를 보여 준 뒤 브라우저를 엽니다.
+2. 직원 초대는 **`Invite.bat`** 또는 화면의 관리 → 직원 초대. 직원은 창에 찍힌 "같은 망 직원" 주소 + `#join` 으로 가입합니다.
+3. 자료는 `%USERPROFILE%\.insight-hub` 에 남으므로, 새 판은 폴더만 바꿔 풀면 이어집니다.
+
+실행기는 `launcher.py`(빈 포트 찾기·첫 관리자 코드·접속 주소 안내). zip 에 키는 들어가지 않습니다.
+
+## 클라우드(Vercel)에 올려 고정 주소로 (PC 없이 24시간)
+
+PC를 켜 둘 필요 없이 `https://<이름>.vercel.app` 고정 주소로 돌립니다. 직원은 휴대폰에서
+그 주소를 열고 「홈 화면에 추가」(안드로이드는 「앱 설치」)만 누르면 앱처럼 씁니다.
+Claude 계정은 필요 없습니다.
+
+**지금 올라가 있는 곳: https://insightroom-wm.vercel.app** (예전 주소 https://center-insight.vercel.app 도 같은 앱으로 열림. Vercel 프로젝트 `center-insight`,
+싱가포르 `sin1`, DB 는 Neon Postgres `insight-db`).
+
+이 폴더에 Vercel 용 파일이 들어 있습니다 — `api/index.py`(입구), `vercel.json`,
+`pyproject.toml`·`requirements.txt`(Postgres 접속용 `psycopg` 하나). 화면·API 는 `server.py` 그대로입니다.
+`pyproject.toml` 의 `[tool.vercel] entrypoint = "api.index:app"` 를 지우지 마십시오 — 없으면 Vercel 이
+루트의 `server.py` 를 입구로 잘못 집어 모든 주소가 404 가 됩니다.
+
+**한 번만 하는 설정** (vercel.com, 모두 화면에서 누르기만 합니다)
+
+1. **Add New → Project** → GitHub 저장소 `work_1` 을 **Import**.
+2. **Root Directory** 를 `tools/insight-hub` 로 바꿉니다(Framework Preset 은 *Other*).
+3. **Environment Variables** 에 넣습니다(값은 저장소에 두지 않습니다).
+
+   | 이름 | 값 |
+   |---|---|
+   | `ANTHROPIC_API_KEY` | Claude API 키 (글·PDF·캡처 정리) |
+   | `GEMINI_API_KEY` | Gemini API 키 (유튜브 정리) |
+   | `INSIGHT_ADMIN_NAME` | 첫 관리자 이름 (예: 홍길동) |
+   | `INSIGHT_SETUP_CODE` | 첫 관리자가 넣을 코드, 8자 이상 아무 문자열 |
+   | `INSIGHT_CENTER_NAME` | (선택) 화면에 보일 센터 이름 |
+
+4. **Deploy**. 아직 DB 가 없어 입장하려 하면 「데이터베이스가 아직 연결되지 않았습니다」가 뜹니다 — 정상입니다.
+5. 프로젝트의 **Storage → Create Database → Neon(Postgres)** → 이 프로젝트에 **Connect**.
+   `DATABASE_URL` 이 저절로 들어갑니다. **Deployments → 맨 위 ⋯ → Redeploy**.
+6. 이 코드가 `main` 이 아닌 가지에만 있으면 **Settings → Git → Production Branch** 를 그
+   가지 이름으로 바꾸거나, `main` 에 병합한 뒤 다시 배포합니다.
+
+**첫 입장**: 휴대폰에서 `https://<이름>.vercel.app/#join` → 이름에 `INSIGHT_ADMIN_NAME`,
+초대 코드에 `INSIGHT_SETUP_CODE`, 새 비밀번호. 들어오면 관리자입니다. 이 길은 사용자가
+한 명이라도 생기면 저절로 닫히고, 이후 직원은 ⚙ 관리 화면에서 초대 코드를 받아 들어옵니다.
+
+**클라우드판에서 달라지는 것**
+
+- 첨부는 한 건 **3MB** 까지입니다(Vercel 요청 크기 제한). 큰 PDF 는 링크로 올리거나 필요한 쪽만 캡처해 주세요.
+- 서버가 뒤에서 일하지 못하므로 올린 화면이 정리를 부릅니다. 올린 직후 앱을 닫아도
+  다음에 누가 피드를 열면 남은 글을 이어서 정리합니다.
+- AI 응답은 240초 안에 끝나야 합니다(함수 최대 300초).
+- Vercel 무료(Hobby) 요금제는 비영리·개인용이 원칙입니다. 업무용으로 오래 쓸 거면 Pro 를 검토하십시오.
+
+## 휴대폰 앱으로 (Claude 계정 없는 직원)
+
+윈도우 꾸러미에는 Cloudflare 공식 `cloudflared.exe` 가 들어 있습니다. `Start.bat` 을 켜면
+실행기가 임시 터널을 열고 창에 `휴대폰 접속 주소 https://….trycloudflare.com/` 을 찍습니다
+(데이터 폴더의 `휴대폰-접속주소.txt` 에도 적힘). 계정·공유기 설정이 필요 없고 HTTPS 라서
+회사 망 밖(LTE)에서도 열리며, 휴대폰에서 **앱으로 설치**됩니다.
+
+1. 관리자: `Invite.bat` 으로 초대 코드 발급 → 메신저로 `주소#join` + 이름 + 코드 전달
+2. 직원: 휴대폰에서 주소를 열어 가입 →
+   안드로이드 크롬 `⋮ → 앱 설치`, 아이폰 사파리 `공유 → 홈 화면에 추가`
+3. 홈 화면 아이콘으로 앱처럼 전체 화면 실행. Claude 계정은 필요 없습니다.
+
+- 터널로 들어온 요청(루프백 + `X-Forwarded-Proto: https`)은 HTTPS 로 보고 `Secure` 쿠키를
+  주며, 접속 IP 는 `Cf-Connecting-Ip` 를 씁니다.
+- **임시 주소는 켤 때마다 바뀝니다.** 고정하려면 Cloudflare 계정 + 도메인으로 이름 있는
+  터널을 만들고 `INSIGHT_TUNNEL=0` 으로 실행기 터널을 끈 뒤 그 터널을 따로 돌립니다.
+- 터널을 끄려면 `INSIGHT_TUNNEL=0`. 꾸러미에서 빼려면 `--no-tunnel` 로 빌드.
+
 ## 입장 방식 — 처음은 엄격하게, 그다음은 바로
 
 | | 처음 (가입) | 그다음 (같은 기기) |
@@ -51,7 +126,7 @@ python3 server.py serve --port 8080
 | 이름 | 기본값 | 뜻 |
 |---|---|---|
 | `INSIGHT_DATA_DIR` | `~/.insight-hub` | DB(`insight.db`)와 첨부(`uploads/`)가 놓이는 곳. **저장소 밖**. 백업은 이 폴더 통째로 |
-| `INSIGHT_CENTER_NAME` | `센터 인사이트` | 화면 제목·앱 이름 |
+| `INSIGHT_CENTER_NAME` | `인사이트룸` | 화면 제목·앱 이름 |
 | `INSIGHT_CLAUDE_MODEL` | `claude-opus-5-5` | 글 정리 모델 |
 | `INSIGHT_CLAUDE_EFFORT` | `medium` | `low`로 낮추면 빠르고 싸짐 |
 | `INSIGHT_GEMINI_MODEL` | `gemini-3.8-flash` | 영상 정리 모델. **쓰는 계정에서 사용 가능한 이름인지 먼저 확인하십시오** |

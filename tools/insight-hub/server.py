@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""센터 인사이트 — 링크만 올리면 AI가 읽고 정리해 센터 전체가 함께 보는 공간.
+"""인사이트룸 — 링크만 올리면 AI가 읽고 정리해 센터 전체가 함께 보는 공간.
 
 표준 라이브러리만 씁니다(설치할 것 없음). 데이터는 저장소 밖
 (`INSIGHT_DATA_DIR`, 기본 ~/.insight-hub)의 SQLite 한 파일과 첨부 폴더에 둡니다.
@@ -44,11 +44,35 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 STATIC = HERE / "static"
+
+
+def _build_id() -> str:
+    """화면 파일이 바뀌면 달라지는 판 번호 — 열려 있는 화면이 새 판을 알아채 스스로 새로고침하게 한다."""
+    h = hashlib.sha256()
+    for n in ("index.html", "sw.js"):
+        try:
+            h.update((STATIC / n).read_bytes())
+        except OSError:
+            pass
+    return h.hexdigest()[:12]
+
+
+BUILD_ID = _build_id()
 DATA_DIR = Path(os.environ.get("INSIGHT_DATA_DIR", Path.home() / ".insight-hub")).expanduser()
+# Vercel 등 클라우드에 올리면 데이터는 Postgres 에 둔다(주소가 환경 변수로 들어온다).
+DATABASE_URL = (os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
+                or os.environ.get("INSIGHT_DATABASE_URL") or "")
+# 서버리스(Vercel): 요청이 끝나면 프로세스가 멈출 수 있어 뒤에서 도는 일꾼을 못 쓴다.
+# 그래서 글을 올린 화면이 /api/posts/{id}/run 을 불러 그 요청 안에서 정리한다.
+SERVERLESS = bool(os.environ.get("VERCEL")) or os.environ.get("INSIGHT_SERVERLESS") == "1"
+# 처음 띄운 클라우드 서버에서 첫 관리자가 들어오는 길(사용자가 한 명도 없을 때만 통함).
+# 값은 저장소가 아니라 Vercel 환경 변수에만 둔다.
+BOOT_ADMIN = os.environ.get("INSIGHT_ADMIN_NAME", "")
+BOOT_CODE = os.environ.get("INSIGHT_SETUP_CODE", "")
 DB_PATH = DATA_DIR / "insight.db"
 UPLOAD_DIR = DATA_DIR / "uploads"
 
-CENTER_NAME = os.environ.get("INSIGHT_CENTER_NAME", "센터 인사이트")
+CENTER_NAME = os.environ.get("INSIGHT_CENTER_NAME", "인사이트룸")
 CLAUDE_MODEL = os.environ.get("INSIGHT_CLAUDE_MODEL", "claude-opus-5-5")
 CLAUDE_EFFORT = os.environ.get("INSIGHT_CLAUDE_EFFORT", "medium")
 GEMINI_MODEL = os.environ.get("INSIGHT_GEMINI_MODEL", "gemini-3.8-flash")
@@ -64,12 +88,24 @@ SESSION_RENEW_SEC = 86400            # 기한 연장은 하루에 한 번만 기
 # 첫 가입은 엄격하게: 초대 코드는 짧게 살고, 그 이름으로 5번 틀리면 코드가 무효가 된다.
 INVITE_HOURS = max(1, int(os.environ.get("INSIGHT_INVITE_HOURS", "72")))
 INVITE_MAX_FAIL = 5
-MAX_UPLOAD = 20 * 1024 * 1024        # 첨부 한 건 상한
+# 첨부 한 건 상한. Vercel 은 요청·응답 한 번이 4.5MB 까지라, 파일은 조각(UPLOAD_CHUNK)으로 나눠
+# 올리고(/api/uploads) 나눠 받는다(/api/files/<id>?part=N). base64 로 1.37배 불어나도 3.4MB 라 안에 든다.
+MAX_UPLOAD = 20 * 1024 * 1024
+UPLOAD_CHUNK = 2_560_000
+MAX_PARTS = -(-MAX_UPLOAD // UPLOAD_CHUNK)
+# Gemini 에 본문째(inline) 넣는 상한 — 요청 전체가 20MB 를 넘으면 안 되므로, 그보다 크면 Files API 로 먼저 올린다
+GEMINI_INLINE_MAX = 12 * 1024 * 1024
+AI_TIMEOUT_CAP = 240 if SERVERLESS else 600   # 서버리스 함수는 300초 안에 끝나야 한다
+STALE_WORK_SEC = 330                          # 이보다 오래 '정리 중'이면 멈춘 것으로 보고 다시 시킨다
 MAX_FETCH = 20 * 1024 * 1024         # 링크에서 받아 올 상한
 MAX_TEXT_CHARS = 150_000             # AI에 넘길 본문 상한 — 넘으면 화면에 그 사실을 적는다
 MIN_TEXT_CHARS = 300                 # 이보다 짧으면 "본문을 읽지 못함"으로 본다
 LOGIN_MAX_FAIL = 5
 LOGIN_LOCK_SEC = 15 * 60
+# 계정 하나에 걸리는 전체 상한 — 여러 IP를 돌려 가며 비밀번호를 맞혀 보는 것을 막는다.
+# 본인이 헷갈려 틀리는 정도(IP당 5번 차단)로는 닿지 않게 넉넉히 잡는다. 관리자가 풀 수 있다.
+ACCT_MAX_FAIL = 20
+ACCT_LOCK_SEC = 60 * 60
 PBKDF2_ROUNDS = 310_000
 
 CATEGORIES = ["국내주식", "해외주식", "채권·금리", "환율", "원자재", "매크로", "부동산", "상품·전략", "기타"]
@@ -87,7 +123,8 @@ USER_AGENT = "Mozilla/5.0 (compatible; CenterInsightBot/1.0)"
 # ───────────────────────────── 저장소(SQLite) ─────────────────────────────
 
 _db_lock = threading.RLock()
-_db: sqlite3.Connection | None = None
+_db = None
+USE_PG = bool(DATABASE_URL)
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS users (
@@ -162,10 +199,43 @@ CREATE TABLE IF NOT EXISTS comments (
 CREATE INDEX IF NOT EXISTS comments_post ON comments(post_id);
 """
 
+# Postgres 에서는 첨부도 DB 에 둔다(서버리스엔 오래 남는 디스크가 없다)
+PG_EXTRA = "CREATE TABLE IF NOT EXISTS files (name TEXT PRIMARY KEY, data BYTEA NOT NULL)"
+_RETURNING_ID = re.compile(r"^\s*INSERT\s+INTO\s+(users|invites|posts|comments)\b", re.I)
 
-def db() -> sqlite3.Connection:
+
+def _pg_schema() -> list[str]:
+    sql = re.sub(r"--[^\n]*", "", SCHEMA)
+    sql = sql.replace("INTEGER PRIMARY KEY", "BIGSERIAL PRIMARY KEY").replace("INTEGER", "BIGINT")
+    return [st.strip() for st in sql.split(";") if st.strip()] + [PG_EXTRA]
+
+
+def _pg_sql(sql: str) -> str:
+    # SQLite 문장을 Postgres 로: 자리표시자 ? → %s, LIKE → ILIKE(대소문자 무시는 SQLite 와 같게)
+    return re.sub(r"\bLIKE\b", "ILIKE", sql).replace("?", "%s")
+
+
+def _pg_connect():
+    import psycopg  # 클라우드(Postgres)에서만 필요하다 — 로컬·Windows 판은 표준 라이브러리만 쓴다
+    from psycopg.rows import dict_row
+    # 연결 풀(pgbouncer, 거래 단위)을 거치므로 서버 쪽 준비문(prepared statement)을 쓰지 않는다
+    conn = psycopg.connect(DATABASE_URL, autocommit=True, row_factory=dict_row, connect_timeout=15,
+                           prepare_threshold=None)
+    with conn.cursor() as cur:
+        for st in _pg_schema():
+            cur.execute(st)
+    return conn
+
+
+def db():
     global _db
     if _db is None:
+        if USE_PG:
+            _db = _pg_connect()
+            return _db
+        if SERVERLESS:  # 서버리스 디스크는 요청이 끝나면 사라진다 — 거기에 SQLite 를 두지 않는다
+            raise HTTPError_(503, "데이터베이스가 아직 연결되지 않았습니다. Vercel 의 Storage 에서 Postgres(Neon)를 "
+                                  "이 프로젝트에 연결한 뒤 다시 배포하세요.")
         DATA_DIR.mkdir(parents=True, exist_ok=True)
         UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
         try:
@@ -184,17 +254,124 @@ def db() -> sqlite3.Connection:
     return _db
 
 
-def q(sql: str, args=(), one=False):
+def _run(sql: str, args, fetch: str):
+    """한 문장을 실행한다. fetch: rows | id | count."""
+    global _db
     with _db_lock:
-        cur = db().execute(sql, args)
-        rows = cur.fetchall()
+        if not USE_PG:
+            cur = db().execute(sql, args)
+            return cur.fetchall() if fetch == "rows" else (cur.lastrowid if fetch == "id" else cur.rowcount)
+        psql = _pg_sql(sql)
+        if fetch == "id" and _RETURNING_ID.match(sql):
+            psql += " RETURNING id"
+        for attempt in (0, 1):
+            try:
+                with db().cursor() as cur:
+                    cur.execute(psql, tuple(args))
+                    if fetch == "rows":
+                        return cur.fetchall() if cur.description else []
+                    if fetch == "id":
+                        r = cur.fetchone() if cur.description else None
+                        return r["id"] if r else None
+                    return cur.rowcount
+            except Exception as e:
+                # 서버리스가 쉬는 동안 DB 연결이 끊겼으면 한 번 다시 잇는다
+                import psycopg
+                if attempt or not isinstance(e, (psycopg.OperationalError, psycopg.InterfaceError)):
+                    raise
+                try:
+                    _db.close()
+                except Exception:
+                    pass
+                _db = None
+
+
+def q(sql: str, args=(), one=False):
+    rows = _run(sql, args, "rows")
     return (rows[0] if rows else None) if one else rows
 
 
 def x(sql: str, args=()) -> int:
-    with _db_lock:
-        cur = db().execute(sql, args)
-        return cur.lastrowid
+    return _run(sql, args, "id")
+
+
+def xn(sql: str, args=()) -> int:
+    """바뀐 줄 수를 돌려준다."""
+    return _run(sql, args, "count")
+
+
+# ── 첨부 보관: 로컬은 폴더, Postgres 는 files 표 ──
+def blob_put(name: str, data: bytes) -> None:
+    if USE_PG:
+        x("INSERT INTO files(name, data) VALUES (?,?)", (name, data))
+    else:
+        (UPLOAD_DIR / name).write_bytes(data)
+
+
+def blob_get(name: str) -> bytes:
+    if USE_PG:
+        r = q("SELECT data FROM files WHERE name=?", (name,), one=True)
+        if not r:
+            raise FileNotFoundError(name)
+        return bytes(r["data"])
+    return (UPLOAD_DIR / name).read_bytes()
+
+
+def blob_slice(name: str, start: int, n: int) -> tuple[bytes, int]:
+    """첨부의 start 부터 n 바이트와 전체 크기 — 큰 파일을 조각으로 내려보낼 때 쓴다."""
+    if USE_PG:
+        r = q("SELECT substring(data from ? for ?) AS d, octet_length(data) AS n FROM files WHERE name=?",
+              (start + 1, n, name), one=True)
+        if not r:
+            raise FileNotFoundError(name)
+        return bytes(r["d"]), int(r["n"])
+    path = UPLOAD_DIR / name
+    with open(path, "rb") as fh:
+        fh.seek(start)
+        return fh.read(n), path.stat().st_size
+
+
+def blob_names(prefix: str) -> list[str]:
+    if USE_PG:
+        return [r["name"] for r in q("SELECT name FROM files WHERE name LIKE ?", (prefix + "%",))]
+    return [f.name for f in UPLOAD_DIR.glob(prefix + "*")]
+
+
+DB_LIMIT_MB = int(os.environ.get("INSIGHT_DB_LIMIT_MB", "1024"))  # 화면에 비교해 보일 한도(Neon 무료 요금제: 2026-10 부터 프로젝트당 1GB)
+
+
+def storage_usage() -> dict:
+    """관리 화면용 저장 공간 사용량. 첨부·글·전체를 바이트로 돌려준다."""
+    posts = q("SELECT COUNT(*) AS n, COALESCE(SUM(LENGTH(COALESCE(pasted_text,''))+LENGTH(COALESCE(summary_json,''))),0) AS b FROM posts", one=True)
+    if USE_PG:
+        f = q("SELECT COUNT(*) AS n, COALESCE(SUM(octet_length(data)),0) AS b FROM files WHERE name NOT LIKE ?", ("up-%",), one=True)
+        total = q("SELECT pg_database_size(current_database()) AS b", one=True)["b"]
+        files_n, files_b = f["n"], f["b"]
+    else:
+        fs = [p for p in UPLOAD_DIR.iterdir() if p.is_file() and not p.name.startswith("up-")] if UPLOAD_DIR.exists() else []
+        files_n, files_b = len(fs), sum(p.stat().st_size for p in fs)
+        total = files_b + (DB_PATH.stat().st_size if DB_PATH.exists() else 0)
+    return {"total": int(total), "files": int(files_b), "files_n": int(files_n), "posts": int(posts["b"]),
+            "posts_n": int(posts["n"]), "limit": DB_LIMIT_MB * 1024 * 1024, "pg": USE_PG}
+
+
+def upload_gc() -> None:
+    """하루 넘게 묶이지 않은 올림 조각(up-<사용자>-<시각>-…)을 치운다."""
+    cut = now() - 86400
+    for nm in blob_names("up-"):
+        m = re.match(r"up-\d+-(\d+)-", nm)
+        if m and int(m.group(1)) < cut:
+            blob_del(nm)
+
+
+def blob_del(name: str) -> None:
+    if USE_PG:
+        x("DELETE FROM files WHERE name=?", (name,))
+    else:
+        try:
+            (UPLOAD_DIR / name).unlink()
+        except FileNotFoundError:
+            pass
 
 
 def now() -> int:
@@ -244,6 +421,26 @@ def new_invite(name: str, role: str = "member", created_by: int | None = None) -
     return code
 
 
+def bootstrap_invite(name: str) -> None:
+    """클라우드에 처음 올린 뒤 첫 관리자가 들어오는 길.
+
+    INSIGHT_ADMIN_NAME·INSIGHT_SETUP_CODE 환경 변수가 있고 사용자가 아직 한 명도 없을 때만,
+    그 이름으로 관리자 초대를 하나 만들어 둔다(코드는 환경 변수 값). 그 뒤 확인은 보통 초대와 같다 —
+    틀린 횟수 제한·IP 잠금도 그대로 걸린다. 누군가 한 명이라도 가입하면 이 길은 닫힌다.
+    """
+    code = re.sub(r"[\s-]", "", BOOT_CODE).upper()
+    if not BOOT_ADMIN or len(code) < 8 or norm_name(BOOT_ADMIN) != name:
+        return
+    if q("SELECT 1 FROM users LIMIT 1", one=True):
+        return
+    if q("SELECT 1 FROM invites WHERE name=? AND ((used_at IS NULL AND expires_at>?) OR fails>=?)",
+         (name, now(), INVITE_MAX_FAIL), one=True):
+        return  # 이미 만들어 둔 것이 있거나, 틀린 횟수로 막혔다(막힌 뒤엔 다시 만들지 않는다)
+    t = now()
+    x("INSERT INTO invites(name, code_hash, role, created_by, created_at, expires_at) VALUES (?,?,?,?,?,?)",
+      (name, sha(code), "admin", None, t, t + INVITE_HOURS * 3600))
+
+
 def invite_label() -> str:
     return f"{INVITE_HOURS // 24}일" if INVITE_HOURS % 24 == 0 else f"{INVITE_HOURS}시간"
 
@@ -267,22 +464,36 @@ def password_problem(pw: str, name: str) -> str | None:
     return None
 
 
-def login_blocked(key: str) -> bool:
+def login_blocked(key: str, limit: int = LOGIN_MAX_FAIL, window: int = LOGIN_LOCK_SEC) -> bool:
     row = q("SELECT count, first_at FROM login_fail WHERE key=?", (key,), one=True)
     if not row:
         return False
-    if now() - row["first_at"] > LOGIN_LOCK_SEC:
+    if now() - row["first_at"] > window:
         x("DELETE FROM login_fail WHERE key=?", (key,))
         return False
-    return row["count"] >= LOGIN_MAX_FAIL
+    return row["count"] >= limit
 
 
-def login_failed(key: str) -> None:
+def acct_key(name: str) -> str:
+    return f"acct|{name}"
+
+
+def acct_locked(name: str) -> bool:
+    return login_blocked(acct_key(name), ACCT_MAX_FAIL, ACCT_LOCK_SEC)
+
+
+def acct_unlock(name: str) -> None:
+    """계정 잠금과, 그 이름에 걸린 IP별 차단을 모두 푼다."""
+    x("DELETE FROM login_fail WHERE key=? OR substr(key, 1, ?)=?", (acct_key(name), len(name) + 1, name + "|"))
+
+
+def login_failed(key: str, window: int = LOGIN_LOCK_SEC) -> None:
     row = q("SELECT count, first_at FROM login_fail WHERE key=?", (key,), one=True)
-    if row and now() - row["first_at"] <= LOGIN_LOCK_SEC:
+    if row and now() - row["first_at"] <= window:
         x("UPDATE login_fail SET count=count+1 WHERE key=?", (key,))
     else:
-        x("INSERT OR REPLACE INTO login_fail(key, count, first_at) VALUES (?,?,?)", (key, 1, now()))
+        x("INSERT INTO login_fail(key, count, first_at) VALUES (?,?,?) "
+          "ON CONFLICT(key) DO UPDATE SET count=excluded.count, first_at=excluded.first_at", (key, 1, now()))
 
 
 def new_session(user_id: int) -> str:
@@ -301,6 +512,18 @@ class BlockedURL(Exception):
     pass
 
 
+def looks_like_url(s: str) -> bool:
+    """링크 칸에 든 것이 주소인가. 띄어쓰기가 있거나 점 있는 호스트가 없으면 주소가 아니다."""
+    if re.search(r"\s", s):
+        return False
+    t = s if re.match(r"^https?://", s, re.I) else "https://" + s
+    try:
+        host = urllib.parse.urlsplit(t).hostname or ""
+    except ValueError:
+        return False
+    return "." in host and bool(re.fullmatch(r"[\w.-]+", host))
+
+
 def check_public_url(url: str) -> urllib.parse.SplitResult:
     """내부망 주소를 읽어 오는 일(SSRF)을 막는다. 공인 주소만 허용."""
     parts = urllib.parse.urlsplit(url)
@@ -311,6 +534,8 @@ def check_public_url(url: str) -> urllib.parse.SplitResult:
         raise BlockedURL("번역 프록시 주소(translate.goog)는 회사 망에서 막혀 있습니다 — 원문 주소를 올려 주세요")
     try:
         infos = socket.getaddrinfo(host, parts.port or (443 if parts.scheme == "https" else 80))
+    except (UnicodeError, ValueError):
+        raise BlockedURL("주소 형식이 올바르지 않습니다 — 링크 칸에는 주소만 넣어 주세요")
     except socket.gaierror:
         # 프록시 뒤라 직접 이름풀이가 안 되는 환경: IP 문자열만 걸러 낸다
         try:
@@ -517,7 +742,11 @@ SYSTEM_PROMPT = f"""당신은 증권사 WM 센터의 리서치 보조입니다. 
 - 본문을 읽을 수 없거나(로그인 벽, 빈 페이지, 오류 화면) 투자와 무관한 자료라면 readable 을 false 로 하고 one_line 에 그 이유를 적습니다.
 - 매수·매도 권유 문장을 쓰지 않습니다. implications 에는 "자료가 말하는 시사점"을 자료의 주장으로서 적습니다(예: "필자는 ~로 본다").
 - 의견과 사실을 구분합니다. 근거가 약한 주장, 출처 없는 루머는 unverified 에 적습니다.
-- 한국어로, 짧고 단정한 문장으로 씁니다. key_points 는 3~6개, tags 는 3~6개(종목명·테마·지표 위주, '#' 없이).
+- 한국어로, 짧고 단정한 문장으로 씁니다. 직원이 1분 안에 읽을 분량이 목표입니다.
+- 자료가 영어·일본어·중국어 등 외국어여도 모든 항목(title 포함)을 한국어로 씁니다. 외국 회사·인물·기관 이름은 한글로 쓰되 처음 한 번은 원어를 괄호에 붙입니다(예: 엔비디아(NVIDIA)). 숫자와 통화 단위($, ¥, €)는 원문 그대로 두고 원화로 바꾸지 않습니다.
+- 개수 상한: key_points 3~5개, implications 1~3개, figures 최대 5개, risks 최대 3개, unverified 최대 3개, related 최대 8개, tags 3~6개(종목명·테마·지표 위주, '#' 없이).
+- figures 에는 자료의 핵심 주장을 뒷받침하는 숫자만 고릅니다. 곁가지 숫자, 같은 뜻을 되풀이하는 숫자는 넣지 않습니다. 기간·시점은 as_of 에만 쓰고 label 에 되풀이하지 않습니다.
+- 상한을 채우려고 억지로 늘리지 않습니다. 중요한 것이 적으면 적게 씁니다.
 - category 는 다음 중 하나: {", ".join(CATEGORIES)}.
 """
 
@@ -528,17 +757,78 @@ class AIError(Exception):
     pass
 
 
+# 글 하나를 정리하는 데 쓸 수 있는 시간. 서버리스 함수는 300초에 끊기므로 그 안에서 끝낸다.
+RUN_BUDGET_SEC = 280 if SERVERLESS else 900
+AI_ATTEMPT_SEC = 150 if SERVERLESS else 600    # 한 번 부를 때 기다리는 최대 시간 — 넘으면 끊고 다시 부른다
+_run_ctx = threading.local()
+
+
 def _post_json(url: str, headers: dict, body: dict, timeout: int = 300) -> dict:
     req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
                                  headers={"content-type": "application/json", **headers})
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return json.loads(resp.read())
-    except urllib.error.HTTPError as e:
-        detail = e.read().decode("utf-8", "replace")[:600]
-        raise AIError(f"HTTP {e.code}: {detail}") from None
-    except (urllib.error.URLError, TimeoutError, socket.timeout) as e:
-        raise AIError(f"연결 실패: {e}") from None
+    deadline = getattr(_run_ctx, "deadline", None) or time.time() + RUN_BUDGET_SEC
+    # 429(한도)·5xx(과부하)·응답 없음은 다시 부르면 대개 된다 — 남은 시간 안에서 두 번까지 다시 부른다.
+    # 한 번에 오래 매달리지 않게 시도마다 상한(AI_ATTEMPT_SEC)을 둔다: 응답 없이 멈춘 요청 하나가
+    # 함수 시간을 다 써 버리던 일(240초 대기 후 실패)을 막는다.
+    for attempt, wait in enumerate((2, 5, None)):
+        t0 = time.time()
+        left = deadline - t0
+        if left < 25:
+            raise AIError("시간 초과: AI가 정해진 시간 안에 답하지 않았습니다")
+        per_try = max(20, min(timeout, AI_TIMEOUT_CAP, AI_ATTEMPT_SEC if attempt == 0 else left, left - 3))
+        try:
+            with urllib.request.urlopen(req, timeout=per_try) as resp:
+                out = json.loads(resp.read())
+            print(f"[ai] {url.rsplit('/', 1)[-1]} {time.time() - t0:.1f}s (시도 {attempt + 1})", file=sys.stderr)
+            return out
+        except urllib.error.HTTPError as e:
+            detail = e.read().decode("utf-8", "replace")[:600]
+            print(f"[ai] HTTP {e.code} {time.time() - t0:.1f}s (시도 {attempt + 1}): {detail[:200]}", file=sys.stderr)
+            if e.code in (429, 500, 502, 503, 504) and wait is not None:
+                time.sleep(wait)
+                continue
+            raise AIError(f"HTTP {e.code}: {detail}") from None
+        except (urllib.error.URLError, TimeoutError, socket.timeout) as e:
+            print(f"[ai] 연결 실패 {time.time() - t0:.1f}s (시도 {attempt + 1}): {e}", file=sys.stderr)
+            timed_out = isinstance(e, (TimeoutError, socket.timeout)) or "timed out" in str(e)
+            if timed_out and wait is not None and deadline - time.time() > 40:
+                continue
+            if timed_out:
+                raise AIError("시간 초과: AI가 정해진 시간 안에 답하지 않았습니다") from None
+            raise AIError(f"연결 실패: {e}") from None
+
+
+def gemini_upload(raw: bytes, mime: str, key: str) -> str:
+    """Gemini Files API(재개형 올리기)로 파일을 올리고 file_uri 를 돌려준다. 파일은 48시간 뒤 저절로 지워진다."""
+    def call(req, timeout):
+        try:
+            with urllib.request.urlopen(req, timeout=min(timeout, AI_TIMEOUT_CAP)) as resp:
+                return resp.headers, json.loads(resp.read() or b"{}")
+        except urllib.error.HTTPError as e:
+            raise AIError(f"HTTP {e.code}: 파일 올리기 실패 {e.read().decode('utf-8', 'replace')[:300]}") from None
+        except (urllib.error.URLError, TimeoutError, socket.timeout) as e:
+            raise AIError(f"연결 실패(파일 올리기): {e}") from None
+    hdrs, _ = call(urllib.request.Request(
+        f"{GEMINI_BASE}/upload/v1beta/files", method="POST",
+        data=json.dumps({"file": {"display_name": "insight-upload"}}).encode(),
+        headers={"x-goog-api-key": key, "content-type": "application/json",
+                 "X-Goog-Upload-Protocol": "resumable", "X-Goog-Upload-Command": "start",
+                 "X-Goog-Upload-Header-Content-Length": str(len(raw)),
+                 "X-Goog-Upload-Header-Content-Type": mime}), 60)
+    up = hdrs.get("X-Goog-Upload-URL")
+    if not up:
+        raise AIError("Gemini 가 파일 올릴 주소를 주지 않았습니다")
+    _, info = call(urllib.request.Request(up, data=raw, method="POST", headers={
+        "x-goog-api-key": key, "Content-Length": str(len(raw)),
+        "X-Goog-Upload-Offset": "0", "X-Goog-Upload-Command": "upload, finalize"}), 180)
+    f = info.get("file") or {}
+    t0 = time.time()
+    while f.get("state") == "PROCESSING" and time.time() - t0 < 90:
+        time.sleep(3)
+        _, f = call(urllib.request.Request(f"{GEMINI_BASE}/v1beta/{f['name']}", headers={"x-goog-api-key": key}), 30)
+    if f.get("state") not in (None, "ACTIVE") or not f.get("uri"):
+        raise AIError(f"Gemini 가 파일을 받지 못했습니다({f.get('state') or '주소 없음'})")
+    return f["uri"]
 
 
 def call_claude(content: list[dict]) -> tuple[dict, str]:
@@ -580,12 +870,26 @@ def call_gemini(video_url: str, note: str) -> tuple[dict, str]:
         raise AIError("GEMINI_API_KEY 가 설정되지 않았습니다 — 영상 정리는 Gemini 키가 있어야 합니다")
     prompt = (SYSTEM_PROMPT + "\n\n위 영상을 정리하십시오. key_points 의 at 에는 해당 내용이 나오는 영상 시각(mm:ss)을 적습니다."
               + (f"\n올린 직원의 메모: {note}" if note else "") + JSON_INSTRUCTION)
+    # 긴 영상도 제한 시간(서버리스 240초) 안에 끝나게: 화면은 낮은 해상도·드문 프레임으로 보고
+    # (말로 하는 영상은 소리가 핵심), 생각은 짧게. 이 설정을 모르는 모델이면 400 → 기본값으로 다시.
+    fast = {"mediaResolution": "MEDIA_RESOLUTION_LOW", "thinkingConfig": {"thinkingLevel": "low"}}
+    vpart = {"file_data": {"file_uri": video_url}}
     body = {
-        "contents": [{"parts": [{"file_data": {"file_uri": video_url}}, {"text": prompt}]}],
-        "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2},
+        "contents": [{"parts": [{**vpart, "videoMetadata": {"fps": 0.25}}, {"text": prompt}]}],
+        "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2, **fast},
     }
     url = f"{GEMINI_BASE}/v1beta/models/{urllib.parse.quote(GEMINI_MODEL)}:generateContent"
-    resp = _post_json(url, {"x-goog-api-key": key}, body, timeout=600)
+    try:
+        resp = _post_json(url, {"x-goog-api-key": key}, body, timeout=600)
+    except AIError as e:
+        if "HTTP 400" not in str(e):
+            if "timed out" in str(e) or "시간" in str(e):
+                raise AIError("영상이 길어 제한 시간 안에 다 보지 못했습니다. 「자막 붙여 AI 정리」로 유튜브 자막(스크립트)을 붙여 넣어 주세요.") from None
+            raise
+        body["contents"][0]["parts"][0] = vpart
+        for k in fast:
+            body["generationConfig"].pop(k)
+        resp = _post_json(url, {"x-goog-api-key": key}, body, timeout=600)
     cands = resp.get("candidates") or []
     if not cands:
         reason = (resp.get("promptFeedback") or {}).get("blockReason", "응답 없음")
@@ -593,6 +897,70 @@ def call_gemini(video_url: str, note: str) -> tuple[dict, str]:
     parts = (cands[0].get("content") or {}).get("parts") or []
     text = "".join(p.get("text", "") for p in parts)
     return parse_json(text), resp.get("modelVersion", GEMINI_MODEL)
+
+
+def text_engine() -> str:
+    """글·PDF·캡처를 누가 정리하나: Claude 키가 있으면 Claude, 없고 Gemini 키만 있으면 Gemini."""
+    if not os.environ.get("ANTHROPIC_API_KEY") and os.environ.get("GEMINI_API_KEY"):
+        return "gemini"
+    return "claude"
+
+
+def call_gemini_blocks(content: list[dict]) -> tuple[dict, str]:
+    """Claude 형식의 내용 블록(글·PDF·이미지)을 Gemini 로 정리한다 — Claude 키가 없을 때의 대체 길."""
+    key = os.environ.get("GEMINI_API_KEY")
+    if not key:
+        raise AIError("GEMINI_API_KEY 가 설정되지 않았습니다")
+    parts: list[dict] = []
+    big = sum(len(b["source"]["data"]) for b in content if b.get("type") in ("document", "image")) > GEMINI_INLINE_MAX * 4 // 3
+    for b in content:
+        if b.get("type") in ("document", "image"):
+            src = b["source"]
+            if big:  # 요청 한 번에 담기엔 커서 Files API 로 먼저 올리고 주소만 넘긴다
+                uri = gemini_upload(base64.b64decode(src["data"]), src["media_type"], key)
+                parts.append({"file_data": {"mime_type": src["media_type"], "file_uri": uri}})
+            else:
+                parts.append({"inline_data": {"mime_type": src["media_type"], "data": src["data"]}})
+        elif b.get("type") == "text":
+            parts.append({"text": b["text"]})
+    parts.append({"text": JSON_INSTRUCTION})
+    body = {
+        "system_instruction": {"parts": [{"text": SYSTEM_PROMPT}]},
+        "contents": [{"role": "user", "parts": parts}],
+        "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2},
+    }
+    url = f"{GEMINI_BASE}/v1beta/models/{urllib.parse.quote(GEMINI_MODEL)}:generateContent"
+    # 글 정리는 깊이 생각할 일이 아니다 — 생각 수준을 낮춰 기다림을 줄인다.
+    # 모델이 그 설정을 모르면(HTTP 400) 설정 없이 한 번 더 부른다.
+    # 기본은 "low"(gemini-3.8-flash 는 "minimal" 을 받지 않는다 — 2026-11-16 서버 기록).
+    # 모델이 모르면(HTTP 400) "low" → 설정 없음 순으로 내려가고, 통한 수준을 기억해 다음부터 바로 쓴다.
+    level = os.environ.get("INSIGHT_GEMINI_THINKING", "low").strip()
+    levels = [lv for lv in dict.fromkeys([level, "low"] if level else []) if lv] + [None]
+    levels = levels[levels.index(_gemini_level_ok[0]):] if _gemini_level_ok and _gemini_level_ok[0] in levels else levels
+    for i, lv in enumerate(levels):
+        if lv:
+            body["generationConfig"]["thinkingConfig"] = {"thinkingLevel": lv}
+        else:
+            body["generationConfig"].pop("thinkingConfig", None)
+        try:
+            resp = _post_json(url, {"x-goog-api-key": key}, body)
+            _gemini_level_ok[:] = [lv]
+            break
+        except AIError as e:
+            if i == len(levels) - 1 or not str(e).startswith("HTTP 400"):
+                raise
+    cands = resp.get("candidates") or []
+    if not cands:
+        reason = (resp.get("promptFeedback") or {}).get("blockReason", "응답 없음")
+        raise AIError(f"Gemini 가 응답하지 않았습니다 ({reason})")
+    if cands[0].get("finishReason") == "MAX_TOKENS":
+        raise AIError("응답이 길이 상한에서 잘렸습니다")
+    parts_out = (cands[0].get("content") or {}).get("parts") or []
+    text = "".join(p.get("text", "") for p in parts_out if not p.get("thought"))
+    return parse_json(text), resp.get("modelVersion", GEMINI_MODEL)
+
+
+_gemini_level_ok: list = []   # 이 서버에서 통한 생각 수준(첫 원소)
 
 
 def parse_json(text: str) -> dict:
@@ -629,15 +997,15 @@ def normalize_summary(d: dict) -> dict:
         "readable": bool(d.get("readable", True)),
         "title": str(d.get("title") or "").strip()[:300],
         "one_line": str(d.get("one_line") or "").strip()[:500],
-        "key_points": objs(d.get("key_points"), ["point", "at"]),
-        "implications": strs(d.get("implications")),
-        "related": objs(d.get("related"), ["name", "kind", "code"], 20),
-        "figures": objs(d.get("figures"), ["label", "value", "as_of"], 20),
-        "risks": strs(d.get("risks")),
+        "key_points": objs(d.get("key_points"), ["point", "at"], 5),
+        "implications": strs(d.get("implications"), 3),
+        "related": objs(d.get("related"), ["name", "kind", "code"], 8),
+        "figures": objs(d.get("figures"), ["label", "value", "as_of"], 5),
+        "risks": strs(d.get("risks"), 3),
         "category": cat,
         "sentiment": sen,
         "tags": tags,
-        "unverified": strs(d.get("unverified")),
+        "unverified": strs(d.get("unverified"), 3),
     }
 
 
@@ -666,10 +1034,18 @@ def set_status(pid: int, status: str, msg: str = "", **cols) -> None:
 
 
 def process(pid: int) -> None:
+    try:
+        _process(pid)
+    finally:
+        _run_ctx.deadline = None   # 같은 스레드의 다음 요청이 지난 마감을 물려받지 않게
+
+
+def _process(pid: int) -> None:
     p = q("SELECT * FROM posts WHERE id=?", (pid,), one=True)
     if not p:
         return
     set_status(pid, "working", "AI가 읽는 중")
+    _run_ctx.deadline = time.time() + RUN_BUDGET_SEC
     notes: list[str] = []
     note = p["note"] or ""
     user_hint = f"\n\n올린 직원의 메모(참고용, 자료 내용이 아님): {note}" if note else ""
@@ -681,7 +1057,7 @@ def process(pid: int) -> None:
             meta = {"주소": p["url"] or "", "제목": p["source_title"] or "", "매체": p["source_site"] or "",
                     "게시일": p["source_published"] or ""}
             if p["file_path"]:
-                raw = (UPLOAD_DIR / p["file_path"]).read_bytes()
+                raw = blob_get(p["file_path"])
                 b64 = base64.b64encode(raw).decode()
                 if p["file_type"] == "application/pdf":
                     content.append({"type": "document", "source": {"type": "base64", "media_type": "application/pdf", "data": b64}})
@@ -696,7 +1072,9 @@ def process(pid: int) -> None:
                 text = p["pasted_text"] or ""
                 label = "직원이_붙여넣은_본문"
                 if not text and p["url"]:
+                    t_fetch = time.time()
                     data, ctype, final = fetch(p["url"])
+                    print(f"[run {pid}] 원문 받기 {time.time() - t_fetch:.1f}s, {len(data):,}바이트", file=sys.stderr)
                     if "pdf" in ctype.lower() or data[:5] == b"%PDF-":
                         content.append({"type": "document", "source": {"type": "base64", "media_type": "application/pdf",
                                                                         "data": base64.b64encode(data).decode()}})
@@ -708,6 +1086,7 @@ def process(pid: int) -> None:
                           (art["title"], art["site"], art["published"], pid))
                         meta.update({"제목": art["title"], "매체": art["site"], "게시일": art["published"]})
                         if len(text) < MIN_TEXT_CHARS:
+                            print(f"[run {pid}] 본문 짧음 {len(text)}자 — 읽지 못함으로 멈춤", file=sys.stderr)
                             set_status(pid, "blocked",
                                        "이 페이지에서 본문을 읽지 못했습니다(로그인·유료 기사이거나 화면을 스크립트로 그리는 사이트). "
                                        "본문을 복사해 붙여넣거나 스크린샷·PDF로 올려 주세요.")
@@ -717,7 +1096,9 @@ def process(pid: int) -> None:
                     notes += n
                     content.append({"type": "text", "text": blk})
                 content.append({"type": "text", "text": "위 자료를 정리하십시오." + user_hint})
-            summary, model = call_claude(content)
+            t_ai = time.time()
+            summary, model = (call_gemini_blocks(content) if text_engine() == "gemini" else call_claude(content))
+            print(f"[run {pid}] AI 정리 {time.time() - t_ai:.1f}s ({model})", file=sys.stderr)
         summary["notes"] = notes
         if not summary["readable"]:
             set_status(pid, "blocked", "AI가 자료 본문을 읽을 수 없다고 판단했습니다: " + summary["one_line"],
@@ -730,7 +1111,11 @@ def process(pid: int) -> None:
     except BlockedURL as e:
         set_status(pid, "failed", str(e))
     except AIError as e:
-        set_status(pid, "failed", str(e))
+        print(f"[run {pid}] AI 실패: {str(e)[:300]}", file=sys.stderr)
+        msg = str(e)
+        if re.match(r"HTTP (429|5\d\d)|시간 초과", msg):
+            msg = "AI 서버가 붐벼 여러 번 불러도 제때 답하지 않았습니다. 잠시 뒤 「다시 시도」를 눌러 주세요. (" + msg[:80] + ")"
+        set_status(pid, "failed", msg)
     except urllib.error.HTTPError as e:
         set_status(pid, "blocked", f"원문 사이트가 접근을 거절했습니다(HTTP {e.code}). 본문을 붙여넣거나 스크린샷·PDF로 올려 주세요.")
     except (urllib.error.URLError, TimeoutError, socket.timeout) as e:
@@ -747,6 +1132,26 @@ def worker() -> None:
             process(pid)
         finally:
             jobs.task_done()
+
+
+def enqueue(pid: int) -> None:
+    # 서버리스에선 줄을 세우지 않는다 — 화면이 곧바로 /run 을 부른다
+    if not SERVERLESS:
+        jobs.put(pid)
+
+
+def queue_size() -> int:
+    if SERVERLESS:
+        return q("SELECT COUNT(*) AS n FROM posts WHERE status IN ('queued','working')", one=True)["n"]
+    return jobs.qsize()
+
+
+def claim(pid: int) -> bool:
+    """정리할 차례를 가져온다. 대기 중이거나, 정리 중인데 너무 오래 멈춰 있는 글만."""
+    t = now()
+    return xn("UPDATE posts SET status='working', status_msg='AI가 읽는 중', updated_at=? "
+              "WHERE id=? AND (status='queued' OR (status='working' AND updated_at<?))",
+              (t, pid, t - STALE_WORK_SEC)) == 1
 
 
 def start_workers(n: int = 3) -> None:
@@ -773,7 +1178,7 @@ def post_row(r: sqlite3.Row, me: int, full: bool = False) -> dict:
         "status": r["status"], "status_msg": r["status_msg"],
         "summary": json.loads(r["summary_json"]) if r["summary_json"] else None,
         "category": r["category"], "sentiment": r["sentiment"], "model": r["model"],
-        "created_at": r["created_at"], "author": r["author"], "author_id": r["user_id"],
+        "created_at": r["created_at"], "updated_at": r["updated_at"], "author": r["author"], "author_id": r["user_id"],
         "likes": r["likes"], "liked": bool(r["liked"]), "comments": r["ncomments"], "mine": r["user_id"] == me,
     }
     if full:
@@ -799,6 +1204,8 @@ STATIC_FILES = {
     "/manifest.webmanifest": ("manifest.webmanifest", "application/manifest+json"),
     "/sw.js": ("sw.js", "text/javascript; charset=utf-8"),
     "/icon.svg": ("icon.svg", "image/svg+xml"),
+    "/icon-192.png": ("icon-192.png", "image/png"),
+    "/icon-512.png": ("icon-512.png", "image/png"),
 }
 
 
@@ -810,15 +1217,25 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         sys.stderr.write("%s %s\n" % (time.strftime("%m-%d %H:%M:%S"), fmt % args))
 
+    def via_local_tunnel(self) -> bool:
+        """같은 PC의 터널(cloudflared)이 넘겨준 요청인가 — 루프백에서 왔고 HTTPS 표시가 붙어 있다."""
+        return (self.client_address[0] in ("127.0.0.1", "::1")
+                and self.headers.get("X-Forwarded-Proto", "").lower() == "https")
+
     def client_ip(self) -> str:
-        if os.environ.get("INSIGHT_TRUST_PROXY") == "1":
+        if self.via_local_tunnel():
+            cf = self.headers.get("Cf-Connecting-Ip", "").strip()
+            if cf:
+                return cf
+        if os.environ.get("INSIGHT_TRUST_PROXY") == "1" or self.via_local_tunnel():
             fwd = self.headers.get("X-Forwarded-For", "").split(",")[0].strip()
             if fwd:
                 return fwd
         return self.client_address[0]
 
     def secure(self) -> bool:
-        return isinstance(self.connection, ssl.SSLSocket) or os.environ.get("INSIGHT_COOKIE_SECURE") == "1"
+        return (isinstance(self.connection, ssl.SSLSocket) or os.environ.get("INSIGHT_COOKIE_SECURE") == "1"
+                or self.via_local_tunnel())
 
     def send_json(self, code: int, obj, cookie: str | None = None) -> None:
         if cookie is None:
@@ -848,7 +1265,7 @@ class Handler(BaseHTTPRequestHandler):
     def body_json(self) -> dict:
         n = int(self.headers.get("Content-Length") or 0)
         if n > MAX_UPLOAD * 1.4 + 100_000:
-            raise HTTPError_(413, "파일이 너무 큽니다(20MB 이하)")
+            raise HTTPError_(413, f"파일이 너무 큽니다({MAX_UPLOAD // 1048576}MB 이하)")
         raw = self.rfile.read(n) if n else b"{}"
         try:
             d = json.loads(raw or b"{}")
@@ -944,6 +1361,7 @@ class Handler(BaseHTTPRequestHandler):
         data = (STATIC / name).read_bytes()
         if name == "index.html":
             data = data.replace(b"{{CENTER_NAME}}", html.escape(CENTER_NAME).encode())
+            data = data.replace(b"{{BUILD_ID}}", BUILD_ID.encode())
         if name == "manifest.webmanifest":
             data = data.replace(b"{{CENTER_NAME}}", json.dumps(CENTER_NAME, ensure_ascii=False)[1:-1].encode())
         self.send_response(200)
@@ -959,24 +1377,38 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     # ── 인증 ──
+    def api_version(self, qs):
+        self.send_json(200, {"build": BUILD_ID})
+
     def api_me(self, qs):
         u = self.current_user()
         if not u:
             return self.send_json(200, {"user": None, "center": CENTER_NAME, "invite_label": invite_label()})
         self.send_json(200, {"user": {"id": u["id"], "name": u["name"], "role": u["role"]}, "center": CENTER_NAME,
-                             "categories": CATEGORIES, "session_days": SESSION_DAYS, "invite_label": invite_label()})
+                             "categories": CATEGORIES, "session_days": SESSION_DAYS, "invite_label": invite_label(),
+                             "serverless": SERVERLESS, "max_upload": MAX_UPLOAD, "upload_chunk": UPLOAD_CHUNK, "now": now(),
+                             "text_engine": text_engine(),
+                             "authors": [dict(r) for r in q(
+                                 "SELECT u.id, u.name FROM users u WHERE EXISTS (SELECT 1 FROM posts p WHERE p.user_id=u.id) "
+                                 "ORDER BY u.name")]})
 
     def api_login(self, qs):
         d = self.body_json()
         name, pw = norm_name(d.get("name", "")), d.get("password", "")
         key = f"{name}|{self.client_ip()}"
+        if acct_locked(name):
+            raise HTTPError_(429, "이 계정은 짧은 시간에 비밀번호가 너무 많이 틀려 1시간 잠겼습니다. "
+                                  "본인이 아니라면 관리자에게 알려 주시고, 급하면 관리자에게 잠금 풀기를 요청하세요.")
         if login_blocked(key):
             raise HTTPError_(429, "여러 번 틀려 15분간 막혔습니다. 잠시 뒤 다시 시도하거나 관리자에게 문의하세요.")
         u = q("SELECT * FROM users WHERE name=?", (name,), one=True)
         if not u or not u["active"] or not check_pw(pw, u["pw_hash"]):
             login_failed(key)
+            login_failed(acct_key(name), ACCT_LOCK_SEC)
+            if acct_locked(name):
+                print(f"[보안] 계정 잠김: 로그인 실패 {ACCT_MAX_FAIL}회 (마지막 IP {self.client_ip()})", file=sys.stderr)
             raise HTTPError_(401, "이름 또는 비밀번호가 맞지 않습니다")
-        x("DELETE FROM login_fail WHERE key=?", (key,))
+        x("DELETE FROM login_fail WHERE key=? OR key=?", (key, acct_key(name)))
         tok = new_session(u["id"])
         self.send_json(200, {"ok": True}, cookie=self.cookie(tok, SESSION_DAYS * 86400))
 
@@ -994,6 +1426,7 @@ class Handler(BaseHTTPRequestHandler):
         bad = password_problem(pw, name)
         if bad:
             raise HTTPError_(400, bad)
+        bootstrap_invite(name)
         live = q("SELECT * FROM invites WHERE name=? AND used_at IS NULL AND expires_at>? ORDER BY id DESC",
                  (name, now()), one=True)
         if not live or not hmac.compare_digest(live["code_hash"], sha(code)):
@@ -1009,6 +1442,7 @@ class Handler(BaseHTTPRequestHandler):
         with _db_lock:
             x("UPDATE invites SET used_at=? WHERE id=?", (now(), inv["id"]))
             u = q("SELECT * FROM users WHERE name=?", (name,), one=True)
+            acct_unlock(name)  # 관리자가 준 코드로 새 비밀번호를 정했으니 잠금도 푼다
             if u:  # 비밀번호 재설정용 초대
                 x("UPDATE users SET pw_hash=?, active=1 WHERE id=?", (hash_pw(pw), u["id"]))
                 x("DELETE FROM sessions WHERE user_id=?", (u["id"],))
@@ -1059,6 +1493,15 @@ class Handler(BaseHTTPRequestHandler):
             where.append("p.user_id=?"); args.append(u["id"])
         if g("liked") == "1":
             where.append("EXISTS (SELECT 1 FROM likes l WHERE l.post_id=p.id AND l.user_id=?)"); args.append(u["id"])
+        kinds = [k for k in g("kind").split(",") if k in ("article", "pdf", "image", "video", "text")]
+        if kinds:
+            where.append("p.kind IN (" + ",".join("?" * len(kinds)) + ")"); args += kinds
+        if g("author").isdigit():
+            where.append("p.user_id=?"); args.append(int(g("author")))
+        if g("since").isdigit():
+            where.append("p.created_at>=?"); args.append(int(g("since")))
+        if g("until").isdigit():
+            where.append("p.created_at<?"); args.append(int(g("until")))
         rng = g("range")
         if rng in ("1", "7", "30"):
             where.append("p.created_at>?"); args.append(now() - int(rng) * 86400)
@@ -1087,9 +1530,14 @@ class Handler(BaseHTTPRequestHandler):
         note = (d.get("note") or "").strip()[:1000]
         pasted = (d.get("text") or "").strip()[:400_000]
         f = d.get("file")
+        if url and not looks_like_url(url):
+            # 링크 칸에 제목·본문을 넣은 경우: 주소로 읽지 않고 붙여넣은 글로 다룬다
+            if url not in pasted:
+                pasted = (url + "\n\n" + pasted).strip()[:400_000]
+            url = ""
         if not url and not f and not pasted:
             raise HTTPError_(400, "링크, 파일, 본문 중 하나는 있어야 합니다")
-        kind, engine, title, site = "article", "claude", "", ""
+        kind, engine, title, site = "article", text_engine(), "", ""
         file_name = file_path = file_type = None
         if url:
             if not re.match(r"^https?://", url, re.I):
@@ -1118,24 +1566,38 @@ class Handler(BaseHTTPRequestHandler):
             ftype = (f.get("type") or "").lower()
             if ftype not in ALLOWED_UPLOAD:
                 raise HTTPError_(400, "PDF 또는 이미지(PNG·JPG·WEBP·GIF)만 올릴 수 있습니다")
-            try:
-                raw = base64.b64decode(f.get("data") or "", validate=True)
-            except ValueError:
-                raise HTTPError_(400, "파일을 읽지 못했습니다")
+            if f.get("upload"):  # 조각으로 먼저 올린 파일을 이어 붙인다
+                up, n = f.get("upload"), f.get("parts")
+                if not isinstance(up, str) or not re.fullmatch(r"\d+-[0-9a-f]{16}", up) \
+                        or not isinstance(n, int) or not 1 <= n <= MAX_PARTS:
+                    raise HTTPError_(400, "파일 조각 정보가 맞지 않습니다")
+                names = [f"up-{u['id']}-{up}-{i:03d}" for i in range(n)]
+                try:
+                    raw = b"".join(blob_get(nm) for nm in names)
+                except FileNotFoundError:
+                    raise HTTPError_(400, "파일 조각이 빠졌습니다. 다시 올려 주세요")
+                for nm in names:
+                    blob_del(nm)
+            else:
+                try:
+                    raw = base64.b64decode(f.get("data") or "", validate=True)
+                except ValueError:
+                    raise HTTPError_(400, "파일을 읽지 못했습니다")
             if len(raw) > MAX_UPLOAD:
-                raise HTTPError_(413, "파일이 20MB를 넘습니다")
+                raise HTTPError_(413, f"파일이 {MAX_UPLOAD // 1048576}MB를 넘습니다")
             if ftype == "application/pdf" and not raw.startswith(b"%PDF-"):
                 raise HTTPError_(400, "PDF 파일이 아닙니다")
             file_type = ftype
             file_name = re.sub(r"[\\/\x00-\x1f]", "_", (f.get("name") or "file"))[:150]
             file_path = f"{secrets.token_hex(16)}{ALLOWED_UPLOAD[ftype]}"
-            (UPLOAD_DIR / file_path).write_bytes(raw)
+            blob_put(file_path, raw)
             kind = "pdf" if ftype == "application/pdf" else "image"
             title = title or re.sub(r"\.[^.]+$", "", file_name)
         elif pasted and not url:
             kind = "text"
+            title = re.sub(r"\s+", " ", (d.get("title") or "")).strip()[:200]
         if kind == "video" and pasted:
-            engine = "claude"  # 영상 대본을 붙여넣었으면 글로 정리한다
+            engine = text_engine()  # 영상 대본을 붙여넣었으면 글로 정리한다
             kind = "text"
         t = now()
         pid = x("""INSERT INTO posts(user_id, url, kind, engine, note, pasted_text, file_name, file_path, file_type,
@@ -1143,7 +1605,7 @@ class Handler(BaseHTTPRequestHandler):
                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                 (u["id"], url or None, kind, engine, note, pasted or None, file_name, file_path, file_type,
                  title, site, "queued", t, t))
-        jobs.put(pid)
+        enqueue(pid)
         self.send_json(201, {"id": pid})
 
     def api_post_delete(self, qs, pid):
@@ -1154,10 +1616,7 @@ class Handler(BaseHTTPRequestHandler):
         if p["user_id"] != u["id"] and u["role"] != "admin":
             raise HTTPError_(403, "올린 사람이나 관리자만 지울 수 있습니다")
         if p["file_path"]:
-            try:
-                (UPLOAD_DIR / p["file_path"]).unlink()
-            except FileNotFoundError:
-                pass
+            blob_del(p["file_path"])
         with _db_lock:
             x("DELETE FROM likes WHERE post_id=?", (pid,))
             x("DELETE FROM comments WHERE post_id=?", (pid,))
@@ -1177,11 +1636,22 @@ class Handler(BaseHTTPRequestHandler):
         d = self.body_json()
         text = (d.get("text") or "").strip()[:400_000]
         if text:
-            x("UPDATE posts SET pasted_text=?, engine='claude', kind=CASE WHEN kind='video' THEN 'text' ELSE kind END WHERE id=?",
-              (text, pid))
+            x("UPDATE posts SET pasted_text=?, engine=?, kind=CASE WHEN kind='video' THEN 'text' ELSE kind END WHERE id=?",
+              (text, text_engine(), pid))
         set_status(pid, "queued", "")
-        jobs.put(pid)
+        enqueue(pid)
         self.send_json(200, {"ok": True})
+
+    def api_post_run(self, qs, pid):
+        """서버리스용: 이 요청 안에서 글을 정리한다. 일꾼이 도는 보통 서버에선 할 일이 없다."""
+        self.need_user()
+        if not SERVERLESS:
+            return self.send_json(200, {"ok": True, "ran": False})
+        if not claim(pid):
+            return self.send_json(200, {"ok": True, "ran": False})
+        process(pid)
+        r = q("SELECT status FROM posts WHERE id=?", (pid,), one=True)
+        self.send_json(200, {"ok": True, "ran": True, "status": r["status"] if r else None})
 
     def api_like(self, qs, pid):
         u = self.need_user()
@@ -1218,12 +1688,54 @@ class Handler(BaseHTTPRequestHandler):
         x("DELETE FROM comments WHERE id=?", (cid,))
         self.send_json(200, {"ok": True})
 
+    def api_upload(self, qs):
+        """파일 조각 하나를 받아 둔다. 첫 조각(i=0)이 올림 번호를 받고, 나머지는 그 번호로 잇는다."""
+        u = self.need_user()
+        d = self.body_json()
+        i, up = d.get("i"), d.get("id")
+        if not isinstance(i, int) or not 0 <= i < MAX_PARTS:
+            raise HTTPError_(400, "파일 조각 번호가 맞지 않습니다")
+        try:
+            raw = base64.b64decode(d.get("data") or "", validate=True)
+        except ValueError:
+            raise HTTPError_(400, "파일 조각을 읽지 못했습니다")
+        if not raw or len(raw) > UPLOAD_CHUNK:
+            raise HTTPError_(400, "파일 조각 크기가 맞지 않습니다")
+        if i == 0:
+            upload_gc()
+            up = f"{int(now())}-{secrets.token_hex(8)}"
+        elif not isinstance(up, str) or not re.fullmatch(r"\d+-[0-9a-f]{16}", up):
+            raise HTTPError_(400, "파일 조각 정보가 맞지 않습니다")
+        name = f"up-{u['id']}-{up}-{i:03d}"
+        blob_del(name)
+        blob_put(name, raw)
+        self.send_json(200, {"id": up})
+
     def api_file(self, qs, pid):
         self.need_user()
         p = q("SELECT file_path, file_type, file_name FROM posts WHERE id=?", (pid,), one=True)
         if not p or not p["file_path"]:
             raise HTTPError_(404, "파일이 없습니다")
-        data = (UPLOAD_DIR / p["file_path"]).read_bytes()
+        part = (qs.get("part") or [""])[0]
+        if part.isdigit():  # 조각으로 내려받기 — 화면이 이어 붙여 연다
+            try:
+                data, size = blob_slice(p["file_path"], int(part) * UPLOAD_CHUNK, UPLOAD_CHUNK)
+            except FileNotFoundError:
+                raise HTTPError_(404, "파일이 없습니다")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/octet-stream")
+            self.send_header("X-File-Parts", str(max(1, -(-size // UPLOAD_CHUNK))))
+            self.send_header("X-File-Type", p["file_type"])
+            self.send_header("Cache-Control", "private, no-store")
+            self._sec_headers()
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
+        try:
+            data = blob_get(p["file_path"])
+        except FileNotFoundError:
+            raise HTTPError_(404, "파일이 없습니다")
         self.send_response(200)
         self.send_header("Content-Type", p["file_type"])
         self.send_header("Content-Disposition", "inline; filename*=UTF-8''" + urllib.parse.quote(p["file_name"] or "file"))
@@ -1250,13 +1762,15 @@ class Handler(BaseHTTPRequestHandler):
         users = [dict(r) for r in q(
             "SELECT u.id, u.name, u.role, u.active, u.created_at, u.last_login, "
             "(SELECT COUNT(*) FROM posts p WHERE p.user_id=u.id) AS posts FROM users u ORDER BY u.name")]
+        for u in users:
+            u["locked"] = acct_locked(u["name"])
         invites = [dict(r) for r in q(
             "SELECT id, name, role, created_at, expires_at FROM invites WHERE used_at IS NULL AND expires_at>? ORDER BY id DESC",
             (now(),))]
         self.send_json(200, {"users": users, "invites": invites, "ai": {
             "claude": bool(os.environ.get("ANTHROPIC_API_KEY")), "claude_model": CLAUDE_MODEL,
             "gemini": bool(os.environ.get("GEMINI_API_KEY")), "gemini_model": GEMINI_MODEL},
-            "queue": jobs.qsize()})
+            "queue": queue_size(), "storage": storage_usage()})
 
     def api_admin_invite(self, qs):
         me = self.need_user(admin=True)
@@ -1282,6 +1796,8 @@ class Handler(BaseHTTPRequestHandler):
                 x("DELETE FROM sessions WHERE user_id=?", (uid,))
         if d.get("role") in ("admin", "member"):
             x("UPDATE users SET role=? WHERE id=?", (d["role"], uid))
+        if d.get("unlock"):
+            acct_unlock(u["name"])
         out = {"ok": True}
         if d.get("reset"):
             out["code"] = new_invite(u["name"], u["role"], me["id"])
@@ -1297,6 +1813,7 @@ class Handler(BaseHTTPRequestHandler):
 
 ROUTES = {
     ("GET", r"/api/me"): Handler.api_me,
+    ("GET", r"/api/version"): Handler.api_version,
     ("POST", r"/api/login"): Handler.api_login,
     ("POST", r"/api/join"): Handler.api_join,
     ("POST", r"/api/logout"): Handler.api_logout,
@@ -1307,10 +1824,12 @@ ROUTES = {
     ("GET", r"/api/posts/(\d+)"): Handler.api_post_get,
     ("DELETE", r"/api/posts/(\d+)"): Handler.api_post_delete,
     ("POST", r"/api/posts/(\d+)/retry"): Handler.api_post_update,
+    ("POST", r"/api/posts/(\d+)/run"): Handler.api_post_run,
     ("POST", r"/api/posts/(\d+)/like"): Handler.api_like,
     ("POST", r"/api/posts/(\d+)/comments"): Handler.api_comment,
     ("DELETE", r"/api/comments/(\d+)"): Handler.api_comment_delete,
     ("GET", r"/api/files/(\d+)"): Handler.api_file,
+    ("POST", r"/api/uploads"): Handler.api_upload,
     ("GET", r"/api/tags"): Handler.api_tags,
     ("GET", r"/api/admin/users"): Handler.api_admin_users,
     ("POST", r"/api/admin/invites"): Handler.api_admin_invite,
