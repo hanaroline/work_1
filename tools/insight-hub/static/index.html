@@ -878,7 +878,7 @@ function lightbox(src, name) {
   // 자료 자세히 창(모달) 위에서도 보이도록 뷰어 자체를 최상위 모달로 연다
   const x = h("button", { type: "button", text: "닫기 ✕", onclick: () => ov.close() });
   const ov = h("dialog", { class: "lb" },
-    h("div", { class: "top" }, h("span", { text: name || "첨부 이미지" }), h("a", { href: src, target: "_blank", rel: "noopener", text: "원본 열기" }), x),
+    h("div", { class: "top" }, h("span", { text: name || "첨부 이미지" }), x),
     h("div", { class: "pic" }, h("img", { src, alt: name || "첨부 이미지" })));
   ov.addEventListener("close", () => ov.remove());
   document.body.append(ov); ov.showModal(); x.focus();
