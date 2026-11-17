@@ -241,6 +241,10 @@ CREATE TABLE IF NOT EXISTS events (        -- 일정 공유: 설명회·교육·
   created_at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS events_day ON events(day);
+CREATE TABLE IF NOT EXISTS app_settings (  -- 관리자 설정(새 기능 켜기·끄기 등)
+  key TEXT PRIMARY KEY,
+  value TEXT
+);
 CREATE TABLE IF NOT EXISTS ai_cache (
   key TEXT PRIMARY KEY,
   sig TEXT,
@@ -257,6 +261,22 @@ PG_EXTRA = ["CREATE TABLE IF NOT EXISTS files (name TEXT PRIMARY KEY, data BYTEA
 _RETURNING_ID = re.compile(r"^\s*INSERT\s+INTO\s+(users|invites|posts|comments|events)\b", re.I)
 SHELVES = ["상품설명서", "제안서", "판매 스크립트", "교육자료", "기타"]
 EVENT_KINDS = ["설명회", "교육", "상품 출시", "기타"]
+# 관리자가 언제든 끌 수 있는 새 기능. 끄면 화면은 이 기능을 넣기 전 모습으로 돌아가고, 써 둔 자료는 지우지 않고 그대로 둔다.
+FEATURES = {"notice": "📢 공지 게시판", "lib": "📁 상품·판매 자료실", "cal": "📅 일정 공유"}
+
+
+def features() -> dict:
+    r = q("SELECT value FROM app_settings WHERE key=?", ("features",), one=True)
+    try:
+        d = json.loads(r["value"]) if r and r["value"] else {}
+    except ValueError:
+        d = {}
+    return {k: d.get(k) is not False for k in FEATURES}
+
+
+def need_feature(k: str):
+    if not features()[k]:
+        raise HTTPError_(403, f"관리자가 「{FEATURES[k]}」 기능을 꺼 두었습니다")
 
 
 def _pg_schema() -> list[str]:
@@ -1990,7 +2010,7 @@ class Handler(BaseHTTPRequestHandler):
                              "categories": CATEGORIES, "session_days": SESSION_DAYS, "invite_label": invite_label(),
                              "serverless": SERVERLESS, "max_upload": MAX_UPLOAD, "upload_chunk": UPLOAD_CHUNK, "now": now(),
                              "text_engine": text_engine(), "app_name": V2_NAME, "ui": UI_DEFAULT,
-                             "shelves": SHELVES, "event_kinds": EVENT_KINDS,
+                             "shelves": SHELVES, "event_kinds": EVENT_KINDS, "features": features(),
                              "authors": [dict(r) for r in q(
                                  "SELECT u.id, u.name FROM users u WHERE EXISTS (SELECT 1 FROM posts p WHERE p.user_id=u.id) "
                                  "ORDER BY u.name")]})
@@ -2164,7 +2184,12 @@ class Handler(BaseHTTPRequestHandler):
         if g("liked") == "1":
             where.append("EXISTS (SELECT 1 FROM likes l WHERE l.post_id=p.id AND l.user_id=?)"); args.append(u["id"])
         kinds = [k for k in g("kind").split(",") if k in ("article", "pdf", "image", "video", "text", "notice")]
-        if g("shelf") == "*":
+        feat = features()
+        if not feat["notice"]:  # 공지를 꺼 두면 써 둔 공지도 피드에서 감춘다(지우지는 않는다)
+            where.append("p.kind<>'notice'")
+        if not feat["lib"]:
+            pass
+        elif g("shelf") == "*":
             where.append("p.shelf IS NOT NULL")
         elif g("shelf") in SHELVES:
             where.append("p.shelf=?"); args.append(g("shelf"))
@@ -2190,7 +2215,7 @@ class Handler(BaseHTTPRequestHandler):
         sql = POST_SELECT + (" WHERE " + " AND ".join(where) if where else "") + f" ORDER BY {order} LIMIT 30"
         rows = q(sql, args)
         out = {"posts": [post_row(r, u["id"]) for r in rows]}
-        if g("pins") == "1":  # 첫 쪽에는 고정 공지를 따로 붙인다(내가 아직 안 읽었는지도)
+        if g("pins") == "1" and feat["notice"]:  # 첫 쪽에는 고정 공지를 따로 붙인다(내가 아직 안 읽었는지도)
             out["pins"] = [post_row(r, u["id"]) | {"read": bool(r["seen"]) or r["user_id"] == u["id"]} for r in q(
                 POST_SELECT.replace("FROM posts p", ", (SELECT COUNT(*) FROM post_views v WHERE v.post_id=p.id AND v.user_id=?) AS seen FROM posts p")
                 + " WHERE p.kind='notice' AND p.pinned=1 ORDER BY p.id DESC LIMIT 5", (u["id"], u["id"]))]
@@ -2288,7 +2313,7 @@ class Handler(BaseHTTPRequestHandler):
                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                 (u["id"], url or None, kind, engine, note, pasted or None, file_name, file_path, file_type,
                  title, site, "queued", t, t))
-        shelf = d.get("shelf") if d.get("shelf") in SHELVES else None
+        shelf = d.get("shelf") if d.get("shelf") in SHELVES and features()["lib"] else None
         if shelf:
             x("UPDATE posts SET shelf=? WHERE id=?", (shelf, pid))
         enqueue(pid)
@@ -2297,6 +2322,7 @@ class Handler(BaseHTTPRequestHandler):
     def api_notice_create(self, qs):
         """관리자가 공지를 올린다. AI 를 부르지 않고 쓴 그대로 둔다."""
         u = self.need_user(admin=True)
+        need_feature("notice")
         d = self.body_json()
         title = re.sub(r"\s+", " ", str(d.get("title") or "")).strip()[:200]
         body = str(d.get("body") or "").strip()[:20000]
@@ -2312,9 +2338,23 @@ class Handler(BaseHTTPRequestHandler):
             out["push"] = r if isinstance(r, dict) else {"msg": r}
         self.send_json(201, out)
 
+    def api_admin_features(self, qs):
+        """새 기능 켜기·끄기(관리자). 끄면 기존 화면으로 돌아가고, 써 둔 자료는 그대로 남는다."""
+        u = self.need_user(admin=True)
+        d = self.body_json()
+        cur = features()
+        for k in FEATURES:
+            if k in d:
+                cur[k] = bool(d[k])
+        x("INSERT INTO app_settings(key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+          ("features", json.dumps(cur)))
+        print(f"[관리] 새 기능 설정 변경: {cur} (by {u['name']})", file=sys.stderr)
+        self.send_json(200, {"features": cur})
+
     def api_notice_edit(self, qs, pid):
         """공지 고정 켜기·끄기, 내용 고치기(관리자)."""
         self.need_user(admin=True)
+        need_feature("notice")
         p = q("SELECT id, kind FROM posts WHERE id=?", (pid,), one=True)
         if not p or p["kind"] != "notice":
             raise HTTPError_(404, "공지가 없습니다")
@@ -2328,6 +2368,7 @@ class Handler(BaseHTTPRequestHandler):
     def api_post_shelf(self, qs, pid):
         """올린 사람이나 관리자가 자료실 칸을 정한다(빈칸이면 자료실에서 뺀다)."""
         u = self.need_user()
+        need_feature("lib")
         p = q("SELECT user_id FROM posts WHERE id=?", (pid,), one=True)
         if not p:
             raise HTTPError_(404, "글이 없습니다")
@@ -2342,6 +2383,7 @@ class Handler(BaseHTTPRequestHandler):
     # ── 일정 ──
     def api_events(self, qs):
         u = self.need_user()
+        need_feature("cal")
         g = lambda k: (qs.get(k) or [""])[0].strip()
         today = kst_day(now())
         day_re = r"\d{4}-\d{2}-\d{2}"
@@ -2354,6 +2396,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def api_event_create(self, qs):
         u = self.need_user()
+        need_feature("cal")
         d = self.body_json()
         title = re.sub(r"\s+", " ", str(d.get("title") or "")).strip()[:120]
         day = str(d.get("day") or "").strip()
@@ -2374,6 +2417,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def api_event_delete(self, qs, eid):
         u = self.need_user()
+        need_feature("cal")
         e = q("SELECT user_id FROM events WHERE id=?", (eid,), one=True)
         if not e:
             raise HTTPError_(404, "일정이 없습니다")
@@ -2833,6 +2877,7 @@ ROUTES = {
     ("POST", r"/api/posts/(\d+)/extras"): Handler.api_post_extras,
     ("POST", r"/api/ask"): Handler.api_ask,
     ("GET", r"/api/admin/users"): Handler.api_admin_users,
+    ("POST", r"/api/admin/features"): Handler.api_admin_features,
     ("GET", r"/api/admin/users/(\d+)/activity"): Handler.api_admin_activity,
     ("POST", r"/api/admin/invites"): Handler.api_admin_invite,
     ("DELETE", r"/api/admin/invites/(\d+)"): Handler.api_admin_invite_delete,
