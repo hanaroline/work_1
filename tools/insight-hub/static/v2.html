@@ -269,6 +269,47 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
 .installbar div{flex:1;font-size:13.5px;color:var(--sub)}.installbar b{display:block;color:var(--ink);font-size:14.5px}
 .installbar .x{border:0;background:none;color:var(--faint);font-size:18px;cursor:pointer;padding:4px}
 .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:var(--ink);color:var(--card);padding:8px 14px;border-radius:10px;font-size:13.5px;z-index:50;max-width:90vw}
+.quick{display:flex;gap:6px;margin:0 0 8px}
+.quick button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:9px 4px;font-size:14px;font-weight:700;cursor:pointer;color:var(--ink);white-space:nowrap}
+.pins{display:flex;flex-direction:column;gap:5px;margin:0 0 8px}
+.pins button{display:flex;align-items:center;gap:7px;text-align:left;border:1px solid var(--warn);background:var(--warn-bg);border-radius:12px;padding:8px 11px;font-size:14px;cursor:pointer;color:var(--ink)}
+.pins button b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+.pins .nb{font-size:11.5px;font-weight:800;color:#fff;background:var(--like);border-radius:999px;padding:1px 7px;flex:none}
+.kb.notice{background:var(--warn-bg);color:var(--warn)}
+.nbody{white-space:pre-wrap;line-height:1.6;margin:6px 0 4px;font-size:15px}
+.nbody.fold{max-height:9.6em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 70%,transparent)}
+.unread{margin-top:6px;color:var(--like)}
+.shelfsel{display:flex;gap:6px;align-items:center;margin:8px 0 0;font-size:13px;color:var(--sub)}
+.shelfsel select,.dform select,.dform input,.dform textarea{border:1px solid var(--line);background:var(--field);border-radius:10px;padding:7px 9px;font-size:15px;color:var(--ink);min-width:0}
+.dform{display:flex;flex-direction:column;gap:7px;padding:10px;border:1px solid var(--line);border-radius:14px;margin:0 0 12px}
+.dform .r{display:flex;gap:6px}.dform .r>*{flex:1}
+.dform textarea{min-height:110px;resize:vertical;font-family:inherit}
+.dform label.ck{display:flex;gap:6px;align-items:center;font-size:14px}
+.lrow{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:10px 2px;cursor:pointer;color:var(--ink)}
+.lrow b{display:block;font-size:15px;margin-bottom:2px}
+.lrow .s{font-size:12.5px;color:var(--sub)}
+.shelves{display:flex;gap:5px;overflow-x:auto;margin:0 0 8px;scrollbar-width:none}
+.shelves button{flex:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 10px;font-size:13px;cursor:pointer;color:var(--sub);font-weight:600}
+.shelves button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.calh{display:flex;align-items:center;justify-content:space-between;margin:0 0 6px}
+.calh b{font-size:16px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin:0 0 10px;text-align:center}
+.cal .wd{font-size:11.5px;color:var(--sub);padding:2px 0}
+.cal button{border:0;background:none;border-radius:9px;padding:6px 0 4px;font-size:14px;cursor:pointer;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:2px;min-height:38px}
+.cal button.out{visibility:hidden}
+.cal button.today{font-weight:800;color:var(--accent)}
+.cal button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.cal button i{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.cal .sun{color:var(--like)}
+.ev{display:flex;gap:9px;padding:9px 2px;border-bottom:1px solid var(--line);align-items:flex-start}
+.ev.past{opacity:.55}
+.ev .ed{flex:none;width:58px;font-size:12.5px;color:var(--sub)}
+.ev .ed b{display:block;font-size:14px;color:var(--ink)}
+.ev .eb{flex:1;min-width:0}
+.ev .eb b{font-size:15px}
+.ev .eb .s{font-size:12.5px;color:var(--sub);white-space:pre-wrap}
+.ev .ex{border:0;background:none;color:var(--sub);cursor:pointer;font-size:12.5px}
+.dsub{font-size:13px;color:var(--sub);margin:4px 0 8px}
 
 /* ── 브리핑룸(새 화면) ── */
 header.top{display:flex;align-items:center;gap:8px;margin:0;padding:calc(env(safe-area-inset-top) + 14px) 16px 6px;background:var(--hd);color:var(--hd-ink)}
@@ -329,6 +370,8 @@ header.top .hbtn{background:transparent;border-color:rgba(255,255,255,.3);color:
 .it .th img{width:100%;height:100%;object-fit:cover;display:block}
 .it .th.video::after{content:"";position:absolute;inset:0;margin:auto;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 7l9 5-9 5z' fill='%23fff'/%3E%3C/svg%3E") center/16px no-repeat}
 .it .th.article,.it .th.text{background:var(--kb-ar-bg);color:var(--kb-ar)}
+#feedView>.quick{margin:12px 16px 6px}#feedView>.pins{margin:0 16px 8px}
+.it .th.notice{background:var(--warn-bg);color:var(--warn);font-size:22px}
 .it .th.pdf{background:var(--kb-pdf-bg);color:var(--kb-pdf)}
 .it .th.wait{background:var(--seg);color:var(--faint)}
 .it .bd{min-width:0;flex:1}
@@ -460,8 +503,11 @@ dialog#postDlg{max-width:min(680px,calc(100vw - 16px))}
       <div class="bcard" id="brief" aria-live="polite"><div class="t">✦ 오늘의 브리핑</div><div class="wait">불러오는 중…</div></div>
       <button class="askbar" type="button" id="askOpen"><span>💬 <b>룸 자료로 물어보기</b> — 「요즘 반도체 의견 어때?」</span><span class="ar">›</span></button>
     </div>
+    <!--quick--><div class="quick"><button type="button" id="qNotice">📢 공지</button><button type="button" id="qLib">📁 자료실</button><button type="button" id="qCal">📅 일정</button></div>
+    <div class="pins" id="pins"></div><!--/quick-->
     <div class="tabs2" id="fKind" role="group" aria-label="자료 종류">
       <button type="button" data-k="" aria-pressed="true">전체</button>
+      <button type="button" data-k="notice" aria-pressed="false">공지</button>
       <button type="button" data-k="article" aria-pressed="false">기사</button>
       <button type="button" data-k="video" aria-pressed="false">유튜브</button>
       <button type="button" data-k="image" aria-pressed="false">스크린샷</button>
@@ -574,6 +620,9 @@ dialog#postDlg{max-width:min(680px,calc(100vw - 16px))}
     <input class="field" type="text" id="wm" maxlength="300" placeholder="왜 의미 있는 자료인지 코멘트를 달아주세요">
     <div class="hint">관련 종목이 있으면 여기에 함께 적어 주세요. AI는 자료에 나온 종목을 따로 뽑아 둡니다.</div>
 
+    <div class="lbl"><label for="shelfIn">📁 자료실에도 꽂기</label> <small>(선택 · 상품설명서·제안서·판매 스크립트 등)</small></div>
+    <select class="field" id="shelfIn"><option value="">자료실에 넣지 않음</option></select>
+
     <label class="agree"><input type="checkbox" id="agree"><div><b>고객 정보 · 사내 자료가 포함되지 않았습니다.</b><span id="agreeSub">올린 내용은 AI 요약을 위해 외부 서비스로 전송됩니다.</span></div></label>
 
     <button class="cta" id="submit" type="button" disabled><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M10 3l1.8 5.2L17 10l-5.2 1.8L10 17l-1.8-5.2L3 10l5.2-1.8z"/><path d="M18 14l.9 2.1L21 17l-2.1.9L18 20l-.9-2.1L15 17l2.1-.9z"/></svg><span>공유하고 AI 정리 받기</span></button>
@@ -671,6 +720,50 @@ dialog#postDlg{max-width:min(680px,calc(100vw - 16px))}
   </div>
 </dialog>
 
+<dialog id="noticeDlg">
+  <div class="dh"><h2>📢 공지</h2><button class="xbtn" type="button" data-close aria-label="닫기">×</button></div>
+  <div class="db">
+    <form class="dform hidden" id="nForm">
+      <input type="text" id="nTitle" maxlength="200" placeholder="공지 제목" aria-label="공지 제목" required>
+      <textarea id="nBody" maxlength="20000" placeholder="공지 내용 — 쓴 그대로 올라갑니다(AI 정리 없음)" aria-label="공지 내용" required></textarea>
+      <label class="ck"><input type="checkbox" id="nPin" checked> 맨 위에 고정</label>
+      <label class="ck"><input type="checkbox" id="nPush" checked> 알림도 보내기(알림 켠 직원)</label>
+      <button class="btn primary" type="submit" id="nGo">공지 올리기</button>
+    </form>
+    <div class="dsub">누가 읽었는지는 관리자가 공지의 「👁 본 사람」을 눌러 볼 수 있습니다.</div>
+    <div id="nList"></div>
+  </div>
+</dialog>
+
+<dialog id="libDlg">
+  <div class="dh"><h2>📁 상품·판매 자료실</h2><button class="xbtn" type="button" data-close aria-label="닫기">×</button></div>
+  <div class="db">
+    <div class="shelves" id="libShelves" role="group" aria-label="자료실 칸"></div>
+    <input type="search" class="field" id="libQ" placeholder="자료실 안에서 검색" aria-label="자료실 검색" style="margin-bottom:6px">
+    <div id="libList"></div>
+    <button class="btn loadmore hidden" id="libMore" type="button">더 보기</button>
+    <div class="dsub">자료를 올릴 때 「📁 자료실에도 꽂기」를 고르거나, 이미 올린 글을 열어 아래쪽 「📁 자료실」에서 칸을 고르면 여기에 모입니다(올린 사람·관리자).</div>
+  </div>
+</dialog>
+
+<dialog id="calDlg">
+  <div class="dh"><h2>📅 일정</h2><button class="xbtn" type="button" data-close aria-label="닫기">×</button></div>
+  <div class="db">
+    <div class="calh"><button class="btn small" type="button" id="calPrev" aria-label="이전 달">‹</button><b id="calTitle"></b><button class="btn small" type="button" id="calNext" aria-label="다음 달">›</button></div>
+    <div class="cal" id="calGrid"></div>
+    <div class="calh"><b id="evHead" style="font-size:14px"></b><button class="btn small" type="button" id="evAll" hidden>이 달 전체</button></div>
+    <div id="evList"></div>
+    <form class="dform" id="evForm" style="margin-top:12px">
+      <b style="font-size:14px">일정 추가</b>
+      <input type="text" id="evTitle" maxlength="200" placeholder="무엇 (예: ○○ 신상품 설명회)" aria-label="일정 제목" required>
+      <div class="r"><input type="date" id="evDay" aria-label="날짜" required><input type="time" id="evTime" aria-label="시각(선택)"></div>
+      <div class="r"><select id="evKind" aria-label="종류"></select><input type="text" id="evPlace" maxlength="200" placeholder="장소(선택)" aria-label="장소"></div>
+      <input type="text" id="evNote" maxlength="1000" placeholder="메모(선택)" aria-label="메모">
+      <button class="btn primary" type="submit">추가</button>
+    </form>
+  </div>
+</dialog>
+
 <dialog id="postDlg">
   <div class="dh"><h2>자료 자세히</h2><button class="xbtn" type="button" data-close aria-label="닫기">×</button></div>
   <div class="db"></div>
@@ -756,6 +849,9 @@ async function boot() {
   if (r.invite_label) state.inviteLabel = r.invite_label;
   if (!r.user) { showAuth(); if (location.hash.startsWith("#join")) setTab(true); return; }
   state.me = r.user; state.cats = r.categories || [];
+  state.shelves = r.shelves || []; state.eventKinds = r.event_kinds || [];
+  $("#shelfIn").replaceChildren(h("option", { value: "", text: "자료실에 넣지 않음" }), ...state.shelves.map(v => h("option", { value: v, text: v })));
+  $("#evKind").replaceChildren(...state.eventKinds.map(v => h("option", { value: v, text: v })));
   state.serverless = !!r.serverless; state.maxUpload = r.max_upload || 20 * 1024 * 1024; state.chunk = r.upload_chunk || 2560000;
   state.skew = r.now ? r.now - Date.now() / 1000 : 0;
   state.textEngine = r.text_engine || "claude";
@@ -839,13 +935,20 @@ function kickStale(posts) {
 async function loadFeed(more = false) {
   const extra = more && state.posts.length && state.filters.sort !== "popular" ? { before: state.posts[state.posts.length - 1].id } : {};
   try {
-    const r = await api("/api/posts?" + qs(extra));
+    const r = await api("/api/posts?" + qs(more ? extra : { ...extra, pins: 1 }));
+    if (!more) { state.pins = r.pins || []; renderPins(); }
     state.posts = more ? state.posts.concat(r.posts) : r.posts;
     renderFeed(); kickStale(r.posts); markFilter();
     $("#loadMore").classList.toggle("hidden", r.posts.length < 30 || state.filters.sort === "popular");
   } catch (e) { if (e.status !== 401) toast(e.message); }
 }
 $("#loadMore").onclick = () => loadFeed(true);
+
+// ── 고정 공지 띠 ──
+function renderPins() {
+  $("#pins").replaceChildren(...(state.pins || []).map(p => h("button", { type: "button", onclick: () => openPost(p.id) },
+    h("span", { text: "📌" }), h("b", { text: titleOf(p, {}) }), p.read ? h("span", { class: "dsub", style: "margin:0", text: timeOf(p.created_at) }) : h("span", { class: "nb", text: "안 읽음" }))));
+}
 
 async function loadTags() {
   try {
@@ -891,7 +994,7 @@ function renderFeed() {
 }
 
 // ── 카드 ──
-const KIND = { article: "기사", pdf: "PDF", image: "스크린샷", video: "유튜브", text: "텍스트" };
+const KIND = { article: "기사", pdf: "PDF", image: "스크린샷", video: "유튜브", text: "텍스트", notice: "공지" };
 const SPARK = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M10 3l1.8 5.2L17 10l-5.2 1.8L10 17l-1.8-5.2L3 10l5.2-1.8z"/><path d="M18 14l.9 2.1L21 17l-2.1.9L18 20l-.9-2.1L15 17l2.1-.9z"/></svg>';
 function ytId(u) {
   try {
@@ -955,8 +1058,8 @@ function sourceLink(p, url) {
 const canEdit = p => p.mine || (state.me && state.me.role === "admin");
 
 function postCard(p, inDialog = false) {
-  const s = p.summary || {}, done = p.status === "done" && p.summary, url = safeUrl(p.url);
-  const card = h("article", { class: "card post" + (done ? "" : " pending"), "data-id": p.id });
+  const s = p.summary || {}, isN = p.kind === "notice", done = p.status === "done" && p.summary && !isN, url = safeUrl(p.url);
+  const card = h("article", { class: "card post" + (done || isN ? "" : " pending"), "data-id": p.id });
   const hero = heroOf(p); if (hero) card.append(hero);
   const body = h("div", { class: "body" }); card.append(body);
 
@@ -982,6 +1085,7 @@ function postCard(p, inDialog = false) {
   const ai = h("div", { class: "aiby" + (bad ? " err" : busy ? " wait" : "") });
   if (busy) ai.textContent = p.status === "queued" ? "⏳ AI 정리 대기 중…" : "◌ " + (p.kind === "video" ? "Gemini가 영상을 보는 중… (몇 분 걸릴 수 있습니다)" : (p.engine === "gemini" ? "Gemini" : "Claude") + "가 읽는 중… (보통 1분 안팎)");
   else if (bad) ai.textContent = "⚠ " + (p.status_msg || "AI 정리에 실패했어요");
+  else if (isN) ai.textContent = (p.pinned ? "📌 고정 공지" : "📢 공지") + " · 쓴 그대로 올린 글(AI 정리 없음)";
   else { ai.innerHTML = SPARK; ai.append(document.createTextNode(aiLine(p))); }
   body.append(ai);
   if (busy) body.append(h("div", { class: "prog" }, h("i")));
@@ -997,10 +1101,16 @@ function postCard(p, inDialog = false) {
       src ? h("span", { text: src }) : null));
   }
 
-  const go = sourceLink(p, url);
+  if (p.shelf) body.append(h("div", { class: "meta" }, h("span", { class: "chip cat", text: "📁 " + p.shelf })));
+  const go = isN ? null : sourceLink(p, url);
   if (go) body.append(go);
 
   const open = inDialog || openMore.has(p.id);
+  if (isN) {
+    const txt = p.body || "", long = txt.length > 260 || txt.split("\n").length > 6;
+    body.append(h("div", { class: "nbody" + (open || !long ? "" : " fold"), text: txt }));
+    if (long && !inDialog) body.append(h("button", { class: "more", type: "button", text: open ? "접기 ⌃" : "더보기 ⌄", onclick: () => { open ? openMore.delete(p.id) : openMore.add(p.id); renderFeed(); } }));
+  }
   if (done) {
     const kp = s.key_points || [];
     const long = kp.length > 3 || (s.one_line || "").length > 160;
@@ -1032,7 +1142,7 @@ function postCard(p, inDialog = false) {
       h("div", { text: "· AI 정리입니다. 고객에게 전달하기 전에 원문과 숫자를 꼭 확인하세요." }),
       p.model ? h("div", { text: "· 정리한 모델: " + p.model }) : null));
     body.append(det);
-  } else if (!done) {
+  } else if (!done && !isN) {
     if (url) body.append(h("a", { class: "src", href: url, target: "_blank", rel: "noopener noreferrer", text: "원문: " + url }));
     else if (p.has_file && p.kind !== "image") body.append(h("a", { class: "src", href: "/api/files/" + p.id, target: "_blank", rel: "noopener", onclick: e => openFile(e, p.id), text: "📄 " + (p.file_name || "첨부") }));
   }
@@ -1059,7 +1169,7 @@ function postCard(p, inDialog = false) {
     catch (err) { toast(err.message); btn.disabled = false; } } }));
   if (bad && canEdit(p)) acts.append(h("button", { type: "button", class: "btn", text: p.kind === "video" ? "자막 붙여 AI 정리" : "본문 붙여 AI 정리",
     onclick: () => { openFill.has(p.id) ? openFill.delete(p.id) : openFill.add(p.id); inDialog ? openPost(p.id) : renderFeed(); } }));
-  const isAdm = state.me.role === "admin" && p.views;
+  const isAdm = state.me.role === "admin" && (p.views || isN);
   const viewList = isAdm ? h("div", { class: "viewers", hidden: true }) : null;
   acts.append(h("span", { class: isAdm ? "vcnt on" : "vcnt", title: isAdm ? "눌러서 누가 봤는지 보기(관리자에게만 보임)" : "열어 본 직원 수(올린 사람 제외, 한 사람은 한 번만 셉니다)",
     role: isAdm ? "button" : null, tabindex: isAdm ? "0" : null, text: "👁 본 사람 " + (p.views || 0) + "명",
@@ -1067,10 +1177,16 @@ function postCard(p, inDialog = false) {
       if (!viewList.hidden) { viewList.hidden = true; return; }
       viewList.hidden = false; viewList.textContent = "불러오는 중…";
       try {
-        const vs = (await api("/api/posts/" + p.id)).viewers || [];
+        const fv = await api("/api/posts/" + p.id), vs = fv.viewers || [];
         viewList.replaceChildren(h("b", { text: "본 사람 " + vs.length + "명 (관리자에게만 보임)" }));
         for (const v of vs) viewList.append(h("div", { class: "vr" }, h("span", { text: v.name }), h("span", { class: "t", text: ago(v.created_at) })));
+        const un = fv.unread;
+        if (un) viewList.append(h("div", { class: "unread", text: un.length ? `아직 안 읽은 사람 ${un.length}명: ` + un.join(", ") : "모두 읽었습니다" }));
       } catch (e) { viewList.textContent = e.message; } } : null }));
+  if (isN && state.me.role === "admin") acts.append(h("button", { type: "button", class: "btn", text: p.pinned ? "📌 고정 해제" : "📌 맨 위 고정", onclick: async e => {
+    e.currentTarget.disabled = true;
+    try { await api(`/api/notices/${p.id}`, { method: "POST", body: { pinned: !p.pinned } }); toast(p.pinned ? "고정을 풀었습니다" : "맨 위에 고정했습니다"); loadFeed(); refreshOne(p.id); }
+    catch (err) { toast(err.message); } } }));
   if (state.me.role === "admin" && p.status === "done") acts.append(h("button", { type: "button", class: "btn", text: "🔔 알림 보내기",
     title: "알림을 켠 직원에게 이 글을 알립니다(관리자에게만 보임)", onclick: async e => {
       if (!confirm("알림을 켠 직원들에게 이 글을 알릴까요?\n(올린 사람 본인은 받지 않습니다)")) return;
@@ -1080,6 +1196,15 @@ function postCard(p, inDialog = false) {
   acts.append(h("span", { class: "sp" }), h("button", { type: "button", class: "btn", text: "링크 복사", onclick: () => copyText(location.origin + "/#p" + p.id) }));
   body.append(acts);
   if (viewList) body.append(viewList);
+  if (inDialog && canEdit(p) && !isN && state.shelves && state.shelves.length) {
+    const sel = h("select", { "aria-label": "자료실 칸" }, h("option", { value: "", text: "넣지 않음" }), ...state.shelves.map(v => h("option", { value: v, text: v })));
+    sel.value = p.shelf || "";
+    sel.onchange = async () => {
+      try { await api(`/api/posts/${p.id}/shelf`, { method: "POST", body: { shelf: sel.value } }); p.shelf = sel.value || null; toast(sel.value ? `자료실 「${sel.value}」에 꽂았습니다` : "자료실에서 뺐습니다"); refreshOne(p.id); }
+      catch (err) { toast(err.message); sel.value = p.shelf || ""; }
+    };
+    body.append(h("label", { class: "shelfsel" }, h("span", { text: "📁 자료실" }), sel));
+  }
   if (bad && canEdit(p) && openFill.has(p.id)) body.append(fillBox(p));
   if (cOpen) body.append(commentBox(p, inDialog));
   return card;
@@ -1137,13 +1262,16 @@ function thumbOf(p) {
     const id = ytId(url);
     return h("span", { class: "th video" }, id ? h("img", { alt: "", loading: "lazy", referrerpolicy: "no-referrer", src: `https://i.ytimg.com/vi/${encodeURIComponent(id)}/mqdefault.jpg`, onerror: e => e.target.remove() }) : "▶");
   }
+  if (p.kind === "notice") return h("span", { class: "th notice", text: p.pinned ? "📌" : "📢" });
   if (p.kind === "image" && p.has_file) return h("span", { class: "th" }, h("img", { alt: "", loading: "lazy", src: "/api/files/" + p.id }));
   return h("span", { class: "th " + (busy ? "wait" : p.kind), text: busy ? "◌" : (KIND[p.kind] || "자료") });
 }
 function listRow(p) {
   const s = p.summary || {}, done = p.status === "done" && p.summary;
   const busy = p.status === "queued" || p.status === "working", bad = p.status === "blocked" || p.status === "failed";
-  const k = h("div", { class: "k" }, h("span", { text: (done ? (p.category || s.category || "기타") : KIND[p.kind] || "") }));
+  const isN = p.kind === "notice";
+  const k = h("div", { class: "k" }, h("span", { text: isN ? (p.pinned ? "📌 고정 공지" : "📢 공지") : (done ? (p.category || s.category || "기타") : KIND[p.kind] || "") }));
+  if (p.shelf) k.append(h("span", { class: "st", text: "· 📁 " + p.shelf }));
   if (busy) k.append(h("span", { class: "st", text: p.status === "queued" ? "· AI 정리 대기" : "· AI가 읽는 중…" }));
   else if (bad) k.append(h("span", { class: "st err", text: "· 정리 못 함" }));
   const sen = done && p.sentiment && SENT[p.sentiment];
@@ -1153,7 +1281,7 @@ function listRow(p) {
   if (p.comments) m.append(h("span", { text: "· 댓글 " + p.comments }));
   if (p.views) m.append(h("span", { text: "· 👁" + p.views }));
   return h("button", { class: "it", type: "button", "data-id": p.id, onclick: () => openPost(p.id) }, thumbOf(p),
-    h("span", { class: "bd" }, k, h("h3", { text: titleOf(p, s) }), done && s.one_line ? h("div", { class: "ol", text: s.one_line }) : null, m));
+    h("span", { class: "bd" }, k, h("h3", { text: titleOf(p, s) }), isN ? h("div", { class: "ol", text: (p.body || "").trim().split("\n")[0] }) : done && s.one_line ? h("div", { class: "ol", text: s.one_line }) : null, m));
 }
 
 // ── 고객 말투 · 다르게 볼 점 ──
@@ -1317,6 +1445,7 @@ const postDlg = $("#postDlg");
 async function openPost(id) {
   try {
     const p = await api("/api/posts/" + id + "?view=1"); full[id] = p;
+    const pin = (state.pins || []).find(x => x.id === id); if (pin && !pin.read) { pin.read = true; renderPins(); }
     $(".db", postDlg).replaceChildren(postCard(p, true));
     if (!postDlg.open) postDlg.showModal();
     if (location.hash !== "#p" + id) history.replaceState(null, "", "#p" + id);
@@ -1325,6 +1454,112 @@ async function openPost(id) {
 postDlg.addEventListener("close", () => { if (location.hash.startsWith("#p")) history.replaceState(null, "", location.pathname + (state.tag ? "#t" + encodeURIComponent(state.tag) : "")); renderFeed(); });
 document.addEventListener("click", e => { if (e.target.matches("[data-close]")) e.target.closest("dialog").close(); });
 for (const d of document.querySelectorAll("dialog")) d.addEventListener("click", e => { if (e.target === d) d.close(); });
+
+// ── 공지 창 ──
+const noticeDlg = $("#noticeDlg");
+async function openNotices() {
+  $("#nForm").classList.toggle("hidden", state.me.role !== "admin");
+  if (!noticeDlg.open) noticeDlg.showModal();
+  const box = $("#nList"); box.textContent = "불러오는 중…";
+  try {
+    const r = await api("/api/posts?kind=notice");
+    box.replaceChildren(...(r.posts.length ? r.posts.map(p => h("button", { class: "lrow", type: "button", onclick: () => { noticeDlg.close(); openPost(p.id); } },
+      h("b", { text: (p.pinned ? "📌 " : "") + titleOf(p, {}) }), h("span", { class: "s", text: `${p.author} · ${timeOf(p.created_at)} · 👁 ${p.views || 0}명` }))) : [h("div", { class: "empty", text: "아직 공지가 없습니다." })]));
+  } catch (e) { box.textContent = e.message; }
+}
+$("#qNotice").onclick = openNotices;
+$("#nForm").onsubmit = async e => {
+  e.preventDefault();
+  const b = $("#nGo"); b.disabled = true;
+  try {
+    const r = await api("/api/notices", { method: "POST", body: { title: $("#nTitle").value.trim(), body: $("#nBody").value, pinned: $("#nPin").checked, push: $("#nPush").checked } });
+    $("#nTitle").value = ""; $("#nBody").value = "";
+    toast(r.push && r.push.ok != null ? `공지를 올렸습니다 · 알림 기기 ${r.push.ok}대` : "공지를 올렸습니다");
+    loadFeed(); openNotices();
+  } catch (err) { toast(err.message); } finally { b.disabled = false; }
+};
+
+// ── 자료실 창 ──
+const libDlg = $("#libDlg"), lib = { shelf: "*", q: "", rows: [] };
+function libTabs() {
+  $("#libShelves").replaceChildren(...[["*", "전체"], ...state.shelves.map(v => [v, v])].map(([k, t]) =>
+    h("button", { type: "button", "aria-pressed": String(lib.shelf === k), text: t, onclick: () => { lib.shelf = k; libTabs(); libLoad(); } })));
+}
+async function libLoad(more = false) {
+  const p = new URLSearchParams({ shelf: lib.shelf }); if (lib.q) p.set("q", lib.q);
+  if (more && lib.rows.length) p.set("before", lib.rows[lib.rows.length - 1].id);
+  const box = $("#libList"); if (!more) box.textContent = "불러오는 중…";
+  try {
+    const r = await api("/api/posts?" + p);
+    lib.rows = more ? lib.rows.concat(r.posts) : r.posts;
+    box.replaceChildren(...(lib.rows.length ? lib.rows.map(x => h("button", { class: "lrow", type: "button", onclick: () => { libDlg.close(); openPost(x.id); } },
+      h("b", { text: titleOf(x, x.summary || {}) }),
+      h("span", { class: "s", text: [lib.shelf === "*" ? "📁 " + x.shelf : null, KIND[x.kind], x.file_name, x.author, timeOf(x.created_at)].filter(Boolean).join(" · ") })))
+      : [h("div", { class: "empty", text: lib.q ? "찾는 자료가 없습니다." : "이 칸에는 아직 자료가 없습니다." })]));
+    $("#libMore").classList.toggle("hidden", r.posts.length < 30);
+  } catch (e) { box.textContent = e.message; }
+}
+$("#qLib").onclick = () => { libTabs(); if (!libDlg.open) libDlg.showModal(); libLoad(); };
+$("#libMore").onclick = () => libLoad(true);
+let libT; $("#libQ").oninput = e => { clearTimeout(libT); libT = setTimeout(() => { lib.q = e.target.value.trim(); libLoad(); }, 300); };
+
+// ── 일정 창 ──
+const calDlg = $("#calDlg"), cal = { y: 0, m: 0, sel: "", evs: [], today: "" };
+const pad2 = n => String(n).padStart(2, "0");
+const ymd = (y, m, d) => `${y}-${pad2(m + 1)}-${pad2(d)}`;
+async function calLoad() {
+  const last = new Date(cal.y, cal.m + 1, 0).getDate();
+  $("#calTitle").textContent = `${cal.y}년 ${cal.m + 1}월`;
+  try {
+    const r = await api(`/api/events?from=${ymd(cal.y, cal.m, 1)}&to=${ymd(cal.y, cal.m, last)}`);
+    cal.evs = r.events; cal.today = r.today;
+  } catch (e) { cal.evs = []; toast(e.message); }
+  calDraw();
+}
+function calDraw() {
+  const first = new Date(cal.y, cal.m, 1).getDay(), last = new Date(cal.y, cal.m + 1, 0).getDate();
+  const has = new Set(cal.evs.map(e => e.day));
+  const g = WD.map((w, i) => h("div", { class: "wd" + (i ? "" : " sun"), text: w }));
+  for (let i = 0; i < first; i++) g.push(h("button", { class: "out", type: "button", tabindex: "-1", "aria-hidden": "true" }));
+  for (let d = 1; d <= last; d++) {
+    const k = ymd(cal.y, cal.m, d);
+    g.push(h("button", { type: "button", class: (k === cal.today ? "today" : "") + ((first + d - 1) % 7 ? "" : " sun"), "aria-pressed": String(cal.sel === k),
+      "aria-label": `${cal.m + 1}월 ${d}일${has.has(k) ? " 일정 있음" : ""}`,
+      onclick: () => { cal.sel = cal.sel === k ? "" : k; if (cal.sel) $("#evDay").value = k; calDraw(); } }, String(d), has.has(k) ? h("i") : null));
+  }
+  $("#calGrid").replaceChildren(...g);
+  const list = cal.sel ? cal.evs.filter(e => e.day === cal.sel) : cal.evs;
+  $("#evHead").textContent = cal.sel ? `${+cal.sel.slice(5, 7)}월 ${+cal.sel.slice(8)}일 일정` : `${cal.m + 1}월 일정 ${cal.evs.length}건`;
+  $("#evAll").hidden = !cal.sel;
+  $("#evList").replaceChildren(...(list.length ? list.map(e => {
+    const dt = new Date(e.day + "T00:00:00");
+    return h("div", { class: "ev" + (e.day < cal.today ? " past" : "") },
+      h("div", { class: "ed" }, h("b", { text: `${dt.getMonth() + 1}.${dt.getDate()} (${WD[dt.getDay()]})` }), e.time || "시각 미정"),
+      h("div", { class: "eb" }, h("span", { class: "chip", text: e.kind || "기타" }), " ", h("b", { text: e.title }),
+        h("div", { class: "s", text: [e.place ? "📍 " + e.place : null, e.note, "등록: " + e.author].filter(Boolean).join("\n") })),
+      e.mine || state.me.role === "admin" ? h("button", { class: "ex", type: "button", text: "삭제", onclick: async () => {
+        if (!confirm(`「${e.title}」 일정을 지울까요?`)) return;
+        try { await api("/api/events/" + e.id, { method: "DELETE" }); toast("지웠습니다"); calLoad(); } catch (err) { toast(err.message); } } }) : null);
+  }) : [h("div", { class: "empty", style: "padding:14px", text: cal.sel ? "이 날은 일정이 없습니다." : "이 달에는 일정이 없습니다." })]));
+}
+$("#qCal").onclick = () => {
+  const n = new Date(Date.now() + (state.skew || 0) * 1000); cal.y = n.getFullYear(); cal.m = n.getMonth(); cal.sel = "";
+  $("#evDay").value = ymd(cal.y, cal.m, n.getDate());
+  if (!calDlg.open) calDlg.showModal(); calLoad();
+};
+$("#calPrev").onclick = () => { cal.m--; if (cal.m < 0) { cal.m = 11; cal.y--; } cal.sel = ""; calLoad(); };
+$("#calNext").onclick = () => { cal.m++; if (cal.m > 11) { cal.m = 0; cal.y++; } cal.sel = ""; calLoad(); };
+$("#evAll").onclick = () => { cal.sel = ""; calDraw(); };
+$("#evForm").onsubmit = async e => {
+  e.preventDefault();
+  const day = $("#evDay").value;
+  try {
+    await api("/api/events", { method: "POST", body: { title: $("#evTitle").value.trim(), day, time: $("#evTime").value, kind: $("#evKind").value, place: $("#evPlace").value.trim(), note: $("#evNote").value.trim() } });
+    for (const id of ["#evTitle", "#evTime", "#evPlace", "#evNote"]) $(id).value = "";
+    toast("일정을 추가했습니다");
+    cal.y = +day.slice(0, 4); cal.m = +day.slice(5, 7) - 1; cal.sel = day; calLoad();
+  } catch (err) { toast(err.message); }
+};
 
 function titleEditor(p, s, h3) {
   const inp = h("input", { type: "text", maxlength: "200", value: titleOf(p, s), "aria-label": "새 제목" });
@@ -1473,6 +1708,7 @@ const isYT = u => /(?:youtube\.com\/(?:watch|shorts|live|embed)|youtu\.be\/)/i.t
 $("#submit").onclick = async () => {
   if (sending) return;
   const body = { note: $("#wm").value.trim() };
+  if ($("#shelfIn").value) body.shelf = $("#shelfIn").value;
   if (kind === "article") { body.url = $("#aUrl").value.trim(); body.text = $("#aText").value.trim(); }
   else if (kind === "text") { body.text = $("#tText").value.trim(); body.title = $("#tTitle").value.trim(); }
   else if (kind === "youtube") {
@@ -1506,7 +1742,7 @@ async function submitPost(body) {
   }
 }
 function resetForm() {
-  for (const id of ["#aUrl", "#aText", "#yUrl", "#yText", "#tTitle", "#tText", "#wm"]) $(id).value = "";
+  for (const id of ["#aUrl", "#aText", "#yUrl", "#yText", "#tTitle", "#tText", "#wm", "#shelfIn"]) $(id).value = "";
   $("#tCount").textContent = "";
   if (imgUrl) URL.revokeObjectURL(imgUrl); imgFile = imgUrl = null; drawPreview();
   pdf = null; $("#pdfFile").value = ""; $("#pdfLine").classList.add("hidden");

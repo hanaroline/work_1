@@ -187,7 +187,9 @@ CREATE TABLE IF NOT EXISTS posts (
   tags TEXT,                          -- ,태그,태그,
   model TEXT,
   created_at INTEGER NOT NULL,
-  updated_at INTEGER NOT NULL
+  updated_at INTEGER NOT NULL,
+  pinned INTEGER,                     -- 공지를 피드 맨 위에 고정(1)
+  shelf TEXT                          -- 자료실 칸(상품설명서·제안서·판매 스크립트·교육자료·기타), 없으면 자료실에 안 보임
 );
 CREATE INDEX IF NOT EXISTS posts_created ON posts(created_at DESC);
 CREATE TABLE IF NOT EXISTS likes (
@@ -227,6 +229,18 @@ CREATE TABLE IF NOT EXISTS visits (        -- 접속 이력: 사람·날짜(한�
   device TEXT,
   PRIMARY KEY (user_id, day)
 );
+CREATE TABLE IF NOT EXISTS events (        -- 일정 공유: 설명회·교육·상품 출시 등
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  title TEXT NOT NULL,
+  day TEXT NOT NULL,                  -- YYYY-MM-DD(한국 날짜)
+  time TEXT,                          -- HH:MM, 없으면 종일
+  place TEXT,
+  kind TEXT,
+  note TEXT,
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS events_day ON events(day);
 CREATE TABLE IF NOT EXISTS ai_cache (
   key TEXT PRIMARY KEY,
   sig TEXT,
@@ -237,8 +251,12 @@ CREATE TABLE IF NOT EXISTS ai_cache (
 
 # Postgres 에서는 첨부도 DB 에 둔다(서버리스엔 오래 남는 디스크가 없다)
 PG_EXTRA = ["CREATE TABLE IF NOT EXISTS files (name TEXT PRIMARY KEY, data BYTEA NOT NULL)",
-            "ALTER TABLE posts ADD COLUMN IF NOT EXISTS title_edit TEXT"]  # 이전 판 DB 이어 쓰기
-_RETURNING_ID = re.compile(r"^\s*INSERT\s+INTO\s+(users|invites|posts|comments)\b", re.I)
+            "ALTER TABLE posts ADD COLUMN IF NOT EXISTS title_edit TEXT",  # 이전 판 DB 이어 쓰기
+            "ALTER TABLE posts ADD COLUMN IF NOT EXISTS pinned BIGINT",
+            "ALTER TABLE posts ADD COLUMN IF NOT EXISTS shelf TEXT"]
+_RETURNING_ID = re.compile(r"^\s*INSERT\s+INTO\s+(users|invites|posts|comments|events)\b", re.I)
+SHELVES = ["상품설명서", "제안서", "판매 스크립트", "교육자료", "기타"]
+EVENT_KINDS = ["설명회", "교육", "상품 출시", "기타"]
 
 
 def _pg_schema() -> list[str]:
@@ -287,8 +305,10 @@ def db():
         cols = {r[1] for r in conn.execute("PRAGMA table_info(invites)")}
         if "fails" not in cols:  # 이전 판 DB 이어 쓰기
             conn.execute("ALTER TABLE invites ADD COLUMN fails INTEGER NOT NULL DEFAULT 0")
-        if "title_edit" not in {r[1] for r in conn.execute("PRAGMA table_info(posts)")}:
-            conn.execute("ALTER TABLE posts ADD COLUMN title_edit TEXT")
+        pcols = {r[1] for r in conn.execute("PRAGMA table_info(posts)")}
+        for col, typ in (("title_edit", "TEXT"), ("pinned", "INTEGER"), ("shelf", "TEXT")):
+            if col not in pcols:
+                conn.execute(f"ALTER TABLE posts ADD COLUMN {col} {typ}")
         _db = conn
     return _db
 
@@ -1406,7 +1426,7 @@ def notify_post(pid: int, force: bool = False):
     돌려주는 값: 보낸 결과 {ok, gone, fail} 또는 보내지 않은 까닭(문자열)."""
     if not push_crypto():
         return "알림 기능을 쓸 수 없는 서버입니다"
-    p = q("SELECT p.id, p.user_id, p.source_title, p.title_edit, p.summary_json, p.kind, u.name "
+    p = q("SELECT p.id, p.user_id, p.source_title, p.title_edit, p.summary_json, p.kind, p.pasted_text, u.name "
           "FROM posts p JOIN users u ON u.id=p.user_id WHERE p.id=? AND p.status='done'", (pid,), one=True)
     if not p:
         return "요약이 끝난 글만 알릴 수 있습니다"
@@ -1425,8 +1445,12 @@ def notify_post(pid: int, force: bool = False):
     except ValueError:
         sm = {}
     title = p["title_edit"] or p["source_title"] or sm.get("title") or "새 글"
+    line = sm.get("one_line") or ""
+    if p["kind"] == "notice":
+        title = "📢 공지 · " + title
+        line = re.sub(r"\s+", " ", p["pasted_text"] or "").strip()
     data = {"title": _clip(title, 80),
-            "body": _clip(f"{p['name']} · " + (sm.get("one_line") or ""), 180),
+            "body": _clip(f"{p['name']} · " + line, 180),
             "url": f"/#p{pid}", "tag": f"post-{pid}"}
     t0 = time.time()
     res = push_fanout(rows, data)
@@ -1593,7 +1617,7 @@ def process(pid: int) -> None:
 
 def _process(pid: int) -> None:
     p = q("SELECT * FROM posts WHERE id=?", (pid,), one=True)
-    if not p:
+    if not p or p["kind"] == "notice":  # 공지는 AI 로 정리하지 않는다
         return
     set_status(pid, "working", "AI가 읽는 중")
     _run_ctx.deadline = time.time() + RUN_BUDGET_SEC
@@ -1735,8 +1759,10 @@ def post_row(r: sqlite3.Row, me: int, full: bool = False, admin: bool = False) -
         "category": r["category"], "sentiment": r["sentiment"], "model": r["model"],
         "created_at": r["created_at"], "updated_at": r["updated_at"], "author": r["author"], "author_id": r["user_id"],
         "likes": r["likes"], "liked": bool(r["liked"]), "comments": r["ncomments"], "mine": r["user_id"] == me,
-        "views": r["nviews"],
+        "views": r["nviews"], "pinned": bool(r["pinned"]), "shelf": r["shelf"],
     }
+    if r["kind"] == "notice":  # 공지는 AI 요약 없이 본문 그대로 보인다
+        d["body"] = r["pasted_text"] or ""
     if full:
         d["comment_list"] = [dict(c) | {"mine": c["user_id"] == me} for c in q(
             "SELECT c.id, c.body, c.created_at, c.user_id, u.name AS author FROM comments c JOIN users u ON u.id=c.user_id "
@@ -1747,6 +1773,10 @@ def post_row(r: sqlite3.Row, me: int, full: bool = False, admin: bool = False) -
             d["viewers"] = [dict(v) for v in q(
                 "SELECT u.name, v.created_at FROM post_views v JOIN users u ON u.id=v.user_id "
                 "WHERE v.post_id=? AND v.user_id<>? ORDER BY v.created_at", (r["id"], r["user_id"]))]
+            if r["kind"] == "notice":  # 공지는 아직 안 읽은 사람도 보인다
+                d["unread"] = [u_["name"] for u_ in q(
+                    "SELECT name FROM users WHERE active=1 AND id<>? AND id NOT IN "
+                    "(SELECT user_id FROM post_views WHERE post_id=?) ORDER BY name", (r["user_id"], r["id"]))]
     return d
 
 
@@ -1960,6 +1990,7 @@ class Handler(BaseHTTPRequestHandler):
                              "categories": CATEGORIES, "session_days": SESSION_DAYS, "invite_label": invite_label(),
                              "serverless": SERVERLESS, "max_upload": MAX_UPLOAD, "upload_chunk": UPLOAD_CHUNK, "now": now(),
                              "text_engine": text_engine(), "app_name": V2_NAME, "ui": UI_DEFAULT,
+                             "shelves": SHELVES, "event_kinds": EVENT_KINDS,
                              "authors": [dict(r) for r in q(
                                  "SELECT u.id, u.name FROM users u WHERE EXISTS (SELECT 1 FROM posts p WHERE p.user_id=u.id) "
                                  "ORDER BY u.name")]})
@@ -2132,7 +2163,11 @@ class Handler(BaseHTTPRequestHandler):
             where.append("p.user_id=?"); args.append(u["id"])
         if g("liked") == "1":
             where.append("EXISTS (SELECT 1 FROM likes l WHERE l.post_id=p.id AND l.user_id=?)"); args.append(u["id"])
-        kinds = [k for k in g("kind").split(",") if k in ("article", "pdf", "image", "video", "text")]
+        kinds = [k for k in g("kind").split(",") if k in ("article", "pdf", "image", "video", "text", "notice")]
+        if g("shelf") == "*":
+            where.append("p.shelf IS NOT NULL")
+        elif g("shelf") in SHELVES:
+            where.append("p.shelf=?"); args.append(g("shelf"))
         if kinds:
             where.append("p.kind IN (" + ",".join("?" * len(kinds)) + ")"); args += kinds
         if g("author").isdigit():
@@ -2146,14 +2181,20 @@ class Handler(BaseHTTPRequestHandler):
             where.append("p.created_at>?"); args.append(now() - int(rng) * 86400)
         if g("q"):
             like = f"%{g('q')}%"
-            where.append("(p.source_title LIKE ? OR p.title_edit LIKE ? OR p.summary_json LIKE ? OR p.note LIKE ? OR p.url LIKE ? OR u.name LIKE ?)")
-            args += [like] * 6
+            where.append("(p.source_title LIKE ? OR p.title_edit LIKE ? OR p.summary_json LIKE ? OR p.note LIKE ? OR p.url LIKE ? "
+                         "OR u.name LIKE ? OR p.file_name LIKE ? OR (p.kind='notice' AND p.pasted_text LIKE ?))")
+            args += [like] * 8
         if g("before").isdigit():
             where.append("p.id<?"); args.append(int(g("before")))
         order = "likes DESC, nviews DESC, ncomments DESC, p.id DESC" if g("sort") == "popular" else "p.id DESC"
         sql = POST_SELECT + (" WHERE " + " AND ".join(where) if where else "") + f" ORDER BY {order} LIMIT 30"
         rows = q(sql, args)
-        self.send_json(200, {"posts": [post_row(r, u["id"]) for r in rows]})
+        out = {"posts": [post_row(r, u["id"]) for r in rows]}
+        if g("pins") == "1":  # 첫 쪽에는 고정 공지를 따로 붙인다(내가 아직 안 읽었는지도)
+            out["pins"] = [post_row(r, u["id"]) | {"read": bool(r["seen"]) or r["user_id"] == u["id"]} for r in q(
+                POST_SELECT.replace("FROM posts p", ", (SELECT COUNT(*) FROM post_views v WHERE v.post_id=p.id AND v.user_id=?) AS seen FROM posts p")
+                + " WHERE p.kind='notice' AND p.pinned=1 ORDER BY p.id DESC LIMIT 5", (u["id"], u["id"]))]
+        self.send_json(200, out)
 
     def api_post_get(self, qs, pid):
         u = self.need_user()
@@ -2247,8 +2288,99 @@ class Handler(BaseHTTPRequestHandler):
                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                 (u["id"], url or None, kind, engine, note, pasted or None, file_name, file_path, file_type,
                  title, site, "queued", t, t))
+        shelf = d.get("shelf") if d.get("shelf") in SHELVES else None
+        if shelf:
+            x("UPDATE posts SET shelf=? WHERE id=?", (shelf, pid))
         enqueue(pid)
         self.send_json(201, {"id": pid})
+
+    def api_notice_create(self, qs):
+        """관리자가 공지를 올린다. AI 를 부르지 않고 쓴 그대로 둔다."""
+        u = self.need_user(admin=True)
+        d = self.body_json()
+        title = re.sub(r"\s+", " ", str(d.get("title") or "")).strip()[:200]
+        body = str(d.get("body") or "").strip()[:20000]
+        if not title or not body:
+            raise HTTPError_(400, "공지 제목과 내용을 모두 적어 주세요")
+        t = now()
+        pid = x("""INSERT INTO posts(user_id, kind, engine, pasted_text, source_title, status, category, pinned, created_at, updated_at)
+                   VALUES (?,?,?,?,?,?,?,?,?,?)""",
+                (u["id"], "notice", "none", body, title, "done", "공지", 1 if d.get("pinned", True) else None, t, t))
+        out = {"id": pid}
+        if d.get("push"):
+            r = notify_post(pid)
+            out["push"] = r if isinstance(r, dict) else {"msg": r}
+        self.send_json(201, out)
+
+    def api_notice_edit(self, qs, pid):
+        """공지 고정 켜기·끄기, 내용 고치기(관리자)."""
+        self.need_user(admin=True)
+        p = q("SELECT id, kind FROM posts WHERE id=?", (pid,), one=True)
+        if not p or p["kind"] != "notice":
+            raise HTTPError_(404, "공지가 없습니다")
+        d = self.body_json()
+        if "pinned" in d:
+            x("UPDATE posts SET pinned=? WHERE id=?", (1 if d["pinned"] else None, pid))
+        if d.get("body"):
+            x("UPDATE posts SET pasted_text=?, updated_at=? WHERE id=?", (str(d["body"]).strip()[:20000], now(), pid))
+        self.send_json(200, {"ok": True})
+
+    def api_post_shelf(self, qs, pid):
+        """올린 사람이나 관리자가 자료실 칸을 정한다(빈칸이면 자료실에서 뺀다)."""
+        u = self.need_user()
+        p = q("SELECT user_id FROM posts WHERE id=?", (pid,), one=True)
+        if not p:
+            raise HTTPError_(404, "글이 없습니다")
+        if p["user_id"] != u["id"] and u["role"] != "admin":
+            raise HTTPError_(403, "올린 사람이나 관리자만 자료실에 넣을 수 있습니다")
+        shelf = self.body_json().get("shelf")
+        if shelf and shelf not in SHELVES:
+            raise HTTPError_(400, "자료실 칸이 맞지 않습니다")
+        x("UPDATE posts SET shelf=? WHERE id=?", (shelf or None, pid))
+        self.send_json(200, {"ok": True, "shelf": shelf or None})
+
+    # ── 일정 ──
+    def api_events(self, qs):
+        u = self.need_user()
+        g = lambda k: (qs.get(k) or [""])[0].strip()
+        today = kst_day(now())
+        day_re = r"\d{4}-\d{2}-\d{2}"
+        frm = g("from") if re.fullmatch(day_re, g("from")) else today
+        to = g("to") if re.fullmatch(day_re, g("to")) else "9999-12-31"
+        rows = [dict(r) | {"mine": r["user_id"] == u["id"]} for r in q(
+            "SELECT e.*, u.name AS author FROM events e JOIN users u ON u.id=e.user_id WHERE e.day>=? AND e.day<=? "
+            "ORDER BY e.day, COALESCE(e.time, ''), e.id LIMIT 300", (frm, to))]
+        self.send_json(200, {"events": rows, "today": today, "kinds": EVENT_KINDS})
+
+    def api_event_create(self, qs):
+        u = self.need_user()
+        d = self.body_json()
+        title = re.sub(r"\s+", " ", str(d.get("title") or "")).strip()[:120]
+        day = str(d.get("day") or "").strip()
+        tm = str(d.get("time") or "").strip()
+        if not title:
+            raise HTTPError_(400, "일정 이름을 적어 주세요")
+        try:
+            time.strptime(day, "%Y-%m-%d")
+        except ValueError:
+            raise HTTPError_(400, "날짜를 골라 주세요")
+        if tm and not re.fullmatch(r"([01]\d|2[0-3]):[0-5]\d", tm):
+            raise HTTPError_(400, "시각이 맞지 않습니다")
+        kind = d.get("kind") if d.get("kind") in EVENT_KINDS else "기타"
+        eid = x("INSERT INTO events(user_id, title, day, time, place, kind, note, created_at) VALUES (?,?,?,?,?,?,?,?)",
+                (u["id"], title, day, tm or None, str(d.get("place") or "").strip()[:120] or None, kind,
+                 str(d.get("note") or "").strip()[:1000] or None, now()))
+        self.send_json(201, {"id": eid})
+
+    def api_event_delete(self, qs, eid):
+        u = self.need_user()
+        e = q("SELECT user_id FROM events WHERE id=?", (eid,), one=True)
+        if not e:
+            raise HTTPError_(404, "일정이 없습니다")
+        if e["user_id"] != u["id"] and u["role"] != "admin":
+            raise HTTPError_(403, "올린 사람이나 관리자만 지울 수 있습니다")
+        x("DELETE FROM events WHERE id=?", (eid,))
+        self.send_json(200, {"ok": True})
 
     def api_post_delete(self, qs, pid):
         u = self.need_user()
@@ -2274,6 +2406,8 @@ class Handler(BaseHTTPRequestHandler):
             raise HTTPError_(404, "글이 없습니다")
         if p["user_id"] != u["id"] and u["role"] != "admin":
             raise HTTPError_(403, "올린 사람이나 관리자만 다시 정리할 수 있습니다")
+        if p["kind"] == "notice":
+            raise HTTPError_(400, "공지는 AI 로 정리하지 않습니다")
         if p["status"] in ("queued", "working"):
             raise HTTPError_(409, "이미 정리 중입니다")
         d = self.body_json()
@@ -2682,6 +2816,12 @@ ROUTES = {
     ("POST", r"/api/posts/(\d+)/title"): Handler.api_post_title,
     ("POST", r"/api/posts/(\d+)/notify"): Handler.api_post_notify,
     ("POST", r"/api/posts/(\d+)/run"): Handler.api_post_run,
+    ("POST", r"/api/notices"): Handler.api_notice_create,
+    ("POST", r"/api/notices/(\d+)"): Handler.api_notice_edit,
+    ("POST", r"/api/posts/(\d+)/shelf"): Handler.api_post_shelf,
+    ("GET", r"/api/events"): Handler.api_events,
+    ("POST", r"/api/events"): Handler.api_event_create,
+    ("DELETE", r"/api/events/(\d+)"): Handler.api_event_delete,
     ("POST", r"/api/posts/(\d+)/like"): Handler.api_like,
     ("POST", r"/api/posts/(\d+)/comments"): Handler.api_comment,
     ("DELETE", r"/api/comments/(\d+)"): Handler.api_comment_delete,
