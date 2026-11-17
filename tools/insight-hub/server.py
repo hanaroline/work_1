@@ -792,6 +792,7 @@ _run_ctx = threading.local()
 
 
 QUOTA_TAG = "QUOTA:"   # 하루 한도 소진 — AIError 메시지 머리말
+QUOTA_PROBE_SEC = 600   # 한도가 막힌 동안에도 이 간격마다 한 번은 실제로 불러 본다
 
 
 def _quota_key(url: str) -> str:
@@ -872,10 +873,18 @@ def _post_json(url: str, headers: dict, body: dict, timeout: int = 300) -> dict:
         qc = cache_get(_quota_key(url))
     except Exception:
         qc = None
+    probing = False
     if qc:
         b = json.loads(qc["body"])
         if b.get("until", 0) > now():
-            raise AIError(f"{QUOTA_TAG}{b['until']}:{b.get('limit', '')}")
+            # 막힌 뒤 10분마다 한 번은 실제로 불러 본다 — 유료로 바꿨거나 한도가 올라갔으면 바로 풀리게
+            if now() - qc["created_at"] < QUOTA_PROBE_SEC:
+                raise AIError(f"{QUOTA_TAG}{b['until']}:{b.get('limit', '')}")
+            probing = True
+            try:
+                cache_put(_quota_key(url), "", b)   # 시각만 새로 — 동시에 여럿이 떠보지 않게
+            except Exception:
+                pass
     req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
                                  headers={"content-type": "application/json", **headers})
     deadline = getattr(_run_ctx, "deadline", None) or time.time() + RUN_BUDGET_SEC
@@ -892,6 +901,13 @@ def _post_json(url: str, headers: dict, body: dict, timeout: int = 300) -> dict:
             with urllib.request.urlopen(req, timeout=per_try) as resp:
                 out = json.loads(resp.read())
             print(f"[ai] {url.rsplit('/', 1)[-1]} {time.time() - t0:.1f}s (시도 {attempt + 1})", file=sys.stderr)
+            if probing:
+                # 한도가 풀렸다: 막힌 기록을 '이미 풀림'으로 바꿔 두면 한도로 실패한 글이 저절로 다시 돈다
+                print("[ai] 한도 풀림 확인 — 막힘 기록 해제", file=sys.stderr)
+                try:
+                    cache_put(_quota_key(url), "", {"until": now() - 1, "limit": b.get("limit", "")})
+                except Exception:
+                    pass
             return out
         except urllib.error.HTTPError as e:
             detail = e.read().decode("utf-8", "replace")[:3000]
