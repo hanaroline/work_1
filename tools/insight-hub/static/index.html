@@ -233,7 +233,7 @@ textarea.field{min-height:130px;resize:vertical;line-height:1.55}
 .status.err{color:var(--like)}
 
 /* 사진 크게 보기 */
-.lb{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:30;display:flex;flex-direction:column}
+.lb{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;background:rgba(0,0,0,.97);z-index:30;display:flex;flex-direction:column}.lb::backdrop{background:rgba(0,0,0,.6)}
 .lb .top{display:flex;gap:8px;align-items:center;padding:calc(env(safe-area-inset-top) + 12px) 14px 12px;color:#fff}
 .lb .top span{flex:1}
 .lb .top a,.lb .top button{border:1px solid rgba(255,255,255,.35);background:none;color:#fff;border-radius:10px;padding:6px 12px;text-decoration:none;cursor:pointer;font-size:14px}
@@ -875,13 +875,13 @@ function heroOf(p) {
   return null;
 }
 function lightbox(src, name) {
-  const close = () => { ov.remove(); document.removeEventListener("keydown", key); };
-  const key = e => { if (e.key === "Escape") close(); };
-  const x = h("button", { type: "button", text: "닫기 ✕", onclick: close });
-  const ov = h("div", { class: "lb", role: "dialog", "aria-modal": "true" },
+  // 자료 자세히 창(모달) 위에서도 보이도록 뷰어 자체를 최상위 모달로 연다
+  const x = h("button", { type: "button", text: "닫기 ✕", onclick: () => ov.close() });
+  const ov = h("dialog", { class: "lb" },
     h("div", { class: "top" }, h("span", { text: name || "첨부 이미지" }), h("a", { href: src, target: "_blank", rel: "noopener", text: "원본 열기" }), x),
     h("div", { class: "pic" }, h("img", { src, alt: name || "첨부 이미지" })));
-  document.body.append(ov); document.addEventListener("keydown", key); x.focus();
+  ov.addEventListener("close", () => ov.remove());
+  document.body.append(ov); ov.showModal(); x.focus();
 }
 function aiLine(p) {
   const who = p.kind === "video" ? "Gemini" : (p.engine === "gemini" ? "Gemini" : "Claude");
