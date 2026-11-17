@@ -5,6 +5,7 @@ version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
     "psycopg[binary]>=3.2,<4",
+    "cryptography>=42",
 ]
 
 # Vercel 은 루트의 server.py 를 입구로 먼저 집어 가므로, WSGI 감싸개(api/index.py 의 app)를 입구로 못 박는다
