@@ -1330,7 +1330,11 @@ async function pushToggle(fromBar) {
   try {
     if (turnOff) { await pushOff(); toast("이 기기의 새 글 알림을 껐습니다."); }
     else { await pushOn(); toast("새 글 알림을 켰습니다."); }
-  } catch (e) { err = e.message; if (fromBar) alert(err); }
+  } catch (e) {
+    err = e.message || String(e); if (fromBar) alert(err);
+    let perm = ""; try { perm = Notification.permission; } catch (_) {}
+    api("/api/push/error", { method: "POST", body: { msg: (e.name || "") + ": " + err, perm, app: String(standalone()), ua: navigator.userAgent } }).catch(() => {});
+  }
   await pushUi();
   if (err) $("#pushMsg").textContent = err;
 }

@@ -1899,7 +1899,7 @@ class Handler(BaseHTTPRequestHandler):
 
     # ── 인증 ──
     def api_version(self, qs):
-        self.send_json(200, {"build": BUILD_ID})
+        self.send_json(200, {"build": BUILD_ID, "push": push_crypto()})
 
     def api_me(self, qs):
         u = self.current_user()
@@ -2023,6 +2023,16 @@ class Handler(BaseHTTPRequestHandler):
         old = q("SELECT endpoint FROM push_subs WHERE user_id=? ORDER BY created_at DESC, endpoint", (u["id"],))
         for r in old[PUSH_SUB_MAX:]:
             xn("DELETE FROM push_subs WHERE endpoint=?", (r["endpoint"],))
+        print(f"[push] 구독 등록 사용자 {u['id']} ({urllib.parse.urlsplit(ep).hostname})", file=sys.stderr)
+        self.send_json(200, {"ok": True})
+
+    def api_push_error(self, qs):
+        """화면에서 알림 켜기가 실패했을 때 까닭을 서버 기록에 남긴다(원인 찾기용, 저장하지 않음)."""
+        u = self.need_user()
+        d = self.body_json()
+        clean = lambda v, n: re.sub(r"[\x00-\x1f]", " ", str(v or ""))[:n]
+        print(f"[push] 켜기 실패 사용자 {u['id']}: {clean(d.get('msg'), 300)} | 허용={clean(d.get('perm'), 20)} "
+              f"앱={clean(d.get('app'), 10)} | {clean(d.get('ua'), 200)}", file=sys.stderr)
         self.send_json(200, {"ok": True})
 
     def api_push_unsubscribe(self, qs):
@@ -2589,6 +2599,7 @@ ROUTES = {
     ("GET", r"/api/push"): Handler.api_push,
     ("POST", r"/api/push/subscribe"): Handler.api_push_subscribe,
     ("POST", r"/api/push/unsubscribe"): Handler.api_push_unsubscribe,
+    ("POST", r"/api/push/error"): Handler.api_push_error,
     ("POST", r"/api/push/test"): Handler.api_push_test,
     ("GET", r"/api/posts"): Handler.api_posts,
     ("POST", r"/api/posts"): Handler.api_post_create,
