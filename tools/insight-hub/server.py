@@ -1351,21 +1351,26 @@ def _clip(s: str, n: int) -> str:
     return s if len(s) <= n else s[:n - 1] + "…"
 
 
-def notify_post(pid: int) -> None:
-    """요약이 끝난 글을 알림을 켠 다른 직원에게 한 번만 알린다(다시 정리해도 또 보내지 않는다)."""
+def notify_post(pid: int, force: bool = False):
+    """요약이 끝난 글을 알림을 켠 다른 직원에게 한 번만 알린다(다시 정리해도 또 보내지 않는다).
+    force=True 는 관리자가 손으로 보내는 경우 — 이미 보낸 글이라도 다시 보낸다.
+    돌려주는 값: 보낸 결과 {ok, gone, fail} 또는 보내지 않은 까닭(문자열)."""
     if not push_crypto():
-        return
+        return "알림 기능을 쓸 수 없는 서버입니다"
     p = q("SELECT p.id, p.user_id, p.source_title, p.title_edit, p.summary_json, p.kind, u.name "
           "FROM posts p JOIN users u ON u.id=p.user_id WHERE p.id=? AND p.status='done'", (pid,), one=True)
     if not p:
-        return
+        return "요약이 끝난 글만 알릴 수 있습니다"
     rows = q("SELECT s.endpoint, s.p256dh, s.auth, s.origin FROM push_subs s JOIN users u ON u.id=s.user_id "
              "WHERE u.active=1 AND s.user_id<>?", (p["user_id"],))
     if not rows:
-        return
+        return "알림을 켠 직원이 아직 없습니다(올린 사람 본인은 받지 않습니다)"
+    key = f"push:sent:{pid}"
+    if force:
+        x("DELETE FROM ai_cache WHERE key=?", (key,))
     if xn("INSERT INTO ai_cache(key, sig, body, created_at) VALUES (?,?,?,?) ON CONFLICT(key) DO NOTHING",
-          (f"push:sent:{pid}", "", "1", now())) != 1:
-        return
+          (key, "", "1", now())) != 1:
+        return "이미 알림을 보낸 글입니다"
     try:
         sm = json.loads(p["summary_json"] or "{}")
     except ValueError:
@@ -1376,7 +1381,8 @@ def notify_post(pid: int) -> None:
             "url": f"/#p{pid}", "tag": f"post-{pid}"}
     t0 = time.time()
     res = push_fanout(rows, data)
-    print(f"[push] 글 {pid} 알림 {res} {time.time() - t0:.1f}s", file=sys.stderr)
+    print(f"[push] 글 {pid} 알림{' (관리자 수동)' if force else ''} {res} {time.time() - t0:.1f}s", file=sys.stderr)
+    return res
 
 
 KST = 9 * 3600
@@ -2218,6 +2224,16 @@ class Handler(BaseHTTPRequestHandler):
         enqueue(pid)
         self.send_json(200, {"ok": True})
 
+    def api_post_notify(self, qs, pid):
+        """관리자가 요약이 끝난 글의 알림을 손으로 보낸다(지난 글, 다시 보내기)."""
+        self.need_user(admin=True)
+        r = notify_post(int(pid), force=True)
+        if isinstance(r, str):
+            raise HTTPError_(409, r)
+        if not r.get("ok"):
+            raise HTTPError_(502, f"보내지 못했습니다(실패 {r.get('fail', 0)} · 만료 {r.get('gone', 0)})")
+        self.send_json(200, r)
+
     def api_post_title(self, qs, pid):
         """올린 사람이나 관리자가 글 제목을 고친다. 빈칸으로 보내면 원래 제목으로 되돌린다."""
         u = self.need_user()
@@ -2511,7 +2527,8 @@ class Handler(BaseHTTPRequestHandler):
         self.need_user(admin=True)
         users = [dict(r) for r in q(
             "SELECT u.id, u.name, u.role, u.active, u.created_at, u.last_login, "
-            "(SELECT COUNT(*) FROM posts p WHERE p.user_id=u.id) AS posts FROM users u ORDER BY u.name")]
+            "(SELECT COUNT(*) FROM posts p WHERE p.user_id=u.id) AS posts, "
+            "(SELECT COUNT(*) FROM push_subs s WHERE s.user_id=u.id) AS push FROM users u ORDER BY u.name")]
         for u in users:
             u["locked"] = acct_locked(u["name"])
         invites = [dict(r) for r in q(
@@ -2579,6 +2596,7 @@ ROUTES = {
     ("DELETE", r"/api/posts/(\d+)"): Handler.api_post_delete,
     ("POST", r"/api/posts/(\d+)/retry"): Handler.api_post_update,
     ("POST", r"/api/posts/(\d+)/title"): Handler.api_post_title,
+    ("POST", r"/api/posts/(\d+)/notify"): Handler.api_post_notify,
     ("POST", r"/api/posts/(\d+)/run"): Handler.api_post_run,
     ("POST", r"/api/posts/(\d+)/like"): Handler.api_like,
     ("POST", r"/api/posts/(\d+)/comments"): Handler.api_comment,

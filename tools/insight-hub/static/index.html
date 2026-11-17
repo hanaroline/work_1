@@ -897,6 +897,12 @@ function postCard(p, inDialog = false) {
         viewList.replaceChildren(h("b", { text: "본 사람 " + vs.length + "명 (관리자에게만 보임)" }));
         for (const v of vs) viewList.append(h("div", { class: "vr" }, h("span", { text: v.name }), h("span", { class: "t", text: ago(v.created_at) })));
       } catch (e) { viewList.textContent = e.message; } } : null }));
+  if (state.me.role === "admin" && p.status === "done") acts.append(h("button", { type: "button", class: "btn", text: "🔔 알림 보내기",
+    title: "알림을 켠 직원에게 이 글을 알립니다(관리자에게만 보임)", onclick: async e => {
+      if (!confirm("알림을 켠 직원들에게 이 글을 알릴까요?\n(올린 사람 본인은 받지 않습니다)")) return;
+      const btn = e.currentTarget; btn.disabled = true;
+      try { const r = await api(`/api/posts/${p.id}/notify`, { method: "POST", body: {} }); toast(`알림을 보냈습니다 — 기기 ${r.ok}대`); }
+      catch (err) { toast(err.message); } finally { btn.disabled = false; } } }));
   acts.append(h("span", { class: "sp" }), h("button", { type: "button", class: "btn", text: "링크 복사", onclick: () => copyText(location.origin + "/#p" + p.id) }));
   body.append(acts);
   if (viewList) body.append(viewList);
@@ -1193,7 +1199,7 @@ function showUsage(s) {
 }
 async function loadAdmin() {
   const r = await api("/api/admin/users"), ai = r.ai;
-  $("#aiStatus").textContent = `Claude: ${ai.claude ? "연결됨" : "키 없음"} (${ai.claude_model}) · Gemini: ${ai.gemini ? "연결됨" : "키 없음"} (${ai.gemini_model}) · 대기 ${r.queue}건`;
+  $("#aiStatus").textContent = `Claude: ${ai.claude ? "연결됨" : "키 없음"} (${ai.claude_model}) · Gemini: ${ai.gemini ? "연결됨" : "키 없음"} (${ai.gemini_model}) · 대기 ${r.queue}건 · 🔔 알림 켠 사람 ${r.users.filter(u => u.push && u.active).length}명`;
   showUsage(r.storage);
   const il = $("#invList"); il.textContent = "";
   if (!r.invites.length) il.append(h("div", { class: "caution", text: "없음" }));
@@ -1205,7 +1211,7 @@ async function loadAdmin() {
     h("tbody", {}, r.users.map(u => {
       const self = u.id === state.me.id;
       const act = (body, msg) => async () => { if (msg && !confirm(msg)) return; try { const x = await api("/api/admin/users/" + u.id, { method: "POST", body }); if (x.code) showCode(x.name, x.code, x.valid); loadAdmin(); } catch (e) { toast(e.message); } };
-      return h("tr", { style: u.active ? "" : "opacity:.5" }, h("td", { text: u.name + (u.active ? "" : " (정지)") + (u.locked ? " 🔒잠김" : "") }), h("td", { text: u.role === "admin" ? "관리자" : "직원" }),
+      return h("tr", { style: u.active ? "" : "opacity:.5" }, h("td", { text: u.name + (u.active ? "" : " (정지)") + (u.locked ? " 🔒잠김" : "") + (u.push ? " 🔔" : ""), title: u.push ? `새 글 알림 켬 — 기기 ${u.push}대` : null }), h("td", { text: u.role === "admin" ? "관리자" : "직원" }),
         h("td", { text: u.posts }), h("td", { text: u.last_login ? ago(u.last_login) : "-" }),
         h("td", { class: "row", style: "gap:4px" },
           u.locked ? h("button", { class: "btn small", type: "button", text: "잠금 풀기", onclick: act({ unlock: true }, `${u.name} 님의 계정 잠금을 풀까요?\n비밀번호가 짧은 시간에 여러 번 틀렸습니다. 본인이 틀린 것이 맞는지 먼저 확인해 주세요.`) }) : null,
