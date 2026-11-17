@@ -210,6 +210,15 @@ CREATE TABLE IF NOT EXISTS comments (
   created_at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS comments_post ON comments(post_id);
+CREATE TABLE IF NOT EXISTS push_subs (     -- 새 글 알림을 받겠다고 한 기기(브라우저 푸시 구독 하나당 한 줄)
+  endpoint TEXT PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  p256dh TEXT NOT NULL,
+  auth TEXT NOT NULL,
+  origin TEXT,
+  created_at INTEGER NOT NULL,
+  last_ok INTEGER
+);
 CREATE TABLE IF NOT EXISTS ai_cache (
   key TEXT PRIMARY KEY,
   sig TEXT,
@@ -792,6 +801,7 @@ _run_ctx = threading.local()
 
 
 QUOTA_TAG = "QUOTA:"   # 하루 한도 소진 — AIError 메시지 머리말
+QUOTA_PROBE_SEC = 600   # 한도가 막힌 동안에도 이 간격마다 한 번은 실제로 불러 본다
 
 
 def _quota_key(url: str) -> str:
@@ -872,10 +882,18 @@ def _post_json(url: str, headers: dict, body: dict, timeout: int = 300) -> dict:
         qc = cache_get(_quota_key(url))
     except Exception:
         qc = None
+    probing = False
     if qc:
         b = json.loads(qc["body"])
         if b.get("until", 0) > now():
-            raise AIError(f"{QUOTA_TAG}{b['until']}:{b.get('limit', '')}")
+            # 막힌 뒤 10분마다 한 번은 실제로 불러 본다 — 유료로 바꿨거나 한도가 올라갔으면 바로 풀리게
+            if now() - qc["created_at"] < QUOTA_PROBE_SEC:
+                raise AIError(f"{QUOTA_TAG}{b['until']}:{b.get('limit', '')}")
+            probing = True
+            try:
+                cache_put(_quota_key(url), "", b)   # 시각만 새로 — 동시에 여럿이 떠보지 않게
+            except Exception:
+                pass
     req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
                                  headers={"content-type": "application/json", **headers})
     deadline = getattr(_run_ctx, "deadline", None) or time.time() + RUN_BUDGET_SEC
@@ -892,6 +910,13 @@ def _post_json(url: str, headers: dict, body: dict, timeout: int = 300) -> dict:
             with urllib.request.urlopen(req, timeout=per_try) as resp:
                 out = json.loads(resp.read())
             print(f"[ai] {url.rsplit('/', 1)[-1]} {time.time() - t0:.1f}s (시도 {attempt + 1})", file=sys.stderr)
+            if probing:
+                # 한도가 풀렸다: 막힌 기록을 '이미 풀림'으로 바꿔 두면 한도로 실패한 글이 저절로 다시 돈다
+                print("[ai] 한도 풀림 확인 — 막힘 기록 해제", file=sys.stderr)
+                try:
+                    cache_put(_quota_key(url), "", {"until": now() - 1, "limit": b.get("limit", "")})
+                except Exception:
+                    pass
             return out
         except urllib.error.HTTPError as e:
             detail = e.read().decode("utf-8", "replace")[:3000]
@@ -1173,6 +1198,187 @@ def lock_drop(name: str) -> None:
     xn("DELETE FROM ai_cache WHERE key=?", ("lock:" + name,))
 
 
+# ───────────────────────────── 새 글 알림(웹 푸시) ─────────────────────────────
+# 요약이 끝난 글을, 알림을 켠 다른 직원의 휴대폰·PC 로 알린다(RFC 8030/8291/8292).
+# 알림 내용은 기기에서만 풀리게 암호화해 보낸다 — 구글·애플의 푸시 서버는 내용을 읽지 못한다.
+# 암호화에 `cryptography` 가 필요하다. 클라우드(Vercel)에는 requirements.txt 로 깔리고,
+# 없는 곳(표준 라이브러리만 쓰는 로컬 판)에서는 알림만 꺼지고 나머지는 그대로 돈다.
+# 서명 열쇠(VAPID)는 처음 쓸 때 서버가 만들어 DB 에 둔다. 저장소·환경 변수에 둘 것이 없다.
+PUSH_HOSTS = ("fcm.googleapis.com", "android.googleapis.com", "push.services.mozilla.com",
+              "push.apple.com", "notify.windows.com")
+PUSH_TTL = 24 * 3600          # 기기가 꺼져 있으면 하루까지 기다렸다 전한다
+PUSH_SUB_MAX = 10             # 한 사람이 알림을 켤 수 있는 기기 수
+
+
+def _b64u(b: bytes) -> str:
+    return base64.urlsafe_b64encode(b).rstrip(b"=").decode()
+
+
+def _unb64u(s: str) -> bytes:
+    return base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
+
+
+def push_crypto():
+    try:
+        from cryptography.hazmat.primitives.asymmetric import ec  # noqa: F401
+        from cryptography.hazmat.primitives.ciphers.aead import AESGCM  # noqa: F401
+        return True
+    except Exception:
+        return False
+
+
+def vapid_keys() -> tuple[object, str] | None:
+    """(서명용 개인 열쇠, 화면에 줄 공개 열쇠) — 없으면 한 번 만들어 DB 에 둔다."""
+    if not push_crypto():
+        return None
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ec
+    row = cache_get("push:vapid")
+    if not row:
+        k = ec.generate_private_key(ec.SECP256R1())
+        d = k.private_numbers().private_value.to_bytes(32, "big")
+        # 두 요청이 동시에 만들어도 먼저 넣은 것 하나만 남는다
+        xn("INSERT INTO ai_cache(key, sig, body, created_at) VALUES (?,?,?,?) ON CONFLICT(key) DO NOTHING",
+           ("push:vapid", "", json.dumps({"d": _b64u(d)}), now()))
+        row = cache_get("push:vapid")
+    d = int.from_bytes(_unb64u(json.loads(row["body"])["d"]), "big")
+    key = ec.derive_private_key(d, ec.SECP256R1())
+    pub = key.public_key().public_bytes(serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint)
+    return key, _b64u(pub)
+
+
+def push_endpoint_ok(endpoint: str) -> bool:
+    """서버가 POST 를 보낼 곳이므로, 알려진 브라우저 푸시 서버 주소만 받는다."""
+    try:
+        u = urllib.parse.urlsplit(endpoint)
+    except ValueError:
+        return False
+    host = (u.hostname or "").lower()
+    return (u.scheme == "https" and len(endpoint) < 1000 and not u.username and u.port in (None, 443)
+            and any(host == h or host.endswith("." + h) for h in PUSH_HOSTS))
+
+
+def push_encrypt(payload: bytes, p256dh: str, auth: str) -> bytes:
+    """RFC 8291(aes128gcm) — 받는 기기의 공개 열쇠로만 풀리는 본문을 만든다."""
+    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.hazmat.primitives.asymmetric import ec
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+    ua_pub = _unb64u(p256dh)
+    secret = _unb64u(auth)
+    eph = ec.generate_private_key(ec.SECP256R1())
+    as_pub = eph.public_key().public_bytes(serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint)
+    shared = eph.exchange(ec.ECDH(), ec.EllipticCurvePublicKey.from_encoded_point(ec.SECP256R1(), ua_pub))
+    ikm = HKDF(hashes.SHA256(), 32, secret, b"WebPush: info\x00" + ua_pub + as_pub).derive(shared)
+    salt = secrets.token_bytes(16)
+    prk = hmac.new(salt, ikm, hashlib.sha256).digest()
+    cek = hmac.new(prk, b"Content-Encoding: aes128gcm\x00\x01", hashlib.sha256).digest()[:16]
+    nonce = hmac.new(prk, b"Content-Encoding: nonce\x00\x01", hashlib.sha256).digest()[:12]
+    body = AESGCM(cek).encrypt(nonce, payload + b"\x02", None)
+    return salt + (4096).to_bytes(4, "big") + bytes([len(as_pub)]) + as_pub + body
+
+
+def vapid_header(endpoint: str, key, pub: str, sub: str) -> str:
+    """RFC 8292 — 이 서버가 보낸 알림임을 푸시 서버에 밝히는 서명."""
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.asymmetric import ec
+    from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
+    u = urllib.parse.urlsplit(endpoint)
+    head = _b64u(json.dumps({"typ": "JWT", "alg": "ES256"}, separators=(",", ":")).encode())
+    claims = _b64u(json.dumps({"aud": f"{u.scheme}://{u.netloc}", "exp": now() + 12 * 3600, "sub": sub},
+                              separators=(",", ":")).encode())
+    r, s_ = decode_dss_signature(key.sign(f"{head}.{claims}".encode(), ec.ECDSA(hashes.SHA256())))
+    sig = _b64u(r.to_bytes(32, "big") + s_.to_bytes(32, "big"))
+    return f"vapid t={head}.{claims}.{sig}, k={pub}"
+
+
+def push_send(sub_row, data: dict, keys) -> str:
+    """한 기기로 보낸다. 돌려주는 값: ok | gone(구독이 사라짐 — 지운다) | fail."""
+    key, pub = keys
+    endpoint = sub_row["endpoint"]
+    if not push_endpoint_ok(endpoint):
+        return "gone"
+    body = push_encrypt(json.dumps(data, ensure_ascii=False).encode(), sub_row["p256dh"], sub_row["auth"])
+    origin = sub_row["origin"] or ""
+    sub = origin if origin.startswith("https://") else "https://insightroom-wm.vercel.app"
+    req = urllib.request.Request(endpoint, data=body, method="POST", headers={
+        "Content-Type": "application/octet-stream", "Content-Encoding": "aes128gcm",
+        "TTL": str(PUSH_TTL), "Urgency": "normal",
+        "Authorization": vapid_header(endpoint, key, pub, sub), "User-Agent": USER_AGENT})
+    try:
+        with urllib.request.urlopen(req, timeout=10, context=ssl.create_default_context()) as r:
+            r.read(2048)
+        return "ok"
+    except urllib.error.HTTPError as e:
+        detail = e.read(300).decode("utf-8", "replace")
+        if e.code in (404, 410):
+            return "gone"
+        print(f"[push] HTTP {e.code} {urllib.parse.urlsplit(endpoint).hostname}: {detail[:200]}", file=sys.stderr)
+        # 403 은 대개 서명 열쇠가 바뀐 옛 구독 — 다시 켜면 살아난다. 지우지 않고 실패로만 센다
+        return "fail"
+    except (urllib.error.URLError, TimeoutError, socket.timeout, OSError) as e:
+        print(f"[push] 보내기 실패 {urllib.parse.urlsplit(endpoint).hostname}: {e}", file=sys.stderr)
+        return "fail"
+
+
+def push_fanout(rows, data: dict) -> dict:
+    keys = vapid_keys()
+    out = {"ok": 0, "gone": 0, "fail": 0}
+    if not keys or not rows:
+        return out
+    from concurrent.futures import ThreadPoolExecutor
+
+    def one(r):
+        try:
+            return r, push_send(r, data, keys)
+        except Exception as e:
+            print(f"[push] 오류 {type(e).__name__}: {e}", file=sys.stderr)
+            return r, "fail"
+
+    with ThreadPoolExecutor(max_workers=min(8, len(rows))) as ex:
+        results = list(ex.map(one, rows))
+    for r, res in results:
+        out[res] += 1
+        if res == "gone":
+            xn("DELETE FROM push_subs WHERE endpoint=?", (r["endpoint"],))
+        elif res == "ok":
+            xn("UPDATE push_subs SET last_ok=? WHERE endpoint=?", (now(), r["endpoint"]))
+    return out
+
+
+def _clip(s: str, n: int) -> str:
+    s = " ".join((s or "").split())
+    return s if len(s) <= n else s[:n - 1] + "…"
+
+
+def notify_post(pid: int) -> None:
+    """요약이 끝난 글을 알림을 켠 다른 직원에게 한 번만 알린다(다시 정리해도 또 보내지 않는다)."""
+    if not push_crypto():
+        return
+    p = q("SELECT p.id, p.user_id, p.source_title, p.title_edit, p.summary_json, p.kind, u.name "
+          "FROM posts p JOIN users u ON u.id=p.user_id WHERE p.id=? AND p.status='done'", (pid,), one=True)
+    if not p:
+        return
+    rows = q("SELECT s.endpoint, s.p256dh, s.auth, s.origin FROM push_subs s JOIN users u ON u.id=s.user_id "
+             "WHERE u.active=1 AND s.user_id<>?", (p["user_id"],))
+    if not rows:
+        return
+    if xn("INSERT INTO ai_cache(key, sig, body, created_at) VALUES (?,?,?,?) ON CONFLICT(key) DO NOTHING",
+          (f"push:sent:{pid}", "", "1", now())) != 1:
+        return
+    try:
+        sm = json.loads(p["summary_json"] or "{}")
+    except ValueError:
+        sm = {}
+    title = p["title_edit"] or p["source_title"] or sm.get("title") or "새 글"
+    data = {"title": _clip(title, 80),
+            "body": _clip(f"{p['name']} · " + (sm.get("one_line") or ""), 180),
+            "url": f"/#p{pid}", "tag": f"post-{pid}"}
+    t0 = time.time()
+    res = push_fanout(rows, data)
+    print(f"[push] 글 {pid} 알림 {res} {time.time() - t0:.1f}s", file=sys.stderr)
+
+
 KST = 9 * 3600
 
 
@@ -1398,6 +1604,10 @@ def _process(pid: int) -> None:
         set_status(pid, "done", "", summary_json=json.dumps(summary, ensure_ascii=False),
                    category=summary["category"], sentiment=summary["sentiment"], tags=tags, model=model,
                    source_title=p["source_title"] or summary["title"])
+        try:
+            notify_post(pid)
+        except Exception as e:  # 알림이 안 가도 요약은 이미 끝났다
+            print(f"[push] 글 {pid} 알림 실패: {type(e).__name__}: {e}", file=sys.stderr)
     except BlockedURL as e:
         set_status(pid, "failed", str(e))
     except AIError as e:
@@ -1770,7 +1980,63 @@ class Handler(BaseHTTPRequestHandler):
         n = q("SELECT COUNT(*) AS n FROM sessions WHERE user_id=? AND token_hash<>?",
               (u["id"], sha(self.session_token() or "")), one=True)["n"]
         x("DELETE FROM sessions WHERE user_id=? AND token_hash<>?", (u["id"], sha(self.session_token() or "")))
+        # 잃어버린 휴대폰의 잠금 화면에 새 글 알림이 계속 뜨지 않게, 이 기기 것만 남기고 알림도 끈다
+        keep = str(self.body_json().get("endpoint") or "")
+        xn("DELETE FROM push_subs WHERE user_id=? AND endpoint<>?", (u["id"], keep))
         self.send_json(200, {"ok": True, "removed": n})
+
+    # ── 새 글 알림 ──
+    def api_push(self, qs):
+        u = self.need_user()
+        keys = vapid_keys()
+        n = q("SELECT COUNT(*) AS n FROM push_subs WHERE user_id=?", (u["id"],), one=True)["n"]
+        self.send_json(200, {"available": bool(keys), "key": keys[1] if keys else "", "devices": n})
+
+    def api_push_subscribe(self, qs):
+        u = self.need_user()
+        d = self.body_json()
+        ep = str(d.get("endpoint") or "")
+        k = d.get("keys") if isinstance(d.get("keys"), dict) else {}
+        p256dh, auth = str(k.get("p256dh") or ""), str(k.get("auth") or "")
+        if not vapid_keys():
+            raise HTTPError_(503, "이 서버에서는 알림을 보낼 수 없습니다")
+        if not push_endpoint_ok(ep):
+            raise HTTPError_(400, "이 브라우저의 알림 주소는 받지 않습니다")
+        try:
+            ok = len(_unb64u(p256dh)) == 65 and _unb64u(p256dh)[0] == 4 and len(_unb64u(auth)) == 16
+        except (ValueError, TypeError):
+            ok = False
+        if not ok:
+            raise HTTPError_(400, "알림 구독 정보가 잘못되었습니다")
+        origin = ("https://" if self.secure() else "http://") + self.headers.get("Host", "")
+        xn("INSERT INTO push_subs(endpoint, user_id, p256dh, auth, origin, created_at) VALUES (?,?,?,?,?,?) "
+           "ON CONFLICT(endpoint) DO UPDATE SET user_id=excluded.user_id, p256dh=excluded.p256dh, "
+           "auth=excluded.auth, origin=excluded.origin",
+           (ep, u["id"], p256dh, auth, origin, now()))
+        # 오래된 기기부터 정리해 한 사람당 PUSH_SUB_MAX 대까지만 둔다
+        old = q("SELECT endpoint FROM push_subs WHERE user_id=? ORDER BY created_at DESC, endpoint", (u["id"],))
+        for r in old[PUSH_SUB_MAX:]:
+            xn("DELETE FROM push_subs WHERE endpoint=?", (r["endpoint"],))
+        self.send_json(200, {"ok": True})
+
+    def api_push_unsubscribe(self, qs):
+        u = self.need_user()
+        ep = str(self.body_json().get("endpoint") or "")
+        xn("DELETE FROM push_subs WHERE user_id=? AND endpoint=?", (u["id"], ep))
+        self.send_json(200, {"ok": True})
+
+    def api_push_test(self, qs):
+        """알림을 켠 본인 기기로 시험 알림 한 통."""
+        u = self.need_user()
+        ep = str(self.body_json().get("endpoint") or "")
+        rows = q("SELECT endpoint, p256dh, auth, origin FROM push_subs WHERE user_id=? AND endpoint=?", (u["id"], ep))
+        if not rows:
+            raise HTTPError_(404, "이 기기는 알림이 켜져 있지 않습니다")
+        res = push_fanout(rows, {"title": "알림 시험", "body": "새 글이 정리되면 이렇게 알려 드립니다.",
+                                 "url": "/", "tag": "push-test"})
+        if not res["ok"]:
+            raise HTTPError_(502, "알림을 보내지 못했습니다. 알림을 껐다가 다시 켜 보세요.")
+        self.send_json(200, {"ok": True})
 
     def api_password(self, qs):
         u = self.need_user()
@@ -2303,6 +2569,10 @@ ROUTES = {
     ("POST", r"/api/logout"): Handler.api_logout,
     ("POST", r"/api/password"): Handler.api_password,
     ("POST", r"/api/logout-others"): Handler.api_logout_others,
+    ("GET", r"/api/push"): Handler.api_push,
+    ("POST", r"/api/push/subscribe"): Handler.api_push_subscribe,
+    ("POST", r"/api/push/unsubscribe"): Handler.api_push_unsubscribe,
+    ("POST", r"/api/push/test"): Handler.api_push_test,
     ("GET", r"/api/posts"): Handler.api_posts,
     ("POST", r"/api/posts"): Handler.api_post_create,
     ("GET", r"/api/posts/(\d+)"): Handler.api_post_get,
