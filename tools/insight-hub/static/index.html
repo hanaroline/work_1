@@ -315,6 +315,7 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
   <!-- 피드 -->
   <section id="feedView" class="hidden">
     <div class="installbar hidden" id="installBar"><img src="/icon-192.png" alt=""><div><b>바탕화면에 앱으로 설치</b>아이콘 한 번으로 바로 열립니다</div><button class="btn primary small" type="button" data-install>설치</button><button class="x" type="button" id="installBarX" aria-label="닫기">×</button></div>
+    <div class="installbar hidden" id="pushBar"><img src="/icon-192.png" alt=""><div><b>새 글 알림 받기</b>새 글이 요약되면 휴대폰으로 알려 드립니다</div><button class="btn primary small" type="button" id="pushBarGo">켜기</button><button class="x" type="button" id="pushBarX" aria-label="닫기">×</button></div>
     <div class="intro"><b>읽고, 정리하고, 공유까지 AI가</b>기사·유튜브·캡처·PDF·글을 올리면 AI가 읽고 정리해 구성원 모두가 함께 봅니다.</div>
     <div class="kchips" id="fKind" role="group" aria-label="자료 종류">
       <button type="button" data-k="" aria-pressed="true">전체</button>
@@ -439,6 +440,13 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
       <button class="btn" type="button" id="logoutBtn">이 기기 로그아웃</button>
     </div>
     <div class="msg" id="sessMsg" role="status"></div>
+    <hr style="border:0;border-top:1px solid var(--line);margin:14px 0">
+    <p style="margin:0 0 8px;font-size:13.5px;color:var(--sub)"><b style="color:var(--ink)">새 글 알림</b> — 새 글의 요약이 끝나면 이 기기로 알려 드립니다. 내가 올린 글은 알리지 않습니다.</p>
+    <div class="row" style="gap:6px">
+      <button class="btn" type="button" id="pushBtn">알림 켜기</button>
+      <button class="btn hidden" type="button" id="pushTestBtn">시험 알림 보내기</button>
+    </div>
+    <div class="msg" id="pushMsg" role="status"></div>
   </div>
 </dialog>
 
@@ -587,7 +595,7 @@ async function boot() {
   const lim = Math.round(state.maxUpload / 1048576);
   $("#pdfLimit").textContent = `리포트·자료 PDF 1개 · ${lim}MB까지`;
   $("#agreeSub").textContent = `올린 내용은 AI 요약을 위해 외부 서비스(글·사진·PDF는 ${textAI() === "Gemini" ? "Google Gemini" : "Anthropic Claude"}, 유튜브는 Google Gemini)로 전송됩니다.`;
-  fillSelects(); loadFeed(); loadTags(); startPolling(); showInstallUi();
+  fillSelects(); loadFeed(); loadTags(); startPolling(); showInstallUi(); pushSync();
 }
 
 // ── 필터 ──
@@ -1143,13 +1151,13 @@ function resetForm() {
 try { const k = localStorage.getItem("ih_kind"); if (["article", "youtube", "image", "pdf", "text"].includes(k)) setKind(k); } catch (_) {}
 
 // ── 계정 ──
-$("#menuBtn").onclick = () => { $("#pwMsg").textContent = $("#sessMsg").textContent = ""; $("#acctDlg").showModal(); };
+$("#menuBtn").onclick = () => { $("#pwMsg").textContent = $("#sessMsg").textContent = ""; pushUi(); $("#acctDlg").showModal(); };
 $("#logoutOthersBtn").onclick = async () => {
   if (!confirm("지금 이 기기만 남기고 다른 모든 기기에서 로그아웃할까요?")) return;
-  try { const r = await api("/api/logout-others", { method: "POST" }); $("#sessMsg").textContent = `다른 기기 ${r.removed}곳을 로그아웃했습니다.`; }
+  try { const sub = await pushSub(); const r = await api("/api/logout-others", { method: "POST", body: { endpoint: sub ? sub.endpoint : "" } }); $("#sessMsg").textContent = `다른 기기 ${r.removed}곳을 로그아웃했습니다.`; }
   catch (e) { $("#sessMsg").textContent = e.message; }
 };
-$("#logoutBtn").onclick = async () => { await api("/api/logout", { method: "POST" }).catch(() => {}); $("#acctDlg").close(); showAuth(); };
+$("#logoutBtn").onclick = async () => { await pushOff().catch(() => {}); await api("/api/logout", { method: "POST" }).catch(() => {}); $("#acctDlg").close(); showAuth(); };
 $("#pwForm").onsubmit = async ev => {
   ev.preventDefault();
   try { await api("/api/password", { method: "POST", body: { old: $("#pOld").value, new: $("#pNew").value } }); $("#pwForm").reset(); $("#pwMsg").textContent = "바꿨습니다. 다른 기기는 다시 로그인해야 합니다."; }
@@ -1221,6 +1229,7 @@ function showInstallUi() {
   $("#installBar").classList.toggle("hidden", !on || off || !state.me);
   $("#installBtn").classList.toggle("hidden", !on || !state.me || !off);
   for (const b of document.querySelectorAll("[data-install]")) b.classList.toggle("hidden", !on);
+  if (typeof pushBarUi === "function" && $("#pushBar")) pushSub().then(sub => pushBarUi(!!sub)).catch(() => {});
 }
 function instTab(ios) {
   $("#instA").setAttribute("aria-selected", !ios); $("#instI").setAttribute("aria-selected", ios);
@@ -1254,6 +1263,98 @@ $("#instGo").onclick = async () => { if (!deferredInstall) return; deferredInsta
 $("#installBarX").onclick = () => { try { localStorage.setItem("ih_instbar", "off"); } catch (_) {} showInstallUi(); };
 $("#instDlg").addEventListener("close", () => { if (location.hash === "#install") history.replaceState(null, "", location.pathname); });
 $("#instCopy").onclick = () => copyText(location.origin + "/#install");
+
+// ── 새 글 알림(웹 푸시) ──
+// 아이폰은 홈 화면에 추가한 앱(iOS 16.4 이상)에서만 된다. 허용 창은 반드시 버튼을 누른 그 순간에 띄운다.
+const pushCan = () => "serviceWorker" in navigator && "PushManager" in window && "Notification" in window && window.isSecureContext;
+let pushKey = "";
+const b64uBytes = s => { const b = atob((s + "===".slice((s.length + 3) % 4)).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from(b, c => c.charCodeAt(0)); };
+function swReady() {
+  return Promise.race([navigator.serviceWorker.ready, new Promise((_, no) => setTimeout(() => no(new Error("앱 준비가 끝나지 않았습니다. 새로고침 뒤 다시 눌러 주세요.")), 8000))]);
+}
+async function pushSub() {
+  if (!pushCan()) return null;
+  try { const reg = await navigator.serviceWorker.getRegistration(); return reg ? await reg.pushManager.getSubscription() : null; } catch (_) { return null; }
+}
+async function pushInfo() {
+  const r = await api("/api/push"); pushKey = r.available ? r.key : ""; return r;
+}
+const sameKey = sub => { try { const a = new Uint8Array(sub.options.applicationServerKey), b = b64uBytes(pushKey); return a.length === b.length && a.every((v, i) => v === b[i]); } catch (_) { return true; } };
+async function pushOn() {
+  if (!pushCan()) throw new Error(isIOS && !standalone() ? "아이폰은 홈 화면에 추가한 앱에서만 알림을 받을 수 있습니다. 먼저 앱으로 설치해 주세요." : "이 브라우저는 알림을 지원하지 않습니다.");
+  const perm = await Notification.requestPermission();   // 버튼을 누른 그 자리에서 먼저 묻는다(아이폰 규칙)
+  if (perm !== "granted") throw new Error(perm === "denied" ? "이 기기에서 알림이 차단되어 있습니다. 휴대폰(또는 브라우저) 설정 → 알림에서 이 앱을 허용한 뒤 다시 눌러 주세요." : "알림 허용을 누르지 않아 켜지 않았습니다.");
+  if (!pushKey) await pushInfo();
+  if (!pushKey) throw new Error("서버에서 알림을 보낼 준비가 되어 있지 않습니다.");
+  const reg = await swReady();
+  let sub = await reg.pushManager.getSubscription();
+  if (sub && !sameKey(sub)) { await sub.unsubscribe().catch(() => {}); sub = null; }
+  if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64uBytes(pushKey) });
+  await api("/api/push/subscribe", { method: "POST", body: sub.toJSON() });
+  try { localStorage.setItem("ih_pushbar", "off"); } catch (_) {}
+}
+async function pushOff() {
+  const sub = await pushSub();
+  if (!sub) return;
+  await api("/api/push/unsubscribe", { method: "POST", body: { endpoint: sub.endpoint } }).catch(() => {});
+  await sub.unsubscribe().catch(() => {});
+}
+async function pushUi() {
+  const btn = $("#pushBtn"), test = $("#pushTestBtn"), msg = $("#pushMsg");
+  const sub = await pushSub();
+  const on = !!sub && Notification.permission === "granted";
+  btn.textContent = on ? "알림 끄기" : "알림 켜기";
+  test.classList.toggle("hidden", !on);
+  if (!pushCan()) msg.textContent = isIOS && !standalone() ? "아이폰은 홈 화면에 추가한 앱에서만 알림을 받을 수 있습니다(iOS 16.4 이상)." : "이 브라우저는 알림을 지원하지 않습니다.";
+  else if (Notification.permission === "denied") msg.textContent = "이 기기에서 알림이 차단되어 있습니다. 휴대폰(또는 브라우저) 설정 → 알림에서 허용해 주세요.";
+  else msg.textContent = on ? "이 기기는 새 글 알림을 받고 있습니다." : "";
+  btn.disabled = !pushCan();
+  pushBarUi(on);
+}
+function pushBarUi(on) {
+  let off = false; try { off = localStorage.getItem("ih_pushbar") === "off"; } catch (_) {}
+  const show = !!state.me && pushCan() && !on && Notification.permission === "default" && !off && $("#installBar").classList.contains("hidden");
+  $("#pushBar").classList.toggle("hidden", !show);
+}
+async function pushToggle(fromBar) {
+  const btn = $("#pushBtn");
+  const turnOff = !fromBar && btn.textContent === "알림 끄기";   // 묻기 전에 기다리는 일이 없어야 아이폰이 허용 창을 띄운다
+  let err = "";
+  btn.disabled = true;
+  try {
+    if (turnOff) { await pushOff(); toast("이 기기의 새 글 알림을 껐습니다."); }
+    else { await pushOn(); toast("새 글 알림을 켰습니다."); }
+  } catch (e) { err = e.message; if (fromBar) alert(err); }
+  await pushUi();
+  if (err) $("#pushMsg").textContent = err;
+}
+async function pushSync() {
+  // 켜 둔 기기는 열 때마다 서버 기록을 맞춘다(다른 사람이 같은 기기로 로그인했거나, 서버가 옛 구독을 지운 경우)
+  if (!pushCan()) return;
+  try {
+    await pushInfo();
+    const sub = await pushSub();
+    if (sub && Notification.permission === "granted") {
+      if (sameKey(sub)) await api("/api/push/subscribe", { method: "POST", body: sub.toJSON() });
+      else await pushOn();
+    }
+    pushBarUi(!!sub);
+  } catch (_) {}
+}
+$("#pushBtn").onclick = () => pushToggle(false);
+$("#pushBarGo").onclick = () => pushToggle(true);
+$("#pushBarX").onclick = () => { try { localStorage.setItem("ih_pushbar", "off"); } catch (_) {} pushBarUi(false); };
+$("#pushTestBtn").onclick = async () => {
+  const sub = await pushSub();
+  try { await api("/api/push/test", { method: "POST", body: { endpoint: sub ? sub.endpoint : "" } }); $("#pushMsg").textContent = "시험 알림을 보냈습니다. 몇 초 안에 오지 않으면 휴대폰의 알림 설정을 확인해 주세요."; }
+  catch (e) { $("#pushMsg").textContent = e.message; }
+};
+// 알림을 누르면 열려 있던 앱이 그 글로 간다(서비스 워커가 알려 준다)
+if ("serviceWorker" in navigator) navigator.serviceWorker.addEventListener("message", e => {
+  const u = e.data && e.data.open; if (!u) return;
+  const hash = new URL(u, location.origin).hash;
+  if (hash && location.hash !== hash) location.hash = hash; else fromHash();
+});
 
 // ── 시작 ──
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("/sw.js").catch(() => {});
