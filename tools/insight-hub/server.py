@@ -219,6 +219,14 @@ CREATE TABLE IF NOT EXISTS push_subs (     -- 새 글 알림을 받겠다고 한
   created_at INTEGER NOT NULL,
   last_ok INTEGER
 );
+CREATE TABLE IF NOT EXISTS visits (        -- 접속 이력: 사람·날짜(한국 시각)마다 한 줄, 처음·마지막으로 쓴 시각과 기기
+  user_id INTEGER NOT NULL,
+  day TEXT NOT NULL,
+  first_at INTEGER NOT NULL,
+  last_at INTEGER NOT NULL,
+  device TEXT,
+  PRIMARY KEY (user_id, day)
+);
 CREATE TABLE IF NOT EXISTS ai_cache (
   key TEXT PRIMARY KEY,
   sig TEXT,
@@ -525,6 +533,47 @@ def login_failed(key: str, window: int = LOGIN_LOCK_SEC) -> None:
     else:
         x("INSERT INTO login_fail(key, count, first_at) VALUES (?,?,?) "
           "ON CONFLICT(key) DO UPDATE SET count=excluded.count, first_at=excluded.first_at", (key, 1, now()))
+
+
+VISIT_KEEP_DAYS = 180                 # 접속 이력은 이 날수만 남긴다
+VISIT_TOUCH_SEC = 600                 # 같은 사람의 '마지막 접속' 은 10분에 한 번만 고쳐 쓴다
+_visit_seen: dict = {}
+
+
+def kst_day(t: int) -> str:
+    return time.strftime("%Y-%m-%d", time.gmtime(t + 9 * 3600))
+
+
+def device_kind(ua: str) -> str:
+    ua = ua or ""
+    if re.search(r"iPhone|iPod", ua):
+        return "아이폰"
+    if "iPad" in ua:
+        return "아이패드"
+    if "Android" in ua:
+        return "갤럭시" if re.search(r"SM-|SAMSUNG|Samsung", ua) else "안드로이드"
+    if "Windows" in ua:
+        return "PC"
+    if "Macintosh" in ua:
+        return "맥"
+    return "기타"
+
+
+def record_visit(user_id: int, ua: str) -> None:
+    """앱을 쓴 날을 남긴다. 요청마다 쓰지 않고 한 사람에 10분에 한 번만 DB 에 닿는다."""
+    t = now()
+    day = kst_day(t)
+    if t - _visit_seen.get((user_id, day), 0) < VISIT_TOUCH_SEC:
+        return
+    _visit_seen[(user_id, day)] = t
+    if len(_visit_seen) > 5000:
+        _visit_seen.clear()
+    try:
+        x("INSERT INTO visits(user_id, day, first_at, last_at, device) VALUES (?,?,?,?,?) "
+          "ON CONFLICT(user_id, day) DO UPDATE SET last_at=excluded.last_at, device=excluded.device",
+          (user_id, day, t, t, device_kind(ua)))
+    except Exception as e:  # 이력 기록이 실패해도 앱은 그대로 쓴다
+        print(f"[visit] {e}", file=sys.stderr)
 
 
 def new_session(user_id: int) -> str:
@@ -1810,6 +1859,8 @@ class Handler(BaseHTTPRequestHandler):
             x("UPDATE sessions SET expires_at=? WHERE token_hash=?", (now() + SESSION_DAYS * 86400, th))
             x("UPDATE users SET last_login=? WHERE id=?", (now(), row["id"]))
             self._renew_cookie = self.cookie(tok, SESSION_DAYS * 86400)
+        if row:
+            record_visit(row["id"], self.headers.get("User-Agent", ""))
         return row
 
     def need_user(self, admin=False):
@@ -2538,16 +2589,38 @@ class Handler(BaseHTTPRequestHandler):
         users = [dict(r) for r in q(
             "SELECT u.id, u.name, u.role, u.active, u.created_at, u.last_login, "
             "(SELECT COUNT(*) FROM posts p WHERE p.user_id=u.id) AS posts, "
-            "(SELECT COUNT(*) FROM push_subs s WHERE s.user_id=u.id) AS push FROM users u ORDER BY u.name")]
+            "(SELECT COUNT(*) FROM push_subs s WHERE s.user_id=u.id) AS push, "
+            "(SELECT COUNT(*) FROM visits v WHERE v.user_id=u.id AND v.day>=?) AS days30 FROM users u ORDER BY u.name",
+            (kst_day(now() - 29 * 86400),))]
         for u in users:
             u["locked"] = acct_locked(u["name"])
         invites = [dict(r) for r in q(
             "SELECT id, name, role, created_at, expires_at FROM invites WHERE used_at IS NULL AND expires_at>? ORDER BY id DESC",
             (now(),))]
-        self.send_json(200, {"users": users, "invites": invites, "ai": {
+        seen = {r["user_id"] for r in q("SELECT DISTINCT user_id FROM visits WHERE day>=?", (kst_day(now() - 6 * 86400),))}
+        self.send_json(200, {"users": users, "invites": invites,
+                             "visits": {"today": q("SELECT COUNT(*) AS n FROM visits WHERE day=?", (kst_day(now()),), one=True)["n"],
+                                        "week": len(seen), "since": (q("SELECT MIN(day) AS d FROM visits", one=True) or {})["d"]},
+                             "ai": {
             "claude": bool(os.environ.get("ANTHROPIC_API_KEY")), "claude_model": CLAUDE_MODEL,
             "gemini": bool(os.environ.get("GEMINI_API_KEY")), "gemini_model": GEMINI_MODEL},
             "queue": queue_size(), "storage": storage_usage()})
+
+    def api_admin_activity(self, qs, uid):
+        """한 사람의 최근 30일 접속한 날과 열어 본 글."""
+        self.need_user(admin=True)
+        u = q("SELECT id, name FROM users WHERE id=?", (uid,), one=True)
+        if not u:
+            raise HTTPError_(404, "사용자가 없습니다")
+        x("DELETE FROM visits WHERE day<?", (kst_day(now() - VISIT_KEEP_DAYS * 86400),))
+        visits = [dict(r) for r in q("SELECT day, first_at, last_at, device FROM visits WHERE user_id=? AND day>=? ORDER BY day DESC",
+                                     (uid, kst_day(now() - 29 * 86400)))]
+        views = [{"id": r["id"], "title": r["title_edit"] or r["source_title"] or r["url"] or f"글 {r['id']}", "at": r["at"]}
+                 for r in q("SELECT p.id, p.title_edit, p.source_title, p.url, v.created_at AS at FROM post_views v "
+                            "JOIN posts p ON p.id=v.post_id WHERE v.user_id=? ORDER BY v.created_at DESC LIMIT 30", (uid,))]
+        nviews = q("SELECT COUNT(*) AS n FROM post_views WHERE user_id=?", (uid,), one=True)["n"]
+        self.send_json(200, {"name": u["name"], "visits": visits, "views": views, "nviews": nviews,
+                             "since": (q("SELECT MIN(day) AS d FROM visits", one=True) or {})["d"]})
 
     def api_admin_invite(self, qs):
         me = self.need_user(admin=True)
@@ -2620,6 +2693,7 @@ ROUTES = {
     ("POST", r"/api/posts/(\d+)/extras"): Handler.api_post_extras,
     ("POST", r"/api/ask"): Handler.api_ask,
     ("GET", r"/api/admin/users"): Handler.api_admin_users,
+    ("GET", r"/api/admin/users/(\d+)/activity"): Handler.api_admin_activity,
     ("POST", r"/api/admin/invites"): Handler.api_admin_invite,
     ("DELETE", r"/api/admin/invites/(\d+)"): Handler.api_admin_invite_delete,
     ("POST", r"/api/admin/users/(\d+)"): Handler.api_admin_user,

@@ -1207,18 +1207,38 @@ async function loadAdmin() {
     h("td", { text: "~" + new Date(i.expires_at * 1000).toLocaleDateString("ko-KR") }),
     h("td", {}, h("button", { class: "btn small", type: "button", text: "취소", onclick: async () => { await api("/api/admin/invites/" + i.id, { method: "DELETE" }); loadAdmin(); } })))))));
   const ul = $("#userList"); ul.textContent = "";
-  ul.append(h("table", {}, h("thead", {}, h("tr", {}, ["이름", "권한", "글", "최근 접속", ""].map(t => h("th", { text: t })))),
-    h("tbody", {}, r.users.map(u => {
+  const vs = r.visits || {};
+  ul.append(h("div", { class: "caution", style: "margin-bottom:6px", text: `접속: 오늘 ${vs.today || 0}명 · 최근 7일 ${vs.week || 0}명` + (vs.since ? ` (이력은 ${vs.since}부터)` : "") + " — 이름을 누르면 그 사람의 접속 이력이 나옵니다." }));
+  ul.append(h("table", {}, h("thead", {}, h("tr", {}, ["이름", "권한", "글", "최근 접속", "30일 접속", ""].map(t => h("th", { text: t })))),
+    h("tbody", {}, r.users.flatMap(u => {
       const self = u.id === state.me.id;
       const act = (body, msg) => async () => { if (msg && !confirm(msg)) return; try { const x = await api("/api/admin/users/" + u.id, { method: "POST", body }); if (x.code) showCode(x.name, x.code, x.valid); loadAdmin(); } catch (e) { toast(e.message); } };
-      return h("tr", { style: u.active ? "" : "opacity:.5" }, h("td", { text: u.name + (u.active ? "" : " (정지)") + (u.locked ? " 🔒잠김" : "") + (u.push ? " 🔔" : ""), title: u.push ? `새 글 알림 켬 — 기기 ${u.push}대` : null }), h("td", { text: u.role === "admin" ? "관리자" : "직원" }),
-        h("td", { text: u.posts }), h("td", { text: u.last_login ? ago(u.last_login) : "-" }),
+      const detail = h("tr", { class: "hidden" }, h("td", { colspan: "6" }));
+      const nameBtn = h("button", { type: "button", class: "linkish", style: "all:unset;cursor:pointer;text-decoration:underline;text-underline-offset:3px", text: u.name, onclick: () => toggleActivity(u, detail) });
+      return [h("tr", { style: u.active ? "" : "opacity:.5" }, h("td", { title: u.push ? `새 글 알림 켬 — 기기 ${u.push}대` : null }, nameBtn, (u.active ? "" : " (정지)") + (u.locked ? " 🔒잠김" : "") + (u.push ? " 🔔" : "")), h("td", { text: u.role === "admin" ? "관리자" : "직원" }),
+        h("td", { text: u.posts }), h("td", { text: u.last_login ? ago(u.last_login) : "-" }), h("td", { text: u.days30 ? u.days30 + "일" : "-" }),
         h("td", { class: "row", style: "gap:4px" },
           u.locked ? h("button", { class: "btn small", type: "button", text: "잠금 풀기", onclick: act({ unlock: true }, `${u.name} 님의 계정 잠금을 풀까요?\n비밀번호가 짧은 시간에 여러 번 틀렸습니다. 본인이 틀린 것이 맞는지 먼저 확인해 주세요.`) }) : null,
           h("button", { class: "btn small", type: "button", text: "비번 재설정", onclick: act({ reset: true }, `${u.name} 님의 비밀번호 재설정 코드를 만들까요?`) }),
           self ? null : h("button", { class: "btn small", type: "button", text: u.active ? "정지" : "복구", onclick: act({ active: !u.active }, u.active ? `${u.name} 님을 정지할까요? 바로 로그아웃됩니다.` : null) }),
-          self ? null : h("button", { class: "btn small", type: "button", text: u.role === "admin" ? "직원으로" : "관리자로", onclick: act({ role: u.role === "admin" ? "member" : "admin" }) })));
+          self ? null : h("button", { class: "btn small", type: "button", text: u.role === "admin" ? "직원으로" : "관리자로", onclick: act({ role: u.role === "admin" ? "member" : "admin" }) }))), detail];
     }))));
+}
+const hm = t => new Date(t * 1000).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false });
+async function toggleActivity(u, tr) {
+  if (!tr.classList.contains("hidden")) { tr.classList.add("hidden"); return; }
+  const td = tr.firstChild; td.textContent = "불러오는 중…"; tr.classList.remove("hidden");
+  let r; try { r = await api(`/api/admin/users/${u.id}/activity`); } catch (e) { td.textContent = e.message; return; }
+  td.textContent = "";
+  td.append(h("div", { style: "font-weight:700;margin:4px 0" , text: `${r.name} — 최근 30일 접속 ${r.visits.length}일` }));
+  if (!r.visits.length) td.append(h("div", { class: "caution", text: r.since ? `${r.since} 이후 접속 기록이 없습니다.` : "아직 쌓인 접속 기록이 없습니다." }));
+  else td.append(h("table", { style: "font-size:13px;margin-bottom:8px" }, h("thead", {}, h("tr", {}, ["날짜", "처음", "마지막", "기기"].map(t => h("th", { text: t })))),
+    h("tbody", {}, r.visits.map(v => h("tr", {}, h("td", { text: v.day.slice(5).replace("-", "/") + " (" + "일월화수목금토"[new Date(v.day + "T12:00:00+09:00").getDay()] + ")" }),
+      h("td", { text: hm(v.first_at) }), h("td", { text: hm(v.last_at) }), h("td", { text: v.device || "-" }))))));
+  td.append(h("div", { style: "font-weight:700;margin:4px 0", text: `열어 본 글 ${r.nviews}건` + (r.nviews > r.views.length ? ` (최근 ${r.views.length}건)` : "") }));
+  if (!r.views.length) td.append(h("div", { class: "caution", text: "열어 본 글이 없습니다." }));
+  else td.append(h("ul", { style: "margin:0;padding-left:18px;font-size:13px" }, r.views.map(v => h("li", {}, h("span", { text: v.title }), h("span", { class: "caution", text: " · " + new Date(v.at * 1000).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false }) })))));
+  td.append(h("div", { class: "caution", style: "margin-top:6px", text: "앱을 쓴 날만 남깁니다(같은 날은 한 줄). 시각은 10분 단위로 대략입니다. 기록은 180일 보관합니다." }));
 }
 
 // ── 앱 설치 ──
