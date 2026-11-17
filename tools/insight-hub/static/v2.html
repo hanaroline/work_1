@@ -403,6 +403,7 @@ dialog#postDlg{max-width:min(680px,calc(100vw - 16px))}
 .ans .cites button{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:7px 10px;text-align:left;cursor:pointer;font-size:13.5px;color:var(--ink)}
 .ans .cites button span{color:var(--accent);font-weight:800;margin-right:6px}
 .classic{display:block;margin-top:14px;font-size:13.5px;color:var(--sub)}
+#brief,#askOpen,#tagAsk{display:none!important}
 </style>
 </head>
 <body>
@@ -1002,7 +1003,7 @@ function postCard(p, inDialog = false) {
     body.append(pd);
   }
   if (p.note) body.append(h("div", { class: "wm" }, h("b", { text: "WM 한마디 코멘트 · " + p.author }), p.note));
-  if (done && inDialog && s.readable !== false) body.append(extrasBox(p));
+  if (done && inDialog && s.readable !== false && (s.client_talk || s.extras_at)) body.append(extrasBox(p));   // 이미 만들어 둔 것만 보여 준다(새로 AI를 부르지 않는다)
 
   if (done && open) {
     const det = h("div", { class: "det" });

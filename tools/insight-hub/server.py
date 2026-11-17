@@ -1086,6 +1086,12 @@ _gemini_level_ok: list = []   # 이 서버에서 통한 생각 수준(첫 원소
 
 # ───────────────────── 짧은 AI 일(브리핑·고객 말투·물어보기) ─────────────────────
 
+# AI는 새 글·기사·유튜브 링크의 요약에만 쓴다. 아래 셋은 하루 무료 한도를 아끼려고 껐다.
+BRIEF_ON = False    # 오늘의 브리핑
+EXTRAS_ON = False   # 고객 말투 · 다르게 볼 점
+ASK_ON = False      # 룸 자료로 물어보기
+
+
 def ai_ready() -> bool:
     return bool(os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("GEMINI_API_KEY"))
 
@@ -2097,7 +2103,7 @@ class Handler(BaseHTTPRequestHandler):
         themes = [{"tag": k, "n": v} for k, v in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:6]]
         sig = ",".join(str(r["id"]) for r in rows)
         body = json.loads(c["body"]) if c else {}
-        need = bool(rows) and ai_ready() and (not c or (c["sig"] != sig and now() - c["created_at"] >= 300))
+        need = BRIEF_ON and bool(rows) and ai_ready() and (not c or (c["sig"] != sig and now() - c["created_at"] >= 300))
         return {"date": date, "scope": scope if rows else "none", "today": today_n, "n": len(rows),
                 "headline": body.get("headline", ""), "points": body.get("points", []),
                 "themes": themes, "sentiment": sen, "generated_at": c["created_at"] if c else None,
@@ -2114,7 +2120,7 @@ class Handler(BaseHTTPRequestHandler):
         key = f"briefing:{date}"
         c = cache_get(key)
         out = self._brief_out(rows, scope, today_n, date, c)
-        if not out["needs_gen"]:
+        if not BRIEF_ON or not out["needs_gen"]:
             return self.send_json(200, out)
         bf = cache_get(f"brieffail:{date}")
         if bf and now() - bf["created_at"] < 900:   # 실패 뒤 15분은 다시 부르지 않는다 (화면 열 때마다 한도를 갉아먹지 않게)
@@ -2160,7 +2166,7 @@ class Handler(BaseHTTPRequestHandler):
         sm = json.loads(r["summary_json"])
         if sm.get("client_talk") or sm.get("extras_at"):
             return self.send_json(200, {"client_talk": sm.get("client_talk", ""), "counterpoint": sm.get("counterpoint", [])})
-        if not sm.get("readable", True) or not ai_ready():
+        if not EXTRAS_ON or not sm.get("readable", True) or not ai_ready():
             return self.send_json(200, {"client_talk": "", "counterpoint": []})
         name = f"extras:{pid}"
         if not lock_take(name, 100):
@@ -2186,6 +2192,8 @@ class Handler(BaseHTTPRequestHandler):
         d = self.body_json()
         question = re.sub(r"\s+", " ", str(d.get("question") or "")).strip()[:300]
         tag = str(d.get("tag") or "").strip()[:30]
+        if not ASK_ON:
+            raise HTTPError_(410, "물어보기 기능은 꺼져 있습니다")
         if len(question) < 2:
             raise HTTPError_(400, "질문을 적어 주세요")
         if not ai_ready():
