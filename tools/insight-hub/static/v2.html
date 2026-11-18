@@ -623,7 +623,7 @@ dialog#postDlg{max-width:min(680px,calc(100vw - 16px))}
     <input class="field" type="text" id="wm" maxlength="300" placeholder="왜 의미 있는 자료인지 코멘트를 달아주세요">
     <div class="hint">관련 종목이 있으면 여기에 함께 적어 주세요. AI는 자료에 나온 종목을 따로 뽑아 둡니다.</div>
 
-    <div class="lbl" id="shelfLbl"><label for="shelfIn">📁 자료실에도 꽂기</label> <small>(선택 · 상품설명서·제안서·판매 스크립트 등)</small></div>
+    <div class="lbl" id="shelfLbl"><label for="shelfIn">📁 자료실에도 꽂기</label> <small>(선택 · 상품설명서·상품안내장·제안서 등, 직접 입력도 됩니다)</small></div>
     <select class="field" id="shelfIn"><option value="">자료실에 넣지 않음</option></select>
 
     <label class="agree"><input type="checkbox" id="agree"><div><b>고객 정보 · 사내 자료가 포함되지 않았습니다.</b><span id="agreeSub">올린 내용은 AI 요약을 위해 외부 서비스로 전송됩니다.</span></div></label>
@@ -856,7 +856,8 @@ async function boot() {
   state.me = r.user; state.cats = r.categories || [];
   state.shelves = r.shelves || []; state.eventKinds = r.event_kinds || [];
   state.features = r.features || {}; applyFeatures();
-  $("#shelfIn").replaceChildren(h("option", { value: "", text: "자료실에 넣지 않음" }), ...state.shelves.map(v => h("option", { value: v, text: v })));
+  shelfFill($("#shelfIn"), "자료실에 넣지 않음", "");
+  $("#shelfIn").onchange = () => { const s = $("#shelfIn"); if (s.value === SHELF_NEW) { const v = askShelf(); shelfFill(s, "자료실에 넣지 않음", v || ""); } };
   $("#evKind").replaceChildren(...state.eventKinds.map(v => h("option", { value: v, text: v })));
   state.serverless = !!r.serverless; state.maxUpload = r.max_upload || 20 * 1024 * 1024; state.chunk = r.upload_chunk || 2560000;
   state.skew = r.now ? r.now - Date.now() / 1000 : 0;
@@ -1227,11 +1228,12 @@ function postCard(p, inDialog = false) {
   body.append(acts);
   if (viewList) body.append(viewList);
   if (inDialog && canEdit(p) && !isN && featOn("lib") && state.shelves && state.shelves.length) {
-    const sel = h("select", { "aria-label": "자료실 칸" }, h("option", { value: "", text: "넣지 않음" }), ...state.shelves.map(v => h("option", { value: v, text: v })));
-    sel.value = p.shelf || "";
+    const sel = h("select", { "aria-label": "자료실 칸" }); shelfFill(sel, "넣지 않음", p.shelf || "");
     sel.onchange = async () => {
-      try { await api(`/api/posts/${p.id}/shelf`, { method: "POST", body: { shelf: sel.value } }); p.shelf = sel.value || null; toast(sel.value ? `자료실 「${sel.value}」에 꽂았습니다` : "자료실에서 뺐습니다"); refreshOne(p.id); }
-      catch (err) { toast(err.message); sel.value = p.shelf || ""; }
+      let v = sel.value;
+      if (v === SHELF_NEW) { v = askShelf(); if (!v) { shelfFill(sel, "넣지 않음", p.shelf || ""); return; } shelfFill(sel, "넣지 않음", v); }
+      try { const r = await api(`/api/posts/${p.id}/shelf`, { method: "POST", body: { shelf: v } }); p.shelf = r.shelf; shelfFill(sel, "넣지 않음", p.shelf || ""); toast(r.shelf ? `자료실 「${r.shelf}」에 꽂았습니다` : "자료실에서 뺐습니다"); refreshOne(p.id); }
+      catch (err) { toast(err.message); shelfFill(sel, "넣지 않음", p.shelf || ""); }
     };
     body.append(h("label", { class: "shelfsel" }, h("span", { text: "📁 자료실" }), sel));
   }
@@ -1509,6 +1511,20 @@ $("#nForm").onsubmit = async e => {
   } catch (err) { toast(err.message); } finally { b.disabled = false; }
 };
 
+// ── 자료실 칸 고르기(정해 둔 칸 + 직접 입력) ──
+const SHELF_NEW = "__new__";
+function shelfFill(sel, emptyText, value) {
+  if (value && !state.shelves.includes(value)) state.shelves.push(value);  // 방금 적은 이름도 목록에 둔다
+  sel.replaceChildren(h("option", { value: "", text: emptyText }), ...state.shelves.map(v => h("option", { value: v, text: v })),
+    h("option", { value: SHELF_NEW, text: "✏️ 직접 입력…" }));
+  sel.value = value || "";
+}
+function askShelf() {
+  const v = (prompt("자료실 칸 이름을 적어 주세요 (20자 이내)\n예: 상품안내장, 세미나 자료") || "").replace(/\s+/g, " ").trim();
+  if (!v) return "";
+  if (v.length > 20) { toast("20자 이내로 적어 주세요"); return ""; }
+  return v;
+}
 // ── 자료실 창 ──
 const libDlg = $("#libDlg"), lib = { shelf: "*", q: "", rows: [] };
 function libTabs() {
@@ -1738,7 +1754,7 @@ const isYT = u => /(?:youtube\.com\/(?:watch|shorts|live|embed)|youtu\.be\/)/i.t
 $("#submit").onclick = async () => {
   if (sending) return;
   const body = { note: $("#wm").value.trim() };
-  if ($("#shelfIn").value) body.shelf = $("#shelfIn").value;
+  if ($("#shelfIn").value && $("#shelfIn").value !== SHELF_NEW) body.shelf = $("#shelfIn").value;
   if (kind === "article") { body.url = $("#aUrl").value.trim(); body.text = $("#aText").value.trim(); }
   else if (kind === "text") { body.text = $("#tText").value.trim(); body.title = $("#tTitle").value.trim(); }
   else if (kind === "youtube") {

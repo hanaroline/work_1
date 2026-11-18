@@ -259,7 +259,24 @@ PG_EXTRA = ["CREATE TABLE IF NOT EXISTS files (name TEXT PRIMARY KEY, data BYTEA
             "ALTER TABLE posts ADD COLUMN IF NOT EXISTS pinned BIGINT",
             "ALTER TABLE posts ADD COLUMN IF NOT EXISTS shelf TEXT"]
 _RETURNING_ID = re.compile(r"^\s*INSERT\s+INTO\s+(users|invites|posts|comments|events)\b", re.I)
-SHELVES = ["상품설명서", "제안서", "판매 스크립트", "교육자료", "기타"]
+SHELVES = ["상품설명서", "상품안내장", "제안서", "판매 스크립트", "교육자료", "기타"]
+SHELF_MAX = 20
+def clean_shelf(v):
+    """자료실 칸 이름: 정해 둔 칸이나 직접 적은 이름(20자 이내). 빈칸이면 None."""
+    if v is None or v == "":
+        return None
+    if not isinstance(v, str):
+        raise HTTPError_(400, "자료실 칸이 맞지 않습니다")
+    v = re.sub(r"\s+", " ", v).strip()
+    if not v:
+        return None
+    if len(v) > SHELF_MAX or re.search(r"[\x00-\x1f<>]", v) or v == "*":
+        raise HTTPError_(400, f"자료실 칸 이름은 {SHELF_MAX}자 이내로, 기호 < > 없이 적어 주세요")
+    return v
+def shelves_all() -> list:
+    """정해 둔 칸 + 직원이 직접 적어 쓰고 있는 칸(가나다순)."""
+    extra = sorted({r["shelf"] for r in q("SELECT DISTINCT shelf FROM posts WHERE shelf IS NOT NULL")} - set(SHELVES))
+    return SHELVES + extra
 EVENT_KINDS = ["설명회", "교육", "상품 출시", "기타"]
 # 관리자가 언제든 끌 수 있는 새 기능. 끄면 화면은 이 기능을 넣기 전 모습으로 돌아가고, 써 둔 자료는 지우지 않고 그대로 둔다.
 FEATURES = {"notice": "📢 공지 게시판", "lib": "📁 상품·판매 자료실", "cal": "📅 일정 공유"}
@@ -2010,7 +2027,7 @@ class Handler(BaseHTTPRequestHandler):
                              "categories": CATEGORIES, "session_days": SESSION_DAYS, "invite_label": invite_label(),
                              "serverless": SERVERLESS, "max_upload": MAX_UPLOAD, "upload_chunk": UPLOAD_CHUNK, "now": now(),
                              "text_engine": text_engine(), "app_name": V2_NAME, "ui": UI_DEFAULT,
-                             "shelves": SHELVES, "event_kinds": EVENT_KINDS, "features": features(),
+                             "shelves": shelves_all(), "event_kinds": EVENT_KINDS, "features": features(),
                              "authors": [dict(r) for r in q(
                                  "SELECT u.id, u.name FROM users u WHERE EXISTS (SELECT 1 FROM posts p WHERE p.user_id=u.id) "
                                  "ORDER BY u.name")]})
@@ -2191,7 +2208,7 @@ class Handler(BaseHTTPRequestHandler):
             pass
         elif g("shelf") == "*":
             where.append("p.shelf IS NOT NULL")
-        elif g("shelf") in SHELVES:
+        elif g("shelf"):
             where.append("p.shelf=?"); args.append(g("shelf"))
         if kinds:
             where.append("p.kind IN (" + ",".join("?" * len(kinds)) + ")"); args += kinds
@@ -2313,7 +2330,7 @@ class Handler(BaseHTTPRequestHandler):
                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                 (u["id"], url or None, kind, engine, note, pasted or None, file_name, file_path, file_type,
                  title, site, "queued", t, t))
-        shelf = d.get("shelf") if d.get("shelf") in SHELVES and features()["lib"] else None
+        shelf = clean_shelf(d.get("shelf")) if features()["lib"] else None
         if shelf:
             x("UPDATE posts SET shelf=? WHERE id=?", (shelf, pid))
         enqueue(pid)
@@ -2374,9 +2391,7 @@ class Handler(BaseHTTPRequestHandler):
             raise HTTPError_(404, "글이 없습니다")
         if p["user_id"] != u["id"] and u["role"] != "admin":
             raise HTTPError_(403, "올린 사람이나 관리자만 자료실에 넣을 수 있습니다")
-        shelf = self.body_json().get("shelf")
-        if shelf and shelf not in SHELVES:
-            raise HTTPError_(400, "자료실 칸이 맞지 않습니다")
+        shelf = clean_shelf(self.body_json().get("shelf"))
         x("UPDATE posts SET shelf=? WHERE id=?", (shelf or None, pid))
         self.send_json(200, {"ok": True, "shelf": shelf or None})
 
