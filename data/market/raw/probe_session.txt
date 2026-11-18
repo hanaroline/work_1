@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-11-19 01:02:12 KST
+세션을 지닌 채 API 부르기 2026-11-19 01:21:24 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 99119 bytes
@@ -16,12 +16,12 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 86144 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8850 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"023","officeHname":"조선일보","articleId":"0004010425","title":"젠슨 황·저커버그 운명 가른 ‘차등 의결권’","datetime":"2026-11-19 00:36:10","type":"1","subcontent":"한국은 1주 1표 원칙 고수 지분 3.6%를 가진 창업
+        HTTP 200 · 8853 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"277","officeHname":"아시아경제","articleId":"0005844726","title":"월러 Fed 이사 \"시장에 충격 줘야\"…12월 빅스텝 인상 주장","datetime":"2026-11-19 01:04:32","type":"1","subcontent":"크리스토퍼 월러 미국 연방준비
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8850 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"023","officeHname":"조선일보","articleId":"0004010425","title":"젠슨 황·저커버그 운명 가른 ‘차등 의결권’","datetime":"2026-11-19 00:36:10","type":"1","subcontent":"한국은 1주 1표 원칙 고수 지분 3.6%를 가진 창업
+        HTTP 200 · 8853 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"277","officeHname":"아시아경제","articleId":"0005844726","title":"월러 Fed 이사 \"시장에 충격 줘야\"…12월 빅스텝 인상 주장","datetime":"2026-11-19 01:04:32","type":"1","subcontent":"크리스토퍼 월러 미국 연방준비
         남김: data/market/raw/session_list.json
 
 ### 시장지표
@@ -36,7 +36,7 @@
         앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
-        HTTP 200 · 5045 bytes · JSON!
+        HTTP 200 · 5046 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
