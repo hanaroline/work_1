@@ -1083,7 +1083,8 @@ function sourceLink(p, url) {
     else { label = "원문 보기"; icon = "↗"; site = p.source_site || site; }
   } else if (p.kind === "pdf" && p.has_file) { href = "/api/files/" + p.id; label = "PDF 보기"; icon = "📄"; site = ""; }
   else return null;
-  return h("a", { class: "golink" + (label === "영상 보기" ? " yt" : ""), href, target: "_blank", rel: "noopener noreferrer" },
+  return h("a", { class: "golink" + (label === "영상 보기" ? " yt" : ""), href, target: "_blank", rel: "noopener noreferrer",
+      onclick: !url ? e => openFile(e, p.id) : null },  // 올린 PDF 는 첨부 보기와 같은 길로 연다(새 탭 직접 열기는 로그인이 안 따라감)
     h("span", { class: "gi", text: icon }), h("b", { text: label }), site ? h("span", { class: "gs", text: site }) : null);
 }
 const canEdit = p => p.mine || (state.me && state.me.role === "admin");
