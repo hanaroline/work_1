@@ -274,6 +274,9 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
 .pins .nb{font-size:11.5px;font-weight:800;color:#fff;background:var(--like);border-radius:999px;padding:1px 7px;flex:none}
 .kb.notice{background:var(--warn-bg);color:var(--warn)}
 .nbody{white-space:pre-wrap;line-height:1.6;margin:6px 0 4px;font-size:15px}
+.pasted{margin:10px 0 4px;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.pasted summary{cursor:pointer;font-weight:600;color:var(--accent,#0f8f80)}
+.pasted .nbody{max-height:60vh;overflow:auto;-webkit-user-select:text;user-select:text}
 .nbody.fold{max-height:9.6em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 70%,transparent)}
 .unread{margin-top:6px;color:var(--like)}
 .shelfsel{display:flex;gap:6px;align-items:center;margin:8px 0 0;font-size:13px;color:var(--sub)}
@@ -899,6 +902,14 @@ function titleOf(p, s) {
   if (u) { try { return (p.kind === "video" ? "유튜브 영상 · " : "기사 · ") + new URL(u).hostname.replace(/^www\./, ""); } catch (_) {} }
   return "(제목 없음)";
 }
+// 붙여 넣은 원문 — 자세히 창에서 펼쳐 본다(눌러야 열리고, 길어도 창 안에서 스크롤)
+function pastedBox(txt) {
+  const n = txt.length.toLocaleString("ko-KR");
+  return h("details", { class: "pasted" }, h("summary", { text: `📝 붙여 넣은 원문 보기 (${n}자)` }),
+    h("div", { class: "nbody", text: txt }),
+    h("button", { type: "button", class: "more", text: "원문 복사", onclick: async () => {
+      try { await navigator.clipboard.writeText(txt); toast("원문을 복사했습니다"); } catch { toast("복사하지 못했습니다 — 길게 눌러 선택해 주세요"); } } }));
+}
 // 원문으로 바로 가는 단추 — 기사는 「원문 보기」, 유튜브는 「영상 보기」, 올린 PDF 는 「PDF 보기」
 function sourceLink(p, url) {
   let href = url, label, icon, site = "";
@@ -994,6 +1005,7 @@ function postCard(p, inDialog = false) {
     sec("근거가 약하거나 확인되지 않은 주장", s.unverified);
     if (url) det.append(h("a", { class: "src", href: url, target: "_blank", rel: "noopener noreferrer", text: "원문: " + url }));
     if (p.has_file) det.append(h("a", { class: "src", href: "/api/files/" + p.id, target: "_blank", rel: "noopener", onclick: e => openFile(e, p.id), text: "📄 첨부 보기: " + (p.file_name || "파일") }));
+    if (p.pasted) det.append(pastedBox(p.pasted));
     det.append(h("div", { class: "caution" }, ...(s.notes || []).map(n => h("div", { text: "· " + n })),
       h("div", { text: "· AI 정리입니다. 고객에게 전달하기 전에 원문과 숫자를 꼭 확인하세요." }),
       p.model ? h("div", { text: "· 정리한 모델: " + p.model }) : null));

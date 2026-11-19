@@ -1800,6 +1800,8 @@ def post_row(r: sqlite3.Row, me: int, full: bool = False, admin: bool = False) -
     }
     if r["kind"] == "notice":  # 공지는 AI 요약 없이 본문 그대로 보인다
         d["body"] = r["pasted_text"] or ""
+    if full and r["kind"] != "notice" and (r["pasted_text"] or "").strip():
+        d["pasted"] = r["pasted_text"]  # 직원이 붙여 넣은 원문 — 자세히 창에서만 보낸다(목록은 가볍게)
     if full:
         d["comment_list"] = [dict(c) | {"mine": c["user_id"] == me} for c in q(
             "SELECT c.id, c.body, c.created_at, c.user_id, u.name AS author FROM comments c JOIN users u ON u.id=c.user_id "
