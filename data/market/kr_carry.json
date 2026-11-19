@@ -14,12 +14,12 @@
    "investor_flows": {
     "retail": -654.0,
     "foreign": -4055.0,
-    "institution": 194.0
+    "institution": 195.0
    },
    "program_trading": {
     "arb": 66.0,
     "non_arb": -2490.0,
-    "total": -2424.0
+    "total": -2425.0
    },
    "intraday": {
     "high": 5137.89,
@@ -42,13 +42,13 @@
    },
    "bizdate": "20261119",
    "investor_flows": {
-    "retail": 16.0,
+    "retail": 11.0,
     "foreign": -2127.0,
-    "institution": 2138.0
+    "institution": 2143.0
    },
    "program_trading": {
-    "arb": 183.0,
-    "non_arb": -1557.0,
+    "arb": 184.0,
+    "non_arb": -1559.0,
     "total": -1375.0
    },
    "intraday": {
@@ -382,9 +382,9 @@
    "name": "기타",
    "change_pct": 1.02,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 973,
+   "advancing": 976,
    "declining": 490,
-   "unchanged": 98,
+   "unchanged": 95,
    "total": 1561
   },
   {
@@ -397,6 +397,15 @@
    "total": 11
   },
   {
+   "name": "레저용장비와제품",
+   "change_pct": 0.95,
+   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
+   "advancing": 8,
+   "declining": 5,
+   "unchanged": 0,
+   "total": 13
+  },
+  {
    "name": "복합기업",
    "change_pct": 0.93,
    "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
@@ -404,15 +413,6 @@
    "declining": 6,
    "unchanged": 1,
    "total": 24
-  },
-  {
-   "name": "레저용장비와제품",
-   "change_pct": 0.93,
-   "source_url": "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100",
-   "advancing": 7,
-   "declining": 5,
-   "unchanged": 1,
-   "total": 13
   },
   {
    "name": "카드",
@@ -776,5 +776,5 @@
   }
  ],
  "sectors_bizdate": "20261119",
- "saved_at_kst": "2026-11-19 16:44:54"
+ "saved_at_kst": "2026-11-19 16:49:11"
 }
