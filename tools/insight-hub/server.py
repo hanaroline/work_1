@@ -1121,6 +1121,10 @@ def call_gemini(video_url: str, note: str) -> tuple[dict, str]:
     if not key:
         raise AIError("GEMINI_API_KEY 가 설정되지 않았습니다 — 영상 정리는 Gemini 키가 있어야 합니다")
     prompt = (SYSTEM_PROMPT + "\n\n위 영상을 정리하십시오. key_points 의 at 에는 해당 내용이 나오는 영상 시각(mm:ss)을 적습니다."
+              "\n- 영상을 처음부터 끝까지 다 보고 들은 뒤 정리합니다. 앞부분만 정리하고 멈추지 않습니다."
+              "\n- 영상의 key_points 는 3~8개로, 도입·중간·후반·마무리 발언까지 영상 전체 구간에 고르게 나누어 시간 순서대로 적습니다."
+              " 영상 뒷부분에서 다룬 주제(종목·업종·일정·결론)가 빠지지 않게 합니다."
+              "\n- one_line·implications·client_talk 도 앞부분이 아니라 영상 전체 내용을 대표하게 씁니다."
               + (f"\n올린 직원의 메모: {note}" if note else "") + JSON_INSTRUCTION)
     # 긴 영상도 제한 시간(서버리스 240초) 안에 끝나게: 화면은 낮은 해상도·드문 프레임으로 보고
     # (말로 하는 영상은 소리가 핵심), 생각은 짧게. 이 설정을 모르는 모델이면 400 → 기본값으로 다시.
@@ -1148,7 +1152,7 @@ def call_gemini(video_url: str, note: str) -> tuple[dict, str]:
         raise AIError(f"Gemini 가 응답하지 않았습니다 ({reason})")
     parts = (cands[0].get("content") or {}).get("parts") or []
     text = "".join(p.get("text", "") for p in parts)
-    return parse_json(text), resp.get("modelVersion", GEMINI_MODEL)
+    return parse_json(text, kp_max=8), resp.get("modelVersion", GEMINI_MODEL)
 
 
 def text_engine() -> str:
@@ -1573,7 +1577,7 @@ def summary_brief(sm: dict) -> str:
     return "\n".join(lines)
 
 
-def parse_json(text: str) -> dict:
+def parse_json(text: str, kp_max: int = 5) -> dict:
     text = text.strip()
     text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text)
     try:
@@ -1583,10 +1587,10 @@ def parse_json(text: str) -> dict:
         if not m:
             raise AIError("AI 응답을 해석하지 못했습니다")
         data = json.loads(m.group(0))
-    return normalize_summary(data)
+    return normalize_summary(data, kp_max)
 
 
-def normalize_summary(d: dict) -> dict:
+def normalize_summary(d: dict, kp_max: int = 5) -> dict:
     """스키마를 강제하지 못하는 경로(Gemini)도 같은 모양이 되게 다듬는다."""
     def strs(v, n=12):
         return [str(s).strip() for s in (v or []) if str(s).strip()][:n]
@@ -1607,7 +1611,7 @@ def normalize_summary(d: dict) -> dict:
         "readable": bool(d.get("readable", True)),
         "title": str(d.get("title") or "").strip()[:300],
         "one_line": str(d.get("one_line") or "").strip()[:500],
-        "key_points": objs(d.get("key_points"), ["point", "at"], 5),
+        "key_points": objs(d.get("key_points"), ["point", "at"], kp_max),
         "implications": strs(d.get("implications"), 3),
         "related": objs(d.get("related"), ["name", "kind", "code"], 8),
         "figures": objs(d.get("figures"), ["label", "value", "as_of"], 5),
