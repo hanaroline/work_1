@@ -933,7 +933,9 @@ const running = new Map();
 function runPost(id) {
   if (!state.serverless || running.has(id)) return;
   running.set(id, Date.now());
-  api(`/api/posts/${id}/run`, { method: "POST" }).catch(() => {}).finally(() => { running.delete(id); refreshOne(id); });
+  let again = false;   // 긴 영상은 한 번에 한 구간씩 — 아직 남았으면(queued) 곧바로 다음 구간을 시킨다
+  api(`/api/posts/${id}/run`, { method: "POST" }).then(r => { again = !!(r && r.ran && r.status === "queued"); })
+    .catch(() => {}).finally(() => { running.delete(id); refreshOne(id); if (again) runPost(id); });
 }
 function kickStale(posts) {
   if (!state.serverless) return;
@@ -1128,7 +1130,8 @@ function postCard(p, inDialog = false) {
   // AI 표시
   const busy = p.status === "queued" || p.status === "working", bad = p.status === "blocked" || p.status === "failed";
   const ai = h("div", { class: "aiby" + (bad ? " err" : busy ? " wait" : "") });
-  if (busy) ai.textContent = p.status === "queued" ? "⏳ AI 정리 대기 중…" : "◌ " + (p.kind === "video" ? "Gemini가 영상을 보는 중… (몇 분 걸릴 수 있습니다)" : (p.engine === "gemini" ? "Gemini" : "Claude") + "가 읽는 중… (보통 1분 안팎)");
+  if (busy && /^긴 영상/.test(p.status_msg || "")) ai.textContent = "◌ " + p.status_msg + " (구간마다 몇 분씩 걸립니다)";
+  else if (busy) ai.textContent = p.status === "queued" ? "⏳ AI 정리 대기 중…" : "◌ " + (p.kind === "video" ? "Gemini가 영상을 보는 중… (몇 분 걸릴 수 있습니다)" : (p.engine === "gemini" ? "Gemini" : "Claude") + "가 읽는 중… (보통 1분 안팎)");
   else if (bad) ai.textContent = "⚠ " + (p.status_msg || "AI 정리에 실패했어요");
   else if (isN) ai.textContent = (p.pinned ? "📌 고정 공지" : "📢 공지") + " · 쓴 그대로 올린 글(AI 정리 없음)";
   else { ai.innerHTML = SPARK; ai.append(document.createTextNode(aiLine(p))); }

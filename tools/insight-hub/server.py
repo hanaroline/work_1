@@ -1155,6 +1155,129 @@ def call_gemini(video_url: str, note: str) -> tuple[dict, str]:
     return parse_json(text, kp_max=8), resp.get("modelVersion", GEMINI_MODEL)
 
 
+# ── 긴 영상: 한 번에 못 보는 영상(Gemini 는 한 번에 약 3시간까지)은 45분씩 잘라 구간마다 정리하고
+#    마지막에 하나로 합친다. 서버리스 함수 한 번(300초)에 한 구간씩 — 진행 상태는 ai_cache 에 둔다.
+VIDEO_PART_SEC = 45 * 60
+VIDEO_MAX_PARTS = 16          # 12시간까지
+
+
+def _hms(sec: int) -> str:
+    sec = max(0, int(sec))
+    return f"{sec // 3600}:{sec % 3600 // 60:02d}:{sec % 60:02d}"
+
+
+def _at_sec(a: str):
+    m = re.fullmatch(r"\s*(?:(\d+):)?(\d{1,2}):(\d{2})\s*", a or "")
+    return None if not m else int(m.group(1) or 0) * 3600 + int(m.group(2)) * 60 + int(m.group(3))
+
+
+def video_too_long(e: Exception) -> bool:
+    s = str(e)
+    return ("시간" in s or "timed out" in s
+            or (s.startswith("HTTP 400") and bool(re.search(r"token|exceed|too long|too large|duration", s, re.I))))
+
+
+def _vkey(pid: int) -> str:
+    return f"vparts:{pid}"
+
+
+def video_state(pid: int):
+    r = cache_get(_vkey(pid))
+    if not r:
+        return None
+    try:
+        st = json.loads(r["body"])
+    except ValueError:
+        return None
+    return st if isinstance(st, dict) and "parts" in st else None
+
+
+def video_state_put(pid: int, st) -> None:
+    if st is None:
+        x("DELETE FROM ai_cache WHERE key=?", (_vkey(pid),))
+    else:
+        cache_put(_vkey(pid), "", st)
+
+
+def call_gemini_part(video_url: str, note: str, i: int):
+    """긴 영상의 i번째 구간(0부터)만 정리한다. 영상이 이미 끝난 구간이면 None."""
+    key = os.environ.get("GEMINI_API_KEY")
+    if not key:
+        raise AIError("GEMINI_API_KEY 가 설정되지 않았습니다 — 영상 정리는 Gemini 키가 있어야 합니다")
+    start, end = i * VIDEO_PART_SEC, (i + 1) * VIDEO_PART_SEC
+    prompt = (SYSTEM_PROMPT
+              + f"\n\n이 영상은 길어서 45분씩 나눠 정리합니다. 지금은 {i + 1}번째 구간({_hms(start)}~{_hms(end)})만 봅니다."
+              "\n- 이 구간을 처음부터 끝까지 보고 들은 뒤, 구간 안의 내용을 key_points 3~6개로 시간 순서대로 고르게 정리합니다."
+              f"\n- key_points 의 at 에는 영상 전체 기준 시각을 h:mm:ss 로 적습니다(이 구간은 {_hms(start)} 에서 시작합니다)."
+              "\n- 방송 시작 전 대기 화면·광고·잡담만 있는 구간이면 key_points 를 비워 두고 one_line 에 그렇다고 적습니다."
+              "\n- 이 구간에 영상 내용이 전혀 없으면(영상이 이미 끝남) readable 을 false 로 합니다."
+              + (f"\n올린 직원의 메모: {note}" if note else "") + JSON_INSTRUCTION
+              + '\n위 스키마의 필드에 더해 "video_ended"(boolean) 를 넣으십시오: 영상이 이 구간 안에서 끝나면 true, '
+                "구간 끝 너머로 이어지면 false.")
+    fast = {"mediaResolution": "MEDIA_RESOLUTION_LOW", "thinkingConfig": {"thinkingLevel": "low"}}
+    vm = {"startOffset": f"{start}s", "endOffset": f"{end}s", "fps": 0.25}
+    body = {
+        "contents": [{"parts": [{"file_data": {"file_uri": video_url}, "videoMetadata": vm}, {"text": prompt}]}],
+        "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2, **fast},
+    }
+    url = f"{GEMINI_BASE}/v1beta/models/{urllib.parse.quote(GEMINI_MODEL)}:generateContent"
+    try:
+        resp = _post_json(url, {"x-goog-api-key": key}, body, timeout=600)
+    except AIError as e:
+        if "HTTP 400" not in str(e):
+            raise
+        if i > 0 and re.search(r"offset|duration|range|length", str(e), re.I):
+            return None   # 영상 길이를 넘는 구간
+        vm.pop("fps", None)
+        for k in fast:
+            body["generationConfig"].pop(k)
+        try:
+            resp = _post_json(url, {"x-goog-api-key": key}, body, timeout=600)
+        except AIError as e2:
+            if i > 0 and "HTTP 400" in str(e2):
+                return None
+            raise
+    cands = resp.get("candidates") or []
+    if not cands:
+        reason = (resp.get("promptFeedback") or {}).get("blockReason", "응답 없음")
+        raise AIError(f"Gemini 가 응답하지 않았습니다 ({reason})")
+    text = "".join(pp.get("text", "") for pp in ((cands[0].get("content") or {}).get("parts") or []) if not pp.get("thought"))
+    text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip())
+    try:
+        raw = json.loads(text)
+    except json.JSONDecodeError:
+        m = re.search(r"\{.*\}", text, re.S)
+        if not m:
+            raise AIError("AI 응답을 해석하지 못했습니다")
+        raw = json.loads(m.group(0))
+    ended = bool(raw.get("video_ended"))
+    sm = normalize_summary(raw, 6)
+    if not sm["readable"] and i > 0:
+        return None
+    for kp in sm["key_points"]:   # 구간 시작 기준으로 적었으면 영상 전체 기준으로 고친다
+        t = _at_sec(kp["at"])
+        if t is not None and t < start - 60:
+            t += start
+        kp["at"] = _hms(t) if t is not None else kp["at"]
+    return {"from": _hms(start), "to": _hms(end), "ended": ended, "summary": sm,
+            "model": resp.get("modelVersion", GEMINI_MODEL)}
+
+
+def merge_video_parts(parts: list[dict], note: str) -> tuple[dict, str]:
+    """구간별 정리를 영상 전체 정리 하나로 합친다(글만 보내는 짧은 호출)."""
+    lines = []
+    for n, pt in enumerate(parts, 1):
+        sm = {k: v for k, v in pt["summary"].items() if k not in ("notes", "readable", "category", "sentiment")}
+        lines.append(f"[{n}구간 {pt['from']}~{pt['to']}]\n" + json.dumps(sm, ensure_ascii=False))
+    text = ("아래는 긴 영상 하나를 45분 구간별로 나눠 정리한 결과입니다. 이것을 영상 전체 정리 하나로 합치십시오.\n"
+            "- 구간 정리에 있는 내용만 씁니다. 새 내용·숫자를 덧붙이지 않습니다.\n"
+            "- key_points 는 3~8개로, 영상 처음부터 끝까지 모든 구간에 고르게 나누어 시간 순서대로 적고, at 은 구간 정리에 적힌 시각을 그대로 옮깁니다.\n"
+            "- 같은 이야기가 여러 구간에 되풀이되면 한 번만 씁니다.\n"
+            "- title·one_line·implications·client_talk 은 영상 전체를 대표하게 씁니다."
+            + (f"\n올린 직원의 메모(참고용): {note}" if note else "") + "\n\n" + "\n\n".join(lines))
+    return call_gemini_blocks([{"type": "text", "text": text}], kp_max=8)
+
+
 def text_engine() -> str:
     """글·PDF·캡처를 누가 정리하나: Claude 키가 있으면 Claude, 없고 Gemini 키만 있으면 Gemini."""
     if not os.environ.get("ANTHROPIC_API_KEY") and os.environ.get("GEMINI_API_KEY"):
@@ -1162,7 +1285,7 @@ def text_engine() -> str:
     return "claude"
 
 
-def call_gemini_blocks(content: list[dict]) -> tuple[dict, str]:
+def call_gemini_blocks(content: list[dict], kp_max: int = 5) -> tuple[dict, str]:
     """Claude 형식의 내용 블록(글·PDF·이미지)을 Gemini 로 정리한다 — Claude 키가 없을 때의 대체 길."""
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
@@ -1213,7 +1336,7 @@ def call_gemini_blocks(content: list[dict]) -> tuple[dict, str]:
         raise AIError("응답이 길이 상한에서 잘렸습니다")
     parts_out = (cands[0].get("content") or {}).get("parts") or []
     text = "".join(p.get("text", "") for p in parts_out if not p.get("thought"))
-    return parse_json(text), resp.get("modelVersion", GEMINI_MODEL)
+    return parse_json(text, kp_max), resp.get("modelVersion", GEMINI_MODEL)
 
 
 _gemini_level_ok: list = []   # 이 서버에서 통한 생각 수준(첫 원소)
@@ -1667,7 +1790,49 @@ def _process(pid: int) -> None:
     user_hint = f"\n\n올린 직원의 메모(참고용, 자료 내용이 아님): {note}" if note else ""
     try:
         if p["kind"] == "video":
-            summary, model = call_gemini(p["url"], note)
+            st = video_state(pid)
+            if st is None:
+                try:
+                    summary, model = call_gemini(p["url"], note)
+                except AIError as e:
+                    if not video_too_long(e):
+                        raise
+                    print(f"[run {pid}] 영상이 길어 구간별 정리로 바꿈: {str(e)[:120]}", file=sys.stderr)
+                    video_state_put(pid, {"parts": [], "next": 0, "ended": False})
+                    set_status(pid, "queued", "긴 영상 — 45분씩 나눠 정리합니다 (1구간 차례)")
+                    enqueue(pid)
+                    return
+            elif not st["ended"] and st["next"] < VIDEO_MAX_PARTS:
+                i = st["next"]
+                set_status(pid, "working", f"긴 영상 {i + 1}구간({_hms(i * VIDEO_PART_SEC)}~) 보는 중")
+                try:
+                    part = call_gemini_part(p["url"], note, i)
+                except AIError as e:
+                    msg = ai_error_text(e, auto=True) or str(e)
+                    set_status(pid, "failed", f"긴 영상 {i + 1}구간에서 멈췄습니다. 「다시 시도」를 누르면 {i + 1}구간부터 이어서 정리합니다. ({msg[:80]})")
+                    return
+                if part is None:
+                    st["ended"] = True
+                else:
+                    st["ended"] = part.pop("ended")
+                    st["parts"].append(part)
+                st["next"] = i + 1
+                video_state_put(pid, st)
+                print(f"[run {pid}] 긴 영상 {i + 1}구간 끝 (끝남={st['ended']})", file=sys.stderr)
+                set_status(pid, "queued", f"긴 영상 {i + 1}구간까지 정리함 — 이어서 정리합니다")
+                enqueue(pid)
+                return
+            else:
+                parts = [pt for pt in st["parts"] if pt["summary"]["readable"]]
+                if not parts:
+                    set_status(pid, "blocked", "AI가 영상 내용을 읽지 못했습니다(구간별로 나눠 봐도 내용이 없었습니다).")
+                    return
+                set_status(pid, "working", f"긴 영상 {len(st['parts'])}개 구간을 하나로 합치는 중")
+                summary, model = merge_video_parts(parts, note)
+                video_state_put(pid, None)   # 합치기까지 끝났으니 구간 기록은 지운다(실패하면 남겨 두어 다시 시도 때 합치기만 한다)
+                notes.append(f"영상이 길어 45분씩 {len(st['parts'])}개 구간으로 나눠 정리한 뒤 하나로 합쳤습니다.")
+                if not st["ended"]:
+                    notes.append(f"{_hms(st['next'] * VIDEO_PART_SEC)} 이후 부분은 정리하지 않았습니다(상한 {VIDEO_MAX_PARTS}구간).")
         else:
             content: list[dict] = []
             meta = {"주소": p["url"] or "", "제목": p["source_title"] or "", "매체": p["source_site"] or "",
@@ -2461,6 +2626,7 @@ class Handler(BaseHTTPRequestHandler):
             x("DELETE FROM comments WHERE post_id=?", (pid,))
             x("DELETE FROM post_views WHERE post_id=?", (pid,))
             x("DELETE FROM posts WHERE id=?", (pid,))
+            video_state_put(pid, None)
         self.send_json(200, {"ok": True})
 
     def api_post_update(self, qs, pid):
@@ -2480,6 +2646,8 @@ class Handler(BaseHTTPRequestHandler):
         if text:
             x("UPDATE posts SET pasted_text=?, engine=?, kind=CASE WHEN kind='video' THEN 'text' ELSE kind END WHERE id=?",
               (text, text_engine(), pid))
+        if text or p["status"] not in ("failed",):
+            video_state_put(pid, None)
         set_status(pid, "queued", "")
         enqueue(pid)
         self.send_json(200, {"ok": True})
