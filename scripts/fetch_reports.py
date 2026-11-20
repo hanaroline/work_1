@@ -1158,6 +1158,16 @@ def src_price(src):
     return v if 100 <= v <= 100_000_000 else None
 
 
+def old_prices(text):
+    """글이 「기존·종전·직전·이전」 바로 뒤에 적은(=옛 목표주가라 밝힌) 가격들."""
+    out = set()
+    for m in _SRC_PRICE.finditer(text or ""):
+        if _SRC_OLD.search(text[max(0, m.start() - 12):m.start()]):
+            out.add(int(round(float(m.group(1).replace(",", ""))
+                              * _UNIT.get(m.group(2) or "", 1))))
+    return out
+
+
 def target_from_src(r):
     """본문이 목표주가를 **제 문장으로** 적었으면 그 수를 쓴다.
 
@@ -1169,6 +1179,14 @@ def target_from_src(r):
     """
     v = src_price(r.get("target_move_src"))
     if not v or v == r.get("target_price"):
+        return r
+    # 같은 글이 그 수를 **옛 값**이라 적었으면 덮지 않는다. 11/20 유진
+    # 성일하이텍은 요약 머리가 「목표주가를 51,000원으로 하향」인데 본문은
+    # 「목표주가를 기존 51,000원에서 30,000원으로 41.2% 하향」이었고 네이버
+    # 칸은 30,000 이었다 — 근거 문구 쪽이 옛 값이다. 서로 어긋나면 칸을 둔다.
+    if r.get("target_price") and v in old_prices(
+            " ".join((r.get("summary") or "", r.get("excerpt") or "",
+                      r.get("lead") or ""))):
         return r
     if r.get("target_price") and r.get("target_from") == "api":
         r["target_price_api"] = r["target_price"]
