@@ -141,6 +141,10 @@ for (const it of A.items) {
   disclosed(`R${n}_SIMFIRST`, '1차 상환 비중', `제${n}회 모의실험에서 1차에 조기상환된 비중`, it.simFirst, '%', ['p4-row', 'p7-card4'],
     { series: '발행사 수익률 모의실험 (공시 원문)' });
   computed(`R${n}_MCLOSS`, '손실 확률', `제${n}회 만기 손실 확률 (B)`, +it.mcLoss.toFixed(1), '%', page2);
+  // 권하지 않는 사유에는 "100번 중 N번"으로 정수로 찍힌다. 원값을 바로 반올림하므로
+  // 소수 한 자리 값(예: 53.5)을 다시 반올림한 것(54)과 다를 수 있다(2026-11-20 제38271회 53).
+  if (it.mcLoss > 25) computed(`R${n}_MCLOSS_INT`, '손실 확률', `제${n}회 만기 손실 확률 (B, 100번 중 횟수)`,
+    +it.mcLoss.toFixed(0), '%', ['an-cau', 'deck-cau']);
   computed(`R${n}_MCCI`, '손실 확률 신뢰구간', `제${n}회 손실 확률의 95% 신뢰구간 반폭`,
     +it.mcCI.toFixed(2), '%p', page2,
     { note: `경로 ${it.mcPaths.toLocaleString('ko-KR')}개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배` });
@@ -541,6 +545,8 @@ if (STALE.length) {
   }
   computed('MCLOSS_AVG_ALL', '손실 확률', `이번 회차 ${pts.length}종 전체의 평균 손실 확률`,
     +A.mcAvgAll.toFixed(1), '%', ['h-card', 'h-cau', 'h-ab']);
+  computed('MCLOSS_AVG_ALL_INT', '손실 확률', `이번 회차 ${pts.length}종 전체의 평균 손실 확률 (100번 중 횟수)`,
+    +A.mcAvgAll.toFixed(0), '%', ['an-cau', 'deck-cau']);
   if (A.kindRatio != null) {
     stat('KIND_RATIO', '자산군 위험 배수', '종목형 평균 손실 확률이 지수형의 몇 배인가',
       +A.kindRatio.toFixed(1), '배', ['h-kind']);
