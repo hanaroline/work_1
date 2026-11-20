@@ -1910,6 +1910,99 @@ def _process(pid: int) -> None:
         set_status(pid, "failed", f"처리 중 오류: {type(e).__name__}: {e}")
 
 
+# ───────────────────────────── 요약 전용(/quick) ─────────────────────────────
+# 단톡방에 올릴 요약만 만들어 돌려준다. 글·요약을 DB 에 남기지 않는다 — 브리핑룸 피드와 섞이지 않게.
+# 긴 영상의 구간 진행 상황도 서버가 아니라 화면이 들고 있다가 다음 요청에 되돌려 보낸다.
+
+class QuickStop(Exception):
+    """요약을 만들 수 없는 사정(읽을 수 없는 페이지 등) — 화면에 그대로 보여 준다."""
+
+
+def _quick_state(st) -> dict | None:
+    """화면이 되돌려 보낸 구간 진행 상황을 믿을 수 있는 모양으로만 받는다."""
+    if not isinstance(st, dict):
+        return None
+    parts = []
+    for pt in (st.get("parts") or [])[:VIDEO_MAX_PARTS]:
+        if isinstance(pt, dict) and isinstance(pt.get("summary"), dict):
+            parts.append({"from": str(pt.get("from", ""))[:12], "to": str(pt.get("to", ""))[:12],
+                          "summary": normalize_summary(pt["summary"], 6), "model": str(pt.get("model", ""))[:60]})
+    nxt = st.get("next")
+    nxt = nxt if isinstance(nxt, int) and 0 <= nxt <= VIDEO_MAX_PARTS else len(parts)
+    return {"parts": parts, "next": nxt, "ended": bool(st.get("ended"))}
+
+
+def quick_summarize(url: str, text: str, st) -> dict:
+    """한 번 부를 때 한 걸음: 끝났으면 done=True 와 요약, 긴 영상이면 다음 구간 상태를 돌려준다."""
+    _run_ctx.deadline = time.time() + RUN_BUDGET_SEC
+    try:
+        notes: list[str] = []
+        vid = youtube_id(url) if url else None
+        if vid and not text:
+            st = _quick_state(st)
+            if st is None:
+                try:
+                    summary, model = call_gemini(url, "")
+                except AIError as e:
+                    if not video_too_long(e):
+                        raise
+                    return {"done": False, "state": {"parts": [], "next": 0, "ended": False},
+                            "msg": "긴 영상 — 45분씩 나눠 정리합니다"}
+            elif not st["ended"] and st["next"] < VIDEO_MAX_PARTS:
+                i = st["next"]
+                try:
+                    part = call_gemini_part(url, "", i)
+                except AIError as e:
+                    msg = ai_error_text(e) or str(e)
+                    return {"done": False, "state": st, "failed": True,
+                            "msg": f"{i + 1}구간에서 멈췄습니다 — 「이어서 다시」를 누르면 {i + 1}구간부터 이어 갑니다. ({msg[:80]})"}
+                if part is None:
+                    st["ended"] = True
+                else:
+                    st["ended"] = part.pop("ended")
+                    st["parts"].append(part)
+                st["next"] = i + 1
+                return {"done": False, "state": st, "msg": f"{i + 1}구간({_hms(i * VIDEO_PART_SEC)}~)까지 정리함"}
+            else:
+                parts = [pt for pt in st["parts"] if pt["summary"]["readable"]]
+                if not parts:
+                    raise QuickStop("AI가 영상 내용을 읽지 못했습니다.")
+                summary, model = merge_video_parts(parts, "")
+                notes.append(f"영상이 길어 45분씩 {len(st['parts'])}개 구간으로 나눠 정리한 뒤 하나로 합쳤습니다.")
+                if not st["ended"]:
+                    notes.append(f"{_hms(st['next'] * VIDEO_PART_SEC)} 이후 부분은 정리하지 않았습니다.")
+            source = youtube_title(vid)[1]
+        else:
+            meta = {"주소": url or "", "제목": "", "매체": "", "게시일": ""}
+            content: list[dict] = []
+            label = "직원이_붙여넣은_본문"
+            source = ""
+            if not text and url:
+                data, ctype, _ = fetch(url)
+                if "pdf" in ctype.lower() or data[:5] == b"%PDF-":
+                    content.append({"type": "document", "source": {"type": "base64", "media_type": "application/pdf",
+                                                                    "data": base64.b64encode(data).decode()}})
+                else:
+                    art = extract_article(decode_html(data, ctype))
+                    text, label, source = art["text"], "기사_본문", art["site"]
+                    meta.update({"제목": art["title"], "매체": art["site"], "게시일": art["published"]})
+                    if len(text) < MIN_TEXT_CHARS:
+                        raise QuickStop("이 페이지에서 본문을 읽지 못했습니다(로그인·유료 기사이거나 화면을 스크립트로 그리는 사이트). "
+                                        "본문을 복사해 붙여 넣어 주세요.")
+            if text:
+                blk, n = text_block(label, text, meta)
+                notes += n
+                content.append({"type": "text", "text": blk})
+            content.append({"type": "text", "text": "위 자료를 정리하십시오."})
+            summary, model = (call_gemini_blocks(content) if text_engine() == "gemini" else call_claude(content))
+        if not summary["readable"]:
+            raise QuickStop("AI가 자료 본문을 읽을 수 없다고 판단했습니다: " + summary["one_line"])
+        summary["notes"] = notes
+        return {"done": True, "summary": summary, "source": source}
+    finally:
+        _run_ctx.deadline = None
+
+
 def worker() -> None:
     while True:
         pid = jobs.get()
@@ -2003,6 +2096,7 @@ STATIC_FILES = {
     "/classic": ("index.html", "text/html; charset=utf-8"),      # 이전 화면은 늘 여기서 열린다
     "/new": ("v2.html", "text/html; charset=utf-8"),
     "/v2.html": ("v2.html", "text/html; charset=utf-8"),
+    "/quick": ("quick.html", "text/html; charset=utf-8"),   # 단톡방에 올릴 요약만 — 저장하지 않는다
     "/manifest.webmanifest": ("manifest.webmanifest", "application/manifest+json"),
     "/sw.js": ("sw.js", "text/javascript; charset=utf-8"),
     "/icon.svg": ("icon.svg", "image/svg+xml"),
@@ -2163,7 +2257,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def static(self, name: str, ctype: str):
         data = (STATIC / name).read_bytes()
-        is_html = name in ("index.html", "v2.html")
+        is_html = name in ("index.html", "v2.html", "quick.html")
         if is_html:
             data = data.replace(b"{{CENTER_NAME}}", html.escape(CENTER_NAME).encode())
             data = data.replace(b"{{APP_NAME}}", html.escape(V2_NAME).encode())
@@ -2687,6 +2781,46 @@ class Handler(BaseHTTPRequestHandler):
         r = q("SELECT status FROM posts WHERE id=?", (pid,), one=True)
         self.send_json(200, {"ok": True, "ran": True, "status": r["status"] if r else None})
 
+    def api_quick(self, qs):
+        """요약 전용: 저장하지 않고 요약만 돌려준다(긴 영상은 화면이 state 를 들고 여러 번 부른다)."""
+        self.need_user()
+        d = self.body_json()
+        url = (d.get("url") or "").strip()
+        text = (d.get("text") or "").strip()[:400_000]
+        if url and not looks_like_url(url):
+            text, url = (url + "\n\n" + text).strip()[:400_000], ""
+        if not url and not text:
+            raise HTTPError_(400, "링크나 본문을 넣어 주세요")
+        if url:
+            if not re.match(r"^https?://", url, re.I):
+                url = "https://" + url
+            try:
+                check_public_url(url)
+            except BlockedURL as e:
+                raise HTTPError_(400, str(e))
+            vid = youtube_id(url)
+            if vid:
+                url = f"https://www.youtube.com/watch?v={vid}"
+            elif (urllib.parse.urlsplit(url).hostname or "").endswith(VIDEO_HOSTS):
+                raise HTTPError_(400, "유튜브 영상 주소를 알아보지 못했습니다(watch?v=… 또는 youtu.be/… 형태)")
+        try:
+            r = quick_summarize(url, text, d.get("state"))
+        except QuickStop as e:
+            return self.send_json(200, {"done": True, "blocked": str(e)})
+        except BlockedURL as e:
+            raise HTTPError_(400, str(e))
+        except AIError as e:
+            msg = ai_error_text(e) or str(e)
+            if re.match(r"HTTP (429|5\d\d)|시간 초과", msg):
+                msg = "AI 서버가 붐벼 제때 답하지 않았습니다. 잠시 뒤 다시 눌러 주세요. (" + msg[:80] + ")"
+            raise HTTPError_(502, msg)
+        except urllib.error.HTTPError as e:
+            return self.send_json(200, {"done": True, "blocked": f"원문 사이트가 접근을 거절했습니다(HTTP {e.code}). 본문을 복사해 붙여 넣어 주세요."})
+        except (urllib.error.URLError, TimeoutError, socket.timeout) as e:
+            raise HTTPError_(502, f"원문을 받아 오지 못했습니다: {e}")
+        r["url"] = url
+        self.send_json(200, r)
+
     def api_like(self, qs, pid):
         u = self.need_user()
         if not q("SELECT 1 FROM posts WHERE id=?", (pid,), one=True):
@@ -3065,6 +3199,7 @@ ROUTES = {
     ("POST", r"/api/briefing"): Handler.api_briefing_make,
     ("POST", r"/api/posts/(\d+)/extras"): Handler.api_post_extras,
     ("POST", r"/api/ask"): Handler.api_ask,
+    ("POST", r"/api/quick"): Handler.api_quick,
     ("GET", r"/api/admin/users"): Handler.api_admin_users,
     ("POST", r"/api/admin/features"): Handler.api_admin_features,
     ("GET", r"/api/admin/users/(\d+)/activity"): Handler.api_admin_activity,
