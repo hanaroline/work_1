@@ -1037,6 +1037,11 @@ function postCard(p, inDialog = false) {
     const btn = e.currentTarget; btn.disabled = true;
     try { await api(`/api/posts/${p.id}/retry`, { method: "POST", body: {} }); toast("다시 정리합니다"); runPost(p.id); refreshOne(p.id); }
     catch (err) { toast(err.message); btn.disabled = false; } } }));
+  if (inDialog && p.status === "done" && p.kind !== "notice" && canEdit(p)) acts.append(h("button", { type: "button", class: "btn", text: "↻ 다시 정리", onclick: async e => {
+    if (!confirm("이 자료를 AI 로 다시 정리할까요? 지금 요약은 새 요약으로 바뀝니다.")) return;
+    const btn = e.currentTarget; btn.disabled = true;
+    try { await api(`/api/posts/${p.id}/retry`, { method: "POST", body: {} }); toast("다시 정리합니다"); runPost(p.id); refreshOne(p.id); }
+    catch (err) { toast(err.message); btn.disabled = false; } } }));
   if (bad && canEdit(p)) acts.append(h("button", { type: "button", class: "btn", text: p.kind === "video" ? "자막 붙여 AI 정리" : "본문 붙여 AI 정리",
     onclick: () => { openFill.has(p.id) ? openFill.delete(p.id) : openFill.add(p.id); inDialog ? openPost(p.id) : renderFeed(); } }));
   const isAdm = state.me.role === "admin" && (p.views || isN);
