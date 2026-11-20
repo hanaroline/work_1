@@ -245,7 +245,9 @@ dialog{border:0;border-radius:20px;padding:0;max-width:min(600px,calc(100vw - 24
 dialog::backdrop{background:var(--scrim)}
 dialog .dh{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line)}
 dialog .dh h2{font-size:17px;margin:0;flex:1}
-dialog .db{padding:14px 18px 18px;max-height:78vh;overflow:auto}
+dialog .db{padding:14px 18px 18px;max-height:78vh;overflow:auto;overscroll-behavior:contain}
+html.modal-open,html.modal-open body{overflow:hidden}
+dialog,dialog::backdrop{overscroll-behavior:contain}
 dialog .db .post{border:0;border-radius:0;margin:0}
 dialog .db .post .body{padding:0}
 dialog input[type=text],dialog input[type=password],dialog select,.auth input{width:100%;border:1px solid var(--line);background:var(--field);border-radius:12px;padding:10px 12px}
@@ -1299,6 +1301,12 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden && st
 
 // ── 올리기 시트 ──
 let kind = "article", imgFile = null, imgUrl = null, pdf = null, sending = false;
+// 팝업(dialog)이 열려 있는 동안 뒤의 목록이 같이 스크롤되지 않게 페이지를 잠근다
+(() => {
+  const sync = () => document.documentElement.classList.toggle("modal-open", !!document.querySelector("dialog[open]"));
+  new MutationObserver(sync).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["open"] });
+  sync();
+})();
 function openSheet() { $("#scrim").classList.remove("hidden"); document.body.style.overflow = "hidden"; say(""); validate(); }
 function closeSheet(force) { if (sending && !force) return; $("#scrim").classList.add("hidden"); document.body.style.overflow = ""; setTimeout(() => window.applyUpdate && applyUpdate(), 800); }
 $("#openSheet").onclick = openSheet;
