@@ -1,5 +1,5 @@
 {
-  "ranAt": "2026-11-16T10:28:51Z",
+  "ranAt": "2026-11-20T02:08:31Z",
   "note": "발표기관 원문에서 확정 날짜를 받아 seed 를 갱신한 결과. ok=false 인 경로는 seed 를 손대지 않았다 — 검색으로 확인해 둔 날짜가 그대로 남아 있다.",
   "dryRun": false,
   "sources": {
@@ -9,7 +9,7 @@
       ],
       "ok": true,
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
-      "bytes": 168039,
+      "bytes": 168333,
       "count": 12,
       "changes": []
     },
@@ -72,11 +72,54 @@
         "https://www.bls.gov/schedule/news_release/bls.ics",
         "https://www.bls.gov/schedule/news_release/empsit.htm"
       ],
-      "ok": true,
-      "url": "https://www.bls.gov/schedule/news_release/bls.ics",
-      "bytes": 80672,
-      "count": 3,
-      "changes": []
+      "ok": false,
+      "tried": [
+        {
+          "url": "https://www.bls.gov/schedule/news_release/bls.ics",
+          "why": "믿을 수 없어 반영하지 않았다 — 구간 안의 발표일이 2개뿐이다",
+          "probe": {
+            "title": null,
+            "bytes": 80672,
+            "textChars": 80662,
+            "headings": [],
+            "sample": "BEGIN:VCALENDAR PRODID:-//Department of Labor//Bureau of Labor Statistics//EN VERSION:2.0 CALSCALE:GREGORIAN METHOD:PUBLISH SUMMARY:BLS.gov Economic News Release Schedule X-WR-CALNAME:BLS.gov Economic News Release Schedule X-WR-TIMEZONE:US-Eastern BEGIN:VTIMEZONE TZID:US-Eastern BEGIN:DAYLIGHT TZOFFSETFROM:-0500 TZOFFSETTO:-0400 DTSTART:20070311T020000 RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU TZNAME:EDT END:DAYLIGHT BEGIN:STANDARD TZOFFSETFROM:-0400 TZOFFSETTO:-0500 DTSTART:20071104T020000 RRULE:FR",
+            "shapes": {},
+            "around": [
+              "BEGIN:VCALENDAR PRODID:-//Department of Labor//Bureau of Labor Statistics//EN VERSION:2.0 CALSCALE:GREGORIAN METHOD:PUBLISH SUMMARY:BLS.gov Economic News Release Schedule X-WR-CALNAME:BLS.gov Economic News Release Schedule X-WR-TIMEZONE:US-Eastern BEGIN:VTIMEZONE TZID:US-Eastern BEGIN:DAYLIGHT TZOFFSETFROM:-0500 TZOFFSETTO:-0400 DTSTART:20070311T020000 RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU TZNAME:EDT END:DAYLIGHT BEGIN:STANDARD TZOFFSETFROM:-0400 TZOFFSETTO:-0500 DTSTART:20071104T020000 RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU TZNAME:EST END:STANDARD END:VTIMEZONE BEGIN:VEVENT SEQUENCE:1 CLASS:PUBLIC UID:f65741ec-4080-474c-b2e3-1349fe430963 DTSTART;TZID=US-Eastern:20250103T100000 DURATION:P",
+              "P:TRANSPARENT CATEGORIES:IMPORTANT, BLS END:VEVENT BEGIN:VEVENT SEQUENCE:1 CLASS:PUBLIC UID:b50a5dae-d0eb-4336-82a1-3340e52c526d DTSTART;TZID=US-Eastern:20250114T083000 DURATION:PT0M SUMMARY:Producer Price Index LOCATION:Washington\\, DC TRANSP:TRANSPARENT CATEGORIES:IMPORTANT, BLS END:VEVENT BEGIN:VEVENT SEQUENCE:1 CLASS:PUBLIC UID:dc9a84d6-deff-49aa-a07d-e7f3f3d8d2c3 DTSTART;TZID=US-Eastern:20250115T083000 DURATION:PT0M SUMMARY:Real Earnings LOCATION:Washington\\, DC TRANSP:TRANSPARENT CATEGORIES:IMPORTANT, BLS END:VEVENT BEGIN:VEVENT SEQUENCE:1 CLASS:PUBLIC UID:6f82e6b8-8b66-4da2-a29c-72643b3440bb DTSTART;TZID=US-Eastern:20250115T083000 DURATION:PT0M SUMMARY:Consumer Price Index LOCATION:Washington\\, DC TRANSP:TRANSPARENT CATEGORIES:IMPORTANT, BLS END:VEVENT BEGIN:VEVENT SEQUENCE:1 CLASS:PUBLIC UID:7f51bef7-dfc8-48c9-b184-4a824a68ea75 DTSTART;TZID=US-Eastern:20250116T083000 DURATION:PT0",
+              "Index LOCATION:Washington\\, DC TRANSP:TRANSPARENT CATEGORIES:IMPORTANT, BLS END:VEVENT BEGIN:VEVENT SEQUENCE:1 CLASS:PUBLIC UID:da9e7e6f-024a-4de1-bbeb-23238e1635a9 DTSTART;TZID=US-Eastern:20250204T100000 DURATION:PT0M SUMMARY:Job Openings and Labor Turnover Survey LOCATION:Washington\\, DC TRANSP:TRANSPARENT CATEGORIES:IMPORTANT, BLS END:VEVENT BEGIN:VEVENT SEQUENCE:1 CLASS:PUBLIC UID:51f1f331-302b-48a8-8593-3f54d0e6ac7e DTSTART;TZID=US-Eastern:20250205T100000 DURATION:PT0M SUMMARY:Metropolitan Area Employment and Unemployment (Monthly) LOCATION:Washington\\, DC TRANSP:TRANSPARENT CATEGORIES:IMPORTANT, BLS END:VEVENT BEGIN:VEVENT SEQUENCE:1 CLASS:PUBLIC UID:fca4738e-3d69-44c6-b6f7-d7c03910c39b DTSTART;TZID=US-Eastern:20250206T083000 DURATION:PT0M SUMMARY:Productivity and Costs LOCATION:Washington\\, DC TRANSP:TRANSPARENT CATEGORIES:IMPORTANT, BLS END:VEVENT BEGIN:VEVENT SEQUENCE:1 CLASS:PU"
+            ]
+          }
+        },
+        {
+          "url": "https://www.bls.gov/schedule/news_release/empsit.htm",
+          "why": "믿을 수 없어 반영하지 않았다 — 발표일을 0개만 읽었다",
+          "probe": {
+            "title": "Schedule of Releases for the Employment Situation",
+            "bytes": 55421,
+            "textChars": 7335,
+            "headings": [
+              "Schedule of Releases for the Employment Situation"
+            ],
+            "sample": "Schedule of Releases for the Employment Situation Skip to Content An official website of the United States government Here is how you know United States Department of Labor The .gov means it's official. Federal government websites often end in .gov or .mil. Before sharing sensitive information, make sure you're on a federal government site. The site is secure. The https:// ensures that you are connecting to the official website and that any information you provide is encrypted and transmitted se",
+            "shapes": {
+              "Month D, YYYY": {
+                "n": 1,
+                "e.g.": [
+                  "May 07, 2027"
+                ]
+              }
+            },
+            "around": [
+              ". 05, 2027</td> <td>08:30 AM</td> </tr> <tr class=\"release-list-odd-row\"> <td>March 2027</td> <td>Apr. 02, 2027</td> <td>08:30 AM</td> </tr> <tr class=\"release-list-even-row\"> <td>April 2027</td> <td>May 07, 2027</td> <td>08:30 AM</td> </tr> <tr class=\"release-list-odd-row\"> <td>May 2027</td> <td>Jun. 04, 2027</td> <td>08:30 AM</td> </tr> <tr class=\"release-list-even-row\"> <td>June 2027</td> <td>Jul. 02, 2027</td> <td>08:30 AM</td> </tr> <tr class=\"release-list-odd-row\"> <td>July 2027</td> <td>Aug. 06, 2027</td> <td>08:30 AM</td> </tr> <tr class=\"release-list-even-row\"> <td>August 2027</td> <td>Sep. 03, 2027</td> <td>08:30 AM</td> </tr> <tr class=\"release-list-odd-row\"> <td>September 2027</td> <td>Oct. 08, 2027</td> <td>08:30 AM</td> </tr> <tr class=\"release-list-even-row\"> <td>October 2027</td> <td>Nov. 05, 2027</td> <td>08:30 AM</td> </tr> <tr class=\"release-list-odd-row\"> <td>November",
+              "le iCal Users:</strong> <ul> <li>Simply click on the <a href=\"webcal://www.bls.gov/schedule/news_release/bls.ics\"><strong>link</strong></a> (Note: Link may seem to be broken if you do not have Outlook or Apple iCal installed.)</li> <li>If the <a href=\"webcal://www.bls.gov/schedule/news_release/bls.ics\"><strong>link</strong></a> doesn't work for you, try downloading the file at <a href=\"https://www.bls.gov/schedule/news_release/bls.ics\">www.bls.gov</a> and then open it as a new calendar or import its items into your calendar.</li> </ul> </li> </ul> <ul> <li><strong>Instructions for Google Calendar, Mozilla, and Evolution Users:</strong> <ul> <li>Copy and paste the URL address <strong>https://www.bls.gov/schedule/news_release/bls.ics</strong> into your calendar. </li> </ul> </li> </ul> <p>NOTE: We do not recommend ",
+              "cript>/*<![CDATA[*/(function(){var sz = document.createElement('script'); sz.type = 'text/javascript'; sz.async = true;sz.src = '//siteimproveanalytics.com/js/siteanalyze_6032860.js';var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(sz, s);})();/*]]>*/</script> <script src=\"/javascripts/touchpointsForms.js\"></script> <link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/touchpointsForms.css\"> <div id=\"footer-primary-wrapper\"> <div class=\"bootstrap standard-width\"> <div id=\"footer-container\" class=\"row\"> <div id=\"footer-links-container\" class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4\"> <div class=\"bls-lftside-holder\"> <div class=\"bls-logo-footer\"> <img src=\"/images/bls_emblem_trans.png\" class=\"responsiveImg\" alt=\"U.S. Bureau of Labor Statistics Logo \"/><div class=\"d-none d-md-block clearfloat\"><br><br></div> </div> <div class=\"address-contact-foote"
+            ],
+            "textAroundDates": "8:30 AM November 2026 Dec. 04, 2026 08:30 AM December 2026 Jan. 08, 2027 08:30 AM January 2027 Feb. 05, 2027 08:30 AM February 2027 Mar. 05, 2027 08:30 AM March 2027 Apr. 02, 2027 08:30 AM April 2027 May 07, 2027 08:30 AM May 2027 Jun. 04, 2027 08:30 AM June 2027 Jul. 02, 2027 08:30 AM July 2027 Aug. 06, 2027 08:30 AM August 2027 Sep. 03, 2027 08:30 AM September 2027 Oct. 08, 2027 08:30 AM October 2027 Nov. 05, 2027 08:30 AM November 2027 Dec. 03, 2027 08:30 AM Subscribe to the BLS Online Calendar Online calendar subscription &#8212; automatically updated : If you use a recent version of an electronic calendar, you may be able to subscribe to the BLS Online Calendar. See details below for users of different types of calendars. Instructions for Outlook and Apple iCal Users: Simply click on the link (Note: Link may seem to be broken if you do not have Outlook or Apple iCal installed.) If the link doesn't work for you, try downloading the file at www.bls.gov and then open it as a new calendar or import its items into your calendar. Instructions for Google Calendar, Mozilla, and Evolution Users: Copy and paste the URL address https://www.bls.gov/schedule/news_release/bls.ics into your calendar. NOTE: We do not recommend using this online calendar with Outlook 2003 or older versions. The calendar will not update automatically in those applications. The BLS calendar contains publication dates for most news releases scheduled to be issued by the BLS national office in upcoming months. It is updated as needed with additional news releases, usually at least a week before their scheduled publication date. Home Subjects Data Tools Publications Economic Releases Classroom Beta U.S. Bureau of Labor Statistics Office of Publications and Special Studies Suitland Federal Center Floor 7 4600 Silver Hill Road Washington, DC 20212-0002 Telephone: 202-691-5200 Telecommunications Relay Service: 7-1-1 www.bls.gov Contact Us resources Inspector General (OIG) Budget and Performance Departm"
+          }
+        }
+      ],
+      "why": "믿을 수 없어 반영하지 않았다 — 발표일을 0개만 읽었다"
     },
     "bls:us-ppi": {
       "urls": [
@@ -103,7 +146,7 @@
   },
   "summary": {
     "sources": 10,
-    "ok": 7,
-    "failed": 3
+    "ok": 6,
+    "failed": 4
   }
 }
