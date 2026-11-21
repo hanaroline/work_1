@@ -700,20 +700,37 @@ class _SafeRedirect(urllib.request.HTTPRedirectHandler):
 _opener = urllib.request.build_opener(_SafeRedirect())
 
 
+def bridge_target(url: str) -> str:
+    """앱으로 넘기는 중간 페이지(본문 없이 스크립트로만 이동)면 실제 기사 주소를, 아니면 ""."""
+    p = urllib.parse.urlsplit(url)
+    # 네이버 공유 단축주소(naver.me) → link.naver.com/bridge?url=<기사 주소>
+    if (p.hostname or "").lower() == "link.naver.com" and p.path.startswith("/bridge"):
+        t = urllib.parse.parse_qs(p.query).get("url", [""])[0]
+        if t.startswith(("http://", "https://")):
+            return t
+    return ""
+
+
 def fetch(url: str, timeout: int = 25) -> tuple[bytes, str, str]:
     """(본문, content-type, 최종 주소)."""
-    check_public_url(url)
-    req = urllib.request.Request(url, headers={
-        "User-Agent": USER_AGENT,
-        "Accept": "text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.8",
-        "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.7",
-    })
-    with _opener.open(req, timeout=timeout) as resp:
-        ctype = resp.headers.get("Content-Type", "")
-        data = resp.read(MAX_FETCH + 1)
-        if len(data) > MAX_FETCH:
-            raise ValueError("파일이 20MB를 넘어 읽지 않았습니다")
-        return data, ctype, resp.geturl()
+    for _ in range(2):
+        check_public_url(url)
+        req = urllib.request.Request(url, headers={
+            "User-Agent": USER_AGENT,
+            "Accept": "text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.8",
+            "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.7",
+        })
+        with _opener.open(req, timeout=timeout) as resp:
+            ctype = resp.headers.get("Content-Type", "")
+            data = resp.read(MAX_FETCH + 1)
+            if len(data) > MAX_FETCH:
+                raise ValueError("파일이 20MB를 넘어 읽지 않았습니다")
+            final = resp.geturl()
+        nxt = bridge_target(final)
+        if not nxt:
+            break
+        url = nxt
+    return data, ctype, final
 
 
 def decode_html(data: bytes, ctype: str) -> str:
