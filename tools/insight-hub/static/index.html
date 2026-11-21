@@ -195,6 +195,7 @@ header.top h1::before,.sheet h2::before,.auth h2::before{content:"";flex:none;wi
 .close{border:0;background:none;color:var(--sub);font-size:16px;cursor:pointer;padding:6px}
 .lbl{font-weight:700;font-size:15px;margin:18px 0 8px;color:var(--ink)}
 .lbl small{font-weight:500;color:var(--faint);font-size:14px}
+.lbl .pasteBtn{float:right;font-size:13px;font-weight:700;color:var(--brand,#13294b);background:none;border:1px solid var(--line);border-radius:999px;padding:3px 12px;cursor:pointer}
 .field{width:100%;border:1px solid var(--line);background:var(--field);border-radius:16px;padding:14px 16px;font-size:16px}
 .field::placeholder{color:var(--faint)}
 textarea.field{min-height:130px;resize:vertical;line-height:1.55}
@@ -418,8 +419,8 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
     </div>
 
     <div data-for="article">
-      <div class="lbl"><label for="aUrl">기사 주소</label></div>
-      <input class="field" type="url" id="aUrl" placeholder="https:// 기사 주소를 붙여넣어 주세요" inputmode="url">
+      <div class="lbl"><label for="aUrl">기사 주소</label><button type="button" class="pasteBtn" data-into="#aUrl">방금 복사한 링크 넣기</button></div>
+      <input class="field" type="url" id="aUrl" placeholder="https:// 기사 주소를 붙여넣어 주세요" inputmode="url" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
       <div class="lbl"><label for="aText">기사 본문</label> <small>(선택)</small></div>
       <textarea class="field" id="aText" placeholder="유료·로그인 기사는 본문을 전체 선택해 붙여넣어 주세요"></textarea>
       <div class="hint" id="aHint">주소만 넣으면 AI가 기사를 직접 읽고 정리합니다. 사이트가 막혀 있으면 카드에 ‘본문 붙여 AI 정리’ 칸이 생깁니다. 주소 없이 본문만 넣어도 됩니다.</div>
@@ -432,8 +433,8 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
       <div class="hint">링크나 파일 없이 글만 올립니다. AI가 이 글을 읽고 요약·핵심 정리를 붙입니다. 고객 이름·계좌번호 같은 개인정보는 넣지 마세요.</div>
     </div>
     <div data-for="youtube" class="hidden">
-      <div class="lbl"><label for="yUrl">유튜브 주소</label></div>
-      <input class="field" type="url" id="yUrl" placeholder="https://youtu.be/..." inputmode="url">
+      <div class="lbl"><label for="yUrl">유튜브 주소</label><button type="button" class="pasteBtn" data-into="#yUrl">방금 복사한 링크 넣기</button></div>
+      <input class="field" type="url" id="yUrl" placeholder="https://youtu.be/..." inputmode="url" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
       <div class="lbl"><label for="yText">영상 자막</label> <small>(선택)</small></div>
       <textarea class="field" id="yText" placeholder="비공개·일부공개 영상이면 ‘스크립트 표시’ → 자막 전체를 붙여넣어 주세요"></textarea>
       <div class="hint">공개 영상은 주소만 넣으면 Gemini가 영상을 직접 보고 정리합니다(몇 분 걸릴 수 있습니다). 자막을 붙이면 그 자막으로 정리합니다.</div>
@@ -1381,6 +1382,15 @@ function hasMaterial() {
 }
 function validate() { $("#submit").disabled = sending || !$("#agree").checked || !hasMaterial(); }
 for (const id of ["#aUrl", "#yUrl", "#aText", "#yText", "#tText"]) $(id).addEventListener("input", validate);
+// 입력칸을 누르면 휴대폰이 예전에 넣었던 주소를 추천해 잘못 올라가는 일이 있어, 클립보드에서 바로 넣는 단추를 둔다
+for (const b of document.querySelectorAll(".pasteBtn")) b.addEventListener("click", async () => {
+  try {
+    const t = (await navigator.clipboard.readText() || "").trim();
+    const m = t.match(/https?:\/\/[^\s<>"']+/i);
+    if (!m) { toast("복사한 내용에 링크가 없습니다"); return; }
+    const el = $(b.dataset.into); el.value = m[0].replace(/[).,]+$/, ""); el.dispatchEvent(new Event("input"));
+  } catch (_) { toast("이 앱에서는 바로 넣을 수 없습니다 — 칸을 길게 눌러 ‘붙여넣기’를 골라 주세요"); }
+});
 $("#tText").addEventListener("input", () => { const n = $("#tText").value.trim().length; $("#tCount").textContent = n ? `${n.toLocaleString()}자` : ""; });
 $("#agree").addEventListener("change", validate);
 function say(msg, err) { const s = $("#status"); s.textContent = msg; s.className = "status" + (err ? " err" : ""); }
