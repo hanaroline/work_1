@@ -1,6 +1,6 @@
 {
   "deliverable": "제38271~38287회 ELS 세일즈 제안서 (8p PPT) + 분석자료 (HTML/PDF)",
-  "as_of": "2026-11-20",
+  "as_of": "2026-11-23",
   "series_policy": {
     "연 수익률": "일괄신고추가서류 공시 원문",
     "공정가격(원)": "일괄신고추가서류 공시 원문 (액면 1만원 기준)",
@@ -9406,18 +9406,37 @@
       "kind": "data_quality",
       "metric": "온라인 전용 확인",
       "text": "홈페이지에서 확인된 이번 회차 상품 수",
-      "value": 0,
+      "value": 17,
       "unit": "종",
-      "series": "미래에셋증권 ELS/DLS 캘린더 (자체 수집)",
-      "as_of": "2026-11-20",
+      "series": "미래에셋증권 ELS/DLS 캘린더 화면 (자체 수집)",
+      "as_of": "2026-11-22",
       "tier": 1,
       "source_url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
-      "verdict": "unverified",
-      "render": "marked",
-      "note": "수집 시점에 홈페이지가 이번 회차를 아직 싣지 않았다. 온라인 전용 여부를 단정할 수 없어 자료에 미확인으로 적는다",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "상품명 끝의 e 로 온라인 전용을 판정했다. 17종 중 17종이 목록에서 확인되었고 그중 7종이 온라인 전용이다",
       "printed_on": [
         "p2-note",
         "p8-basis"
+      ]
+    },
+    {
+      "id": "ONLINE_COUNT",
+      "kind": "data_quality",
+      "metric": "온라인 전용 확인",
+      "text": "영업점 창구 청약이 안 되는(온라인 전용) 상품 수",
+      "value": 7,
+      "unit": "종",
+      "series": "미래에셋증권 ELS/DLS 캘린더 화면 (자체 수집)",
+      "as_of": "2026-11-22",
+      "tier": 1,
+      "source_url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "제38281·38282·38283·38284·38285·38286·38287회",
+      "printed_on": [
+        "p2-row",
+        "p4-row"
       ]
     },
     {
