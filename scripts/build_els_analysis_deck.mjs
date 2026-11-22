@@ -14,9 +14,10 @@
  * 표·도형·차트는 전부 네이티브라 파워포인트에서 그대로 고칠 수 있다.
  */
 import pptxgen from 'pptxgenjs';
-import { analyze, kindOf, tierOf, idxWorstOver, rankLow, regSlopeText, KINDS, TIER_RULE, money, baseOf, unitOf, josa, perRiskVsIdx, sensText, rhoLabel, togetherOf, rhoValOf, sameGroupText } from './lib/els-analysis.mjs';
+import { analyze, riskOf, kindOf, tierOf, idxWorstOver, rankLow, regSlopeText, KINDS, TIER_RULE, money, baseOf, unitOf, josa, perRiskVsIdx, sensText, rhoLabel, togetherOf, rhoValOf, sameGroupText } from './lib/els-analysis.mjs';
 
 const A = await analyze(process.argv[2]);
+const RISK = riskOf(A.items);   // 상품위험등급 — 회차마다 공시에서 읽는다
 const OUT = 'els-analysis-deck.pptx';   // 문서판 els-analysis.pdf 와 겹치지 않게
 
 // ── 미래에셋 팔레트 ─────────────────────────────────────────────────────────
@@ -137,10 +138,10 @@ const stockAnswer = !stockRec
     + (A.plan.hasCooling ? `  개인 일반투자자 청약 마감은 ${dayLabel(A.plan.retailEnd)}입니다.` : ''), {
     x: M, y: 5.9, w: CW, h: 0.34, fontFace: F, fontSize: 12, color: WHITE, margin: 0,
   });
-  s.addText('원금비보장 · 상품위험등급 1등급(매우높은위험) · 투자 권유 참고자료', {
+  s.addText(`원금비보장 · 상품${RISK.short} · 투자 권유 참고자료`, {
     x: M, y: 6.26, w: CW, h: 0.3, fontFace: F, fontSize: 11, color: WHITE, margin: 0,
   });
-  s.addNotes(`이번 회차 ${A.items.length}종. 청약 ${A.offer[0]}~${A.offer[1]}. 전부 원금비보장 1등급입니다.`);
+  s.addNotes(`이번 회차 ${A.items.length}종. 청약 ${A.offer[0]}~${A.offer[1]}. 전부 원금비보장, ${RISK.short}.`);
 }
 
 function dayLabel(iso) {
@@ -224,7 +225,7 @@ if (A.plan.hasCooling) {
   });
 
   const bullets = [
-    `${A.items.length}종 전부 원금을 잃을 수 있는 상품이고, 위험등급도 가장 높은 1등급입니다. 이 문서가 붙인 등급은 안전하다는 뜻이 아니라 ${A.items.length}종끼리 줄 세운 순서입니다.`,
+    `${A.items.length}종 전부 원금을 잃을 수 있는 상품이고, ${RISK.allTop ? '위험등급도 가장 높은 1등급입니다.' : `위험등급은 ${RISK.mainLabel}이 기본이고 ${RISK.except}입니다.`} 이 문서가 붙인 등급은 안전하다는 뜻이 아니라 ${A.items.length}종끼리 줄 세운 순서입니다.`,
     `같은 1만원을 넣어도 실제 값어치가 다릅니다. 가장 좋은 제${A.gapBest.no}회는 ${money(A.gapBest, A.gapBest.fairValue / 100)}, 가장 나쁜 제${A.gapWorst.no}회는 ${money(A.gapWorst, A.gapWorst.fairValue / 100)}입니다. 홈페이지 상품 목록에는 나오지 않는 차이입니다.`,
     `컴퓨터로 다시 돌린 손해 볼 가능성은 이번 주 평균 ${f1(A.mcAvgAll)}%입니다. 가장 낮은 제${A.safest[0].no}회 ${f1(A.safest[0].mcLoss)}%부터 가장 높은 제${A.safest[A.safest.length - 1].no}회 ${f1(A.safest[A.safest.length - 1].mcLoss)}%까지 벌어집니다.`,
     `개별 종목이 섞이면 손해 볼 가능성이 지수만 담은 상품의 ${f1(A.kindRatio)}배입니다. 다만 상품 하나하나로 보면 뒤집히는 경우가 있어, 자산 종류가 아니라 상품별 가능성으로 등급을 매겼습니다.`,

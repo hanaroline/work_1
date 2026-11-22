@@ -21,12 +21,14 @@
 import { writeFile } from 'node:fs/promises';
 import {
   analyze, kindOf, tierOf, idxWorstOver, rankLow, regSlopeText, KINDS, TIER_RULE, IDX, MC, money, baseOf, unitOf, josa, perRiskVsIdx, sensText, rhoLabel, togetherOf, rhoValOf, sameGroupText,
+  riskOf,
 } from './lib/els-analysis.mjs';
 
 const OUT = 'els-analysis.html';
 
 // 숫자·등급·추천은 전부 분석층에서 나온다. 이 파일은 그것을 문서로 옮기는 일만 한다.
 const A = await analyze(process.argv[2]).catch((e) => { console.error(e.message); process.exit(1); });
+const RISK = riskOf(A.items);   // 상품위험등급 — 회차마다 공시에서 읽는다
 const {
   rcp: RCP, items, head, H, filedOn, checkedAt, onOfferNow,
   byKind, mcAvgAll, kindRatio, safest, idxWorst, stockBest,
@@ -763,7 +765,7 @@ ${plan.hasCooling ? `<section class="tl">
     <div class="stat"><span>이 문서가 매긴 등급</span><b>${tierCount[0]} / ${tierCount[1]} / ${tierCount[2]}</b><small>방어적 / 중간 / 공격적</small></div>
   </div>
   <ul class="keys">
-    <li>${items.length}종 <b>전부 원금을 잃을 수 있는 상품</b>이고, 위험 등급도 가장 높은 1등급(매우높은위험)입니다. 이 문서가 붙인 방어적·중간·공격적은 안전하다는 뜻이 아니라 <b>${items.length}종끼리 줄을 세운 순서</b>일 뿐입니다.</li>
+    <li>${items.length}종 <b>전부 원금을 잃을 수 있는 상품</b>이고, ${RISK.allTop ? '위험 등급도 가장 높은 1등급(매우높은위험)입니다.' : `위험 등급은 ${RISK.mainLabel}이 기본이고 ${RISK.except}입니다.`} 이 문서가 붙인 방어적·중간·공격적은 안전하다는 뜻이 아니라 <b>${items.length}종끼리 줄을 세운 순서</b>일 뿐입니다.</li>
     <li>같은 1만원을 넣어도 <b>상품마다 실제 값어치가 다릅니다.</b> 가장 좋은 제${gapBest.no}회는 ${money(gapBest, gapBest.fairValue / 100)}, 가장 나쁜 제${gapWorst.no}회는 ${money(gapWorst, gapWorst.fairValue / 100)}입니다. 나머지는 회사 몫으로 빠지는 비용인데, <b>이 차이는 홈페이지 상품 목록에 나오지 않습니다.</b></li>
     <li>회사가 값을 매길 때 잡은 <b>가격 출렁임</b>은 ${vols.slice(0, 2).map(([a, v]) => `<b>${esc(a)} ${f1(v, 0)}%</b>`).join(', ')} 순으로 큽니다. 많이 출렁일수록 받는 수익률도 높지만, 그만큼 <b>아래로도 크게 빠질 수 있다</b>는 뜻입니다.</li>
   </ul>
@@ -979,7 +981,7 @@ ${[
       </tbody>
     </table>
   </div>
-  <p class="tnote">위험 등급 <b>1등급(매우높은위험)</b>도 자주 오해받는 말입니다. 1등급이 제일 좋다는 뜻이 아니라 <b>가장 위험하다</b>는 뜻입니다. 이번 주 ${items.length}종이 전부 1등급입니다.</p>
+  <p class="tnote">위험 등급 <b>1등급(매우높은위험)</b>도 자주 오해받는 말입니다. 1등급이 제일 좋다는 뜻이 아니라 <b>가장 위험하다</b>는 뜻입니다. ${RISK.allTop ? `이번 주 ${items.length}종이 전부 1등급입니다.` : `이번 주 ${RISK.except}이고, 나머지는 ${RISK.mainLabel}입니다.`}</p>
 </section>
 
 </main>

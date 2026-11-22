@@ -56,7 +56,7 @@ export const TIERS = [
 // 등급 설명은 산출물마다 다시 쓰면 갈라진다. HTML·PPT 가 같은 문장을 가져다 쓴다.
 export const TIER_RULE = `등급은 B(같은 조건으로 돌린 손실 확률) 하나로만 가릅니다 — `
   + `${TIER_CUT[0]}% 이하 방어적, ${TIER_CUT[0]}~${TIER_CUT[1]}% 중간, ${TIER_CUT[1]}% 초과 공격적. `
-  + `수익률이나 기초자산 종류는 등급에 넣지 않았습니다. 모두 원금비보장 1등급 상품이므로 "안전"이 아니라 서로 견준 순서입니다.`;
+  + `수익률이나 기초자산 종류는 등급에 넣지 않았습니다. 모두 원금비보장 상품이므로 "안전"이 아니라 서로 견준 순서입니다.`;
 
 /**
  * 손실 확률 1%당 받는 연 수익률 — "위험당 대가". 완전 비례라면 모두 같은 값이어야 한다.
@@ -142,6 +142,38 @@ export const josa = (word, withJong, withoutJong) => {
   if (!(c >= 0xac00 && c <= 0xd7a3)) return `${withJong}(${withoutJong})`;
   return (c - 0xac00) % 28 ? withJong : withoutJong;
 };
+
+/**
+ * 상품위험등급 — 공시 표지의 "투자위험등급 : N등급" 을 회차마다 읽은 값.
+ * 예전에는 "전 종목 1등급" 을 박아 두었는데, 제38271회가 2등급(높은위험)이라
+ * 창구에서 틀린 등급을 읽게 됐다(2026-11-20 판). 다수 등급을 기본으로 두고
+ * 다른 회차만 따로 짚는다.
+ */
+const RISK_LABEL = { 1: '매우높은위험', 2: '높은위험', 3: '다소높은위험', 4: '보통위험', 5: '낮은위험', 6: '매우낮은위험' };
+export function riskOf(items) {
+  const by = new Map();
+  for (const i of items) {
+    const g = i.riskGrade ?? null;
+    if (!by.has(g)) by.set(g, []);
+    by.get(g).push(i);
+  }
+  const groups = [...by.entries()].sort((a, b) => b[1].length - a[1].length || (a[0] ?? 9) - (b[0] ?? 9));
+  const lab = (g) => g == null ? '위험등급 미확인' : `${g}등급(${RISK_LABEL[g] ?? '?'})`;
+  const [mainG] = groups[0];
+  const others = groups.slice(1);
+  const nos = (g) => `제${g.map((i) => i.no).join('·')}회`;
+  return {
+    uniform: others.length === 0,
+    main: mainG,
+    mainLabel: lab(mainG),
+    /** "위험등급 1등급(매우높은위험)" 또는 "위험등급 1등급(매우높은위험) — 제38271회만 2등급(높은위험)" */
+    short: others.length === 0 ? `위험등급 ${lab(mainG)}`
+      : `위험등급 ${lab(mainG)} — ${others.map(([g, l]) => `${nos(l)}${others.length === 1 ? '만' : '는'} ${lab(g)}`).join(', ')}`,
+    /** 다른 등급 회차만 — "제38271회는 2등급(높은위험)" (없으면 '') */
+    except: others.map(([g, l]) => `${nos(l)}는 ${lab(g)}`).join(', '),
+    allTop: others.length === 0 && mainG === 1,
+  };
+}
 
 function enrich(item, H, rcp) {
   const p = fromProspectus(item);

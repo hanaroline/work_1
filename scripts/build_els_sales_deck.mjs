@@ -16,9 +16,10 @@
  */
 import { readFile } from 'node:fs/promises';
 import pptxgen from 'pptxgenjs';
-import { analyze, kindOf, tierOf, unitOf, money, perRiskOf, perRiskSpread, TIER_CUT, sensText } from './lib/els-analysis.mjs';
+import { analyze, riskOf, kindOf, tierOf, unitOf, money, perRiskOf, perRiskSpread, TIER_CUT, sensText } from './lib/els-analysis.mjs';
 
 const A = await analyze(process.argv[2]);   // 인자가 없으면 가장 최근 공시 회차
+const RISK = riskOf(A.items);                // 상품위험등급 — 회차마다 공시에서 읽는다
 const OUT = 'els-sales-deck.pptx';
 
 // ── 미래에셋 팔레트 ─────────────────────────────────────────────────────────
@@ -273,7 +274,7 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
     );
   }
 
-  s.addText('전 종목 원금비보장 · 위험등급 1등급(매우높은위험) · 예금자보호 대상 아님', {
+  s.addText(`전 종목 원금비보장 · ${RISK.short} · 예금자보호 대상 아님`, {
     x: M, y: 6.72, w: CW, h: 0.28, fontFace: F, fontSize: 10, color: WHITE, margin: 0,
   });
 }
@@ -870,7 +871,7 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
   s.addText('반드시 말해야 할 여섯 가지', { x: rx, y: y0, w: rw, h: 0.3, fontFace: F, fontSize: 13, bold: true, color: INK, margin: 0 });
   s.addShape(pres.ShapeType.rect, { x: rx, y: y0 + 0.34, w: rw, h: 0.012, fill: { color: BAD }, line: { width: 0 } });
   const must = [
-    '원금비보장 · 위험등급 1등급(매우높은위험). 원금 전액(-100%) 손실이 가능합니다.',
+    `원금비보장 · ${RISK.short}. 원금 전액(-100%) 손실이 가능합니다.`,
     '예금자보호법 대상이 아닙니다.',
     '발행사 신용위험 — 미래에셋증권이 지급 불이행하면 조건과 무관하게 손실이 납니다 (신용등급 AA).',
     '거래소 비상장 — 만기 전 현금화가 어렵고, 중도상환 시 상환비용으로 원금에 미달할 수 있습니다.',
