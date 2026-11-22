@@ -1,9 +1,9 @@
 {
- "builtAt": "2026-11-16 19:28 KST",
- "builtAtUtc": "2026-11-16T10:28:55Z",
+ "builtAt": "2026-11-23 08:07 KST",
+ "builtAtUtc": "2026-11-22T23:07:32Z",
  "window": {
-  "from": "2026-10-02",
-  "to": "2028-03-30"
+  "from": "2026-10-08",
+  "to": "2028-04-05"
  },
  "note": "증시 일정 캘린더. confirmed 는 official(공식 확인) · websearch(검색 교차 확인) · tentative(기관이 잠정으로 공표) · estimate(제공사 추정 구간) · rule(규칙으로 만든 날짜) 다. 확정이 아닌 것은 화면에서 배지로 구분한다.",
  "confirmed_legend": {
@@ -21,20 +21,20 @@
   "rule": "Derived from the usual release cadence — not confirmed"
  },
  "counts": {
-  "policy": 59,
-  "indicator": 169,
+  "policy": 60,
+  "indicator": 168,
   "earnings": 266,
   "conference": 9,
-  "supply": 36,
-  "holiday": 93,
+  "supply": 37,
+  "holiday": 91,
   "other": 2,
-  "total": 634,
+  "total": 633,
   "confirmed": {
-   "official": 409,
+   "official": 406,
    "websearch": 12,
    "tentative": 0,
    "estimate": 0,
-   "rule": 213
+   "rule": 215
   }
  },
  "sources": {
@@ -78,49 +78,49 @@
  "context": {
   "policy_rate_us": {
    "effr_pct": 3.88,
-   "date": "2026-11-12",
+   "date": "2026-11-19",
    "percentile_1": 3.85,
    "percentile_99": 3.9,
-   "volume_bn_usd": 99,
+   "volume_bn_usd": 100,
    "note": "실효 연방기금금리. 하루 지연 공표라 시세일보다 하루 이르다",
    "source_url": "https://markets.newyorkfed.org/api/rates/unsecured/effr",
    "perf": {
     "w1": 0.0,
     "m1": 0.0,
     "m3": 25.0,
-    "m6": 25.0,
-    "y1": 1.0,
+    "m6": 26.0,
+    "y1": 0.0,
     "ytd": 24.0,
     "unit": "bp",
-    "from": "2025-04-10"
+    "from": "2025-04-17"
    },
    "series_days": 400
   },
   "fed_implied": {
-   "contract_price": 95.825,
-   "implied_rate_pct": 4.175,
-   "quote_date": "2026-11-16",
+   "contract_price": 96.12,
+   "implied_rate_pct": 3.88,
+   "quote_date": "2026-11-20",
    "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 — 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
    "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
    "effr_pct": 3.88,
-   "vs_effr_bp": 29,
+   "vs_effr_bp": 0,
    "perf": {
-    "w1": 29.8,
-    "m1": 28.8,
-    "m3": 54.9,
-    "m6": 54.9,
-    "y1": 29.8,
-    "ytd": 45.3,
+    "w1": 0.0,
+    "m1": -1.0,
+    "m3": 25.1,
+    "m6": 25.1,
+    "y1": 0.0,
+    "ytd": 15.4,
     "unit": "bp",
     "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
    }
   },
   "rates_kr": {
-   "call": 3.055,
-   "cd91": 3.37,
-   "cofix_new": 3.43,
-   "cofix_balance": 3.15,
-   "cofix_new_balance": 2.79,
+   "call": 3.074,
+   "cd91": 3.38,
+   "cofix_new": 3.62,
+   "cofix_balance": 3.26,
+   "cofix_new_balance": 2.93,
    "source_url": "https://stock.naver.com/api/securityService/marketindex/majors/domesticInterest",
    "unit": "%",
    "items": [
@@ -131,71 +131,71 @@
     "COFIX 신잔액"
    ],
    "ktb10y_errors": [
-    "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(133090 bytes)",
-    "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
+    "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(94779 bytes)"
    ],
-   "ktb1y": 3.631,
-   "ktb5y": 3.841,
-   "ktb10y": 4.001,
+   "ktb10y": 3.857,
+   "ktb10y_source": "https://kr.investing.com/rates-bonds/south-korea-10-year-bond-yield",
+   "ktb1y": 3.62,
+   "ktb5y": 3.728,
    "perf": {
     "ktb1y": {
-     "w1": 6.3,
-     "m1": -6.3,
-     "m3": 22.9,
+     "w1": -1.1,
+     "m1": -7.2,
+     "m3": 21.6,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb5y": {
-     "w1": 11.0,
-     "m1": -14.7,
-     "m3": -20.6,
+     "w1": -11.3,
+     "m1": -26.2,
+     "m3": -33.8,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb10y": {
-     "w1": 13.8,
-     "m1": -18.1,
-     "m3": -31.2,
+     "w1": -14.4,
+     "m1": -31.9,
+     "m3": -46.6,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "cd91": {
-     "w1": 3.0,
-     "m1": 12.0,
-     "m3": 43.0,
+     "w1": 1.0,
+     "m1": 13.0,
+     "m3": 44.0,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "call": {
-     "w1": 2.1,
-     "m1": 1.2,
-     "m3": 29.5,
+     "w1": 1.3,
+     "m1": 3.8,
+     "m3": 31.4,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "cofix_new": {
-     "w1": 0.0,
-     "m1": 0.0,
-     "m3": 38.0,
+     "w1": 19.0,
+     "m1": 19.0,
+     "m3": 44.0,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "cofix_balance": {
-     "w1": 0.0,
-     "m1": 0.0,
+     "w1": 11.0,
+     "m1": 11.0,
      "unit": "bp",
      "from": "2026-08-21",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     }
    }
   },
-  "asof_kst": "2026-11-16 16:15:41"
+  "asof_kst": "2026-11-22 11:04:14"
  },
  "holidays": [
   {
@@ -2336,12 +2336,6 @@
    "market": "us",
    "sector": "it"
   },
-  "LITE": {
-   "ko": "루멘텀홀딩스",
-   "en": "Lumentum Holdings",
-   "market": "us",
-   "sector": "it"
-  },
   "WM": {
    "ko": "웨이스트매니지먼트",
    "en": "Waste Management",
@@ -2677,6 +2671,12 @@
    "en": "Arthur J. Gallagher & Co.",
    "market": "us",
    "sector": "fin"
+  },
+  "WAT": {
+   "ko": "워터스",
+   "en": "Waters",
+   "market": "us",
+   "sector": "hc"
   }
  },
  "earnings_snapshot_bases": {
@@ -2706,7 +2706,7 @@
    "calendar_url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "rule_note_en": "Usually in the second week of the month, 08:30 ET",
    "why_en": "The single biggest mover of the expected policy path; core month-on-month is what matters",
-   "fetched_at": "2026-11-16"
+   "fetched_at": "2026-11-22"
   },
   {
    "id": "us-empsit",
@@ -2823,7 +2823,7 @@
    "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
    "rule_note_en": "Usually in the same week as CPI, 08:30 ET",
    "why_en": "Price pressure one stage before it reaches CPI",
-   "fetched_at": "2026-11-16"
+   "fetched_at": "2026-11-22"
   },
   {
    "id": "us-claims",
@@ -3086,7 +3086,7 @@
    "source_en": "Federal Reserve — FOMC meeting calendars",
    "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local",
    "meetings_per_year": 8,
-   "fetched_at": "2026-11-16"
+   "fetched_at": "2026-11-22"
   },
   {
    "key": "bok",
@@ -3125,7 +3125,7 @@
    "source_en": "ECB — Meetings of the Governing Council and the General Council",
    "projections_note_en": "ECB staff macroeconomic projections accompany the March, June, September and December meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-11-16"
+   "fetched_at": "2026-11-22"
   },
   {
    "key": "boj",
@@ -3143,7 +3143,7 @@
    "source_en": "Bank of Japan — Monetary Policy Meetings",
    "projections_note_en": "The quarterly Outlook Report accompanies the January, April, July and October meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-11-16"
+   "fetched_at": "2026-11-22"
   },
   {
    "key": "boe",
@@ -3161,7 +3161,7 @@
    "source_en": "Bank of England — Upcoming MPC dates",
    "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-11-16"
+   "fetched_at": "2026-11-22"
   },
   {
    "key": "pboc",
@@ -3565,158 +3565,6 @@
   }
  ],
  "events": [
-  {
-   "id": "indicator-us-empsit-2026-10-02",
-   "date": "2026-10-02",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 3,
-   "title_ko": "미국 고용상황 (비농업 취업자수·실업률)",
-   "title_en": "US Employment Situation",
-   "org": "美 노동통계국 (BLS)",
-   "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "고용이 꺾이는지로 금리 인하 기대가 갈린다. 시간당임금 상승률도 함께 본다",
-   "detail_en": "Whether hiring is cracking decides rate-cut expectations; average hourly earnings matter too",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2026-10-02 21:30",
-   "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
-   "source": "美 노동통계국 (BLS)",
-   "source_en": "Bureau of Labor Statistics",
-   "confirmed": "official",
-   "tags": [
-    "indicator",
-    "us-empsit"
-   ]
-  },
-  {
-   "id": "indicator-kr-cpi-2026-10-02",
-   "date": "2026-10-02",
-   "end_date": null,
-   "country": "kr",
-   "category": "indicator",
-   "importance": 3,
-   "title_ko": "한국 소비자물가동향",
-   "title_en": "Korea CPI",
-   "org": "통계청",
-   "org_en": "Statistics Korea",
-   "detail_ko": "통상 매월 초(1~4일) 08:00",
-   "detail_en": "Usually in the first days of the month, 08:00",
-   "time_local": "08:00",
-   "tz": "Asia/Seoul",
-   "time_kst": "2026-10-02 08:00",
-   "url": "https://kostat.go.kr/board.es?mid=a10501010000&bid=11570",
-   "source": "통계청",
-   "source_en": "Statistics Korea",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "kr-cpi"
-   ]
-  },
-  {
-   "id": "holiday-kr-2026-10-03",
-   "date": "2026-10-03",
-   "end_date": null,
-   "country": "kr",
-   "category": "holiday",
-   "importance": 1,
-   "title_ko": "한국 (KRX) 개천절 — 주말과 겹쳐 원래 휴장",
-   "title_en": "Korea (KRX) National Foundation Day — weekend",
-   "org": "한국 (KRX)",
-   "org_en": "Korea (KRX)",
-   "detail_ko": null,
-   "detail_en": null,
-   "time_local": null,
-   "tz": null,
-   "time_kst": null,
-   "url": "https://english.sse.com.cn/start/trading/schedule/",
-   "source": "data/market/holidays.json",
-   "source_en": "data/market/holidays.json",
-   "confirmed": "official",
-   "tags": [
-    "holiday",
-    "kr",
-    "weekend"
-   ]
-  },
-  {
-   "id": "indicator-us-ism-svc-2026-10-05",
-   "date": "2026-10-05",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 2,
-   "title_ko": "미국 ISM 서비스업 PMI",
-   "title_en": "US ISM Services PMI",
-   "org": "美 공급관리협회 (ISM)",
-   "org_en": "Institute for Supply Management",
-   "detail_ko": "통상 매월 셋째 영업일 10:00 ET",
-   "detail_en": "Usually the third business day of the month, 10:00 ET",
-   "time_local": "10:00",
-   "tz": "America/New_York",
-   "time_kst": "2026-10-05 23:00",
-   "url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/",
-   "source": "美 공급관리협회 (ISM)",
-   "source_en": "Institute for Supply Management",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-ism-svc"
-   ]
-  },
-  {
-   "id": "holiday-kr-2026-10-05",
-   "date": "2026-10-05",
-   "end_date": null,
-   "country": "kr",
-   "category": "holiday",
-   "importance": 2,
-   "title_ko": "한국 (KRX) 개천절 대체공휴일 — 종일 휴장",
-   "title_en": "Korea (KRX) Substitute holiday — full",
-   "org": "한국 (KRX)",
-   "org_en": "Korea (KRX)",
-   "detail_ko": null,
-   "detail_en": null,
-   "time_local": null,
-   "tz": null,
-   "time_kst": null,
-   "url": "https://english.sse.com.cn/start/trading/schedule/",
-   "source": "data/market/holidays.json",
-   "source_en": "data/market/holidays.json",
-   "confirmed": "official",
-   "tags": [
-    "holiday",
-    "kr",
-    "full"
-   ]
-  },
-  {
-   "id": "indicator-cn-trade-2026-10-07",
-   "date": "2026-10-07",
-   "end_date": null,
-   "country": "cn",
-   "category": "indicator",
-   "importance": 1,
-   "title_ko": "중국 수출입 (해관총서)",
-   "title_en": "China Trade Balance",
-   "org": "중국 해관총서",
-   "org_en": "General Administration of Customs China",
-   "detail_ko": "통상 매월 상순 — 발표 시각이 고정돼 있지 않다",
-   "detail_en": "Usually in the first third of the month — no fixed release time",
-   "time_local": null,
-   "tz": "Asia/Shanghai",
-   "time_kst": null,
-   "url": "http://english.customs.gov.cn/",
-   "source": "중국 해관총서",
-   "source_en": "General Administration of Customs China",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "cn-trade"
-   ]
-  },
   {
    "id": "kr-option-expiry-2026-10-08",
    "date": "2026-10-08",
@@ -7450,32 +7298,6 @@
    ]
   },
   {
-   "id": "earnings-034730.KS-2026-11-16",
-   "date": "2026-11-16",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "SK 실적발표",
-   "title_en": "SK Inc. earnings",
-   "org": "034730.KS",
-   "org_en": "034730.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/034730.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "034730.KS"
-   ]
-  },
-  {
    "id": "earnings-402340.KS-2026-11-16",
    "date": "2026-11-16",
    "end_date": null,
@@ -7524,6 +7346,32 @@
    "tags": [
     "indicator",
     "cn-activity"
+   ]
+  },
+  {
+   "id": "earnings-034730.KS-2026-11-17",
+   "date": "2026-11-17",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "SK 실적발표",
+   "title_en": "SK Inc. earnings",
+   "org": "034730.KS",
+   "org_en": "034730.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/034730.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "034730.KS"
    ]
   },
   {
@@ -7601,32 +7449,6 @@
     "earnings",
     "us",
     "NVDA"
-   ]
-  },
-  {
-   "id": "earnings-DIS-2026-11-17",
-   "date": "2026-11-17",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "월트디즈니 실적발표",
-   "title_en": "Walt Disney earnings",
-   "org": "DIS",
-   "org_en": "DIS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/DIS",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "DIS"
    ]
   },
   {
@@ -7759,32 +7581,6 @@
    ]
   },
   {
-   "id": "earnings-PANW-2026-11-18",
-   "date": "2026-11-18",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "팔로알토네트웍스 실적발표",
-   "title_en": "Palo Alto Networks earnings",
-   "org": "PANW",
-   "org_en": "PANW",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/PANW",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "PANW"
-   ]
-  },
-  {
    "id": "earnings-ROST-2026-11-19",
    "date": "2026-11-19",
    "end_date": null,
@@ -7833,32 +7629,6 @@
    "tags": [
     "indicator",
     "us-claims"
-   ]
-  },
-  {
-   "id": "earnings-WMT-2026-11-19",
-   "date": "2026-11-19",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "월마트 실적발표",
-   "title_en": "Walmart earnings",
-   "org": "WMT",
-   "org_en": "WMT",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/WMT",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "WMT"
    ]
   },
   {
@@ -9159,6 +8929,32 @@
    ]
   },
   {
+   "id": "earnings-MU-2026-12-17",
+   "date": "2026-12-17",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "마이크론 실적발표",
+   "title_en": "Micron Technology earnings",
+   "org": "MU",
+   "org_en": "MU",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "http://investors.micron.com/",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "MU"
+   ]
+  },
+  {
    "id": "indicator-us-claims-2026-12-17",
    "date": "2026-12-17",
    "end_date": null,
@@ -9383,32 +9179,6 @@
    "tags": [
     "indicator",
     "cn-activity"
-   ]
-  },
-  {
-   "id": "earnings-MU-2026-12-23",
-   "date": "2026-12-23",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "마이크론 실적발표",
-   "title_en": "Micron Technology earnings",
-   "org": "MU",
-   "org_en": "MU",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "http://investors.micron.com/",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "MU"
    ]
   },
   {
@@ -11149,6 +10919,31 @@
     "earnings",
     "us",
     "GE"
+   ]
+  },
+  {
+   "id": "indicator-us-claims-2027-01-21",
+   "date": "2027-01-21",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "미국 신규 실업수당 청구건수 (주간)",
+   "title_en": "US Initial Jobless Claims",
+   "org": "美 노동부 (DOL)",
+   "org_en": "Department of Labor",
+   "detail_ko": "매주 목요일 08:30 ET",
+   "detail_en": "Every Thursday, 08:30 ET",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2027-01-21 22:30",
+   "url": "https://www.dol.gov/ui/data.pdf",
+   "source": "美 노동부 (DOL)",
+   "source_en": "Department of Labor",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "us-claims"
    ]
   },
   {
@@ -13639,6 +13434,32 @@
    ]
   },
   {
+   "id": "earnings-DIS-2027-02-01",
+   "date": "2027-02-01",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "월트디즈니 실적발표",
+   "title_en": "Walt Disney earnings",
+   "org": "DIS",
+   "org_en": "DIS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/DIS",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "DIS"
+   ]
+  },
+  {
    "id": "earnings-PLTR-2027-02-01",
    "date": "2027-02-01",
    "end_date": null,
@@ -13722,8 +13543,8 @@
    "country": "us",
    "category": "earnings",
    "importance": 1,
-   "title_ko": "루멘텀홀딩스 실적발표",
-   "title_en": "Lumentum Holdings earnings",
+   "title_ko": "LITE 실적발표",
+   "title_en": "LITE earnings",
    "org": "LITE",
    "org_en": "LITE",
    "detail_ko": "회사 IR 공지가 원문이다",
@@ -15031,6 +14852,32 @@
    ]
   },
   {
+   "id": "earnings-PANW-2027-02-16",
+   "date": "2027-02-16",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "팔로알토네트웍스 실적발표",
+   "title_en": "Palo Alto Networks earnings",
+   "org": "PANW",
+   "org_en": "PANW",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/PANW",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "PANW"
+   ]
+  },
+  {
    "id": "indicator-fomc-minutes-2027-02-17",
    "date": "2027-02-17",
    "end_date": null,
@@ -15053,6 +14900,32 @@
    "tags": [
     "fed",
     "minutes"
+   ]
+  },
+  {
+   "id": "earnings-WMT-2027-02-18",
+   "date": "2027-02-18",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "월마트 실적발표",
+   "title_en": "Walmart earnings",
+   "org": "WMT",
+   "org_en": "WMT",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/WMT",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "WMT"
    ]
   },
   {
@@ -17580,6 +17453,56 @@
    ]
   },
   {
+   "id": "indicator-cn-activity-2027-05-17",
+   "date": "2027-05-17",
+   "end_date": null,
+   "country": "cn",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "중국 월간 실물지표 (산업생산·소매판매·고정자산투자)",
+   "title_en": "China monthly activity data",
+   "org": "중국 국가통계국 (NBS)",
+   "org_en": "National Bureau of Statistics of China",
+   "detail_ko": "통상 매월 중순(15일 전후) 10:00",
+   "detail_en": "Usually mid-month, around the 15th, 10:00",
+   "time_local": "10:00",
+   "tz": "Asia/Shanghai",
+   "time_kst": "2027-05-17 11:00",
+   "url": "https://www.stats.gov.cn/english/PressRelease/",
+   "source": "중국 국가통계국 (NBS)",
+   "source_en": "National Bureau of Statistics of China",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "cn-activity"
+   ]
+  },
+  {
+   "id": "indicator-us-retail-2027-05-18",
+   "date": "2027-05-18",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 2,
+   "title_ko": "미국 소매판매",
+   "title_en": "US Advance Retail Sales",
+   "org": "美 인구조사국 (Census)",
+   "org_en": "Census Bureau",
+   "detail_ko": "통상 매월 중순 08:30 ET",
+   "detail_en": "Usually mid-month, 08:30 ET",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2027-05-18 21:30",
+   "url": "https://www.census.gov/economic-indicators/",
+   "source": "美 인구조사국 (Census)",
+   "source_en": "Census Bureau",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "us-retail"
+   ]
+  },
+  {
    "id": "indicator-fomc-minutes-2027-05-19",
    "date": "2027-05-19",
    "end_date": null,
@@ -17602,6 +17525,56 @@
    "tags": [
     "fed",
     "minutes"
+   ]
+  },
+  {
+   "id": "pboc-lpr-2027-05-20",
+   "date": "2027-05-20",
+   "end_date": null,
+   "country": "cn",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "중국 대출우대금리 (LPR) 고시",
+   "title_en": "China Loan Prime Rate fixing",
+   "org": "People's Bank of China",
+   "org_en": "People's Bank of China",
+   "detail_ko": "매월 20일 09:15(현지). 20일이 휴일이면 다음 영업일 · 중국의 실질 정책금리. 인민은행 MLF 조정 뒤 반영된다",
+   "detail_en": "The 20th of each month at 09:15 local time, moving to the next business day if the 20th is a holiday · China's effective policy rate; it follows any PBOC adjustment to the MLF",
+   "time_local": "09:15",
+   "tz": "Asia/Shanghai",
+   "time_kst": "2027-05-20 10:15",
+   "url": "https://www.pbc.gov.cn/en/3688229/index.html",
+   "source": "People's Bank of China",
+   "source_en": "People's Bank of China",
+   "confirmed": "rule",
+   "tags": [
+    "supply",
+    "pboc-lpr"
+   ]
+  },
+  {
+   "id": "us-option-expiry-2027-05-21",
+   "date": "2027-05-21",
+   "end_date": null,
+   "country": "us",
+   "category": "supply",
+   "importance": 1,
+   "title_ko": "미국 주식·지수 옵션 만기일",
+   "title_en": "US equity & index option expiry",
+   "org": "Cboe — trading hours & expirations",
+   "org_en": "Cboe — trading hours & expirations",
+   "detail_ko": "매월 세 번째 금요일 · 만기 주에 변동성이 커진다",
+   "detail_en": "The third Friday of every month · Volatility picks up during expiry week",
+   "time_local": null,
+   "tz": null,
+   "time_kst": null,
+   "url": "https://www.cboe.com/about/hours/us-options/",
+   "source": "Cboe — trading hours & expirations",
+   "source_en": "Cboe — trading hours & expirations",
+   "confirmed": "rule",
+   "tags": [
+    "supply",
+    "us-option-expiry"
    ]
   },
   {
