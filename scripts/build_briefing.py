@@ -888,6 +888,18 @@ def sec_deep(C):
     body = blocks[0] + '\n<div class="soft-grid">\n' + "\n".join(blocks[1:]) + '\n</div>'
     if dp.get("table"):
         body += "\n" + dp["table"]
+    # 제2부(선택) — 같은 특별판 안에서 표 뒤에 이어지는 두 번째 주제.
+    # 카드가 표보다 앞서 버리지 않도록 lede2 · blocks2 · table2 를 따로 받는다.
+    b2 = dp.get("blocks2") or []
+    if b2:
+        if CORE[0]:
+            b2 = b2[:dp.get("core_blocks2", len(b2))]
+        cards2 = [card(r.get("q_ko", ""), r.get("q_en", ""), r.get("a_ko", ""), r.get("a_en", ""))
+                  for r in b2]
+        body += ("\n" + lede(dp.get("lede2_ko", ""), dp.get("lede2_en", ""))
+                 + '\n<div class="soft-grid">\n' + "\n".join(cards2) + '\n</div>')
+        if dp.get("table2") and not (CORE[0] and dp.get("table2_full_only")):
+            body += "\n" + dp["table2"]
     return (dp["title_ko"], dp.get("title_en", dp["title_ko"]), body)
 
 
