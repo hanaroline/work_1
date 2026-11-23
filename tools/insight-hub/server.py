@@ -843,6 +843,24 @@ def youtube_id(url: str) -> str | None:
     return m.group(1) if m else None
 
 
+_EMBED_YT = re.compile(r"(?:youtube(?:-nocookie)?\.com/(?:embed/|watch\?v=|shorts/)|youtu\.be/)([A-Za-z0-9_-]{11})")
+
+
+def embedded_youtube(html_text: str) -> list[str]:
+    """페이지에 실린 유튜브 영상 ID(나온 순서, 중복 없이). 본문이 짧은 소개 글(블로그 등)에서 영상을 대신 정리할 때 쓴다."""
+    out: list[str] = []
+    for m in _EMBED_YT.finditer(html.unescape(html_text).replace("\\u003d", "=").replace("\\/", "/")):
+        if m.group(1) not in out:
+            out.append(m.group(1))
+    return out
+
+
+def embed_note(vids: list[str]) -> str:
+    more = f" 글에 실린 다른 영상 {len(vids) - 1}개는 정리하지 않았습니다(" + ", ".join(
+        f"https://youtu.be/{v}" for v in vids[1:4]) + ")." if len(vids) > 1 else ""
+    return f"글 본문이 짧아 글에 실린 유튜브 영상(https://youtu.be/{vids[0]})을 대신 정리했습니다." + more
+
+
 def youtube_title(vid: str) -> tuple[str, str]:
     try:
         data, _, _ = fetch("https://www.youtube.com/oembed?format=json&url="
@@ -1806,11 +1824,12 @@ def _process(pid: int) -> None:
     note = p["note"] or ""
     user_hint = f"\n\n올린 직원의 메모(참고용, 자료 내용이 아님): {note}" if note else ""
     try:
-        if p["kind"] == "video":
+        def video_run(vurl: str):
+            """영상 정리 한 걸음. 끝나면 (요약, 모델), 다음 구간으로 넘기거나 멈췄으면 None."""
             st = video_state(pid)
             if st is None:
                 try:
-                    summary, model = call_gemini(p["url"], note)
+                    summary, model = call_gemini(vurl, note)
                 except AIError as e:
                     if not video_too_long(e):
                         raise
@@ -1818,16 +1837,16 @@ def _process(pid: int) -> None:
                     video_state_put(pid, {"parts": [], "next": 0, "ended": False})
                     set_status(pid, "queued", "긴 영상 — 45분씩 나눠 정리합니다 (1구간 차례)")
                     enqueue(pid)
-                    return
+                    return None
             elif not st["ended"] and st["next"] < VIDEO_MAX_PARTS:
                 i = st["next"]
                 set_status(pid, "working", f"긴 영상 {i + 1}구간({_hms(i * VIDEO_PART_SEC)}~) 보는 중")
                 try:
-                    part = call_gemini_part(p["url"], note, i)
+                    part = call_gemini_part(vurl, note, i)
                 except AIError as e:
                     msg = ai_error_text(e, auto=True) or str(e)
                     set_status(pid, "failed", f"긴 영상 {i + 1}구간에서 멈췄습니다. 「다시 시도」를 누르면 {i + 1}구간부터 이어서 정리합니다. ({msg[:80]})")
-                    return
+                    return None
                 if part is None:
                     st["ended"] = True
                 else:
@@ -1838,18 +1857,26 @@ def _process(pid: int) -> None:
                 print(f"[run {pid}] 긴 영상 {i + 1}구간 끝 (끝남={st['ended']})", file=sys.stderr)
                 set_status(pid, "queued", f"긴 영상 {i + 1}구간까지 정리함 — 이어서 정리합니다")
                 enqueue(pid)
-                return
+                return None
             else:
                 parts = [pt for pt in st["parts"] if pt["summary"]["readable"]]
                 if not parts:
                     set_status(pid, "blocked", "AI가 영상 내용을 읽지 못했습니다(구간별로 나눠 봐도 내용이 없었습니다).")
-                    return
+                    return None
                 set_status(pid, "working", f"긴 영상 {len(st['parts'])}개 구간을 하나로 합치는 중")
                 summary, model = merge_video_parts(parts, note)
                 video_state_put(pid, None)   # 합치기까지 끝났으니 구간 기록은 지운다(실패하면 남겨 두어 다시 시도 때 합치기만 한다)
                 notes.append(f"영상이 길어 45분씩 {len(st['parts'])}개 구간으로 나눠 정리한 뒤 하나로 합쳤습니다.")
                 if not st["ended"]:
                     notes.append(f"{_hms(st['next'] * VIDEO_PART_SEC)} 이후 부분은 정리하지 않았습니다(상한 {VIDEO_MAX_PARTS}구간).")
+            return summary, model
+
+        summary = None
+        if p["kind"] == "video":
+            r = video_run(p["url"])
+            if r is None:
+                return
+            summary, model = r
         else:
             content: list[dict] = []
             meta = {"주소": p["url"] or "", "제목": p["source_title"] or "", "매체": p["source_site"] or "",
@@ -1883,20 +1910,30 @@ def _process(pid: int) -> None:
                         x("UPDATE posts SET source_title=COALESCE(NULLIF(source_title,''),?), source_site=?, source_published=? WHERE id=?",
                           (art["title"], art["site"], art["published"], pid))
                         meta.update({"제목": art["title"], "매체": art["site"], "게시일": art["published"]})
-                        if len(text) < MIN_TEXT_CHARS:
+                        vids = embedded_youtube(decode_html(data, ctype)) if len(text) < MIN_TEXT_CHARS else []
+                        if vids:   # 영상을 소개하는 짧은 글(블로그 등) — 실린 영상을 대신 정리한다
+                            print(f"[run {pid}] 본문 짧음 {len(text)}자 — 실린 영상 {vids[0]} 정리", file=sys.stderr)
+                            notes.append(embed_note(vids))
+                            r = video_run(f"https://www.youtube.com/watch?v={vids[0]}")
+                            if r is None:
+                                return
+                            summary, model = r
+                        elif len(text) < MIN_TEXT_CHARS:
                             print(f"[run {pid}] 본문 짧음 {len(text)}자 — 읽지 못함으로 멈춤", file=sys.stderr)
                             set_status(pid, "blocked",
                                        "이 페이지에서 본문을 읽지 못했습니다(로그인·유료 기사이거나 화면을 스크립트로 그리는 사이트). "
                                        "본문을 복사해 붙여넣거나 스크린샷·PDF로 올려 주세요.")
                             return
-                if text:
-                    blk, n = text_block(label, text, meta)
-                    notes += n
-                    content.append({"type": "text", "text": blk})
-                content.append({"type": "text", "text": "위 자료를 정리하십시오." + user_hint})
-            t_ai = time.time()
-            summary, model = (call_gemini_blocks(content) if text_engine() == "gemini" else call_claude(content))
-            print(f"[run {pid}] AI 정리 {time.time() - t_ai:.1f}s ({model})", file=sys.stderr)
+                if summary is None:
+                    if text:
+                        blk, n = text_block(label, text, meta)
+                        notes += n
+                        content.append({"type": "text", "text": blk})
+                    content.append({"type": "text", "text": "위 자료를 정리하십시오." + user_hint})
+            if summary is None:
+                t_ai = time.time()
+                summary, model = (call_gemini_blocks(content) if text_engine() == "gemini" else call_claude(content))
+                print(f"[run {pid}] AI 정리 {time.time() - t_ai:.1f}s ({model})", file=sys.stderr)
         summary["notes"] = notes
         if not summary["readable"]:
             set_status(pid, "blocked", "AI가 자료 본문을 읽을 수 없다고 판단했습니다: " + summary["one_line"],
@@ -2003,6 +2040,12 @@ def quick_summarize(url: str, text: str, st) -> dict:
                     art = extract_article(decode_html(data, ctype))
                     text, label, source = art["text"], "기사_본문", art["site"]
                     meta.update({"제목": art["title"], "매체": art["site"], "게시일": art["published"]})
+                    vids = embedded_youtube(decode_html(data, ctype)) if len(text) < MIN_TEXT_CHARS else []
+                    if vids:   # 영상을 소개하는 짧은 글 — 실린 영상을 대신 정리한다(구간 진행 상태도 그대로 이어 간다)
+                        r = quick_summarize(f"https://www.youtube.com/watch?v={vids[0]}", "", st)
+                        if r.get("done") and r.get("summary"):
+                            r["summary"]["notes"] = [embed_note(vids)] + r["summary"]["notes"]
+                        return r
                     if len(text) < MIN_TEXT_CHARS:
                         raise QuickStop("이 페이지에서 본문을 읽지 못했습니다(로그인·유료 기사이거나 화면을 스크립트로 그리는 사이트). "
                                         "본문을 복사해 붙여 넣어 주세요.")
