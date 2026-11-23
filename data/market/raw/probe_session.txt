@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-11-23 11:06:45 KST
+세션을 지닌 채 API 부르기 2026-11-23 11:31:29 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 99119 bytes
@@ -16,19 +16,19 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 86144 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8766 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"215","officeHname":"한국경제TV","articleId":"0001273594","title":"정부 증안펀드, 시장 방어할까...개미 '초집중'","datetime":"2026-11-23 10:55:08","type":"1","subcontent":"정부가 증권시장안정펀드(증안펀드) 가동 준비에
+        HTTP 200 · 8800 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"215","officeHname":"한국경제TV","articleId":"0001273601","title":"한때 1만피 넘봤는데 \"역사는 버틴 쪽 편\"…고수의 '줍줍' 전략은'","datetime":"2026-11-23 11:21:00","type":"1","subcontent":"국내 증시가 미국발 인
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8766 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"215","officeHname":"한국경제TV","articleId":"0001273594","title":"정부 증안펀드, 시장 방어할까...개미 '초집중'","datetime":"2026-11-23 10:55:08","type":"1","subcontent":"정부가 증권시장안정펀드(증안펀드) 가동 준비에
+        HTTP 200 · 8800 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"215","officeHname":"한국경제TV","articleId":"0001273601","title":"한때 1만피 넘봤는데 \"역사는 버틴 쪽 편\"…고수의 '줍줍' 전략은'","datetime":"2026-11-23 11:21:00","type":"1","subcontent":"국내 증시가 미국발 인
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 93949 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26533 bytes · JSON!
+        HTTP 200 · 26537 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
@@ -36,7 +36,7 @@
         앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
-        HTTP 200 · 5040 bytes · JSON!
+        HTTP 200 · 5038 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
