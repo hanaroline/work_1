@@ -855,12 +855,6 @@ def embedded_youtube(html_text: str) -> list[str]:
     return out
 
 
-def embed_note(vids: list[str]) -> str:
-    more = f" 글에 실린 다른 영상 {len(vids) - 1}개는 정리하지 않았습니다(" + ", ".join(
-        f"https://youtu.be/{v}" for v in vids[1:4]) + ")." if len(vids) > 1 else ""
-    return f"글 본문이 짧아 글에 실린 유튜브 영상(https://youtu.be/{vids[0]})을 대신 정리했습니다." + more
-
-
 def youtube_title(vid: str) -> tuple[str, str]:
     try:
         data, _, _ = fetch("https://www.youtube.com/oembed?format=json&url="
@@ -1118,7 +1112,7 @@ def gemini_upload(raw: bytes, mime: str, key: str) -> str:
     return f["uri"]
 
 
-def call_claude(content: list[dict]) -> tuple[dict, str]:
+def call_claude(content: list[dict], kp_max: int = 5) -> tuple[dict, str]:
     """Claude Messages API(raw HTTP — 저장소 규칙상 외부 패키지를 쓰지 않는다)."""
     key = os.environ.get("ANTHROPIC_API_KEY")
     if not key:
@@ -1148,7 +1142,7 @@ def call_claude(content: list[dict]) -> tuple[dict, str]:
     if resp.get("stop_reason") == "max_tokens":
         raise AIError("응답이 길이 상한에서 잘렸습니다")
     text = "".join(b.get("text", "") for b in resp.get("content", []) if b.get("type") == "text")
-    return parse_json(text), resp.get("model", CLAUDE_MODEL)
+    return parse_json(text, kp_max), resp.get("model", CLAUDE_MODEL)
 
 
 def call_gemini(video_url: str, note: str) -> tuple[dict, str]:
@@ -1228,8 +1222,8 @@ def video_state(pid: int):
 
 
 def video_state_put(pid: int, st) -> None:
-    if st is None:
-        x("DELETE FROM ai_cache WHERE key=?", (_vkey(pid),))
+    if st is None:   # 처음부터 다시 정리할 때 — 글·이미지·영상 함께 정리의 진행 기록도 같이 지운다
+        x("DELETE FROM ai_cache WHERE key IN (?, ?)", (_vkey(pid), f"rich:{pid}"))
     else:
         cache_put(_vkey(pid), "", st)
 
@@ -1910,14 +1904,33 @@ def _process(pid: int) -> None:
                         x("UPDATE posts SET source_title=COALESCE(NULLIF(source_title,''),?), source_site=?, source_published=? WHERE id=?",
                           (art["title"], art["site"], art["published"], pid))
                         meta.update({"제목": art["title"], "매체": art["site"], "게시일": art["published"]})
-                        vids = embedded_youtube(decode_html(data, ctype)) if len(text) < MIN_TEXT_CHARS else []
-                        if vids:   # 영상을 소개하는 짧은 글(블로그 등) — 실린 영상을 대신 정리한다
-                            print(f"[run {pid}] 본문 짧음 {len(text)}자 — 실린 영상 {vids[0]} 정리", file=sys.stderr)
-                            notes.append(embed_note(vids))
-                            r = video_run(f"https://www.youtube.com/watch?v={vids[0]}")
-                            if r is None:
+                        html_text = decode_html(data, ctype)
+                        if is_rich_page(html_text, final):   # 본문 이미지·실린 영상까지 걸음을 나눠 함께 정리한다
+                            rkey = f"rich:{pid}"
+                            row = cache_get(rkey)
+                            try:
+                                rst = json.loads(row["body"]) if row else None
+                            except ValueError:
+                                rst = None
+                            set_status(pid, "working", "글·이미지·영상을 함께 정리하는 중")
+                            try:
+                                r = rich_step(rst, text, label, meta, html_text, final, note)
+                            except QuickStop as e:
+                                x("DELETE FROM ai_cache WHERE key=?", (rkey,))
+                                set_status(pid, "blocked", str(e))
                                 return
-                            summary, model = r
+                            if not r["done"]:
+                                cache_put(rkey, "", r["state"])
+                                print(f"[run {pid}] {r['msg']}", file=sys.stderr)
+                                if r.get("failed"):
+                                    set_status(pid, "failed", r["msg"].replace("「이어서 다시」", "「다시 시도」"))
+                                else:
+                                    set_status(pid, "queued", r["msg"])
+                                    enqueue(pid)
+                                return
+                            x("DELETE FROM ai_cache WHERE key=?", (rkey,))
+                            summary, model = r["summary"], r["model"]
+                            notes += r["notes"]
                         elif len(text) < MIN_TEXT_CHARS:
                             print(f"[run {pid}] 본문 짧음 {len(text)}자 — 읽지 못함으로 멈춤", file=sys.stderr)
                             set_status(pid, "blocked",
@@ -1964,6 +1977,195 @@ def _process(pid: int) -> None:
         set_status(pid, "failed", f"처리 중 오류: {type(e).__name__}: {e}")
 
 
+# ───────────── 글 + 본문 이미지 + 글에 실린 유튜브(블로그 등) ─────────────
+# 블로그 글은 내용이 이미지(캡처·차트)와 붙여 둔 영상에 있는 일이 많다. 한 번에 다 보면 제한 시간을
+# 넘기므로 걸음을 나눈다: ① 본문 글과 이미지를 함께 정리 → ② 실린 영상을 하나씩(긴 영상은 구간별로)
+# → ③ 하나로 합치기. 진행 상태는 브리핑룸은 ai_cache 에, AI 자동 요약은 화면이 들고 다닌다.
+RICH_MAX_VIDEOS = 3
+RICH_MAX_IMAGES = 10
+IMG_MIN_BYTES = 15_000        # 이보다 작은 그림은 아이콘·스티커·구분선으로 본다
+IMG_MAX_BYTES = 3_500_000     # AI 한 장 상한(5MB)보다 넉넉히 아래
+_IMG_ATTR = re.compile(r"""([\w:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')""")
+
+
+def page_images(html_text: str, base_url: str) -> list[str]:
+    """본문에 실린 이미지 주소(나온 순서). 네이버 블로그는 본문 이미지만, 다른 사이트는 <article> 안만 본다
+    — 그 밖(메뉴·광고·추천 글)의 그림은 섞지 않는다."""
+    naver = 'class="se-main-container"' in html_text
+    if naver:
+        h = html_text[html_text.index('class="se-main-container"'):]
+    else:
+        m = re.search(r"<article\b.*?</article>", html_text, re.S | re.I)
+        if not m:
+            return []
+        h = m.group(0)
+    out: list[str] = []
+    for t in re.finditer(r"<img\b[^>]*>", h, re.I):
+        tag = t.group(0)
+        if naver and "se-image-resource" not in tag:
+            continue
+        a = {k.lower(): (v1 or v2) for k, v1, v2 in _IMG_ATTR.findall(tag)}
+        src = html.unescape(a.get("data-lazy-src") or a.get("data-src") or a.get("data-original") or a.get("src") or "").strip()
+        if not src or src.startswith("data:"):
+            continue
+        w = a.get("data-width") or a.get("width") or ""
+        if w.isdigit() and int(w) < 150:
+            continue
+        src = urllib.parse.urljoin(base_url, src)
+        if not src.startswith(("http://", "https://")) or re.search(r"\.(svg|gif)(\?|$)", src, re.I):
+            continue
+        if src not in out:
+            out.append(src)
+    return out[:RICH_MAX_IMAGES * 2]   # 받다가 걸러지는 것을 생각해 넉넉히
+
+
+def _img_type(b: bytes) -> str:
+    if b[:8] == b"\x89PNG\r\n\x1a\n":
+        return "image/png"
+    if b[:3] == b"\xff\xd8\xff":
+        return "image/jpeg"
+    if b[:4] == b"RIFF" and b[8:12] == b"WEBP":
+        return "image/webp"
+    return ""
+
+
+def fetch_images(urls: list[str]) -> list[dict]:
+    """이미지를 받아 AI 에 넘길 블록으로. 못 받거나 너무 작거나(아이콘) 큰 것은 조용히 뺀다."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    def one(u):
+        try:
+            data, _, _ = fetch(u, timeout=15)
+        except Exception:
+            return None
+        mt = _img_type(data)
+        if not mt or not IMG_MIN_BYTES <= len(data) <= IMG_MAX_BYTES:
+            return None
+        return {"type": "image", "source": {"type": "base64", "media_type": mt, "data": base64.b64encode(data).decode()}}
+    with ThreadPoolExecutor(max_workers=6) as ex:
+        got = list(ex.map(one, urls))
+    return [b for b in got if b][:RICH_MAX_IMAGES]
+
+
+def ai_blocks(content: list[dict], kp_max: int = 5) -> tuple[dict, str]:
+    return call_gemini_blocks(content, kp_max) if text_engine() == "gemini" else call_claude(content, kp_max)
+
+
+def is_rich_page(html_text: str, base_url: str) -> bool:
+    return bool(embedded_youtube(html_text) or page_images(html_text, base_url))
+
+
+def rich_state(st) -> dict:
+    """진행 상태를 믿을 수 있는 모양으로만 받는다(AI 자동 요약은 화면이 되돌려 보낸 것이다)."""
+    st = st if isinstance(st, dict) else {}
+
+    def sm(v):
+        return normalize_summary(v, 8) if isinstance(v, dict) else None
+    vi = st.get("vi")
+    vs = []
+    for v in (st.get("vs") or [])[:RICH_MAX_VIDEOS]:
+        if isinstance(v, dict) and re.fullmatch(r"[\w-]{11}", str(v.get("vid", ""))):
+            vs.append({"vid": v["vid"], "summary": sm(v.get("summary")), "model": str(v.get("model", ""))[:60]})
+    return {"pd": bool(st.get("pd")), "page": sm(st.get("page")), "model": str(st.get("model", ""))[:60],
+            "vi": vi if isinstance(vi, int) and 0 <= vi <= RICH_MAX_VIDEOS else len(vs), "vs": vs,
+            "vst": st.get("vst") if isinstance(st.get("vst"), dict) else None,
+            "notes": [str(n)[:300] for n in (st.get("notes") or [])[:12] if isinstance(n, str)]}
+
+
+def merge_rich(page, vs: list[dict], note: str) -> tuple[dict, str]:
+    """글·이미지 정리와 영상별 정리를 그 글 전체 정리 하나로 합친다(글만 보내는 짧은 호출)."""
+    def strip(sm):
+        return json.dumps({k: v for k, v in sm.items() if k not in ("notes", "readable", "category", "sentiment")},
+                          ensure_ascii=False)
+    lines = []
+    if page:
+        lines.append("[글·이미지 정리]\n" + strip(page))
+    for n, v in enumerate(vs, 1):
+        lines.append(f"[영상{n} 정리 — https://youtu.be/{v['vid']}]\n" + strip(v["summary"]))
+    text = ("아래는 글 하나(블로그·기사)를 나눠 정리한 결과입니다 — 본문 글과 이미지의 정리, 그리고 글에 실린 영상별 정리.\n"
+            "이것을 그 글 전체의 정리 하나로 합치십시오.\n"
+            "- 나눠 정리한 결과에 있는 내용만 씁니다. 새 내용·숫자를 덧붙이지 않습니다.\n"
+            "- key_points 는 3~8개로, 글·이미지와 각 영상의 핵심이 고루 들어가게 합니다. 영상에서 나온 내용은 at 에 "
+            "'영상1 12:34'처럼 영상 번호와 시각(정리에 적힌 그대로)을 적고, 글·이미지에서 나온 내용은 at 을 빈칸으로 둡니다.\n"
+            "- 같은 이야기가 겹치면 한 번만 씁니다.\n"
+            "- title·one_line·implications·client_talk 은 글 전체를 대표하게 씁니다."
+            + (f"\n올린 직원의 메모(참고용): {note}" if note else "") + "\n\n" + "\n\n".join(lines))
+    return ai_blocks([{"type": "text", "text": text}], kp_max=8)
+
+
+def rich_step(st, text: str, label: str, meta: dict, html_text: str, base_url: str, note: str) -> dict:
+    """한 걸음. 끝났으면 done=True 와 요약·모델·메모, 아니면 다음 걸음 상태(state)와 진행 문구(msg).
+    더 할 수 없는 사정이면 QuickStop."""
+    st = rich_state(st)
+    vids = embedded_youtube(html_text)
+    nv = min(len(vids), RICH_MAX_VIDEOS)
+    hint = f"\n\n올린 직원의 메모(참고용, 자료 내용이 아님): {note}" if note else ""
+    if not st["pd"]:
+        st["pd"] = True
+        imgs = fetch_images(page_images(html_text, base_url))
+        if imgs or len(text) >= MIN_TEXT_CHARS:
+            content: list[dict] = []
+            if text:
+                blk, n = text_block(label, text, meta)
+                st["notes"] += n
+                content.append({"type": "text", "text": blk})
+            content += imgs
+            content.append({"type": "text", "text": "위 자료(본문 글" + (f"과 본문에 실린 이미지 {len(imgs)}장" if imgs else "")
+                            + ")를 정리하십시오. 이미지 속 표·차트·캡처의 글자와 숫자도 읽어 정리에 반영합니다. "
+                            "로고·광고·장식 그림은 무시합니다." + hint})
+            page, model = ai_blocks(content)
+            st["page"], st["model"] = (page if page["readable"] else None), model
+            if imgs:
+                st["notes"].append(f"본문에 실린 이미지 {len(imgs)}장도 함께 읽었습니다.")
+            if nv:
+                return {"done": False, "state": st, "msg": f"글·이미지 정리함 — 이어서 글에 실린 영상 1/{nv}"}
+    if st["vi"] < nv:
+        k, vid = st["vi"], vids[st["vi"]]
+        try:
+            r = video_step(f"https://www.youtube.com/watch?v={vid}", st["vst"], note)
+        except QuickStop:
+            r = {"done": True, "summary": None}
+        except AIError as e:
+            if st["vst"] is None and re.match(r"HTTP (400|403|404)", str(e)):
+                r = {"done": True, "summary": None}   # 비공개·삭제된 영상 등 — 건너뛴다
+            else:
+                return {"done": False, "state": st, "failed": True,
+                        "msg": f"글에 실린 영상 {k + 1}/{nv}에서 멈췄습니다 — 이어서 다시 하면 그 영상부터 정리합니다. "
+                               f"({(ai_error_text(e) or str(e))[:80]})"}
+        if not r["done"]:
+            st["vst"] = r["state"]
+            msg = f"글에 실린 영상 {k + 1}/{nv}: {r['msg']}"
+            return {"done": False, "state": st, "failed": bool(r.get("failed")), "msg": msg}
+        st["vst"], st["vi"] = None, k + 1
+        if r["summary"] and r["summary"]["readable"]:
+            st["vs"].append({"vid": vid, "summary": r["summary"], "model": r["model"]})
+            st["notes"] += [f"영상{len(st['vs'])}: {t}" for t in r["notes"]]
+        else:
+            st["notes"].append(f"글에 실린 영상 https://youtu.be/{vid} 은 정리하지 못했습니다(비공개·삭제 등).")
+        if st["vi"] < nv or (st["page"] and st["vs"]):
+            return {"done": False, "state": st, "msg": f"글에 실린 영상 {k + 1}/{nv} 정리함" + (" — 하나로 합치는 중" if st["vi"] >= nv else "")}
+    notes = list(st["notes"])
+    if st["vs"]:
+        notes.insert(0, f"글에 실린 유튜브 영상 {len(st['vs'])}개(" + ", ".join(f"https://youtu.be/{v['vid']}" for v in st["vs"])
+                     + ")도 함께 정리했습니다.")
+    if len(vids) > RICH_MAX_VIDEOS:
+        notes.append(f"글에 실린 영상 {len(vids)}개 가운데 앞의 {RICH_MAX_VIDEOS}개만 정리했습니다.")
+    if st["page"] and st["vs"]:
+        summary, model = merge_rich(st["page"], st["vs"], note)
+    elif st["page"]:
+        summary, model = st["page"], st["model"]
+    elif st["vs"]:
+        if len(st["vs"]) > 1:
+            summary, model = merge_rich(None, st["vs"], note)
+        else:
+            summary, model = st["vs"][0]["summary"], st["vs"][0]["model"]
+            if len(text) < MIN_TEXT_CHARS:
+                notes[0] = f"글 본문이 짧아 글에 실린 유튜브 영상(https://youtu.be/{st['vs'][0]['vid']})을 정리했습니다."
+    else:
+        raise QuickStop("이 페이지에서 본문·이미지·영상 어느 것도 읽지 못했습니다. 본문을 복사해 붙여 넣거나 스크린샷으로 올려 주세요.")
+    return {"done": True, "summary": summary, "model": model, "notes": notes}
+
+
 # ───────────────────────────── 요약 전용(/quick) ─────────────────────────────
 # 단톡방에 올릴 요약만 만들어 돌려준다. 글·요약을 DB 에 남기지 않는다 — 브리핑룸 피드와 섞이지 않게.
 # 긴 영상의 구간 진행 상황도 서버가 아니라 화면이 들고 있다가 다음 요청에 되돌려 보낸다.
@@ -1986,6 +2188,45 @@ def _quick_state(st) -> dict | None:
     return {"parts": parts, "next": nxt, "ended": bool(st.get("ended"))}
 
 
+def video_step(url: str, st, note: str) -> dict:
+    """유튜브 영상 정리 한 걸음(화면이 진행 상태를 들고 다니는 길). 끝났으면 done=True 와 요약·모델·메모,
+    긴 영상이면 다음 구간 상태를 돌려준다."""
+    notes: list[str] = []
+    st = _quick_state(st)
+    if st is None:
+        try:
+            summary, model = call_gemini(url, note)
+        except AIError as e:
+            if not video_too_long(e):
+                raise
+            return {"done": False, "state": {"parts": [], "next": 0, "ended": False},
+                    "msg": "긴 영상 — 45분씩 나눠 정리합니다"}
+    elif not st["ended"] and st["next"] < VIDEO_MAX_PARTS:
+        i = st["next"]
+        try:
+            part = call_gemini_part(url, note, i)
+        except AIError as e:
+            msg = ai_error_text(e) or str(e)
+            return {"done": False, "state": st, "failed": True,
+                    "msg": f"{i + 1}구간에서 멈췄습니다 — 「이어서 다시」를 누르면 {i + 1}구간부터 이어 갑니다. ({msg[:80]})"}
+        if part is None:
+            st["ended"] = True
+        else:
+            st["ended"] = part.pop("ended")
+            st["parts"].append(part)
+        st["next"] = i + 1
+        return {"done": False, "state": st, "msg": f"긴 영상 {i + 1}구간({_hms(i * VIDEO_PART_SEC)}~)까지 정리함"}
+    else:
+        parts = [pt for pt in st["parts"] if pt["summary"]["readable"]]
+        if not parts:
+            raise QuickStop("AI가 영상 내용을 읽지 못했습니다.")
+        summary, model = merge_video_parts(parts, note)
+        notes.append(f"영상이 길어 45분씩 {len(st['parts'])}개 구간으로 나눠 정리한 뒤 하나로 합쳤습니다.")
+        if not st["ended"]:
+            notes.append(f"{_hms(st['next'] * VIDEO_PART_SEC)} 이후 부분은 정리하지 않았습니다.")
+    return {"done": True, "summary": summary, "model": model, "notes": notes}
+
+
 def quick_summarize(url: str, text: str, st) -> dict:
     """한 번 부를 때 한 걸음: 끝났으면 done=True 와 요약, 긴 영상이면 다음 구간 상태를 돌려준다."""
     _run_ctx.deadline = time.time() + RUN_BUDGET_SEC
@@ -1993,46 +2234,19 @@ def quick_summarize(url: str, text: str, st) -> dict:
         notes: list[str] = []
         vid = youtube_id(url) if url else None
         if vid and not text:
-            st = _quick_state(st)
-            if st is None:
-                try:
-                    summary, model = call_gemini(url, "")
-                except AIError as e:
-                    if not video_too_long(e):
-                        raise
-                    return {"done": False, "state": {"parts": [], "next": 0, "ended": False},
-                            "msg": "긴 영상 — 45분씩 나눠 정리합니다"}
-            elif not st["ended"] and st["next"] < VIDEO_MAX_PARTS:
-                i = st["next"]
-                try:
-                    part = call_gemini_part(url, "", i)
-                except AIError as e:
-                    msg = ai_error_text(e) or str(e)
-                    return {"done": False, "state": st, "failed": True,
-                            "msg": f"{i + 1}구간에서 멈췄습니다 — 「이어서 다시」를 누르면 {i + 1}구간부터 이어 갑니다. ({msg[:80]})"}
-                if part is None:
-                    st["ended"] = True
-                else:
-                    st["ended"] = part.pop("ended")
-                    st["parts"].append(part)
-                st["next"] = i + 1
-                return {"done": False, "state": st, "msg": f"{i + 1}구간({_hms(i * VIDEO_PART_SEC)}~)까지 정리함"}
-            else:
-                parts = [pt for pt in st["parts"] if pt["summary"]["readable"]]
-                if not parts:
-                    raise QuickStop("AI가 영상 내용을 읽지 못했습니다.")
-                summary, model = merge_video_parts(parts, "")
-                notes.append(f"영상이 길어 45분씩 {len(st['parts'])}개 구간으로 나눠 정리한 뒤 하나로 합쳤습니다.")
-                if not st["ended"]:
-                    notes.append(f"{_hms(st['next'] * VIDEO_PART_SEC)} 이후 부분은 정리하지 않았습니다.")
+            r = video_step(url, st, "")
+            if not r["done"]:
+                return r
+            summary, model, notes = r["summary"], r["model"], r["notes"]
             source = youtube_title(vid)[1]
         else:
             meta = {"주소": url or "", "제목": "", "매체": "", "게시일": ""}
             content: list[dict] = []
             label = "직원이_붙여넣은_본문"
             source = ""
+            summary = None
             if not text and url:
-                data, ctype, _ = fetch(url)
+                data, ctype, final = fetch(url)
                 if "pdf" in ctype.lower() or data[:5] == b"%PDF-":
                     content.append({"type": "document", "source": {"type": "base64", "media_type": "application/pdf",
                                                                     "data": base64.b64encode(data).decode()}})
@@ -2040,21 +2254,23 @@ def quick_summarize(url: str, text: str, st) -> dict:
                     art = extract_article(decode_html(data, ctype))
                     text, label, source = art["text"], "기사_본문", art["site"]
                     meta.update({"제목": art["title"], "매체": art["site"], "게시일": art["published"]})
-                    vids = embedded_youtube(decode_html(data, ctype)) if len(text) < MIN_TEXT_CHARS else []
-                    if vids:   # 영상을 소개하는 짧은 글 — 실린 영상을 대신 정리한다(구간 진행 상태도 그대로 이어 간다)
-                        r = quick_summarize(f"https://www.youtube.com/watch?v={vids[0]}", "", st)
-                        if r.get("done") and r.get("summary"):
-                            r["summary"]["notes"] = [embed_note(vids)] + r["summary"]["notes"]
-                        return r
-                    if len(text) < MIN_TEXT_CHARS:
+                    html_text = decode_html(data, ctype)
+                    if is_rich_page(html_text, final):   # 본문 이미지·실린 영상까지 걸음을 나눠 함께 정리한다
+                        r = rich_step((st or {}).get("rich") if isinstance(st, dict) else None,
+                                      text, label, meta, html_text, final, "")
+                        if not r["done"]:
+                            return {"done": False, "state": {"rich": r["state"]}, "msg": r["msg"], "failed": bool(r.get("failed"))}
+                        summary, model, notes = r["summary"], r["model"], r["notes"]
+                    elif len(text) < MIN_TEXT_CHARS:
                         raise QuickStop("이 페이지에서 본문을 읽지 못했습니다(로그인·유료 기사이거나 화면을 스크립트로 그리는 사이트). "
                                         "본문을 복사해 붙여 넣어 주세요.")
-            if text:
-                blk, n = text_block(label, text, meta)
-                notes += n
-                content.append({"type": "text", "text": blk})
-            content.append({"type": "text", "text": "위 자료를 정리하십시오."})
-            summary, model = (call_gemini_blocks(content) if text_engine() == "gemini" else call_claude(content))
+            if summary is None:
+                if text:
+                    blk, n = text_block(label, text, meta)
+                    notes += n
+                    content.append({"type": "text", "text": blk})
+                content.append({"type": "text", "text": "위 자료를 정리하십시오."})
+                summary, model = ai_blocks(content)
         if not summary["readable"]:
             raise QuickStop("AI가 자료 본문을 읽을 수 없다고 판단했습니다: " + summary["one_line"])
         summary["notes"] = notes

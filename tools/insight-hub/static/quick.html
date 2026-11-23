@@ -90,7 +90,7 @@ function kakaoText(sm, url, source) {
   if (source) L.push("(" + source + ")");
   if ((sm.key_points || []).length) {
     L.push("", "✅ 핵심");
-    for (const k of sm.key_points) L.push("• " + k.point + (k.at && /^\d+:\d{2}/.test(k.at) ? " [" + k.at + "]" : ""));
+    for (const k of sm.key_points) L.push("• " + k.point + (k.at && /^(영상\d+ )?\d+:\d{2}/.test(k.at) ? " [" + k.at + "]" : ""));
   }
   if ((sm.implications || []).length) { L.push("", "💡 시사점"); for (const t of sm.implications) L.push("• " + t); }
   if ((sm.risks || []).length) { L.push("", "⚠️ 유의할 점"); for (const t of sm.risks.slice(0, 2)) L.push("• " + t); }
@@ -111,7 +111,7 @@ async function run(resumeState) {
   let state = resumeState || null;
   setStatus(state ? "이어서 정리하는 중…" : (url && /youtu/.test(url) && onlyUrl ? "영상을 보는 중… (몇 분 걸릴 수 있습니다)" : "읽고 정리하는 중…"));
   try {
-    for (let n = 0; n < 40; n++) {
+    for (let n = 0; n < 80; n++) {
       const d = await call(state ? Object.assign({}, body, { state }) : body);
       if (d.done) {
         if (d.blocked) { setStatus(d.blocked, "err"); return; }
@@ -124,7 +124,7 @@ async function run(resumeState) {
       }
       state = d.state;
       if (d.failed) { pending = state; setStatus(d.msg, "err"); $("#resumeRow").classList.remove("hidden"); return; }
-      setStatus("긴 영상 " + d.msg + " — 화면을 켜 둔 채 기다려 주세요 (구간마다 몇 분씩 걸립니다)");
+      setStatus(d.msg + " — 화면을 켜 둔 채 기다려 주세요 (몇 분씩 걸릴 수 있습니다)");
     }
     setStatus("너무 오래 걸려 멈췄습니다.", "err");
   } catch (e) {
