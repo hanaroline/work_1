@@ -125,14 +125,17 @@ def _prefer_daily(idx, daily):
     812.41(+0.70%)이었습니다. **부호가 반대**였고, 그대로 두면 코스닥이
     오른 날 판에 「내렸다」가 실립니다.
 
-    일별시세가 더 새것일 때만 종가·등락률·날짜를 덮어씁니다. 장중 고저는
+    일별시세가 같거나 더 새것이면 종가·등락률·날짜를 덮어씁니다. 장중 고저는
     `market_internals.*.intraday` 가 따로 들고 있으므로 건드리지 않습니다.
     """
     rows = (daily or {}).get("series") or []
     if not rows or not idx:
         return idx
     top = rows[0]
-    if not top.get("date") or top["date"] <= (idx.get("date") or ""):
+    # 같은 날짜여도 일별시세가 기준이다 — 2026-11-19 수능일(16:30 마감) 수집에서
+    # 야후는 날짜만 11/19 로 바꾸고 종가를 장중값 5118.96 에 묶어 두었는데
+    # 일별시세는 확정 종가 5137.89 였다. 날짜가 **더 오래된** 때만 건너뛴다.
+    if not top.get("date") or top["date"] < (idx.get("date") or ""):
         return idx
     out = dict(idx)
     out["date"] = top["date"]
