@@ -784,7 +784,9 @@ function defence(it) {
   const script = [
     ...(A.plan.hasCooling ? [`"먼저 일정부터 말씀드리면, 청약은 ${dayLabel(A.plan.retailEnd)}까지 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 숙려기간이라 주문을 받을 수 없습니다."`] : []),
     `"이 상품은 최장 ${it0.months}개월짜리인데, ${it0.every}개월마다 끝날 기회가 옵니다. 컴퓨터로 같은 조건을 돌려보면 ${f1(it0.mcByStep[0], 0)}%가 첫 번째에 끝났습니다."`,
-    `"${it0.underlyings.join(' · ')} 중 더 많이 떨어진 하나로 판정합니다."`,
+    // 기초자산이 하나뿐이면 "중 더 많이 떨어진 하나" 가 성립하지 않는다(2026-11-25 제38290회)
+    it0.underlyings.length === 1 ? `"${it0.underlyings[0]} 하나만 봅니다."`
+      : `"${it0.underlyings.join(' · ')} 중 더 많이 떨어진 하나로 판정합니다."`,
     '"올라야 버는 게 아니라, 많이 안 떨어지면 버는 구조입니다. 제자리여도 약속한 이자를 다 받습니다."',
     `"대신 ${it0.knockIn ?? it0.maturityBarrier}% 아래로 크게 떨어지면 떨어진 만큼 그대로 손실입니다. 원금은 보장되지 않습니다."`,
     `"지난 ${it0.simYearsWhole}년으로 돌려보면 손실은 ${f1(it0.simLoss, 2)}%였는데 그 기간이 좋았던 덕도 있습니다. 넉넉하게 잡으면 ${f1(it0.mcLoss, 0)}% 정도로 봅니다."`,
