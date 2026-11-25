@@ -1306,6 +1306,9 @@ def _kr_snapshot_core(C, kr_idx, breadth):
 
     `kr_idx`&middot;`breadth` 는 전체 판이 쓰는 두 표다 &mdash; 받아만 두고 쓰지
     않는다. 인자로 받는 것은 **부르는 쪽이 둘 다 만들었다는 것을 드러내기 위해서**다.
+
+    「295 / 594」의 빗금 양옆은 좁은 띄어쓰기(&thinsp;)다 &mdash; 보통 띄어쓰기로는
+    11/25 핵심본이 940px 에서 1px 넘쳤다(칸 넓이 합 430 &gt; 429).
     """
     KS, KQ, ksb, kqb = C["KS"], C["KQ"], C["ksb"], C["kqb"]
     rows = [
@@ -1318,8 +1321,8 @@ def _kr_snapshot_core(C, kr_idx, breadth):
         _brow("상승 / 하락 종목", "Advancing / declining",
               "지수 방향과 어긋나면 대형주 몇 개가 지수를 움직인 것입니다",
               "If it disagrees with the index, a few heavyweights moved it",
-              n(ksb.get("advancing"), 0) + " / " + n(ksb.get("declining"), 0),
-              n(kqb.get("advancing"), 0) + " / " + n(kqb.get("declining"), 0)),
+              n(ksb.get("advancing"), 0) + "&thinsp;/&thinsp;" + n(ksb.get("declining"), 0),
+              n(kqb.get("advancing"), 0) + "&thinsp;/&thinsp;" + n(kqb.get("declining"), 0)),
         _brow("오른 종목 비율", "Share advancing", "열 종목 가운데 몇 개가 올랐는지",
               "How many in ten rose",
               "열에 " + n(C["adv_per_ten"], 0), "열에 " + n(C["adv_per_ten_q"], 0)),
@@ -1328,8 +1331,8 @@ def _kr_snapshot_core(C, kr_idx, breadth):
               "(close &minus; low) / (high &minus; low)",
               n(C["pos52_ks"], 1) + "%", n(C["pos52_kq"], 1) + "%"),
         _brow("상한 / 하한", "Limit up / down", "&nbsp;", "&nbsp;",
-              n(ksb.get("limit_up"), 0) + " / " + n(ksb.get("limit_down"), 0),
-              n(kqb.get("limit_up"), 0) + " / " + n(kqb.get("limit_down"), 0)),
+              n(ksb.get("limit_up"), 0) + "&thinsp;/&thinsp;" + n(ksb.get("limit_down"), 0),
+              n(kqb.get("limit_up"), 0) + "&thinsp;/&thinsp;" + n(kqb.get("limit_down"), 0)),
     ]
     head = [TH("항목", "Measure", "wrap"), TH("읽는 법", "How to read it", "note wrap"),
             TH("코스피", "KOSPI", "n"), TH("코스닥", "KOSDAQ", "n"),
