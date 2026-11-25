@@ -257,6 +257,98 @@ footer{
 .skip{position:absolute; left:-9999px;}
 .skip:focus{left:32px; top:8px; background:#fff; padding:8px 12px; border:1px solid var(--orange); z-index:9;}
 
+/* ---------- 휴대폰 (640px 이하) ----------
+   표는 가로로 밀어 보는 대신 한 일정 = 한 카드로 쌓는다. 월간 격자는 글자 대신
+   분류 색 점만 찍고, 날짜를 누르면 아래에 그날 일정이 펼쳐진다(원래 동작). */
+@media (max-width:640px){
+  html{-webkit-text-size-adjust:100%;}
+  .page{padding:0 16px;}
+  .toolbar{padding:10px 16px 0; justify-content:space-between; gap:8px;}
+  .toolbar .btn-tool{padding:9px 11px; font-size:13px;}
+  #btn-print{display:none;}
+  .lang-toggle button{padding:9px 13px;}
+  .masthead{padding-top:22px;}
+  h1{font-size:24px;}
+  .lede{font-size:15px;}
+  /* 섹션 바로가기 — 가로 한 줄로 밀어 보고, 내려가도 위에 붙어 있다 */
+  .anchors{
+    position:sticky; top:0; z-index:5; flex-wrap:nowrap; overflow-x:auto;
+    margin:18px -16px 0; padding:8px 16px; background:rgba(255,255,255,.96);
+    border-bottom:1px solid var(--hairline-soft); scrollbar-width:none;
+  }
+  .anchors::-webkit-scrollbar{display:none;}
+  .anchors a{white-space:nowrap; flex:0 0 auto; font-size:13px; padding:7px 11px;}
+  :root{--space-section:44px; --space-block:28px;}
+  .section{scroll-margin-top:56px;}
+  .section-title{font-size:20px;}
+
+  /* 월간 격자 */
+  .grid .dow{font-size:12px; padding:6px 0;}
+  .grid .cell{min-height:52px; padding:4px 3px; text-align:center;}
+  .grid .dnum{font-size:14px;}
+  .grid .cell > .small{display:block; font-size:9.5px !important; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .grid .chips{flex-direction:row; flex-wrap:wrap; justify-content:center; gap:3px; margin-top:4px;}
+  .grid .chip{font-size:0; width:7px; height:7px; padding:0;}
+  .grid .chip > span{top:0 !important; width:7px !important; height:7px !important;}
+  .grid .more{font-size:10px; margin-top:1px;}
+  .legend{font-size:13px; gap:6px 12px;}
+
+  /* 필터 */
+  .filters{padding:14px; gap:10px;}
+  .frow{gap:6px;}
+  .frow > label{flex-basis:100%; min-width:0;}
+  .pill{font-size:13px; padding:7px 10px;}
+  .search{min-width:0; width:100%; font-size:16px;}
+  .fcount{margin-left:0;}
+
+  /* 일정 표 → 카드 */
+  .tw{overflow:visible; border:0;}
+  table.ev, table.ev tbody{display:block; background:transparent;}
+  table.ev thead{display:none;}
+  table.ev tr{
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:3px 10px;
+    padding:12px 14px; margin-bottom:8px; background:#fff;
+    border:1px solid var(--hairline); border-radius:4px;
+  }
+  table.ev tr.past td{background:transparent;}
+  table.ev td{padding:0; border:0; line-height:1.45;}
+  table.ev .c-date{order:1; flex:1 1 auto; font-weight:600; color:var(--ink);}
+  table.ev tr.past .c-date{color:inherit;}
+  table.ev .c-fav{order:2; margin-left:auto;}
+  table.ev .c-fav .fav-btn{font-size:20px; padding:0 2px;}
+  table.ev .c-time{order:3; flex-basis:100%; font-size:14px; color:var(--muted);}
+  table.ev .c-ctry, table.ev .c-cat{order:4; font-size:14px; color:var(--muted);}
+  table.ev .c-title{order:5; flex-basis:100%; font-size:16px; font-weight:500; color:var(--ink); margin-top:2px;}
+  table.ev tr.past .c-title{color:inherit;}
+  table.ev .c-detail{order:6; flex-basis:100%; font-size:13.5px;}
+  table.ev .c-conf{order:7; margin-top:4px;}
+  table.ev .c-src{order:8; margin-top:4px;}
+
+  /* 그 밖의 표 → '항목: 값' 카드 */
+  .tw table:not(.ev), .tw table:not(.ev) tbody{display:block; background:transparent;}
+  .tw table:not(.ev) thead{display:none;}
+  .tw table:not(.ev) tr{
+    display:block; padding:10px 14px; margin-bottom:8px; background:#fff;
+    border:1px solid var(--hairline); border-radius:4px;
+  }
+  .tw table:not(.ev) td{
+    display:block; position:relative; padding:3px 0 3px 7em; min-height:1.6em;
+    border:0; white-space:normal; overflow-wrap:anywhere;
+  }
+  .tw table:not(.ev) td::before{
+    content:attr(data-label); position:absolute; left:0; top:4px; width:6.5em;
+    color:var(--muted); font-size:13px; font-weight:400; line-height:1.35;
+  }
+  .tw table:not(.ev) td:first-child{font-weight:600; color:var(--ink);}
+  .tw table:not(.ev) td.num{text-align:left;}
+
+  .bar-row{grid-template-columns:9ch 1fr 4ch; font-size:13px;}
+  .kv{grid-template-columns:1fr; gap:2px;}
+  .kv dd{margin-bottom:8px;}
+  .callout{padding:14px; font-size:15px;}
+  .card{padding:16px;}
+}
+
 /* ---------- 인쇄 ---------- */
 @media print{
   .toolbar,.anchors,.filters,.cal-head button,.fav-btn,.btn-tool,.no-print{display:none !important;}
@@ -290,19 +382,19 @@ footer{
        data-ko="각국 경제지표 발표일 · 중앙은행 정책금리 결정일 · 기업 실적발표와 컨퍼런스콜 · 제약·바이오 학회 · 파생 만기와 지수 정기변경 · 시장 휴장일을 한 화면에서 조회합니다. 확정 일정과 추정 일정을 배지로 구분하고, 확인하지 못한 일정은 날짜를 지어내지 않고 이름과 공식 링크만 남깁니다."
        data-en="Economic data releases, central-bank rate decisions, corporate earnings and conference calls, pharma/biotech congresses, derivative expiries and index reviews, and market holidays — in one screen. Confirmed and estimated dates carry distinct badges; where a date could not be verified, only the name and its official link are shown.">각국 경제지표 발표일 · 중앙은행 정책금리 결정일 · 기업 실적발표와 컨퍼런스콜 · 제약·바이오 학회 · 파생 만기와 지수 정기변경 · 시장 휴장일을 한 화면에서 조회합니다. 확정 일정과 추정 일정을 배지로 구분하고, 확인하지 못한 일정은 날짜를 지어내지 않고 이름과 공식 링크만 남깁니다.</p>
     <div class="meta-line" id="meta"></div>
-    <nav class="anchors no-print" aria-label="sections">
-      <a href="#s1" data-ko="① 다가오는 일정" data-en="1. Coming up">① 다가오는 일정</a>
-      <a href="#s2" data-ko="② 월간 캘린더" data-en="2. Month view">② 월간 캘린더</a>
-      <a href="#s3" data-ko="③ 일정 목록" data-en="3. Schedule list">③ 일정 목록</a>
-      <a href="#s4" data-ko="④ 경제지표" data-en="4. Economic data">④ 경제지표</a>
-      <a href="#s5" data-ko="⑤ 통화정책" data-en="5. Monetary policy">⑤ 통화정책</a>
-      <a href="#s6" data-ko="⑥ 실적·컨콜" data-en="6. Earnings & calls">⑥ 실적·컨콜</a>
-      <a href="#s7" data-ko="⑦ 제약·바이오 학회" data-en="7. Pharma congresses">⑦ 제약·바이오 학회</a>
-      <a href="#s8" data-ko="⑧ 수급·제도" data-en="8. Market structure">⑧ 수급·제도</a>
-      <a href="#s9" data-ko="⑨ 관심 일정" data-en="9. My list">⑨ 관심 일정</a>
-      <a href="#s10" data-ko="⑩ 데이터 상태" data-en="10. Data status">⑩ 데이터 상태</a>
-    </nav>
   </header>
+  <nav class="anchors no-print" aria-label="sections">
+    <a href="#s1" data-ko="① 다가오는 일정" data-en="1. Coming up">① 다가오는 일정</a>
+    <a href="#s2" data-ko="② 월간 캘린더" data-en="2. Month view">② 월간 캘린더</a>
+    <a href="#s3" data-ko="③ 일정 목록" data-en="3. Schedule list">③ 일정 목록</a>
+    <a href="#s4" data-ko="④ 경제지표" data-en="4. Economic data">④ 경제지표</a>
+    <a href="#s5" data-ko="⑤ 통화정책" data-en="5. Monetary policy">⑤ 통화정책</a>
+    <a href="#s6" data-ko="⑥ 실적·컨콜" data-en="6. Earnings & calls">⑥ 실적·컨콜</a>
+    <a href="#s7" data-ko="⑦ 제약·바이오 학회" data-en="7. Pharma congresses">⑦ 제약·바이오 학회</a>
+    <a href="#s8" data-ko="⑧ 수급·제도" data-en="8. Market structure">⑧ 수급·제도</a>
+    <a href="#s9" data-ko="⑨ 관심 일정" data-en="9. My list">⑨ 관심 일정</a>
+    <a href="#s10" data-ko="⑩ 데이터 상태" data-en="10. Data status">⑩ 데이터 상태</a>
+  </nav>
 
   <div id="boot"></div>
 
@@ -535,7 +627,9 @@ var SEEN_TODAY = null;     /* 마지막으로 그렸을 때의 '오늘' — 날�
 
 /* 처음에 표 780행을 한꺼번에 만들면 DOM 이 1만 노드를 넘어가 스크롤부터 무거워진다.
    자주 보는 것만 펼쳐 두고, 참고용 긴 표(출처 목록·휴장일·실적)는 눌렀을 때 만든다. */
-var LIST_PAGE = 200, LIST_SHOWN = LIST_PAGE;
+/* 휴대폰에서는 한 번에 50건만 그린다 — 카드로 쌓이면 200건이 화면 수십 장이 된다. */
+var IS_PHONE = !!(window.matchMedia && window.matchMedia('(max-width:640px)').matches);
+var LIST_PAGE = IS_PHONE ? 50 : 200, LIST_SHOWN = LIST_PAGE;
 var OPEN = { srcUrls: false, holidays: false, earn: false };
 
 function foldButton(key, label, n) {
@@ -992,22 +1086,22 @@ function eventTable(rows, opt) {
       ? fmtDateFull(e._d) + ' ~ ' + fmtDateFull(e._end) : fmtDateFull(e._d);
     var dd = diffDays(today, e._d);
     return '<tr class="' + (e._d < today ? 'past' : '') + '">' +
-      '<td><button type="button" class="fav-btn" data-fav="' + esc(e.id) + '" aria-pressed="' +
+      '<td class="c-fav"><button type="button" class="fav-btn" data-fav="' + esc(e.id) + '" aria-pressed="' +
         isFav(e.id) + '" aria-label="' + t('관심 일정', 'star') + '">★</button></td>' +
-      '<td class="nowrap"><span class="mono">' + esc(span) + '</span>' +
+      '<td class="nowrap c-date"><span class="mono">' + esc(span) + '</span>' +
         (dd >= 0 && dd <= 60 ? ' <span class="small">' + esc(ddayLabel(e._d)) + '</span>' : '') + '</td>' +
-      '<td class="nowrap">' + timeText(e) + '</td>' +
-      '<td class="nowrap">' + esc(countryName(e.country)) + '</td>' +
-      '<td class="nowrap">' + catDot(e.category) + ' ' +
+      '<td class="nowrap c-time">' + timeText(e) + '</td>' +
+      '<td class="nowrap c-ctry">' + esc(countryName(e.country)) + '</td>' +
+      '<td class="nowrap c-cat">' + catDot(e.category) + ' ' +
         esc(t((CATS[e.category] || CATS.other).ko, (CATS[e.category] || CATS.other).en)) + '</td>' +
-      '<td>' + esc(title(e)) + ' ' + impMark(e.importance) + '</td>' +
-      (opt.compact ? '' : '<td class="small">' + esc(orgName(e)) +
+      '<td class="c-title">' + esc(title(e)) + ' ' + impMark(e.importance) + '</td>' +
+      (opt.compact ? '' : '<td class="small c-detail">' + esc(orgName(e)) +
         (detail(e) ? '<br>' + esc(detail(e)) : '') + '</td>') +
-      '<td class="nowrap">' + badge(e.confirmed) + '</td>' +
-      '<td class="nowrap">' + link(e) + '</td>' +
+      '<td class="nowrap c-conf">' + badge(e.confirmed) + '</td>' +
+      '<td class="nowrap c-src">' + link(e) + '</td>' +
       '</tr>';
   }).join('');
-  return '<table>' + head + '<tbody>' + body + '</tbody></table>';
+  return '<table class="ev">' + head + '<tbody>' + body + '</tbody></table>';
 }
 
 /* ---------- 월간 격자 ---------- */
@@ -1652,6 +1746,22 @@ function renderAll() {
   renderSupply();
   renderFav();
   renderStatus();
+  labelTables();
+}
+
+/* 좁은 화면에서는 표를 '항목: 값' 카드로 쌓는다. 그때 쓸 머리글을 칸마다 붙여 둔다. */
+function labelTables() {
+  var tabs = document.querySelectorAll('#app table:not(.ev)');
+  for (var i = 0; i < tabs.length; i++) {
+    var hs = tabs[i].querySelectorAll('thead th');
+    var rows = tabs[i].querySelectorAll('tbody tr');
+    for (var r = 0; r < rows.length; r++) {
+      var cs = rows[r].children;
+      for (var c = 0; c < cs.length && c < hs.length; c++) {
+        cs[c].setAttribute('data-label', hs[c].textContent);
+      }
+    }
+  }
 }
 
 /* ------------------------------------------------- 날짜가 넘어갔을 때
