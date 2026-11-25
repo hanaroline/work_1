@@ -1427,9 +1427,17 @@ def move_brief(rows, moves, limit=8, used=None):
         why = ""
         if r:
             # 상향·하향이라는 말이 든 문장을 우선으로 고른다 — 그것이 까닭이다.
-            for s in re.split(r"(?<=다\.)\s+|(?<=[.!?])\s+", r.get("summary") or ""):
-                if re.search(r"상향|하향|목표\s*주가", s) and len(s) >= 20:
-                    why = s.strip()
+            # 「목표주가」와 방향어가 **함께** 든 문장을 먼저 찾는다. 11/25 유진
+            # 영원무역(목표주가 하향)은 앞 문장 「배당 성향을 … 30%까지
+            # 상향했다」가 먼저 잡혀 하향의 까닭처럼 실렸다.
+            sents = re.split(r"(?<=다\.)\s+|(?<=[.!?])\s+", r.get("summary") or "")
+            for pat in (r"목표\s*(?:주가|가).*(?:상향|하향)|(?:상향|하향).*목표\s*(?:주가|가)",
+                        r"상향|하향|목표\s*주가"):
+                for s in sents:
+                    if re.search(pat, s) and len(s) >= 20:
+                        why = s.strip()
+                        break
+                if why:
                     break
             if not why:
                 why = r.get("lead") or ""

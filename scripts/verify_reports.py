@@ -265,6 +265,8 @@ def verify(path):
             forms.add(sq("%d만" % (tp // 10000)))
         if tp % 1000 == 0:
             forms.add(sq("%s만" % ("%g" % (tp / 10000))))
+            # 「TP 8.0만원」처럼 소수 한 자리를 붙여 쓰는 증권사가 있다(하나).
+            forms.add(sq("%.1f만" % (tp / 10000)))
         if r.get("target_from") == "api":
             continue                       # 칸에서 온 수 — 다4-1 이 따로 본다
         if not any(f and f in hay for f in forms):
