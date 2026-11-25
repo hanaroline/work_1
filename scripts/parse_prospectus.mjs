@@ -40,6 +40,7 @@ const ASSETS = [
   [/Tesla|TSLA|테슬라/i, '테슬라'],
   [/\bAMD\b|Advanced Micro Devices/i, 'AMD'],
   [/Palantir|PLTR/i, '팔란티어 테크'],
+  [/NVIDIA|NVDA|엔비디아/i, '엔비디아'],
 ];
 const parseUnderlyings = (s) => {
   const line = clean(s);
