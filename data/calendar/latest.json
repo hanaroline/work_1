@@ -1,6 +1,6 @@
 {
- "builtAt": "2026-11-25 16:14 KST",
- "builtAtUtc": "2026-11-25T07:14:48Z",
+ "builtAt": "2026-11-25 16:29 KST",
+ "builtAtUtc": "2026-11-25T07:29:54Z",
  "window": {
   "from": "2026-10-11",
   "to": "2028-04-08"
@@ -22,19 +22,19 @@
  },
  "counts": {
   "policy": 60,
-  "indicator": 167,
+  "indicator": 166,
   "earnings": 266,
   "conference": 9,
   "supply": 36,
   "holiday": 90,
   "other": 2,
-  "total": 630,
+  "total": 629,
   "confirmed": {
    "official": 405,
    "websearch": 12,
    "tentative": 0,
    "estimate": 0,
-   "rule": 213
+   "rule": 212
   }
  },
  "sources": {
@@ -4095,6 +4095,31 @@
    ]
   },
   {
+   "id": "indicator-eu-hicp-2026-10-30",
+   "date": "2026-10-30",
+   "end_date": null,
+   "country": "eu",
+   "category": "indicator",
+   "importance": 2,
+   "title_ko": "유로존 소비자물가 (HICP 속보)",
+   "title_en": "Euro area HICP flash",
+   "org": "Eurostat",
+   "org_en": "Eurostat",
+   "detail_ko": "속보치는 통상 매월 말, 확정치는 다음 달 중순",
+   "detail_en": "Flash at month end, final in the middle of the following month",
+   "time_local": "11:00",
+   "tz": "Europe/Brussels",
+   "time_kst": "2026-10-30 19:00",
+   "url": "https://ec.europa.eu/eurostat/web/euro-indicators/release-calendar",
+   "source": "Eurostat",
+   "source_en": "Eurostat",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "eu-hicp"
+   ]
+  },
+  {
    "id": "policy-boj-2026-10-30",
    "date": "2026-10-30",
    "end_date": null,
@@ -4143,31 +4168,6 @@
    "tags": [
     "indicator",
     "kr-ip"
-   ]
-  },
-  {
-   "id": "indicator-eu-hicp-2026-10-31",
-   "date": "2026-10-31",
-   "end_date": null,
-   "country": "eu",
-   "category": "indicator",
-   "importance": 2,
-   "title_ko": "유로존 소비자물가 (HICP 속보)",
-   "title_en": "Euro area HICP flash",
-   "org": "Eurostat",
-   "org_en": "Eurostat",
-   "detail_ko": "속보치는 통상 매월 말, 확정치는 다음 달 중순",
-   "detail_en": "Flash at month end, final in the middle of the following month",
-   "time_local": "11:00",
-   "tz": "Europe/Brussels",
-   "time_kst": "2026-10-31 19:00",
-   "url": "https://ec.europa.eu/eurostat/web/euro-indicators/release-calendar",
-   "source": "Eurostat",
-   "source_en": "Eurostat",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "eu-hicp"
    ]
   },
   {
@@ -5497,6 +5497,56 @@
    ]
   },
   {
+   "id": "indicator-us-pce-2026-11-27",
+   "date": "2026-11-27",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 3,
+   "title_ko": "미국 개인소득·지출 (PCE 물가)",
+   "title_en": "US Personal Income and Outlays (PCE)",
+   "org": "美 경제분석국 (BEA)",
+   "org_en": "Bureau of Economic Analysis",
+   "detail_ko": "통상 매월 말 08:30 ET",
+   "detail_en": "Usually at the end of the month, 08:30 ET",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2026-11-27 22:30",
+   "url": "https://www.bea.gov/news/schedule",
+   "source": "美 경제분석국 (BEA)",
+   "source_en": "Bureau of Economic Analysis",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "us-pce"
+   ]
+  },
+  {
+   "id": "indicator-kr-ip-2026-11-27",
+   "date": "2026-11-27",
+   "end_date": null,
+   "country": "kr",
+   "category": "indicator",
+   "importance": 2,
+   "title_ko": "한국 산업활동동향",
+   "title_en": "Korea Industrial Activity",
+   "org": "통계청",
+   "org_en": "Statistics Korea",
+   "detail_ko": "통상 매월 말 08:00",
+   "detail_en": "Usually at the end of the month, 08:00",
+   "time_local": "08:00",
+   "tz": "Asia/Seoul",
+   "time_kst": "2026-11-27 08:00",
+   "url": "https://kostat.go.kr/board.es?mid=a10501010000&bid=11570",
+   "source": "통계청",
+   "source_en": "Statistics Korea",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "kr-ip"
+   ]
+  },
+  {
    "id": "holiday-us-2026-11-27",
    "date": "2026-11-27",
    "end_date": null,
@@ -5545,56 +5595,6 @@
    "tags": [
     "fed",
     "blackout"
-   ]
-  },
-  {
-   "id": "indicator-us-pce-2026-11-29",
-   "date": "2026-11-29",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 3,
-   "title_ko": "미국 개인소득·지출 (PCE 물가)",
-   "title_en": "US Personal Income and Outlays (PCE)",
-   "org": "美 경제분석국 (BEA)",
-   "org_en": "Bureau of Economic Analysis",
-   "detail_ko": "통상 매월 말 08:30 ET",
-   "detail_en": "Usually at the end of the month, 08:30 ET",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2026-11-29 22:30",
-   "url": "https://www.bea.gov/news/schedule",
-   "source": "美 경제분석국 (BEA)",
-   "source_en": "Bureau of Economic Analysis",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-pce"
-   ]
-  },
-  {
-   "id": "indicator-kr-ip-2026-11-29",
-   "date": "2026-11-29",
-   "end_date": null,
-   "country": "kr",
-   "category": "indicator",
-   "importance": 2,
-   "title_ko": "한국 산업활동동향",
-   "title_en": "Korea Industrial Activity",
-   "org": "통계청",
-   "org_en": "Statistics Korea",
-   "detail_ko": "통상 매월 말 08:00",
-   "detail_en": "Usually at the end of the month, 08:00",
-   "time_local": "08:00",
-   "tz": "Asia/Seoul",
-   "time_kst": "2026-11-29 08:00",
-   "url": "https://kostat.go.kr/board.es?mid=a10501010000&bid=11570",
-   "source": "통계청",
-   "source_en": "Statistics Korea",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "kr-ip"
    ]
   },
   {
@@ -7094,31 +7094,6 @@
     "holiday",
     "hk",
     "early"
-   ]
-  },
-  {
-   "id": "indicator-us-empsit-2027-01-01",
-   "date": "2027-01-01",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 3,
-   "title_ko": "미국 고용상황 (비농업 취업자수·실업률)",
-   "title_en": "US Employment Situation",
-   "org": "美 노동통계국 (BLS)",
-   "org_en": "Bureau of Labor Statistics",
-   "detail_ko": "통상 매월 첫 금요일 08:30 ET",
-   "detail_en": "Usually the first Friday of the month, 08:30 ET",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2027-01-01 22:30",
-   "url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
-   "source": "美 노동통계국 (BLS)",
-   "source_en": "Bureau of Labor Statistics",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-empsit"
    ]
   },
   {
@@ -10558,6 +10533,31 @@
    ]
   },
   {
+   "id": "indicator-us-pce-2027-01-29",
+   "date": "2027-01-29",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 3,
+   "title_ko": "미국 개인소득·지출 (PCE 물가)",
+   "title_en": "US Personal Income and Outlays (PCE)",
+   "org": "美 경제분석국 (BEA)",
+   "org_en": "Bureau of Economic Analysis",
+   "detail_ko": "통상 매월 말 08:30 ET",
+   "detail_en": "Usually at the end of the month, 08:30 ET",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2027-01-29 22:30",
+   "url": "https://www.bea.gov/news/schedule",
+   "source": "美 경제분석국 (BEA)",
+   "source_en": "Bureau of Economic Analysis",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "us-pce"
+   ]
+  },
+  {
    "id": "earnings-066570.KS-2027-01-29",
    "date": "2027-01-29",
    "end_date": null,
@@ -10584,6 +10584,31 @@
    ]
   },
   {
+   "id": "indicator-eu-hicp-2027-01-29",
+   "date": "2027-01-29",
+   "end_date": null,
+   "country": "eu",
+   "category": "indicator",
+   "importance": 2,
+   "title_ko": "유로존 소비자물가 (HICP 속보)",
+   "title_en": "Euro area HICP flash",
+   "org": "Eurostat",
+   "org_en": "Eurostat",
+   "detail_ko": "속보치는 통상 매월 말, 확정치는 다음 달 중순",
+   "detail_en": "Flash at month end, final in the middle of the following month",
+   "time_local": "11:00",
+   "tz": "Europe/Brussels",
+   "time_kst": "2027-01-29 19:00",
+   "url": "https://ec.europa.eu/eurostat/web/euro-indicators/release-calendar",
+   "source": "Eurostat",
+   "source_en": "Eurostat",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "eu-hicp"
+   ]
+  },
+  {
    "id": "earnings-086790.KS-2027-01-29",
    "date": "2027-01-29",
    "end_date": null,
@@ -10607,6 +10632,31 @@
     "earnings",
     "kr",
     "086790.KS"
+   ]
+  },
+  {
+   "id": "indicator-kr-ip-2027-01-29",
+   "date": "2027-01-29",
+   "end_date": null,
+   "country": "kr",
+   "category": "indicator",
+   "importance": 2,
+   "title_ko": "한국 산업활동동향",
+   "title_en": "Korea Industrial Activity",
+   "org": "통계청",
+   "org_en": "Statistics Korea",
+   "detail_ko": "통상 매월 말 08:00",
+   "detail_en": "Usually at the end of the month, 08:00",
+   "time_local": "08:00",
+   "tz": "Asia/Seoul",
+   "time_kst": "2027-01-29 08:00",
+   "url": "https://kostat.go.kr/board.es?mid=a10501010000&bid=11570",
+   "source": "통계청",
+   "source_en": "Statistics Korea",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "kr-ip"
    ]
   },
   {
@@ -10737,81 +10787,6 @@
     "earnings",
     "us",
     "CL"
-   ]
-  },
-  {
-   "id": "indicator-us-pce-2027-01-30",
-   "date": "2027-01-30",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 3,
-   "title_ko": "미국 개인소득·지출 (PCE 물가)",
-   "title_en": "US Personal Income and Outlays (PCE)",
-   "org": "美 경제분석국 (BEA)",
-   "org_en": "Bureau of Economic Analysis",
-   "detail_ko": "통상 매월 말 08:30 ET",
-   "detail_en": "Usually at the end of the month, 08:30 ET",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2027-01-30 22:30",
-   "url": "https://www.bea.gov/news/schedule",
-   "source": "美 경제분석국 (BEA)",
-   "source_en": "Bureau of Economic Analysis",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-pce"
-   ]
-  },
-  {
-   "id": "indicator-kr-ip-2027-01-30",
-   "date": "2027-01-30",
-   "end_date": null,
-   "country": "kr",
-   "category": "indicator",
-   "importance": 2,
-   "title_ko": "한국 산업활동동향",
-   "title_en": "Korea Industrial Activity",
-   "org": "통계청",
-   "org_en": "Statistics Korea",
-   "detail_ko": "통상 매월 말 08:00",
-   "detail_en": "Usually at the end of the month, 08:00",
-   "time_local": "08:00",
-   "tz": "Asia/Seoul",
-   "time_kst": "2027-01-30 08:00",
-   "url": "https://kostat.go.kr/board.es?mid=a10501010000&bid=11570",
-   "source": "통계청",
-   "source_en": "Statistics Korea",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "kr-ip"
-   ]
-  },
-  {
-   "id": "indicator-eu-hicp-2027-01-31",
-   "date": "2027-01-31",
-   "end_date": null,
-   "country": "eu",
-   "category": "indicator",
-   "importance": 2,
-   "title_ko": "유로존 소비자물가 (HICP 속보)",
-   "title_en": "Euro area HICP flash",
-   "org": "Eurostat",
-   "org_en": "Eurostat",
-   "detail_ko": "속보치는 통상 매월 말, 확정치는 다음 달 중순",
-   "detail_en": "Flash at month end, final in the middle of the following month",
-   "time_local": "11:00",
-   "tz": "Europe/Brussels",
-   "time_kst": "2027-01-31 19:00",
-   "url": "https://ec.europa.eu/eurostat/web/euro-indicators/release-calendar",
-   "source": "Eurostat",
-   "source_en": "Eurostat",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "eu-hicp"
    ]
   },
   {
@@ -14929,8 +14904,8 @@
    ]
   },
   {
-   "id": "indicator-us-pce-2027-02-27",
-   "date": "2027-02-27",
+   "id": "indicator-us-pce-2027-02-26",
+   "date": "2027-02-26",
    "end_date": null,
    "country": "us",
    "category": "indicator",
@@ -14943,7 +14918,7 @@
    "detail_en": "Usually at the end of the month, 08:30 ET",
    "time_local": "08:30",
    "tz": "America/New_York",
-   "time_kst": "2027-02-27 22:30",
+   "time_kst": "2027-02-26 22:30",
    "url": "https://www.bea.gov/news/schedule",
    "source": "美 경제분석국 (BEA)",
    "source_en": "Bureau of Economic Analysis",
@@ -14954,33 +14929,8 @@
    ]
   },
   {
-   "id": "indicator-kr-ip-2027-02-27",
-   "date": "2027-02-27",
-   "end_date": null,
-   "country": "kr",
-   "category": "indicator",
-   "importance": 2,
-   "title_ko": "한국 산업활동동향",
-   "title_en": "Korea Industrial Activity",
-   "org": "통계청",
-   "org_en": "Statistics Korea",
-   "detail_ko": "통상 매월 말 08:00",
-   "detail_en": "Usually at the end of the month, 08:00",
-   "time_local": "08:00",
-   "tz": "Asia/Seoul",
-   "time_kst": "2027-02-27 08:00",
-   "url": "https://kostat.go.kr/board.es?mid=a10501010000&bid=11570",
-   "source": "통계청",
-   "source_en": "Statistics Korea",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "kr-ip"
-   ]
-  },
-  {
-   "id": "indicator-eu-hicp-2027-02-28",
-   "date": "2027-02-28",
+   "id": "indicator-eu-hicp-2027-02-26",
+   "date": "2027-02-26",
    "end_date": null,
    "country": "eu",
    "category": "indicator",
@@ -14993,7 +14943,7 @@
    "detail_en": "Flash at month end, final in the middle of the following month",
    "time_local": "11:00",
    "tz": "Europe/Brussels",
-   "time_kst": "2027-02-28 19:00",
+   "time_kst": "2027-02-26 19:00",
    "url": "https://ec.europa.eu/eurostat/web/euro-indicators/release-calendar",
    "source": "Eurostat",
    "source_en": "Eurostat",
@@ -15001,6 +14951,31 @@
    "tags": [
     "indicator",
     "eu-hicp"
+   ]
+  },
+  {
+   "id": "indicator-kr-ip-2027-02-26",
+   "date": "2027-02-26",
+   "end_date": null,
+   "country": "kr",
+   "category": "indicator",
+   "importance": 2,
+   "title_ko": "한국 산업활동동향",
+   "title_en": "Korea Industrial Activity",
+   "org": "통계청",
+   "org_en": "Statistics Korea",
+   "detail_ko": "통상 매월 말 08:00",
+   "detail_en": "Usually at the end of the month, 08:00",
+   "time_local": "08:00",
+   "tz": "Asia/Seoul",
+   "time_kst": "2027-02-26 08:00",
+   "url": "https://kostat.go.kr/board.es?mid=a10501010000&bid=11570",
+   "source": "통계청",
+   "source_en": "Statistics Korea",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "kr-ip"
    ]
   },
   {
