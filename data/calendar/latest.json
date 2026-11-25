@@ -1,9 +1,9 @@
 {
- "builtAt": "2026-11-23 10:47 KST",
- "builtAtUtc": "2026-11-23T01:47:16Z",
+ "builtAt": "2026-11-25 11:07 KST",
+ "builtAtUtc": "2026-11-25T02:07:14Z",
  "window": {
-  "from": "2026-10-09",
-  "to": "2028-04-06"
+  "from": "2026-10-11",
+  "to": "2028-04-08"
  },
  "note": "증시 일정 캘린더. confirmed 는 official(공식 확인) · websearch(검색 교차 확인) · tentative(기관이 잠정으로 공표) · estimate(제공사 추정 구간) · rule(규칙으로 만든 날짜) 다. 확정이 아닌 것은 화면에서 배지로 구분한다.",
  "confirmed_legend": {
@@ -22,19 +22,19 @@
  },
  "counts": {
   "policy": 60,
-  "indicator": 166,
+  "indicator": 167,
   "earnings": 265,
   "conference": 9,
   "supply": 36,
-  "holiday": 91,
+  "holiday": 90,
   "other": 2,
   "total": 629,
   "confirmed": {
-   "official": 405,
+   "official": 404,
    "websearch": 12,
    "tentative": 0,
    "estimate": 0,
-   "rule": 212
+   "rule": 213
   }
  },
  "sources": {
@@ -78,10 +78,10 @@
  "context": {
   "policy_rate_us": {
    "effr_pct": 3.88,
-   "date": "2026-11-19",
+   "date": "2026-11-23",
    "percentile_1": 3.85,
-   "percentile_99": 3.9,
-   "volume_bn_usd": 100,
+   "percentile_99": 3.95,
+   "volume_bn_usd": 87,
    "note": "실효 연방기금금리. 하루 지연 공표라 시세일보다 하루 이르다",
    "source_url": "https://markets.newyorkfed.org/api/rates/unsecured/effr",
    "perf": {
@@ -92,32 +92,32 @@
     "y1": 0.0,
     "ytd": 24.0,
     "unit": "bp",
-    "from": "2025-04-17"
+    "from": "2025-04-21"
    },
    "series_days": 400
   },
   "fed_implied": {
-   "contract_price": 95.865,
-   "implied_rate_pct": 4.135,
-   "quote_date": "2026-11-23",
+   "contract_price": 95.7,
+   "implied_rate_pct": 4.3,
+   "quote_date": "2026-11-24",
    "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 — 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
    "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
    "effr_pct": 3.88,
-   "vs_effr_bp": 25,
+   "vs_effr_bp": 42,
    "perf": {
-    "w1": 26.0,
-    "m1": 25.0,
-    "m3": 50.1,
-    "m6": 51.1,
-    "y1": 26.0,
-    "ytd": 41.4,
+    "w1": 42.3,
+    "m1": 41.3,
+    "m3": 67.5,
+    "m6": 67.5,
+    "y1": 42.3,
+    "ytd": 57.8,
     "unit": "bp",
     "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
    }
   },
   "rates_kr": {
-   "call": 3.074,
-   "cd91": 3.38,
+   "call": 3.104,
+   "cd91": 3.39,
    "cofix_new": 3.62,
    "cofix_balance": 3.26,
    "cofix_new_balance": 2.93,
@@ -131,55 +131,55 @@
     "COFIX 신잔액"
    ],
    "ktb10y_errors": [
-    "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(94779 bytes)"
+    "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(94779 bytes)",
+    "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
    ],
-   "ktb10y": 3.857,
-   "ktb10y_source": "https://kr.investing.com/rates-bonds/south-korea-10-year-bond-yield",
-   "ktb1y": 3.62,
-   "ktb5y": 3.728,
+   "ktb1y": 3.635,
+   "ktb5y": 3.708,
+   "ktb10y": 3.819,
    "perf": {
     "ktb1y": {
-     "w1": -1.3,
-     "m1": -4.8,
-     "m3": 20.4,
+     "w1": 0.2,
+     "m1": -3.3,
+     "m3": 22.8,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb5y": {
-     "w1": -10.2,
-     "m1": -22.0,
-     "m3": -38.3,
+     "w1": -11.7,
+     "m1": -24.0,
+     "m3": -36.0,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb10y": {
-     "w1": -12.4,
-     "m1": -24.0,
-     "m3": -51.9,
+     "w1": -14.7,
+     "m1": -27.8,
+     "m3": -51.6,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "cd91": {
      "w1": 1.0,
-     "m1": 12.0,
+     "m1": 13.0,
      "m3": 43.0,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "call": {
-     "w1": 1.9,
-     "m1": 4.2,
-     "m3": 32.4,
+     "w1": 2.1,
+     "m1": 7.2,
+     "m3": 34.4,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "cofix_new": {
-     "w1": 19.0,
+     "w1": 0.0,
      "m1": 19.0,
      "m3": 44.0,
      "unit": "bp",
@@ -187,7 +187,7 @@
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "cofix_balance": {
-     "w1": 11.0,
+     "w1": 0.0,
      "m1": 11.0,
      "m3": 26.0,
      "unit": "bp",
@@ -196,7 +196,7 @@
     }
    }
   },
-  "asof_kst": "2026-11-23 10:45:11"
+  "asof_kst": "2026-11-25 07:43:00"
  },
  "holidays": [
   {
@@ -2707,7 +2707,7 @@
    "calendar_url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "rule_note_en": "Usually in the second week of the month, 08:30 ET",
    "why_en": "The single biggest mover of the expected policy path; core month-on-month is what matters",
-   "fetched_at": "2026-11-23"
+   "fetched_at": "2026-11-25"
   },
   {
    "id": "us-empsit",
@@ -2824,7 +2824,7 @@
    "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
    "rule_note_en": "Usually in the same week as CPI, 08:30 ET",
    "why_en": "Price pressure one stage before it reaches CPI",
-   "fetched_at": "2026-11-23"
+   "fetched_at": "2026-11-25"
   },
   {
    "id": "us-claims",
@@ -3087,7 +3087,7 @@
    "source_en": "Federal Reserve — FOMC meeting calendars",
    "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local",
    "meetings_per_year": 8,
-   "fetched_at": "2026-11-23"
+   "fetched_at": "2026-11-25"
   },
   {
    "key": "bok",
@@ -3126,7 +3126,7 @@
    "source_en": "ECB — Meetings of the Governing Council and the General Council",
    "projections_note_en": "ECB staff macroeconomic projections accompany the March, June, September and December meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-11-23"
+   "fetched_at": "2026-11-25"
   },
   {
    "key": "boj",
@@ -3144,7 +3144,7 @@
    "source_en": "Bank of Japan — Monetary Policy Meetings",
    "projections_note_en": "The quarterly Outlook Report accompanies the January, April, July and October meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-11-23"
+   "fetched_at": "2026-11-25"
   },
   {
    "key": "boe",
@@ -3162,7 +3162,7 @@
    "source_en": "Bank of England — Upcoming MPC dates",
    "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-11-23"
+   "fetched_at": "2026-11-25"
   },
   {
    "key": "pboc",
@@ -3567,32 +3567,6 @@
  ],
  "events": [
   {
-   "id": "holiday-kr-2026-10-09",
-   "date": "2026-10-09",
-   "end_date": null,
-   "country": "kr",
-   "category": "holiday",
-   "importance": 2,
-   "title_ko": "한국 (KRX) 한글날 — 종일 휴장",
-   "title_en": "Korea (KRX) Hangul Day — full",
-   "org": "한국 (KRX)",
-   "org_en": "Korea (KRX)",
-   "detail_ko": null,
-   "detail_en": null,
-   "time_local": null,
-   "tz": null,
-   "time_kst": null,
-   "url": "https://english.sse.com.cn/start/trading/schedule/",
-   "source": "data/market/holidays.json",
-   "source_en": "data/market/holidays.json",
-   "confirmed": "official",
-   "tags": [
-    "holiday",
-    "kr",
-    "full"
-   ]
-  },
-  {
    "id": "holiday-jp-2026-10-12",
    "date": "2026-10-12",
    "end_date": null,
@@ -3947,32 +3921,6 @@
    ]
   },
   {
-   "id": "earnings-010120.KS-2026-10-21",
-   "date": "2026-10-21",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "LS일렉트릭 실적발표",
-   "title_en": "LS Electric earnings",
-   "org": "010120.KS",
-   "org_en": "010120.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/010120.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "010120.KS"
-   ]
-  },
-  {
    "id": "earnings-CME-2026-10-21",
    "date": "2026-10-21",
    "end_date": null,
@@ -4179,136 +4127,6 @@
    ]
   },
   {
-   "id": "earnings-316140.KS-2026-10-23",
-   "date": "2026-10-23",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "우리금융지주 실적발표",
-   "title_en": "Woori Financial Group earnings",
-   "org": "316140.KS",
-   "org_en": "316140.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/316140.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "316140.KS"
-   ]
-  },
-  {
-   "id": "earnings-086790.KS-2026-10-23",
-   "date": "2026-10-23",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "하나금융지주 실적발표",
-   "title_en": "Hana Financial Group earnings",
-   "org": "086790.KS",
-   "org_en": "086790.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/086790.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "086790.KS"
-   ]
-  },
-  {
-   "id": "earnings-064350.KS-2026-10-23",
-   "date": "2026-10-23",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "현대로템 실적발표",
-   "title_en": "Hyundai Rotem earnings",
-   "org": "064350.KS",
-   "org_en": "064350.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/064350.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "064350.KS"
-   ]
-  },
-  {
-   "id": "earnings-005940.KS-2026-10-26",
-   "date": "2026-10-26",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "NH투자증권 실적발표",
-   "title_en": "NH Investment & Securities earnings",
-   "org": "005940.KS",
-   "org_en": "005940.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/005940.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "005940.KS"
-   ]
-  },
-  {
-   "id": "earnings-024110.KS-2026-10-26",
-   "date": "2026-10-26",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "기업은행 실적발표",
-   "title_en": "Industrial Bank of Korea earnings",
-   "org": "024110.KS",
-   "org_en": "024110.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/024110.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "024110.KS"
-   ]
-  },
-  {
    "id": "earnings-WELL-2026-10-26",
    "date": "2026-10-26",
    "end_date": null,
@@ -4383,162 +4201,6 @@
     "earnings",
     "us",
     "CDNS"
-   ]
-  },
-  {
-   "id": "earnings-267260.KS-2026-10-27",
-   "date": "2026-10-27",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "HD현대일렉트릭 실적발표",
-   "title_en": "HD Hyundai Electric earnings",
-   "org": "267260.KS",
-   "org_en": "267260.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/267260.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "267260.KS"
-   ]
-  },
-  {
-   "id": "earnings-175330.KS-2026-10-27",
-   "date": "2026-10-27",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "JB금융지주 실적발표",
-   "title_en": "JB Financial Group earnings",
-   "org": "175330.KS",
-   "org_en": "175330.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/175330.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "175330.KS"
-   ]
-  },
-  {
-   "id": "earnings-068270.KS-2026-10-27",
-   "date": "2026-10-27",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "셀트리온 실적발표",
-   "title_en": "Celltrion earnings",
-   "org": "068270.KS",
-   "org_en": "068270.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/068270.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "068270.KS"
-   ]
-  },
-  {
-   "id": "earnings-055550.KS-2026-10-27",
-   "date": "2026-10-27",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "신한지주 실적발표",
-   "title_en": "Shinhan Financial Group earnings",
-   "org": "055550.KS",
-   "org_en": "055550.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/055550.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "055550.KS"
-   ]
-  },
-  {
-   "id": "earnings-128940.KS-2026-10-27",
-   "date": "2026-10-27",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "한미약품 실적발표",
-   "title_en": "Hanmi Pharm earnings",
-   "org": "128940.KS",
-   "org_en": "128940.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/128940.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "128940.KS"
-   ]
-  },
-  {
-   "id": "earnings-042660.KS-2026-10-27",
-   "date": "2026-10-27",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "한화오션 실적발표",
-   "title_en": "Hanwha Ocean earnings",
-   "org": "042660.KS",
-   "org_en": "042660.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/042660.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "042660.KS"
    ]
   },
   {
@@ -4797,32 +4459,6 @@
    "tags": [
     "central-bank",
     "fed"
-   ]
-  },
-  {
-   "id": "earnings-009540.KS-2026-10-28",
-   "date": "2026-10-28",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "HD한국조선해양 실적발표",
-   "title_en": "HD Korea Shipbuilding & Offshore earnings",
-   "org": "009540.KS",
-   "org_en": "009540.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/009540.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "009540.KS"
    ]
   },
   {
@@ -5134,162 +4770,6 @@
    "tags": [
     "central-bank",
     "ecb"
-   ]
-  },
-  {
-   "id": "earnings-105560.KS-2026-10-29",
-   "date": "2026-10-29",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "KB금융 실적발표",
-   "title_en": "KB Financial Group earnings",
-   "org": "105560.KS",
-   "org_en": "105560.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/105560.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "105560.KS"
-   ]
-  },
-  {
-   "id": "earnings-241560.KS-2026-10-29",
-   "date": "2026-10-29",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "두산밥캣 실적발표",
-   "title_en": "Doosan Bobcat earnings",
-   "org": "241560.KS",
-   "org_en": "241560.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/241560.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "241560.KS"
-   ]
-  },
-  {
-   "id": "earnings-006400.KS-2026-10-29",
-   "date": "2026-10-29",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "삼성SDI 실적발표",
-   "title_en": "Samsung SDI earnings",
-   "org": "006400.KS",
-   "org_en": "006400.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/006400.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "006400.KS"
-   ]
-  },
-  {
-   "id": "earnings-090430.KS-2026-10-29",
-   "date": "2026-10-29",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "아모레퍼시픽 실적발표",
-   "title_en": "Amorepacific earnings",
-   "org": "090430.KS",
-   "org_en": "090430.KS",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "http://en.amorepacific.com/invest/stock_currently.jsp",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "090430.KS"
-   ]
-  },
-  {
-   "id": "earnings-009830.KS-2026-10-29",
-   "date": "2026-10-29",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "한화솔루션 실적발표",
-   "title_en": "Hanwha Solutions earnings",
-   "org": "009830.KS",
-   "org_en": "009830.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/009830.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "009830.KS"
-   ]
-  },
-  {
-   "id": "earnings-012450.KS-2026-10-29",
-   "date": "2026-10-29",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "한화에어로스페이스 실적발표",
-   "title_en": "Hanwha Aerospace earnings",
-   "org": "012450.KS",
-   "org_en": "012450.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/012450.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "012450.KS"
    ]
   },
   {
@@ -5733,32 +5213,6 @@
    ]
   },
   {
-   "id": "earnings-278470.KS-2026-10-30",
-   "date": "2026-10-30",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "에이피알 실적발표",
-   "title_en": "APR earnings",
-   "org": "278470.KS",
-   "org_en": "278470.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/278470.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "278470.KS"
-   ]
-  },
-  {
    "id": "policy-boj-2026-10-30",
    "date": "2026-10-30",
    "end_date": null,
@@ -5807,58 +5261,6 @@
    "tags": [
     "indicator",
     "kr-ip"
-   ]
-  },
-  {
-   "id": "earnings-042700.KS-2026-10-30",
-   "date": "2026-10-30",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "한미반도체 실적발표",
-   "title_en": "Hanmi Semiconductor earnings",
-   "org": "042700.KS",
-   "org_en": "042700.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/042700.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "042700.KS"
-   ]
-  },
-  {
-   "id": "earnings-000720.KS-2026-10-30",
-   "date": "2026-10-30",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "현대건설 실적발표",
-   "title_en": "Hyundai Engineering & Construction earnings",
-   "org": "000720.KS",
-   "org_en": "000720.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/000720.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "000720.KS"
    ]
   },
   {
@@ -6013,32 +5415,6 @@
    ]
   },
   {
-   "id": "earnings-003670.KS-2026-11-02",
-   "date": "2026-11-02",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "포스코퓨처엠 실적발표",
-   "title_en": "POSCO Future M earnings",
-   "org": "003670.KS",
-   "org_en": "003670.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/003670.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "003670.KS"
-   ]
-  },
-  {
    "id": "earnings-MAR-2026-11-02",
    "date": "2026-11-02",
    "end_date": null,
@@ -6168,32 +5544,6 @@
    ]
   },
   {
-   "id": "earnings-377300.KS-2026-11-03",
-   "date": "2026-11-03",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "카카오페이 실적발표",
-   "title_en": "Kakao Pay earnings",
-   "org": "377300.KS",
-   "org_en": "377300.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/377300.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "377300.KS"
-   ]
-  },
-  {
    "id": "earnings-BKNG-2026-11-03",
    "date": "2026-11-03",
    "end_date": null,
@@ -6320,32 +5670,6 @@
    "tags": [
     "indicator",
     "us-ism-svc"
-   ]
-  },
-  {
-   "id": "earnings-000880.KS-2026-11-04",
-   "date": "2026-11-04",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "한화 실적발표",
-   "title_en": "Hanwha earnings",
-   "org": "000880.KS",
-   "org_en": "000880.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/000880.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "000880.KS"
    ]
   },
   {
@@ -6479,32 +5803,6 @@
    ]
   },
   {
-   "id": "earnings-078930.KS-2026-11-05",
-   "date": "2026-11-05",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "GS 실적발표",
-   "title_en": "GS Holdings earnings",
-   "org": "078930.KS",
-   "org_en": "078930.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/078930.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "078930.KS"
-   ]
-  },
-  {
    "id": "policy-boe-2026-11-05",
    "date": "2026-11-05",
    "end_date": null,
@@ -6528,32 +5826,6 @@
     "central-bank",
     "boe",
     "sep"
-   ]
-  },
-  {
-   "id": "earnings-035720.KS-2026-11-05",
-   "date": "2026-11-05",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "카카오 실적발표",
-   "title_en": "Kakao earnings",
-   "org": "035720.KS",
-   "org_en": "035720.KS",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "http://www.daumcorp.com/DaumEng/ir/stockInformation.daum",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "035720.KS"
    ]
   },
   {
@@ -6968,32 +6240,6 @@
    ]
   },
   {
-   "id": "earnings-259960.KS-2026-11-10",
-   "date": "2026-11-10",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "크래프톤 실적발표",
-   "title_en": "Krafton earnings",
-   "org": "259960.KS",
-   "org_en": "259960.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/259960.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "259960.KS"
-   ]
-  },
-  {
    "id": "indicator-kr-employment-2026-11-11",
    "date": "2026-11-11",
    "end_date": null,
@@ -7016,84 +6262,6 @@
    "tags": [
     "indicator",
     "kr-employment"
-   ]
-  },
-  {
-   "id": "earnings-005830.KS-2026-11-12",
-   "date": "2026-11-12",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "DB손해보험 실적발표",
-   "title_en": "DB Insurance earnings",
-   "org": "005830.KS",
-   "org_en": "005830.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/005830.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "005830.KS"
-   ]
-  },
-  {
-   "id": "earnings-032830.KS-2026-11-12",
-   "date": "2026-11-12",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "삼성생명 실적발표",
-   "title_en": "Samsung Life Insurance earnings",
-   "org": "032830.KS",
-   "org_en": "032830.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/032830.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "032830.KS"
-   ]
-  },
-  {
-   "id": "earnings-000810.KS-2026-11-12",
-   "date": "2026-11-12",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "삼성화재 실적발표",
-   "title_en": "Samsung Fire & Marine earnings",
-   "org": "000810.KS",
-   "org_en": "000810.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/000810.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "000810.KS"
    ]
   },
   {
@@ -7221,32 +6389,6 @@
     "conference",
     "bio",
     "obesityweek"
-   ]
-  },
-  {
-   "id": "earnings-402340.KS-2026-11-16",
-   "date": "2026-11-16",
-   "end_date": null,
-   "country": "kr",
-   "category": "earnings",
-   "importance": 2,
-   "title_ko": "SK스퀘어 실적발표",
-   "title_en": "SK Square earnings",
-   "org": "402340.KS",
-   "org_en": "402340.KS",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "Asia/Seoul",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/402340.KS",
-   "source": "KR 스냅샷 (data/kr100/latest.json)",
-   "source_en": "KR100 snapshot (data/kr100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "kr",
-    "402340.KS"
    ]
   },
   {
@@ -11572,6 +10714,32 @@
    ]
   },
   {
+   "id": "earnings-010120.KS-2027-01-27",
+   "date": "2027-01-27",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "LS일렉트릭 실적발표",
+   "title_en": "LS Electric earnings",
+   "org": "010120.KS",
+   "org_en": "010120.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/010120.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "010120.KS"
+   ]
+  },
+  {
    "id": "earnings-096770.KS-2027-01-27",
    "date": "2027-01-27",
    "end_date": null,
@@ -12404,6 +11572,32 @@
    ]
   },
   {
+   "id": "earnings-064350.KS-2027-01-28",
+   "date": "2027-01-28",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "현대로템 실적발표",
+   "title_en": "Hyundai Rotem earnings",
+   "org": "064350.KS",
+   "org_en": "064350.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/064350.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "064350.KS"
+   ]
+  },
+  {
    "id": "earnings-005380.KS-2027-01-28",
    "date": "2027-01-28",
    "end_date": null,
@@ -13054,6 +12248,32 @@
    ]
   },
   {
+   "id": "earnings-086790.KS-2027-01-29",
+   "date": "2027-01-29",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "하나금융지주 실적발표",
+   "title_en": "Hana Financial Group earnings",
+   "org": "086790.KS",
+   "org_en": "086790.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/086790.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "086790.KS"
+   ]
+  },
+  {
    "id": "earnings-CVX-2027-01-29",
    "date": "2027-01-29",
    "end_date": null,
@@ -13437,6 +12657,32 @@
    ]
   },
   {
+   "id": "earnings-006400.KS-2027-02-02",
+   "date": "2027-02-02",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "삼성SDI 실적발표",
+   "title_en": "Samsung SDI earnings",
+   "org": "006400.KS",
+   "org_en": "006400.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/006400.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "006400.KS"
+   ]
+  },
+  {
    "id": "earnings-AMD-2027-02-02",
    "date": "2027-02-02",
    "end_date": null,
@@ -13644,6 +12890,58 @@
    ]
   },
   {
+   "id": "earnings-278470.KS-2027-02-03",
+   "date": "2027-02-03",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "에이피알 실적발표",
+   "title_en": "APR earnings",
+   "org": "278470.KS",
+   "org_en": "278470.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/278470.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "278470.KS"
+   ]
+  },
+  {
+   "id": "earnings-042660.KS-2027-02-03",
+   "date": "2027-02-03",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "한화오션 실적발표",
+   "title_en": "Hanwha Ocean earnings",
+   "org": "042660.KS",
+   "org_en": "042660.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/042660.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "042660.KS"
+   ]
+  },
+  {
    "id": "earnings-MCK-2027-02-03",
    "date": "2027-02-03",
    "end_date": null,
@@ -13744,6 +13042,58 @@
    "tags": [
     "central-bank",
     "ecb"
+   ]
+  },
+  {
+   "id": "earnings-175330.KS-2027-02-04",
+   "date": "2027-02-04",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "JB금융지주 실적발표",
+   "title_en": "JB Financial Group earnings",
+   "org": "175330.KS",
+   "org_en": "175330.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/175330.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "175330.KS"
+   ]
+  },
+  {
+   "id": "earnings-105560.KS-2027-02-04",
+   "date": "2027-02-04",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "KB금융 실적발표",
+   "title_en": "KB Financial Group earnings",
+   "org": "105560.KS",
+   "org_en": "105560.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/105560.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "105560.KS"
    ]
   },
   {
@@ -13851,6 +13201,32 @@
    ]
   },
   {
+   "id": "earnings-005940.KS-2027-02-04",
+   "date": "2027-02-04",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "NH투자증권 실적발표",
+   "title_en": "NH Investment & Securities earnings",
+   "org": "005940.KS",
+   "org_en": "005940.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/005940.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "005940.KS"
+   ]
+  },
+  {
    "id": "earnings-326030.KS-2027-02-04",
    "date": "2027-02-04",
    "end_date": null,
@@ -13900,6 +13276,84 @@
     "earnings",
     "kr",
     "017670.KS"
+   ]
+  },
+  {
+   "id": "earnings-024110.KS-2027-02-04",
+   "date": "2027-02-04",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "기업은행 실적발표",
+   "title_en": "Industrial Bank of Korea earnings",
+   "org": "024110.KS",
+   "org_en": "024110.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/024110.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "024110.KS"
+   ]
+  },
+  {
+   "id": "earnings-068270.KS-2027-02-04",
+   "date": "2027-02-04",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "셀트리온 실적발표",
+   "title_en": "Celltrion earnings",
+   "org": "068270.KS",
+   "org_en": "068270.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/068270.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "068270.KS"
+   ]
+  },
+  {
+   "id": "earnings-055550.KS-2027-02-04",
+   "date": "2027-02-04",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "신한지주 실적발표",
+   "title_en": "Shinhan Financial Group earnings",
+   "org": "055550.KS",
+   "org_en": "055550.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/055550.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "055550.KS"
    ]
   },
   {
@@ -13955,6 +13409,32 @@
    ]
   },
   {
+   "id": "earnings-003670.KS-2027-02-04",
+   "date": "2027-02-04",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "포스코퓨처엠 실적발표",
+   "title_en": "POSCO Future M earnings",
+   "org": "003670.KS",
+   "org_en": "003670.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/003670.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "003670.KS"
+   ]
+  },
+  {
    "id": "earnings-161390.KS-2027-02-04",
    "date": "2027-02-04",
    "end_date": null,
@@ -13978,6 +13458,84 @@
     "earnings",
     "kr",
     "161390.KS"
+   ]
+  },
+  {
+   "id": "earnings-128940.KS-2027-02-04",
+   "date": "2027-02-04",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "한미약품 실적발표",
+   "title_en": "Hanmi Pharm earnings",
+   "org": "128940.KS",
+   "org_en": "128940.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/128940.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "128940.KS"
+   ]
+  },
+  {
+   "id": "earnings-009830.KS-2027-02-04",
+   "date": "2027-02-04",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "한화솔루션 실적발표",
+   "title_en": "Hanwha Solutions earnings",
+   "org": "009830.KS",
+   "org_en": "009830.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/009830.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "009830.KS"
+   ]
+  },
+  {
+   "id": "earnings-000720.KS-2027-02-04",
+   "date": "2027-02-04",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "현대건설 실적발표",
+   "title_en": "Hyundai Engineering & Construction earnings",
+   "org": "000720.KS",
+   "org_en": "000720.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/000720.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "000720.KS"
    ]
   },
   {
@@ -14110,6 +13668,32 @@
    ]
   },
   {
+   "id": "earnings-267260.KS-2027-02-05",
+   "date": "2027-02-05",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "HD현대일렉트릭 실적발표",
+   "title_en": "HD Hyundai Electric earnings",
+   "org": "267260.KS",
+   "org_en": "267260.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/267260.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "267260.KS"
+   ]
+  },
+  {
    "id": "earnings-035420.KS-2027-02-05",
    "date": "2027-02-05",
    "end_date": null,
@@ -14136,6 +13720,58 @@
    ]
   },
   {
+   "id": "earnings-090430.KS-2027-02-05",
+   "date": "2027-02-05",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "아모레퍼시픽 실적발표",
+   "title_en": "Amorepacific earnings",
+   "org": "090430.KS",
+   "org_en": "090430.KS",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "http://en.amorepacific.com/invest/stock_currently.jsp",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "090430.KS"
+   ]
+  },
+  {
+   "id": "earnings-316140.KS-2027-02-05",
+   "date": "2027-02-05",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "우리금융지주 실적발표",
+   "title_en": "Woori Financial Group earnings",
+   "org": "316140.KS",
+   "org_en": "316140.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/316140.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "316140.KS"
+   ]
+  },
+  {
    "id": "earnings-021240.KS-2027-02-05",
    "date": "2027-02-05",
    "end_date": null,
@@ -14159,6 +13795,32 @@
     "earnings",
     "kr",
     "021240.KS"
+   ]
+  },
+  {
+   "id": "earnings-042700.KS-2027-02-05",
+   "date": "2027-02-05",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "한미반도체 실적발표",
+   "title_en": "Hanmi Semiconductor earnings",
+   "org": "042700.KS",
+   "org_en": "042700.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/042700.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "042700.KS"
    ]
   },
   {
@@ -14445,6 +14107,32 @@
    ]
   },
   {
+   "id": "earnings-078930.KS-2027-02-10",
+   "date": "2027-02-10",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "GS 실적발표",
+   "title_en": "GS Holdings earnings",
+   "org": "078930.KS",
+   "org_en": "078930.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/078930.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "078930.KS"
+   ]
+  },
+  {
    "id": "earnings-011200.KS-2027-02-10",
    "date": "2027-02-10",
    "end_date": null,
@@ -14548,6 +14236,58 @@
    ]
   },
   {
+   "id": "earnings-009540.KS-2027-02-11",
+   "date": "2027-02-11",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "HD한국조선해양 실적발표",
+   "title_en": "HD Korea Shipbuilding & Offshore earnings",
+   "org": "009540.KS",
+   "org_en": "009540.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/009540.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "009540.KS"
+   ]
+  },
+  {
+   "id": "earnings-241560.KS-2027-02-11",
+   "date": "2027-02-11",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "두산밥캣 실적발표",
+   "title_en": "Doosan Bobcat earnings",
+   "org": "241560.KS",
+   "org_en": "241560.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/241560.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "241560.KS"
+   ]
+  },
+  {
    "id": "holiday-jp-2027-02-11",
    "date": "2027-02-11",
    "end_date": null,
@@ -14574,6 +14314,32 @@
    ]
   },
   {
+   "id": "earnings-035720.KS-2027-02-11",
+   "date": "2027-02-11",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "카카오 실적발표",
+   "title_en": "Kakao earnings",
+   "org": "035720.KS",
+   "org_en": "035720.KS",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "http://www.daumcorp.com/DaumEng/ir/stockInformation.daum",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "035720.KS"
+   ]
+  },
+  {
    "id": "kr-option-expiry-2027-02-11",
    "date": "2027-02-11",
    "end_date": null,
@@ -14596,6 +14362,32 @@
    "tags": [
     "supply",
     "kr-option-expiry"
+   ]
+  },
+  {
+   "id": "earnings-000880.KS-2027-02-11",
+   "date": "2027-02-11",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "한화 실적발표",
+   "title_en": "Hanwha earnings",
+   "org": "000880.KS",
+   "org_en": "000880.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/000880.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "000880.KS"
    ]
   },
   {
@@ -14673,6 +14465,58 @@
     "earnings",
     "kr",
     "016360.KS"
+   ]
+  },
+  {
+   "id": "earnings-377300.KS-2027-02-12",
+   "date": "2027-02-12",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "카카오페이 실적발표",
+   "title_en": "Kakao Pay earnings",
+   "org": "377300.KS",
+   "org_en": "377300.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/377300.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "377300.KS"
+   ]
+  },
+  {
+   "id": "earnings-012450.KS-2027-02-12",
+   "date": "2027-02-12",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "한화에어로스페이스 실적발표",
+   "title_en": "Hanwha Aerospace earnings",
+   "org": "012450.KS",
+   "org_en": "012450.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/012450.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "012450.KS"
    ]
   },
   {
@@ -14803,6 +14647,32 @@
    ]
   },
   {
+   "id": "earnings-259960.KS-2027-02-18",
+   "date": "2027-02-18",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "크래프톤 실적발표",
+   "title_en": "Krafton earnings",
+   "org": "259960.KS",
+   "org_en": "259960.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/259960.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "259960.KS"
+   ]
+  },
+  {
    "id": "earnings-WMT-2027-02-18",
    "date": "2027-02-18",
    "end_date": null,
@@ -14826,6 +14696,84 @@
     "earnings",
     "us",
     "WMT"
+   ]
+  },
+  {
+   "id": "earnings-005830.KS-2027-02-19",
+   "date": "2027-02-19",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "DB손해보험 실적발표",
+   "title_en": "DB Insurance earnings",
+   "org": "005830.KS",
+   "org_en": "005830.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/005830.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "005830.KS"
+   ]
+  },
+  {
+   "id": "earnings-032830.KS-2027-02-19",
+   "date": "2027-02-19",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "삼성생명 실적발표",
+   "title_en": "Samsung Life Insurance earnings",
+   "org": "032830.KS",
+   "org_en": "032830.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/032830.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "032830.KS"
+   ]
+  },
+  {
+   "id": "earnings-000810.KS-2027-02-19",
+   "date": "2027-02-19",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "삼성화재 실적발표",
+   "title_en": "Samsung Fire & Marine earnings",
+   "org": "000810.KS",
+   "org_en": "000810.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/000810.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "000810.KS"
    ]
   },
   {
@@ -14926,6 +14874,32 @@
    "tags": [
     "indicator",
     "jp-cpi"
+   ]
+  },
+  {
+   "id": "earnings-402340.KS-2027-02-23",
+   "date": "2027-02-23",
+   "end_date": null,
+   "country": "kr",
+   "category": "earnings",
+   "importance": 2,
+   "title_ko": "SK스퀘어 실적발표",
+   "title_en": "SK Square earnings",
+   "org": "402340.KS",
+   "org_en": "402340.KS",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "Asia/Seoul",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/402340.KS",
+   "source": "KR 스냅샷 (data/kr100/latest.json)",
+   "source_en": "KR100 snapshot (data/kr100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "kr",
+    "402340.KS"
    ]
   },
   {
@@ -17475,6 +17449,31 @@
    "tags": [
     "supply",
     "us-option-expiry"
+   ]
+  },
+  {
+   "id": "indicator-eu-pmi-2027-05-24",
+   "date": "2027-05-24",
+   "end_date": null,
+   "country": "eu",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "유로존 제조업·서비스업 PMI (속보)",
+   "title_en": "Euro area flash PMI",
+   "org": "S&P Global / HCOB",
+   "org_en": "S&P Global / HCOB",
+   "detail_ko": "통상 매월 하순(23일 전후)",
+   "detail_en": "Usually late in the month, around the 23rd",
+   "time_local": "10:00",
+   "tz": "Europe/Brussels",
+   "time_kst": "2027-05-24 17:00",
+   "url": "https://www.pmi.spglobal.com/",
+   "source": "S&P Global / HCOB",
+   "source_en": "S&P Global / HCOB",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "eu-pmi"
    ]
   },
   {
