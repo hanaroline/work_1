@@ -83260,5 +83260,118 @@
         "targetMarket": null
       }
     ]
+  },
+  "20261126000035": {
+    "rcpNo": "20261126000035",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261126000035",
+    "range": "4133~4133",
+    "offer": "2026-11-30 ~ 2026-11-30",
+    "count": 1,
+    "items": [
+      {
+        "title": "미래에셋증권 제4133회 파생결합사채(주가연계파생결합사채)(낮은위험)",
+        "no": 4133,
+        "riskLabel": "낮은위험",
+        "riskGrade": null,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
+        "underlyings": [
+          "KOSPI200",
+          "삼성전자"
+        ],
+        "issueSize": 10000000000,
+        "offerStart": "2026-11-30",
+        "offerEnd": "2026-11-30",
+        "coolStart": null,
+        "coolEnd": null,
+        "coolingFrom": null,
+        "coolingTo": null,
+        "confirmBy": null,
+        "confirmNote": null,
+        "payDate": "2026-11-30",
+        "minAmount": 10000,
+        "minAmountCcy": "KRW",
+        "recordingRight": false,
+        "riskSummaryDoc": false,
+        "maxLossNotice": false,
+        "issueDate": "2026-11-30",
+        "maturityDate": "2028-05-30",
+        "maturityEvalDate": "2028-05-26",
+        "baseDate": "2026-11-30",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 10014.84,
+        "fairValueDate": "2026-11-25",
+        "fairValueGap": 0.15,
+        "volatility": [
+          {
+            "asset": "KOSPI200",
+            "vol": 48.57
+          },
+          {
+            "asset": "삼성전자",
+            "vol": 59.42
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "KOSPI200 · 삼성전자",
+            "rho": 0.9633
+          }
+        ],
+        "schedule": [],
+        "lizard": null,
+        "monthlyIncome": null,
+        "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+        "maturityBarrier": 500,
+        "maturityRate": 6.5949,
+        "maturityPayLabel": "연 4.4006%",
+        "maturityPrincipalOnly": false,
+        "knockIn": null,
+        "knockInBasis": null,
+        "annualRate": 4.4006,
+        "docMaxRate": 6.5949,
+        "simulation": [
+          {
+            "label": "만기상환1",
+            "ret": "6.5949%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환2",
+            "ret": "6.5939%",
+            "count": 5026,
+            "share": 100
+          },
+          {
+            "label": "손실",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 5026,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2005-01-03",
+          "to": "2025-05-16"
+        },
+        "simRuns": 5026,
+        "simFirst": null,
+        "simLoss": 0,
+        "targetMarket": null
+      }
+    ]
   }
 }
