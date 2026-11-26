@@ -893,7 +893,9 @@ def sec_deep(C):
     b2 = dp.get("blocks2") or []
     if b2:
         if CORE[0]:
-            b2 = b2[:dp.get("core_blocks2", len(b2))]
+            keep = dp.get("core_blocks2", len(b2))
+            # 정수면 앞에서 그만큼, 목록이면 그 번호(0부터)의 블록만 싣는다.
+            b2 = [b2[i] for i in keep if 0 <= i < len(b2)] if isinstance(keep, list) else b2[:keep]
         cards2 = [card(r.get("q_ko", ""), r.get("q_en", ""), r.get("a_ko", ""), r.get("a_en", ""))
                   for r in b2]
         body += ("\n" + lede(dp.get("lede2_ko", ""), dp.get("lede2_en", ""))
