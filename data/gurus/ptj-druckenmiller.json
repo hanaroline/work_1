@@ -6,7 +6,9 @@
     "full_text": "전문을 볼 수 있는 곳 — 공시 원본, 인터뷰 영상·대본, 본인 기고문. 없으면 null 로 두고 full_text_note 에 까닭",
     "coverage": "그 소식을 다룬 기사들 (확인한 것만)",
     "points": "핵심 내용 4~6줄. 직접 인용은 따옴표, 기사 해석은 '보도:' 로 시작",
-    "disputed": "매체끼리 엇갈리는 값"
+    "disputed": "매체끼리 엇갈리는 값",
+    "stances": "견해 흐름표. 소식(seen) 하나에서 자산마다 한 줄. view = long·short·neutral·position(공시상 보유, 전망 아님). horizon = near(몇 주~몇 달, 판정함)·yearend(연말에 판정)·long(구조적 견해, 변화만 보임). check.key 는 data/market/*.json 의 indices 키, check.from 은 견줄 기준 스냅샷 날짜",
+    "filings": "13F 분기별 변화 요약. 기사 보도 기준이며 원본 표와 대조 여부를 verified 로 적는다"
   },
   "baseline_date": "2026-11-26",
   "next_13f_due": "2027-02-16 전후 (2026Q4분, 분기 말 뒤 45일) — 정확한 제출일은 EDGAR 에서 확인",
@@ -19,7 +21,10 @@
   "seen": [
     {
       "id": "druck-2026-11-17-tomorrowx",
-      "who": "druckenmiller", "date": "2026-11-17", "kind": "발언", "direct": true,
+      "who": "druckenmiller",
+      "date": "2026-11-17",
+      "kind": "발언",
+      "direct": true,
       "venue": "TomorrowX 서밋 (미국 오스틴) 대담",
       "headline": "주식은 순매수·순매도 없이 비켜서 있다 — 구리는 숏, 달러는 소폭 롱",
       "points": [
@@ -33,15 +38,27 @@
       "full_text": null,
       "full_text_note": "대담 영상·대본은 공개된 것을 찾지 못함. 처음 보도한 블룸버그 기사가 가장 원문에 가까움(유료)",
       "coverage": [
-        {"name": "Bloomberg (첫 보도)", "url": "https://www.bloomberg.com/news/articles/2026-11-17/stan-druckenmiller-says-he-s-short-copper-neutral-on-equities"},
-        {"name": "Longbridge (상세 인용)", "url": "https://longbridge.com/en/news/305883406"},
-        {"name": "Yahoo Finance / 24/7 Wall St.", "url": "https://finance.yahoo.com/markets/stocks/articles/stan-druckenmiller-says-taking-break-150826632.html"}
+        {
+          "name": "Bloomberg (첫 보도)",
+          "url": "https://www.bloomberg.com/news/articles/2026-11-17/stan-druckenmiller-says-he-s-short-copper-neutral-on-equities"
+        },
+        {
+          "name": "Longbridge (상세 인용)",
+          "url": "https://longbridge.com/en/news/305883406"
+        },
+        {
+          "name": "Yahoo Finance / 24/7 Wall St.",
+          "url": "https://finance.yahoo.com/markets/stocks/articles/stan-druckenmiller-says-taking-break-150826632.html"
+        }
       ],
       "disputed": "포지션 표현: '주식 순포지션 없음'(Bloomberg·Longbridge) vs '작은 롱·숏을 들고 있음'(Yahoo). 워시 의장을 직접 언급했는지는 Longbridge 기사엔 없음"
     },
     {
       "id": "druck-2026-11-16-13f",
-      "who": "druckenmiller", "date": "2026-11-16", "kind": "13F", "direct": true,
+      "who": "druckenmiller",
+      "date": "2026-11-16",
+      "kind": "13F",
+      "direct": true,
       "venue": "Duquesne Family Office 13F-HR (2026-09-30 기준)",
       "headline": "기술주 대거 정리, 금광주 신규 — 1위는 여전히 나테라",
       "points": [
@@ -54,15 +71,27 @@
       ],
       "full_text": "https://www.sec.gov/Archives/edgar/data/1536411/000153641126000011/0001536411-26-000011-index.htm",
       "coverage": [
-        {"name": "24/7 Wall St.", "url": "https://247wallst.com/investing/2026/11/17/druckenmiller-sold-all-of-his-alphabet-amd-and-sandisk/"},
-        {"name": "Mining.com", "url": "https://www.mining.com/druckenmiller-exits-copper-steel-and-chip-stocks-to-buy-gold-miners/"},
-        {"name": "Motley Fool", "url": "https://www.fool.com/investing/2026/11/17/billionaire-stanley-druckenmiller-says-he-s-staying-away-from-stocks-here-s-what-he-bought-and-sold-last-quarter/"}
+        {
+          "name": "24/7 Wall St.",
+          "url": "https://247wallst.com/investing/2026/11/17/druckenmiller-sold-all-of-his-alphabet-amd-and-sandisk/"
+        },
+        {
+          "name": "Mining.com",
+          "url": "https://www.mining.com/druckenmiller-exits-copper-steel-and-chip-stocks-to-buy-gold-miners/"
+        },
+        {
+          "name": "Motley Fool",
+          "url": "https://www.fool.com/investing/2026/11/17/billionaire-stanley-druckenmiller-says-he-s-staying-away-from-stocks-here-s-what-he-bought-and-sold-last-quarter/"
+        }
       ],
       "disputed": "종목 수·총액: 65종목 44.7억 달러 vs 61종목 약 45억 달러 vs 60종목 41.5억 달러(TIKR). 원본 표와 아직 대조하지 못함"
     },
     {
       "id": "ptj-2026-10-13-cnbc",
-      "who": "tudor_jones", "date": "2026-10-13", "kind": "발언", "direct": true,
+      "who": "tudor_jones",
+      "date": "2026-10-13",
+      "kind": "발언",
+      "direct": true,
       "venue": "CNBC Squawk Box 인터뷰",
       "headline": "유가 20~25달러 더 오른다, 연말 반등 뒤 2027년은 주식 수급 최악",
       "points": [
@@ -75,14 +104,23 @@
       "full_text": "https://www.cnbc.com/2026/10/13/paul-tudor-jones-oil-iran.html",
       "full_text_note": "CNBC 기사 안에 5분 52초 인터뷰 영상이 있음",
       "coverage": [
-        {"name": "Yahoo Finance (StockTwits)", "url": "https://finance.yahoo.com/markets/stocks/articles/paul-tudor-jones-sees-ai-134457284.html"},
-        {"name": "GuruFocus", "url": "https://www.gurufocus.com/news/9121153/billionaire-paul-tudor-jones-has-message-for-stock-market-investors"}
+        {
+          "name": "Yahoo Finance (StockTwits)",
+          "url": "https://finance.yahoo.com/markets/stocks/articles/paul-tudor-jones-sees-ai-134457284.html"
+        },
+        {
+          "name": "GuruFocus",
+          "url": "https://www.gurufocus.com/news/9121153/billionaire-paul-tudor-jones-has-message-for-stock-market-investors"
+        }
       ],
       "disputed": "바닥 시점·60-40 발언은 CNBC 기사 본문엔 없고 재인용 기사에만 있음 — 영상 전체에서 나온 말로 보이나 대본으로 확인하지 못함"
     },
     {
       "id": "ptj-2026-11-16-13f",
-      "who": "tudor_jones", "date": "2026-11-16", "kind": "13F", "direct": true,
+      "who": "tudor_jones",
+      "date": "2026-11-16",
+      "kind": "13F",
+      "direct": true,
       "venue": "Tudor Investment Corp 13F-HR (2026-09-30 기준)",
       "headline": "비트코인 ETF(IBIT) 두 배로 — 그래도 포트폴리오의 1% 미만",
       "points": [
@@ -94,10 +132,207 @@
       ],
       "full_text": "https://www.sec.gov/Archives/edgar/data/923093/000090266426004567/0000902664-26-004567-index.htm",
       "coverage": [
-        {"name": "Motley Fool", "url": "https://www.fool.com/investing/2026/11/26/billionaire-investor-paul-tudor-jones-just-doubled-down-on-bitcoin-what-does-he-know-that-you-dont/"},
-        {"name": "Yahoo Finance", "url": "https://finance.yahoo.com/markets/crypto/articles/billionaire-paul-tudor-jones-doubles-002450666.html"}
+        {
+          "name": "Motley Fool",
+          "url": "https://www.fool.com/investing/2026/11/26/billionaire-investor-paul-tudor-jones-just-doubled-down-on-bitcoin-what-does-he-know-that-you-dont/"
+        },
+        {
+          "name": "Yahoo Finance",
+          "url": "https://finance.yahoo.com/markets/crypto/articles/billionaire-paul-tudor-jones-doubles-002450666.html"
+        }
       ],
       "disputed": "주식 수·옵션 수량은 코인 매체 보도 기준 — 원본 표와 아직 대조하지 못함"
+    }
+  ],
+  "stances": [
+    {
+      "who": "tudor_jones",
+      "date": "2026-10-13",
+      "source_id": "ptj-2026-10-13-cnbc",
+      "asset": "원유",
+      "view": "long",
+      "horizon": "near",
+      "basis": "직접 발언",
+      "text": "유가가 배럴당 20~25달러 더 오를 수 있다",
+      "check": {
+        "key": "wti",
+        "from": "2026-10-13"
+      }
+    },
+    {
+      "who": "tudor_jones",
+      "date": "2026-10-13",
+      "source_id": "ptj-2026-10-13-cnbc",
+      "asset": "미국 주식",
+      "view": "watch",
+      "horizon": "yearend",
+      "basis": "보도",
+      "text": "10월 말~11월 초 바닥, 연말까지 반등 가능",
+      "check": {
+        "key": "sp500",
+        "from": "2026-10-13"
+      }
+    },
+    {
+      "who": "tudor_jones",
+      "date": "2026-10-13",
+      "source_id": "ptj-2026-10-13-cnbc",
+      "asset": "미국 주식(2027)",
+      "view": "short",
+      "horizon": "long",
+      "basis": "보도",
+      "text": "2027년은 대형 IPO·보호예수 해제로 2002년 이후 최악의 수급"
+    },
+    {
+      "who": "tudor_jones",
+      "date": "2026-10-13",
+      "source_id": "ptj-2026-10-13-cnbc",
+      "asset": "미국 국채",
+      "view": "short",
+      "horizon": "long",
+      "basis": "보도",
+      "text": "적자·회사채·AI 자금 수요로 채권시장이 한계 쪽으로 간다(\"60-40\")",
+      "check": {
+        "key": "ust10y",
+        "from": "2026-10-13",
+        "higher_is": "short"
+      }
+    },
+    {
+      "who": "tudor_jones",
+      "date": "2026-11-16",
+      "source_id": "ptj-2026-11-16-13f",
+      "asset": "비트코인",
+      "view": "position",
+      "horizon": "long",
+      "basis": "13F (9/30 기준)",
+      "text": "IBIT 보유를 6월 말보다 약 두 배로 — 포트폴리오의 1% 미만",
+      "check": {
+        "key": "btc",
+        "from": "2026-09-30"
+      }
+    },
+    {
+      "who": "druckenmiller",
+      "date": "2026-11-16",
+      "source_id": "druck-2026-11-16-13f",
+      "asset": "금(금광주)",
+      "view": "position",
+      "horizon": "long",
+      "basis": "13F (9/30 기준)",
+      "text": "뉴몬트·배릭·애그니코이글 신규 편입",
+      "check": {
+        "key": "gold",
+        "from": "2026-09-30"
+      }
+    },
+    {
+      "who": "druckenmiller",
+      "date": "2026-11-16",
+      "source_id": "druck-2026-11-16-13f",
+      "asset": "미국 기술주",
+      "view": "position",
+      "horizon": "long",
+      "basis": "13F (9/30 기준)",
+      "text": "알파벳·AMD·샌디스크 전량 매도, TSMC 약 94% 축소",
+      "check": {
+        "key": "sp500",
+        "from": "2026-09-30"
+      }
+    },
+    {
+      "who": "druckenmiller",
+      "date": "2026-11-17",
+      "source_id": "druck-2026-11-17-tomorrowx",
+      "asset": "미국 주식",
+      "view": "neutral",
+      "horizon": "near",
+      "basis": "직접 발언",
+      "text": "\"We are basically staying away\" — 순 롱·숏 없이 비켜섬",
+      "check": {
+        "key": "sp500",
+        "from": "2026-11-17"
+      }
+    },
+    {
+      "who": "druckenmiller",
+      "date": "2026-11-17",
+      "source_id": "druck-2026-11-17-tomorrowx",
+      "asset": "구리",
+      "view": "short",
+      "horizon": "near",
+      "basis": "보도",
+      "text": "구리 숏",
+      "check": {
+        "key": "copper",
+        "from": "2026-11-17"
+      }
+    },
+    {
+      "who": "druckenmiller",
+      "date": "2026-11-17",
+      "source_id": "druck-2026-11-17-tomorrowx",
+      "asset": "달러",
+      "view": "long",
+      "horizon": "near",
+      "basis": "보도",
+      "text": "달러 소폭 롱",
+      "check": {
+        "key": "dxy",
+        "from": "2026-11-17"
+      }
+    }
+  ],
+  "filings": [
+    {
+      "who": "druckenmiller",
+      "period": "2026-09-30",
+      "filed": "2026-11-16",
+      "url": "https://www.sec.gov/Archives/edgar/data/1536411/000153641126000011/0001536411-26-000011-index.htm",
+      "verified": false,
+      "rows": [
+        [
+          "전량 매도",
+          "알파벳 · AMD · 샌디스크 · 유나이티드항공"
+        ],
+        [
+          "대폭 축소",
+          "TSMC (약 94%)"
+        ],
+        [
+          "신규",
+          "뉴몬트 · 배릭 · 애그니코이글 (합계 약 1억2,910만 달러)"
+        ],
+        [
+          "확대",
+          "아마존 77만2,600주 + 콜옵션 · 시게이트 (약 +180%)"
+        ],
+        [
+          "1위",
+          "나테라 (약 29%)"
+        ]
+      ]
+    },
+    {
+      "who": "tudor_jones",
+      "period": "2026-09-30",
+      "filed": "2026-11-16",
+      "url": "https://www.sec.gov/Archives/edgar/data/923093/000090266426004567/0000902664-26-004567-index.htm",
+      "verified": false,
+      "rows": [
+        [
+          "확대",
+          "IBIT 136만3,567주 (6월 말 68만8,529주에서 약 +98%)"
+        ],
+        [
+          "옵션",
+          "IBIT 콜 기초 85만8천 주 · 풋 기초 62만5천 주"
+        ],
+        [
+          "비중",
+          "비트코인 관련 약 230억 달러 포트폴리오의 1% 미만"
+        ]
+      ]
     }
   ]
 }

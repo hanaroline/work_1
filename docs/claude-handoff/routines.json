@@ -188,5 +188,25 @@
     "created_at": "2026-09-16T01:02:15.290614Z",
     "updated_at": "2026-09-23T05:07:39.338622Z",
     "prompt": "오늘 자 증권사 리포트 아침 배포를 할 시각입니다. 늘 하던 순서 그대로, main 에서 합니다.\n\n1. git fetch origin main && git checkout main && git reset --hard origin/main\n\n2. 수집을 직접 부릅니다 — 예약(GitHub cron)을 기다리지 않습니다.\n   bash scripts/request_reports_refresh.sh \"아침 배포 판\"\n\n3. 러너가 끝나기를 기다립니다. 밀어 넣기 전 HEAD 를 적어 두고, 그 뒤에\n   새 수집 커밋이 붙는지로 봅니다 — 「리포트 수집 요청」(내가 민 것)과\n   「리포트 수집 2026-…」(러너가 민 것)을 헷갈리지 않게, 자릿수까지 봅니다.\n     BASE=$(git rev-parse origin/main)   # 밀어 넣기 전에\n     until git fetch -q origin main && [ -n \"$(git log --format=%h $BASE..origin/main --grep='^리포트 수집 [0-9]')\" ]; do sleep 45; done\n   9/16 에 재어 보니 2분 26초~3분이었습니다. 8분이 지나도 안 오면 기다리기를\n   그만두고, 저장소에 이미 있는 가장 최근 판으로 진행하되 「오늘 아침 수집이\n   돌지 않아 ○시 ○분 판을 썼다」고 반드시 적어 알립니다.\n\n4. git reset --hard origin/main 뒤 검산을 **먼저** 돌립니다.\n   python3 scripts/verify_reports.py data/reports/latest.json\n   나가는 값이 0 이 아니면 자료를 내지 않습니다. 어느 검사가 어떻게 어긋났는지\n   그대로 옮겨 알리고, 원인을 찾아 고친 뒤 다시 돌립니다. 41개 「모두 맞음」이\n   나와야 통과입니다.\n\n5. 통과했으면 배포본을 만듭니다.\n   bash scripts/make_reports_outputs.sh\n   out/ 아래 한 파일 HTML 하나와 PDF 셋을 SendUserFile 로 올립니다.\n\n6. 보고에 아래를 담습니다. 숫자는 실린 값과 직접 센 값을 대조해 적습니다.\n   - 오늘 자 몇 건 · 전체 몇 건 · 한 주 몇 건\n   - 그날의 머리 요약(overview 의 text)\n   - 목표주가를 올리거나 내린 리포트 (없으면 없다고)\n   - 검산 41개 통과 여부\n   - 수집 시각과 어제 자 완성본 건수\n\n어림하거나 지어내지 않습니다. 못 한 것은 못 했다고 적습니다."
+  },
+  {
+    "name": "튜더 존스·드러켄밀러 발언 점검",
+    "id": "trig_01Ci6g2r84sv6H7CUsqc3jYm",
+    "cron_expression": "CRON_TZ=Asia/Seoul 47 6 * * *",
+    "enabled": true,
+    "persist_session": true,
+    "created_at": "2026-11-26T22:32:20.937077Z",
+    "updated_at": "2026-11-26T23:02:35.695378Z",
+    "prompt": "폴 튜더 존스와 스탠리 드러켄밀러의 새 투자의견·발언·포지션 변화를 점검할 차례입니다. 07:30 모닝 브리핑이 결과를 읽으므로 07:20 KST 전에 푸시까지 끝내십시오.\n\n1. 저장소의 ccr-92b10f50-ans9t1 가지를 받고(git fetch origin ccr-92b10f50-ans9t1 main && git checkout ccr-92b10f50-ans9t1 && git merge --ff-only origin/ccr-92b10f50-ans9t1) data/gurus/ptj-druckenmiller.json 의 _fields 설명, seen, stances, filings 를 읽는다. 새 항목은 기존 항목과 같은 모양(id, who, date, kind, direct, venue, headline, points, full_text, full_text_note, coverage, disputed)으로 쓴다.\n2. 웹을 찾는다: 두 사람의 최근 인터뷰·기사(CNBC·Bloomberg·FT·WSJ·Reuters 등), 유튜브·팟캐스트·컨퍼런스 출연, 블로그·SNS 인용, SEC EDGAR 13F(Duquesne Family Office CIK 1536411, Tudor Investment Corp CIK 923093). 한국어 기사도 본다. 번역 프록시(*.translate.goog)는 쓰지 않는다.\n3. seen 에 없는 것만 고른다. date 는 기사 날짜가 아니라 발언·공시가 실제로 나온 날이다(13F 는 EDGAR 제출일). 본인이 직접 한 말·공시인지, 기사가 옮긴 해석인지 구분한다 — points 에서 직접 인용은 따옴표, 기사 해석은 「보도:」로 시작한다. 날짜·숫자는 원문에서 확인된 것만 쓰고, 매체끼리 엇갈리면 disputed 에 적는다. 지어내지 않는다.\n4. 링크: full_text 에는 전문을 볼 수 있는 곳(공시 원본 EDGAR 색인 주소, 인터뷰 영상·대본, 본인 기고문)을 넣는다. 찾지 못하면 null 로 두고 full_text_note 에 까닭을 적는다. coverage 에는 확인한 기사 2~3개를 넣는다. 열어 보지 않은 주소는 넣지 않는다.\n5. 견해 흐름: 새 항목에서 자산별 견해가 나오면 stances 에 자산마다 한 줄씩 더한다(_fields.stances 설명대로 view·horizon·basis·check). 13F 면 filings 에도 한 덩이 더하고 next_13f_due 를 다음 분기로 고친다.\n6. 새것이 있으면 이 대화에 한국어로 보고한다. 항목마다:\n   - 제목 줄: 누가 · 언제 · 어디서 · (직접 발언 / 공시 / 보도만)\n   - 핵심 4~6줄: 주식·채권·원자재·환율·코인 각각의 방향과 근거, 숫자는 확인된 것만\n   - 「예전 견해와 달라진 점」 한 줄 (stances 의 같은 자산 직전 줄과 견줌)\n   - 「국내 계좌에 닿는 점」 한 줄 (업종·환율·금리 중 해당하는 것, 권유는 하지 않음)\n   - 링크: 전문 링크, 기사 링크\n7. 중요한 것이면 PushNotification 으로 휴대폰 알림을 보낸다 — 새 13F 제출, 또는 같은 자산의 견해가 직전 줄과 반대로 바뀐 발언(강세↔약세, 중립으로 철수 포함)일 때만. 알림은 한 줄: 「[드러켄밀러] 11/17 주식 중립·구리 숏 — 노트 갱신」 꼴. 나머지는 알림 없이 기록만 한다.\n8. 새것이 있으면 baseline_date 를 오늘로 바꾸고 `python3 scripts/build_gurus_page.py` 로 gurus.html 을 다시 지은 뒤, 같은 파일 경로로 Artifact 를 다시 발행해 https://claude.ai/artifact/3FoZQeQoiPJfZD94eWVUEK 주소를 유지한다(새 주소를 만들지 않는다). 그다음 data/gurus/, gurus.html 을 커밋해 같은 가지에 푸시한다(-f 금지).\n9. 새것이 없으면 「새 소식 없음」 한 줄만 남기고 아무것도 커밋하지 않는다. 페이지의 「그 뒤 시장」 칸은 주간 요약 예약이 토요일에 갱신한다."
+  },
+  {
+    "name": "튜더 존스·드러켄밀러 주간 요약 (토 08:23 KST)",
+    "id": "trig_01VRAAdsufQLDU9Yx2NRCBP7",
+    "cron_expression": "CRON_TZ=Asia/Seoul 23 8 * * 6",
+    "enabled": true,
+    "persist_session": true,
+    "created_at": "2026-11-26T23:02:36.222509Z",
+    "updated_at": "2026-11-26T23:02:36.222509Z",
+    "prompt": "폴 튜더 존스·스탠리 드러켄밀러 주간 요약을 만들 차례입니다(토요일, 미국 금요일 장 마감 뒤).\n\n1. git fetch origin ccr-92b10f50-ans9t1 main && git checkout ccr-92b10f50-ans9t1 && git merge --ff-only origin/ccr-92b10f50-ans9t1\n2. `python3 scripts/build_gurus_page.py` 를 돌린다. origin/main 의 data/market/ 스냅샷으로 「견해 흐름과 그 뒤 시장」을 다시 계산하고 판정 표를 찍는다. 숫자는 이 스크립트가 낸 것만 쓰고 손으로 계산하거나 지어내지 않는다. 시세 스냅샷이 없는 줄은 없다고 적는다.\n3. 이 대화에 한국어로 보고한다:\n   - 이번 주(지난 토요일~어제) seen 에 새로 들어온 소식 — 없으면 「이번 주 새 소식 없음」\n   - 판정 표 요약: 「지금까지 맞는 쪽 N · 어긋난 쪽 N · 차이 없음 N · 판정 안 함 N」, 그리고 지난주보다 판정이 바뀐 줄\n   - 사람별 지금 자세 한 줄씩(자산별 최신 견해)\n   - 다음 주 볼 것: 예정된 출연·컨퍼런스(확인된 것만), next_13f_due 가 2주 안이면 그것\n   - 페이지 링크 https://claude.ai/artifact/3FoZQeQoiPJfZD94eWVUEK\n4. gurus.html 이 바뀌었으면 같은 파일 경로로 Artifact 를 다시 발행해 위 주소를 유지하고, gurus.html 을 커밋해 같은 가지에 푸시한다(-f 금지). 매수·매도 권유로 읽히게 쓰지 않는다."
   }
 ]
