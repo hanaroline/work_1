@@ -89,7 +89,7 @@ def e(s):
 
 def fmt_val(key, v):
     if v is None:
-        return ""
+        return "—"
     if key == "ust10y":
         return "%.2f%%" % v
     if key in ("btc", "sp500", "gold"):
@@ -170,6 +170,35 @@ td.num{font-family:var(--f-num);font-variant-numeric:tabular-nums;white-space:no
 a{color:var(--accent);text-underline-offset:2px}
 a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .notes{color:var(--muted);font-size:.88rem;display:grid;gap:4px;margin:0;padding-left:1.2em}
+/* 휴대폰: 아홉 칸짜리 표를 가로로 밀지 않고 한 줄 = 카드 한 장으로 읽는다 */
+@media (max-width:640px){
+  body{font-size:16px}
+  .wrap{padding-block:18px 40px;gap:28px}
+  header h1{font-size:1.4rem}
+  .person,.item,.filing{padding:16px}
+  .tbl{overflow:visible;background:none;border:0;border-radius:0}
+  table,tbody{display:block;min-width:0;font-size:.95rem}
+  thead{display:none}
+  tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;
+     grid-template-areas:"asset asset asset" "verdict verdict verdict" "date who who" "view view view" "text text text" "base now move";
+     background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+  td{display:block;padding:0;border:0;min-width:0}
+  td:nth-child(2){white-space:normal}
+  .c-asset{grid-area:asset;font-weight:700;font-size:1.05rem}
+  .c-verdict{grid-area:verdict;margin-top:-2px}
+  .c-date{grid-area:date;color:var(--muted);font-size:.85rem}
+  .c-who{grid-area:who;color:var(--muted);font-size:.85rem}
+  .c-view{grid-area:view}
+  .c-view .basis{display:inline;margin-left:8px}
+  .c-text{grid-area:text}
+  .c-base{grid-area:base}.c-now{grid-area:now}.c-move{grid-area:move}
+  .c-base,.c-now,.c-move{white-space:normal;border-top:1px solid var(--rule);padding-top:8px}
+  .c-base .basis,.c-now .basis{white-space:normal;font-family:var(--f-body);font-size:.75rem;line-height:1.35;margin-top:2px}
+  td[data-label]::before{content:attr(data-label);display:block;font-family:var(--f-body);font-size:.75rem;color:var(--muted)}
+  .item .links a{display:inline-block;padding:6px 0}
+  .filing dl{grid-template-columns:1fr;gap:2px}
+  .filing dd{margin-bottom:8px}
+}
 """
 
 
@@ -181,12 +210,16 @@ def build(d, ref):
     stances = sorted(d.get("stances", []), key=lambda x: (x["date"], x["who"]), reverse=True)
     rows = [(st, judge(st, ref, now)) for st in stances]
 
-    out = ['<title>튜더 존스·드러켄밀러 노트</title>',
+    # 받아 간 파일을 휴대폰에서 바로 열어도 폭이 맞도록 문서 머리를 온전히 갖춘다
+    out = ['<!doctype html>', '<html lang="ko">', '<head>', '<meta charset="utf-8">',
+           '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">',
+           '<meta name="color-scheme" content="light dark">',
+           '<title>튜더 존스·드러켄밀러 노트</title>',
            '<meta name="claude:viewport-fit-sides" content="cover">',
            '<link rel="preconnect" href="https://fonts.googleapis.com">',
            '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500'
            '&family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap">',
-           "<style>" + CSS + "</style>", '<div class="wrap">']
+           "<style>" + CSS + "</style>", '</head>', '<body>', '<div class="wrap">']
     out.append('<header><h1>튜더 존스·드러켄밀러 노트</h1>'
                '<p>발언·13F 공시 %d건 · 마지막 점검 %s · 시세 기준 %s</p></header>'
                % (len(seen), e(d.get("baseline_date", "")), e(stamp or "확인 못 함")))
@@ -218,11 +251,12 @@ def build(d, ref):
     for st, j in rows:
         key = (st.get("check") or {}).get("key")
         b, n = j["base"], j["now"]
-        out.append('<tr><td class="date">%s</td><td>%s</td><td>%s</td>'
-                   '<td><span class="chip v-%s">%s</span><span class="basis">%s · %s</span></td>'
-                   '<td>%s</td><td class="num">%s<span class="basis">%s</span></td>'
-                   '<td class="num">%s<span class="basis">%s</span></td><td class="num">%s</td>'
-                   '<td><span class="verdict t-%s">%s</span></td></tr>'
+        out.append('<tr><td class="date c-date">%s</td><td class="c-who">%s</td><td class="c-asset">%s</td>'
+                   '<td class="c-view"><span class="chip v-%s">%s</span><span class="basis">%s · %s</span></td>'
+                   '<td class="c-text">%s</td><td class="num c-base" data-label="그날">%s<span class="basis">%s</span></td>'
+                   '<td class="num c-now" data-label="지금">%s<span class="basis">%s</span></td>'
+                   '<td class="num c-move" data-label="변화">%s</td>'
+                   '<td class="c-verdict"><span class="verdict t-%s">%s</span></td></tr>'
                    % (e(st["date"]), e(WHO[st["who"]]), e(st["asset"]),
                       st["view"], e(VIEW[st["view"]]), e(st["basis"]), e(HORIZON[st["horizon"]]),
                       e(st["text"]),
@@ -267,6 +301,7 @@ def build(d, ref):
                '<li>시세는 저장소가 모은 스냅샷이고 수집 시각 기준이라 종가와 조금 다를 수 있습니다. 스냅샷이 없는 날은 비웁니다.</li>'
                '<li>매수·매도 권유가 아닙니다. 고객에게 옮길 때는 「직접 발언」과 「보도」를 구분해 말하십시오.</li>'
                '</ul></section></div>')
+    out += ['</body>', '</html>']
     return "\n".join(out) + "\n", rows
 
 
