@@ -1,7 +1,7 @@
-세션을 지닌 채 API 부르기 2026-11-26 16:13:47 KST
+세션을 지닌 채 API 부르기 2026-11-27 02:18:44 KST
 
 ### 증시자금동향
-    페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 99119 bytes
+    페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 102980 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
         HTTP 200 · 11591 bytes · JSON!
@@ -13,22 +13,22 @@
         남김: data/market/raw/session_chart.json
 
 ### 증시 기사
-    페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 86144 bytes
+    페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 89756 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8818 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"138","officeHname":"디지털데일리","articleId":"0002250058","title":"“4800선 넘겼지만 뒷심 부족”…코스피, 0.3% 상승 그쳐","datetime":"2026-11-26 16:03:07","type":"1","subcontent":"전날 6% 넘게 급락했던 코스피가
+        HTTP 200 · 8828 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"023","officeHname":"조선일보","articleId":"0004011995","title":"“한국 반도체 기업, 이익 변동성 줄이고 주주 환원 늘려야”","datetime":"2026-11-27 00:33:26","type":"1","subcontent":"M&G인베스트먼트 亞주식 매니저 “수년
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8818 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"138","officeHname":"디지털데일리","articleId":"0002250058","title":"“4800선 넘겼지만 뒷심 부족”…코스피, 0.3% 상승 그쳐","datetime":"2026-11-26 16:03:07","type":"1","subcontent":"전날 6% 넘게 급락했던 코스피가
+        HTTP 200 · 8828 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"023","officeHname":"조선일보","articleId":"0004011995","title":"“한국 반도체 기업, 이익 변동성 줄이고 주주 환원 늘려야”","datetime":"2026-11-27 00:33:26","type":"1","subcontent":"M&G인베스트먼트 亞주식 매니저 “수년
         남김: data/market/raw/session_list.json
 
 ### 시장지표
-    페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 93949 bytes
+    페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 99590 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26528 bytes · JSON!
+        HTTP 200 · 26527 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
@@ -40,30 +40,30 @@
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
-        HTTP 200 · 7374 bytes · JSON!
+        HTTP 200 · 7379 bytes · JSON!
         앞머리: [{"categoryType":"bond","stockExchangeType":null,"reutersCode":"US10YT=RR","symbolCode":null,"name":"미국 국채 10년","fullName":null,"nameEng":null,"itemLogoUrl":null,"itemLogoPngUrl":null,"delayTime":0,"d
         남김: data/market/raw/session_bond.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dminte
-        HTTP 400 · 256 bytes · JSON!
-        앞머리: {"detailCode":"invalid_enum_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"type\":[\"Invalid enum value. Expected 'bond' | 'domesticInterest' | 'exchange' | 'exchangeWorld' | 'part1' | 'part2
+        HTTP 400 · 269 bytes · JSON!
+        앞머리: {"detailCode":"invalid_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"type\":[\"Invalid option: expected one of \\\"bond\\\"|\\\"domesticInterest\\\"|\\\"exchange\\\"|\\\"exchangeWorld\\\"|\\
         남김: data/market/raw/session_dminte.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dmInte
-        HTTP 400 · 256 bytes · JSON!
-        앞머리: {"detailCode":"invalid_enum_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"type\":[\"Invalid enum value. Expected 'bond' | 'domesticInterest' | 'exchange' | 'exchangeWorld' | 'part1' | 'part2
+        HTTP 400 · 269 bytes · JSON!
+        앞머리: {"detailCode":"invalid_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"type\":[\"Invalid option: expected one of \\\"bond\\\"|\\\"domesticInterest\\\"|\\\"exchange\\\"|\\\"exchangeWorld\\\"|\\
         남김: data/market/raw/session_dmInte.json
     API https://stock.naver.com/api/securityService/marketindex/majors/domesticInte
-        HTTP 400 · 262 bytes · JSON!
-        앞머리: {"detailCode":"invalid_enum_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"type\":[\"Invalid enum value. Expected 'bond' | 'domesticInterest' | 'exchange' | 'exchangeWorld' | 'part1' | 'part2
+        HTTP 400 · 269 bytes · JSON!
+        앞머리: {"detailCode":"invalid_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"type\":[\"Invalid option: expected one of \\\"bond\\\"|\\\"domesticInterest\\\"|\\\"exchange\\\"|\\\"exchangeWorld\\\"|\\
         남김: data/market/raw/session_domesticInte.json
     API https://stock.naver.com/api/securityService/marketindex/majors/domesticInterestRate
-        HTTP 400 · 270 bytes · JSON!
-        앞머리: {"detailCode":"invalid_enum_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"type\":[\"Invalid enum value. Expected 'bond' | 'domesticInterest' | 'exchange' | 'exchangeWorld' | 'part1' | 'part2
+        HTTP 400 · 269 bytes · JSON!
+        앞머리: {"detailCode":"invalid_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"type\":[\"Invalid option: expected one of \\\"bond\\\"|\\\"domesticInterest\\\"|\\\"exchange\\\"|\\\"exchangeWorld\\\"|\\
         남김: data/market/raw/session_domesticInterestRate.json
     API https://stock.naver.com/api/securityService/marketindex/majors/krRate
-        HTTP 400 · 256 bytes · JSON!
-        앞머리: {"detailCode":"invalid_enum_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"type\":[\"Invalid enum value. Expected 'bond' | 'domesticInterest' | 'exchange' | 'exchangeWorld' | 'part1' | 'part2
+        HTTP 400 · 269 bytes · JSON!
+        앞머리: {"detailCode":"invalid_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"type\":[\"Invalid option: expected one of \\\"bond\\\"|\\\"domesticInterest\\\"|\\\"exchange\\\"|\\\"exchangeWorld\\\"|\\
         남김: data/market/raw/session_krRate.json
     API https://stock.naver.com/api/securityService/marketindex/majors/marketRate
-        HTTP 400 · 260 bytes · JSON!
-        앞머리: {"detailCode":"invalid_enum_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"type\":[\"Invalid enum value. Expected 'bond' | 'domesticInterest' | 'exchange' | 'exchangeWorld' | 'part1' | 'part2
+        HTTP 400 · 269 bytes · JSON!
+        앞머리: {"detailCode":"invalid_value","message":"{\"formErrors\":[],\"fieldErrors\":{\"type\":[\"Invalid option: expected one of \\\"bond\\\"|\\\"domesticInterest\\\"|\\\"exchange\\\"|\\\"exchangeWorld\\\"|\\
         남김: data/market/raw/session_marketRate.json
