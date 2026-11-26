@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-11-26 13:06:17 KST
+세션을 지닌 채 API 부르기 2026-11-26 16:13:47 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 99119 bytes
@@ -16,19 +16,19 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 86144 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8812 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"018","officeHname":"이데일리","articleId":"0006415905","title":"“3259억 손실 위기”vs“자의적 추정”…고려아연 투자 논란 쟁점은[마켓인]","datetime":"2026-11-26 11:47:10","type":"1","subcontent":"이 기사는 2026년
+        HTTP 200 · 8818 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"138","officeHname":"디지털데일리","articleId":"0002250058","title":"“4800선 넘겼지만 뒷심 부족”…코스피, 0.3% 상승 그쳐","datetime":"2026-11-26 16:03:07","type":"1","subcontent":"전날 6% 넘게 급락했던 코스피가
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8812 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"018","officeHname":"이데일리","articleId":"0006415905","title":"“3259억 손실 위기”vs“자의적 추정”…고려아연 투자 논란 쟁점은[마켓인]","datetime":"2026-11-26 11:47:10","type":"1","subcontent":"이 기사는 2026년
+        HTTP 200 · 8818 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"138","officeHname":"디지털데일리","articleId":"0002250058","title":"“4800선 넘겼지만 뒷심 부족”…코스피, 0.3% 상승 그쳐","datetime":"2026-11-26 16:03:07","type":"1","subcontent":"전날 6% 넘게 급락했던 코스피가
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 93949 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26527 bytes · JSON!
+        HTTP 200 · 26528 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
@@ -40,7 +40,7 @@
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
-        HTTP 200 · 7371 bytes · JSON!
+        HTTP 200 · 7374 bytes · JSON!
         앞머리: [{"categoryType":"bond","stockExchangeType":null,"reutersCode":"US10YT=RR","symbolCode":null,"name":"미국 국채 10년","fullName":null,"nameEng":null,"itemLogoUrl":null,"itemLogoPngUrl":null,"delayTime":0,"d
         남김: data/market/raw/session_bond.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dminte
