@@ -2028,7 +2028,17 @@ _IB_NAMES = (
     "모하메드 엘에리언", "엘 에리언", "제러미 시걸", "래리 서머스", "제이미 다이먼",
     "데이비드 솔로몬", "켄 그리핀", "스탠리 드러켄밀러", "하워드 막스",
     "톰 리", "에드 야데니", "마이크 윌슨", "데이비드 코스틴", "사비타 서브라마니안",
+    "폴 튜더 존스",
+    # 같은 사람의 다른 표기 — 아래 _IB_ALIAS 가 대표 이름으로 모은다.
+    # 국내 기사는 성만 쓰거나(「드러켄밀러는」) 붙여 쓰거나(「튜더존스」)
+    # 「드러큰밀러」로 적기도 한다. 대표 이름만 찾으면 이 문장들이 빠진다.
+    "드러켄밀러", "드러큰밀러", "폴 튜더존스", "튜더 존스", "튜더존스",
 )
+_IB_ALIAS = {
+    "드러켄밀러": "스탠리 드러켄밀러", "드러큰밀러": "스탠리 드러켄밀러",
+    "폴 튜더존스": "폴 튜더 존스", "튜더 존스": "폴 튜더 존스",
+    "튜더존스": "폴 튜더 존스",
+}
 _IB_SENT = re.compile(
     r"[^.。\n]{0,120}(?:" + "|".join(re.escape(x) for x in _IB_NAMES)
     + r")[^.。\n]{0,200}")
@@ -2650,9 +2660,16 @@ def ib_mentions(*article_groups):
                 # 달리오」) **먼저 나온 쪽**을 대표로 삼는다. _IB_NAMES 의
                 # 나열 순서로 고르면 엉뚱한 이름이 붙는다.
                 found = sorted(((s.index(x), x) for x in _IB_NAMES if x in s))
-                who = found[0][1]
+                # 표기가 달라도 한 사람이다. 대표 이름으로 모으고, 「스탠리
+                # 드러켄밀러」 안의 「드러켄밀러」처럼 겹쳐 잡힌 것은 한 번만 센다.
+                names = []
+                for _, x in found:
+                    x = _IB_ALIAS.get(x, x)
+                    if x not in names:
+                        names.append(x)
+                who = names[0]
                 row = {"who": who, "sentence": s[:400],
-                       "also": [x for _, x in found[1:]],
+                       "also": names[1:],
                        "title": a.get("title"), "url": a.get("url")}
                 if any(h["sentence"] == row["sentence"] for h in hits):
                     continue
