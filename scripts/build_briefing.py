@@ -873,18 +873,14 @@ def sec_deep(C):
     if not isinstance(dp, dict) or not dp.get("title_ko"):
         return None
     N.used.add("deep")
-    if CORE[0] and dp.get("full_only"):
-        return None   # 전체판 전용 특별판 — 핵심판에서는 뺀다
+    # 핵심판에도 특별판을 **블록·표까지 전부** 싣는다(2026-11-27 사용자 지시
+    # 「앞으로 핵심본에도 특별판 블록 전부 넣어줘」). 예전에 핵심판을 줄이던
+    # full_only · core_all · core_blocks2 · table2_full_only 는 이제 읽지 않는다 —
+    # 옛 서술 파일에 남아 있어도 무시된다.
     blocks = [lede(dp.get("lede_ko", ""), dp.get("lede_en", ""))]
     for row in dp.get("blocks", []):
         blocks.append(card(row.get("q_ko", ""), row.get("q_en", ""),
                            row.get("a_ko", ""), row.get("a_en", "")))
-    if CORE[0] and not dp.get("core_all"):
-        # core_all: 특별판처럼 꼭지를 전부 핵심판에도 싣기로 한 날만 켠다.
-        # 핵심본에서도 **그날의 이슈와 실적은 남긴다.** 요약이 「무엇이 움직였나」만
-        # 말하고 「그래서 이것이 무슨 뜻인가」를 말하지 않으면, 받아 보는 쪽이 다시
-        # 물어야 한다. 카드는 넷까지, 딸린 표는 접어 두지 않고 그대로 싣는다.
-        blocks = blocks[:5]
     body = blocks[0] + '\n<div class="soft-grid">\n' + "\n".join(blocks[1:]) + '\n</div>'
     if dp.get("table"):
         body += "\n" + dp["table"]
@@ -892,15 +888,11 @@ def sec_deep(C):
     # 카드가 표보다 앞서 버리지 않도록 lede2 · blocks2 · table2 를 따로 받는다.
     b2 = dp.get("blocks2") or []
     if b2:
-        if CORE[0]:
-            keep = dp.get("core_blocks2", len(b2))
-            # 정수면 앞에서 그만큼, 목록이면 그 번호(0부터)의 블록만 싣는다.
-            b2 = [b2[i] for i in keep if 0 <= i < len(b2)] if isinstance(keep, list) else b2[:keep]
         cards2 = [card(r.get("q_ko", ""), r.get("q_en", ""), r.get("a_ko", ""), r.get("a_en", ""))
                   for r in b2]
         body += ("\n" + lede(dp.get("lede2_ko", ""), dp.get("lede2_en", ""))
                  + '\n<div class="soft-grid">\n' + "\n".join(cards2) + '\n</div>')
-        if dp.get("table2") and not (CORE[0] and dp.get("table2_full_only")):
+        if dp.get("table2"):
             body += "\n" + dp["table2"]
     return (dp["title_ko"], dp.get("title_en", dp["title_ko"]), body)
 
