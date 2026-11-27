@@ -123,7 +123,10 @@ jobs:
   collect:
     needs: gate
     if: needs.gate.outputs.skip != 'yes'
-    runs-on: ubuntu-latest
+    # ubuntu-latest 가 2026-11 에 26.04 로 넘어가자 playwright 1.56.1 이
+    # "does not support chromium on ubuntu26.04-x64" 로 브라우저 설치에서 멈췄다
+    # (11/20 실행). playwright 를 올리기 전까지 24.04 에 묶어 둔다.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:

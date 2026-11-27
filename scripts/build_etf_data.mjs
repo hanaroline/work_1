@@ -134,11 +134,56 @@ function finish(etf, listedIn) {
     retSource = 'naver';
   }
 
+  // ── 서로 맞지 않는 값은 비운다 (2026-11-28) ─────────────────────────────
+  //
+  // 11/20 부터 저녁 수집이 감사에서 막혀 2주 가까이 자료가 멈췄다. 막은 것은
+  // 두 종목의 원천 값이었다. 감사 잣대를 넓히는 대신 그 값을 비운다 —
+  // 틀린 값보다 빈칸이 낫다. 감사(audit_etf_data.mjs)와 같은 잣대를 쓴다.
+  //
+  //   - 총수익률 < 시장가수익률: 분배금을 음수로 먹은 것이다. 510500(야후)의
+  //     Y5·Y10 이 그랬다. 그 구간의 tr 만 비운다(price 는 남긴다).
+  //   - 시총/설정액이 2배 밖: 0007G0 은 설정액이 11/13 368억 → 11/27 174억으로
+  //     반토막 났는데 시총은 358억 → 354억 그대로였다. 같은 기간 유입은 수십억
+  //     규모라 설정액 쪽이 틀린 것이다. 설정액을 비운다. 거래정지 종목은
+  //     마지막 체결가 때문에 벌어지는 것이 정상이므로 건드리지 않는다.
+  //
+  // 비운 것은 dropped 에 남겨 다음 사람이 찾게 한다.
+  const dropped = [];
+  if (ret && ret.tr && ret.price) {
+    const YEARS = { D1: 1 / 252, W1: 1 / 52, M1: 1 / 12, M3: 0.25, M6: 0.5, YTD: null, Y1: 1, Y3: 3, Y5: 5 };
+    const ANNUALIZED = new Set(['Y3', 'Y5']);
+    let tr = null;
+    for (const [k, t] of Object.entries(ret.tr)) {
+      const p = ret.price[k];
+      if (!Number.isFinite(p) || !Number.isFinite(t) || 1 + p / 100 <= 0) continue;
+      const span = YEARS[k] ?? 1;
+      const ratio = ANNUALIZED.has(k) ? ((1 + t / 100) / (1 + p / 100)) ** span : (1 + t / 100) / (1 + p / 100);
+      if (ratio - 1 < -0.005) {
+        tr = tr || { ...ret.tr };
+        delete tr[k];
+        dropped.push({ field: `ret.tr.${k}`, value: t, why: `총수익률 ${t}% < 시장가 ${p}%` });
+      }
+    }
+    if (tr) ret = { ...ret, tr };
+  }
+  let aum = etf.aum;
+  const mcap = Number(etf.marketCap);
+  if (!suspended && Number.isFinite(Number(aum)) && Number(aum) > 0 && Number.isFinite(mcap) && mcap > 0) {
+    const r = mcap / Number(aum);
+    if (r > 2 || r < 0.5) {
+      dropped.push({ field: 'aum', value: aum, why: `시총 ${mcap} / 설정액 ${aum} = ${r.toFixed(2)}배` });
+      aum = undefined;
+    }
+  }
+  if (dropped.length) console.log(`[build] ${etf.code} ${etf.name} 비움: ${dropped.map((d) => `${d.field}(${d.why})`).join(' · ')}`);
+
   return {
     ...etf,
+    aum,
+    dropped: dropped.length ? dropped : undefined,
     ret,
     retSource,
-    aumScope,
+    aumScope: aum == null ? null : aumScope,
     suspended: suspended || undefined,
     // 국내는 수집기가 운용사를 직접 받아 온다(네이버 issuerName). 없으면 규칙으로.
     manager: etf.manager || tag.manager,
