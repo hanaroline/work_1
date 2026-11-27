@@ -20,6 +20,8 @@
     undated 로 내려보내 이름과 공식 링크만 보여준다.
   - 만기일이 휴장일과 겹치면 앞 영업일로 당긴다(국내·미국 파생 규칙). LPR 처럼 뒤로 미는
     것은 shift="next" 로 따로 적는다. 판단 근거는 holidays.json 하나뿐이다.
+  - 경제지표 규칙 추정일이 휴장일에 떨어지면 「월말」 규칙만 그 달 마지막 영업일로 당기고,
+    나머지는 옮길 근거가 없어 뺀다(settle_rule_day). 주말에도 발표하는 중국은 그대로 둔다.
   - 시각은 현지 시각과 함께 **KST 로 환산해** 넣는다. 브라우저에 시간대 데이터를 두지 않기
     위함이다. 발표 시각이 공표돼 있지 않은 일정(BOJ·금통위)은 비워 둔다 — 추정하지 않는다.
 
@@ -370,6 +372,29 @@ def add_dated_events(me, events, start, end):
         ))
 
 
+# 주말에도 발표하는 나라. 중국 국가통계국 PMI(매월 말일)와 해관총서 무역통계는 토·일에도
+# 나온다 — 여기는 날짜를 옮기지 않는다.
+RULE_WEEKEND_OK = {"cn"}
+
+
+def settle_rule_day(it, rule, day, market, hidx):
+    """규칙으로 만든 발표일이 휴장일(주말·공휴일)에 떨어지면 어떻게 할지.
+
+    - 「월말」 규칙은 그 달 마지막 영업일로 당긴다. 월말 발표는 달을 넘기지 않는다.
+    - 그 밖의 규칙(첫 금요일·N번째 요일·N일)은 기관마다 옮기는 방향이 달라(美 고용지표는
+      신정이면 한 주 미룬다) 어느 쪽인지 근거가 없다 — 날짜를 지어내지 않고 뺀다.
+      틀린 날짜보다 빈칸이 낫다.
+    """
+    if it["country"] in RULE_WEEKEND_OK or rule.get("kind") == "weekly":
+        return day
+    if not is_closed(day, market, hidx):
+        return day
+    if rule.get("kind") == "month-end":
+        moved = shift_business(day, market, hidx, "prev")
+        return moved if moved.month == day.month and not is_closed(moved, market, hidx) else None
+    return None
+
+
 def add_indicators(ind, events, start, end, hidx):
     if not ind:
         return
@@ -407,7 +432,8 @@ def add_indicators(ind, events, start, end, hidx):
         rule_end = min(end, date.today() + timedelta(days=horizon))
         weekly = rule["kind"] == "weekly"
         for day in expand_rule(rule, start, rule_end, market, hidx, shift=None):
-            if day in seen:
+            day = settle_rule_day(it, rule, day, market, hidx)
+            if day is None or day in seen:
                 continue
             if not weekly and (day.year, day.month) in known_months:
                 continue

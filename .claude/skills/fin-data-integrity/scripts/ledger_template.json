@@ -1,0 +1,313 @@
+{
+  "_설명": "복사해서 쓰는 주장 대장 템플릿. 아래 예시는 실제 환율 자료에서 발췌한 것으로, 각 kind 의 사용법을 보여줍니다. 작업 시작 시 claims/derived 를 비우고 자신의 수치로 채우십시오.",
+  "deliverable": "원/달러·헤알/원 환율 진단과 전망 (4p PPT)",
+  "as_of": "2026-08-27",
+  "_series_policy": "한 지표는 한 계열로 통일. 다른 계열 값은 각주로만 병기.",
+  "series_policy": {
+    "USD/KRW": "Trading Economics 현물",
+    "BRL/KRW": "exchange-rates.org 종가",
+    "USD/BRL": "Trading Economics 현물"
+  },
+  "claims": [
+    {
+      "id": "KRW_NOW",
+      "kind": "market_level",
+      "metric": "USD/KRW",
+      "text": "원/달러 현물",
+      "value": 1381.7,
+      "unit": "KRW/USD",
+      "series": "Trading Economics 현물",
+      "as_of": "2026-08-27",
+      "tier": 2,
+      "source_url": "https://tradingeconomics.com/south-korea/currency",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p1-tile1"
+      ]
+    },
+    {
+      "id": "KRW_PEAK",
+      "kind": "market_level",
+      "metric": "USD/KRW",
+      "text": "원/달러 2026년 고점(장중)",
+      "value": 1561.5,
+      "unit": "KRW/USD",
+      "series": "Trading Economics 현물",
+      "as_of": "2026-06-06",
+      "tier": 2,
+      "source_url": "https://www.khan.co.kr/article/202606060753001",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "장중 기준. 종가 계열은 1,559.0원 — 계열 병기 필요",
+      "printed_on": [
+        "p1-tile1",
+        "p2-phase5"
+      ]
+    },
+    {
+      "id": "BRL_KRW_NOW",
+      "kind": "market_level",
+      "metric": "BRL/KRW",
+      "text": "헤알/원 종가",
+      "value": 269.0,
+      "unit": "KRW/BRL",
+      "series": "exchange-rates.org 종가",
+      "as_of": "2026-08-26",
+      "tier": 2,
+      "source_url": "https://www.exchange-rates.org/exchange-rate-history/brl-krw-2026",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "Investing.com 장중 기준은 269.5원 — 각주 병기",
+      "printed_on": [
+        "p1-tile2",
+        "p3-decomp"
+      ]
+    },
+    {
+      "id": "BRL_KRW_PEAK",
+      "kind": "market_level",
+      "metric": "BRL/KRW",
+      "text": "헤알/원 2026년 고점",
+      "value": 303.8,
+      "unit": "KRW/BRL",
+      "series": "exchange-rates.org 종가",
+      "as_of": "2026-05-12",
+      "tier": 2,
+      "source_url": "https://www.exchange-rates.org/exchange-rate-history/brl-krw-2026",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p1-tile2",
+        "p3-decomp"
+      ]
+    },
+    {
+      "id": "USD_BRL_NOW",
+      "kind": "market_level",
+      "metric": "USD/BRL",
+      "text": "달러/헤알 현물",
+      "value": 5.16,
+      "unit": "BRL/USD",
+      "series": "Trading Economics 현물",
+      "as_of": "2026-08-26",
+      "tier": 2,
+      "source_url": "https://tradingeconomics.com/brazil/currency",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p3-decomp"
+      ]
+    },
+    {
+      "id": "USD_BRL_MAY",
+      "kind": "market_level",
+      "metric": "USD/BRL",
+      "text": "달러/헤알 2026년 최저(헤알 최강)",
+      "value": 4.91,
+      "unit": "BRL/USD",
+      "series": "Trading Economics 현물",
+      "as_of": "2026-05-12",
+      "tier": 2,
+      "source_url": "https://tradingeconomics.com/brazil/currency",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p3-decomp"
+      ]
+    },
+    {
+      "id": "KRW_MAY",
+      "kind": "market_level",
+      "metric": "USD/KRW",
+      "text": "원/달러 5월 12일",
+      "value": 1492.0,
+      "unit": "KRW/USD",
+      "series": "Trading Economics 현물",
+      "as_of": "2026-05-12",
+      "tier": 3,
+      "corroborating_urls": [
+        "https://www.exchange-rates.org/exchange-rate-history/brl-krw-2026"
+      ],
+      "source_url": "https://tradingeconomics.com/south-korea/currency",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "교차환율(303.8 × 4.91)로 역산 검증됨",
+      "printed_on": [
+        "p3-decomp"
+      ]
+    },
+    {
+      "id": "BOK_RATE",
+      "kind": "policy_rate",
+      "metric": "BOK 기준금리",
+      "text": "한국은행 기준금리 (2회 연속 인상)",
+      "value": 3.0,
+      "unit": "%",
+      "series": "한국은행 공표",
+      "as_of": "2026-08-27",
+      "tier": 1,
+      "source_url": "https://www.mt.co.kr/economy/2026/08/27/2026082709114417494",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p1-tile3",
+        "p2-driver"
+      ]
+    },
+    {
+      "id": "SELIC",
+      "kind": "policy_rate",
+      "metric": "Selic",
+      "text": "브라질 Selic (4회 연속 인하, 만장일치)",
+      "value": 14.0,
+      "unit": "%",
+      "series": "BCB/COPOM 공표",
+      "as_of": "2026-08-05",
+      "tier": 1,
+      "source_url": "https://borainvestir.b3.com.br/noticias/copom-reduz-selic-pela-quarta-reuniao-consecutiva-taxa-vai-a-14-ao-ano/",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p1-tile4",
+        "p3-driver"
+      ]
+    },
+    {
+      "id": "GS_BRL",
+      "kind": "institution_forecast",
+      "metric": "USD/BRL 전망",
+      "text": "Goldman Sachs USD/BRL 12개월 전망",
+      "value": 5.0,
+      "unit": "BRL/USD",
+      "series": "기관 전망",
+      "as_of": "2026-08-27",
+      "tier": 2,
+      "source_url": "https://www.investing.com/news/forex-news/goldman-sachs-lowers-usdbrl-forecast-on-trade-carry-strength-93CH-4637402",
+      "announced_on": "2026-04-25",
+      "attributed_to": "Goldman Sachs (FX Research)",
+      "target_period": "12개월",
+      "revision": "down",
+      "revision_from": 5.3,
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "8/18 재보도 기사가 있으나 원 발표는 4/25. 5.30→5.00 하향(헤알 강세 조정) — 방향을 뒤집으면 의미가 반대가 됨",
+      "printed_on": [
+        "p4-table-brl"
+      ]
+    },
+    {
+      "id": "HANA_KRW",
+      "kind": "institution_forecast",
+      "metric": "USD/KRW 전망",
+      "text": "하나은행 하반기 원/달러 하단",
+      "value": 1360.0,
+      "unit": "KRW/USD",
+      "series": "기관 전망",
+      "as_of": "2026-08-27",
+      "tier": 2,
+      "source_url": "https://www.dailian.co.kr/news/view/1680758/",
+      "announced_on": "2026-08-21",
+      "attributed_to": "하나은행 이유정 연구위원",
+      "target_period": "2026년 하반기",
+      "revision": "new",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "같은 기사에 세종대 김대종 교수·한은 부총재 발언이 함께 등장 — 화자 혼동 주의",
+      "printed_on": [
+        "p4-table-krw"
+      ]
+    },
+    {
+      "id": "KIEP_FX",
+      "kind": "access_blocked",
+      "metric": "KIEP 원/달러 언급",
+      "text": "KIEP 세계경제전망의 원/달러 언급 여부",
+      "value": 0,
+      "unit": "n/a",
+      "series": "기관 전망",
+      "as_of": "2026-08-27",
+      "tier": 1,
+      "source_url": "https://www.kiep.go.kr/gallery.es?mid=a10102020000&bid=0003&act=view&list_no=12404&cg_code=",
+      "verdict": "unverified",
+      "render": "omit",
+      "note": "robots.txt 차단으로 본문 확인 불가. '공표하지 않는다'는 부정 단정으로 쓸 수 없어 자료에서 제외",
+      "printed_on": []
+    }
+  ],
+  "derived": [
+    {
+      "id": "D_KRW_RETRACE",
+      "kind": "pct_change",
+      "from": "KRW_PEAK",
+      "to": "KRW_NOW",
+      "printed": -11.5,
+      "tolerance": 0.05,
+      "_설명": "1페이지 타일의 되돌림 폭"
+    },
+    {
+      "id": "D_BRLKRW_DROP",
+      "kind": "pct_change",
+      "from": "BRL_KRW_PEAK",
+      "to": "BRL_KRW_NOW",
+      "printed": -11.5,
+      "tolerance": 0.05
+    },
+    {
+      "id": "D_CROSS_MAY",
+      "kind": "cross",
+      "a": "KRW_MAY",
+      "b": "USD_BRL_MAY",
+      "result": "BRL_KRW_PEAK",
+      "tolerance_pct": 0.5,
+      "_설명": "USD/KRW ÷ USD/BRL = BRL/KRW 정합성. 기준일이 어긋나면 여기서 잡힘"
+    },
+    {
+      "id": "D_DECOMP",
+      "kind": "log_decomposition",
+      "total": {
+        "from": "BRL_KRW_PEAK",
+        "to": "BRL_KRW_NOW"
+      },
+      "factors": [
+        {
+          "name": "원화",
+          "from": "KRW_MAY",
+          "to": "KRW_NOW"
+        },
+        {
+          "name": "헤알",
+          "from": "USD_BRL_MAY",
+          "to": "USD_BRL_NOW",
+          "invert": true
+        }
+      ],
+      "printed_shares": {
+        "원화": 60,
+        "헤알": 40
+      },
+      "share_tolerance": 1.0,
+      "tolerance_pct": 5.0,
+      "_설명": "요인 분해. invert=true 는 역수 방향(USD/BRL 상승 = 헤알 약세 = BRL/KRW 하락 요인)"
+    },
+    {
+      "id": "D_SCENARIO_B",
+      "kind": "ratio",
+      "numerator": 1420,
+      "denominator": 5.2,
+      "printed": 273,
+      "tolerance": 0.6,
+      "_설명": "시나리오 조합값. 전망치는 claim 이 아니라 상수로 넣어도 되지만, 출처가 있으면 claim id 로 참조할 것"
+    }
+  ],
+  "_unit_policy": "metric 별 기대 단위. 선언해두면 통화쌍 전망을 '원' 단위로 적는 사고를 자동으로 잡습니다.",
+  "unit_policy": {
+    "USD/KRW": "KRW/USD",
+    "BRL/KRW": "KRW/BRL",
+    "USD/BRL": "BRL/USD",
+    "USD/KRW 전망": "KRW/USD",
+    "USD/BRL 전망": "BRL/USD",
+    "BOK 기준금리": "%",
+    "Selic": "%"
+  }
+}

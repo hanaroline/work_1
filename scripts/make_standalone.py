@@ -54,6 +54,8 @@ def main():
         sys.exit("%s 에 <title> 이 없다." % src)
     attrs, title = m.group(1), m.group(2)
     body = (body[:m.start()] + body[m.end():]).lstrip()
+    # 본문 첫 줄의 인코딩 선언(readability.py)은 <head> 에 이미 있으니 뗀다.
+    body = re.sub(r'^\ufeff?<meta charset="utf-8">\s*', "", body)
 
     base = os.path.basename(src)[:-len(".html")]          # 2026-08-10-close
     date, kind = base[:10].replace("-", ""), base[11:]
@@ -75,7 +77,10 @@ def main():
     os.makedirs(outdir, exist_ok=True)
     out = os.path.join(outdir, name)
 
-    with open(out, "w", encoding="utf-8") as f:
+    # utf-8-sig = 맨 앞에 BOM. 메신저·메일 첨부 미리보기, 일부 안드로이드
+    # 파일 보기는 <meta charset> 을 읽지 않고 EUC-KR 로 짐작해 한글이 깨진다
+    # (2026-11-12 사용자 제보). BOM 은 어느 보기 도구든 먼저 본다.
+    with open(out, "w", encoding="utf-8-sig") as f:
         f.write(HEAD % (attrs, title) + body + "\n</body>\n</html>\n")
     print("만듦: %s (%d자)" % (out, len(body)))
     print("제목: %s" % title)

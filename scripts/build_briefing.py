@@ -35,11 +35,11 @@ sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
 from briefing_lib import (  # noqa: E402
     KST, WD, VF_OK, VF_MD, VF_C, VF_1, VF_N,
-    d, DK, DE, DD, DS, n, pct, bp, eok, jo, esc,
+    d, DK, DE, DD, DS, n, pct, bp, eok, eokc, jo, esc,
     L, TH, THP, perf_cells, perf_line, tbl, exp as _exp, P, lede, stat, card, callout,
     sparkline, bar, Doc, Narrative, assemble)
 import briefing_lib as _lib  # noqa: E402
-from briefing_prepare import prepare, KIND_NAME  # noqa: E402
+from briefing_prepare import prepare, KIND_NAME, RANK_NOTE_KO, RANK_NOTE_EN, cm_foot  # noqa: E402
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -406,9 +406,9 @@ def sec_today(C):
              + _adr(kqb) + "x)"),
         stat("거래대금", "Turnover", C["turnover_now"], C["turnover_word"],
              C["turnover_trail"], C["turnover_trail_en"]),
-        stat("외국인 순매수", "Foreign net", eok(kf.get("foreign")), "",
-             "기관 " + eok(kf.get("institution")) + " &middot; 개인 " + eok(kf.get("retail")),
-             "Institutions " + eok(kf.get("institution")) + ", retail " + eok(kf.get("retail"))),
+        stat("외국인 순매수", "Foreign net", eokc(kf.get("foreign")), "",
+             "기관 " + eokc(kf.get("institution")) + " &middot; 개인 " + eokc(kf.get("retail")),
+             "Institutions " + eokc(kf.get("institution")) + ", retail " + eokc(kf.get("retail"))),
         stat("미 10년물", "US 10-year", n(ru["curve"]["ust10y"], 3) + "%",
              bp(ru["change_bp"]["ust10y"]),
              "2년 " + bp(ru["change_bp"]["ust2y"]) + " &middot; 30년 " + bp(ru["change_bp"]["ust30y"]),
@@ -540,16 +540,16 @@ def sec_flows(C):
         _brow("외국인 순매수", "Foreign net buying",
               "방향보다 <strong>전날 대비 변화</strong>가 큽니다 &mdash; 팔던 손이 멎는 것만으로 지수가 움직입니다",
               "The change matters more than the level",
-              eok(kf.get("foreign")), eok(qf.get("foreign")), True),
+              eokc(kf.get("foreign")), eokc(qf.get("foreign")), True),
         _brow("기관 순매수", "Institutions", "연기금·투신·보험", "Pensions, funds, insurers",
-              eok(kf.get("institution")), eok(qf.get("institution"))),
+              eokc(kf.get("institution")), eokc(qf.get("institution"))),
         _brow("개인 순매수", "Retail", "외국인·기관이 판 것을 누가 받았는지",
-              "Who absorbed what the others sold", eok(kf.get("retail")), eok(qf.get("retail"))),
+              "Who absorbed what the others sold", eokc(kf.get("retail")), eokc(qf.get("retail"))),
         _brow("프로그램 비차익", "Non-arb programme",
               "크게 마이너스면 <strong>바스켓 매도</strong>가 지수를 눌렀다는 신호입니다",
               "Deeply negative means basket selling weighed on the index",
-              eok((KSI.get("program_trading") or {}).get("non_arb")),
-              eok((C["KQI"].get("program_trading") or {}).get("non_arb"))),
+              eokc((KSI.get("program_trading") or {}).get("non_arb")),
+              eokc((C["KQI"].get("program_trading") or {}).get("non_arb"))),
     ]
     flow_tbl = tbl("투자자별 순매수 &mdash; " + DK(C["prev_kr"]) + ", 단위 원",
                    "Net buying by investor type &mdash; " + DE(C["prev_kr"]),
@@ -696,10 +696,19 @@ def sec_global(C):
         trio_foot = ('<p class="tbl-foot">' + L(
             "세 표는 <strong>통화가 다 다릅니다</strong>(EUR&middot;GBp&middot;CHF&middot;JPY&middot;CNY"
             "&middot;HKD) &mdash; <strong>종가는 견주지 말고 등락률로 견주십시오.</strong> 도쿄와 홍콩은 "
-            "국내 오후에 닫으므로 <strong>미국 장중 소식을 모르는 값</strong>입니다 " + VF_MD + ".",
+            "국내 오후에 닫으므로 <strong>미국 장중 소식을 모르는 값</strong>입니다 " + VF_MD + ". "
+            "<strong>위 미국 표까지 네 표 모두</strong> &mdash; " + RANK_NOTE_KO,
             "The three tables are in <strong>different currencies</strong> (EUR, GBp, CHF, JPY, CNY, HKD) "
             "&mdash; <strong>compare percentages, not price levels.</strong> Tokyo and Hong Kong close "
-            "before the US session " + VF_MD + ".") + '</p>')
+            "before the US session " + VF_MD + ". <strong>For all four tables, the US one above "
+            "included</strong> &mdash; " + RANK_NOTE_EN) + '</p>')
+        # 순위 유의 문구는 바로 아래 3단 표 꼬리말에 한 번만 둔다 &mdash; 미국 표에도
+        # 달면 같은 절에 같은 문장이 두 번 선다(2026-10-27 요청). 3단 표가 없는 날만
+        # 미국 표에 남긴다.
+        us_foot_ko, us_foot_en = C["us_stk_foot_ko"], C["us_stk_foot_en"]
+        if trio:
+            us_foot_ko = us_foot_ko.replace(" " + RANK_NOTE_KO, "")
+            us_foot_en = us_foot_en.replace(" " + RANK_NOTE_EN, "")
         # 업종 ETF 는 「어느 업종에 돈이 붙었나」를 한 표로 말한다 &mdash; 금리가
         # 움직인 날에는 이것이 지수보다 많은 것을 설명한다(은행↑ 유틸리티↓).
         # 해외 지수와 업종 ETF 는 둘 다 열이 적어 나란히 세운다 &mdash; 「어디가
@@ -710,7 +719,7 @@ def sec_global(C):
                 + _stock_core("미국 종목 &mdash; " + DK(C["prev_us"]) + ", 달러",
                               "US stocks &mdash; " + DE(C["prev_us"]) + ", in dollars",
                               C["us_top"], C["us_bot"], C["why"],
-                              foot_ko=C["us_stk_foot_ko"], foot_en=C["us_stk_foot_en"])
+                              foot_ko=us_foot_ko, foot_en=us_foot_en)
                 + ("\n<div class=\"trio\">\n" + trio + "\n</div>\n" + trio_foot if trio else ""))
     return (lede(a, b) + "\n" + gidx + "\n" + us_stk + "\n"
             + exp("미국 업종 ETF &middot; 유럽 &middot; 일본 &middot; 중국 개별 종목",
@@ -864,18 +873,27 @@ def sec_deep(C):
     if not isinstance(dp, dict) or not dp.get("title_ko"):
         return None
     N.used.add("deep")
+    # 핵심판에도 특별판을 **블록·표까지 전부** 싣는다(2026-11-27 사용자 지시
+    # 「앞으로 핵심본에도 특별판 블록 전부 넣어줘」). 예전에 핵심판을 줄이던
+    # full_only · core_all · core_blocks2 · table2_full_only 는 이제 읽지 않는다 —
+    # 옛 서술 파일에 남아 있어도 무시된다.
     blocks = [lede(dp.get("lede_ko", ""), dp.get("lede_en", ""))]
     for row in dp.get("blocks", []):
         blocks.append(card(row.get("q_ko", ""), row.get("q_en", ""),
                            row.get("a_ko", ""), row.get("a_en", "")))
-    if CORE[0]:
-        # 핵심본에서도 **그날의 이슈와 실적은 남긴다.** 요약이 「무엇이 움직였나」만
-        # 말하고 「그래서 이것이 무슨 뜻인가」를 말하지 않으면, 받아 보는 쪽이 다시
-        # 물어야 한다. 카드는 넷까지, 딸린 표는 접어 두지 않고 그대로 싣는다.
-        blocks = blocks[:5]
     body = blocks[0] + '\n<div class="soft-grid">\n' + "\n".join(blocks[1:]) + '\n</div>'
     if dp.get("table"):
         body += "\n" + dp["table"]
+    # 제2부(선택) — 같은 특별판 안에서 표 뒤에 이어지는 두 번째 주제.
+    # 카드가 표보다 앞서 버리지 않도록 lede2 · blocks2 · table2 를 따로 받는다.
+    b2 = dp.get("blocks2") or []
+    if b2:
+        cards2 = [card(r.get("q_ko", ""), r.get("q_en", ""), r.get("a_ko", ""), r.get("a_en", ""))
+                  for r in b2]
+        body += ("\n" + lede(dp.get("lede2_ko", ""), dp.get("lede2_en", ""))
+                 + '\n<div class="soft-grid">\n' + "\n".join(cards2) + '\n</div>')
+        if dp.get("table2"):
+            body += "\n" + dp["table2"]
     return (dp["title_ko"], dp.get("title_en", dp["title_ko"]), body)
 
 
@@ -931,8 +949,15 @@ def sec_calendar(C):
     return body
 
 
+# 고객 응대는 심층 분석 수준으로 — 전체 판은 써 둔 문항을 모두(최대 10),
+# 핵심본은 앞의 5문항까지 싣는다. 예전에는 4·3 으로 잘려 9문항을 써도
+# 절반이 버려졌다(2026-11-12).
+TALK_FULL, TALK_CORE = 10, 5
+
+
 def sec_talking(C):
-    """09 고객 응대 — 질문 넷. **이 판의 표에서 나온 숫자로만** 답한다."""
+    """09 고객 응대 — 서술 파일의 `talking` 을 전체 판 10·핵심본 5문항까지 싣는다.
+    **이 판의 표와 기사에서 나온 숫자로만** 답한다."""
     N = C["N"]
     qs = N.d.get("talking") or []
     if qs:
@@ -940,7 +965,7 @@ def sec_talking(C):
     else:
         qs = C["fb_talking"]
     cards = "\n".join(card("Q. " + q.get("q_ko", ""), "Q. " + q.get("q_en", ""),
-                           q.get("a_ko", ""), q.get("a_en", "")) for q in qs[:3 if CORE[0] else 4])
+                           q.get("a_ko", ""), q.get("a_en", "")) for q in qs[:TALK_CORE if CORE[0] else TALK_FULL])
     a, b = N.get("talking_lede",
                  "아래 답변은 <strong>모두 이 판의 표에서 나온 숫자로만</strong> 만들었습니다. "
                  "<strong>확정된 투자 판단이 아닙니다.</strong>",
@@ -1147,7 +1172,7 @@ def _region_core(C, key, tko, ten):
         return ""
     head = [TH("종목", "Name", "wrap"), TH("종가", "Close", "n"), TH("등락률", "Change %", "n")]
     rows = []
-    for label_ko, label_en, grp in (("오른 쪽", "Up", order[:3]), ("내린 쪽", "Down", order[-3:])):
+    for label_ko, label_en, grp in (("상승률 상위", "Top", order[:3]), ("상승률 하위", "Bottom", order[-3:])):
         rows.append('      <tr class="grp"><th class="wrap" colspan="3">'
                     + L(label_ko, label_en) + '</th></tr>')
         for k, v in grp:
@@ -1173,7 +1198,7 @@ def _wide(dct, k=10):
 
 
 def _stock_core(tko, ten, top, bot, why, foot_ko="", foot_en="", k=10, dp=2):
-    """핵심본용 종목표 — **오른 쪽과 내린 쪽을 나란히 세워 개수를 늘린다.**
+    """핵심본용 종목표 — **상위와 하위를 나란히 세워 개수를 늘린다.**
 
     한 표에 세로로 쌓으면 종목 하나가 한 줄씩 자리를 먹어, 여섯 쪽에 맞추려고
     네 개까지 줄여 놓았었다. 네 개로는 「무엇이 움직였나」에 답하지 못한다.
@@ -1194,8 +1219,8 @@ def _stock_core(tko, ten, top, bot, why, foot_ko="", foot_en="", k=10, dp=2):
         return tbl(cap_ko, cap_en, head, rows, cls="data compact")
 
     return ('<div class="duo">\n'
-            + one("오른 쪽 &middot; " + tko, "Gainers &middot; " + ten, top) + "\n"
-            + one("내린 쪽 &middot; " + tko, "Losers &middot; " + ten, list(reversed(bot))) + "\n"
+            + one("상승률 상위 &middot; " + tko, "Top by change &middot; " + ten, top) + "\n"
+            + one("상승률 하위 &middot; " + tko, "Bottom by change &middot; " + ten, list(reversed(bot))) + "\n"
             '</div>\n'
             + ('<p class="tbl-foot">' + L(foot_ko, foot_en) + '</p>' if foot_ko else ""))
 
@@ -1275,6 +1300,9 @@ def _kr_snapshot_core(C, kr_idx, breadth):
 
     `kr_idx`&middot;`breadth` 는 전체 판이 쓰는 두 표다 &mdash; 받아만 두고 쓰지
     않는다. 인자로 받는 것은 **부르는 쪽이 둘 다 만들었다는 것을 드러내기 위해서**다.
+
+    「295 / 594」의 빗금 양옆은 좁은 띄어쓰기(&thinsp;)다 &mdash; 보통 띄어쓰기로는
+    11/25 핵심본이 940px 에서 1px 넘쳤다(칸 넓이 합 430 &gt; 429).
     """
     KS, KQ, ksb, kqb = C["KS"], C["KQ"], C["ksb"], C["kqb"]
     rows = [
@@ -1287,8 +1315,8 @@ def _kr_snapshot_core(C, kr_idx, breadth):
         _brow("상승 / 하락 종목", "Advancing / declining",
               "지수 방향과 어긋나면 대형주 몇 개가 지수를 움직인 것입니다",
               "If it disagrees with the index, a few heavyweights moved it",
-              n(ksb.get("advancing"), 0) + " / " + n(ksb.get("declining"), 0),
-              n(kqb.get("advancing"), 0) + " / " + n(kqb.get("declining"), 0)),
+              n(ksb.get("advancing"), 0) + "&thinsp;/&thinsp;" + n(ksb.get("declining"), 0),
+              n(kqb.get("advancing"), 0) + "&thinsp;/&thinsp;" + n(kqb.get("declining"), 0)),
         _brow("오른 종목 비율", "Share advancing", "열 종목 가운데 몇 개가 올랐는지",
               "How many in ten rose",
               "열에 " + n(C["adv_per_ten"], 0), "열에 " + n(C["adv_per_ten_q"], 0)),
@@ -1297,8 +1325,8 @@ def _kr_snapshot_core(C, kr_idx, breadth):
               "(close &minus; low) / (high &minus; low)",
               n(C["pos52_ks"], 1) + "%", n(C["pos52_kq"], 1) + "%"),
         _brow("상한 / 하한", "Limit up / down", "&nbsp;", "&nbsp;",
-              n(ksb.get("limit_up"), 0) + " / " + n(ksb.get("limit_down"), 0),
-              n(kqb.get("limit_up"), 0) + " / " + n(kqb.get("limit_down"), 0)),
+              n(ksb.get("limit_up"), 0) + "&thinsp;/&thinsp;" + n(ksb.get("limit_down"), 0),
+              n(kqb.get("limit_up"), 0) + "&thinsp;/&thinsp;" + n(kqb.get("limit_down"), 0)),
     ]
     head = [TH("항목", "Measure", "wrap"), TH("읽는 법", "How to read it", "note wrap"),
             TH("코스피", "KOSPI", "n"), TH("코스닥", "KOSDAQ", "n"),
@@ -1366,10 +1394,7 @@ def _cm_core(C):
                "Commodities &mdash; " + DE(C["prev_us"]),
                [TH("항목", "Item", "wrap"), TH("종가", "Close", "n"), TH("등락률", "Change %", "n")],
                rows, cls="data compact",
-               foot_ko="유가는 <strong>야후 일봉 종가</strong>입니다 &mdash; 국내 보도가 쓰는 "
-                       "<strong>선물 정산가</strong>와 폭이 다를 수 있습니다 " + VF_MD + ".",
-               foot_en="Crude is the <strong>Yahoo daily close</strong>, which differs from the "
-                       "<strong>futures settlement</strong> Korean coverage quotes " + VF_MD + ".")
+               foot_ko=cm_foot(I, "ko", True), foot_en=cm_foot(I, "en", True))
 
 
 def _earn_core(C, k=6):
@@ -1465,7 +1490,7 @@ def _stock_table(tko, ten, top, bot, why, foot_ko="", foot_en="", dp=2):
             TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP(),
             TH("검증", "Verified", "n opt")]
     rows = []
-    for label_ko, label_en, group in (("오른 쪽", "Gainers", _cut(top)), ("내린 쪽", "Losers", _cut(bot))):
+    for label_ko, label_en, group in (("상승률 상위", "Top by change", _cut(top)), ("상승률 하위", "Bottom by change", _cut(bot))):
         # colspan 은 **머리행에서 센다.** 9 로 박아 두면 핵심본처럼 열이 줄었을 때
         # 머리행과 어긋나 재검증기가 FAIL 을 낸다(실제로 났다).
         # colspan 은 **실제로 서는 머리 칸 수**에서 센다. 9 로 박아 두면 핵심본처럼
@@ -1615,6 +1640,11 @@ def main():
     # 이제 모든 절이 서술을 다 꺼내 갔다. 그제서야 개수를 박는다.
     html = html.replace(NUSED, str(len(N.used))).replace(NFB, str(len(set(N.missing))))
     assert NUSED not in html and NFB not in html
+
+    # 읽기 편하게 — 인코딩 선언 · 화면 글자 바닥 · 진한 회색(scripts/readability.py).
+    # 핵심본 CSS 뒤, 맨 마지막 <style> 로 들어가야 이긴다.
+    from readability import apply as _readable
+    html = _readable(html)
 
     out = a.out or (ROOT + "/docs/briefings/%s-%s%s.html"
                     % (today.isoformat(), a.kind, "-core" if CORE[0] else ""))

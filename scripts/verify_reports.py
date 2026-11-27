@@ -30,7 +30,7 @@ import glob
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fetch_reports import (THEMES, theme_counts, _sentences, pool_key,  # noqa: E402
-                           _TP_MOVE)
+                           tp_move)
 
 OK, BAD, WARN = [], [], []
 
@@ -160,7 +160,8 @@ def verify(path):
     check("나6 여러 곳이 함께 본 종목", crowd_shown == crowd_re,
           "실린 %d건 · 다시 센 %d건" % (len(crowd_shown), len(crowd_re)))
 
-    mv_re = [r for r in todays if r.get("target_move")][:20]
+    # 자르지 않는다 — 실린 목록이 잘리면 여기서 걸려야 한다.
+    mv_re = [r for r in todays if r.get("target_move")]
     check("나7 목표주가 변경 건수", len(S["target_moves"]) == len(mv_re),
           "실린 %d · 다시 센 %d" % (len(S["target_moves"]), len(mv_re)))
     mv_bad = [m for m in S["target_moves"]
@@ -183,8 +184,10 @@ def verify(path):
         want.append("%d건으로 가장 많습니다" % top[1])
     for t in th_re[:3]:
         want.append("%s %d건" % (t["theme"], t["count"]))
-    ups = [m for m in S["target_moves"] if m["move"] == "상향"]
-    dns = [m for m in S["target_moves"] if m["move"] == "하향"]
+    # 실린 목록이 아니라 **다시 센 것**과 맞춘다 — 실린 목록이 잘려 있으면
+    # 문장도 같이 틀리므로, 실린 것끼리 맞추면 둘 다 틀린 채 통과한다.
+    ups = [r for r in mv_re if r["target_move"] == "상향"]
+    dns = [r for r in mv_re if r["target_move"] == "하향"]
     if ups:
         want.append("%d건 상향" % len(ups))
     if dns:
@@ -254,12 +257,16 @@ def verify(path):
         tp = r.get("target_price")
         if not tp:
             continue
-        hay = sq((r.get("excerpt") or "") + (r.get("summary") or "") + (r.get("title") or ""))
+        # 뽑을 때 본문에서 떠 둔 근거 문구(「목표주가 16만원 유지」)도 본문이다.
+        hay = sq((r.get("excerpt") or "") + (r.get("summary") or "") + (r.get("title") or "")
+                 + (r.get("target_move_src") or ""))
         forms = {sq("%d" % tp), sq("{:,}".format(tp))}
         if tp % 10000 == 0:
             forms.add(sq("%d만" % (tp // 10000)))
         if tp % 1000 == 0:
             forms.add(sq("%s만" % ("%g" % (tp / 10000))))
+            # 「TP 8.0만원」처럼 소수 한 자리를 붙여 쓰는 증권사가 있다(하나).
+            forms.add(sq("%.1f만" % (tp / 10000)))
         if r.get("target_from") == "api":
             continue                       # 칸에서 온 수 — 다4-1 이 따로 본다
         if not any(f and f in hay for f in forms):
@@ -283,8 +290,17 @@ def verify(path):
         if not r.get("target_move"):
             continue
         hay = (r.get("excerpt") or "") + " " + (r.get("title") or "")
-        # 방향어만으로는 모자라다 — 목표주가와 묶여 있어야 근거다.
-        if _TP_MOVE.search(hay):
+        # 방향어만으로는 모자라다 — 목표주가와 묶여 있어야 근거다. 실린 방향과
+        # 같은 방향이어야 한다.
+        if tp_move(hay)[0] == r["target_move"]:
+            continue
+        # 뽑을 때 본문에서 떠 둔 근거 문구가 있으면 그것도 본다. 다만 그
+        # 문구가 발췌 안에 있어야 할 자리(본문이 발췌보다 길지 않음)인데 발췌에
+        # 없으면 근거로 치지 않는다 — 아래에서 「근거 못 찾음」으로 센다.
+        src = r.get("target_move_src") or ""
+        longer = (r.get("body_chars") or 0) > len(r.get("excerpt") or "")
+        if src and (longer or src in (r.get("excerpt") or "") + " " + (r.get("title") or "")) \
+                and tp_move(hay + " " + src)[0] == r["target_move"]:
             continue
         # 본문을 앞 1200자까지만 보관한다. 그 뒤에 적힌 근거는 여기서 볼 수
         # 없다 — 뽑을 때는 본문 전체를 보므로 실제로는 있을 수 있다. 다1 이

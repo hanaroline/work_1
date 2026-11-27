@@ -910,11 +910,15 @@ def fetch_detail(rep, dump_dir=None, alien=()):
     # 하락세임」. 올렸다는 말이 아니라 그 이름의 팩터가 부진하다는 말인데,
     # 머리 요약에 「목표주가는 1건 상향()」으로 실릴 뻔했다 — 가리킬 종목이
     # 없으니 괄호까지 비었다. 빈 괄호가 오히려 다행이었다.
+    #
+    # 근거 문구를 함께 남긴다. 발췌는 본문 앞 1200자뿐이라, 그 뒤에 적힌
+    # 「목표주가를 … 하향」은 다음 판에서 다시 따질 때 보이지 않는다 — 10/28
+    # 유진 대우건설의 하향이 그렇게 두 판 만에 지워졌다.
     if not rep.get("target_move") and rep.get("stock"):
-        move = _TP_MOVE.search(body + " " + rep["title"])
+        move, src = tp_move(body + " " + rep["title"])
         if move:
-            rep["target_move"] = move.group(1)
-    return rep
+            rep["target_move"], rep["target_move_src"] = move, src
+    return target_from_src(rep)
 
 
 # ---------------------------------------------------------------- 요약
@@ -1083,7 +1087,111 @@ _TP_COLON = re.compile(r"(?:목표\s*(?:주가|가)|TP)\s*[:：]\s*([\d,]+(?:\.\
 # 「업종 최선호주 의견 유지」나 「가격 상승세가 유지되는 가운데」까지
 # 목표주가 조정으로 둔갑한다 — 9/11 판에서 실제로 셋이 그렇게 걸렸다.
 # 갓 뽑을 때와 지난 판에서 넘어온 것을 털 때가 같은 잣대여야 한다.
-_TP_MOVE = re.compile(r"목표\s*(?:주가|가)[^.\n]{0,40}?(상향|하향|유지)")
+#
+# 예전에는 「목표주가 뒤 마흔 자 안에서 처음 걸린 방향어」 하나를 썼다
+# (`목표\s*(?:주가|가)[^.\n]{0,40}?(상향|하향|유지)`). 그러면 틀린다. 10/29 유진 파마리서치가
+# 그랬다 — 「목표주가 42만원] 당사는 파마리서치에 대해 투자의견 BUY를
+# 유지하고 목표주가를 42만원으로 하향한다」. 앞의 목표주가에서 마흔 자 안에
+# 투자의견의 「유지」가 먼저 걸려 하향이 유지로 실렸다(10/28 칩스앤미디어도
+# 본문은 26,000→17,400원 하향인데 유지로 실렸다).
+#
+# 그래서 목표주가 낱말마다 따로 본다.
+# - 다음 목표주가나 문장 끝을 넘어가지 않는다.
+# - 상향·하향은 「의견」을 건너 잡지 않는다 — 「투자의견 매수로 상향」은
+#   의견을 올린 것이지 목표주가를 올린 것이 아니다(10/23 신한 한세실업).
+# - 유지는 건너 잡는다 — 「목표주가 80,000원과 투자의견 매수를 유지」는 둘 다
+#   유지한다는 말이다(하나증권이 늘 이렇게 쓴다).
+# - 목표주가마다 가장 먼저 나온 방향어 하나만 쓴다 — 「목표주가 280만원 유지,
+#   … 실적 상향」의 상향은 목표주가 얘기가 아니다.
+# 그렇게 모은 것 가운데 상향·하향이 있으면 그것을 쓴다. 둘 다 있으면 어느
+# 쪽인지 댈 수 없으므로 비운다. 없고 유지만 있으면 유지다.
+_TP_ANCHOR = re.compile(r"목표\s*(?:주가|가)")
+_TP_WORD = re.compile(r"상향|하향|유지")
+
+
+def tp_move(text):
+    """(상향·하향·유지, 근거 문구) 또는 (None, None)."""
+    found = []
+    for a in _TP_ANCHOR.finditer(text):
+        seg = text[a.end():a.end() + 40]
+        cut = len(seg)
+        for stop in (re.search(r"\n|(?<!\d)\.|\.(?!\d)", seg), _TP_ANCHOR.search(seg)):
+            if stop:
+                cut = min(cut, stop.start())
+        seg = seg[:cut]
+        op = re.search(r"의견", seg)
+        for w in _TP_WORD.finditer(seg):
+            if w.group(0) != "유지" and op and op.start() < w.start():
+                continue
+            found.append((w.group(0), text[a.start():a.end() + w.end()]))
+            break
+    turns = {d for d, _ in found if d != "유지"}
+    if len(turns) > 1:
+        return None, None
+    for d, src in found:
+        if not turns or d in turns:
+            return d, src
+    return None, None
+
+
+# 근거 문구 속 가격. 「기존 22만원에서 16만원으로 27% 하향」처럼 옛 값이
+# 앞에 오므로 **방향어에 가장 가까운 것(마지막)** 이 지금 목표주가다.
+_SRC_PRICE = re.compile(r"(\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)\s*(만|억)?\s*원")
+
+
+# 옛 값임을 밝힌 가격. 「목표주가 35만원(기존 28만원)으로 상향」처럼 옛 값이
+# **뒤 괄호**에 오면 「마지막 것」 규칙이 옛 값을 집는다 — 11/11 미래에셋
+# 셀트리온이 그렇게 맞는 네이버 칸(35만)을 28만으로 덮었다. 「기존·종전·
+# 직전·이전」 바로 뒤의 가격은 지금 목표주가 후보에서 뺀다.
+_SRC_OLD = re.compile(r"(?:기존|종전|직전|이전)\s*(?:목표\s*주가\s*)?$")
+
+
+def src_price(src):
+    """근거 문구(「목표주가 16만원 유지」)가 적은 목표주가. 없으면 None."""
+    src = src or ""
+    ms = [m for m in _SRC_PRICE.finditer(src)
+          if not _SRC_OLD.search(src[max(0, m.start() - 12):m.start()])]
+    if not ms:
+        return None
+    m = ms[-1]
+    v = int(round(float(m.group(1).replace(",", "")) * _UNIT.get(m.group(2) or "", 1)))
+    return v if 100 <= v <= 100_000_000 else None
+
+
+def old_prices(text):
+    """글이 「기존·종전·직전·이전」 바로 뒤에 적은(=옛 목표주가라 밝힌) 가격들."""
+    out = set()
+    for m in _SRC_PRICE.finditer(text or ""):
+        if _SRC_OLD.search(text[max(0, m.start() - 12):m.start()]):
+            out.add(int(round(float(m.group(1).replace(",", ""))
+                              * _UNIT.get(m.group(2) or "", 1))))
+    return out
+
+
+def target_from_src(r):
+    """본문이 목표주가를 **제 문장으로** 적었으면 그 수를 쓴다.
+
+    네이버 칸(`goalPrice`)이 본문과 다른 일이 있다. 11/2 유진 기아는 본문이
+    「투자의견 매수와 목표주가 16만원 유지함」인데 칸은 150,000 이었다 —
+    같은 증권사가 10/12 에 22만원에서 16만원으로 내린 뒤라 본문 쪽이 맞다.
+    지난 판 전량에서 근거 문구와 칸이 함께 있는 105건 중 어긋난 것은 이
+    한 건뿐이었다. 칸 값은 지우지 않고 `target_price_api` 로 남긴다.
+    """
+    v = src_price(r.get("target_move_src"))
+    if not v or v == r.get("target_price"):
+        return r
+    # 같은 글이 그 수를 **옛 값**이라 적었으면 덮지 않는다. 11/20 유진
+    # 성일하이텍은 요약 머리가 「목표주가를 51,000원으로 하향」인데 본문은
+    # 「목표주가를 기존 51,000원에서 30,000원으로 41.2% 하향」이었고 네이버
+    # 칸은 30,000 이었다 — 근거 문구 쪽이 옛 값이다. 서로 어긋나면 칸을 둔다.
+    if r.get("target_price") and v in old_prices(
+            " ".join((r.get("summary") or "", r.get("excerpt") or "",
+                      r.get("lead") or ""))):
+        return r
+    if r.get("target_price") and r.get("target_from") == "api":
+        r["target_price_api"] = r["target_price"]
+    r["target_price"], r["target_from"] = v, "본문"
+    return r
 
 
 _TP_BARE = re.compile(r"(?:목표\s*(?:주가|가)|TP)[^\d\n]{0,6}?"
@@ -1319,9 +1427,17 @@ def move_brief(rows, moves, limit=8, used=None):
         why = ""
         if r:
             # 상향·하향이라는 말이 든 문장을 우선으로 고른다 — 그것이 까닭이다.
-            for s in re.split(r"(?<=다\.)\s+|(?<=[.!?])\s+", r.get("summary") or ""):
-                if re.search(r"상향|하향|목표\s*주가", s) and len(s) >= 20:
-                    why = s.strip()
+            # 「목표주가」와 방향어가 **함께** 든 문장을 먼저 찾는다. 11/25 유진
+            # 영원무역(목표주가 하향)은 앞 문장 「배당 성향을 … 30%까지
+            # 상향했다」가 먼저 잡혀 하향의 까닭처럼 실렸다.
+            sents = re.split(r"(?<=다\.)\s+|(?<=[.!?])\s+", r.get("summary") or "")
+            for pat in (r"목표\s*(?:주가|가).*(?:상향|하향)|(?:상향|하향).*목표\s*(?:주가|가)",
+                        r"상향|하향|목표\s*주가"):
+                for s in sents:
+                    if re.search(pat, s) and len(s) >= 20:
+                        why = s.strip()
+                        break
+                if why:
                     break
             if not why:
                 why = r.get("lead") or ""
@@ -1336,16 +1452,22 @@ def move_brief(rows, moves, limit=8, used=None):
 
 
 def crowd_brief(rows, crowd, limit=4, per=3, used=None):
-    """여러 곳이 함께 본 종목마다 증권사별 한 줄 — 시각차가 드러나야 한다."""
+    """여러 곳이 함께 본 종목마다 증권사별 한 줄 — 시각차가 드러나야 한다.
+
+    고를 줄이 모자라도 **종목은 빼지 않는다.** 총평 문장이 「삼성전자 8곳」을
+    앞세워 놓고 아래 표에서는 그 종목이 사라진 판이 있었다 — 첫 줄이 짧은
+    리포트가 많고, 남은 줄은 주제 칸이 먼저 가져갔기 때문이다. 줄을 새로
+    짓거나 다른 칸의 줄을 되풀이하지 않고, 몇 곳·목표주가 폭·다룬 증권사만
+    싣는다.
+    """
     out = []
     for c in crowd[:limit]:
         hit = [r for r in rows if (r.get("stock") or {}).get("code") == c.get("code")]
         lines = _pick_lines(hit, per=per, used=used)
-        if len(lines) < 2:
-            continue
         out.append({"name": c.get("name") or c.get("code"), "count": c["count"],
                     "target_avg": c.get("target_avg"), "target_min": c.get("target_min"),
-                    "target_max": c.get("target_max"), "points": lines})
+                    "target_max": c.get("target_max"), "brokers": c.get("brokers") or [],
+                    "points": lines})
     return out
 
 
@@ -1434,10 +1556,13 @@ def digest(reports, day):
     # 여러 증권사가 같은 날 같은 종목을 함께 다뤘다면 그날의 이야깃거리다.
     crowd = sorted((e for e in stocks.values() if e["count"] >= 2),
                    key=lambda e: -e["count"])[:12]
+    # 목표주가를 건드린 리포트는 **모두** 싣는다. 예전에는 20건에서 잘라
+    # 실적 시즌(11/9 판 23건)에 현대백화점 하향이 총평의 「N건 하향」과
+    # 화면 목록에서 함께 빠졌다. 하루 수십 건이라 잘라야 할 만큼 많지 않다.
     moves = [{"title": r["title"], "broker": r.get("broker"), "url": r["url"],
               "stock": (r.get("stock") or {}).get("name"),
               "target_price": r.get("target_price"), "move": r["target_move"]}
-             for r in base if r.get("target_move")][:20]
+             for r in base if r.get("target_move")]
     return {
         "report_date": day,
         "count_report_date": len(todays),
@@ -1561,6 +1686,9 @@ def _absorb(old, new):
     # 그것은 그 판의 출처를 따라야 한다.
     if new.get("target_from") and old.get("target_price") == new.get("target_price"):
         old.setdefault("target_from", new["target_from"])
+    # 상하향과 그 근거 문구도 한 쌍이다. 방향이 같을 때만 문구를 옮긴다.
+    if new.get("target_move_src") and old.get("target_move") == new.get("target_move"):
+        old.setdefault("target_move_src", new["target_move_src"])
     # 제목은 되찾은 쪽(잘리지 않은 쪽)이 낫다.
     if old["title"].rstrip().endswith("..") and not new["title"].rstrip().endswith(".."):
         old["title"] = new["title"]
@@ -1623,20 +1751,41 @@ def drop_unsourced(r):
     # 적힌 「목표주가 상향」이 지난 판에서 넘어올 수 있다(9/16).
     if r.get("target_move") and not r.get("stock"):
         r.pop("target_move", None)
+        r.pop("target_move_src", None)
+    #
+    # 근거는 발췌·제목과, 뽑을 때 본문에서 떠 둔 문구(`target_move_src`)에서
+    # 찾는다. 그 문구가 없던 때 들어온 줄은 요약 문장도 본다 — 요약도 본문에서
+    # 뜬 문장이다. 다만 요약은 문장을 잇느라 줄바꿈이 사라져 「조정 … 투자의견
+    # 유지」 같은 남의 문장까지 이어 읽을 수 있으므로, 문구가 있는 줄에는 대지
+    # 않는다. 다시 따진 방향이 실린 것과 다르면 다시 따진 쪽을 쓴다 — 실린
+    # 것은 옛 잣대로 뽑은 값이다(위 `tp_move` 설명).
     if r.get("target_move"):
-        hay = (r.get("excerpt") or "") + " " + (r.get("title") or "")
-        if not _TP_MOVE.search(hay):
+        title = r.get("title") or ""
+        src = r.get("target_move_src")
+        if src:
+            move, _ = tp_move(" ".join((r.get("excerpt") or "", src, title)))
+        else:
+            move, src = tp_move((r.get("excerpt") or "") + " " + title)
+            if not move:
+                move, src = tp_move((r.get("summary") or "") + " " + title)
+        if move:
+            r["target_move"], r["target_move_src"] = move, src
+        else:
             r.pop("target_move", None)
+            r.pop("target_move_src", None)
+    target_from_src(r)
 
     tp = r.get("target_price")
     if tp and r.get("target_from") != "api":
-        hay = _SQ_NUM.sub("", (r.get("excerpt") or "") + " " + (r.get("title") or ""))
+        hay = _SQ_NUM.sub("", " ".join((r.get("excerpt") or "", r.get("title") or "",
+                                        r.get("target_move_src") or "")))
         forms = {str(tp), "%d" % tp, format(tp, ",").replace(",", "")}
         if tp % 10000 == 0:
             forms.add("%d만" % (tp // 10000))
         if not any(f in hay for f in forms):
             r.pop("target_price", None)
             r.pop("target_move", None)
+            r.pop("target_move_src", None)
     return r
 
 

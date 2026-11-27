@@ -56,19 +56,26 @@ def n(v, dp=2):
     return ("{:,.%df}" % dp).format(v)
 
 
+def _signed(v, dp):
+    """부호 붙인 수와 색 이름. **반올림해 0 이면 부호도 색도 없다** — 보합을
+    「+0.00%」로 적으면 오른 것처럼 읽히고, −0.004 는 「−0.00%」 파랑이 된다."""
+    if round(v, dp) == 0:
+        return ("{:,.%df}" % dp).format(0), "flat"
+    s = ("{:+,.%df}" % dp).format(v).replace("-", "&minus;")
+    return s, ("up" if v > 0 else "down")
+
+
 def pct(v, dp=2):
     if v is None:
         return '<span class="mut">&mdash;</span>'
-    s = ("{:+,.%df}" % dp).format(v).replace("-", "&minus;")
-    cls = "up" if v > 0 else ("down" if v < 0 else "flat")
+    s, cls = _signed(v, dp)
     return '<span class="%s">%s%%</span>' % (cls, s)
 
 
 def bp(v, dp=1):
     if v is None:
         return '<span class="mut">&mdash;</span>'
-    s = ("{:+,.%df}" % dp).format(v).replace("-", "&minus;")
-    cls = "up" if v > 0 else ("down" if v < 0 else "flat")
+    s, cls = _signed(v, dp)
     return '<span class="%s">%sbp</span>' % (cls, s)
 
 
@@ -81,6 +88,18 @@ def eok(v, dp=0):
     if a >= 10000:
         return sign + n(a / 10000.0, 2) + "조"
     return sign + n(a, dp) + "억"
+
+
+def eokc(v, dp=0):
+    """순매수·순매도처럼 **방향이 뜻인 값**에 쓰는 eok — 부호대로 색을 입힌다.
+
+    순매수(+)는 오른 값과 같은 빨강, 순매도(−)는 파랑이다. 부호 하나만으로는
+    표를 훑는 눈이 놓친다(2026-10-27 요청). 잔액처럼 방향이 없는 값에는 쓰지 않는다.
+    """
+    if v is None:
+        return '<span class="mut">&mdash;</span>'
+    cls = "up" if v > 0 else ("down" if v < 0 else "flat")
+    return '<span class="%s">%s</span>' % (cls, eok(v, dp))
 
 
 def jo(v, dp=2):

@@ -93,6 +93,41 @@ h1{font-size:34px; line-height:1.25; letter-spacing:-.3px;}
 }
 .anchors a:hover{border-color:var(--orange); color:var(--ink);}
 
+/* ---------- 상단 검색 (연관어 목록) ---------- */
+.stickybar{margin-top:28px;}
+#list{scroll-margin-top:16px;}
+.stickybar .anchors{margin-top:12px;}
+.ts{position:relative; max-width:640px;}
+.ts input{
+  width:100%; font:inherit; font-size:16px; padding:11px 40px 11px 14px;
+  border:1px solid var(--hairline); border-radius:2px; background:#fff; color:var(--ink);
+  -webkit-appearance:none; appearance:none;
+}
+.ts input:focus{border-color:var(--orange); outline:none; box-shadow:0 0 0 2px rgba(245,130,32,.18);}
+.ts input::-webkit-search-cancel-button{display:none;}
+.ts-clear{
+  position:absolute; right:4px; top:50%; transform:translateY(-50%);
+  width:34px; height:34px; border:0; background:none; color:var(--muted);
+  font-size:20px; line-height:1; cursor:pointer; border-radius:2px;
+}
+.ts-list{
+  position:absolute; left:0; right:0; top:calc(100% + 4px); z-index:30;
+  margin:0; padding:4px 0; list-style:none; background:#fff;
+  border:1px solid var(--hairline); border-radius:2px;
+  box-shadow:0 8px 24px rgba(0,0,0,.12); max-height:min(60vh,440px); overflow-y:auto;
+}
+.ts-list li{padding:9px 14px; cursor:pointer; display:flex; flex-direction:column; gap:2px;}
+.ts-list li[aria-selected="true"], .ts-list li:hover{background:#FFF6EE;}
+.ts-list .ts-l{font-size:15px; color:var(--ink); line-height:1.35;}
+.ts-list .ts-l mark{background:none; color:var(--orange-active); font-weight:700;}
+.ts-list .ts-m{font-size:12.5px; color:var(--muted); display:flex; gap:6px; align-items:center; flex-wrap:wrap;}
+.ts-list .ts-k{border:1px solid var(--hairline); border-radius:2px; padding:0 5px; font-size:11.5px;}
+.ts-list li.ts-all{border-top:1px solid var(--hairline-soft); margin-top:2px;}
+.ts-list li.ts-all .ts-l{color:var(--blue); font-size:14px;}
+.ts-list li.ts-none{cursor:default; color:var(--muted); font-size:14px;}
+.ts-hint{font-size:13px; color:var(--muted); margin-top:6px; min-height:1em;}
+.ts-hint button{font:inherit; font-size:13px; border:0; background:none; color:var(--blue); text-decoration:underline; cursor:pointer; padding:0 2px;}
+
 /* ---------- 섹션 ---------- */
 .section{padding-top:var(--space-section);}
 .section-rule{height:1px; background:var(--orange); margin-bottom:19px;}
@@ -248,7 +283,7 @@ tbody tr.past td{background:#FCFCFC;}
 @media (max-width:900px){ .two-col{grid-template-columns:1fr;} }
 .kv{font-size:15px; display:grid; grid-template-columns:auto 1fr; gap:5px 14px;}
 .kv dt{color:var(--muted);} .kv dd{margin:0; color:var(--ink);}
-.small{font-size:14px; color:var(--muted);}
+.small{font-size:14px; color:var(--muted); overflow-wrap:anywhere;}
 .mono{font-family:var(--font-num);}
 footer{
   margin-top:var(--space-section); padding:28px 0 56px; border-top:1px solid var(--hairline);
@@ -257,9 +292,109 @@ footer{
 .skip{position:absolute; left:-9999px;}
 .skip:focus{left:32px; top:8px; background:#fff; padding:8px 12px; border:1px solid var(--orange); z-index:9;}
 
+/* ---------- 휴대폰 (640px 이하) ----------
+   표는 가로로 밀어 보는 대신 한 일정 = 한 카드로 쌓는다. 월간 격자는 글자 대신
+   분류 색 점만 찍고, 날짜를 누르면 아래에 그날 일정이 펼쳐진다(원래 동작). */
+@media (max-width:640px){
+  html{-webkit-text-size-adjust:100%;}
+  .page{padding:0 16px;}
+  .toolbar{padding:10px 16px 0; justify-content:space-between; gap:8px;}
+  .toolbar .btn-tool{padding:9px 11px; font-size:13px;}
+  #btn-print{display:none;}
+  .lang-toggle button{padding:9px 13px;}
+  .masthead{padding-top:22px;}
+  h1{font-size:24px;}
+  .lede{font-size:15px;}
+  /* 섹션 바로가기 — 가로 한 줄로 밀어 보고, 내려가도 위에 붙어 있다 */
+  .stickybar{
+    position:sticky; top:0; z-index:20; margin:16px -16px 0; padding:8px 16px 0;
+    background:#fff; border-bottom:1px solid var(--hairline-soft);
+  }
+  .ts{max-width:none;}
+  .ts input{padding:10px 40px 10px 12px;}
+  .ts-hint{margin-top:4px;}
+  .ts-hint:empty{display:none;}
+  .ts-list{max-height:55vh;}
+  .stickybar .anchors{
+    flex-wrap:nowrap; overflow-x:auto; margin:8px -16px 0; padding:0 16px 8px;
+    scrollbar-width:none;
+  }
+  .anchors::-webkit-scrollbar{display:none;}
+  .anchors a{white-space:nowrap; flex:0 0 auto; font-size:13px; padding:7px 11px;}
+  :root{--space-section:44px; --space-block:28px;}
+  .section, #list{scroll-margin-top:150px;}
+  .section-title{font-size:20px;}
+
+  /* 월간 격자 */
+  .grid .dow{font-size:12px; padding:6px 0;}
+  .grid .cell{min-height:52px; padding:4px 3px; text-align:center;}
+  .grid .dnum{font-size:14px;}
+  .grid .cell > .small{display:block; font-size:9.5px !important; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .grid .chips{flex-direction:row; flex-wrap:wrap; justify-content:center; gap:3px; margin-top:4px;}
+  .grid .chip{font-size:0; width:7px; height:7px; padding:0;}
+  .grid .chip > span{top:0 !important; width:7px !important; height:7px !important;}
+  .grid .more{font-size:10px; margin-top:1px;}
+  .legend{font-size:13px; gap:6px 12px;}
+
+  /* 필터 */
+  .filters{padding:14px; gap:10px;}
+  .frow{gap:6px;}
+  .frow > label{flex-basis:100%; min-width:0;}
+  .pill{font-size:13px; padding:7px 10px;}
+  .search{min-width:0; width:100%; font-size:16px;}
+  .fcount{margin-left:0;}
+
+  /* 일정 표 → 카드 */
+  .tw{overflow:visible; border:0;}
+  table.ev, table.ev tbody{display:block; background:transparent;}
+  table.ev thead{display:none;}
+  table.ev tr{
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:3px 10px;
+    padding:12px 14px; margin-bottom:8px; background:#fff;
+    border:1px solid var(--hairline); border-radius:4px;
+  }
+  table.ev tr.past td{background:transparent;}
+  table.ev td{padding:0; border:0; line-height:1.45;}
+  table.ev .c-date{order:1; flex:1 1 auto; font-weight:600; color:var(--ink);}
+  table.ev tr.past .c-date{color:inherit;}
+  table.ev .c-fav{order:2; margin-left:auto;}
+  table.ev .c-fav .fav-btn{font-size:20px; padding:0 2px;}
+  table.ev .c-time{order:3; flex-basis:100%; font-size:14px; color:var(--muted);}
+  table.ev .c-ctry, table.ev .c-cat{order:4; font-size:14px; color:var(--muted);}
+  table.ev .c-title{order:5; flex-basis:100%; font-size:16px; font-weight:500; color:var(--ink); margin-top:2px;}
+  table.ev tr.past .c-title{color:inherit;}
+  table.ev .c-detail{order:6; flex-basis:100%; font-size:13.5px;}
+  table.ev .c-conf{order:7; margin-top:4px;}
+  table.ev .c-src{order:8; margin-top:4px;}
+
+  /* 그 밖의 표 → '항목: 값' 카드 */
+  .tw table:not(.ev), .tw table:not(.ev) tbody{display:block; background:transparent;}
+  .tw table:not(.ev) thead{display:none;}
+  .tw table:not(.ev) tr{
+    display:block; padding:10px 14px; margin-bottom:8px; background:#fff;
+    border:1px solid var(--hairline); border-radius:4px;
+  }
+  .tw table:not(.ev) td{
+    display:block; position:relative; padding:3px 0 3px 7em; min-height:1.6em;
+    border:0; white-space:normal; overflow-wrap:anywhere;
+  }
+  .tw table:not(.ev) td::before{
+    content:attr(data-label); position:absolute; left:0; top:4px; width:6.5em;
+    color:var(--muted); font-size:13px; font-weight:400; line-height:1.35;
+  }
+  .tw table:not(.ev) td:first-child{font-weight:600; color:var(--ink);}
+  .tw table:not(.ev) td.num{text-align:left;}
+
+  .bar-row{grid-template-columns:9ch 1fr 4ch; font-size:13px;}
+  .kv{grid-template-columns:1fr; gap:2px;}
+  .kv dd{margin-bottom:8px;}
+  .callout{padding:14px; font-size:15px;}
+  .card{padding:16px;}
+}
+
 /* ---------- 인쇄 ---------- */
 @media print{
-  .toolbar,.anchors,.filters,.cal-head button,.fav-btn,.btn-tool,.no-print{display:none !important;}
+  .toolbar,.anchors,.stickybar,.filters,.cal-head button,.fav-btn,.btn-tool,.no-print{display:none !important;}
   body{font-size:11pt; line-height:1.4;}
   .page{max-width:100%; padding:0;}
   .section{padding-top:24px;}
@@ -290,19 +425,32 @@ footer{
        data-ko="각국 경제지표 발표일 · 중앙은행 정책금리 결정일 · 기업 실적발표와 컨퍼런스콜 · 제약·바이오 학회 · 파생 만기와 지수 정기변경 · 시장 휴장일을 한 화면에서 조회합니다. 확정 일정과 추정 일정을 배지로 구분하고, 확인하지 못한 일정은 날짜를 지어내지 않고 이름과 공식 링크만 남깁니다."
        data-en="Economic data releases, central-bank rate decisions, corporate earnings and conference calls, pharma/biotech congresses, derivative expiries and index reviews, and market holidays — in one screen. Confirmed and estimated dates carry distinct badges; where a date could not be verified, only the name and its official link are shown.">각국 경제지표 발표일 · 중앙은행 정책금리 결정일 · 기업 실적발표와 컨퍼런스콜 · 제약·바이오 학회 · 파생 만기와 지수 정기변경 · 시장 휴장일을 한 화면에서 조회합니다. 확정 일정과 추정 일정을 배지로 구분하고, 확인하지 못한 일정은 날짜를 지어내지 않고 이름과 공식 링크만 남깁니다.</p>
     <div class="meta-line" id="meta"></div>
-    <nav class="anchors no-print" aria-label="sections">
-      <a href="#s1" data-ko="① 다가오는 일정" data-en="1. Coming up">① 다가오는 일정</a>
-      <a href="#s2" data-ko="② 월간 캘린더" data-en="2. Month view">② 월간 캘린더</a>
-      <a href="#s3" data-ko="③ 일정 목록" data-en="3. Schedule list">③ 일정 목록</a>
-      <a href="#s4" data-ko="④ 경제지표" data-en="4. Economic data">④ 경제지표</a>
-      <a href="#s5" data-ko="⑤ 통화정책" data-en="5. Monetary policy">⑤ 통화정책</a>
-      <a href="#s6" data-ko="⑥ 실적·컨콜" data-en="6. Earnings & calls">⑥ 실적·컨콜</a>
-      <a href="#s7" data-ko="⑦ 제약·바이오 학회" data-en="7. Pharma congresses">⑦ 제약·바이오 학회</a>
-      <a href="#s8" data-ko="⑧ 수급·제도" data-en="8. Market structure">⑧ 수급·제도</a>
-      <a href="#s9" data-ko="⑨ 관심 일정" data-en="9. My list">⑨ 관심 일정</a>
-      <a href="#s10" data-ko="⑩ 데이터 상태" data-en="10. Data status">⑩ 데이터 상태</a>
-    </nav>
   </header>
+  <div class="stickybar no-print">
+  <div class="ts" role="search">
+    <input id="tq" type="search" autocomplete="off" autocapitalize="off" spellcheck="false"
+           enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false"
+           aria-controls="ts-list" aria-label="search"
+           data-ko-ph="일정·지표·기업·기관·국가 검색 (예: CPI, 삼성, ㅅㅂㅈ)"
+           data-en-ph="Search events, data, companies, institutions, countries"
+           placeholder="일정·지표·기업·기관·국가 검색 (예: CPI, 삼성, ㅅㅂㅈ)">
+    <button type="button" class="ts-clear" id="ts-clear" hidden aria-label="clear">×</button>
+    <ul class="ts-list" id="ts-list" role="listbox" hidden></ul>
+  </div>
+  <div class="ts-hint" id="ts-hint" aria-live="polite"></div>
+  <nav class="anchors no-print" aria-label="sections">
+    <a href="#s1" data-ko="① 다가오는 일정" data-en="1. Coming up">① 다가오는 일정</a>
+    <a href="#s2" data-ko="② 월간 캘린더" data-en="2. Month view">② 월간 캘린더</a>
+    <a href="#s3" data-ko="③ 일정 목록" data-en="3. Schedule list">③ 일정 목록</a>
+    <a href="#s4" data-ko="④ 경제지표" data-en="4. Economic data">④ 경제지표</a>
+    <a href="#s5" data-ko="⑤ 통화정책" data-en="5. Monetary policy">⑤ 통화정책</a>
+    <a href="#s6" data-ko="⑥ 실적·컨콜" data-en="6. Earnings & calls">⑥ 실적·컨콜</a>
+    <a href="#s7" data-ko="⑦ 제약·바이오 학회" data-en="7. Pharma congresses">⑦ 제약·바이오 학회</a>
+    <a href="#s8" data-ko="⑧ 수급·제도" data-en="8. Market structure">⑧ 수급·제도</a>
+    <a href="#s9" data-ko="⑨ 관심 일정" data-en="9. My list">⑨ 관심 일정</a>
+    <a href="#s10" data-ko="⑩ 데이터 상태" data-en="10. Data status">⑩ 데이터 상태</a>
+  </nav>
+  </div>
 
   <div id="boot"></div>
 
@@ -535,7 +683,9 @@ var SEEN_TODAY = null;     /* 마지막으로 그렸을 때의 '오늘' — 날�
 
 /* 처음에 표 780행을 한꺼번에 만들면 DOM 이 1만 노드를 넘어가 스크롤부터 무거워진다.
    자주 보는 것만 펼쳐 두고, 참고용 긴 표(출처 목록·휴장일·실적)는 눌렀을 때 만든다. */
-var LIST_PAGE = 200, LIST_SHOWN = LIST_PAGE;
+/* 휴대폰에서는 한 번에 50건만 그린다 — 카드로 쌓이면 200건이 화면 수십 장이 된다. */
+var IS_PHONE = !!(window.matchMedia && window.matchMedia('(max-width:640px)').matches);
+var LIST_PAGE = IS_PHONE ? 50 : 200, LIST_SHOWN = LIST_PAGE;
 var OPEN = { srcUrls: false, holidays: false, earn: false };
 
 function foldButton(key, label, n) {
@@ -992,22 +1142,22 @@ function eventTable(rows, opt) {
       ? fmtDateFull(e._d) + ' ~ ' + fmtDateFull(e._end) : fmtDateFull(e._d);
     var dd = diffDays(today, e._d);
     return '<tr class="' + (e._d < today ? 'past' : '') + '">' +
-      '<td><button type="button" class="fav-btn" data-fav="' + esc(e.id) + '" aria-pressed="' +
+      '<td class="c-fav"><button type="button" class="fav-btn" data-fav="' + esc(e.id) + '" aria-pressed="' +
         isFav(e.id) + '" aria-label="' + t('관심 일정', 'star') + '">★</button></td>' +
-      '<td class="nowrap"><span class="mono">' + esc(span) + '</span>' +
+      '<td class="nowrap c-date"><span class="mono">' + esc(span) + '</span>' +
         (dd >= 0 && dd <= 60 ? ' <span class="small">' + esc(ddayLabel(e._d)) + '</span>' : '') + '</td>' +
-      '<td class="nowrap">' + timeText(e) + '</td>' +
-      '<td class="nowrap">' + esc(countryName(e.country)) + '</td>' +
-      '<td class="nowrap">' + catDot(e.category) + ' ' +
+      '<td class="nowrap c-time">' + timeText(e) + '</td>' +
+      '<td class="nowrap c-ctry">' + esc(countryName(e.country)) + '</td>' +
+      '<td class="nowrap c-cat">' + catDot(e.category) + ' ' +
         esc(t((CATS[e.category] || CATS.other).ko, (CATS[e.category] || CATS.other).en)) + '</td>' +
-      '<td>' + esc(title(e)) + ' ' + impMark(e.importance) + '</td>' +
-      (opt.compact ? '' : '<td class="small">' + esc(orgName(e)) +
+      '<td class="c-title">' + esc(title(e)) + ' ' + impMark(e.importance) + '</td>' +
+      (opt.compact ? '' : '<td class="small c-detail">' + esc(orgName(e)) +
         (detail(e) ? '<br>' + esc(detail(e)) : '') + '</td>') +
-      '<td class="nowrap">' + badge(e.confirmed) + '</td>' +
-      '<td class="nowrap">' + link(e) + '</td>' +
+      '<td class="nowrap c-conf">' + badge(e.confirmed) + '</td>' +
+      '<td class="nowrap c-src">' + link(e) + '</td>' +
       '</tr>';
   }).join('');
-  return '<table>' + head + '<tbody>' + body + '</tbody></table>';
+  return '<table class="ev">' + head + '<tbody>' + body + '</tbody></table>';
 }
 
 /* ---------- 월간 격자 ---------- */
@@ -1148,6 +1298,7 @@ function renderList() {
         t('더 보기 — 남은 ' + (rows.length - shown.length) + '건',
           'Show more — ' + (rows.length - shown.length) + ' remaining') + '</button></div>'
       : '');
+  tsHint();
 }
 
 /* ---------- ④ 경제지표 ---------- */
@@ -1629,6 +1780,241 @@ function exportIcs(rows, fname) {
 /* ---------------------------------------------------------- 묶어 그리기 */
 
 /* 필터·검색이 바꾸는 것은 이 셋뿐이다. ④~⑩ 은 필터와 무관하므로 건드리지 않는다. */
+
+/* ---------------------------------------------------------- 상단 검색 · 연관어
+   글자를 칠 때마다 일정 이름·기관·기업(티커)·국가·분류 가운데 맞는 것을 아래에 띄운다.
+   고르면 ③ 일정 목록의 필터를 그 말로 바꾸고 목록으로 내려간다. 한글은 초성(ㅅㅂㅈ)으로도
+   찾는다 — 휴대폰 자판에서 끝까지 치지 않아도 되게. */
+
+var CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+function choOf(s) {
+  var out = '';
+  for (var i = 0; i < s.length; i++) {
+    var c = s.charCodeAt(i);
+    out += (c >= 0xAC00 && c <= 0xD7A3) ? CHO.charAt(Math.floor((c - 0xAC00) / 588)) : s.charAt(i);
+  }
+  return out;
+}
+function isChoQuery(q) { return /^[ㄱ-ㅎ\s]+$/.test(q); }
+function normKey(s) { return String(s || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+/* 'FOMC 의사록 공개 (10/27 회의)' · 'XX 실적발표 (11-03~11-05)' — 날짜가 든 꼬리 괄호는 뗀다 */
+function baseTitle(s) { return String(s || '').replace(/\s*\([^()]*\d[^()]*\)\s*$/, '').trim(); }
+
+var TS = { idx: null, n: -1, items: [], sel: -1 };
+
+function tsBuild() {
+  var map = {}, out = [];
+  function put(key, o, e) {
+    var it = map[key];
+    if (!it) { it = map[key] = o; it.evs = []; out.push(it); }
+    it.evs.push(e);
+  }
+  CAL.events.forEach(function (e) {
+    var tk = baseTitle(e.title_ko), te = baseTitle(e.title_en || e.title_ko);
+    var tick = e.category === 'earnings' ? (e.tags || [])[2] || '' : '';
+    put('e:' + tk, { kind: 'ev', ko: tk, en: te, q: { ko: tk, en: te },
+      extra: [tick, e.org, e.org_en].join(' ') }, e);
+    if (e.org && e.category !== 'earnings' && e.category !== 'holiday')
+      put('o:' + e.org, { kind: 'org', ko: e.org, en: e.org_en || e.org,
+        q: { ko: e.org, en: e.org_en || e.org }, extra: '' }, e);
+    put('c:' + e.country, { kind: 'ctry', code: e.country,
+      ko: (COUNTRIES[e.country] || {}).ko || e.country, en: (COUNTRIES[e.country] || {}).en || e.country,
+      extra: e.country }, e);
+    put('k:' + e.category, { kind: 'cat', code: e.category,
+      ko: (CATS[e.category] || CATS.other).ko, en: (CATS[e.category] || CATS.other).en, extra: '' }, e);
+  });
+  out.forEach(function (it) {
+    it.hay = normKey(it.ko + ' ' + it.en + ' ' + it.extra);
+    it.cho = choOf(normKey(it.ko));
+  });
+  TS.idx = out; TS.n = CAL.events.length;
+}
+
+function tsNext(it) {
+  var today = todayISO(), best = null;
+  it.evs.forEach(function (e) { if (e._end >= today && (!best || e._d < best)) best = e._d; });
+  return best;
+}
+
+function tsMatch(q) {
+  if (!TS.idx || TS.n !== CAL.events.length) tsBuild();
+  var nq = normKey(q);
+  if (!nq) return [];
+  var cho = isChoQuery(nq), nqc = nq.replace(/\s/g, '');
+  var hits = [];
+  TS.idx.forEach(function (it) {
+    var lab = normKey(t(it.ko, it.en)), score;
+    if (cho) {
+      var c = it.cho.replace(/\s/g, ''), at = c.indexOf(nqc);
+      if (at < 0) return;
+      score = at === 0 ? 3 : 4;
+    } else if (lab.indexOf(nq) === 0) score = 0;
+    else if ((' ' + lab).indexOf(' ' + nq) >= 0 || lab.indexOf('(' + nq) >= 0) score = 1;
+    else if (it.hay.indexOf(nq) >= 0) score = 2;
+    else return;
+    var kindRank = { ctry: 0, cat: 1, ev: 2, org: 3 }[it.kind];
+    if (it.kind === 'ev' && it.evs[0].category === 'holiday') kindRank = 4;   /* 휴장일 한 줄씩은 뒤로 */
+    var nx = tsNext(it);
+    hits.push({ it: it, s: score, k: kindRank, nx: nx });
+  });
+  hits.sort(function (a, b) {
+    return ((a.k === 4) - (b.k === 4)) || (a.s - b.s) || ((a.nx ? 0 : 1) - (b.nx ? 0 : 1)) || (a.k - b.k) ||
+      (a.nx && b.nx && a.nx !== b.nx ? (a.nx < b.nx ? -1 : 1) : 0) ||
+      (b.it.evs.length - a.it.evs.length);
+  });
+  return hits.slice(0, 8);
+}
+
+function tsMark(label, q) {
+  var i = isChoQuery(q) ? -1 : label.toLowerCase().indexOf(q.toLowerCase());
+  if (i < 0) return esc(label);
+  return esc(label.slice(0, i)) + '<mark>' + esc(label.slice(i, i + q.length)) + '</mark>' +
+    esc(label.slice(i + q.length));
+}
+
+var TS_KIND = { ev: ['일정', 'Event'], org: ['기관', 'Institution'], ctry: ['국가', 'Country'], cat: ['분류', 'Category'] };
+
+function tsRender() {
+  var q = el('tq').value.trim(), ul = el('ts-list');
+  if (!q) { tsClose(); return; }
+  var hits = tsMatch(q);
+  TS.items = hits.map(function (h) { return h.it; });
+  TS.items.push({ kind: 'all', q: q });
+  TS.sel = -1;
+  var allN = CAL.events.filter(function (e) {
+    var hay = [e.title_ko, e.title_en, e.org, e.org_en, e.detail_ko, e.detail_en,
+               (e.tags || []).join(' ')].join(' ').toLowerCase();
+    return hay.indexOf(q.toLowerCase()) >= 0;
+  }).length;
+  var html = hits.map(function (h, i) {
+    var it = h.it, lab = t(it.ko, it.en), k = TS_KIND[it.kind];
+    var lead = it.kind === 'cat' ? catDot(it.code) + ' ' : '';
+    return '<li role="option" id="ts-o' + i + '" data-ts="' + i + '" aria-selected="false">' +
+      '<span class="ts-l">' + lead + tsMark(lab, q) + '</span>' +
+      '<span class="ts-m"><span class="ts-k">' + esc(t(k[0], k[1])) + '</span>' +
+      (it.kind === 'ev' || it.kind === 'org' ? esc(countryName(it.evs[0].country)) + ' · ' : '') +
+      (h.nx ? t('다음 ', 'next ') + esc(fmtDate(h.nx)) + ' · ' : t('지난 일정만 · ', 'past only · ')) +
+      t(it.evs.length + '건', it.evs.length + ' events') + '</span></li>';
+  }).join('');
+  if (isChoQuery(q) && !allN) {               /* 초성만으로는 본문 검색이 0건이다 — 연관어만 보인다 */
+    TS.items.pop();
+    if (!hits.length) html = '<li class="ts-none" aria-disabled="true">' + esc(t('맞는 연관어가 없습니다', 'No suggestions')) + '</li>';
+  } else if (!hits.length && isChoQuery(q)) {
+    html = '<li class="ts-none" aria-disabled="true">' + esc(t('맞는 연관어가 없습니다', 'No suggestions')) + '</li>';
+    TS.items = [];
+  } else {
+    var n = TS.items.length - 1;
+    html += '<li role="option" class="ts-all" id="ts-o' + n + '" data-ts="' + n + '" aria-selected="false">' +
+      '<span class="ts-l">' + esc(t('‘' + q + '’ 들어간 일정 모두 보기', 'All events containing “' + q + '”')) +
+      ' (' + allN + t('건', '') + ')</span></li>';
+  }
+  ul.innerHTML = html;
+  ul.hidden = false;
+  el('tq').setAttribute('aria-expanded', 'true');
+  ul.scrollTop = 0;
+}
+
+function tsClose() {
+  el('ts-list').hidden = true;
+  el('tq').setAttribute('aria-expanded', 'false');
+  el('tq').removeAttribute('aria-activedescendant');
+  TS.sel = -1;
+}
+
+function tsMove(d) {
+  var lis = el('ts-list').querySelectorAll('li[data-ts]');
+  if (!lis.length) return;
+  TS.sel = (TS.sel + d + lis.length) % lis.length;
+  Array.prototype.forEach.call(lis, function (li, i) { li.setAttribute('aria-selected', i === TS.sel); });
+  lis[TS.sel].scrollIntoView({ block: 'nearest' });
+  el('tq').setAttribute('aria-activedescendant', lis[TS.sel].id);
+}
+
+function tsSyncClear() { el('ts-clear').hidden = !el('tq').value; }
+
+/* 고른 말로 목록 필터를 맞춘다. 다른 필터에 가려 0건이 되지 않게, 걸러 둔 분류·국가·중요도·
+   확정도는 풀고, 기간은 그 말이 들어가는 가장 좁은 구간으로 넓힌다. */
+function tsApply(it) {
+  CAT_ORDER.forEach(function (c) { FILT.cat[c] = true; });
+  FILT.country = {}; FILT.imp = 0;
+  Object.keys(CONF).forEach(function (k) { FILT.conf[k] = true; });
+  if (it.kind === 'ctry') { FILT.q = ''; FILT.country[it.code] = true; FILT.cat.holiday = false; }
+  else if (it.kind === 'cat') { FILT.q = ''; CAT_ORDER.forEach(function (c) { FILT.cat[c] = c === it.code; }); }
+  else FILT.q = it.kind === 'all' ? it.q : t(it.q.ko, it.q.en);
+  el('q').value = FILT.q;
+  el('tq').value = it.kind === 'all' ? it.q : t(it.ko, it.en);
+  var ranges = ['3m', '12m', 'all'], pick = 'all';
+  for (var i = 0; i < ranges.length; i++) {
+    FILT.range = ranges[i];
+    if (CAL.events.some(function (e) { return passes(e); })) { pick = ranges[i]; break; }
+  }
+  FILT.range = pick;
+  LIST_SHOWN = LIST_PAGE;
+  tsClose(); tsSyncClear();
+  renderFiltered();
+  tsHint();
+  el('tq').blur();                              /* 휴대폰 자판을 내린다 */
+  var to = el('list') || el('s3');                /* 설명·필터를 건너 결과로 바로 */
+  if (to) to.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* 지금 걸린 검색을 한 줄로 알려 주고, 바로 풀 수 있게 한다 */
+function tsHint() {
+  var h = el('ts-hint'); if (!h) return;
+  var picked = Object.keys(FILT.country).filter(function (k) { return FILT.country[k]; });
+  var cats = CAT_ORDER.filter(function (c) { return FILT.cat[c]; });
+  var parts = [];
+  if (FILT.q) parts.push('‘' + FILT.q + '’');
+  if (picked.length) parts.push(picked.map(countryName).join('·'));
+  if (cats.length === 1) parts.push(t(CATS[cats[0]].ko, CATS[cats[0]].en));
+  if (!parts.length) { h.innerHTML = ''; return; }
+  var n = filtered().length;
+  h.innerHTML = esc(t('③ 일정 목록: ', '3. List: ') + parts.join(' · ') + ' — ' + t(n + '건', n + ' events')) +
+    ' <button type="button" id="ts-reset">' + esc(t('검색 풀기', 'Clear')) + '</button>';
+}
+
+function tsReset() {
+  FILT.q = ''; FILT.country = {}; FILT.imp = 0; FILT.range = '3m';
+  CAT_ORDER.forEach(function (c) { FILT.cat[c] = true; });
+  FILT.cat.holiday = false;
+  Object.keys(CONF).forEach(function (k) { FILT.conf[k] = true; });
+  el('q').value = ''; el('tq').value = '';
+  LIST_SHOWN = LIST_PAGE;
+  tsClose(); tsSyncClear(); renderFiltered(); tsHint();
+}
+
+function bindTopSearch() {
+  var inp = el('tq');
+  inp.addEventListener('input', function () { tsSyncClear(); tsRender(); });
+  inp.addEventListener('focus', function () { if (inp.value.trim()) tsRender(); });
+  inp.addEventListener('keydown', function (ev) {
+    if (ev.key === 'ArrowDown') { ev.preventDefault(); if (el('ts-list').hidden) tsRender(); tsMove(1); }
+    else if (ev.key === 'ArrowUp') { ev.preventDefault(); tsMove(-1); }
+    else if (ev.key === 'Escape') { tsClose(); }
+    else if (ev.key === 'Enter') {
+      ev.preventDefault();
+      var q = inp.value.trim();
+      if (!q) { tsReset(); return; }
+      if (el('ts-list').hidden) tsRender();
+      if (TS.sel >= 0 && TS.items[TS.sel]) tsApply(TS.items[TS.sel]);
+      else if (isChoQuery(q)) { if (TS.items.length) tsApply(TS.items[0]); }
+      else tsApply({ kind: 'all', q: q });
+    }
+  });
+  el('ts-list').addEventListener('mousedown', function (ev) { ev.preventDefault(); });  /* 입력칸 blur 막기 */
+  el('ts-list').addEventListener('click', function (ev) {
+    var li = ev.target.closest ? ev.target.closest('li[data-ts]') : null;
+    if (li) tsApply(TS.items[+li.getAttribute('data-ts')]);
+  });
+  el('ts-clear').addEventListener('click', function () { tsReset(); inp.focus(); });
+  el('ts-hint').addEventListener('click', function (ev) {
+    if (ev.target && ev.target.id === 'ts-reset') tsReset();
+  });
+  document.addEventListener('click', function (ev) {
+    if (!ev.target.closest || !ev.target.closest('.ts')) tsClose();
+  });
+}
+
 function renderFiltered() {
   renderFilters();
   renderThisWeek();
@@ -1652,6 +2038,22 @@ function renderAll() {
   renderSupply();
   renderFav();
   renderStatus();
+  labelTables();
+}
+
+/* 좁은 화면에서는 표를 '항목: 값' 카드로 쌓는다. 그때 쓸 머리글을 칸마다 붙여 둔다. */
+function labelTables() {
+  var tabs = document.querySelectorAll('#app table:not(.ev)');
+  for (var i = 0; i < tabs.length; i++) {
+    var hs = tabs[i].querySelectorAll('thead th');
+    var rows = tabs[i].querySelectorAll('tbody tr');
+    for (var r = 0; r < rows.length; r++) {
+      var cs = rows[r].children;
+      for (var c = 0; c < cs.length && c < hs.length; c++) {
+        cs[c].setAttribute('data-label', hs[c].textContent);
+      }
+    }
+  }
 }
 
 /* ------------------------------------------------- 날짜가 넘어갔을 때
@@ -1704,9 +2106,11 @@ function bind() {
 
   el('q').addEventListener('input', function () {
     FILT.q = this.value.trim();
+    el('tq').value = this.value; tsSyncClear(); tsHint();
     LIST_SHOWN = LIST_PAGE;
     renderList(); renderGrid();
   });
+  bindTopSearch();
   el('btn-csv').addEventListener('click', exportCsv);
   el('btn-ics-all').addEventListener('click', function () {
     exportIcs(filtered(), 'market-calendar-' + todayISO() + '.ics');

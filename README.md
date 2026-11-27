@@ -325,7 +325,6 @@ data/els.js           # ELS 상품 데이터 + 기초자산 과거 시세 (매�
 
 us-top200.html        # 미국 200대 기업 시세 조회 — 단일 파일 (아래 참고)
 kr-top100.html        # 국내 100대 기업 시세 조회 — 단일 파일 (아래 참고)
-mapo-wm.html          # 마포 WM 모바일 창구 (아래 참고)
 sales-script.html     # 완전판매 스크립트 자동완성 — 전체판 (적합성원칙 + 상품설명의무)
 sales-script-expl.html            # 같은 시스템의 상품설명의무 전용판 (아래 참고)
 sales-script-expl-standalone.html # 설명의무 전용판 배포본 (단일 파일, 오프라인 PC 용)
@@ -352,6 +351,35 @@ data/etf.js           # ETF 통합 데이터 (매일 자동 수집)
 fund.html             # 국내 설정 공모펀드 조회 페이지 (아래 참고)
 fund-search.html      # 공모펀드 조회 — 배포용 단일 파일 (빌드 결과물)
 data/fund.js          # 공모펀드 통합 데이터 (매일 자동 수집)
+
+semi-supply-chain.html # 국내 반도체 밸류체인 맵 — 완성·수요 4칸(맨 앞) + 전공정·후공정 14개 공정(소부장)
+                       # (메모리·파운드리·시스템반도체·AI 빅테크) 88개사의 핵심사업·특징
+                       # (단일 파일, 데이터 인라인. 공정 배치 출처: TIGER 코리아테크액티브ETF 사내한 18~19쪽)
+                       # 시장 지표(시총·현재가·PER·PBR·EPS·BPS·외국인 소진율·수익률·52주 위치·상장일)는
+                       # 아래 수집기가 /*METRICS-BEGIN*/…/*METRICS-END*/ 자리에 넣는다. 못 받은 값은 빈칸
+scripts/fetch_semi_metrics.py         # 위 지표 수집기 (네이버 basic·integration·일봉 + KIND·다음 상장일, 표준 라이브러리만)
+scripts/embed_semi_fonts.py           # 화면이 쓰는 글자만 담은 Noto Sans KR·Inter 부분 글꼴을 HTML 안에 넣는다(오프라인용, 문구 고치면 다시 돌림)
+.github/workflows/semi-metrics.yml    # 평일 20:10 KST 자동 갱신 (수동 실행 가능, schedule 은 main 에서만)
+data/semi-metrics.json                # 수집 결과 원본 · data/semi-metrics-report.md 채움 현황 보고
+
+semi-us.html · semi-jp.html · semi-cn.html
+                       # 해외 반도체 밸류체인 맵 — 미국 48 · 일본 55 · 중국 52개사, 화면 틀은 국내 맵과 같다.
+                       # 소부장 공정 칸 뒤에 완성·수요 단계(메모리·파운드리·시스템반도체·AI 빅테크)를 붙였다.
+                       # 중국 빅테크 중 A주가 없는 알리바바·텐센트·바이두는 홍콩 상장 종목(홍콩달러)
+                       # (KO/EN, 공정별 표, 상세 창, 오프라인 단일 파일). 기업 목록·핵심사업은
+                       # tools/semi-global/common.js(공통 틀) + us.js·jp.js·cn.js(나라별)에서 고친다
+scripts/build_semi_global.py          # 국내 맵의 CSS·본문·동작 스크립트 + 위 데이터로 세 파일을 짓는다.
+                                      # 들어 있던 시세·글꼴 블록은 그대로 둔다. --check 로 커밋본과 같은지 확인
+scripts/fetch_semi_global.py          # 야후 v7 시세 + 2년 일봉 → 시총·현재가·PER·PBR·EPS·BPS·배당수익률·
+                                      # 52주 위치·1/3개월·연초 대비. 회사명이 다르거나 통화(USD·JPY·CNY, .HK 는 HKD)가 다르거나
+                                      # 마지막 거래일이 7일 넘게 묵은 종목은 통째로 비운다(틀린 값보다 빈칸)
+                                      # --market us|jp|cn|all · --limit N(찍기만) · --selftest
+.github/workflows/semi-global-metrics.yml
+                                      # 평일 자동 갱신: 미국 06:30 KST(화~토) · 일본 16:20 · 중국 17:20 KST. 샌드박스는
+                                      # 야후에 못 붙으므로 러너가 돈다(schedule 은 main 에서만, 수동 실행 가능)
+data/semi-global-<cc>.json            # 수집 결과 원본 · data/semi-global-<cc>-report.md 채움 현황·비운 종목
+                                      # 글꼴: python3 scripts/embed_semi_fonts.py --html semi-jp.html
+                                      #       (일본은 Noto Sans JP, 중국은 Noto Sans SC 를 더 담는다)
 
 scripts/             # 그 밖의 수집·빌드·탐색 스크립트
 ```
@@ -1626,55 +1654,6 @@ SK하이닉스 38개 기관처럼 국내 대형주는 커버리지가 두텁습�
 정보 제공 목적의 사내 참고 자료이며 투자 권유가 아닙니다. 시세는 통상 15분 이상 지연될 수
 있고, 회사 공시(DART)·IR 공지가 원문입니다. 고객에게 보여주는 자료로 쓸 경우 준법감시
 부서 확인이 필요합니다.
-
----
-
-# 마포 WM 모바일 창구 (링크형)
-
-`mapo-wm.html` — 기존 QR 전단(`mapowmmobiledesk.pdf`)을 **링크 한 개로 보내는 형태**로 옮긴
-모바일 페이지입니다. 고객이 메시지로 받은 링크를 누르면 이 화면이 뜨고, 원하는 항목을
-누르면 해당 업무가 바로 실행됩니다(카메라로 QR을 비추는 단계가 없어짐).
-
-| 항목 | 내용 |
-|------|------|
-| **① 비대면 계좌개설** | 01 주식(국내/해외)+CMA · 02 개인연금(이전/신규) · 03 퇴직연금(IRP) · 04 중개형 ISA · 05 개인투자용국채 · 06 RIA — 전부 **마포 WM으로 개설**되는 링크 |
-| **② 자주 찾는 업무** | 07 계좌비밀번호 재등록 · 08 통보처 관리 · 09 타사연금 가져오기 · 10 반송해지 · 11 해외주식 매매신청 · 12 외화증권 약정신청 · 13 해외 ETF 거래신청 |
-| **지점 안내** | 전화 걸기(`tel:`), 주소, 지도 링크 |
-| **부가** | 한/영 토글(선택 유지), 링크 복사 버튼, 인쇄 CSS |
-
-각 항목의 링크는 **전단 PDF의 QR 13개를 그대로 디코딩해서 옮긴 값**입니다. 항목 번호와
-QR 위치를 1:1로 대조해 확인했으며, 링크 자체를 새로 만들거나 추측한 것은 없습니다.
-
-> `link.miraeasset.com/...` 단축링크(07~13)는 최종 목적지를 이 저장소에서 확인할 수 없습니다.
-> 전단의 QR과 동일한 값이므로 전단이 유효한 동안에는 동일하게 동작하지만,
-> 배포 전에 실제 휴대폰에서 13개를 한 번씩 눌러보는 것을 권장합니다.
-
-## 배포 (GitHub Pages)
-
-`.github/workflows/pages.yml`이 `main`에 올라온 `mapo-wm.html`을 GitHub Pages로 배포합니다.
-저장소 전체가 아니라 **이 페이지만** 올립니다(시세·ELS·브리핑 자료는 웹사이트로 노출하지 않음).
-
-| 주소 | 내용 |
-|------|------|
-| `https://hanaroline.github.io/work_1/` | 마포 WM 모바일 창구 |
-| `https://hanaroline.github.io/work_1/mapo-wm.html` | 같은 페이지(주소만 다름) |
-
-**최초 1회만 설정** — 저장소 Settings 〉 Pages 〉 Build and deployment 〉 Source 를
-**GitHub Actions** 로 바꿉니다. 그 뒤로는 `mapo-wm.html`을 고쳐 `main`에 올릴 때마다
-자동 배포되고, Actions 탭에서 수동 실행(workflow_dispatch)도 됩니다.
-
-검색 노출은 막아둡니다(페이지 `noindex` + `robots.txt`). 문자·메신저로 주소를 받은
-고객만 들어오는 페이지라서, 지점 코드가 박힌 링크가 검색에 걸리지 않게 하려는 것입니다.
-
-```bash
-# 로컬 확인
-python3 -m http.server 8000   # http://localhost:8000/mapo-wm.html
-```
-
-## 유의사항 (마포 WM 페이지)
-
-고객에게 배포하는 화면이므로 대외 배포 전 준법감시 부서 확인을 권장합니다.
-계좌개설 링크에는 지점 코드가 포함되어 있어, 다른 지점에서 그대로 쓰면 안 됩니다.
 
 ---
 

@@ -95,9 +95,39 @@ CHECKS = {
 #
 # 기준은 «그 판이 다루는 장» 의 마감이다. 토요일에 도는 주말 판은 기대
 # 날짜가 금요일이므로 금요일 15:30 이 하한이 되어 그대로 통과한다.
+#
+# 모닝 판도 날짜만으로는 못 거른다. 미국 장중(KST 밤 22:30~)에 찍힌 파일은
+# S&P·나스닥 날짜가 이미 «그날» 이라 2026-10-20 아침에 10/19 23:28 KST 수집본이
+# 「쓸 수 있다」로 통과했다 — 종가가 아니라 개장 한 시간 뒤의 값이었다.
+# 그래서 모닝의 하한은 그 날짜 미국 정규장 마감(16:00 ET)을 KST 로 옮긴 시각에
+# 15분을 더한 것이다. 마감 직후에는 야후 일봉 종가가 아직 종가 경매 전 값일
+# 수 있어서다. 서머타임이면 다음날 05:15, 아니면 06:15 KST.
+
+
+def us_dst(d):
+    """미국 동부 서머타임 기간인가. 3월 둘째 일요일 ~ 11월 첫째 일요일.
+
+    tzdata 가 없는 곳에서도 돌도록 zoneinfo 를 쓰지 않는다. 날짜 단위로만
+    보면 되는 것은 정규장 마감(16:00)이 전환 시각(02:00)과 겹치지 않아서다.
+    """
+    def nth_sunday(month, n):
+        first = datetime.date(d.year, month, 1)
+        return first + datetime.timedelta(days=(6 - first.weekday()) % 7 + 7 * (n - 1))
+    return nth_sunday(3, 2) <= d < nth_sunday(11, 1)
+
+
+def kr_close_floor(d):
+    return datetime.datetime.combine(d, datetime.time(15, 30), tzinfo=KST)
+
+
+def us_close_floor(d):
+    et = datetime.timezone(datetime.timedelta(hours=-4 if us_dst(d) else -5))
+    return datetime.datetime.combine(d, datetime.time(16, 15), tzinfo=et).astimezone(KST)
+
+
 SESSION_FLOOR = {
-    "close": datetime.time(15, 30),   # 국내 정규장 마감
-    "morning": None,                  # 간밤 미국 마감이 날짜로 이미 걸러진다
+    "close": kr_close_floor,    # 국내 정규장 마감
+    "morning": us_close_floor,  # 간밤 미국 정규장 마감(국내 전날 마감은 그보다 앞선다)
 }
 
 # 날짜와 시각이 맞아도 **덩어리째 빠진 스냅숏**이 있다. 2026-09-10 저녁
@@ -169,10 +199,10 @@ def inspect(session, today, use_main=True):
                          % (mark, name, got, "" if hit or required else "  (참고 항목)"))
 
     # 날짜가 맞아도 **마감 전에 찍힌 것**이면 그날 값이 아니다.
-    floor_t = SESSION_FLOOR.get(session)
-    if floor_t is not None and last_want is not None:
+    floor_fn = SESSION_FLOOR.get(session)
+    if floor_fn is not None and last_want is not None:
         cap = capture_time(j)
-        floor = datetime.datetime.combine(last_want, floor_t, tzinfo=KST)
+        floor = floor_fn(last_want)
         if cap is None:
             ok = False
             lines.append("  X 수집 시각을 읽지 못했다 — 마감 전 자료인지 가릴 수 없다")
@@ -183,7 +213,7 @@ def inspect(session, today, use_main=True):
             lines.append("    날짜만 맞고 종가&middot;수급은 그날 것이 아니다.".replace("&middot;", "·"))
         else:
             lines.append("  O 마감 뒤 수집          %s (하한 %s)"
-                         % (cap.strftime("%m-%d %H:%M"), floor.strftime("%H:%M")))
+                         % (cap.strftime("%m-%d %H:%M"), floor.strftime("%m-%d %H:%M")))
 
     # 날짜·시각이 맞아도 덩어리가 빠져 있으면 브리핑을 지을 수 없다.
     gone = missing_sections(j, session)
