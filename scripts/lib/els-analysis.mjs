@@ -331,7 +331,12 @@ function couponStudy(items, best) {
   for (const g of groups.values()) {
     const f = g.find((i) => i.currency !== 'KRW');
     const k = g.filter((i) => i.currency === 'KRW').sort((a, b) => b.annualRate - a.annualRate)[0];
-    if (f && k && (!fx || f.annualRate > fx.fx.annualRate)) fx = { fx: f, krw: k };
+    // ③ 은 "외화 쪽이 더 주면서 덜 위험해 보이는" 어긋남을 설명하는 항목이다. 그 어긋남이
+    // 없으면(덜 주거나 더 위험하면) 문장이 거짓이 되므로 싣지 않는다 — 2026-11-27 달러
+    // 제38310회(연 9.0%)를 원화 제38312회(연 10.8%)보다 "더 주면서" 라 적었다.
+    if (!f || !k || !(f.annualRate > k.annualRate && f.mcLoss != null && k.mcLoss != null
+      && +f.mcLoss.toFixed(1) < +k.mcLoss.toFixed(1))) continue;
+    if (!fx || f.annualRate > fx.fx.annualRate) fx = { fx: f, krw: k };
   }
 
   return {
