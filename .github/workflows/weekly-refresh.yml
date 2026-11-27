@@ -138,7 +138,7 @@ jobs:
     name: '이번 주 갱신 요약'
     needs: [els, els_prospectus, els_pages, fund_catalog, fund_kofia, fund_prospectus, build]
     if: ${{ always() }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: 요약
         run: |
