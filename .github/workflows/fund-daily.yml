@@ -44,7 +44,9 @@ concurrency:
 
 jobs:
   collect:
-    runs-on: ubuntu-latest
+    # ubuntu-latest 가 26.04 로 넘어가면서 playwright 1.56.1 이 크로미움을
+    # 깔지 못해 11/16·11/23 수집과 재검증이 멈췄다. 되던 판에 묶어 둔다.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
