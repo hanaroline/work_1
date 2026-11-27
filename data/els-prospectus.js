@@ -11,7 +11,7 @@
  * 원문에 없는 값은 담지 않으므로 화면에서 「확인필요」로 남는다.
  */
 window.ELS_PROSPECTUS = {
- "updatedAt": "2026-11-26T05:14:16.796Z",
+ "updatedAt": "2026-11-27T05:12:31.317Z",
  "source": "DART 일괄신고추가서류",
  "rcpNos": [
   "20260821000106",
@@ -95,7 +95,9 @@ window.ELS_PROSPECTUS = {
   "20261125000062",
   "20261125000088",
   "20261125000286",
-  "20261126000035"
+  "20261126000035",
+  "20261127000954",
+  "20261127000957"
  ],
  "matched": 18,
  "productCount": 18,
@@ -127,7 +129,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000106",
    "rcpNo": "20260821000106",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.784Z",
+   "collectedAt": "2026-11-27T05:12:31.293Z",
    "fields": {
     "name": "미래에셋증권 제4053회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -246,7 +248,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000181",
    "rcpNo": "20260821000181",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.784Z",
+   "collectedAt": "2026-11-27T05:12:31.293Z",
    "fields": {
     "name": "미래에셋증권 제4054회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -413,7 +415,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000181",
    "rcpNo": "20260821000181",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.784Z",
+   "collectedAt": "2026-11-27T05:12:31.293Z",
    "fields": {
     "name": "미래에셋증권 제4055회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -532,7 +534,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000181",
    "rcpNo": "20260821000181",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.294Z",
    "fields": {
     "name": "미래에셋증권 제4056회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -699,7 +701,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000181",
    "rcpNo": "20260821000181",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.294Z",
    "fields": {
     "name": "미래에셋증권 제4057회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -818,7 +820,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000242",
    "rcpNo": "20260825000242",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제4058회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -985,7 +987,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826000487",
    "rcpNo": "20260826000487",
    "docDate": "2026-08-26",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제4059회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -1058,7 +1060,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826000487",
    "rcpNo": "20260826000487",
    "docDate": "2026-08-26",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제4060회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -1131,7 +1133,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000204",
    "rcpNo": "20260825000204",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제4061회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -1250,7 +1252,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000838",
    "rcpNo": "20260828000838",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제4063회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -1417,7 +1419,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826000227",
    "rcpNo": "20260826000227",
    "docDate": "2026-08-26",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제4064회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -1584,7 +1586,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826000227",
    "rcpNo": "20260826000227",
    "docDate": "2026-08-26",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제4065회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -1703,7 +1705,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826000227",
    "rcpNo": "20260826000227",
    "docDate": "2026-08-26",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제4066회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -1822,7 +1824,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902000080",
    "rcpNo": "20260902000080",
    "docDate": "2026-09-02",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제4067회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -1895,7 +1897,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902000080",
    "rcpNo": "20260902000080",
    "docDate": "2026-09-02",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제4068회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -1968,7 +1970,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902000017",
    "rcpNo": "20260902000017",
    "docDate": "2026-09-02",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제4069회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2081,7 +2083,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902000017",
    "rcpNo": "20260902000017",
    "docDate": "2026-09-02",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제4070회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2194,7 +2196,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000116",
    "rcpNo": "20260901000116",
    "docDate": "2026-09-01",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제4071회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2313,7 +2315,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000116",
    "rcpNo": "20260901000116",
    "docDate": "2026-09-01",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제4072회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2432,7 +2434,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000116",
    "rcpNo": "20260901000116",
    "docDate": "2026-09-01",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제4073회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2551,7 +2553,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000185",
    "rcpNo": "20260904000185",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제4075회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2670,7 +2672,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000185",
    "rcpNo": "20260904000185",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제4076회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2732,7 +2734,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000185",
    "rcpNo": "20260904000185",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제4077회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2794,7 +2796,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000185",
    "rcpNo": "20260904000185",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제4078회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2856,7 +2858,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260910000074",
    "rcpNo": "20260910000074",
    "docDate": "2026-09-10",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제4079회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -2929,7 +2931,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260908000216",
    "rcpNo": "20260908000216",
    "docDate": "2026-09-08",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제4080회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -3048,7 +3050,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260908000216",
    "rcpNo": "20260908000216",
    "docDate": "2026-09-08",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제4081회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -3167,7 +3169,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260909000201",
    "rcpNo": "20260909000201",
    "docDate": "2026-09-09",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제4082회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -3334,7 +3336,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260909000253",
    "rcpNo": "20260909000253",
    "docDate": "2026-09-09",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제4083회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -3453,7 +3455,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000315",
    "rcpNo": "20260911000315",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제4084회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -3515,7 +3517,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000315",
    "rcpNo": "20260911000315",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제4085회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -3577,7 +3579,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000315",
    "rcpNo": "20260911000315",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제4086회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -3639,7 +3641,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260916000041",
    "rcpNo": "20260916000041",
    "docDate": "2026-09-16",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제4087회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -3712,7 +3714,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260915000162",
    "rcpNo": "20260915000162",
    "docDate": "2026-09-15",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제4088회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -3831,7 +3833,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260915000162",
    "rcpNo": "20260915000162",
    "docDate": "2026-09-15",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제4089회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -3950,7 +3952,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260916000162",
    "rcpNo": "20260916000162",
    "docDate": "2026-09-16",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제4090회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -4117,7 +4119,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260916000222",
    "rcpNo": "20260916000222",
    "docDate": "2026-09-16",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제4091회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -4236,7 +4238,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000192",
    "rcpNo": "20260917000192",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제4092회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -4355,7 +4357,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260921000175",
    "rcpNo": "20260921000175",
    "docDate": "2026-09-21",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제4093회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -4428,7 +4430,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000114",
    "rcpNo": "20260928000114",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제4094회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -4490,7 +4492,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000114",
    "rcpNo": "20260928000114",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제4095회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -4552,7 +4554,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260922000198",
    "rcpNo": "20260922000198",
    "docDate": "2026-09-22",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제4096회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -4671,7 +4673,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000088",
    "rcpNo": "20260928000088",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제4097회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -4744,7 +4746,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260929000118",
    "rcpNo": "20260929000118",
    "docDate": "2026-09-29",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제4098회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -4863,7 +4865,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000076",
    "rcpNo": "20261001000076",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제4099회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -4982,7 +4984,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260930000202",
    "rcpNo": "20260930000202",
    "docDate": "2026-09-30",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제4100회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -5149,7 +5151,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260930000350",
    "rcpNo": "20260930000350",
    "docDate": "2026-09-30",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제4101회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -5268,7 +5270,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000216",
    "rcpNo": "20261008000216",
    "docDate": "2026-10-08",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제4102회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -5341,7 +5343,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261015000127",
    "rcpNo": "20261015000127",
    "docDate": "2026-10-15",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제4103회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -5414,7 +5416,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261006000071",
    "rcpNo": "20261006000071",
    "docDate": "2026-10-06",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제4104회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -5487,7 +5489,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261006000071",
    "rcpNo": "20261006000071",
    "docDate": "2026-10-06",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제4105회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -5560,7 +5562,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000245",
    "rcpNo": "20261008000245",
    "docDate": "2026-10-08",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제4106회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -5679,7 +5681,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000326",
    "rcpNo": "20261016000326",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제4107회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -5798,7 +5800,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261014000081",
    "rcpNo": "20261014000081",
    "docDate": "2026-10-14",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제4108회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -5965,7 +5967,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261014000170",
    "rcpNo": "20261014000170",
    "docDate": "2026-10-14",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제4109회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -6084,7 +6086,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261021000061",
    "rcpNo": "20261021000061",
    "docDate": "2026-10-21",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제4110회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -6157,7 +6159,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261021000125",
    "rcpNo": "20261021000125",
    "docDate": "2026-10-21",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제4111회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -6324,7 +6326,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261021000125",
    "rcpNo": "20261021000125",
    "docDate": "2026-10-21",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제4112회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -6491,7 +6493,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000175",
    "rcpNo": "20261023000175",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제4113회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -6610,7 +6612,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028000045",
    "rcpNo": "20261028000045",
    "docDate": "2026-10-28",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제4114회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -6683,7 +6685,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000358",
    "rcpNo": "20261030000358",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제4115회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -6804,7 +6806,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028000113",
    "rcpNo": "20261028000113",
    "docDate": "2026-10-28",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제4116회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -6971,7 +6973,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261103000197",
    "rcpNo": "20261103000197",
    "docDate": "2026-11-03",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제4117회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -7090,7 +7092,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261103000197",
    "rcpNo": "20261103000197",
    "docDate": "2026-11-03",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제4118회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -7209,7 +7211,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261104000088",
    "rcpNo": "20261104000088",
    "docDate": "2026-11-04",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제4119회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -7376,7 +7378,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261104000122",
    "rcpNo": "20261104000122",
    "docDate": "2026-11-04",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제4120회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -7495,7 +7497,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000021",
    "rcpNo": "20261120000021",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제4121회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -7662,7 +7664,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000328",
    "rcpNo": "20261120000328",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제4122회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -7781,7 +7783,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000328",
    "rcpNo": "20261120000328",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제4123회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -7900,7 +7902,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000359",
    "rcpNo": "20261124000359",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제4124회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -8019,7 +8021,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261125000286",
    "rcpNo": "20261125000286",
    "docDate": "2026-11-25",
-   "collectedAt": "2026-11-26T05:14:16.794Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제4125회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -8092,7 +8094,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261125000286",
    "rcpNo": "20261125000286",
    "docDate": "2026-11-25",
-   "collectedAt": "2026-11-26T05:14:16.794Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제4126회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -8165,7 +8167,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261125000062",
    "rcpNo": "20261125000062",
    "docDate": "2026-11-25",
-   "collectedAt": "2026-11-26T05:14:16.794Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제4127회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -8326,13 +8328,132 @@ window.ELS_PROSPECTUS = {
    },
    "targetMarket": null
   },
+  "4128": {
+   "no": 4128,
+   "name": "미래에셋증권 제4128회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000957",
+   "rcpNo": "20261127000957",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.312Z",
+   "fields": {
+    "name": "미래에셋증권 제4128회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
+    "issuer": "미래에셋증권",
+    "round": "제4128회",
+    "kind": "ELB",
+    "highDiff": "해당 없음 (원금지급형)",
+    "riskGrade": "5",
+    "riskLabel": "낮은위험",
+    "riskReason": "파생결합사채(ELB·DLB) — 발행 금융회사의 신용등급에 대응하는 채권의 위험등급 준용",
+    "under": "KOSPI200",
+    "underVol": "KOSPI200 37.96%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "해당 없음 (원금지급형)",
+    "coupon": "연 6.51%",
+    "maxLoss": "0% (원금지급형)",
+    "lossExample": "이 상품은 원금지급형(파생결합사채)으로 만기까지 보유하시면 투자원금은 지급됩니다. 다만 만기 전 중도상환을 신청하시는 경우 상환금액이 공정가액을 기준으로 산정되고 중도상환비용이 차감되므로 투자원금에 미달할 수 있으며, 발행사인 미래에셋증권의 신용위험(파산·지급불능 등)이 발생하면 원금을 돌려받지 못할 수 있습니다.\n발행사 수익률 모의실험(2003-01-02~2023-11-17 과거 데이터 5,164회) 기준 만기 손실 발생 비율은 0% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산이 모두 아시아 지역 거래자산)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 1,000,000원",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 투자설명서에는 숙려제도 대상 청약기간과 숙려기간이 정해져 있지 않습니다. 파생결합사채(원금지급형)는 고난도 금융투자상품이 아니어서 청약 숙려제도 적용 대상이 아닙니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 9,916.97원 입니다 (액면 대비 -0.83%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다.",
+    "monthlyNote": "이 상품은 월지급식으로, 매월 월수익지급평가일에 모든 기초자산의 평가가격이 각 최초기준가격의 80% 이상이면 원금의 0.5425% 를 그 달의 수익으로 지급합니다 (총 36회 평가). 조건을 충족하지 못한 달에는 그 달의 수익이 지급되지 않으며, 미지급분은 이후에 소급하여 지급되지 않습니다. 지급일은 해당 차수 월수익지급평가일(불포함) 후 3영업일."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 85,
+     "payRate": 100,
+     "annRate": 6.51,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 85,
+     "payRate": 100,
+     "annRate": 6.51,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 85,
+     "payRate": 100,
+     "annRate": 6.51,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 85,
+     "payRate": 100,
+     "annRate": 6.51,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 85,
+     "payRate": 100,
+     "annRate": 6.51,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 85,
+     "payRate": 100,
+     "annRate": 6.51,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 85,
+   "instrument": "파생결합사채",
+   "principalProtected": true,
+   "monthlyIncome": {
+    "barrier": 80,
+    "rate": 0.5425,
+    "count": 36,
+    "payRule": "해당 차수 월수익지급평가일(불포함) 후 3영업일"
+   },
+   "knockIn": "",
+   "lizard": null,
+   "sim": {
+    "runs": 5164,
+    "loss": 0,
+    "first": 94.98,
+    "range": {
+     "from": "2003-01-02",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
+   },
+   "targetMarket": null
+  },
   "4131": {
    "no": 4131,
    "name": "미래에셋증권 제4131회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261125000088",
    "rcpNo": "20261125000088",
    "docDate": "2026-11-25",
-   "collectedAt": "2026-11-26T05:14:16.794Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제4131회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -8445,7 +8566,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261125000088",
    "rcpNo": "20261125000088",
    "docDate": "2026-11-25",
-   "collectedAt": "2026-11-26T05:14:16.794Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제4132회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -8564,7 +8685,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261126000035",
    "rcpNo": "20261126000035",
    "docDate": "2026-11-26",
-   "collectedAt": "2026-11-26T05:14:16.794Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제4133회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -8637,7 +8758,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000207",
    "rcpNo": "20260825000207",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제36711회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -8749,7 +8870,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000207",
    "rcpNo": "20260825000207",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제36712회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -8861,7 +8982,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000204",
    "rcpNo": "20260901000204",
    "docDate": "2026-09-01",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제36716회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -8973,7 +9094,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000204",
    "rcpNo": "20260901000204",
    "docDate": "2026-09-01",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제36717회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9051,7 +9172,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260908000224",
    "rcpNo": "20260908000224",
    "docDate": "2026-09-08",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제36722회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9129,7 +9250,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260922000101",
    "rcpNo": "20260922000101",
    "docDate": "2026-09-22",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제36729회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9207,7 +9328,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000139",
    "rcpNo": "20261001000139",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.305Z",
    "fields": {
     "name": "미래에셋증권 제36733회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9285,7 +9406,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261013000279",
    "rcpNo": "20261013000279",
    "docDate": "2026-10-13",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제36739회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9363,7 +9484,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261013000279",
    "rcpNo": "20261013000279",
    "docDate": "2026-10-13",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제36740회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9475,7 +9596,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261020000214",
    "rcpNo": "20261020000214",
    "docDate": "2026-10-20",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제36741회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9553,7 +9674,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261027000094",
    "rcpNo": "20261027000094",
    "docDate": "2026-10-27",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제36745회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9665,7 +9786,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028000212",
    "rcpNo": "20261028000212",
    "docDate": "2026-10-28",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제36746회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9743,7 +9864,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261106000182",
    "rcpNo": "20261106000182",
    "docDate": "2026-11-06",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제36747회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9821,7 +9942,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000022",
    "rcpNo": "20261120000022",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제36749회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9933,7 +10054,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000144",
    "rcpNo": "20261124000144",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제36750회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10011,7 +10132,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000466",
    "rcpNo": "20260821000466",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제36998회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10123,7 +10244,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000466",
    "rcpNo": "20260821000466",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제36999회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10201,7 +10322,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.294Z",
    "fields": {
     "name": "미래에셋증권 제38031회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10324,7 +10445,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.294Z",
    "fields": {
     "name": "미래에셋증권 제38032회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10447,7 +10568,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.294Z",
    "fields": {
     "name": "미래에셋증권 제38033회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10570,7 +10691,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.294Z",
    "fields": {
     "name": "미래에셋증권 제38034회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10693,7 +10814,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.294Z",
    "fields": {
     "name": "미래에셋증권 제38035회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10816,7 +10937,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.294Z",
    "fields": {
     "name": "미래에셋증권 제38036회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10939,7 +11060,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제38037회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -11110,7 +11231,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제38038회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -11233,7 +11354,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제38039회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -11404,7 +11525,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제38040회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -11527,7 +11648,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제38041회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -11698,7 +11819,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제38042회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -11821,7 +11942,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제38043회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -11944,7 +12065,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제38044회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -12115,7 +12236,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제38045회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -12238,7 +12359,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제38046회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -12361,7 +12482,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제38047회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -12484,7 +12605,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제38048회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -12611,7 +12732,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제38049회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -12734,7 +12855,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.785Z",
+   "collectedAt": "2026-11-27T05:12:31.295Z",
    "fields": {
     "name": "미래에셋증권 제38050회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
     "issuer": "미래에셋증권",
@@ -12858,7 +12979,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38051회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -12981,7 +13102,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38052회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -13152,7 +13273,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38053회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -13275,7 +13396,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38054회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -13398,7 +13519,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38055회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -13521,7 +13642,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38056회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -13644,7 +13765,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38057회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -13767,7 +13888,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38058회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -13938,7 +14059,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38059회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -14109,7 +14230,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38060회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -14232,7 +14353,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38061회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -14403,7 +14524,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38062회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -14510,7 +14631,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38063회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -14633,7 +14754,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38064회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -14756,7 +14877,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38065회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -14879,7 +15000,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38070회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
     "issuer": "미래에셋증권",
@@ -15003,7 +15124,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38071회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -15130,7 +15251,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38072회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -15253,7 +15374,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.296Z",
    "fields": {
     "name": "미래에셋증권 제38073회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -15376,7 +15497,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38074회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -15499,7 +15620,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38075회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -15622,7 +15743,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38076회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -15745,7 +15866,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38077회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -15868,7 +15989,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38078회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -16039,7 +16160,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38079회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -16162,7 +16283,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38080회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -16285,7 +16406,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38081회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -16456,7 +16577,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38082회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -16579,7 +16700,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38083회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -16702,7 +16823,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38084회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -16825,7 +16946,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38085회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -16996,7 +17117,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38086회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -17119,7 +17240,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38087회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -17242,7 +17363,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38088회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -17365,7 +17486,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-11-26T05:14:16.786Z",
+   "collectedAt": "2026-11-27T05:12:31.297Z",
    "fields": {
     "name": "미래에셋증권 제38089회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -17488,7 +17609,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제38100회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
     "issuer": "미래에셋증권",
@@ -17612,7 +17733,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제38101회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -17735,7 +17856,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제38102회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -17858,7 +17979,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제38103회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -17981,7 +18102,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제38104회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -18104,7 +18225,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제38105회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -18227,7 +18348,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제38106회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -18356,7 +18477,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제38107회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -18479,7 +18600,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제38108회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -18602,7 +18723,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제38109회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -18725,7 +18846,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제38110회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -18848,7 +18969,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제38111회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -18971,7 +19092,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제38112회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -19094,7 +19215,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제38113회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -19217,7 +19338,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.298Z",
    "fields": {
     "name": "미래에셋증권 제38114회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -19340,7 +19461,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제38115회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -19463,7 +19584,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제38116회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -19586,7 +19707,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제38117회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -19709,7 +19830,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제38118회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -19832,7 +19953,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제38119회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -19955,7 +20076,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제38120회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -20078,7 +20199,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제38121회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -20201,7 +20322,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제38122회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -20324,7 +20445,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제38123회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -20447,7 +20568,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.299Z",
    "fields": {
     "name": "미래에셋증권 제38124회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -20570,7 +20691,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.787Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제38125회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -20693,7 +20814,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.788Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제38126회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -20816,7 +20937,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.788Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제38127회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -20939,7 +21060,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.788Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제38128회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -21062,7 +21183,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.788Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제38129회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -21185,7 +21306,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.788Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제38130회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -21308,7 +21429,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000507",
    "rcpNo": "20260911000507",
    "docDate": "2026-09-11",
-   "collectedAt": "2026-11-26T05:14:16.788Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제38131회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -21431,7 +21552,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260914000166",
    "rcpNo": "20260914000166",
    "docDate": "2026-09-14",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제38132회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -21554,7 +21675,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제38133회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -21677,7 +21798,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제38134회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -21800,7 +21921,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제38135회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -21923,7 +22044,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제38136회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -22046,7 +22167,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제38137회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -22169,7 +22290,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제38138회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -22298,7 +22419,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.302Z",
    "fields": {
     "name": "미래에셋증권 제38139회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -22421,7 +22542,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38140회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -22544,7 +22665,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38141회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -22667,7 +22788,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38142회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -22790,7 +22911,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38143회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -22913,7 +23034,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38144회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
     "issuer": "미래에셋증권",
@@ -23037,7 +23158,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38145회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -23160,7 +23281,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38146회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -23283,7 +23404,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38147회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -23406,7 +23527,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38148회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -23529,7 +23650,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38149회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -23652,7 +23773,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38150회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -23775,7 +23896,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000140",
    "rcpNo": "20260917000140",
    "docDate": "2026-09-17",
-   "collectedAt": "2026-11-26T05:14:16.789Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38151회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -23898,7 +24019,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38152회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -24021,7 +24142,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38153회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -24144,7 +24265,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38154회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -24267,7 +24388,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38155회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -24390,7 +24511,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38156회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -24513,7 +24634,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38157회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -24636,7 +24757,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38158회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -24807,7 +24928,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38159회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -24930,7 +25051,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38160회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -25053,7 +25174,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38161회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -25176,7 +25297,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.303Z",
    "fields": {
     "name": "미래에셋증권 제38162회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -25299,7 +25420,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38163회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -25422,7 +25543,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38164회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -25545,7 +25666,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38165회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -25716,7 +25837,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38166회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -25839,7 +25960,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38167회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -25962,7 +26083,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38168회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -26085,7 +26206,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928000075",
    "rcpNo": "20260928000075",
    "docDate": "2026-09-28",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38169회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -26208,7 +26329,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38170회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -26331,7 +26452,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38171회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -26454,7 +26575,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38172회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -26577,7 +26698,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38173회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -26700,7 +26821,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38174회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -26829,7 +26950,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38175회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -26952,7 +27073,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38176회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -27075,7 +27196,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38177회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -27198,7 +27319,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38178회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -27321,7 +27442,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38179회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -27444,7 +27565,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38180회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -27567,7 +27688,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38181회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -27694,7 +27815,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38182회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -27817,7 +27938,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38183회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -27940,7 +28061,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.304Z",
    "fields": {
     "name": "미래에셋증권 제38184회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -28063,7 +28184,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.305Z",
    "fields": {
     "name": "미래에셋증권 제38185회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -28186,7 +28307,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.305Z",
    "fields": {
     "name": "미래에셋증권 제38186회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -28357,7 +28478,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.305Z",
    "fields": {
     "name": "미래에셋증권 제38187회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -28528,7 +28649,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000091",
    "rcpNo": "20261001000091",
    "docDate": "2026-10-01",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.305Z",
    "fields": {
     "name": "미래에셋증권 제38188회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -28699,7 +28820,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000217",
    "rcpNo": "20261008000217",
    "docDate": "2026-10-08",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38190회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -28822,7 +28943,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000217",
    "rcpNo": "20261008000217",
    "docDate": "2026-10-08",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38191회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -28945,7 +29066,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000217",
    "rcpNo": "20261008000217",
    "docDate": "2026-10-08",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38192회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -29068,7 +29189,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000217",
    "rcpNo": "20261008000217",
    "docDate": "2026-10-08",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38193회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -29191,7 +29312,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000217",
    "rcpNo": "20261008000217",
    "docDate": "2026-10-08",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38194회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -29314,7 +29435,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000217",
    "rcpNo": "20261008000217",
    "docDate": "2026-10-08",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38195회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -29437,7 +29558,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000217",
    "rcpNo": "20261008000217",
    "docDate": "2026-10-08",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38196회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -29560,7 +29681,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000217",
    "rcpNo": "20261008000217",
    "docDate": "2026-10-08",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38197회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -29683,7 +29804,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000217",
    "rcpNo": "20261008000217",
    "docDate": "2026-10-08",
-   "collectedAt": "2026-11-26T05:14:16.790Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38198회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -29806,7 +29927,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000217",
    "rcpNo": "20261008000217",
    "docDate": "2026-10-08",
-   "collectedAt": "2026-11-26T05:14:16.791Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38199회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -29929,7 +30050,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000217",
    "rcpNo": "20261008000217",
    "docDate": "2026-10-08",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38200회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -30052,7 +30173,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000217",
    "rcpNo": "20261008000217",
    "docDate": "2026-10-08",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38201회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -30175,7 +30296,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000217",
    "rcpNo": "20261008000217",
    "docDate": "2026-10-08",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38202회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -30298,7 +30419,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38205회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -30421,7 +30542,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38206회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
     "issuer": "미래에셋증권",
@@ -30545,7 +30666,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38207회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -30668,7 +30789,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38208회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -30791,7 +30912,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38209회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -30914,7 +31035,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38210회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -31037,7 +31158,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38211회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -31160,7 +31281,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38212회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -31283,7 +31404,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38213회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -31406,7 +31527,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38214회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -31529,7 +31650,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38215회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -31652,7 +31773,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38216회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -31779,7 +31900,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38217회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
     "issuer": "미래에셋증권",
@@ -31903,7 +32024,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38218회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -32026,7 +32147,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38219회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -32149,7 +32270,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38220회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -32272,7 +32393,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000319",
    "rcpNo": "20261016000319",
    "docDate": "2026-10-16",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38221회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -32395,7 +32516,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261014000084",
    "rcpNo": "20261014000084",
    "docDate": "2026-10-14",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38222회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -32518,7 +32639,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261014000084",
    "rcpNo": "20261014000084",
    "docDate": "2026-10-14",
-   "collectedAt": "2026-11-26T05:14:16.792Z",
+   "collectedAt": "2026-11-27T05:12:31.308Z",
    "fields": {
     "name": "미래에셋증권 제38223회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -32641,7 +32762,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38225회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -32764,7 +32885,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38226회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -32887,7 +33008,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38227회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -33010,7 +33131,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38228회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -33133,7 +33254,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38229회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -33262,7 +33383,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38230회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -33385,7 +33506,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38231회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -33508,7 +33629,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38232회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -33631,7 +33752,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38233회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -33754,7 +33875,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38234회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
     "issuer": "미래에셋증권",
@@ -33878,7 +33999,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38235회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -34001,7 +34122,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38236회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -34124,7 +34245,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38237회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -34247,7 +34368,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38238회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -34370,7 +34491,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38239회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -34493,7 +34614,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38240회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -34616,7 +34737,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000173",
    "rcpNo": "20261023000173",
    "docDate": "2026-10-23",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.309Z",
    "fields": {
     "name": "미래에셋증권 제38241회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -34739,7 +34860,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38242회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -34864,7 +34985,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38243회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
     "issuer": "미래에셋증권",
@@ -34990,7 +35111,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38244회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -35115,7 +35236,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38245회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -35240,7 +35361,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38246회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -35365,7 +35486,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38247회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -35490,7 +35611,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38248회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -35615,7 +35736,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38249회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -35740,7 +35861,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38250회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -35865,7 +35986,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38251회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
     "issuer": "미래에셋증권",
@@ -35991,7 +36112,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38252회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -36116,7 +36237,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38253회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -36241,7 +36362,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38254회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -36366,7 +36487,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38255회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -36491,7 +36612,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38256회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -36616,7 +36737,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000220",
    "rcpNo": "20261030000220",
    "docDate": "2026-10-30",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38257회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -36741,7 +36862,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261103000274",
    "rcpNo": "20261103000274",
    "docDate": "2026-11-03",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38263회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -36866,7 +36987,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38271회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
     "issuer": "미래에셋증권",
@@ -36990,7 +37111,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38272회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -37113,7 +37234,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38273회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -37236,7 +37357,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38274회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -37359,7 +37480,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38275회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -37482,7 +37603,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38276회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -37605,7 +37726,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38277회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -37728,7 +37849,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38278회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -37851,7 +37972,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38279회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -37974,7 +38095,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38280회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -38145,7 +38266,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.310Z",
    "fields": {
     "name": "미래에셋증권 제38281회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -38268,7 +38389,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38282회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -38391,7 +38512,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38283회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -38514,7 +38635,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38284회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -38637,7 +38758,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38285회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -38760,7 +38881,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38286회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -38883,7 +39004,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261120000269",
    "rcpNo": "20261120000269",
    "docDate": "2026-11-20",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38287회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -39006,7 +39127,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38290회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -39129,7 +39250,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38291회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
     "issuer": "미래에셋증권",
@@ -39253,7 +39374,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38292회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -39376,7 +39497,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38293회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -39499,7 +39620,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38294회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -39622,7 +39743,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38295회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -39751,7 +39872,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38296회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -39874,7 +39995,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38297회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -39997,7 +40118,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38298회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -40120,7 +40241,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38299회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -40291,7 +40412,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38300회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -40414,7 +40535,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38301회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -40537,7 +40658,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38302회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -40660,7 +40781,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38303회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -40783,7 +40904,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38304회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -40904,7 +41025,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38305회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -41027,7 +41148,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000357",
    "rcpNo": "20261124000357",
    "docDate": "2026-11-24",
-   "collectedAt": "2026-11-26T05:14:16.793Z",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
    "fields": {
     "name": "미래에셋증권 제38306회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -41123,6 +41244,2270 @@ window.ELS_PROSPECTUS = {
     "range": {
      "from": "2003-01-02",
      "to": "2023-11-10"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38310": {
+   "no": 38310,
+   "name": "미래에셋증권 제38310회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
+   "fields": {
+    "name": "미래에셋증권 제38310회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38310회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "KOSPI200",
+    "underVol": "KOSPI200 37.96%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "35%",
+    "coupon": "연 9%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(KOSPI200) 중 어느 하나라도 종가기준으로 각 최초기준가격의 35% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 70% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2003-01-02~2023-11-17 과거 데이터 5,164회) 기준 만기 손실 발생 비율은 0% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산이 모두 아시아 지역 거래자산)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 USD 1,000",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 USD 10,000 당 USD 9,687.54 입니다 (액면 대비 -3.12%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 85,
+     "payRate": 104.5,
+     "annRate": 9,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 85,
+     "payRate": 109,
+     "annRate": 9,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 85,
+     "payRate": 113.5,
+     "annRate": 9,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 80,
+     "payRate": 118,
+     "annRate": 9,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 75,
+     "payRate": 122.5,
+     "annRate": 9,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 70,
+     "payRate": 127,
+     "annRate": 9,
+     "evalDate": "2029-12-04",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 70,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "35",
+   "lizard": null,
+   "sim": {
+    "runs": 5164,
+    "loss": 0,
+    "first": 94.98,
+    "range": {
+     "from": "2003-01-02",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38311": {
+   "no": 38311,
+   "name": "미래에셋증권 제38311회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
+   "fields": {
+    "name": "미래에셋증권 제38311회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38311회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "2",
+    "riskLabel": "높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "EuroStoxx50, S&P500, Nikkei225",
+    "underVol": "EuroStoxx50 23.14%, S&P500 25.48%, Nikkei225 29.1%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "45%",
+    "coupon": "연 9.6%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(EuroStoxx50, S&P500, Nikkei225) 중 어느 하나라도 종가기준으로 각 최초기준가격의 45% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 65% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2003-01-06~2023-11-17 과거 데이터 4,896회) 기준 만기 손실 발생 비율은 3% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 익거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산에 非아시아 지역 거래자산 포함)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 1,000,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급·2등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 9,601.06원 입니다 (액면 대비 -3.99%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 90,
+     "payRate": 104.8,
+     "annRate": 9.6,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 85,
+     "payRate": 109.6,
+     "annRate": 9.6,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 80,
+     "payRate": 114.4,
+     "annRate": 9.6,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 75,
+     "payRate": 119.2,
+     "annRate": 9.6,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 70,
+     "payRate": 124,
+     "annRate": 9.6,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 65,
+     "payRate": 128.8,
+     "annRate": 9.6,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 65,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "45",
+   "lizard": null,
+   "sim": {
+    "runs": 4896,
+    "loss": 3,
+    "first": 80.78,
+    "range": {
+     "from": "2003-01-06",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1,
+     2
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38312": {
+   "no": 38312,
+   "name": "미래에셋증권 제38312회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
+   "fields": {
+    "name": "미래에셋증권 제38312회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38312회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "KOSPI200",
+    "underVol": "KOSPI200 37.96%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "45%",
+    "coupon": "연 10.8%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(KOSPI200) 중 어느 하나라도 종가기준으로 각 최초기준가격의 45% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 70% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2003-01-02~2023-11-17 과거 데이터 5,164회) 기준 만기 손실 발생 비율은 0% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산이 모두 아시아 지역 거래자산)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 1,000,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 9,639.96원 입니다 (액면 대비 -3.6%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 85,
+     "payRate": 105.4,
+     "annRate": 10.8,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 85,
+     "payRate": 110.8,
+     "annRate": 10.8,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 85,
+     "payRate": 116.2,
+     "annRate": 10.8,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 80,
+     "payRate": 121.6,
+     "annRate": 10.8,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 75,
+     "payRate": 127,
+     "annRate": 10.8,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 70,
+     "payRate": 132.4,
+     "annRate": 10.8,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 70,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "45",
+   "lizard": null,
+   "sim": {
+    "runs": 5164,
+    "loss": 0,
+    "first": 94.98,
+    "range": {
+     "from": "2003-01-02",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38313": {
+   "no": 38313,
+   "name": "미래에셋증권 제38313회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.311Z",
+   "fields": {
+    "name": "미래에셋증권 제38313회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38313회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "S&P500, HSCEI, KOSPI200",
+    "underVol": "S&P500 25.48%, HSCEI 26.53%, KOSPI200 37.96%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "35%",
+    "coupon": "연 11.1%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(S&P500, HSCEI, KOSPI200) 중 어느 하나라도 종가기준으로 각 최초기준가격의 35% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 70% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2003-01-02~2023-11-17 과거 데이터 4,847회) 기준 만기 손실 발생 비율은 0.35% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 익거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산에 非아시아 지역 거래자산 포함)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 1,000,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 9,797.91원 입니다 (액면 대비 -2.02%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 85,
+     "payRate": 105.55,
+     "annRate": 11.1,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 85,
+     "payRate": 111.1,
+     "annRate": 11.1,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 85,
+     "payRate": 116.65,
+     "annRate": 11.1,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 80,
+     "payRate": 122.2,
+     "annRate": 11.1,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 75,
+     "payRate": 127.75,
+     "annRate": 11.1,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 70,
+     "payRate": 133.3,
+     "annRate": 11.1,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 70,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "35",
+   "lizard": null,
+   "sim": {
+    "runs": 4847,
+    "loss": 0.35,
+    "first": 81.56,
+    "range": {
+     "from": "2003-01-02",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38314": {
+   "no": 38314,
+   "name": "미래에셋증권 제38314회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.312Z",
+   "fields": {
+    "name": "미래에셋증권 제38314회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38314회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "EuroStoxx50, KOSPI200, Nikkei225",
+    "underVol": "EuroStoxx50 23.14%, KOSPI200 37.96%, Nikkei225 29.1%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "없음 (노낙인)",
+    "coupon": "연 11.2%",
+    "maxLoss": "100%",
+    "lossExample": "이 상품은 낙인(원금손실 발생) 조건이 없어 투자기간 중 기초자산 가격이 얼마나 하락하더라도 그 자체로는 손실이 확정되지 않습니다. 다만 만기평가일에 모든 기초자산(EuroStoxx50, KOSPI200, Nikkei225) 중 어느 하나라도 만기평가가격이 각 최초기준가격의 60% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2003-01-06~2023-11-17 과거 데이터 4,829회) 기준 만기 손실 발생 비율은 0.31% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 익거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산에 非아시아 지역 거래자산 포함)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 1,000,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 9,571.13원 입니다 (액면 대비 -4.29%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 80,
+     "payRate": 105.6,
+     "annRate": 11.2,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 75,
+     "payRate": 111.2,
+     "annRate": 11.2,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 75,
+     "payRate": 116.8,
+     "annRate": 11.2,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 70,
+     "payRate": 122.4,
+     "annRate": 11.2,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 65,
+     "payRate": 128,
+     "annRate": 11.2,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 60,
+     "payRate": 133.6,
+     "annRate": 11.2,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 60,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "",
+   "lizard": null,
+   "sim": {
+    "runs": 4829,
+    "loss": 0.31,
+    "first": 93.56,
+    "range": {
+     "from": "2003-01-06",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "노낙인 — 만기 배리어 조항이 유일한 손실조건"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38315": {
+   "no": 38315,
+   "name": "미래에셋증권 제38315회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.312Z",
+   "fields": {
+    "name": "미래에셋증권 제38315회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38315회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "삼성전자, SK하이닉스",
+    "underVol": "삼성전자 48.34%, SK하이닉스 57.19%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "25%",
+    "coupon": "연 12.1%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(삼성전자, SK하이닉스) 중 어느 하나라도 종가기준으로 각 최초기준가격의 25% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 65% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2003-01-02~2023-11-17 과거 데이터 5,149회) 기준 만기 손실 발생 비율은 0.5% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산이 모두 아시아 지역 거래자산)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 1,000,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 9,449.77원 입니다 (액면 대비 -5.5%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 75,
+     "payRate": 106.05,
+     "annRate": 12.1,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 75,
+     "payRate": 112.1,
+     "annRate": 12.1,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 75,
+     "payRate": 118.15,
+     "annRate": 12.1,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 75,
+     "payRate": 124.2,
+     "annRate": 12.1,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 70,
+     "payRate": 130.25,
+     "annRate": 12.1,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 65,
+     "payRate": 136.3,
+     "annRate": 12.1,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 65,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "25",
+   "lizard": null,
+   "sim": {
+    "runs": 5149,
+    "loss": 0.5,
+    "first": 90.77,
+    "range": {
+     "from": "2003-01-02",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38316": {
+   "no": 38316,
+   "name": "미래에셋증권 제38316회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.312Z",
+   "fields": {
+    "name": "미래에셋증권 제38316회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38316회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "EuroStoxx50, S&P500, KOSPI200",
+    "underVol": "EuroStoxx50 23.14%, S&P500 25.48%, KOSPI200 37.96%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "40%",
+    "coupon": "연 12.6%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(EuroStoxx50, S&P500, KOSPI200) 중 어느 하나라도 종가기준으로 각 최초기준가격의 40% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 70% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2003-01-02~2023-11-17 과거 데이터 4,970회) 기준 만기 손실 발생 비율은 0% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 익거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산에 非아시아 지역 거래자산 포함)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 1,000,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 9,673.86원 입니다 (액면 대비 -3.26%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 85,
+     "payRate": 106.3,
+     "annRate": 12.6,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 85,
+     "payRate": 112.6,
+     "annRate": 12.6,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 80,
+     "payRate": 118.9,
+     "annRate": 12.6,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 80,
+     "payRate": 125.2,
+     "annRate": 12.6,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 75,
+     "payRate": 131.5,
+     "annRate": 12.6,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 70,
+     "payRate": 137.8,
+     "annRate": 12.6,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 70,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "40",
+   "lizard": null,
+   "sim": {
+    "runs": 4970,
+    "loss": 0,
+    "first": 90.26,
+    "range": {
+     "from": "2003-01-02",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38317": {
+   "no": 38317,
+   "name": "미래에셋증권 제38317회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.312Z",
+   "fields": {
+    "name": "미래에셋증권 제38317회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38317회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "S&P500, KOSPI200, Nikkei225",
+    "underVol": "S&P500 25.48%, KOSPI200 37.96%, Nikkei225 29.1%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "45%",
+    "coupon": "연 14.2%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(S&P500, KOSPI200, Nikkei225) 중 어느 하나라도 종가기준으로 각 최초기준가격의 45% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 70% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2003-01-06~2023-11-17 과거 데이터 4,739회) 기준 만기 손실 발생 비율은 1.69% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 익거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산에 非아시아 지역 거래자산 포함)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 1,000,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 9,496.46원 입니다 (액면 대비 -5.04%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 85,
+     "payRate": 107.1,
+     "annRate": 14.2,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 85,
+     "payRate": 114.2,
+     "annRate": 14.2,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 85,
+     "payRate": 121.3,
+     "annRate": 14.2,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 80,
+     "payRate": 128.4,
+     "annRate": 14.2,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 75,
+     "payRate": 135.5,
+     "annRate": 14.2,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 70,
+     "payRate": 142.6,
+     "annRate": 14.2,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 70,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "45",
+   "lizard": null,
+   "sim": {
+    "runs": 4739,
+    "loss": 1.69,
+    "first": 91.14,
+    "range": {
+     "from": "2003-01-06",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38318": {
+   "no": 38318,
+   "name": "미래에셋증권 제38318회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.312Z",
+   "fields": {
+    "name": "미래에셋증권 제38318회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38318회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "삼성전자, SK하이닉스",
+    "underVol": "삼성전자 48.34%, SK하이닉스 57.19%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "30%",
+    "coupon": "연 18%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(삼성전자, SK하이닉스) 중 어느 하나라도 종가기준으로 각 최초기준가격의 30% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 70% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2003-01-02~2023-11-17 과거 데이터 5,149회) 기준 만기 손실 발생 비율은 1.87% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산이 모두 아시아 지역 거래자산)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 1,000,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 9,295.19원 입니다 (액면 대비 -7.05%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 90,
+     "payRate": 109,
+     "annRate": 18,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 85,
+     "payRate": 118,
+     "annRate": 18,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 85,
+     "payRate": 127,
+     "annRate": 18,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 80,
+     "payRate": 136,
+     "annRate": 18,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 75,
+     "payRate": 145,
+     "annRate": 18,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 70,
+     "payRate": 154,
+     "annRate": 18,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 70,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "30",
+   "lizard": null,
+   "sim": {
+    "runs": 5149,
+    "loss": 1.87,
+    "first": 70.98,
+    "range": {
+     "from": "2003-01-02",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38319": {
+   "no": 38319,
+   "name": "미래에셋증권 제38319회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.312Z",
+   "fields": {
+    "name": "미래에셋증권 제38319회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38319회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "KOSPI200, SK하이닉스",
+    "underVol": "KOSPI200 37.96%, SK하이닉스 57.19%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "35%",
+    "coupon": "연 19.4%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(KOSPI200, SK하이닉스) 중 어느 하나라도 종가기준으로 각 최초기준가격의 35% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 70% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2003-01-02~2023-11-17 과거 데이터 5,152회) 기준 만기 손실 발생 비율은 1.27% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산이 모두 아시아 지역 거래자산)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 1,000,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 9,459.99원 입니다 (액면 대비 -5.4%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 85,
+     "payRate": 109.7,
+     "annRate": 19.4,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 85,
+     "payRate": 119.4,
+     "annRate": 19.4,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 85,
+     "payRate": 129.1,
+     "annRate": 19.4,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 80,
+     "payRate": 138.8,
+     "annRate": 19.4,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 75,
+     "payRate": 148.5,
+     "annRate": 19.4,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 70,
+     "payRate": 158.2,
+     "annRate": 19.4,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 70,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "35",
+   "lizard": null,
+   "sim": {
+    "runs": 5152,
+    "loss": 1.27,
+    "first": 80.2,
+    "range": {
+     "from": "2003-01-02",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38320": {
+   "no": 38320,
+   "name": "미래에셋증권 제38320회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.312Z",
+   "fields": {
+    "name": "미래에셋증권 제38320회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38320회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "삼성전자, SK하이닉스",
+    "underVol": "삼성전자 48.34%, SK하이닉스 57.19%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "35%",
+    "coupon": "연 21%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(삼성전자, SK하이닉스) 중 어느 하나라도 종가기준으로 각 최초기준가격의 35% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 70% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2003-01-02~2023-11-17 과거 데이터 5,149회) 기준 만기 손실 발생 비율은 0.46% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산이 모두 아시아 지역 거래자산)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 1,000,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 9,564.5원 입니다 (액면 대비 -4.35%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 3,
+     "barrier": 85,
+     "payRate": 105.25,
+     "annRate": 21,
+     "evalDate": "2027-03-05"
+    },
+    {
+     "seq": 2,
+     "months": 6,
+     "barrier": 85,
+     "payRate": 110.5,
+     "annRate": 21,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 3,
+     "months": 9,
+     "barrier": 85,
+     "payRate": 115.75,
+     "annRate": 21,
+     "evalDate": "2027-09-07"
+    },
+    {
+     "seq": 4,
+     "months": 12,
+     "barrier": 85,
+     "payRate": 121,
+     "annRate": 21,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 5,
+     "months": 15,
+     "barrier": 85,
+     "payRate": 126.25,
+     "annRate": 21,
+     "evalDate": "2028-03-07"
+    },
+    {
+     "seq": 6,
+     "months": 18,
+     "barrier": 85,
+     "payRate": 131.5,
+     "annRate": 21,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 7,
+     "months": 21,
+     "barrier": 80,
+     "payRate": 136.75,
+     "annRate": 21,
+     "evalDate": "2028-09-05"
+    },
+    {
+     "seq": 8,
+     "months": 24,
+     "barrier": 80,
+     "payRate": 142,
+     "annRate": 21,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 9,
+     "months": 27,
+     "barrier": 80,
+     "payRate": 147.25,
+     "annRate": 21,
+     "evalDate": "2029-03-06"
+    },
+    {
+     "seq": 10,
+     "months": 30,
+     "barrier": 75,
+     "payRate": 152.5,
+     "annRate": 21,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 11,
+     "months": 33,
+     "barrier": 75,
+     "payRate": 157.75,
+     "annRate": 21,
+     "evalDate": "2029-09-05"
+    },
+    {
+     "seq": 12,
+     "months": 36,
+     "barrier": 70,
+     "payRate": 163,
+     "annRate": 21,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 70,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "35",
+   "lizard": null,
+   "sim": {
+    "runs": 5149,
+    "loss": 0.46,
+    "first": 84.42,
+    "range": {
+     "from": "2003-01-02",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38321": {
+   "no": 38321,
+   "name": "미래에셋증권 제38321회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.312Z",
+   "fields": {
+    "name": "미래에셋증권 제38321회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38321회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "2",
+    "riskLabel": "높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "S&P500, HSCEI, Nikkei225",
+    "underVol": "S&P500 25.48%, HSCEI 26.53%, Nikkei225 29.1%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "45%",
+    "coupon": "연 11.3%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(S&P500, HSCEI, Nikkei225) 중 어느 하나라도 종가기준으로 각 최초기준가격의 45% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 65% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2003-01-06~2023-11-17 과거 데이터 4,714회) 기준 만기 손실 발생 비율은 4.12% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 익거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산에 非아시아 지역 거래자산 포함)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 100,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급·2등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 9,574.02원 입니다 (액면 대비 -4.26%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 90,
+     "payRate": 105.65,
+     "annRate": 11.3,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 85,
+     "payRate": 111.3,
+     "annRate": 11.3,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 80,
+     "payRate": 116.95,
+     "annRate": 11.3,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 75,
+     "payRate": 122.6,
+     "annRate": 11.3,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 70,
+     "payRate": 128.25,
+     "annRate": 11.3,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 65,
+     "payRate": 133.9,
+     "annRate": 11.3,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 65,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "45",
+   "lizard": null,
+   "sim": {
+    "runs": 4714,
+    "loss": 4.12,
+    "first": 69.28,
+    "range": {
+     "from": "2003-01-06",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1,
+     2
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38322": {
+   "no": 38322,
+   "name": "미래에셋증권 제38322회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.312Z",
+   "fields": {
+    "name": "미래에셋증권 제38322회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38322회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "삼성전자, SK하이닉스",
+    "underVol": "삼성전자 48.34%, SK하이닉스 57.19%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "35%",
+    "coupon": "연 18.2%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(삼성전자, SK하이닉스) 중 어느 하나라도 종가기준으로 각 최초기준가격의 35% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 65% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2003-01-02~2023-11-17 과거 데이터 5,149회) 기준 만기 손실 발생 비율은 0.5% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산이 모두 아시아 지역 거래자산)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 100,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 9,515.67원 입니다 (액면 대비 -4.84%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 75,
+     "payRate": 109.1,
+     "annRate": 18.2,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 75,
+     "payRate": 118.2,
+     "annRate": 18.2,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 75,
+     "payRate": 127.3,
+     "annRate": 18.2,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 75,
+     "payRate": 136.4,
+     "annRate": 18.2,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 70,
+     "payRate": 145.5,
+     "annRate": 18.2,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 65,
+     "payRate": 154.6,
+     "annRate": 18.2,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 65,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "35",
+   "lizard": null,
+   "sim": {
+    "runs": 5149,
+    "loss": 0.5,
+    "first": 90.77,
+    "range": {
+     "from": "2003-01-02",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38323": {
+   "no": 38323,
+   "name": "미래에셋증권 제38323회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.312Z",
+   "fields": {
+    "name": "미래에셋증권 제38323회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38323회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "삼성전자, SK하이닉스",
+    "underVol": "삼성전자 48.34%, SK하이닉스 57.19%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "40%",
+    "coupon": "연 22.2%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(삼성전자, SK하이닉스) 중 어느 하나라도 종가기준으로 각 최초기준가격의 40% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 70% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2003-01-02~2023-11-17 과거 데이터 5,149회) 기준 만기 손실 발생 비율은 0.97% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산이 모두 아시아 지역 거래자산)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 100,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 9,462.72원 입니다 (액면 대비 -5.37%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 80,
+     "payRate": 111.1,
+     "annRate": 22.2,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 80,
+     "payRate": 122.2,
+     "annRate": 22.2,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 80,
+     "payRate": 133.3,
+     "annRate": 22.2,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 80,
+     "payRate": 144.4,
+     "annRate": 22.2,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 75,
+     "payRate": 155.5,
+     "annRate": 22.2,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 70,
+     "payRate": 166.6,
+     "annRate": 22.2,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 70,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "40",
+   "lizard": null,
+   "sim": {
+    "runs": 5149,
+    "loss": 0.97,
+    "first": 85.1,
+    "range": {
+     "from": "2003-01-02",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38324": {
+   "no": 38324,
+   "name": "미래에셋증권 제38324회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.312Z",
+   "fields": {
+    "name": "미래에셋증권 제38324회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38324회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "팔란티어 테크",
+    "underVol": "팔란티어 테크 67.42%, AMD 91.19%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "25%",
+    "coupon": "연 20%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(팔란티어 테크) 중 어느 하나라도 종가기준으로 각 최초기준가격의 25% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 70% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2020-09-30~2023-11-17 과거 데이터 789회) 기준 만기 손실 발생 비율은 1.89% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 익거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산에 非아시아 지역 거래자산 포함)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 100,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 7,070.39원 입니다 (액면 대비 -29.3%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 75,
+     "payRate": 110,
+     "annRate": 20,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 75,
+     "payRate": 120,
+     "annRate": 20,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 75,
+     "payRate": 130,
+     "annRate": 20,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 75,
+     "payRate": 140,
+     "annRate": 20,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 70,
+     "payRate": 150,
+     "annRate": 20,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 70,
+     "payRate": 160,
+     "annRate": 20,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 70,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "25",
+   "lizard": null,
+   "sim": {
+    "runs": 789,
+    "loss": 1.89,
+    "first": 65.78,
+    "range": {
+     "from": "2020-09-30",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38325": {
+   "no": 38325,
+   "name": "미래에셋증권 제38325회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.312Z",
+   "fields": {
+    "name": "미래에셋증권 제38325회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38325회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "브로드컴",
+    "underVol": "브로드컴 60.69%, AMD 91.19%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "35%",
+    "coupon": "연 24.8%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(브로드컴) 중 어느 하나라도 종가기준으로 각 최초기준가격의 35% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 70% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2009-08-06~2023-11-17 과거 데이터 3,595회) 기준 만기 손실 발생 비율은 3.36% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 익거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산에 非아시아 지역 거래자산 포함)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 100,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 8,062.08원 입니다 (액면 대비 -19.38%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 75,
+     "payRate": 112.4,
+     "annRate": 24.8,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 75,
+     "payRate": 124.8,
+     "annRate": 24.8,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 75,
+     "payRate": 137.2,
+     "annRate": 24.8,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 75,
+     "payRate": 149.6,
+     "annRate": 24.8,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 70,
+     "payRate": 162,
+     "annRate": 24.8,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 70,
+     "payRate": 174.4,
+     "annRate": 24.8,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 70,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "35",
+   "lizard": null,
+   "sim": {
+    "runs": 3595,
+    "loss": 3.36,
+    "first": 82.56,
+    "range": {
+     "from": "2009-08-06",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38326": {
+   "no": 38326,
+   "name": "미래에셋증권 제38326회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.312Z",
+   "fields": {
+    "name": "미래에셋증권 제38326회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38326회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "마이크론 테크놀로지, 테슬라",
+    "underVol": "마이크론 테크놀로지 99.92%, 테슬라 58.52%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "35%",
+    "coupon": "연 29%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(마이크론 테크놀로지, 테슬라) 중 어느 하나라도 종가기준으로 각 최초기준가격의 35% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 70% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2010-06-29~2023-11-17 과거 데이터 3,372회) 기준 만기 손실 발생 비율은 0.24% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 익거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산에 非아시아 지역 거래자산 포함)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 100,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 7,524.32원 입니다 (액면 대비 -24.76%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 80,
+     "payRate": 114.5,
+     "annRate": 29,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 80,
+     "payRate": 129,
+     "annRate": 29,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 75,
+     "payRate": 143.5,
+     "annRate": 29,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 75,
+     "payRate": 158,
+     "annRate": 29,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 70,
+     "payRate": 172.5,
+     "annRate": 29,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 70,
+     "payRate": 187,
+     "annRate": 29,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 70,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "35",
+   "lizard": null,
+   "sim": {
+    "runs": 3372,
+    "loss": 0.24,
+    "first": 70.88,
+    "range": {
+     "from": "2010-06-29",
+     "to": "2023-11-17"
+    }
+   },
+   "derivedFrom": {
+    "months": "차수별 평가일과 발행일의 차이로 계산",
+    "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
+    "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
+    "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
+    "lossExample": "낙인 배리어 + 만기 배리어 조항"
+   },
+   "targetMarket": {
+    "grades": [
+     1
+    ],
+    "appetite": {
+     "name": "위험선호형",
+     "profile": "성장형·성장추구형",
+     "grades": "1,2,3등급"
+    }
+   }
+  },
+  "38327": {
+   "no": 38327,
+   "name": "미래에셋증권 제38327회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+   "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000954",
+   "rcpNo": "20261127000954",
+   "docDate": "2026-11-27",
+   "collectedAt": "2026-11-27T05:12:31.312Z",
+   "fields": {
+    "name": "미래에셋증권 제38327회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+    "issuer": "미래에셋증권",
+    "round": "제38327회",
+    "kind": "ELS",
+    "highDiff": "해당 (고난도 금융투자상품)",
+    "riskGrade": "1",
+    "riskLabel": "매우높은위험",
+    "riskReason": "최대 원금손실가능금액 20% 초과형",
+    "under": "마이크론 테크놀로지, 팔란티어 테크",
+    "underVol": "마이크론 테크놀로지 99.92%, 팔란티어 테크 67.42%",
+    "issueDate": "2026년 12월 10일",
+    "matDate": "2029년 12월 10일",
+    "matTerm": "3년",
+    "fixMethod": "최초기준가격평가일의 각 기초자산 종가",
+    "fixDate": "2026년 12월 10일",
+    "knockIn": "30%",
+    "coupon": "연 32.3%",
+    "maxLoss": "100%",
+    "lossExample": "만기평가일에 모든 기초자산(마이크론 테크놀로지, 팔란티어 테크) 중 어느 하나라도 종가기준으로 각 최초기준가격의 30% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 70% 미만인 경우, 하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.\n발행사 수익률 모의실험(2020-09-30~2023-11-17 과거 데이터 790회) 기준 만기 손실 발생 비율은 2.53% 입니다.",
+    "midPeriod": "발행일 익 영업일부터 중도상환 신청 불가능일을 제외한 모든 영업일(단, 조기/만기 상환평가 확정시 중도상환 신청 불가)",
+    "midPriceDate": "중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 익거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산에 非아시아 지역 거래자산 포함)",
+    "midAmt6": "공정가액(기준가)의 90% 이상",
+    "midAmtAfter": "공정가액(기준가)의 95% 이상",
+    "subUnit": "최소 100,000원",
+    "riskGradeNote": "위험선호형(투자성향 성장형·성장추구형, 상품위험등급 1,2,3등급) 투자자를 목표시장으로 하는 상품으로서, 원금 대비 100% 손실 감내가 가능하고 투자에 대한 지식과 경험이 중간·높음 수준이며 투자기간을 1년 이상 ~ 3년 이하로 고려하는 투자자에게 적합한 상품입니다. 이 회차의 목표시장은 위험등급 6단계 중 1등급에 해당하는 고객입니다. 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.",
+    "offerEnd": "2026년 12월 9일",
+    "docDate": "2026년 11월 27일",
+    "coolNote": "이 회차의 숙려기간은 2026년 12월 7일 ~ 2026년 12월 8일 이며, 가입의사 확인은 2026년 12월 09일 오후 5시까지 입니다. 숙려제도 대상(개인 일반투자자) 청약종료일은 2026년 12월 4일 로, 일반 청약종료일(2026년 12월 9일)보다 앞섭니다.",
+    "fairValueNote": "2026년 11월 23일 기준 이 증권의 공정가격은 액면 10,000원 당 6,563.16원 입니다 (액면 대비 -34.37%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
+   },
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 6,
+     "barrier": 85,
+     "payRate": 116.15,
+     "annRate": 32.3,
+     "evalDate": "2027-06-07"
+    },
+    {
+     "seq": 2,
+     "months": 12,
+     "barrier": 85,
+     "payRate": 132.3,
+     "annRate": 32.3,
+     "evalDate": "2027-12-07"
+    },
+    {
+     "seq": 3,
+     "months": 18,
+     "barrier": 85,
+     "payRate": 148.45,
+     "annRate": 32.3,
+     "evalDate": "2028-06-05"
+    },
+    {
+     "seq": 4,
+     "months": 24,
+     "barrier": 80,
+     "payRate": 164.6,
+     "annRate": 32.3,
+     "evalDate": "2028-12-05"
+    },
+    {
+     "seq": 5,
+     "months": 30,
+     "barrier": 75,
+     "payRate": 180.75,
+     "annRate": 32.3,
+     "evalDate": "2029-06-04"
+    },
+    {
+     "seq": 6,
+     "months": 36,
+     "barrier": 70,
+     "payRate": 196.9,
+     "annRate": 32.3,
+     "evalDate": "2029-12-05",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 70,
+   "instrument": "파생결합증권",
+   "principalProtected": false,
+   "monthlyIncome": null,
+   "knockIn": "30",
+   "lizard": null,
+   "sim": {
+    "runs": 790,
+    "loss": 2.53,
+    "first": 53.92,
+    "range": {
+     "from": "2020-09-30",
+     "to": "2023-11-17"
     }
    },
    "derivedFrom": {
