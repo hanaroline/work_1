@@ -544,6 +544,28 @@ export async function analyze(rcpNo) {
    * 수익률 1등이 방어 자리에 먼저 올라가면 "이번 회차에서 가장 큽니다" 가 거짓이 된다
    * — 2026-10-13 제38195회(1.04%)를 그렇게 적었는데, 1등은 1번 자리 제38194회(1.06%)였다.
    */
+  /**
+   * 방어 자리도 같다. 원화이면서 값어치가 멀쩡한 상품 안에서 고르므로, 전체 최저가
+   * 그 밖에 있으면 "이번 회차에서 가장 낮습니다" 가 거짓이 된다 — 2026-11-27 달러
+   * 제38310회(9.1%)를 두고 제38312회(12.8%)를 "18종 중 가장 낮습니다" 라 적었다.
+   * 그때는 범위를 밝히고, 더 낮은 상품과 빠진 이유를 함께 적는다.
+   */
+  const lowSlot = slots.find((s) => s.label === '원금을 지키는 게 먼저인 분');
+  if (lowSlot) {
+    const p = lowSlot.pick;
+    const lower = items.filter((i) => i.mcLoss != null && +i.mcLoss.toFixed(1) < +p.mcLoss.toFixed(1));
+    if (lower.length) {
+      const fx = lower.some((i) => !krw(i));
+      const cut = lower.some((i) => krw(i));
+      lowSlot.scope = fx && cut ? '원화이면서 값어치가 멀쩡한 상품 중' : fx ? '원화 상품 중' : '값어치가 멀쩡한 상품 중';
+      const whyOut = (i) => !krw(i) ? `${UNIT[i.currency] ?? i.currency} 상품`
+        : (i.fairValueGap ?? 0) <= -5 ? '값어치가 깎인 상품' : '검증 표본이 짧은 상품';
+      lowSlot.lower = lower.sort((a, b) => a.mcLoss - b.mcLoss)
+        .map((i) => `${whyOut(i)} 제${i.no}회(${i.mcLoss.toFixed(1)}%)`).join(', ');
+      lowSlot.why = `${lowSlot.scope}에서 컴퓨터로 돌려봤을 때 손해 볼 가능성이 가장 낮습니다. 이보다 낮은 것은 ${lowSlot.lower}입니다.`;
+    }
+  }
+
   const midSlot = slots.find((s) => s.label === '수익과 안정을 반반 보는 분');
   if (midSlot) {
     const p = midSlot.pick;

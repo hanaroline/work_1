@@ -146,7 +146,14 @@ const cauShort = A.caution.filter((c) => c.simShort);
 const safest = A.safest[0];                                   // 손실 확률 최저
 // 스크립트에서 "그래도 부담스러우면 이걸 보시죠" 로 내미는 대안. 지금 이야기하는
 // 상품 자신을 다시 권하지 않도록 추천 1순위는 빼고 고른다.
-const safeAlt = A.safest.find((i) => i.no !== A.slots[0]?.pick?.no) || A.safest[0];
+// "그다음으로 낮은" 대안은 추천 1번보다 손실 확률이 **높은** 쪽에서 고른다. 예전에는 추천 1번만
+// 빼고 맨 앞을 집어, 1번이 원화 안에서 고른 것일 때 그보다 낮은 달러 상품을 "그다음" 이라 적었다
+// (2026-11-27 제38310회 9.1% < 제38312회 12.8%). 권할 대안이므로 원화·값어치 멀쩡한 것만 본다.
+const R0 = A.slots[0]?.pick;
+const okAlt = (i) => i.currency === 'KRW' && (i.fairValueGap ?? 0) > -5 && !i.simShort;
+const after = R0 ? A.safest.filter((i) => i.no !== R0.no && +i.mcLoss.toFixed(1) > +R0.mcLoss.toFixed(1)) : A.safest;
+const safeAlt = after.find(okAlt) || after[0] || A.safest[0];
+const altScope = after[0] && safeAlt !== after[0] ? '원화이면서 값어치가 멀쩡한 상품 중 ' : '';
 const topRate = [...A.items].sort((a, b) => b.annualRate - a.annualRate)[0];
 // 대안으로 내밀 상품 — 주의 종목을 뺀 나머지 중 수익률 1위. topRate 는 주의
 // 종목과 겹치는 주가 있어서(제38151회) 스크립트의 "대신 이걸 보시죠" 자리에
@@ -215,7 +222,9 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
   // 결론 3줄 — 흰 카드
   const lines = [
     ['추천 1순위', `제${best.no}회 ${best.underlyings.join('·')}${onl(best)}`,
-      `연 ${f1(best.annualRate, 1)}% · 손실 확률 ${f1(best.mcLoss)}%로 ${A.items.length}종 중 가장 낮습니다`
+      // 방어 자리는 원화·값어치 멀쩡한 상품 안에서 고른다. 전체 최저가 그 밖이면 범위를 밝힌다(2026-11-27).
+      `연 ${f1(best.annualRate, 1)}% · 손실 확률 ${f1(best.mcLoss)}%로 `
+      + (A.slots[0]?.scope ? `${A.slots[0].scope} 가장 낮습니다 — 더 낮은 건 ${A.slots[0].lower}` : `${A.items.length}종 중 가장 낮습니다`)
       + (bestPerRisk.no === best.no ? ` (위험 1%당 연 ${f1(perRisk(best), 2)}% 로도 1위)` : ''), ORANGE],
     // 최고 수익률 회차가 주의 종목과 겹치는 주가 있다. 그때 이 줄을 추천처럼 두면
     // 표지가 6장과 정면으로 어긋난다 — "제일 높은 게 뭐냐" 는 질문에는 답하되,
@@ -811,7 +820,7 @@ const perRisk = perRiskOf;   // 정의는 분석층 한 곳에만 둔다
     ['“3년이나 묶이는 거 아닌가요.”',
       `3년은 최장 기간이고 대부분 훨씬 일찍 끝납니다. 제${R.no}회는 ${R.every}개월마다 ${R.steps}번 상환 기회가 있고, 첫 회에 끝난 경우가 백테스트 ${f1(R.simFirst)}%였습니다. 중도상환도 가능합니다만 그때는 원금 손실이 날 수 있어서, 3년 쓸 일 없는 돈으로만 하셔야 합니다.`],
     ['“지금이 고점 아닌가요.”',
-      `고점인지 아닌지는 저도 모릅니다. 다만 이 상품은 오르면 버는 구조가 아니라 크게 안 떨어지면 버는 구조입니다. 제${R.no}회는 ${R.barriers[0]}% 배리어라 기초자산이 ${100 - R.barriers[0]}% 떨어져도 첫 회에 상환됩니다. 그래도 부담스러우시면 손실 확률이 그다음으로 낮은 제${safeAlt.no}회(${f1(safeAlt.mcLoss)}%, 연 ${f1(safeAlt.annualRate, 1)}%)를 보시죠.`],
+      `고점인지 아닌지는 저도 모릅니다. 다만 이 상품은 오르면 버는 구조가 아니라 크게 안 떨어지면 버는 구조입니다. 제${R.no}회는 ${R.barriers[0]}% 배리어라 기초자산이 ${100 - R.barriers[0]}% 떨어져도 첫 회에 상환됩니다. 그래도 부담스러우시면 ${altScope}손실 확률이 그다음으로 낮은 제${safeAlt.no}회(${f1(safeAlt.mcLoss)}%, 연 ${f1(safeAlt.annualRate, 1)}%)를 보시죠.`],
     /**
      * "제일 높은 것" 은 **실제 수익률 1위(topRate)** 를 가리켜야 한다.
      *
