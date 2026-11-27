@@ -1,9 +1,9 @@
 {
- "builtAt": "2026-11-25 16:45 KST",
- "builtAtUtc": "2026-11-25T07:45:25Z",
+ "builtAt": "2026-11-28 08:46 KST",
+ "builtAtUtc": "2026-11-27T23:46:03Z",
  "window": {
-  "from": "2026-10-11",
-  "to": "2028-04-08"
+  "from": "2026-10-13",
+  "to": "2028-04-10"
  },
  "note": "증시 일정 캘린더. confirmed 는 official(공식 확인) · websearch(검색 교차 확인) · tentative(기관이 잠정으로 공표) · estimate(제공사 추정 구간) · rule(규칙으로 만든 날짜) 다. 확정이 아닌 것은 화면에서 배지로 구분한다.",
  "confirmed_legend": {
@@ -22,19 +22,19 @@
  },
  "counts": {
   "policy": 60,
-  "indicator": 166,
+  "indicator": 167,
   "earnings": 266,
   "conference": 9,
   "supply": 36,
-  "holiday": 90,
+  "holiday": 89,
   "other": 2,
   "total": 629,
   "confirmed": {
-   "official": 405,
+   "official": 404,
    "websearch": 12,
    "tentative": 0,
    "estimate": 0,
-   "rule": 212
+   "rule": 213
   }
  },
  "sources": {
@@ -78,10 +78,10 @@
  "context": {
   "policy_rate_us": {
    "effr_pct": 3.88,
-   "date": "2026-11-23",
+   "date": "2026-11-25",
    "percentile_1": 3.85,
    "percentile_99": 3.95,
-   "volume_bn_usd": 87,
+   "volume_bn_usd": 84,
    "note": "실효 연방기금금리. 하루 지연 공표라 시세일보다 하루 이르다",
    "source_url": "https://markets.newyorkfed.org/api/rates/unsecured/effr",
    "perf": {
@@ -92,32 +92,32 @@
     "y1": 0.0,
     "ytd": 24.0,
     "unit": "bp",
-    "from": "2025-04-21"
+    "from": "2025-04-23"
    },
    "series_days": 400
   },
   "fed_implied": {
-   "contract_price": 95.71,
-   "implied_rate_pct": 4.29,
-   "quote_date": "2026-11-25",
+   "contract_price": 95.855,
+   "implied_rate_pct": 4.145,
+   "quote_date": "2026-11-27",
    "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 — 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
    "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
    "effr_pct": 3.88,
-   "vs_effr_bp": 41,
+   "vs_effr_bp": 26,
    "perf": {
-    "w1": 41.3,
-    "m1": 40.4,
-    "m3": 65.5,
-    "m6": 66.5,
-    "y1": 41.3,
-    "ytd": 56.8,
+    "w1": 26.9,
+    "m1": 26.0,
+    "m3": 51.1,
+    "m6": 52.0,
+    "y1": 26.9,
+    "ytd": 42.4,
     "unit": "bp",
     "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
    }
   },
   "rates_kr": {
-   "call": 3.096,
-   "cd91": 3.39,
+   "call": 3.321,
+   "cd91": 3.4,
    "cofix_new": 3.62,
    "cofix_balance": 3.26,
    "cofix_new_balance": 2.93,
@@ -131,49 +131,49 @@
     "COFIX 신잔액"
    ],
    "ktb10y_errors": [
-    "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(94779 bytes)",
+    "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(100424 bytes)",
     "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
    ],
-   "ktb1y": 3.635,
-   "ktb5y": 3.708,
-   "ktb10y": 3.819,
+   "ktb1y": 3.677,
+   "ktb5y": 3.734,
+   "ktb10y": 3.832,
    "perf": {
     "ktb1y": {
-     "w1": 0.0,
-     "m1": -3.3,
-     "m3": 22.6,
+     "w1": 5.7,
+     "m1": 5.5,
+     "m3": 27.8,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb5y": {
-     "w1": -13.1,
-     "m1": -24.0,
-     "m3": -33.1,
+     "w1": 0.6,
+     "m1": -16.5,
+     "m3": -24.0,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb10y": {
-     "w1": -15.6,
-     "m1": -27.8,
-     "m3": -50.1,
+     "w1": -2.5,
+     "m1": -20.0,
+     "m3": -40.6,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "cd91": {
-     "w1": 1.0,
-     "m1": 13.0,
-     "m3": 44.0,
+     "w1": 2.0,
+     "m1": 14.0,
+     "m3": 28.0,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "call": {
-     "w1": 3.1,
-     "m1": 6.4,
-     "m3": 33.6,
+     "w1": 24.7,
+     "m1": 26.6,
+     "m3": 55.1,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
@@ -196,7 +196,7 @@
     }
    }
   },
-  "asof_kst": "2026-11-25 13:51:22"
+  "asof_kst": "2026-11-28 07:42:54"
  },
  "holidays": [
   {
@@ -2707,7 +2707,7 @@
    "calendar_url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
    "rule_note_en": "Usually in the second week of the month, 08:30 ET",
    "why_en": "The single biggest mover of the expected policy path; core month-on-month is what matters",
-   "fetched_at": "2026-11-25"
+   "fetched_at": "2026-11-27"
   },
   {
    "id": "us-empsit",
@@ -2824,7 +2824,7 @@
    "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
    "rule_note_en": "Usually in the same week as CPI, 08:30 ET",
    "why_en": "Price pressure one stage before it reaches CPI",
-   "fetched_at": "2026-11-25"
+   "fetched_at": "2026-11-27"
   },
   {
    "id": "us-claims",
@@ -3087,7 +3087,7 @@
    "source_en": "Federal Reserve — FOMC meeting calendars",
    "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local",
    "meetings_per_year": 8,
-   "fetched_at": "2026-11-25"
+   "fetched_at": "2026-11-27"
   },
   {
    "key": "bok",
@@ -3126,7 +3126,7 @@
    "source_en": "ECB — Meetings of the Governing Council and the General Council",
    "projections_note_en": "ECB staff macroeconomic projections accompany the March, June, September and December meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-11-25"
+   "fetched_at": "2026-11-27"
   },
   {
    "key": "boj",
@@ -3144,7 +3144,7 @@
    "source_en": "Bank of Japan — Monetary Policy Meetings",
    "projections_note_en": "The quarterly Outlook Report accompanies the January, April, July and October meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-11-25"
+   "fetched_at": "2026-11-27"
   },
   {
    "key": "boe",
@@ -3162,7 +3162,7 @@
    "source_en": "Bank of England — Upcoming MPC dates",
    "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-11-25"
+   "fetched_at": "2026-11-27"
   },
   {
    "key": "pboc",
@@ -3566,32 +3566,6 @@
   }
  ],
  "events": [
-  {
-   "id": "holiday-jp-2026-10-12",
-   "date": "2026-10-12",
-   "end_date": null,
-   "country": "jp",
-   "category": "holiday",
-   "importance": 2,
-   "title_ko": "일본 (도쿄) 스포츠의 날 — 종일 휴장",
-   "title_en": "Japan (TSE) Sports Day — full",
-   "org": "일본 (도쿄)",
-   "org_en": "Japan (TSE)",
-   "detail_ko": null,
-   "detail_en": null,
-   "time_local": null,
-   "tz": null,
-   "time_kst": null,
-   "url": "https://english.sse.com.cn/start/trading/schedule/",
-   "source": "data/market/holidays.json",
-   "source_en": "data/market/holidays.json",
-   "confirmed": "official",
-   "tags": [
-    "holiday",
-    "jp",
-    "full"
-   ]
-  },
   {
    "id": "indicator-us-cpi-2026-10-14",
    "date": "2026-10-14",
@@ -5242,84 +5216,6 @@
    ]
   },
   {
-   "id": "earnings-DELL-2026-11-24",
-   "date": "2026-11-24",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "델테크놀로지스 실적발표",
-   "title_en": "Dell Technologies earnings",
-   "org": "DELL",
-   "org_en": "DELL",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/DELL",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "DELL"
-   ]
-  },
-  {
-   "id": "earnings-MDT-2026-11-24",
-   "date": "2026-11-24",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "메드트로닉 실적발표",
-   "title_en": "Medtronic earnings",
-   "org": "MDT",
-   "org_en": "MDT",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/MDT",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "MDT"
-   ]
-  },
-  {
-   "id": "earnings-ADI-2026-11-24",
-   "date": "2026-11-24",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "아날로그디바이스 실적발표",
-   "title_en": "Analog Devices earnings",
-   "org": "ADI",
-   "org_en": "ADI",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "http://investor.analog.com/",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "ADI"
-   ]
-  },
-  {
    "id": "indicator-eu-pmi-2026-11-24",
    "date": "2026-11-24",
    "end_date": null,
@@ -5342,32 +5238,6 @@
    "tags": [
     "indicator",
     "eu-pmi"
-   ]
-  },
-  {
-   "id": "earnings-DE-2026-11-25",
-   "date": "2026-11-25",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "디어 실적발표",
-   "title_en": "Deere & Co. earnings",
-   "org": "DE",
-   "org_en": "DE",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "http://phx.corporate-ir.net/phoenix.zhtml?c=83523&p=irol-stockquote",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "DE"
    ]
   },
   {
@@ -13872,6 +13742,32 @@
    ]
   },
   {
+   "id": "earnings-DE-2027-02-11",
+   "date": "2027-02-11",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "디어 실적발표",
+   "title_en": "Deere & Co. earnings",
+   "org": "DE",
+   "org_en": "DE",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "http://phx.corporate-ir.net/phoenix.zhtml?c=83523&p=irol-stockquote",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "DE"
+   ]
+  },
+  {
    "id": "earnings-DLR-2027-02-11",
    "date": "2027-02-11",
    "end_date": null,
@@ -14388,6 +14284,32 @@
    ]
   },
   {
+   "id": "earnings-ADI-2027-02-17",
+   "date": "2027-02-17",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "아날로그디바이스 실적발표",
+   "title_en": "Analog Devices earnings",
+   "org": "ADI",
+   "org_en": "ADI",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "http://investor.analog.com/",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "ADI"
+   ]
+  },
+  {
    "id": "earnings-CVNA-2027-02-17",
    "date": "2027-02-17",
    "end_date": null,
@@ -14826,6 +14748,32 @@
    ]
   },
   {
+   "id": "earnings-MDT-2027-02-23",
+   "date": "2027-02-23",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "메드트로닉 실적발표",
+   "title_en": "Medtronic earnings",
+   "org": "MDT",
+   "org_en": "MDT",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/MDT",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "MDT"
+   ]
+  },
+  {
    "id": "earnings-AMT-2027-02-23",
    "date": "2027-02-23",
    "end_date": null,
@@ -14901,6 +14849,32 @@
     "earnings",
     "us",
     "HD"
+   ]
+  },
+  {
+   "id": "earnings-DELL-2027-02-25",
+   "date": "2027-02-25",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "델테크놀로지스 실적발표",
+   "title_en": "Dell Technologies earnings",
+   "org": "DELL",
+   "org_en": "DELL",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/DELL",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "DELL"
    ]
   },
   {
@@ -17500,6 +17474,31 @@
    "tags": [
     "fed",
     "beige-book"
+   ]
+  },
+  {
+   "id": "indicator-jp-cpi-2027-05-26",
+   "date": "2027-05-26",
+   "end_date": null,
+   "country": "jp",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "일본 전국 소비자물가",
+   "title_en": "Japan National CPI",
+   "org": "총무성 통계국",
+   "org_en": "Statistics Bureau of Japan",
+   "detail_ko": "통상 매월 하순 08:30",
+   "detail_en": "Usually late in the month, 08:30",
+   "time_local": "08:30",
+   "tz": "Asia/Tokyo",
+   "time_kst": "2027-05-26 08:30",
+   "url": "https://www.stat.go.jp/english/data/cpi/index.html",
+   "source": "총무성 통계국",
+   "source_en": "Statistics Bureau of Japan",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "jp-cpi"
    ]
   },
   {
