@@ -737,7 +737,7 @@ function defence(it) {
   s.addShape(pres.ShapeType.rect, { x: M, y: y0 + 3.76, w: CW, h: 0.88, fill: { color: SURF }, line: { color: HAIR, width: 1 } });
   s.addText([
     { text: '거르는 기준  ', options: { bold: true, color: INK } },
-    { text: `① 컴퓨터로 돌린 손해 볼 가능성이 25%를 넘거나  ② ${baseOf(A.head)}을 넣는 순간의 값어치가 제값보다 10% 넘게 깎였거나  ③ 회사가 과거로 돌려본 기간이 10년에 못 미쳐 다른 상품과 비교할 수 없는 경우. 셋 중 하나라도 걸리면 이 자리로 내립니다. 수익률이 높아 먼저 눈에 띄는 상품들이라, 상담 전에 걸러두는 편이 낫습니다.` },
+    { text: `① 컴퓨터로 돌린 손해 볼 가능성이 25%를 넘거나  ② 액면 1만 단위를 넣는 순간의 값어치가 제값보다 10% 넘게 깎였거나  ③ 회사가 과거로 돌려본 기간이 10년에 못 미쳐 다른 상품과 비교할 수 없는 경우. 셋 중 하나라도 걸리면 이 자리로 내립니다. 수익률이 높아 먼저 눈에 띄는 상품들이라, 상담 전에 걸러두는 편이 낫습니다.` },
   ], { x: M + 0.22, y: y0 + 3.76, w: CW - 0.44, h: 0.88, fontFace: F, fontSize: 11.5, color: BODY, valign: 'middle', lineSpacing: 16, margin: 0 });
 }
 
@@ -747,7 +747,8 @@ function defence(it) {
   const chk = [
     ...(A.plan.hasCooling ? [[`청약 마감은 ${dayLabel(A.plan.retailEnd)}입니다`,
       `홈페이지에는 ${dot(A.plan.start)}~${dot(A.plan.end)}로 나오지만 개인 일반투자자는 ${dayLabel(A.plan.retailEnd)}까지만 청약할 수 있습니다. ${A.plan.othersShort || '이후는 숙려·가입의사확인 기간이라 주문을 받을 수 없습니다.'}`]] : []),
-    [`${baseOf(A.head)}을 넣어도 ${baseOf(A.head)}어치가 아닙니다`,
+    // 표제 단위는 값어치를 견주는 상품(gapBest) 통화로 — A.head 가 달러 상품이면 "1만 달러을" 이 됐다(2026-11-27)
+    [`${baseOf(A.gapBest)}${josa(baseOf(A.gapBest), '을', '를')} 넣어도 ${baseOf(A.gapBest)}어치가 아닙니다`,
       `넣는 순간의 실제 값어치가 ${money(A.gapBest, A.gapBest.fairValue / 100)}부터 ${money(A.gapWorst, A.gapWorst.fairValue / 100)}까지 벌어집니다. 차액은 회사 몫과 비용이고, 이마저도 앞으로 들 비용을 이미 뺀 값입니다.`],
     ['중간에 빼면 손해입니다',
       `만기 전에 빼시면 원금이 아니라 그날 계산한 값어치의 95%(가입 6개월 안이면 90%)만 받습니다. ${A.head.months}개월 동안 안 쓸 돈으로만 하셔야 합니다.`],
