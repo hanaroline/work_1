@@ -700,7 +700,9 @@ function defence(it) {
     if ((it.fairValueGap ?? 0) <= -10) r.push(`${baseOf(it)}${josa(baseOf(it), '을', '를')} 넣는 순간의 실제 값어치가 ${money(it, it.fairValue / 100)}밖에 안 됨`);
     // 칸이 좁다. 길게 적으면 네 줄로 꺾여 카드 밖으로 넘친다(2026-10-02, 13장).
     if (it.simShort) r.push(`회사가 돌려본 기간이 ${f1(it.simYears)}년(${it.simRuns?.toLocaleString('ko-KR')}번)뿐 — 큰 폭락장이 빠져 손실 ${f1(it.simLoss, 2)}%를 20년 상품과 견줄 수 없음`);
-    if (it.vmax >= 90) r.push(`가격 출렁임 ${f1(it.vmax, 0)}% — 이번 주에서 가장 심한 축`);
+    // "가장 심한" 은 실제 1위일 때만(2026-11-27)
+    const vTop = Math.max(...A.items.map((i) => i.vmax ?? 0));
+    if (it.vmax >= 90) r.push(`가격 출렁임 ${f1(it.vmax, 0)}% — ${it.vmax >= vTop - 1e-9 ? '이번 주에서 가장 심한 축' : '크게 흔들리는 축'}`);
     // 같은 기초자산인데 수익률이 더 높으면서 손실 확률까지 낮은 상품이 있으면 그쪽을 가리킨다
     const key = (x) => [...x.underlyings].sort().join('|');
     const better = A.items.filter((x) => x.no !== it.no && key(x) === key(it)

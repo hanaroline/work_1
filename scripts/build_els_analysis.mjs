@@ -85,7 +85,9 @@ const cautionReason = (it) => {
   if (it.mcLoss != null && it.mcLoss > 25) r.push(`컴퓨터로 똑같이 돌려보면 <b>100번 중 ${f1(it.mcLoss, 0)}번</b>이 손실로 끝납니다 (이번 주 상품 평균 ${f1(mcAvgAll, 0)}번)`);
   if ((it.fairValueGap ?? 0) <= -10) r.push(`${baseOf(it)}${josa(baseOf(it), '을', '를')} 넣는 순간의 실제 값어치가 <b>${money(it, it.fairValue / 100)}</b>밖에 안 됩니다`);
   if (it.simShort) r.push(`회사가 과거로 돌려본 기간이 ${f1(it.simYears, 1)}년(${it.simRuns.toLocaleString('ko-KR')}번)뿐입니다 — ${esc(it.underlyings[it.underlyings.length - 1])}${josa(it.underlyings[it.underlyings.length - 1], '이', '가')} 늦게 상장해서 <b>큰 폭락장이 아예 빠져 있습니다.</b> 설명서에 적힌 손실 ${f1(it.simLoss, 2)}%를 20년을 돌려본 상품 옆에 나란히 놓으면 안 됩니다`);
-  if (it.vmax != null && it.vmax >= 90) r.push(`회사가 값을 매길 때 잡은 <b>가격 출렁임이 ${f1(it.vmax, 0)}%</b>입니다 — 이번 주에서 가장 심하게 흔들리는 축입니다`);
+  // "가장 심하게" 는 실제 1위일 때만 — 2026-11-27 91%(제38324·38325회)에도 붙었는데 최고는 99.9%였다
+  const vTop = Math.max(...items.map((i) => i.vmax ?? 0));
+  if (it.vmax != null && it.vmax >= 90) r.push(`회사가 값을 매길 때 잡은 <b>가격 출렁임이 ${f1(it.vmax, 0)}%</b>입니다 — ${it.vmax >= vTop - 1e-9 ? '이번 주에서 가장 심하게 흔들리는 축입니다' : '크게 흔들리는 축입니다'}`);
   if (it.margin != null && it.margin < 0) r.push(`${covLabel(it)} 안에 <b>원금 지키는 선을 이미 ${f1(-it.margin)}%p 뚫고 내려간 적</b>이 있습니다`);
   return r.slice(0, 4);
 };
