@@ -429,6 +429,20 @@
   }
   var nf = new Intl.NumberFormat("ko-KR");
 
+  /* 네이버 리서치 상세 주소를 휴대폰에서 열면 네이버가 nid 를 버리고
+     모바일 리서치 목록(m.stock.naver.com/investment/research/daily)으로 보낸다.
+     휴대폰과 PDF(휴대폰에서 많이 연다)에서는 모바일 상세 주소로 바꿔 건다.
+     갈래 이름이 다른 것은 시황정보 하나뿐이다(market_info → daily). */
+  var NV_MOBILE = window.__MOBILE_LINKS__ ||
+    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "");
+  var NV_SLUG = { company: "company", industry: "industry", market_info: "daily",
+                  invest: "invest", economy: "economy", debenture: "debenture" };
+  function nv(u) {
+    if (!NV_MOBILE || !u) return u;
+    var m = /^https?:\/\/finance\.naver\.com\/research\/(\w+)_read\.naver\?nid=(\d+)/.exec(u);
+    return m && NV_SLUG[m[1]] ? "https://m.stock.naver.com/investment/research/" + NV_SLUG[m[1]] + "/" + m[2] : u;
+  }
+
   /* ================= 테마 ================= */
   (function () {
     var saved = null; try { saved = localStorage.getItem("theme"); } catch (e) {}
@@ -556,7 +570,7 @@
      문장이 아니라 리포트가 한 말이고, 눌러서 원문으로 갈 수 있다. */
   function point(p) {
     var who = esc(p.broker || "-") + (p.stock ? " " + esc(p.stock) : "");
-    return '<li><a class="who" href="' + esc(p.url) + '" target="_blank" rel="noopener">'
+    return '<li><a class="who" href="' + esc(nv(p.url)) + '" target="_blank" rel="noopener">'
       + who + "</a> " + esc(p.text) + "</li>";
   }
 
@@ -573,7 +587,7 @@
         + "<span>본문에서 읽어 낸 것입니다 — 원문으로 확인하십시오</span></div><ul>"
         + ov.moves.map(function (m) {
           var cls = m.move === "상향" ? "mv-up" : "mv-dn";
-          return '<li><a class="who" href="' + esc(m.url) + '" target="_blank" rel="noopener">'
+          return '<li><a class="who" href="' + esc(nv(m.url)) + '" target="_blank" rel="noopener">'
             + esc(m.broker || "-") + (m.stock ? " " + esc(m.stock) : "") + "</a> "
             + '<span class="' + cls + '">' + esc(m.move)
             + (m.target_price ? " " + nf.format(m.target_price) + "원" : "") + "</span> "
@@ -684,7 +698,7 @@
     var meta = [who, r.date, r.views != null ? "조회 " + nf.format(r.views) : null, r.source]
       .filter(Boolean).map(esc).join(' <span class="sep">·</span> ');
 
-    var links = ['<a class="go" href="' + esc(r.url) + '" target="_blank" rel="noopener">세부 리포트 →</a>'];
+    var links = ['<a class="go" href="' + esc(nv(r.url)) + '" target="_blank" rel="noopener">세부 리포트 →</a>'];
     if (r.pdf) links.push('<a class="go" href="' + esc(r.pdf) + '" target="_blank" rel="noopener">원문 PDF ↓</a>');
     // 하우스에서 직접 받은 원문이 따로 있으면 그 길도 같이 연다.
     if (r.house_pdf && r.house_pdf !== r.pdf) links.push('<a class="go" href="' + esc(r.house_pdf) + '" target="_blank" rel="noopener">미래에셋 원문 ↓</a>');
@@ -692,9 +706,9 @@
     if (st.code && !window.__NO_DASH__) links.push('<a class="go" href="../../index.html?code=' + esc(st.code) + '">종목 대시보드</a>');
     if (r.excerpt) links.push('<button type="button" data-more="1">본문 발췌</button>');
 
-    return '<article class="rp" data-cat="' + esc(r.category) + '" data-url="' + esc(r.url) + '">' +
+    return '<article class="rp" data-cat="' + esc(r.category) + '" data-url="' + esc(nv(r.url)) + '">' +
       '<div class="tags">' + tags.join("") + "</div>" +
-      '<a class="t" href="' + esc(r.url) + '" target="_blank" rel="noopener">' + esc(r.title) + "</a>" +
+      '<a class="t" href="' + esc(nv(r.url)) + '" target="_blank" rel="noopener">' + esc(r.title) + "</a>" +
       sum +
       (r.excerpt ? '<div class="ex">' + esc(r.excerpt) + "…</div>" : "") +
       '<div class="foot"><span>' + meta + "</span>" + links.join("") + "</div>" +
@@ -712,14 +726,14 @@
     document.getElementById("moves").innerHTML =
       '<div class="cards">' + up.map(function (m) {
         var cls = m.move === "상향" ? "mv-up" : m.move === "하향" ? "mv-dn" : "";
-        return '<article class="rp" data-url="' + esc(m.url) + '">' +
+        return '<article class="rp" data-url="' + esc(nv(m.url)) + '">' +
           '<div class="tags">' +
             (m.stock ? '<span class="tag stock">' + esc(m.stock) + "</span>" : "") +
             '<span class="tag tp"><span class="' + cls + '">' + esc(m.move) + "</span>" +
               (m.target_price ? " " + nf.format(m.target_price) + "원" : "") + "</span>" +
             '<span class="tag">' + esc(m.broker || "-") + "</span>" +
           "</div>" +
-          '<a class="t" href="' + esc(m.url) + '" target="_blank" rel="noopener">' + esc(m.title) + "</a>" +
+          '<a class="t" href="' + esc(nv(m.url)) + '" target="_blank" rel="noopener">' + esc(m.title) + "</a>" +
           "</article>";
       }).join("") + "</div>";
   }
