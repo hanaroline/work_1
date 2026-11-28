@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-11-28 12:33:06 KST
+세션을 지닌 채 API 부르기 2026-11-28 12:51:02 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 102980 bytes
@@ -16,11 +16,11 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 89756 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8858 bytes · JSON!
+        HTTP 200 · 8860 bytes · JSON!
         앞머리: {"articles":[{"officeId":"014","officeHname":"파이낸셜뉴스","articleId":"0005611013","title":"\"폭락 거의 끝났다, 이제 겨우 살았다 싶었는데\"…JP모건, 2027년 섬뜩한 가능성 경고 [머니 시그널]","datetime":"2026-11-28 12:18:14","type":"1","subc
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8858 bytes · JSON!
+        HTTP 200 · 8860 bytes · JSON!
         앞머리: {"articles":[{"officeId":"014","officeHname":"파이낸셜뉴스","articleId":"0005611013","title":"\"폭락 거의 끝났다, 이제 겨우 살았다 싶었는데\"…JP모건, 2027년 섬뜩한 가능성 경고 [머니 시그널]","datetime":"2026-11-28 12:18:14","type":"1","subc
         남김: data/market/raw/session_list.json
 
@@ -33,7 +33,7 @@
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
         HTTP 200 · 2415 bytes · JSON!
-        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","s
+        앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
         HTTP 200 · 5051 bytes · JSON!
