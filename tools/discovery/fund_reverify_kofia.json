@@ -1,31 +1,21 @@
 {
-  "at": "2026-11-23T08:29:29.833Z",
+  "at": "2026-11-28T00:07:28.481Z",
   "attempts": [
     {
       "label": "전자공시 첫 화면",
       "url": "https://dis.kofia.or.kr/",
       "method": "GET",
-      "status": 200,
-      "finalUrl": "https://dis.kofia.or.kr/",
-      "contentType": "text/html",
-      "bytes": 536,
-      "encoding": "utf8",
-      "head": "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=EUC-KR\">\r\n<title>Insert title here</title>\r\n<script type=\"text/javascript\" src=\"/js/com/disCommon.js\"></script>\r\n<script type=\"text/javascript\">\r\nwindow.onload = function () {\r\n\t//location.href = menuLinkUrl + \"?w2xPath=/wq/main/intro.xml\";\r\n\tlocation.href = menuLinkUrl + \"?w2xPath=/wq/main/main.xml\";  \r\n}\r\n</script>\r\n</head>\r\n<body>\r\n\r\n</body>\r\n</html>\n",
-      "ok": true,
-      "ms": 905
+      "ok": false,
+      "error": "TypeError: fetch failed",
+      "ms": 10526
     },
     {
       "label": "전자공시 펀드공시",
       "url": "https://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/fundann/DISFundAnnPop.xml",
       "method": "GET",
-      "status": 200,
-      "finalUrl": "https://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/fundann/DISFundAnnPop.xml",
-      "contentType": "text/html; charset=UTF-8",
-      "bytes": 2182,
-      "encoding": "utf8",
-      "head": "\n\n\n\n\n\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns='http://www.w3.org/1999/xhtml' xmlns:ev='http://www.w3.org/2001/xml-events' xmlns:w2='http://www.inswave.com/websquare' xmlns:xf='http://www.w3.org/2002/xforms' lang=\"ko\" xml:lang=\"ko\">\n\t<head>\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>\n\t\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"/>\n\t\t<meta name=\"viewport\" content=\"width=1095\"/>\n\t\t<title>\t금융투자협회 </title>\n\t\t\n\t\t<script type=\"text/javascript\">\n\t\t\n\t\t</script>\n\t\t\n\t\t\n\t\t\n\t\t<script type=\"text/javascript\">\n\t\t\ttry{\n\t\t\t\n\t\t\t\t\tif( !!document.implementation && !!document.implementation.createDocument && navigator.userAgent.match(/Opera/i) == null && document.implementation.hasFeature(\"XPath\", \"3.0\") ) {\n\t\t\t\t\t\t\tDocument.prototype.selectNodes = function(path, xNode)\t{\n\t\t\t\t\t\t\t\tif",
-      "ok": true,
-      "ms": 142
+      "ok": false,
+      "error": "TypeError: fetch failed",
+      "ms": 10494
     },
     {
       "label": "펀드다모아 첫 화면",
@@ -33,7 +23,7 @@
       "method": "GET",
       "ok": false,
       "error": "TypeError: fetch failed",
-      "ms": 696
+      "ms": 10496
     },
     {
       "label": "펀드다모아 검색(추정)",
@@ -41,33 +31,23 @@
       "method": "GET",
       "ok": false,
       "error": "TypeError: fetch failed",
-      "ms": 439
+      "ms": 10493
     },
     {
       "label": "금투협 본사이트",
       "url": "https://www.kofia.or.kr/",
       "method": "GET",
-      "status": 200,
-      "finalUrl": "https://www.kofia.or.kr/",
-      "contentType": "text/html",
-      "bytes": 374,
-      "encoding": "utf8",
-      "head": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"ko\">\r<head>\r\t<title>금융투자협회</title>\r\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\t<meta http-equiv='refresh' content='0;url=./index.do' />\r</head><body></body></html>",
-      "ok": true,
-      "ms": 772
+      "ok": false,
+      "error": "TypeError: fetch failed",
+      "ms": 10495
     },
     {
       "label": "전자공시 조회 API(추정, POST)",
       "url": "https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/",
       "method": "POST",
-      "status": 200,
-      "finalUrl": "https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/",
-      "contentType": "text/xml;charset=UTF-8",
-      "bytes": 692,
-      "encoding": "utf8",
-      "head": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message>\r\n<proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityInfoSO</pfmSvcName>\n<pfmFnName>select</pfmFnName>\n<pfmGlobalNo>078657df0afe0097061d6e8dfb3fcd88</pfmGlobalNo>\n<pfmTrDate>20261123</pfmTrDate>\n<pfmTrTime>20261123172934559</pfmTrTime>\n<pfmClntIp>3.42.157.47</pfmClntIp>\n<pfmResponseType>S</pfmResponseType>\n<pfmResponseCode>COMS9009</pfmResponseCode>\n<pfmResponseTitle>MODULE ERROR</pfmResponseTitle>\n<pfmResponseBasc>proframe application name [FS-COM] [COMFundUnityInfoSO] is not found.</pfmResponseBasc>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<data /></message></root>",
-      "ok": true,
-      "ms": 155
+      "ok": false,
+      "error": "TypeError: fetch failed",
+      "ms": 10495
     },
     {
       "label": "미래에셋자산운용",
@@ -80,20 +60,20 @@
       "encoding": "utf8",
       "head": "<!DOCTYPE html><html lang=\"ko\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta name=\"robots\" content=\"noindex\"><title>안내</title><style>html,body{height:100%;margin:0}body{display:flex;align-items:center;justify-content:center;background:#f5f6f8;color:#1f2733;font-family:\"Malgun Gothic\",\"Apple SD Gothic Neo\",\"Noto Sans KR\",sans-serif;text-align:center}main{padding:48px 24px;max-width:560px}.t{font-size:20px;font-weight:700;margin:0 0 8px}.d{font-size:15px;color:#5a6473;margin:0}hr{border:0;border-top:1px solid #dde1e6;margin:28px auto;width:120px}</style></head><body><main><p class=\"t\">요청하신 페이지를 표시할 수 없습니다.</p><p class=\"d\">잠시 후 다시 시도해 주세요.</p><hr><p class=\"t\">The requested page cannot be displayed.</p><p class=\"d\">Please try again later.</p></main></body></html>",
       "ok": false,
-      "ms": 187
+      "ms": 440
     },
     {
       "label": "삼성자산운용",
       "url": "https://www.samsungfund.com/",
       "method": "GET",
-      "status": 200,
+      "status": 403,
       "finalUrl": "https://www.samsungfund.com/fund/main.do",
-      "contentType": "text/html;charset=UTF-8",
-      "bytes": 83651,
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 4549,
       "encoding": "utf8",
-      "head": "<!DOCTYPE html>\r\n\r\n\r\n\r\n<html lang=\"ko\" id=\"top-of-site\" class=\"\">\r\n\t<head>\r\n\t\t\r\n\r\n\r\n\r\n\r\n<script>\r\n\tvar lang\t\t\t= \"ko\";\r\n\tvar langUri         = \"\";\r\n\tvar resourceDomain\t= \"/assets\";\r\n</script>\r\n\r\n\r\n\t\t\r\n\r\n\t\t\r\n\t\t\r\n\t\t\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n<script>\r\n\t(function() {\r\n\t\tconst hostname\t= location.hostname;\r\n\t\tconst isLocal\t= hostname.endsWith(\"localhost\");\r\n\t\tconst isMobPage\t= hostname.endsWith(\"m.samsungfund.com\");\r\n\r\n\t\tconst width\t\t= top.innerWidth;\r\n\t\tconst height\t= top.innerHeight;\r\n\t\tconst isDesktop\t= width > 1280;\r\n\t\tconst isTablet\t= width > 680 && !isDesktop;\r\n\t\tconst isMobile\t= !isDesktop && !isTablet;\r\n\r\n\t\tconsole.log('width:',width)\r\n\t\tconsole.log('height:',height)\r\n\t\tconsole.log('isDesktop:',isDesktop)\r\n\t\tconsole.log('isTablet:',isTablet)\r\n\t\tconsole.log('isMobile:',isMobile)\r\n\r\n\t\t////////////////////////////////////////////////////////////////////////\r\n\t\tconst isPortrait = width <= height;\r",
-      "ok": true,
-      "ms": 1698
+      "head": "<!DOCTYPE html>\n<!--[if lt IE 7]> <html class=\"no-js ie6 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if IE 7]>    <html class=\"no-js ie7 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if IE 8]>    <html class=\"no-js ie8 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html class=\"no-js\" lang=\"en-US\"> <!--<![endif]-->\n<head>\n<title>Attention Required! | Cloudflare</title>\n<meta charset=\"UTF-8\" />\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\" />\n<meta name=\"robots\" content=\"noindex, nofollow\" />\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\" />\n<link rel=\"stylesheet\" id=\"cf_styles-css\" href=\"/cdn-cgi/styles/cf.errors.css\" />\n<!--[if lt IE 9]><link rel=\"stylesheet\" id='cf_styles-ie-css' href=\"/cdn-cgi/styles/cf.errors.ie.css\" /><![endif]-->\n<style>body{margin:0;padding:0}</style>\n\n\n<!--[if gte IE 10",
+      "ok": false,
+      "ms": 473
     },
     {
       "label": "네이버 펀드 화면(원천 자체)",
@@ -102,11 +82,11 @@
       "status": 200,
       "finalUrl": "https://stock.naver.com/domestic/fund/KR5105409225/total",
       "contentType": "text/html; charset=utf-8",
-      "bytes": 102523,
+      "bytes": 105814,
       "encoding": "utf8",
-      "head": "<!DOCTYPE html><html lang=\"ko\" class=\"\" data-theme=\"light\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><meta name=\"viewport\" content=\"width=1366, initial-scale=1.0, user-scalable=yes\"/><link rel=\"preload\" as=\"image\" href=\"https://ssl.pstatic.net/imgstock/fn/real/logo/brand/domestic/StockCommonFUND.svg\"/><link rel=\"stylesheet\" href=\"https://financial-vn.pstatic.net/stock-pc/261122-5315000/_next/static/chunks/0-7qlirmm_inx.css\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"https://financial-vn.pstatic.net/stock-pc/261122-5315000/_next/static/chunks/3ck1qml9f9nwm.css\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"https://financial-vn.pstatic.net/stock-pc/261122-5315000/_next/static/chunks/1eoflli07-8oq.css\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"https://financial-vn.pstatic.net/stock-pc/261122-5315000/_next/st",
+      "head": "<!DOCTYPE html><html lang=\"ko\" class=\"\" data-theme=\"light\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><meta name=\"viewport\" content=\"width=1366, initial-scale=1.0, user-scalable=yes\"/><link rel=\"preload\" as=\"image\" href=\"https://ssl.pstatic.net/imgstock/fn/real/logo/brand/domestic/StockCommonFUND.svg\"/><link rel=\"stylesheet\" href=\"https://financial-vn.pstatic.net/stock-pc/261126-803cdb3/_next/static/chunks/3d013i-gbwvu2.css\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"https://financial-vn.pstatic.net/stock-pc/261126-803cdb3/_next/static/chunks/2gza-mxd3mrmu.css\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"https://financial-vn.pstatic.net/stock-pc/261126-803cdb3/_next/static/chunks/2zwfak3wu9x6_.css\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"https://financial-vn.pstatic.net/stock-pc/261126-803cdb3/_next/st",
       "ok": true,
-      "ms": 1005
+      "ms": 954
     },
     {
       "label": "FnGuide 펀드",
@@ -115,11 +95,11 @@
       "status": 200,
       "finalUrl": "https://www.fnguide.com/",
       "contentType": "text/html; charset=utf-8",
-      "bytes": 118861,
+      "bytes": 118817,
       "encoding": "utf8",
       "head": "\r\n<!DOCTYPE html>\r\n<html lang=\"ko\">\r\n<head>\r\n    <meta charset=\"utf-8\" />\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\r\n    <!--Str : favicon -->\r\n    <link rel=\"icon\" href=\"/favicon.ico?v=20251020\">\r\n    <!--End : favicon -->\r\n    <!--Str : apple-touch-icon -->\r\n    <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/apple-touch-icon-180.png\">\r\n    <link rel=\"apple-touch-icon\" sizes=\"167x167\" href=\"/apple-touch-icon-167.png\">\r\n    <link rel=\"apple-touch-icon\" sizes=\"152x152\" href=\"/apple-touch-icon-152.png\">\r\n    <link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\"> <!-- fallback -->\r\n    <!--End : apple-touch-icon -->\r\n    <!--Str : og Setting-->\r\n    <meta property=\"og:title\" content=\"FnGuide\">\r\n    <meta property=\"og:description\" content=\"FnGuide\">\r\n    <meta property=\"og:image\" content=\"https://www.fnguide.com/images/img/og-img.png\">\r\n    <meta ",
       "ok": true,
-      "ms": 1097
+      "ms": 1307
     },
     {
       "label": "에프앤가이드 펀드닥터",
@@ -128,11 +108,11 @@
       "status": 200,
       "finalUrl": "https://www.funddoctor.co.kr/",
       "contentType": "text/html;charset=utf-8",
-      "bytes": 50790,
+      "bytes": 50793,
       "encoding": "utf8",
       "head": "\r\n<!DOCTYPE html>\r\n<html>\r\n<body>\r\n<!-- Google Tag Manager -->\r\n<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\r\nnew Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\r\nj=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\r\n'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\r\n})(window,document,'script','dataLayer','GTM-WSBDNCL');</script>\r\n<!-- End Google Tag Manager -->\r\n<!-- 2019.12.26 김사랑 추가 Google Tag Manager >\r\n<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\r\nnew Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\r\nj=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\r\n'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\r\n})(window,document,'script','dataLayer','GTM-KQP52TQ');</script>\r\n<End Google Tag Manager -->\r\n\r",
       "ok": true,
-      "ms": 1584
+      "ms": 2610
     }
   ],
   "errors": [],
@@ -142,9 +122,9 @@
       "name": "삼성MMF법인 1",
       "company": "삼성자산운용",
       "type": "MMF",
-      "basePrice": 1026.38,
-      "aum": 11903928495343,
-      "nav": 12217996312378,
+      "basePrice": 1028.31,
+      "aum": 11128233606240,
+      "nav": 11443220662809,
       "feeMin": 0.05,
       "feeMax": 0.09,
       "classSample": [
@@ -170,9 +150,9 @@
       "name": "IBK그랑프리국공채MMF법인투자신탁 1[국공채]",
       "company": "아이비케이자산운용",
       "type": "MMF",
-      "basePrice": 1023.78,
-      "aum": 9564409929229,
-      "nav": 9791854964007,
+      "basePrice": 1025.73,
+      "aum": 10363790392014,
+      "nav": 10630459636529,
       "feeMin": 0.093,
       "feeMax": 0.168,
       "classSample": [
@@ -194,36 +174,13 @@
       ]
     },
     {
-      "code": "KR5223385430",
-      "name": "KB법인용MMF I-1(운용)",
-      "company": "케이비자산운용",
-      "type": "MMF",
-      "basePrice": 1004.63,
-      "aum": 9467156170547,
-      "nav": 9510999196490,
-      "feeMin": 0.06,
-      "feeMax": 0.09,
-      "classSample": [
-        {
-          "code": "K55223BU0616",
-          "name": "KB법인용MMF I-1C",
-          "fee": 0.09
-        },
-        {
-          "code": "K55223BU0624",
-          "name": "KB법인용MMF I-1 C-F",
-          "fee": 0.06
-        }
-      ]
-    },
-    {
       "code": "K55107BJ2329",
       "name": "우리큰만족법인MMF 1(국공채)",
       "company": "우리자산운용",
       "type": "MMF",
-      "basePrice": 1028.77,
-      "aum": 9271675321132,
-      "nav": 9538445423944,
+      "basePrice": 1001.33,
+      "aum": 8617212655905,
+      "nav": 8628716215058,
       "feeMin": 0.078,
       "feeMax": 0.098,
       "classSample": [
@@ -240,38 +197,61 @@
       ]
     },
     {
-      "code": "KR5219391517",
-      "name": "신한BEST신종법인용MMFGS-2(종류)",
-      "company": "신한자산운용",
+      "code": "KR5223482922",
+      "name": "KB법인용MMF I-2(국공채)(운용)",
+      "company": "케이비자산운용",
       "type": "MMF",
-      "basePrice": 1030.46,
-      "aum": 7561988035521,
-      "nav": 7792329847386,
-      "feeMin": 0.055,
-      "feeMax": 0.085,
+      "basePrice": 1020.21,
+      "aum": 7592501593042,
+      "nav": 7745966892898,
+      "feeMin": 0.07,
+      "feeMax": 0.12,
       "classSample": [
         {
-          "code": "K55210CA0853",
-          "name": "신한BEST신종법인용MMFGS-2(종C-i)",
-          "fee": 0.065
+          "code": "K55223C29408",
+          "name": "KB법인용MMF I-2(국공채)C-퇴직",
+          "fee": 0.11
         },
         {
-          "code": "KR5210AM3980",
-          "name": "신한BEST신종법인용MMFGS-2(종류C)",
+          "code": "K55223C29416",
+          "name": "KB법인용MMF I-2(국공채)C-퇴직e",
           "fee": 0.085
         },
         {
-          "code": "KR5210AM3998",
-          "name": "신한BEST신종법인용MMFGS-2(종류C-w)",
-          "fee": 0.055
+          "code": "K55223CA7788",
+          "name": "KB법인용MMF I-2(국공채)C-F",
+          "fee": 0.07
+        }
+      ]
+    },
+    {
+      "code": "KR5103373936",
+      "name": "한화골드법인MMF-KM3(국공채)",
+      "company": "한화자산운용",
+      "type": "MMF",
+      "basePrice": 1014.02,
+      "aum": 7214649742013,
+      "nav": 7315808488792,
+      "feeMin": 0.06,
+      "feeMax": 0.1,
+      "classSample": [
+        {
+          "code": "K55213D38804",
+          "name": "한화골드법인MMF-KM3(국공채)종류C",
+          "fee": 0.1
+        },
+        {
+          "code": "K55213D38812",
+          "name": "한화골드법인MMF-KM3(국공채)종류C-W",
+          "fee": 0.06
         }
       ]
     }
   ],
   "summary": {
     "attempted": 11,
-    "reached": 8,
-    "blocked": 3,
+    "reached": 3,
+    "blocked": 8,
     "usableForComparison": 0,
     "usableLabels": []
   },

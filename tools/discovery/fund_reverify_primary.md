@@ -1,8 +1,8 @@
 # 재검증 L3 (2차 시도) — 브라우저로 1차 출처를 연다
 
-검증 시각: 2026-11-09T07:32:39.293Z
+검증 시각: 2026-11-28T00:09:00.489Z
 
-**1차 출처에서 조회 경로를 찾음 (전자공시 펀드검색(표준코드))**
+**1차 출처에서 표준코드 조회 경로를 찾지 못함 — 2차 출처 단독 근거로 남는다**
 
 1차 시도는 주소를 추측해 찔렀고 실패했습니다. 금투협 전자공시는 WebSquare 라 화면
 주소만으로는 자료가 안 나오고, 조회는 내부 서비스명을 갖춘 POST 로 이뤄집니다.
@@ -12,114 +12,61 @@
 
 | 표준코드 | 펀드 | 유형 | 기준가 | 설정액 | 총보수 |
 |---|---|---|---:|---:|---:|
-| KR5105409225 | 삼성MMF법인 1 | MMF | 1026.38 | 119039억 | 0.05~0.09% |
-| KR5234472706 | IBK그랑프리국공채MMF법인투자신탁 1[국공채] | MMF | 1023.78 | 95644억 | 0.093~0.168% |
-| KR5223385430 | KB법인용MMF I-1(운용) | MMF | 1004.63 | 94672억 | 0.06~0.09% |
-| K55235B39924 | 피델리티글로벌테크놀로지증권자투자신탁(주식-재간접형) | 해외주식형 | 5842.21 | 9230억 | 0.162~1.362% |
-| KR5209676463 | 신영밸류고배당증권자투자신탁(주식)운용 | 국내주식형 | 2310.33 | 8316억 | 0.45~1.35% |
+| KR5105409225 | 삼성MMF법인 1 | MMF | 1028.31 | 111282억 | 0.05~0.09% |
+| KR5234472706 | IBK그랑프리국공채MMF법인투자신탁 1[국공채] | MMF | 1025.73 | 103638억 | 0.093~0.168% |
+| K55107BJ2329 | 우리큰만족법인MMF 1(국공채) | MMF | 1001.33 | 86172억 | 0.078~0.098% |
+| K55235B39924 | 피델리티글로벌테크놀로지증권자투자신탁(주식-재간접형) | 해외주식형 | 5299.35 | 9210억 | 0.162~1.362% |
+| KR5209676463 | 신영밸류고배당증권자투자신탁(주식)운용 | 국내주식형 | 2071.48 | 8292억 | 0.45~1.35% |
 
 ## 접근 결과
 
 | 사이트 | 등급 | 열림 | XHR | 표준코드 보임 | 대조 필드 보임 |
 |---|---|:-:|---:|:-:|:-:|
-| 전자공시 펀드공시 | 1차 | ✓ | 4 | · | · |
-| 전자공시 펀드검색(표준코드) | 1차 | ✓ | 14 | ○ | ○ |
-| 펀드다모아 | 1차 | ✓ | 18 | · | · |
+| 전자공시 펀드공시 | 1차 | ✗ | 0 | · | · |
+| 전자공시 펀드검색(표준코드) | 1차 | ✗ | 0 | · | · |
+| 펀드다모아 | 1차 | ✗ | 0 | · | · |
 | 펀드다모아(www) | 1차 | ✗ | 0 | · | · |
 | 펀드닥터 (에프앤가이드) | 2차 | ✓ | 4 | · | · |
 | 펀드닥터 펀드검색 | 2차 | ✓ | 4 | · | · |
 
 ## 잡힌 XHR (다음 시도의 출발점)
 
-### 전자공시 펀드공시
-
-- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17942095606753305.3023215131507` → 200
-- `GET https://dis.kofia.or.kr/wq/fundann/DISFundAnnList.xml?postfix=17942095618916250.6150900370685` → 307
-- `GET https://dis.kofia.or.kr/common/error.html` → 200
-- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17942095622235536.6219613178055` → 200
-
-### 전자공시 펀드검색(표준코드)
-
-- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17942095689312888.1399411192488` → 200
-- `GET https://dis.kofia.or.kr/wq/com/popup/DISComFundSmryInfo.xml?postfix=17942095701382823.1340098803093` → 200
-- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17942095703233309.230103100359` → 200
-- `GET https://dis.kofia.or.kr/css/pop.css?postfix=17942095704933862.070432743867` → 200
-- `GET https://dis.kofia.or.kr/css/common.css?postfix=17942095706687223.268218865123` → 200
-- `GET https://dis.kofia.or.kr/wq/com/popup/loading.xml?postfix=17942095708448135.684777270509` → 200
-- `POST https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/` → 200
-  - POST: `<?xml version="1.0" encoding="utf-8"?>
-<message>
-  <proframeHeader>
-    <pfmAppName>FS-DIS2</pfmAppName>
-    <pfmSvcName>DISComFundNmSO</pfmSvcName>
-    <pfmFnName>select</pfmFnName>
-  </proframeHeade`
-- `POST https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/` → 200
-  - POST: `<?xml version="1.0" encoding="utf-8"?>
-<message>
-  <proframeHeader>
-    <pfmAppName>FS-COM</pfmAppName>
-    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>
-    <pfmFnName>srchFile</pfmFnName>
-  </profr`
-- `POST https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/` → 200
-  - POST: `<?xml version="1.0" encoding="utf-8"?>
-<message>
-  <proframeHeader>
-    <pfmAppName>FS-COM</pfmAppName>
-    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>
-    <pfmFnName>srchFile</pfmFnName>
-  </profr`
-- `POST https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/` → 200
-  - POST: `<?xml version="1.0" encoding="utf-8"?>
-<message>
-  <proframeHeader>
-    <pfmAppName>FS-COM</pfmAppName>
-    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>
-    <pfmFnName>srchFile</pfmFnName>
-  </profr`
-- `POST https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/` → 200
-  - POST: `<?xml version="1.0" encoding="utf-8"?>
-<message>
-  <proframeHeader>
-    <pfmAppName>FS-DIS2</pfmAppName>
-    <pfmSvcName>DISComConnLogSO</pfmSvcName>
-    <pfmFnName>insertFndInqLog</pfmFnName>
-  </pro`
-- `POST https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/` → 200
-  - POST: `<?xml version="1.0" encoding="utf-8"?>
-<message>
-  <proframeHeader>
-    <pfmAppName>FS-COM</pfmAppName>
-    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>
-    <pfmFnName>fundBasInfoSrch</pfmFnName>
-  `
-
-### 펀드다모아
-
-- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17942095778694551.559682288498` → 200
-- `GET https://dis.kofia.or.kr/wq/damoa/DISFundDamoaNotice.xml?postfix=17942095792186058.090785539014` → 200
-- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=1794209579382317.3597092169167` → 200
-- `GET https://dis.kofia.or.kr/wq/com/gnb.xml?postfix=17942095795558251.35141709012` → 200
-- `GET https://dis.kofia.or.kr/css/common.css?postfix=17942095797245306.545928965578` → 200
-- `GET https://dis.kofia.or.kr/css/layout.css?postfix=17942095799021483.731796599168` → 200
-- `GET https://dis.kofia.or.kr/css/sub.css?postfix=17942095800689755.495021217936` → 200
-- `GET https://dis.kofia.or.kr/wq/com/gnbTop.xml?postfix=17942095802385126.830784011599` → 200
-- `GET https://dis.kofia.or.kr/wq/com/snb.xml?postfix=17942095804064263.815989939649` → 200
-- `GET https://dis.kofia.or.kr/wq/com/subTit.xml?postfix=17942095805706582.234234543381` → 200
-- `GET https://dis.kofia.or.kr/wq/com/subTip.xml?postfix=17942095807319195.986011995814` → 200
-- `GET https://dis.kofia.or.kr/wq/com/quick.xml?postfix=17942095808967305.4217963257115` → 200
-
 ### 펀드닥터 (에프앤가이드)
 
-- `POST https://www.google-analytics.com/j/collect?v=1&_v=j102&a=20691967&t=event&ni=0&_s=1&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2F&ul=ko-kr&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&sr=1280x720&vp=1280x720&ec=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0%EC%83%81%EB%8B%A8%EB%B0%B0%EB%84%88&ea=undefined&el=%2F&_u=YCDAgEABAAAAACAAI~&jid=1179328516&gjid=1032396044&cid=814593811.1794209587&tid=UA-150939181-1&_gid=1107741806.1794209587&_slc=1&gtm=45He6b50h2n81WSBDNCLza200xf1&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938465~115938468~118897920~118897930~120385423~120412526~120420414~120469145~120469153~121246026~121246034~123814183&z=922063679` → 200
-- `POST https://stats.g.doubleclick.net/j/collect?t=dc&aip=1&_r=3&v=1&_v=j102&tid=UA-150939181-1&cid=814593811.1794209587&jid=1179328516&gjid=1032396044&_gid=1107741806.1794209587&_u=YCDAgEABAAAAAGAAI~&z=318789841` → 200
-- `POST https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je6b41v9136902590za20oxf1&_p=1794209586615&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=814593811.1794209587&frm=0&pscdl=noapi&rcb=14&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B141.0.7390.37%7CNot%253FA_Brand%3B8.0.0.0%7CChromium%3B141.0.7390.37&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=ko-kr&gaf=2&_s=1&tag_exp=115938465~115938468~118897920~118897930~120213116~120385422~120412528~120420414~120469145~120469153~121246026~121246034~123814185&sid=1794209586&sct=1&seg=0&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2F&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&en=page_view&_fv=1&_nsi=1&_ss=1&tfd=1189` → 204
+- `POST https://www.google-analytics.com/j/collect?v=1&_v=j102&a=1264200806&t=event&ni=0&_s=1&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2F&ul=ko-kr&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&sr=1280x720&vp=1280x720&ec=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0%EC%83%81%EB%8B%A8%EB%B0%B0%EB%84%88&ea=undefined&el=%2F&_u=YGBAgEABAAAAACAAI~&jid=511267444&gjid=964639659&cid=366016917.1795824663&tid=UA-150939181-1&_gid=1840693332.1795824663&_slc=1&gtm=45He6bi0h2n81WSBDNCLza200xf1&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938465~115938468~120385422~120469145~120469153~121246026~121246034&z=424835027` → 200
+- `POST https://stats.g.doubleclick.net/j/collect?t=dc&aip=1&_r=3&v=1&_v=j102&tid=UA-150939181-1&cid=366016917.1795824663&jid=511267444&gjid=964639659&_gid=1840693332.1795824663&_u=YGBAgEABAAAAAGAAI~&z=2077338809` → 200
+- `POST https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je6bh1h1v9136902590za20oxf1&_p=1795824662699&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=366016917.1795824663&frm=0&pscdl=noapi&rcb=15&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B141.0.7390.37%7CNot%253FA_Brand%3B8.0.0.0%7CChromium%3B141.0.7390.37&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=ko-kr&gaf=2&_s=1&tag_exp=115616986~115938465~115938469~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795824662&sct=1&seg=0&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2F&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&en=page_view&_fv=1&_ss=1&tfd=1219` → 204
 - `GET https://www.funddoctor.co.kr/common/footer.jsp` → 200
 
 ### 펀드닥터 펀드검색
 
-- `POST https://www.google-analytics.com/j/collect?v=1&_v=j102&a=1488759096&t=event&ni=0&_s=1&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2Fafn%2Ffund%2Ffdlist.jsp%3Ffund_cd%3DKR5105409225&ul=ko-kr&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&sr=1280x720&vp=1280x720&ec=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0%EC%83%81%EB%8B%A8%EB%B0%B0%EB%84%88&ea=undefined&el=%2Fafn%2Ffund%2Ffdlist.jsp&_u=YCDAgEABAAAAACAAI~&jid=1275203199&gjid=820725104&cid=2108742493.1794209598&tid=UA-150939181-1&_gid=968036543.1794209598&_slc=1&gtm=45He6b41h1n81WSBDNCLza200xf1&gcd=13l3l3l3l1l1&dma=0&tag_exp=115616986~115938465~115938469~118012009~118897920~118897930~120385423~120412526~120420416~120469145~120469153~121246026~121246034~123814185&z=829532946` → 200
-- `POST https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je6b41v9136902590za20oxf1&_p=1794209595907&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=2108742493.1794209598&frm=0&pscdl=noapi&rcb=14&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B141.0.7390.37%7CNot%253FA_Brand%3B8.0.0.0%7CChromium%3B141.0.7390.37&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=ko-kr&gaf=2&_s=1&tag_exp=115938465~115938468~118897920~118897930~120213116~120385422~120412528~120420416~120469145~120469153~121246026~121246034~123814183~124013660&sid=1794209598&sct=1&seg=0&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2Fafn%2Ffund%2Ffdlist.jsp%3Ffund_cd%3DKR5105409225&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&en=page_view&_fv=1&_nsi=1&_ss=1&tfd=3162` → 204
-- `POST https://stats.g.doubleclick.net/j/collect?t=dc&aip=1&_r=3&v=1&_v=j102&tid=UA-150939181-1&cid=2108742493.1794209598&jid=1275203199&gjid=820725104&_gid=968036543.1794209598&_u=YCDAgEABAAAAAGAAI~&z=1436128850` → 200
+- `POST https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je6bh1v9136902590za20oxf1&_p=1795824671399&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=646892827.1795824673&frm=0&pscdl=noapi&rcb=19&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B141.0.7390.37%7CNot%253FA_Brand%3B8.0.0.0%7CChromium%3B141.0.7390.37&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=ko-kr&gaf=2&_s=1&tag_exp=115616985~115938466~115938468~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795824672&sct=1&seg=0&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2Fafn%2Ffund%2Ffdlist.jsp%3Ffund_cd%3DKR5105409225&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&en=page_view&_fv=1&_nsi=1&_ss=1&tfd=2210` → 204
+- `POST https://stats.g.doubleclick.net/j/collect?t=dc&aip=1&_r=3&v=1&_v=j102&tid=UA-150939181-1&cid=646892827.1795824673&jid=1978420907&gjid=525352287&_gid=1552183596.1795824673&_u=YCDAgEABAAAAAGAAI~&z=1938433074` → 200
+- `POST https://www.google-analytics.com/j/collect?v=1&_v=j102&a=327766143&t=event&ni=0&_s=1&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2Fafn%2Ffund%2Ffdlist.jsp%3Ffund_cd%3DKR5105409225&ul=ko-kr&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&sr=1280x720&vp=1280x720&ec=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0%EC%83%81%EB%8B%A8%EB%B0%B0%EB%84%88&ea=undefined&el=%2Fafn%2Ffund%2Ffdlist.jsp&_u=YCDAgEABAAAAACAAI~&jid=1978420907&gjid=525352287&cid=646892827.1795824673&tid=UA-150939181-1&_gid=1552183596.1795824673&_slc=1&gtm=45He6bi0h2n81WSBDNCLza200xf1&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938466~115938468~120385422~120469145~120469153~121246026~121246034~123785234&z=27779105` → 200
 - `GET https://www.funddoctor.co.kr/common/footer.jsp` → 200
+
+## 대조하지 못했습니다
+
+**이 화면의 숫자는 네이버 Npay 증권 한 곳에서 왔고, 그것은 2차 출처입니다.**
+두 차례 시도했으나 1차 출처에서 표준코드로 조회되는 경로를 재현하지 못했습니다.
+
+이것이 뜻하는 바를 분명히 적습니다.
+
+- 확인된 것: **내가 네이버를 정확히 옮겼다** (표본 400개 전 필드 일치)
+- 확인되지 않은 것: **네이버가 맞는가**
+
+네이버가 틀린 값을 실었다면 이 화면도 똑같이 틀립니다. 그 가능성은 이 검증으로
+배제되지 않습니다.
+
+### 사용자가 확인할 수 있는 경로
+
+| 확인할 것 | 어디서 | 어떻게 |
+|---|---|---|
+| 총보수 (클래스별) | 금융투자협회 전자공시 dis.kofia.or.kr | 펀드공시 → 표준코드 입력 → 보수 항목 |
+| 총보수 | 각 펀드 투자설명서 | 운용사 홈페이지 또는 판매사 |
+| 설정액·순자산 | 운용사 월간 운용보고서 | 운용사 홈페이지 |
+| 기준가 | 운용사 기준가 조회 | 운용사 홈페이지 |
+| 유형(분류) | 펀드다모아 fundamoa.kofia.or.kr | 유형 분류 대조 |
+
+위 표의 5개 펀드를 짚어 확인해 주시면 계열 전체의 신뢰도를 판단할 수 있습니다.
+한 종목이라도 어긋나면 원천 자체를 다시 봐야 합니다.
