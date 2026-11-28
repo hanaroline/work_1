@@ -1169,8 +1169,10 @@ async function openPost(id) {
   try {
     const p = await api("/api/posts/" + id + "?view=1"); full[id] = p;
     const pin = (state.pins || []).find(x => x.id === id); if (pin && !pin.read) { pin.read = true; renderPins(); }
-    $(".db", postDlg).replaceChildren(postCard(p, true));
+    const db = $(".db", postDlg), fresh = !postDlg.open || postDlg.dataset.id !== String(id);
+    db.replaceChildren(postCard(p, true)); postDlg.dataset.id = id;
     if (!postDlg.open) postDlg.showModal();
+    if (fresh) db.scrollTop = 0;  // 새로 연 글은 맨 위부터(앞 글을 내려 본 자리가 남지 않게) — 같은 글 새로고침은 자리 유지
     if (location.hash !== "#p" + id) history.replaceState(null, "", "#p" + id);
   } catch (e) { toast(e.message); }
 }
