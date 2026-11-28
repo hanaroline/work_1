@@ -33,6 +33,8 @@ for (const [mode, suffix, label] of [
 ]) {
   const name = path.join(outdir, base + suffix + '.pdf');
   const p = await b.newPage({ viewport: { width: 1280, height: 1000 } });
+  // PDF 는 휴대폰에서 많이 연다 — 네이버 링크를 모바일 상세 주소로 건다.
+  await p.addInitScript(() => { window.__MOBILE_LINKS__ = true; });
   await p.goto('file://' + path.resolve(src), { waitUntil: 'load' });
   // 자료를 그려 넣는 데 시간이 걸린다. 카드가 설 때까지 기다린다.
   await p.waitForFunction(() => document.querySelectorAll('#list .rp').length > 0,
