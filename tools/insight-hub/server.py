@@ -187,7 +187,9 @@ CREATE TABLE IF NOT EXISTS posts (
   tags TEXT,                          -- ,태그,태그,
   model TEXT,
   created_at INTEGER NOT NULL,
-  updated_at INTEGER NOT NULL
+  updated_at INTEGER NOT NULL,
+  pinned INTEGER,                     -- 공지를 피드 맨 위에 고정(1)
+  shelf TEXT                          -- 자료실 칸(상품설명서·제안서·판매 스크립트·교육자료·기타), 없으면 자료실에 안 보임
 );
 CREATE INDEX IF NOT EXISTS posts_created ON posts(created_at DESC);
 CREATE TABLE IF NOT EXISTS likes (
@@ -219,6 +221,30 @@ CREATE TABLE IF NOT EXISTS push_subs (     -- 새 글 알림을 받겠다고 한
   created_at INTEGER NOT NULL,
   last_ok INTEGER
 );
+CREATE TABLE IF NOT EXISTS visits (        -- 접속 이력: 사람·날짜(한국 시각)마다 한 줄, 처음·마지막으로 쓴 시각과 기기
+  user_id INTEGER NOT NULL,
+  day TEXT NOT NULL,
+  first_at INTEGER NOT NULL,
+  last_at INTEGER NOT NULL,
+  device TEXT,
+  PRIMARY KEY (user_id, day)
+);
+CREATE TABLE IF NOT EXISTS events (        -- 일정 공유: 설명회·교육·상품 출시 등
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  title TEXT NOT NULL,
+  day TEXT NOT NULL,                  -- YYYY-MM-DD(한국 날짜)
+  time TEXT,                          -- HH:MM, 없으면 종일
+  place TEXT,
+  kind TEXT,
+  note TEXT,
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS events_day ON events(day);
+CREATE TABLE IF NOT EXISTS app_settings (  -- 관리자 설정(새 기능 켜기·끄기 등)
+  key TEXT PRIMARY KEY,
+  value TEXT
+);
 CREATE TABLE IF NOT EXISTS ai_cache (
   key TEXT PRIMARY KEY,
   sig TEXT,
@@ -229,8 +255,45 @@ CREATE TABLE IF NOT EXISTS ai_cache (
 
 # Postgres 에서는 첨부도 DB 에 둔다(서버리스엔 오래 남는 디스크가 없다)
 PG_EXTRA = ["CREATE TABLE IF NOT EXISTS files (name TEXT PRIMARY KEY, data BYTEA NOT NULL)",
-            "ALTER TABLE posts ADD COLUMN IF NOT EXISTS title_edit TEXT"]  # 이전 판 DB 이어 쓰기
-_RETURNING_ID = re.compile(r"^\s*INSERT\s+INTO\s+(users|invites|posts|comments)\b", re.I)
+            "ALTER TABLE posts ADD COLUMN IF NOT EXISTS title_edit TEXT",  # 이전 판 DB 이어 쓰기
+            "ALTER TABLE posts ADD COLUMN IF NOT EXISTS pinned BIGINT",
+            "ALTER TABLE posts ADD COLUMN IF NOT EXISTS shelf TEXT"]
+_RETURNING_ID = re.compile(r"^\s*INSERT\s+INTO\s+(users|invites|posts|comments|events)\b", re.I)
+SHELVES = ["상품설명서", "상품안내장", "제안서", "판매 스크립트", "교육자료", "기타"]
+SHELF_MAX = 20
+def clean_shelf(v):
+    """자료실 칸 이름: 정해 둔 칸이나 직접 적은 이름(20자 이내). 빈칸이면 None."""
+    if v is None or v == "":
+        return None
+    if not isinstance(v, str):
+        raise HTTPError_(400, "자료실 칸이 맞지 않습니다")
+    v = re.sub(r"\s+", " ", v).strip()
+    if not v:
+        return None
+    if len(v) > SHELF_MAX or re.search(r"[\x00-\x1f<>]", v) or v == "*":
+        raise HTTPError_(400, f"자료실 칸 이름은 {SHELF_MAX}자 이내로, 기호 < > 없이 적어 주세요")
+    return v
+def shelves_all() -> list:
+    """정해 둔 칸 + 직원이 직접 적어 쓰고 있는 칸(가나다순)."""
+    extra = sorted({r["shelf"] for r in q("SELECT DISTINCT shelf FROM posts WHERE shelf IS NOT NULL")} - set(SHELVES))
+    return SHELVES + extra
+EVENT_KINDS = ["설명회", "교육", "상품 출시", "기타"]
+# 관리자가 언제든 끌 수 있는 새 기능. 끄면 화면은 이 기능을 넣기 전 모습으로 돌아가고, 써 둔 자료는 지우지 않고 그대로 둔다.
+FEATURES = {"notice": "📢 공지 게시판", "lib": "📁 상품·판매 자료실", "cal": "📅 일정 공유"}
+
+
+def features() -> dict:
+    r = q("SELECT value FROM app_settings WHERE key=?", ("features",), one=True)
+    try:
+        d = json.loads(r["value"]) if r and r["value"] else {}
+    except ValueError:
+        d = {}
+    return {k: d.get(k) is not False for k in FEATURES}
+
+
+def need_feature(k: str):
+    if not features()[k]:
+        raise HTTPError_(403, f"관리자가 「{FEATURES[k]}」 기능을 꺼 두었습니다")
 
 
 def _pg_schema() -> list[str]:
@@ -279,8 +342,10 @@ def db():
         cols = {r[1] for r in conn.execute("PRAGMA table_info(invites)")}
         if "fails" not in cols:  # 이전 판 DB 이어 쓰기
             conn.execute("ALTER TABLE invites ADD COLUMN fails INTEGER NOT NULL DEFAULT 0")
-        if "title_edit" not in {r[1] for r in conn.execute("PRAGMA table_info(posts)")}:
-            conn.execute("ALTER TABLE posts ADD COLUMN title_edit TEXT")
+        pcols = {r[1] for r in conn.execute("PRAGMA table_info(posts)")}
+        for col, typ in (("title_edit", "TEXT"), ("pinned", "INTEGER"), ("shelf", "TEXT")):
+            if col not in pcols:
+                conn.execute(f"ALTER TABLE posts ADD COLUMN {col} {typ}")
         _db = conn
     return _db
 
@@ -527,6 +592,47 @@ def login_failed(key: str, window: int = LOGIN_LOCK_SEC) -> None:
           "ON CONFLICT(key) DO UPDATE SET count=excluded.count, first_at=excluded.first_at", (key, 1, now()))
 
 
+VISIT_KEEP_DAYS = 180                 # 접속 이력은 이 날수만 남긴다
+VISIT_TOUCH_SEC = 600                 # 같은 사람의 '마지막 접속' 은 10분에 한 번만 고쳐 쓴다
+_visit_seen: dict = {}
+
+
+def kst_day(t: int) -> str:
+    return time.strftime("%Y-%m-%d", time.gmtime(t + 9 * 3600))
+
+
+def device_kind(ua: str) -> str:
+    ua = ua or ""
+    if re.search(r"iPhone|iPod", ua):
+        return "아이폰"
+    if "iPad" in ua:
+        return "아이패드"
+    if "Android" in ua:
+        return "갤럭시" if re.search(r"SM-|SAMSUNG|Samsung", ua) else "안드로이드"
+    if "Windows" in ua:
+        return "PC"
+    if "Macintosh" in ua:
+        return "맥"
+    return "기타"
+
+
+def record_visit(user_id: int, ua: str) -> None:
+    """앱을 쓴 날을 남긴다. 요청마다 쓰지 않고 한 사람에 10분에 한 번만 DB 에 닿는다."""
+    t = now()
+    day = kst_day(t)
+    if t - _visit_seen.get((user_id, day), 0) < VISIT_TOUCH_SEC:
+        return
+    _visit_seen[(user_id, day)] = t
+    if len(_visit_seen) > 5000:
+        _visit_seen.clear()
+    try:
+        x("INSERT INTO visits(user_id, day, first_at, last_at, device) VALUES (?,?,?,?,?) "
+          "ON CONFLICT(user_id, day) DO UPDATE SET last_at=excluded.last_at, device=excluded.device",
+          (user_id, day, t, t, device_kind(ua)))
+    except Exception as e:  # 이력 기록이 실패해도 앱은 그대로 쓴다
+        print(f"[visit] {e}", file=sys.stderr)
+
+
 def new_session(user_id: int) -> str:
     token = secrets.token_urlsafe(32)
     x(
@@ -594,20 +700,37 @@ class _SafeRedirect(urllib.request.HTTPRedirectHandler):
 _opener = urllib.request.build_opener(_SafeRedirect())
 
 
+def bridge_target(url: str) -> str:
+    """앱으로 넘기는 중간 페이지(본문 없이 스크립트로만 이동)면 실제 기사 주소를, 아니면 ""."""
+    p = urllib.parse.urlsplit(url)
+    # 네이버 공유 단축주소(naver.me) → link.naver.com/bridge?url=<기사 주소>
+    if (p.hostname or "").lower() == "link.naver.com" and p.path.startswith("/bridge"):
+        t = urllib.parse.parse_qs(p.query).get("url", [""])[0]
+        if t.startswith(("http://", "https://")):
+            return t
+    return ""
+
+
 def fetch(url: str, timeout: int = 25) -> tuple[bytes, str, str]:
     """(본문, content-type, 최종 주소)."""
-    check_public_url(url)
-    req = urllib.request.Request(url, headers={
-        "User-Agent": USER_AGENT,
-        "Accept": "text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.8",
-        "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.7",
-    })
-    with _opener.open(req, timeout=timeout) as resp:
-        ctype = resp.headers.get("Content-Type", "")
-        data = resp.read(MAX_FETCH + 1)
-        if len(data) > MAX_FETCH:
-            raise ValueError("파일이 20MB를 넘어 읽지 않았습니다")
-        return data, ctype, resp.geturl()
+    for _ in range(2):
+        check_public_url(url)
+        req = urllib.request.Request(url, headers={
+            "User-Agent": USER_AGENT,
+            "Accept": "text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.8",
+            "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.7",
+        })
+        with _opener.open(req, timeout=timeout) as resp:
+            ctype = resp.headers.get("Content-Type", "")
+            data = resp.read(MAX_FETCH + 1)
+            if len(data) > MAX_FETCH:
+                raise ValueError("파일이 20MB를 넘어 읽지 않았습니다")
+            final = resp.geturl()
+        nxt = bridge_target(final)
+        if not nxt:
+            break
+        url = nxt
+    return data, ctype, final
 
 
 def decode_html(data: bytes, ctype: str) -> str:
@@ -718,6 +841,18 @@ VIDEO_HOSTS = ("youtube.com", "youtu.be")
 def youtube_id(url: str) -> str | None:
     m = YT_RE.match(url.strip())
     return m.group(1) if m else None
+
+
+_EMBED_YT = re.compile(r"(?:youtube(?:-nocookie)?\.com/(?:embed/|watch\?v=|shorts/)|youtu\.be/)([A-Za-z0-9_-]{11})")
+
+
+def embedded_youtube(html_text: str) -> list[str]:
+    """페이지에 실린 유튜브 영상 ID(나온 순서, 중복 없이). 본문이 짧은 소개 글(블로그 등)에서 영상을 대신 정리할 때 쓴다."""
+    out: list[str] = []
+    for m in _EMBED_YT.finditer(html.unescape(html_text).replace("\\u003d", "=").replace("\\/", "/")):
+        if m.group(1) not in out:
+            out.append(m.group(1))
+    return out
 
 
 def youtube_title(vid: str) -> tuple[str, str]:
@@ -977,7 +1112,7 @@ def gemini_upload(raw: bytes, mime: str, key: str) -> str:
     return f["uri"]
 
 
-def call_claude(content: list[dict]) -> tuple[dict, str]:
+def call_claude(content: list[dict], kp_max: int = 5) -> tuple[dict, str]:
     """Claude Messages API(raw HTTP — 저장소 규칙상 외부 패키지를 쓰지 않는다)."""
     key = os.environ.get("ANTHROPIC_API_KEY")
     if not key:
@@ -1007,7 +1142,7 @@ def call_claude(content: list[dict]) -> tuple[dict, str]:
     if resp.get("stop_reason") == "max_tokens":
         raise AIError("응답이 길이 상한에서 잘렸습니다")
     text = "".join(b.get("text", "") for b in resp.get("content", []) if b.get("type") == "text")
-    return parse_json(text), resp.get("model", CLAUDE_MODEL)
+    return parse_json(text, kp_max), resp.get("model", CLAUDE_MODEL)
 
 
 def call_gemini(video_url: str, note: str) -> tuple[dict, str]:
@@ -1015,6 +1150,10 @@ def call_gemini(video_url: str, note: str) -> tuple[dict, str]:
     if not key:
         raise AIError("GEMINI_API_KEY 가 설정되지 않았습니다 — 영상 정리는 Gemini 키가 있어야 합니다")
     prompt = (SYSTEM_PROMPT + "\n\n위 영상을 정리하십시오. key_points 의 at 에는 해당 내용이 나오는 영상 시각(mm:ss)을 적습니다."
+              "\n- 영상을 처음부터 끝까지 다 보고 들은 뒤 정리합니다. 앞부분만 정리하고 멈추지 않습니다."
+              "\n- 영상의 key_points 는 3~8개로, 도입·중간·후반·마무리 발언까지 영상 전체 구간에 고르게 나누어 시간 순서대로 적습니다."
+              " 영상 뒷부분에서 다룬 주제(종목·업종·일정·결론)가 빠지지 않게 합니다."
+              "\n- one_line·implications·client_talk 도 앞부분이 아니라 영상 전체 내용을 대표하게 씁니다."
               + (f"\n올린 직원의 메모: {note}" if note else "") + JSON_INSTRUCTION)
     # 긴 영상도 제한 시간(서버리스 240초) 안에 끝나게: 화면은 낮은 해상도·드문 프레임으로 보고
     # (말로 하는 영상은 소리가 핵심), 생각은 짧게. 이 설정을 모르는 모델이면 400 → 기본값으로 다시.
@@ -1042,7 +1181,130 @@ def call_gemini(video_url: str, note: str) -> tuple[dict, str]:
         raise AIError(f"Gemini 가 응답하지 않았습니다 ({reason})")
     parts = (cands[0].get("content") or {}).get("parts") or []
     text = "".join(p.get("text", "") for p in parts)
-    return parse_json(text), resp.get("modelVersion", GEMINI_MODEL)
+    return parse_json(text, kp_max=8), resp.get("modelVersion", GEMINI_MODEL)
+
+
+# ── 긴 영상: 한 번에 못 보는 영상(Gemini 는 한 번에 약 3시간까지)은 45분씩 잘라 구간마다 정리하고
+#    마지막에 하나로 합친다. 서버리스 함수 한 번(300초)에 한 구간씩 — 진행 상태는 ai_cache 에 둔다.
+VIDEO_PART_SEC = 45 * 60
+VIDEO_MAX_PARTS = 16          # 12시간까지
+
+
+def _hms(sec: int) -> str:
+    sec = max(0, int(sec))
+    return f"{sec // 3600}:{sec % 3600 // 60:02d}:{sec % 60:02d}"
+
+
+def _at_sec(a: str):
+    m = re.fullmatch(r"\s*(?:(\d+):)?(\d{1,2}):(\d{2})\s*", a or "")
+    return None if not m else int(m.group(1) or 0) * 3600 + int(m.group(2)) * 60 + int(m.group(3))
+
+
+def video_too_long(e: Exception) -> bool:
+    s = str(e)
+    return ("시간" in s or "timed out" in s
+            or (s.startswith("HTTP 400") and bool(re.search(r"token|exceed|too long|too large|duration", s, re.I))))
+
+
+def _vkey(pid: int) -> str:
+    return f"vparts:{pid}"
+
+
+def video_state(pid: int):
+    r = cache_get(_vkey(pid))
+    if not r:
+        return None
+    try:
+        st = json.loads(r["body"])
+    except ValueError:
+        return None
+    return st if isinstance(st, dict) and "parts" in st else None
+
+
+def video_state_put(pid: int, st) -> None:
+    if st is None:   # 처음부터 다시 정리할 때 — 글·이미지·영상 함께 정리의 진행 기록도 같이 지운다
+        x("DELETE FROM ai_cache WHERE key IN (?, ?)", (_vkey(pid), f"rich:{pid}"))
+    else:
+        cache_put(_vkey(pid), "", st)
+
+
+def call_gemini_part(video_url: str, note: str, i: int):
+    """긴 영상의 i번째 구간(0부터)만 정리한다. 영상이 이미 끝난 구간이면 None."""
+    key = os.environ.get("GEMINI_API_KEY")
+    if not key:
+        raise AIError("GEMINI_API_KEY 가 설정되지 않았습니다 — 영상 정리는 Gemini 키가 있어야 합니다")
+    start, end = i * VIDEO_PART_SEC, (i + 1) * VIDEO_PART_SEC
+    prompt = (SYSTEM_PROMPT
+              + f"\n\n이 영상은 길어서 45분씩 나눠 정리합니다. 지금은 {i + 1}번째 구간({_hms(start)}~{_hms(end)})만 봅니다."
+              "\n- 이 구간을 처음부터 끝까지 보고 들은 뒤, 구간 안의 내용을 key_points 3~6개로 시간 순서대로 고르게 정리합니다."
+              f"\n- key_points 의 at 에는 영상 전체 기준 시각을 h:mm:ss 로 적습니다(이 구간은 {_hms(start)} 에서 시작합니다)."
+              "\n- 방송 시작 전 대기 화면·광고·잡담만 있는 구간이면 key_points 를 비워 두고 one_line 에 그렇다고 적습니다."
+              "\n- 이 구간에 영상 내용이 전혀 없으면(영상이 이미 끝남) readable 을 false 로 합니다."
+              + (f"\n올린 직원의 메모: {note}" if note else "") + JSON_INSTRUCTION
+              + '\n위 스키마의 필드에 더해 "video_ended"(boolean) 를 넣으십시오: 영상이 이 구간 안에서 끝나면 true, '
+                "구간 끝 너머로 이어지면 false.")
+    fast = {"mediaResolution": "MEDIA_RESOLUTION_LOW", "thinkingConfig": {"thinkingLevel": "low"}}
+    vm = {"startOffset": f"{start}s", "endOffset": f"{end}s", "fps": 0.25}
+    body = {
+        "contents": [{"parts": [{"file_data": {"file_uri": video_url}, "videoMetadata": vm}, {"text": prompt}]}],
+        "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2, **fast},
+    }
+    url = f"{GEMINI_BASE}/v1beta/models/{urllib.parse.quote(GEMINI_MODEL)}:generateContent"
+    try:
+        resp = _post_json(url, {"x-goog-api-key": key}, body, timeout=600)
+    except AIError as e:
+        if "HTTP 400" not in str(e):
+            raise
+        if i > 0 and re.search(r"offset|duration|range|length", str(e), re.I):
+            return None   # 영상 길이를 넘는 구간
+        vm.pop("fps", None)
+        for k in fast:
+            body["generationConfig"].pop(k)
+        try:
+            resp = _post_json(url, {"x-goog-api-key": key}, body, timeout=600)
+        except AIError as e2:
+            if i > 0 and "HTTP 400" in str(e2):
+                return None
+            raise
+    cands = resp.get("candidates") or []
+    if not cands:
+        reason = (resp.get("promptFeedback") or {}).get("blockReason", "응답 없음")
+        raise AIError(f"Gemini 가 응답하지 않았습니다 ({reason})")
+    text = "".join(pp.get("text", "") for pp in ((cands[0].get("content") or {}).get("parts") or []) if not pp.get("thought"))
+    text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip())
+    try:
+        raw = json.loads(text)
+    except json.JSONDecodeError:
+        m = re.search(r"\{.*\}", text, re.S)
+        if not m:
+            raise AIError("AI 응답을 해석하지 못했습니다")
+        raw = json.loads(m.group(0))
+    ended = bool(raw.get("video_ended"))
+    sm = normalize_summary(raw, 6)
+    if not sm["readable"] and i > 0:
+        return None
+    for kp in sm["key_points"]:   # 구간 시작 기준으로 적었으면 영상 전체 기준으로 고친다
+        t = _at_sec(kp["at"])
+        if t is not None and t < start - 60:
+            t += start
+        kp["at"] = _hms(t) if t is not None else kp["at"]
+    return {"from": _hms(start), "to": _hms(end), "ended": ended, "summary": sm,
+            "model": resp.get("modelVersion", GEMINI_MODEL)}
+
+
+def merge_video_parts(parts: list[dict], note: str) -> tuple[dict, str]:
+    """구간별 정리를 영상 전체 정리 하나로 합친다(글만 보내는 짧은 호출)."""
+    lines = []
+    for n, pt in enumerate(parts, 1):
+        sm = {k: v for k, v in pt["summary"].items() if k not in ("notes", "readable", "category", "sentiment")}
+        lines.append(f"[{n}구간 {pt['from']}~{pt['to']}]\n" + json.dumps(sm, ensure_ascii=False))
+    text = ("아래는 긴 영상 하나를 45분 구간별로 나눠 정리한 결과입니다. 이것을 영상 전체 정리 하나로 합치십시오.\n"
+            "- 구간 정리에 있는 내용만 씁니다. 새 내용·숫자를 덧붙이지 않습니다.\n"
+            "- key_points 는 3~8개로, 영상 처음부터 끝까지 모든 구간에 고르게 나누어 시간 순서대로 적고, at 은 구간 정리에 적힌 시각을 그대로 옮깁니다.\n"
+            "- 같은 이야기가 여러 구간에 되풀이되면 한 번만 씁니다.\n"
+            "- title·one_line·implications·client_talk 은 영상 전체를 대표하게 씁니다."
+            + (f"\n올린 직원의 메모(참고용): {note}" if note else "") + "\n\n" + "\n\n".join(lines))
+    return call_gemini_blocks([{"type": "text", "text": text}], kp_max=8)
 
 
 def text_engine() -> str:
@@ -1052,7 +1314,7 @@ def text_engine() -> str:
     return "claude"
 
 
-def call_gemini_blocks(content: list[dict]) -> tuple[dict, str]:
+def call_gemini_blocks(content: list[dict], kp_max: int = 5) -> tuple[dict, str]:
     """Claude 형식의 내용 블록(글·PDF·이미지)을 Gemini 로 정리한다 — Claude 키가 없을 때의 대체 길."""
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
@@ -1103,7 +1365,7 @@ def call_gemini_blocks(content: list[dict]) -> tuple[dict, str]:
         raise AIError("응답이 길이 상한에서 잘렸습니다")
     parts_out = (cands[0].get("content") or {}).get("parts") or []
     text = "".join(p.get("text", "") for p in parts_out if not p.get("thought"))
-    return parse_json(text), resp.get("modelVersion", GEMINI_MODEL)
+    return parse_json(text, kp_max), resp.get("modelVersion", GEMINI_MODEL)
 
 
 _gemini_level_ok: list = []   # 이 서버에서 통한 생각 수준(첫 원소)
@@ -1351,32 +1613,42 @@ def _clip(s: str, n: int) -> str:
     return s if len(s) <= n else s[:n - 1] + "…"
 
 
-def notify_post(pid: int) -> None:
-    """요약이 끝난 글을 알림을 켠 다른 직원에게 한 번만 알린다(다시 정리해도 또 보내지 않는다)."""
+def notify_post(pid: int, force: bool = False):
+    """요약이 끝난 글을 알림을 켠 다른 직원에게 한 번만 알린다(다시 정리해도 또 보내지 않는다).
+    force=True 는 관리자가 손으로 보내는 경우 — 이미 보낸 글이라도 다시 보낸다.
+    돌려주는 값: 보낸 결과 {ok, gone, fail} 또는 보내지 않은 까닭(문자열)."""
     if not push_crypto():
-        return
-    p = q("SELECT p.id, p.user_id, p.source_title, p.title_edit, p.summary_json, p.kind, u.name "
+        return "알림 기능을 쓸 수 없는 서버입니다"
+    p = q("SELECT p.id, p.user_id, p.source_title, p.title_edit, p.summary_json, p.kind, p.pasted_text, u.name "
           "FROM posts p JOIN users u ON u.id=p.user_id WHERE p.id=? AND p.status='done'", (pid,), one=True)
     if not p:
-        return
+        return "요약이 끝난 글만 알릴 수 있습니다"
     rows = q("SELECT s.endpoint, s.p256dh, s.auth, s.origin FROM push_subs s JOIN users u ON u.id=s.user_id "
              "WHERE u.active=1 AND s.user_id<>?", (p["user_id"],))
     if not rows:
-        return
+        return "알림을 켠 직원이 아직 없습니다(올린 사람 본인은 받지 않습니다)"
+    key = f"push:sent:{pid}"
+    if force:
+        x("DELETE FROM ai_cache WHERE key=?", (key,))
     if xn("INSERT INTO ai_cache(key, sig, body, created_at) VALUES (?,?,?,?) ON CONFLICT(key) DO NOTHING",
-          (f"push:sent:{pid}", "", "1", now())) != 1:
-        return
+          (key, "", "1", now())) != 1:
+        return "이미 알림을 보낸 글입니다"
     try:
         sm = json.loads(p["summary_json"] or "{}")
     except ValueError:
         sm = {}
     title = p["title_edit"] or p["source_title"] or sm.get("title") or "새 글"
+    line = sm.get("one_line") or ""
+    if p["kind"] == "notice":
+        title = "📢 공지 · " + title
+        line = re.sub(r"\s+", " ", p["pasted_text"] or "").strip()
     data = {"title": _clip(title, 80),
-            "body": _clip(f"{p['name']} · " + (sm.get("one_line") or ""), 180),
+            "body": _clip(f"{p['name']} · " + line, 180),
             "url": f"/#p{pid}", "tag": f"post-{pid}"}
     t0 = time.time()
     res = push_fanout(rows, data)
-    print(f"[push] 글 {pid} 알림 {res} {time.time() - t0:.1f}s", file=sys.stderr)
+    print(f"[push] 글 {pid} 알림{' (관리자 수동)' if force else ''} {res} {time.time() - t0:.1f}s", file=sys.stderr)
+    return res
 
 
 KST = 9 * 3600
@@ -1457,7 +1729,7 @@ def summary_brief(sm: dict) -> str:
     return "\n".join(lines)
 
 
-def parse_json(text: str) -> dict:
+def parse_json(text: str, kp_max: int = 5) -> dict:
     text = text.strip()
     text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text)
     try:
@@ -1467,10 +1739,10 @@ def parse_json(text: str) -> dict:
         if not m:
             raise AIError("AI 응답을 해석하지 못했습니다")
         data = json.loads(m.group(0))
-    return normalize_summary(data)
+    return normalize_summary(data, kp_max)
 
 
-def normalize_summary(d: dict) -> dict:
+def normalize_summary(d: dict, kp_max: int = 5) -> dict:
     """스키마를 강제하지 못하는 경로(Gemini)도 같은 모양이 되게 다듬는다."""
     def strs(v, n=12):
         return [str(s).strip() for s in (v or []) if str(s).strip()][:n]
@@ -1491,7 +1763,7 @@ def normalize_summary(d: dict) -> dict:
         "readable": bool(d.get("readable", True)),
         "title": str(d.get("title") or "").strip()[:300],
         "one_line": str(d.get("one_line") or "").strip()[:500],
-        "key_points": objs(d.get("key_points"), ["point", "at"], 5),
+        "key_points": objs(d.get("key_points"), ["point", "at"], kp_max),
         "implications": strs(d.get("implications"), 3),
         "related": objs(d.get("related"), ["name", "kind", "code"], 8),
         "figures": objs(d.get("figures"), ["label", "value", "as_of"], 5),
@@ -1538,7 +1810,7 @@ def process(pid: int) -> None:
 
 def _process(pid: int) -> None:
     p = q("SELECT * FROM posts WHERE id=?", (pid,), one=True)
-    if not p:
+    if not p or p["kind"] == "notice":  # 공지는 AI 로 정리하지 않는다
         return
     set_status(pid, "working", "AI가 읽는 중")
     _run_ctx.deadline = time.time() + RUN_BUDGET_SEC
@@ -1546,8 +1818,59 @@ def _process(pid: int) -> None:
     note = p["note"] or ""
     user_hint = f"\n\n올린 직원의 메모(참고용, 자료 내용이 아님): {note}" if note else ""
     try:
+        def video_run(vurl: str):
+            """영상 정리 한 걸음. 끝나면 (요약, 모델), 다음 구간으로 넘기거나 멈췄으면 None."""
+            st = video_state(pid)
+            if st is None:
+                try:
+                    summary, model = call_gemini(vurl, note)
+                except AIError as e:
+                    if not video_too_long(e):
+                        raise
+                    print(f"[run {pid}] 영상이 길어 구간별 정리로 바꿈: {str(e)[:120]}", file=sys.stderr)
+                    video_state_put(pid, {"parts": [], "next": 0, "ended": False})
+                    set_status(pid, "queued", "긴 영상 — 45분씩 나눠 정리합니다 (1구간 차례)")
+                    enqueue(pid)
+                    return None
+            elif not st["ended"] and st["next"] < VIDEO_MAX_PARTS:
+                i = st["next"]
+                set_status(pid, "working", f"긴 영상 {i + 1}구간({_hms(i * VIDEO_PART_SEC)}~) 보는 중")
+                try:
+                    part = call_gemini_part(vurl, note, i)
+                except AIError as e:
+                    msg = ai_error_text(e, auto=True) or str(e)
+                    set_status(pid, "failed", f"긴 영상 {i + 1}구간에서 멈췄습니다. 「다시 시도」를 누르면 {i + 1}구간부터 이어서 정리합니다. ({msg[:80]})")
+                    return None
+                if part is None:
+                    st["ended"] = True
+                else:
+                    st["ended"] = part.pop("ended")
+                    st["parts"].append(part)
+                st["next"] = i + 1
+                video_state_put(pid, st)
+                print(f"[run {pid}] 긴 영상 {i + 1}구간 끝 (끝남={st['ended']})", file=sys.stderr)
+                set_status(pid, "queued", f"긴 영상 {i + 1}구간까지 정리함 — 이어서 정리합니다")
+                enqueue(pid)
+                return None
+            else:
+                parts = [pt for pt in st["parts"] if pt["summary"]["readable"]]
+                if not parts:
+                    set_status(pid, "blocked", "AI가 영상 내용을 읽지 못했습니다(구간별로 나눠 봐도 내용이 없었습니다).")
+                    return None
+                set_status(pid, "working", f"긴 영상 {len(st['parts'])}개 구간을 하나로 합치는 중")
+                summary, model = merge_video_parts(parts, note)
+                video_state_put(pid, None)   # 합치기까지 끝났으니 구간 기록은 지운다(실패하면 남겨 두어 다시 시도 때 합치기만 한다)
+                notes.append(f"영상이 길어 45분씩 {len(st['parts'])}개 구간으로 나눠 정리한 뒤 하나로 합쳤습니다.")
+                if not st["ended"]:
+                    notes.append(f"{_hms(st['next'] * VIDEO_PART_SEC)} 이후 부분은 정리하지 않았습니다(상한 {VIDEO_MAX_PARTS}구간).")
+            return summary, model
+
+        summary = None
         if p["kind"] == "video":
-            summary, model = call_gemini(p["url"], note)
+            r = video_run(p["url"])
+            if r is None:
+                return
+            summary, model = r
         else:
             content: list[dict] = []
             meta = {"주소": p["url"] or "", "제목": p["source_title"] or "", "매체": p["source_site"] or "",
@@ -1581,20 +1904,49 @@ def _process(pid: int) -> None:
                         x("UPDATE posts SET source_title=COALESCE(NULLIF(source_title,''),?), source_site=?, source_published=? WHERE id=?",
                           (art["title"], art["site"], art["published"], pid))
                         meta.update({"제목": art["title"], "매체": art["site"], "게시일": art["published"]})
-                        if len(text) < MIN_TEXT_CHARS:
+                        html_text = decode_html(data, ctype)
+                        if is_rich_page(html_text, final):   # 본문 이미지·실린 영상까지 걸음을 나눠 함께 정리한다
+                            rkey = f"rich:{pid}"
+                            row = cache_get(rkey)
+                            try:
+                                rst = json.loads(row["body"]) if row else None
+                            except ValueError:
+                                rst = None
+                            set_status(pid, "working", "글·이미지·영상을 함께 정리하는 중")
+                            try:
+                                r = rich_step(rst, text, label, meta, html_text, final, note)
+                            except QuickStop as e:
+                                x("DELETE FROM ai_cache WHERE key=?", (rkey,))
+                                set_status(pid, "blocked", str(e))
+                                return
+                            if not r["done"]:
+                                cache_put(rkey, "", r["state"])
+                                print(f"[run {pid}] {r['msg']}", file=sys.stderr)
+                                if r.get("failed"):
+                                    set_status(pid, "failed", r["msg"].replace("「이어서 다시」", "「다시 시도」"))
+                                else:
+                                    set_status(pid, "queued", r["msg"])
+                                    enqueue(pid)
+                                return
+                            x("DELETE FROM ai_cache WHERE key=?", (rkey,))
+                            summary, model = r["summary"], r["model"]
+                            notes += r["notes"]
+                        elif len(text) < MIN_TEXT_CHARS:
                             print(f"[run {pid}] 본문 짧음 {len(text)}자 — 읽지 못함으로 멈춤", file=sys.stderr)
                             set_status(pid, "blocked",
                                        "이 페이지에서 본문을 읽지 못했습니다(로그인·유료 기사이거나 화면을 스크립트로 그리는 사이트). "
                                        "본문을 복사해 붙여넣거나 스크린샷·PDF로 올려 주세요.")
                             return
-                if text:
-                    blk, n = text_block(label, text, meta)
-                    notes += n
-                    content.append({"type": "text", "text": blk})
-                content.append({"type": "text", "text": "위 자료를 정리하십시오." + user_hint})
-            t_ai = time.time()
-            summary, model = (call_gemini_blocks(content) if text_engine() == "gemini" else call_claude(content))
-            print(f"[run {pid}] AI 정리 {time.time() - t_ai:.1f}s ({model})", file=sys.stderr)
+                if summary is None:
+                    if text:
+                        blk, n = text_block(label, text, meta)
+                        notes += n
+                        content.append({"type": "text", "text": blk})
+                    content.append({"type": "text", "text": "위 자료를 정리하십시오." + user_hint})
+            if summary is None:
+                t_ai = time.time()
+                summary, model = (call_gemini_blocks(content) if text_engine() == "gemini" else call_claude(content))
+                print(f"[run {pid}] AI 정리 {time.time() - t_ai:.1f}s ({model})", file=sys.stderr)
         summary["notes"] = notes
         if not summary["readable"]:
             set_status(pid, "blocked", "AI가 자료 본문을 읽을 수 없다고 판단했습니다: " + summary["one_line"],
@@ -1623,6 +1975,308 @@ def _process(pid: int) -> None:
     except Exception as e:  # 예상 못 한 오류도 화면에 남긴다
         traceback.print_exc()
         set_status(pid, "failed", f"처리 중 오류: {type(e).__name__}: {e}")
+
+
+# ───────────── 글 + 본문 이미지 + 글에 실린 유튜브(블로그 등) ─────────────
+# 블로그 글은 내용이 이미지(캡처·차트)와 붙여 둔 영상에 있는 일이 많다. 한 번에 다 보면 제한 시간을
+# 넘기므로 걸음을 나눈다: ① 본문 글과 이미지를 함께 정리 → ② 실린 영상을 하나씩(긴 영상은 구간별로)
+# → ③ 하나로 합치기. 진행 상태는 브리핑룸은 ai_cache 에, AI 자동 요약은 화면이 들고 다닌다.
+RICH_MAX_VIDEOS = 3
+RICH_MAX_IMAGES = 10
+IMG_MIN_BYTES = 15_000        # 이보다 작은 그림은 아이콘·스티커·구분선으로 본다
+IMG_MAX_BYTES = 3_500_000     # AI 한 장 상한(5MB)보다 넉넉히 아래
+_IMG_ATTR = re.compile(r"""([\w:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')""")
+
+
+def page_images(html_text: str, base_url: str) -> list[str]:
+    """본문에 실린 이미지 주소(나온 순서). 네이버 블로그는 본문 이미지만, 다른 사이트는 <article> 안만 본다
+    — 그 밖(메뉴·광고·추천 글)의 그림은 섞지 않는다."""
+    naver = 'class="se-main-container"' in html_text
+    if naver:
+        h = html_text[html_text.index('class="se-main-container"'):]
+    else:
+        m = re.search(r"<article\b.*?</article>", html_text, re.S | re.I)
+        if not m:
+            return []
+        h = m.group(0)
+    out: list[str] = []
+    for t in re.finditer(r"<img\b[^>]*>", h, re.I):
+        tag = t.group(0)
+        if naver and "se-image-resource" not in tag:
+            continue
+        a = {k.lower(): (v1 or v2) for k, v1, v2 in _IMG_ATTR.findall(tag)}
+        src = html.unescape(a.get("data-lazy-src") or a.get("data-src") or a.get("data-original") or a.get("src") or "").strip()
+        if not src or src.startswith("data:"):
+            continue
+        w = a.get("data-width") or a.get("width") or ""
+        if w.isdigit() and int(w) < 150:
+            continue
+        src = urllib.parse.urljoin(base_url, src)
+        if not src.startswith(("http://", "https://")) or re.search(r"\.(svg|gif)(\?|$)", src, re.I):
+            continue
+        if src not in out:
+            out.append(src)
+    return out[:RICH_MAX_IMAGES * 2]   # 받다가 걸러지는 것을 생각해 넉넉히
+
+
+def _img_type(b: bytes) -> str:
+    if b[:8] == b"\x89PNG\r\n\x1a\n":
+        return "image/png"
+    if b[:3] == b"\xff\xd8\xff":
+        return "image/jpeg"
+    if b[:4] == b"RIFF" and b[8:12] == b"WEBP":
+        return "image/webp"
+    return ""
+
+
+def fetch_images(urls: list[str]) -> list[dict]:
+    """이미지를 받아 AI 에 넘길 블록으로. 못 받거나 너무 작거나(아이콘) 큰 것은 조용히 뺀다."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    def one(u):
+        try:
+            data, _, _ = fetch(u, timeout=15)
+        except Exception:
+            return None
+        mt = _img_type(data)
+        if not mt or not IMG_MIN_BYTES <= len(data) <= IMG_MAX_BYTES:
+            return None
+        return {"type": "image", "source": {"type": "base64", "media_type": mt, "data": base64.b64encode(data).decode()}}
+    with ThreadPoolExecutor(max_workers=6) as ex:
+        got = list(ex.map(one, urls))
+    return [b for b in got if b][:RICH_MAX_IMAGES]
+
+
+def ai_blocks(content: list[dict], kp_max: int = 5) -> tuple[dict, str]:
+    return call_gemini_blocks(content, kp_max) if text_engine() == "gemini" else call_claude(content, kp_max)
+
+
+def is_rich_page(html_text: str, base_url: str) -> bool:
+    return bool(embedded_youtube(html_text) or page_images(html_text, base_url))
+
+
+def rich_state(st) -> dict:
+    """진행 상태를 믿을 수 있는 모양으로만 받는다(AI 자동 요약은 화면이 되돌려 보낸 것이다)."""
+    st = st if isinstance(st, dict) else {}
+
+    def sm(v):
+        return normalize_summary(v, 8) if isinstance(v, dict) else None
+    vi = st.get("vi")
+    vs = []
+    for v in (st.get("vs") or [])[:RICH_MAX_VIDEOS]:
+        if isinstance(v, dict) and re.fullmatch(r"[\w-]{11}", str(v.get("vid", ""))):
+            vs.append({"vid": v["vid"], "summary": sm(v.get("summary")), "model": str(v.get("model", ""))[:60]})
+    return {"pd": bool(st.get("pd")), "page": sm(st.get("page")), "model": str(st.get("model", ""))[:60],
+            "vi": vi if isinstance(vi, int) and 0 <= vi <= RICH_MAX_VIDEOS else len(vs), "vs": vs,
+            "vst": st.get("vst") if isinstance(st.get("vst"), dict) else None,
+            "notes": [str(n)[:300] for n in (st.get("notes") or [])[:12] if isinstance(n, str)]}
+
+
+def merge_rich(page, vs: list[dict], note: str) -> tuple[dict, str]:
+    """글·이미지 정리와 영상별 정리를 그 글 전체 정리 하나로 합친다(글만 보내는 짧은 호출)."""
+    def strip(sm):
+        return json.dumps({k: v for k, v in sm.items() if k not in ("notes", "readable", "category", "sentiment")},
+                          ensure_ascii=False)
+    lines = []
+    if page:
+        lines.append("[글·이미지 정리]\n" + strip(page))
+    for n, v in enumerate(vs, 1):
+        lines.append(f"[영상{n} 정리 — https://youtu.be/{v['vid']}]\n" + strip(v["summary"]))
+    text = ("아래는 글 하나(블로그·기사)를 나눠 정리한 결과입니다 — 본문 글과 이미지의 정리, 그리고 글에 실린 영상별 정리.\n"
+            "이것을 그 글 전체의 정리 하나로 합치십시오.\n"
+            "- 나눠 정리한 결과에 있는 내용만 씁니다. 새 내용·숫자를 덧붙이지 않습니다.\n"
+            "- key_points 는 3~8개로, 글·이미지와 각 영상의 핵심이 고루 들어가게 합니다. 영상에서 나온 내용은 at 에 "
+            "'영상1 12:34'처럼 영상 번호와 시각(정리에 적힌 그대로)을 적고, 글·이미지에서 나온 내용은 at 을 빈칸으로 둡니다.\n"
+            "- 같은 이야기가 겹치면 한 번만 씁니다.\n"
+            "- title·one_line·implications·client_talk 은 글 전체를 대표하게 씁니다."
+            + (f"\n올린 직원의 메모(참고용): {note}" if note else "") + "\n\n" + "\n\n".join(lines))
+    return ai_blocks([{"type": "text", "text": text}], kp_max=8)
+
+
+def rich_step(st, text: str, label: str, meta: dict, html_text: str, base_url: str, note: str) -> dict:
+    """한 걸음. 끝났으면 done=True 와 요약·모델·메모, 아니면 다음 걸음 상태(state)와 진행 문구(msg).
+    더 할 수 없는 사정이면 QuickStop."""
+    st = rich_state(st)
+    vids = embedded_youtube(html_text)
+    nv = min(len(vids), RICH_MAX_VIDEOS)
+    hint = f"\n\n올린 직원의 메모(참고용, 자료 내용이 아님): {note}" if note else ""
+    if not st["pd"]:
+        st["pd"] = True
+        imgs = fetch_images(page_images(html_text, base_url))
+        if imgs or len(text) >= MIN_TEXT_CHARS:
+            content: list[dict] = []
+            if text:
+                blk, n = text_block(label, text, meta)
+                st["notes"] += n
+                content.append({"type": "text", "text": blk})
+            content += imgs
+            content.append({"type": "text", "text": "위 자료(본문 글" + (f"과 본문에 실린 이미지 {len(imgs)}장" if imgs else "")
+                            + ")를 정리하십시오. 이미지 속 표·차트·캡처의 글자와 숫자도 읽어 정리에 반영합니다. "
+                            "로고·광고·장식 그림은 무시합니다." + hint})
+            page, model = ai_blocks(content)
+            st["page"], st["model"] = (page if page["readable"] else None), model
+            if imgs:
+                st["notes"].append(f"본문에 실린 이미지 {len(imgs)}장도 함께 읽었습니다.")
+            if nv:
+                return {"done": False, "state": st, "msg": f"글·이미지 정리함 — 이어서 글에 실린 영상 1/{nv}"}
+    if st["vi"] < nv:
+        k, vid = st["vi"], vids[st["vi"]]
+        try:
+            r = video_step(f"https://www.youtube.com/watch?v={vid}", st["vst"], note)
+        except QuickStop:
+            r = {"done": True, "summary": None}
+        except AIError as e:
+            if st["vst"] is None and re.match(r"HTTP (400|403|404)", str(e)):
+                r = {"done": True, "summary": None}   # 비공개·삭제된 영상 등 — 건너뛴다
+            else:
+                return {"done": False, "state": st, "failed": True,
+                        "msg": f"글에 실린 영상 {k + 1}/{nv}에서 멈췄습니다 — 이어서 다시 하면 그 영상부터 정리합니다. "
+                               f"({(ai_error_text(e) or str(e))[:80]})"}
+        if not r["done"]:
+            st["vst"] = r["state"]
+            msg = f"글에 실린 영상 {k + 1}/{nv}: {r['msg']}"
+            return {"done": False, "state": st, "failed": bool(r.get("failed")), "msg": msg}
+        st["vst"], st["vi"] = None, k + 1
+        if r["summary"] and r["summary"]["readable"]:
+            st["vs"].append({"vid": vid, "summary": r["summary"], "model": r["model"]})
+            st["notes"] += [f"영상{len(st['vs'])}: {t}" for t in r["notes"]]
+        else:
+            st["notes"].append(f"글에 실린 영상 https://youtu.be/{vid} 은 정리하지 못했습니다(비공개·삭제 등).")
+        if st["vi"] < nv or (st["page"] and st["vs"]):
+            return {"done": False, "state": st, "msg": f"글에 실린 영상 {k + 1}/{nv} 정리함" + (" — 하나로 합치는 중" if st["vi"] >= nv else "")}
+    notes = list(st["notes"])
+    if st["vs"]:
+        notes.insert(0, f"글에 실린 유튜브 영상 {len(st['vs'])}개(" + ", ".join(f"https://youtu.be/{v['vid']}" for v in st["vs"])
+                     + ")도 함께 정리했습니다.")
+    if len(vids) > RICH_MAX_VIDEOS:
+        notes.append(f"글에 실린 영상 {len(vids)}개 가운데 앞의 {RICH_MAX_VIDEOS}개만 정리했습니다.")
+    if st["page"] and st["vs"]:
+        summary, model = merge_rich(st["page"], st["vs"], note)
+    elif st["page"]:
+        summary, model = st["page"], st["model"]
+    elif st["vs"]:
+        if len(st["vs"]) > 1:
+            summary, model = merge_rich(None, st["vs"], note)
+        else:
+            summary, model = st["vs"][0]["summary"], st["vs"][0]["model"]
+            if len(text) < MIN_TEXT_CHARS:
+                notes[0] = f"글 본문이 짧아 글에 실린 유튜브 영상(https://youtu.be/{st['vs'][0]['vid']})을 정리했습니다."
+    else:
+        raise QuickStop("이 페이지에서 본문·이미지·영상 어느 것도 읽지 못했습니다. 본문을 복사해 붙여 넣거나 스크린샷으로 올려 주세요.")
+    return {"done": True, "summary": summary, "model": model, "notes": notes}
+
+
+# ───────────────────────────── 요약 전용(/quick) ─────────────────────────────
+# 단톡방에 올릴 요약만 만들어 돌려준다. 글·요약을 DB 에 남기지 않는다 — 브리핑룸 피드와 섞이지 않게.
+# 긴 영상의 구간 진행 상황도 서버가 아니라 화면이 들고 있다가 다음 요청에 되돌려 보낸다.
+
+class QuickStop(Exception):
+    """요약을 만들 수 없는 사정(읽을 수 없는 페이지 등) — 화면에 그대로 보여 준다."""
+
+
+def _quick_state(st) -> dict | None:
+    """화면이 되돌려 보낸 구간 진행 상황을 믿을 수 있는 모양으로만 받는다."""
+    if not isinstance(st, dict):
+        return None
+    parts = []
+    for pt in (st.get("parts") or [])[:VIDEO_MAX_PARTS]:
+        if isinstance(pt, dict) and isinstance(pt.get("summary"), dict):
+            parts.append({"from": str(pt.get("from", ""))[:12], "to": str(pt.get("to", ""))[:12],
+                          "summary": normalize_summary(pt["summary"], 6), "model": str(pt.get("model", ""))[:60]})
+    nxt = st.get("next")
+    nxt = nxt if isinstance(nxt, int) and 0 <= nxt <= VIDEO_MAX_PARTS else len(parts)
+    return {"parts": parts, "next": nxt, "ended": bool(st.get("ended"))}
+
+
+def video_step(url: str, st, note: str) -> dict:
+    """유튜브 영상 정리 한 걸음(화면이 진행 상태를 들고 다니는 길). 끝났으면 done=True 와 요약·모델·메모,
+    긴 영상이면 다음 구간 상태를 돌려준다."""
+    notes: list[str] = []
+    st = _quick_state(st)
+    if st is None:
+        try:
+            summary, model = call_gemini(url, note)
+        except AIError as e:
+            if not video_too_long(e):
+                raise
+            return {"done": False, "state": {"parts": [], "next": 0, "ended": False},
+                    "msg": "긴 영상 — 45분씩 나눠 정리합니다"}
+    elif not st["ended"] and st["next"] < VIDEO_MAX_PARTS:
+        i = st["next"]
+        try:
+            part = call_gemini_part(url, note, i)
+        except AIError as e:
+            msg = ai_error_text(e) or str(e)
+            return {"done": False, "state": st, "failed": True,
+                    "msg": f"{i + 1}구간에서 멈췄습니다 — 「이어서 다시」를 누르면 {i + 1}구간부터 이어 갑니다. ({msg[:80]})"}
+        if part is None:
+            st["ended"] = True
+        else:
+            st["ended"] = part.pop("ended")
+            st["parts"].append(part)
+        st["next"] = i + 1
+        return {"done": False, "state": st, "msg": f"긴 영상 {i + 1}구간({_hms(i * VIDEO_PART_SEC)}~)까지 정리함"}
+    else:
+        parts = [pt for pt in st["parts"] if pt["summary"]["readable"]]
+        if not parts:
+            raise QuickStop("AI가 영상 내용을 읽지 못했습니다.")
+        summary, model = merge_video_parts(parts, note)
+        notes.append(f"영상이 길어 45분씩 {len(st['parts'])}개 구간으로 나눠 정리한 뒤 하나로 합쳤습니다.")
+        if not st["ended"]:
+            notes.append(f"{_hms(st['next'] * VIDEO_PART_SEC)} 이후 부분은 정리하지 않았습니다.")
+    return {"done": True, "summary": summary, "model": model, "notes": notes}
+
+
+def quick_summarize(url: str, text: str, st) -> dict:
+    """한 번 부를 때 한 걸음: 끝났으면 done=True 와 요약, 긴 영상이면 다음 구간 상태를 돌려준다."""
+    _run_ctx.deadline = time.time() + RUN_BUDGET_SEC
+    try:
+        notes: list[str] = []
+        vid = youtube_id(url) if url else None
+        if vid and not text:
+            r = video_step(url, st, "")
+            if not r["done"]:
+                return r
+            summary, model, notes = r["summary"], r["model"], r["notes"]
+            source = youtube_title(vid)[1]
+        else:
+            meta = {"주소": url or "", "제목": "", "매체": "", "게시일": ""}
+            content: list[dict] = []
+            label = "직원이_붙여넣은_본문"
+            source = ""
+            summary = None
+            if not text and url:
+                data, ctype, final = fetch(url)
+                if "pdf" in ctype.lower() or data[:5] == b"%PDF-":
+                    content.append({"type": "document", "source": {"type": "base64", "media_type": "application/pdf",
+                                                                    "data": base64.b64encode(data).decode()}})
+                else:
+                    art = extract_article(decode_html(data, ctype))
+                    text, label, source = art["text"], "기사_본문", art["site"]
+                    meta.update({"제목": art["title"], "매체": art["site"], "게시일": art["published"]})
+                    html_text = decode_html(data, ctype)
+                    if is_rich_page(html_text, final):   # 본문 이미지·실린 영상까지 걸음을 나눠 함께 정리한다
+                        r = rich_step((st or {}).get("rich") if isinstance(st, dict) else None,
+                                      text, label, meta, html_text, final, "")
+                        if not r["done"]:
+                            return {"done": False, "state": {"rich": r["state"]}, "msg": r["msg"], "failed": bool(r.get("failed"))}
+                        summary, model, notes = r["summary"], r["model"], r["notes"]
+                    elif len(text) < MIN_TEXT_CHARS:
+                        raise QuickStop("이 페이지에서 본문을 읽지 못했습니다(로그인·유료 기사이거나 화면을 스크립트로 그리는 사이트). "
+                                        "본문을 복사해 붙여 넣어 주세요.")
+            if summary is None:
+                if text:
+                    blk, n = text_block(label, text, meta)
+                    notes += n
+                    content.append({"type": "text", "text": blk})
+                content.append({"type": "text", "text": "위 자료를 정리하십시오."})
+                summary, model = ai_blocks(content)
+        if not summary["readable"]:
+            raise QuickStop("AI가 자료 본문을 읽을 수 없다고 판단했습니다: " + summary["one_line"])
+        summary["notes"] = notes
+        return {"done": True, "summary": summary, "source": source}
+    finally:
+        _run_ctx.deadline = None
 
 
 def worker() -> None:
@@ -1680,8 +2334,12 @@ def post_row(r: sqlite3.Row, me: int, full: bool = False, admin: bool = False) -
         "category": r["category"], "sentiment": r["sentiment"], "model": r["model"],
         "created_at": r["created_at"], "updated_at": r["updated_at"], "author": r["author"], "author_id": r["user_id"],
         "likes": r["likes"], "liked": bool(r["liked"]), "comments": r["ncomments"], "mine": r["user_id"] == me,
-        "views": r["nviews"],
+        "views": r["nviews"], "pinned": bool(r["pinned"]), "shelf": r["shelf"],
     }
+    if r["kind"] == "notice":  # 공지는 AI 요약 없이 본문 그대로 보인다
+        d["body"] = r["pasted_text"] or ""
+    if full and r["kind"] != "notice" and (r["pasted_text"] or "").strip():
+        d["pasted"] = r["pasted_text"]  # 직원이 붙여 넣은 원문 — 자세히 창에서만 보낸다(목록은 가볍게)
     if full:
         d["comment_list"] = [dict(c) | {"mine": c["user_id"] == me} for c in q(
             "SELECT c.id, c.body, c.created_at, c.user_id, u.name AS author FROM comments c JOIN users u ON u.id=c.user_id "
@@ -1692,6 +2350,10 @@ def post_row(r: sqlite3.Row, me: int, full: bool = False, admin: bool = False) -
             d["viewers"] = [dict(v) for v in q(
                 "SELECT u.name, v.created_at FROM post_views v JOIN users u ON u.id=v.user_id "
                 "WHERE v.post_id=? AND v.user_id<>? ORDER BY v.created_at", (r["id"], r["user_id"]))]
+            if r["kind"] == "notice":  # 공지는 아직 안 읽은 사람도 보인다
+                d["unread"] = [u_["name"] for u_ in q(
+                    "SELECT name FROM users WHERE active=1 AND id<>? AND id NOT IN "
+                    "(SELECT user_id FROM post_views WHERE post_id=?) ORDER BY name", (r["user_id"], r["id"]))]
     return d
 
 
@@ -1710,6 +2372,7 @@ STATIC_FILES = {
     "/classic": ("index.html", "text/html; charset=utf-8"),      # 이전 화면은 늘 여기서 열린다
     "/new": ("v2.html", "text/html; charset=utf-8"),
     "/v2.html": ("v2.html", "text/html; charset=utf-8"),
+    "/quick": ("quick.html", "text/html; charset=utf-8"),   # 단톡방에 올릴 요약만 — 저장하지 않는다
     "/manifest.webmanifest": ("manifest.webmanifest", "application/manifest+json"),
     "/sw.js": ("sw.js", "text/javascript; charset=utf-8"),
     "/icon.svg": ("icon.svg", "image/svg+xml"),
@@ -1804,6 +2467,8 @@ class Handler(BaseHTTPRequestHandler):
             x("UPDATE sessions SET expires_at=? WHERE token_hash=?", (now() + SESSION_DAYS * 86400, th))
             x("UPDATE users SET last_login=? WHERE id=?", (now(), row["id"]))
             self._renew_cookie = self.cookie(tok, SESSION_DAYS * 86400)
+        if row:
+            record_visit(row["id"], self.headers.get("User-Agent", ""))
         return row
 
     def need_user(self, admin=False):
@@ -1868,7 +2533,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def static(self, name: str, ctype: str):
         data = (STATIC / name).read_bytes()
-        is_html = name in ("index.html", "v2.html")
+        is_html = name in ("index.html", "v2.html", "quick.html")
         if is_html:
             data = data.replace(b"{{CENTER_NAME}}", html.escape(CENTER_NAME).encode())
             data = data.replace(b"{{APP_NAME}}", html.escape(V2_NAME).encode())
@@ -1893,7 +2558,7 @@ class Handler(BaseHTTPRequestHandler):
 
     # ── 인증 ──
     def api_version(self, qs):
-        self.send_json(200, {"build": BUILD_ID})
+        self.send_json(200, {"build": BUILD_ID, "push": push_crypto()})
 
     def api_me(self, qs):
         u = self.current_user()
@@ -1903,6 +2568,7 @@ class Handler(BaseHTTPRequestHandler):
                              "categories": CATEGORIES, "session_days": SESSION_DAYS, "invite_label": invite_label(),
                              "serverless": SERVERLESS, "max_upload": MAX_UPLOAD, "upload_chunk": UPLOAD_CHUNK, "now": now(),
                              "text_engine": text_engine(), "app_name": V2_NAME, "ui": UI_DEFAULT,
+                             "shelves": shelves_all(), "event_kinds": EVENT_KINDS, "features": features(),
                              "authors": [dict(r) for r in q(
                                  "SELECT u.id, u.name FROM users u WHERE EXISTS (SELECT 1 FROM posts p WHERE p.user_id=u.id) "
                                  "ORDER BY u.name")]})
@@ -2017,6 +2683,16 @@ class Handler(BaseHTTPRequestHandler):
         old = q("SELECT endpoint FROM push_subs WHERE user_id=? ORDER BY created_at DESC, endpoint", (u["id"],))
         for r in old[PUSH_SUB_MAX:]:
             xn("DELETE FROM push_subs WHERE endpoint=?", (r["endpoint"],))
+        print(f"[push] 구독 등록 사용자 {u['id']} ({urllib.parse.urlsplit(ep).hostname})", file=sys.stderr)
+        self.send_json(200, {"ok": True})
+
+    def api_push_error(self, qs):
+        """화면에서 알림 켜기가 실패했을 때 까닭을 서버 기록에 남긴다(원인 찾기용, 저장하지 않음)."""
+        u = self.need_user()
+        d = self.body_json()
+        clean = lambda v, n: re.sub(r"[\x00-\x1f]", " ", str(v or ""))[:n]
+        print(f"[push] 켜기 실패 사용자 {u['id']}: {clean(d.get('msg'), 300)} | 허용={clean(d.get('perm'), 20)} "
+              f"앱={clean(d.get('app'), 10)} | {clean(d.get('ua'), 200)}", file=sys.stderr)
         self.send_json(200, {"ok": True})
 
     def api_push_unsubscribe(self, qs):
@@ -2065,7 +2741,16 @@ class Handler(BaseHTTPRequestHandler):
             where.append("p.user_id=?"); args.append(u["id"])
         if g("liked") == "1":
             where.append("EXISTS (SELECT 1 FROM likes l WHERE l.post_id=p.id AND l.user_id=?)"); args.append(u["id"])
-        kinds = [k for k in g("kind").split(",") if k in ("article", "pdf", "image", "video", "text")]
+        kinds = [k for k in g("kind").split(",") if k in ("article", "pdf", "image", "video", "text", "notice")]
+        feat = features()
+        if not feat["notice"]:  # 공지를 꺼 두면 써 둔 공지도 피드에서 감춘다(지우지는 않는다)
+            where.append("p.kind<>'notice'")
+        if not feat["lib"]:
+            pass
+        elif g("shelf") == "*":
+            where.append("p.shelf IS NOT NULL")
+        elif g("shelf"):
+            where.append("p.shelf=?"); args.append(g("shelf"))
         if kinds:
             where.append("p.kind IN (" + ",".join("?" * len(kinds)) + ")"); args += kinds
         if g("author").isdigit():
@@ -2079,14 +2764,20 @@ class Handler(BaseHTTPRequestHandler):
             where.append("p.created_at>?"); args.append(now() - int(rng) * 86400)
         if g("q"):
             like = f"%{g('q')}%"
-            where.append("(p.source_title LIKE ? OR p.title_edit LIKE ? OR p.summary_json LIKE ? OR p.note LIKE ? OR p.url LIKE ? OR u.name LIKE ?)")
-            args += [like] * 6
+            where.append("(p.source_title LIKE ? OR p.title_edit LIKE ? OR p.summary_json LIKE ? OR p.note LIKE ? OR p.url LIKE ? "
+                         "OR u.name LIKE ? OR p.file_name LIKE ? OR (p.kind='notice' AND p.pasted_text LIKE ?))")
+            args += [like] * 8
         if g("before").isdigit():
             where.append("p.id<?"); args.append(int(g("before")))
         order = "likes DESC, nviews DESC, ncomments DESC, p.id DESC" if g("sort") == "popular" else "p.id DESC"
         sql = POST_SELECT + (" WHERE " + " AND ".join(where) if where else "") + f" ORDER BY {order} LIMIT 30"
         rows = q(sql, args)
-        self.send_json(200, {"posts": [post_row(r, u["id"]) for r in rows]})
+        out = {"posts": [post_row(r, u["id"]) for r in rows]}
+        if g("pins") == "1" and feat["notice"]:  # 첫 쪽에는 고정 공지를 따로 붙인다(내가 아직 안 읽었는지도)
+            out["pins"] = [post_row(r, u["id"]) | {"read": bool(r["seen"]) or r["user_id"] == u["id"]} for r in q(
+                POST_SELECT.replace("FROM posts p", ", (SELECT COUNT(*) FROM post_views v WHERE v.post_id=p.id AND v.user_id=?) AS seen FROM posts p")
+                + " WHERE p.kind='notice' AND p.pinned=1 ORDER BY p.id DESC LIMIT 5", (u["id"], u["id"]))]
+        self.send_json(200, out)
 
     def api_post_get(self, qs, pid):
         u = self.need_user()
@@ -2180,8 +2871,116 @@ class Handler(BaseHTTPRequestHandler):
                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                 (u["id"], url or None, kind, engine, note, pasted or None, file_name, file_path, file_type,
                  title, site, "queued", t, t))
+        shelf = clean_shelf(d.get("shelf")) if features()["lib"] else None
+        if shelf:
+            x("UPDATE posts SET shelf=? WHERE id=?", (shelf, pid))
         enqueue(pid)
         self.send_json(201, {"id": pid})
+
+    def api_notice_create(self, qs):
+        """관리자가 공지를 올린다. AI 를 부르지 않고 쓴 그대로 둔다."""
+        u = self.need_user(admin=True)
+        need_feature("notice")
+        d = self.body_json()
+        title = re.sub(r"\s+", " ", str(d.get("title") or "")).strip()[:200]
+        body = str(d.get("body") or "").strip()[:20000]
+        if not title or not body:
+            raise HTTPError_(400, "공지 제목과 내용을 모두 적어 주세요")
+        t = now()
+        pid = x("""INSERT INTO posts(user_id, kind, engine, pasted_text, source_title, status, category, pinned, created_at, updated_at)
+                   VALUES (?,?,?,?,?,?,?,?,?,?)""",
+                (u["id"], "notice", "none", body, title, "done", "공지", 1 if d.get("pinned", True) else None, t, t))
+        out = {"id": pid}
+        if d.get("push"):
+            r = notify_post(pid)
+            out["push"] = r if isinstance(r, dict) else {"msg": r}
+        self.send_json(201, out)
+
+    def api_admin_features(self, qs):
+        """새 기능 켜기·끄기(관리자). 끄면 기존 화면으로 돌아가고, 써 둔 자료는 그대로 남는다."""
+        u = self.need_user(admin=True)
+        d = self.body_json()
+        cur = features()
+        for k in FEATURES:
+            if k in d:
+                cur[k] = bool(d[k])
+        x("INSERT INTO app_settings(key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+          ("features", json.dumps(cur)))
+        print(f"[관리] 새 기능 설정 변경: {cur} (by {u['name']})", file=sys.stderr)
+        self.send_json(200, {"features": cur})
+
+    def api_notice_edit(self, qs, pid):
+        """공지 고정 켜기·끄기, 내용 고치기(관리자)."""
+        self.need_user(admin=True)
+        need_feature("notice")
+        p = q("SELECT id, kind FROM posts WHERE id=?", (pid,), one=True)
+        if not p or p["kind"] != "notice":
+            raise HTTPError_(404, "공지가 없습니다")
+        d = self.body_json()
+        if "pinned" in d:
+            x("UPDATE posts SET pinned=? WHERE id=?", (1 if d["pinned"] else None, pid))
+        if d.get("body"):
+            x("UPDATE posts SET pasted_text=?, updated_at=? WHERE id=?", (str(d["body"]).strip()[:20000], now(), pid))
+        self.send_json(200, {"ok": True})
+
+    def api_post_shelf(self, qs, pid):
+        """올린 사람이나 관리자가 자료실 칸을 정한다(빈칸이면 자료실에서 뺀다)."""
+        u = self.need_user()
+        need_feature("lib")
+        p = q("SELECT user_id FROM posts WHERE id=?", (pid,), one=True)
+        if not p:
+            raise HTTPError_(404, "글이 없습니다")
+        if p["user_id"] != u["id"] and u["role"] != "admin":
+            raise HTTPError_(403, "올린 사람이나 관리자만 자료실에 넣을 수 있습니다")
+        shelf = clean_shelf(self.body_json().get("shelf"))
+        x("UPDATE posts SET shelf=? WHERE id=?", (shelf or None, pid))
+        self.send_json(200, {"ok": True, "shelf": shelf or None})
+
+    # ── 일정 ──
+    def api_events(self, qs):
+        u = self.need_user()
+        need_feature("cal")
+        g = lambda k: (qs.get(k) or [""])[0].strip()
+        today = kst_day(now())
+        day_re = r"\d{4}-\d{2}-\d{2}"
+        frm = g("from") if re.fullmatch(day_re, g("from")) else today
+        to = g("to") if re.fullmatch(day_re, g("to")) else "9999-12-31"
+        rows = [dict(r) | {"mine": r["user_id"] == u["id"]} for r in q(
+            "SELECT e.*, u.name AS author FROM events e JOIN users u ON u.id=e.user_id WHERE e.day>=? AND e.day<=? "
+            "ORDER BY e.day, COALESCE(e.time, ''), e.id LIMIT 300", (frm, to))]
+        self.send_json(200, {"events": rows, "today": today, "kinds": EVENT_KINDS})
+
+    def api_event_create(self, qs):
+        u = self.need_user()
+        need_feature("cal")
+        d = self.body_json()
+        title = re.sub(r"\s+", " ", str(d.get("title") or "")).strip()[:120]
+        day = str(d.get("day") or "").strip()
+        tm = str(d.get("time") or "").strip()
+        if not title:
+            raise HTTPError_(400, "일정 이름을 적어 주세요")
+        try:
+            time.strptime(day, "%Y-%m-%d")
+        except ValueError:
+            raise HTTPError_(400, "날짜를 골라 주세요")
+        if tm and not re.fullmatch(r"([01]\d|2[0-3]):[0-5]\d", tm):
+            raise HTTPError_(400, "시각이 맞지 않습니다")
+        kind = d.get("kind") if d.get("kind") in EVENT_KINDS else "기타"
+        eid = x("INSERT INTO events(user_id, title, day, time, place, kind, note, created_at) VALUES (?,?,?,?,?,?,?,?)",
+                (u["id"], title, day, tm or None, str(d.get("place") or "").strip()[:120] or None, kind,
+                 str(d.get("note") or "").strip()[:1000] or None, now()))
+        self.send_json(201, {"id": eid})
+
+    def api_event_delete(self, qs, eid):
+        u = self.need_user()
+        need_feature("cal")
+        e = q("SELECT user_id FROM events WHERE id=?", (eid,), one=True)
+        if not e:
+            raise HTTPError_(404, "일정이 없습니다")
+        if e["user_id"] != u["id"] and u["role"] != "admin":
+            raise HTTPError_(403, "올린 사람이나 관리자만 지울 수 있습니다")
+        x("DELETE FROM events WHERE id=?", (eid,))
+        self.send_json(200, {"ok": True})
 
     def api_post_delete(self, qs, pid):
         u = self.need_user()
@@ -2197,6 +2996,7 @@ class Handler(BaseHTTPRequestHandler):
             x("DELETE FROM comments WHERE post_id=?", (pid,))
             x("DELETE FROM post_views WHERE post_id=?", (pid,))
             x("DELETE FROM posts WHERE id=?", (pid,))
+            video_state_put(pid, None)
         self.send_json(200, {"ok": True})
 
     def api_post_update(self, qs, pid):
@@ -2207,6 +3007,8 @@ class Handler(BaseHTTPRequestHandler):
             raise HTTPError_(404, "글이 없습니다")
         if p["user_id"] != u["id"] and u["role"] != "admin":
             raise HTTPError_(403, "올린 사람이나 관리자만 다시 정리할 수 있습니다")
+        if p["kind"] == "notice":
+            raise HTTPError_(400, "공지는 AI 로 정리하지 않습니다")
         if p["status"] in ("queued", "working"):
             raise HTTPError_(409, "이미 정리 중입니다")
         d = self.body_json()
@@ -2214,9 +3016,21 @@ class Handler(BaseHTTPRequestHandler):
         if text:
             x("UPDATE posts SET pasted_text=?, engine=?, kind=CASE WHEN kind='video' THEN 'text' ELSE kind END WHERE id=?",
               (text, text_engine(), pid))
+        if text or p["status"] not in ("failed",):
+            video_state_put(pid, None)
         set_status(pid, "queued", "")
         enqueue(pid)
         self.send_json(200, {"ok": True})
+
+    def api_post_notify(self, qs, pid):
+        """관리자가 요약이 끝난 글의 알림을 손으로 보낸다(지난 글, 다시 보내기)."""
+        self.need_user(admin=True)
+        r = notify_post(int(pid), force=True)
+        if isinstance(r, str):
+            raise HTTPError_(409, r)
+        if not r.get("ok"):
+            raise HTTPError_(502, f"보내지 못했습니다(실패 {r.get('fail', 0)} · 만료 {r.get('gone', 0)})")
+        self.send_json(200, r)
 
     def api_post_title(self, qs, pid):
         """올린 사람이나 관리자가 글 제목을 고친다. 빈칸으로 보내면 원래 제목으로 되돌린다."""
@@ -2242,6 +3056,46 @@ class Handler(BaseHTTPRequestHandler):
         process(pid)
         r = q("SELECT status FROM posts WHERE id=?", (pid,), one=True)
         self.send_json(200, {"ok": True, "ran": True, "status": r["status"] if r else None})
+
+    def api_quick(self, qs):
+        """요약 전용: 저장하지 않고 요약만 돌려준다(긴 영상은 화면이 state 를 들고 여러 번 부른다)."""
+        self.need_user()
+        d = self.body_json()
+        url = (d.get("url") or "").strip()
+        text = (d.get("text") or "").strip()[:400_000]
+        if url and not looks_like_url(url):
+            text, url = (url + "\n\n" + text).strip()[:400_000], ""
+        if not url and not text:
+            raise HTTPError_(400, "링크나 본문을 넣어 주세요")
+        if url:
+            if not re.match(r"^https?://", url, re.I):
+                url = "https://" + url
+            try:
+                check_public_url(url)
+            except BlockedURL as e:
+                raise HTTPError_(400, str(e))
+            vid = youtube_id(url)
+            if vid:
+                url = f"https://www.youtube.com/watch?v={vid}"
+            elif (urllib.parse.urlsplit(url).hostname or "").endswith(VIDEO_HOSTS):
+                raise HTTPError_(400, "유튜브 영상 주소를 알아보지 못했습니다(watch?v=… 또는 youtu.be/… 형태)")
+        try:
+            r = quick_summarize(url, text, d.get("state"))
+        except QuickStop as e:
+            return self.send_json(200, {"done": True, "blocked": str(e)})
+        except BlockedURL as e:
+            raise HTTPError_(400, str(e))
+        except AIError as e:
+            msg = ai_error_text(e) or str(e)
+            if re.match(r"HTTP (429|5\d\d)|시간 초과", msg):
+                msg = "AI 서버가 붐벼 제때 답하지 않았습니다. 잠시 뒤 다시 눌러 주세요. (" + msg[:80] + ")"
+            raise HTTPError_(502, msg)
+        except urllib.error.HTTPError as e:
+            return self.send_json(200, {"done": True, "blocked": f"원문 사이트가 접근을 거절했습니다(HTTP {e.code}). 본문을 복사해 붙여 넣어 주세요."})
+        except (urllib.error.URLError, TimeoutError, socket.timeout) as e:
+            raise HTTPError_(502, f"원문을 받아 오지 못했습니다: {e}")
+        r["url"] = url
+        self.send_json(200, r)
 
     def api_like(self, qs, pid):
         u = self.need_user()
@@ -2511,16 +3365,39 @@ class Handler(BaseHTTPRequestHandler):
         self.need_user(admin=True)
         users = [dict(r) for r in q(
             "SELECT u.id, u.name, u.role, u.active, u.created_at, u.last_login, "
-            "(SELECT COUNT(*) FROM posts p WHERE p.user_id=u.id) AS posts FROM users u ORDER BY u.name")]
+            "(SELECT COUNT(*) FROM posts p WHERE p.user_id=u.id) AS posts, "
+            "(SELECT COUNT(*) FROM push_subs s WHERE s.user_id=u.id) AS push, "
+            "(SELECT COUNT(*) FROM visits v WHERE v.user_id=u.id AND v.day>=?) AS days30 FROM users u ORDER BY u.name",
+            (kst_day(now() - 29 * 86400),))]
         for u in users:
             u["locked"] = acct_locked(u["name"])
         invites = [dict(r) for r in q(
             "SELECT id, name, role, created_at, expires_at FROM invites WHERE used_at IS NULL AND expires_at>? ORDER BY id DESC",
             (now(),))]
-        self.send_json(200, {"users": users, "invites": invites, "ai": {
+        seen = {r["user_id"] for r in q("SELECT DISTINCT user_id FROM visits WHERE day>=?", (kst_day(now() - 6 * 86400),))}
+        self.send_json(200, {"users": users, "invites": invites,
+                             "visits": {"today": q("SELECT COUNT(*) AS n FROM visits WHERE day=?", (kst_day(now()),), one=True)["n"],
+                                        "week": len(seen), "since": (q("SELECT MIN(day) AS d FROM visits", one=True) or {})["d"]},
+                             "ai": {
             "claude": bool(os.environ.get("ANTHROPIC_API_KEY")), "claude_model": CLAUDE_MODEL,
             "gemini": bool(os.environ.get("GEMINI_API_KEY")), "gemini_model": GEMINI_MODEL},
             "queue": queue_size(), "storage": storage_usage()})
+
+    def api_admin_activity(self, qs, uid):
+        """한 사람의 최근 30일 접속한 날과 열어 본 글."""
+        self.need_user(admin=True)
+        u = q("SELECT id, name FROM users WHERE id=?", (uid,), one=True)
+        if not u:
+            raise HTTPError_(404, "사용자가 없습니다")
+        x("DELETE FROM visits WHERE day<?", (kst_day(now() - VISIT_KEEP_DAYS * 86400),))
+        visits = [dict(r) for r in q("SELECT day, first_at, last_at, device FROM visits WHERE user_id=? AND day>=? ORDER BY day DESC",
+                                     (uid, kst_day(now() - 29 * 86400)))]
+        views = [{"id": r["id"], "title": r["title_edit"] or r["source_title"] or r["url"] or f"글 {r['id']}", "at": r["at"]}
+                 for r in q("SELECT p.id, p.title_edit, p.source_title, p.url, v.created_at AS at FROM post_views v "
+                            "JOIN posts p ON p.id=v.post_id WHERE v.user_id=? ORDER BY v.created_at DESC LIMIT 30", (uid,))]
+        nviews = q("SELECT COUNT(*) AS n FROM post_views WHERE user_id=?", (uid,), one=True)["n"]
+        self.send_json(200, {"name": u["name"], "visits": visits, "views": views, "nviews": nviews,
+                             "since": (q("SELECT MIN(day) AS d FROM visits", one=True) or {})["d"]})
 
     def api_admin_invite(self, qs):
         me = self.need_user(admin=True)
@@ -2572,6 +3449,7 @@ ROUTES = {
     ("GET", r"/api/push"): Handler.api_push,
     ("POST", r"/api/push/subscribe"): Handler.api_push_subscribe,
     ("POST", r"/api/push/unsubscribe"): Handler.api_push_unsubscribe,
+    ("POST", r"/api/push/error"): Handler.api_push_error,
     ("POST", r"/api/push/test"): Handler.api_push_test,
     ("GET", r"/api/posts"): Handler.api_posts,
     ("POST", r"/api/posts"): Handler.api_post_create,
@@ -2579,7 +3457,14 @@ ROUTES = {
     ("DELETE", r"/api/posts/(\d+)"): Handler.api_post_delete,
     ("POST", r"/api/posts/(\d+)/retry"): Handler.api_post_update,
     ("POST", r"/api/posts/(\d+)/title"): Handler.api_post_title,
+    ("POST", r"/api/posts/(\d+)/notify"): Handler.api_post_notify,
     ("POST", r"/api/posts/(\d+)/run"): Handler.api_post_run,
+    ("POST", r"/api/notices"): Handler.api_notice_create,
+    ("POST", r"/api/notices/(\d+)"): Handler.api_notice_edit,
+    ("POST", r"/api/posts/(\d+)/shelf"): Handler.api_post_shelf,
+    ("GET", r"/api/events"): Handler.api_events,
+    ("POST", r"/api/events"): Handler.api_event_create,
+    ("DELETE", r"/api/events/(\d+)"): Handler.api_event_delete,
     ("POST", r"/api/posts/(\d+)/like"): Handler.api_like,
     ("POST", r"/api/posts/(\d+)/comments"): Handler.api_comment,
     ("DELETE", r"/api/comments/(\d+)"): Handler.api_comment_delete,
@@ -2590,7 +3475,10 @@ ROUTES = {
     ("POST", r"/api/briefing"): Handler.api_briefing_make,
     ("POST", r"/api/posts/(\d+)/extras"): Handler.api_post_extras,
     ("POST", r"/api/ask"): Handler.api_ask,
+    ("POST", r"/api/quick"): Handler.api_quick,
     ("GET", r"/api/admin/users"): Handler.api_admin_users,
+    ("POST", r"/api/admin/features"): Handler.api_admin_features,
+    ("GET", r"/api/admin/users/(\d+)/activity"): Handler.api_admin_activity,
     ("POST", r"/api/admin/invites"): Handler.api_admin_invite,
     ("DELETE", r"/api/admin/invites/(\d+)"): Handler.api_admin_invite_delete,
     ("POST", r"/api/admin/users/(\d+)"): Handler.api_admin_user,

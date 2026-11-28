@@ -36,7 +36,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-sy
 button,select,input,textarea{font:inherit;color:inherit}
 a{color:var(--accent)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.hidden{display:none!important}
+.hidden,[hidden]{display:none!important}
 .wrap{max-width:760px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 16px) 16px 120px}
 header.top{display:flex;align-items:center;gap:8px;margin:4px 0 14px}
 header.top h1{font-size:21px;margin:0;flex:1;display:flex;align-items:center;gap:8px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -151,7 +151,9 @@ header.top h1::before,.sheet h2::before,.auth h2::before{content:"";flex:none;wi
 .more{display:block;margin:6px auto 0;border:0;background:none;color:var(--accent);font-weight:700;font-size:15px;cursor:pointer;padding:6px 10px}
 .wm{background:var(--accent-soft);border-radius:12px;padding:8px 11px;font-size:14px;margin:8px 0;white-space:pre-wrap}
 .wm b{color:var(--accent);font-size:12.5px;display:block}
-.sec{font-size:12.5px;font-weight:700;color:var(--sub);margin-top:12px}
+.sec{font-size:12.5px;font-weight:700;color:var(--sub);margin-top:12px;display:flex;align-items:center;gap:6px}
+.cpb{margin-left:auto;font:inherit;font-size:12px;font-weight:700;color:var(--accent);border:1px solid var(--line);border-radius:8px;padding:2px 9px;background:var(--card);cursor:pointer;flex:none}
+.cprow{display:flex;justify-content:flex-end;margin-top:6px}
 .det ul{margin:6px 0;padding-left:20px}.det li{margin:2px 0}
 .at{font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--accent);font-weight:700;margin-right:4px}
 .nums{margin-top:4px;font-size:13.5px}
@@ -195,6 +197,7 @@ header.top h1::before,.sheet h2::before,.auth h2::before{content:"";flex:none;wi
 .close{border:0;background:none;color:var(--sub);font-size:16px;cursor:pointer;padding:6px}
 .lbl{font-weight:700;font-size:15px;margin:18px 0 8px;color:var(--ink)}
 .lbl small{font-weight:500;color:var(--faint);font-size:14px}
+.lbl .pasteBtn{float:right;font-size:13px;font-weight:700;color:var(--brand,#13294b);background:none;border:1px solid var(--line);border-radius:999px;padding:3px 12px;cursor:pointer}
 .field{width:100%;border:1px solid var(--line);background:var(--field);border-radius:16px;padding:14px 16px;font-size:16px}
 .field::placeholder{color:var(--faint)}
 textarea.field{min-height:130px;resize:vertical;line-height:1.55}
@@ -233,7 +236,7 @@ textarea.field{min-height:130px;resize:vertical;line-height:1.55}
 .status.err{color:var(--like)}
 
 /* 사진 크게 보기 */
-.lb{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:30;display:flex;flex-direction:column}
+.lb{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;background:rgba(0,0,0,.97);z-index:30;display:flex;flex-direction:column}.lb::backdrop{background:rgba(0,0,0,.6)}
 .lb .top{display:flex;gap:8px;align-items:center;padding:calc(env(safe-area-inset-top) + 12px) 14px 12px;color:#fff}
 .lb .top span{flex:1}
 .lb .top a,.lb .top button{border:1px solid rgba(255,255,255,.35);background:none;color:#fff;border-radius:10px;padding:6px 12px;text-decoration:none;cursor:pointer;font-size:14px}
@@ -245,7 +248,9 @@ dialog{border:0;border-radius:20px;padding:0;max-width:min(600px,calc(100vw - 24
 dialog::backdrop{background:var(--scrim)}
 dialog .dh{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line)}
 dialog .dh h2{font-size:17px;margin:0;flex:1}
-dialog .db{padding:14px 18px 18px;max-height:78vh;overflow:auto}
+dialog .db{padding:14px 18px 18px;max-height:78vh;overflow:auto;overscroll-behavior:contain}
+html.modal-open,html.modal-open body{overflow:hidden}
+dialog,dialog::backdrop{overscroll-behavior:contain}
 dialog .db .post{border:0;border-radius:0;margin:0}
 dialog .db .post .body{padding:0}
 dialog input[type=text],dialog input[type=password],dialog select,.auth input{width:100%;border:1px solid var(--line);background:var(--field);border-radius:12px;padding:10px 12px}
@@ -266,6 +271,53 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
 .installbar div{flex:1;font-size:13.5px;color:var(--sub)}.installbar b{display:block;color:var(--ink);font-size:14.5px}
 .installbar .x{border:0;background:none;color:var(--faint);font-size:18px;cursor:pointer;padding:4px}
 .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:var(--ink);color:var(--card);padding:8px 14px;border-radius:10px;font-size:13.5px;z-index:50;max-width:90vw}
+.quick{display:flex;gap:6px;margin:0 0 8px}
+.quick button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:9px 4px;font-size:14px;font-weight:700;cursor:pointer;color:var(--ink);white-space:nowrap}
+.pins{display:flex;flex-direction:column;gap:5px;margin:0 0 8px}
+.pins button{display:flex;align-items:center;gap:7px;text-align:left;border:1px solid var(--warn);background:var(--warn-bg);border-radius:12px;padding:8px 11px;font-size:14px;cursor:pointer;color:var(--ink)}
+.pins button b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+.pins .nb{font-size:11.5px;font-weight:800;color:#fff;background:var(--like);border-radius:999px;padding:1px 7px;flex:none}
+.kb.notice{background:var(--warn-bg);color:var(--warn)}
+.nbody{white-space:pre-wrap;line-height:1.6;margin:6px 0 4px;font-size:15px}
+.pasted{margin:10px 0 4px;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.pasted summary{cursor:pointer;font-weight:600;color:var(--accent,#0f8f80)}
+.pasted .nbody{max-height:60vh;overflow:auto;-webkit-user-select:text;user-select:text}
+.nbody.fold{max-height:9.6em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 70%,transparent)}
+.unread{margin-top:6px;color:var(--like)}
+.shelfsel{display:flex;gap:6px;align-items:center;margin:8px 0 0;font-size:13px;color:var(--sub)}
+.shelfsel select,.dform select,.dform input,.dform textarea{border:1px solid var(--line);background:var(--field);border-radius:10px;padding:7px 9px;font-size:15px;color:var(--ink);min-width:0}
+.dform{display:flex;flex-direction:column;gap:7px;padding:10px;border:1px solid var(--line);border-radius:14px;margin:0 0 12px}
+.dform .r{display:flex;gap:6px}.dform .r>*{flex:1}
+.dform textarea{min-height:110px;resize:vertical;font-family:inherit}
+.dform label.ck{display:flex;gap:6px;align-items:center;font-size:14px}
+.lrow{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:10px 2px;cursor:pointer;color:var(--ink)}
+.lrow b{display:block;font-size:15px;margin-bottom:2px}
+.lrow .s{font-size:12.5px;color:var(--sub)}
+.shelves{display:flex;gap:5px;overflow-x:auto;margin:0 0 8px;scrollbar-width:none}
+.shelves button{flex:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 10px;font-size:13px;cursor:pointer;color:var(--sub);font-weight:600}
+.shelves button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.calh{display:flex;align-items:center;justify-content:space-between;margin:0 0 6px}
+.calh b{font-size:16px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin:0 0 10px;text-align:center}
+.cal .wd{font-size:11.5px;color:var(--sub);padding:2px 0}
+.cal button{border:0;background:none;border-radius:9px;padding:6px 0 4px;font-size:14px;cursor:pointer;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:2px;min-height:38px}
+.cal button.out{visibility:hidden}
+.cal button.today{font-weight:800;color:var(--accent)}
+.cal button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.cal button i{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.cal .sun{color:var(--like)}
+.ev{display:flex;gap:9px;padding:9px 2px;border-bottom:1px solid var(--line);align-items:flex-start}
+.ev.past{opacity:.55}
+.ev .ed{flex:none;width:58px;font-size:12.5px;color:var(--sub)}
+.ev .ed b{display:block;font-size:14px;color:var(--ink)}
+.ev .eb{flex:1;min-width:0}
+.ev .eb b{font-size:15px}
+.ev .eb .s{font-size:12.5px;color:var(--sub);white-space:pre-wrap}
+.ev .ex{border:0;background:none;color:var(--sub);cursor:pointer;font-size:12.5px}
+.feat{display:flex;flex-direction:column;gap:6px;margin:4px 0 6px}
+.feat label{display:flex;gap:8px;align-items:center;font-size:14.5px}
+.feat .hint2{font-size:12.5px;color:var(--sub)}
+.dsub{font-size:13px;color:var(--sub);margin:4px 0 8px}
 </style>
 </head>
 <body>
@@ -317,8 +369,11 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
     <div class="installbar hidden" id="installBar"><img src="/icon-192.png" alt=""><div><b>바탕화면에 앱으로 설치</b>아이콘 한 번으로 바로 열립니다</div><button class="btn primary small" type="button" data-install>설치</button><button class="x" type="button" id="installBarX" aria-label="닫기">×</button></div>
     <div class="installbar hidden" id="pushBar"><img src="/icon-192.png" alt=""><div><b>새 글 알림 받기</b>새 글이 요약되면 휴대폰으로 알려 드립니다</div><button class="btn primary small" type="button" id="pushBarGo">켜기</button><button class="x" type="button" id="pushBarX" aria-label="닫기">×</button></div>
     <div class="intro"><b>읽고, 정리하고, 공유까지 AI가</b>기사·유튜브·캡처·PDF·글을 올리면 AI가 읽고 정리해 구성원 모두가 함께 봅니다.</div>
+    <!--quick--><div class="quick"><button type="button" id="qNotice">📢 공지</button><button type="button" id="qLib">📁 자료실</button><button type="button" id="qCal">📅 일정</button></div>
+    <div class="pins" id="pins"></div><!--/quick-->
     <div class="kchips" id="fKind" role="group" aria-label="자료 종류">
       <button type="button" data-k="" aria-pressed="true">전체</button>
+      <button type="button" data-k="notice" aria-pressed="false">공지</button>
       <button type="button" data-k="article" aria-pressed="false">기사</button>
       <button type="button" data-k="video" aria-pressed="false">유튜브</button>
       <button type="button" data-k="image" aria-pressed="false">스크린샷</button>
@@ -366,8 +421,8 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
     </div>
 
     <div data-for="article">
-      <div class="lbl"><label for="aUrl">기사 주소</label></div>
-      <input class="field" type="url" id="aUrl" placeholder="https:// 기사 주소를 붙여넣어 주세요" inputmode="url">
+      <div class="lbl"><label for="aUrl">기사 주소</label><button type="button" class="pasteBtn" data-into="#aUrl">방금 복사한 링크 넣기</button></div>
+      <input class="field" type="url" id="aUrl" placeholder="https:// 기사 주소를 붙여넣어 주세요" inputmode="url" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
       <div class="lbl"><label for="aText">기사 본문</label> <small>(선택)</small></div>
       <textarea class="field" id="aText" placeholder="유료·로그인 기사는 본문을 전체 선택해 붙여넣어 주세요"></textarea>
       <div class="hint" id="aHint">주소만 넣으면 AI가 기사를 직접 읽고 정리합니다. 사이트가 막혀 있으면 카드에 ‘본문 붙여 AI 정리’ 칸이 생깁니다. 주소 없이 본문만 넣어도 됩니다.</div>
@@ -380,8 +435,8 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
       <div class="hint">링크나 파일 없이 글만 올립니다. AI가 이 글을 읽고 요약·핵심 정리를 붙입니다. 고객 이름·계좌번호 같은 개인정보는 넣지 마세요.</div>
     </div>
     <div data-for="youtube" class="hidden">
-      <div class="lbl"><label for="yUrl">유튜브 주소</label></div>
-      <input class="field" type="url" id="yUrl" placeholder="https://youtu.be/..." inputmode="url">
+      <div class="lbl"><label for="yUrl">유튜브 주소</label><button type="button" class="pasteBtn" data-into="#yUrl">방금 복사한 링크 넣기</button></div>
+      <input class="field" type="url" id="yUrl" placeholder="https://youtu.be/..." inputmode="url" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
       <div class="lbl"><label for="yText">영상 자막</label> <small>(선택)</small></div>
       <textarea class="field" id="yText" placeholder="비공개·일부공개 영상이면 ‘스크립트 표시’ → 자막 전체를 붙여넣어 주세요"></textarea>
       <div class="hint">공개 영상은 주소만 넣으면 Gemini가 영상을 직접 보고 정리합니다(몇 분 걸릴 수 있습니다). 자막을 붙이면 그 자막으로 정리합니다.</div>
@@ -414,6 +469,9 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
     <div class="lbl"><label for="wm">WM 한마디 코멘트</label> <small>(선택)</small></div>
     <input class="field" type="text" id="wm" maxlength="300" placeholder="왜 의미 있는 자료인지 코멘트를 달아주세요">
     <div class="hint">관련 종목이 있으면 여기에 함께 적어 주세요. AI는 자료에 나온 종목을 따로 뽑아 둡니다.</div>
+
+    <div class="lbl" id="shelfLbl"><label for="shelfIn">📁 자료실에도 꽂기</label> <small>(선택 · 상품설명서·상품안내장·제안서 등, 직접 입력도 됩니다)</small></div>
+    <select class="field" id="shelfIn"><option value="">자료실에 넣지 않음</option></select>
 
     <label class="agree"><input type="checkbox" id="agree"><div><b>고객 정보 · 사내 자료가 포함되지 않았습니다.</b><span id="agreeSub">올린 내용은 AI 요약을 위해 외부 서비스로 전송됩니다.</span></div></label>
 
@@ -454,6 +512,8 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
   <div class="dh"><h2>관리</h2><button class="xbtn" type="button" data-close aria-label="닫기">×</button></div>
   <div class="db">
     <div id="aiStatus" class="note"></div>
+    <div class="sec">새 기능 켜기·끄기</div>
+    <div class="feat" id="featBox"></div>
     <div class="sec">저장 공간</div>
     <div id="dbUsage"></div>
     <div class="sec">직원 초대</div>
@@ -494,6 +554,50 @@ label.f{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
       </ol>
     </div>
     <div class="row" style="margin-top:10px"><button class="btn small" type="button" id="instCopy">설치 안내 주소 복사</button><span style="font-size:12.5px;color:var(--sub)">직원에게 보내면 이 안내가 바로 열립니다</span></div>
+  </div>
+</dialog>
+
+<dialog id="noticeDlg">
+  <div class="dh"><h2>📢 공지</h2><button class="xbtn" type="button" data-close aria-label="닫기">×</button></div>
+  <div class="db">
+    <form class="dform hidden" id="nForm">
+      <input type="text" id="nTitle" maxlength="200" placeholder="공지 제목" aria-label="공지 제목" required>
+      <textarea id="nBody" maxlength="20000" placeholder="공지 내용 — 쓴 그대로 올라갑니다(AI 정리 없음)" aria-label="공지 내용" required></textarea>
+      <label class="ck"><input type="checkbox" id="nPin" checked> 맨 위에 고정</label>
+      <label class="ck"><input type="checkbox" id="nPush" checked> 알림도 보내기(알림 켠 직원)</label>
+      <button class="btn primary" type="submit" id="nGo">공지 올리기</button>
+    </form>
+    <div class="dsub">누가 읽었는지는 관리자가 공지의 「👁 본 사람」을 눌러 볼 수 있습니다.</div>
+    <div id="nList"></div>
+  </div>
+</dialog>
+
+<dialog id="libDlg">
+  <div class="dh"><h2>📁 상품·판매 자료실</h2><button class="xbtn" type="button" data-close aria-label="닫기">×</button></div>
+  <div class="db">
+    <div class="shelves" id="libShelves" role="group" aria-label="자료실 칸"></div>
+    <input type="search" class="field" id="libQ" placeholder="자료실 안에서 검색" aria-label="자료실 검색" style="margin-bottom:6px">
+    <div id="libList"></div>
+    <button class="btn loadmore hidden" id="libMore" type="button">더 보기</button>
+    <div class="dsub">자료를 올릴 때 「📁 자료실에도 꽂기」를 고르거나, 이미 올린 글을 열어 아래쪽 「📁 자료실」에서 칸을 고르면 여기에 모입니다(올린 사람·관리자).</div>
+  </div>
+</dialog>
+
+<dialog id="calDlg">
+  <div class="dh"><h2>📅 일정</h2><button class="xbtn" type="button" data-close aria-label="닫기">×</button></div>
+  <div class="db">
+    <div class="calh"><button class="btn small" type="button" id="calPrev" aria-label="이전 달">‹</button><b id="calTitle"></b><button class="btn small" type="button" id="calNext" aria-label="다음 달">›</button></div>
+    <div class="cal" id="calGrid"></div>
+    <div class="calh"><b id="evHead" style="font-size:14px"></b><button class="btn small" type="button" id="evAll" hidden>이 달 전체</button></div>
+    <div id="evList"></div>
+    <form class="dform" id="evForm" style="margin-top:12px">
+      <b style="font-size:14px">일정 추가</b>
+      <input type="text" id="evTitle" maxlength="200" placeholder="무엇 (예: ○○ 신상품 설명회)" aria-label="일정 제목" required>
+      <div class="r"><input type="date" id="evDay" aria-label="날짜" required><input type="time" id="evTime" aria-label="시각(선택)"></div>
+      <div class="r"><select id="evKind" aria-label="종류"></select><input type="text" id="evPlace" maxlength="200" placeholder="장소(선택)" aria-label="장소"></div>
+      <input type="text" id="evNote" maxlength="1000" placeholder="메모(선택)" aria-label="메모">
+      <button class="btn primary" type="submit">추가</button>
+    </form>
   </div>
 </dialog>
 
@@ -582,6 +686,11 @@ async function boot() {
   if (r.invite_label) state.inviteLabel = r.invite_label;
   if (!r.user) { showAuth(); if (location.hash.startsWith("#join")) setTab(true); return; }
   state.me = r.user; state.cats = r.categories || [];
+  state.shelves = r.shelves || []; state.eventKinds = r.event_kinds || [];
+  state.features = r.features || {}; applyFeatures();
+  shelfFill($("#shelfIn"), "자료실에 넣지 않음", "");
+  $("#shelfIn").onchange = () => { const s = $("#shelfIn"); if (s.value === SHELF_NEW) { const v = askShelf(); shelfFill(s, "자료실에 넣지 않음", v || ""); } };
+  $("#evKind").replaceChildren(...state.eventKinds.map(v => h("option", { value: v, text: v })));
   state.serverless = !!r.serverless; state.maxUpload = r.max_upload || 20 * 1024 * 1024; state.chunk = r.upload_chunk || 2560000;
   state.skew = r.now ? r.now - Date.now() / 1000 : 0;
   state.textEngine = r.text_engine || "claude";
@@ -652,7 +761,9 @@ const running = new Map();
 function runPost(id) {
   if (!state.serverless || running.has(id)) return;
   running.set(id, Date.now());
-  api(`/api/posts/${id}/run`, { method: "POST" }).catch(() => {}).finally(() => { running.delete(id); refreshOne(id); });
+  let again = false;   // 긴 영상은 한 번에 한 구간씩 — 아직 남았으면(queued) 곧바로 다음 구간을 시킨다
+  api(`/api/posts/${id}/run`, { method: "POST" }).then(r => { again = !!(r && r.ran && r.status === "queued"); })
+    .catch(() => {}).finally(() => { running.delete(id); refreshOne(id); if (again) runPost(id); });
 }
 function kickStale(posts) {
   if (!state.serverless) return;
@@ -666,13 +777,44 @@ function kickStale(posts) {
 async function loadFeed(more = false) {
   const extra = more && state.posts.length && state.filters.sort !== "popular" ? { before: state.posts[state.posts.length - 1].id } : {};
   try {
-    const r = await api("/api/posts?" + qs(extra));
+    const r = await api("/api/posts?" + qs(more ? extra : { ...extra, pins: 1 }));
+    if (!more) { state.pins = r.pins || []; renderPins(); }
     state.posts = more ? state.posts.concat(r.posts) : r.posts;
     renderFeed(); kickStale(r.posts);
     $("#loadMore").classList.toggle("hidden", r.posts.length < 30 || state.filters.sort === "popular");
   } catch (e) { if (e.status !== 401) toast(e.message); }
 }
 $("#loadMore").onclick = () => loadFeed(true);
+
+// ── 새 기능 켜기·끄기(관리자가 끄면 기존 화면으로) ──
+const FEAT = { notice: "📢 공지 게시판", lib: "📁 상품·판매 자료실", cal: "📅 일정 공유" };
+const featOn = k => !state.features || state.features[k] !== false;
+function applyFeatures() {
+  $("#qNotice").hidden = !featOn("notice"); $("#qLib").hidden = !featOn("lib"); $("#qCal").hidden = !featOn("cal");
+  $(".quick").hidden = !Object.keys(FEAT).some(featOn);
+  $("#pins").hidden = !featOn("notice");
+  const nb = $('#fKind [data-k="notice"]'); if (nb) nb.hidden = !featOn("notice");
+  if (!featOn("notice") && state.filters.kind === "notice") { state.filters.kind = ""; for (const b of document.querySelectorAll("#fKind button")) b.setAttribute("aria-pressed", String(!b.dataset.k)); }
+  $("#shelfLbl").hidden = $("#shelfIn").hidden = !featOn("lib"); if (!featOn("lib")) $("#shelfIn").value = "";
+  for (const [k, d] of [["notice", "#noticeDlg"], ["lib", "#libDlg"], ["cal", "#calDlg"]]) if (!featOn(k) && $(d).open) $(d).close();
+}
+function featBox() {
+  const box = $("#featBox");
+  const save = async body => {
+    try { const r = await api("/api/admin/features", { method: "POST", body }); state.features = r.features; applyFeatures(); featBox(); loadFeed(); toast("바꿨습니다 — 직원 화면에는 새로 열 때 반영됩니다"); }
+    catch (e) { toast(e.message); featBox(); }
+  };
+  box.replaceChildren(...Object.entries(FEAT).map(([k, t]) => h("label", {}, h("input", { type: "checkbox", checked: featOn(k), onchange: e => save({ [k]: e.target.checked }) }), t)),
+    h("div", { class: "row" }, h("button", { class: "btn small", type: "button", text: "모두 끄기 (기존 버전으로)", onclick: () => { if (confirm("공지·자료실·일정을 모두 끄고 기존 화면으로 돌릴까요?\n써 둔 공지·자료실 칸·일정은 지우지 않고 남겨 두며, 다시 켜면 그대로 보입니다.")) save({ notice: false, lib: false, cal: false }); } }),
+      h("button", { class: "btn small", type: "button", text: "모두 켜기", onclick: () => save({ notice: true, lib: true, cal: true }) })),
+    h("div", { class: "hint2", text: "끄면 그 기능의 단추·창이 사라져 기존 화면으로 돌아갑니다. 써 둔 내용은 지우지 않으니 언제든 다시 켤 수 있습니다." }));
+}
+
+// ── 고정 공지 띠 ──
+function renderPins() {
+  $("#pins").replaceChildren(...(state.pins || []).map(p => h("button", { type: "button", onclick: () => openPost(p.id) },
+    h("span", { text: "📌" }), h("b", { text: titleOf(p, {}) }), p.read ? h("span", { class: "dsub", style: "margin:0", text: timeOf(p.created_at) }) : h("span", { class: "nb", text: "안 읽음" }))));
+}
 
 async function loadTags() {
   try {
@@ -718,7 +860,7 @@ function renderFeed() {
 }
 
 // ── 카드 ──
-const KIND = { article: "기사", pdf: "PDF", image: "스크린샷", video: "유튜브", text: "텍스트" };
+const KIND = { article: "기사", pdf: "PDF", image: "스크린샷", video: "유튜브", text: "텍스트", notice: "공지" };
 const SPARK = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M10 3l1.8 5.2L17 10l-5.2 1.8L10 17l-1.8-5.2L3 10l5.2-1.8z"/><path d="M18 14l.9 2.1L21 17l-2.1.9L18 20l-.9-2.1L15 17l2.1-.9z"/></svg>';
 function ytId(u) {
   try {
@@ -744,13 +886,13 @@ function heroOf(p) {
   return null;
 }
 function lightbox(src, name) {
-  const close = () => { ov.remove(); document.removeEventListener("keydown", key); };
-  const key = e => { if (e.key === "Escape") close(); };
-  const x = h("button", { type: "button", text: "닫기 ✕", onclick: close });
-  const ov = h("div", { class: "lb", role: "dialog", "aria-modal": "true" },
-    h("div", { class: "top" }, h("span", { text: name || "첨부 이미지" }), h("a", { href: src, target: "_blank", rel: "noopener", text: "원본 열기" }), x),
+  // 자료 자세히 창(모달) 위에서도 보이도록 뷰어 자체를 최상위 모달로 연다
+  const x = h("button", { type: "button", text: "닫기 ✕", onclick: () => ov.close() });
+  const ov = h("dialog", { class: "lb" },
+    h("div", { class: "top" }, h("span", { text: name || "첨부 이미지" }), x),
     h("div", { class: "pic" }, h("img", { src, alt: name || "첨부 이미지" })));
-  document.body.append(ov); document.addEventListener("keydown", key); x.focus();
+  ov.addEventListener("close", () => ov.remove());
+  document.body.append(ov); ov.showModal(); x.focus();
 }
 function aiLine(p) {
   const who = p.kind === "video" ? "Gemini" : (p.engine === "gemini" ? "Gemini" : "Claude");
@@ -767,6 +909,14 @@ function titleOf(p, s) {
   if (u) { try { return (p.kind === "video" ? "유튜브 영상 · " : "기사 · ") + new URL(u).hostname.replace(/^www\./, ""); } catch (_) {} }
   return "(제목 없음)";
 }
+// 붙여 넣은 원문 — 자세히 창에서 펼쳐 본다(눌러야 열리고, 길어도 창 안에서 스크롤)
+function pastedBox(txt) {
+  const n = txt.length.toLocaleString("ko-KR");
+  return h("details", { class: "pasted" }, h("summary", { text: `📝 붙여 넣은 원문 보기 (${n}자)` }),
+    h("div", { class: "nbody", text: txt }),
+    h("button", { type: "button", class: "more", text: "원문 복사", onclick: async () => {
+      try { await navigator.clipboard.writeText(txt); toast("원문을 복사했습니다"); } catch { toast("복사하지 못했습니다 — 길게 눌러 선택해 주세요"); } } }));
+}
 // 원문으로 바로 가는 단추 — 기사는 「원문 보기」, 유튜브는 「영상 보기」, 올린 PDF 는 「PDF 보기」
 function sourceLink(p, url) {
   let href = url, label, icon, site = "";
@@ -776,14 +926,15 @@ function sourceLink(p, url) {
     else { label = "원문 보기"; icon = "↗"; site = p.source_site || site; }
   } else if (p.kind === "pdf" && p.has_file) { href = "/api/files/" + p.id; label = "PDF 보기"; icon = "📄"; site = ""; }
   else return null;
-  return h("a", { class: "golink" + (label === "영상 보기" ? " yt" : ""), href, target: "_blank", rel: "noopener noreferrer" },
+  return h("a", { class: "golink" + (label === "영상 보기" ? " yt" : ""), href, target: "_blank", rel: "noopener noreferrer",
+      onclick: !url ? e => openFile(e, p.id) : null },  // 올린 PDF 는 첨부 보기와 같은 길로 연다(새 탭 직접 열기는 로그인이 안 따라감)
     h("span", { class: "gi", text: icon }), h("b", { text: label }), site ? h("span", { class: "gs", text: site }) : null);
 }
 const canEdit = p => p.mine || (state.me && state.me.role === "admin");
 
 function postCard(p, inDialog = false) {
-  const s = p.summary || {}, done = p.status === "done" && p.summary, url = safeUrl(p.url);
-  const card = h("article", { class: "card post" + (done ? "" : " pending"), "data-id": p.id });
+  const s = p.summary || {}, isN = p.kind === "notice", done = p.status === "done" && p.summary && !isN, url = safeUrl(p.url);
+  const card = h("article", { class: "card post" + (done || isN ? "" : " pending"), "data-id": p.id });
   const hero = heroOf(p); if (hero) card.append(hero);
   const body = h("div", { class: "body" }); card.append(body);
 
@@ -807,8 +958,10 @@ function postCard(p, inDialog = false) {
   // AI 표시
   const busy = p.status === "queued" || p.status === "working", bad = p.status === "blocked" || p.status === "failed";
   const ai = h("div", { class: "aiby" + (bad ? " err" : busy ? " wait" : "") });
-  if (busy) ai.textContent = p.status === "queued" ? "⏳ AI 정리 대기 중…" : "◌ " + (p.kind === "video" ? "Gemini가 영상을 보는 중… (몇 분 걸릴 수 있습니다)" : (p.engine === "gemini" ? "Gemini" : "Claude") + "가 읽는 중… (보통 1분 안팎)");
+  if (busy && /^긴 영상/.test(p.status_msg || "")) ai.textContent = "◌ " + p.status_msg + " (구간마다 몇 분씩 걸립니다)";
+  else if (busy) ai.textContent = p.status === "queued" ? "⏳ AI 정리 대기 중…" : "◌ " + (p.kind === "video" ? "Gemini가 영상을 보는 중… (몇 분 걸릴 수 있습니다)" : (p.engine === "gemini" ? "Gemini" : "Claude") + "가 읽는 중… (보통 1분 안팎)");
   else if (bad) ai.textContent = "⚠ " + (p.status_msg || "AI 정리에 실패했어요");
+  else if (isN) ai.textContent = (p.pinned ? "📌 고정 공지" : "📢 공지") + " · 쓴 그대로 올린 글(AI 정리 없음)";
   else { ai.innerHTML = SPARK; ai.append(document.createTextNode(aiLine(p))); }
   body.append(ai);
   if (busy) body.append(h("div", { class: "prog" }, h("i")));
@@ -824,10 +977,16 @@ function postCard(p, inDialog = false) {
       src ? h("span", { text: src }) : null));
   }
 
-  const go = sourceLink(p, url);
+  if (p.shelf && featOn("lib")) body.append(h("div", { class: "meta" }, h("span", { class: "chip cat", text: "📁 " + p.shelf })));
+  const go = isN ? null : sourceLink(p, url);
   if (go) body.append(go);
 
   const open = inDialog || openMore.has(p.id);
+  if (isN) {
+    const txt = p.body || "", long = txt.length > 260 || txt.split("\n").length > 6;
+    body.append(h("div", { class: "nbody" + (open || !long ? "" : " fold"), text: txt }));
+    if (long && !inDialog) body.append(h("button", { class: "more", type: "button", text: open ? "접기 ⌃" : "더보기 ⌄", onclick: () => { open ? openMore.delete(p.id) : openMore.add(p.id); renderFeed(); } }));
+  }
   if (done) {
     const kp = s.key_points || [];
     const long = kp.length > 3 || (s.one_line || "").length > 160;
@@ -836,29 +995,31 @@ function postCard(p, inDialog = false) {
     if (kp.length) pd.append(h("ul", {}, kp.slice(0, open ? 99 : 3).map(k => h("li", {}, k.at ? h("span", { class: "at", text: k.at }) : null, k.point))));
     if (!s.one_line && !kp.length && s.readable === false) pd.append(h("p", { text: "자료에서 정리할 내용을 찾지 못했습니다." }));
     body.append(pd);
+    if (open && (s.one_line || kp.length)) body.append(h("div", { class: "cprow" }, copyBtn("요약 복사", () => sumText(p, s, false), "요약을")));
   }
   if (p.note) body.append(h("div", { class: "wm" }, h("b", { text: "WM 한마디 코멘트 · " + p.author }), p.note));
 
   if (done && open) {
     const det = h("div", { class: "det" });
-    const sec = (label, arr) => { if (arr && arr.length) det.append(h("div", { class: "sec", text: label }), h("ul", {}, arr.map(t => h("li", { text: t })))); };
+    const sec = (label, arr) => { if (arr && arr.length) det.append(h("div", { class: "sec" }, label, copyBtn("복사", () => arr.map(t => "• " + t).join("\n"), label + "을(를)")), h("ul", {}, arr.map(t => h("li", { text: t })))); };
     sec("자료가 말하는 시사점", s.implications);
     if (s.figures && s.figures.length) {
-      det.append(h("div", { class: "sec", text: "자료에 나온 숫자 (원문 그대로)" }),
+      det.append(h("div", { class: "sec" }, "자료에 나온 숫자 (원문 그대로)", copyBtn("복사", () => figText(s.figures.slice(0, 5)), "숫자를")),
         h("div", { class: "nums" }, s.figures.slice(0, 5).map(f => h("div", { class: "nr" }, f.label ? h("div", { class: "nl", text: f.label }) : null,
           h("div", { class: "nv", text: f.value || "" }), h("div", { class: "nb", text: f.as_of ? "기준: " + f.as_of : "기준 시점 표기 없음" })))));
     }
-    if (s.related && s.related.length) det.append(h("div", { class: "sec", text: "자료에 나온 종목·자산" }),
+    if (s.related && s.related.length) det.append(h("div", { class: "sec" }, "자료에 나온 종목·자산", copyBtn("복사", () => s.related.map(r => r.name + (r.code ? " (" + r.code + ")" : "")).join(", "), "종목을")),
       h("div", { class: "meta", style: "margin-top:6px" }, s.related.map(r => h("span", { class: "chip", text: `${r.name}${r.code ? " (" + r.code + ")" : ""}${r.kind ? " · " + r.kind : ""}` }))));
     sec("위험 요인", s.risks);
     sec("근거가 약하거나 확인되지 않은 주장", s.unverified);
     if (url) det.append(h("a", { class: "src", href: url, target: "_blank", rel: "noopener noreferrer", text: "원문: " + url }));
     if (p.has_file) det.append(h("a", { class: "src", href: "/api/files/" + p.id, target: "_blank", rel: "noopener", onclick: e => openFile(e, p.id), text: "📄 첨부 보기: " + (p.file_name || "파일") }));
+    if (p.pasted) det.append(pastedBox(p.pasted));
     det.append(h("div", { class: "caution" }, ...(s.notes || []).map(n => h("div", { text: "· " + n })),
       h("div", { text: "· AI 정리입니다. 고객에게 전달하기 전에 원문과 숫자를 꼭 확인하세요." }),
       p.model ? h("div", { text: "· 정리한 모델: " + p.model }) : null));
     body.append(det);
-  } else if (!done) {
+  } else if (!done && !isN) {
     if (url) body.append(h("a", { class: "src", href: url, target: "_blank", rel: "noopener noreferrer", text: "원문: " + url }));
     else if (p.has_file && p.kind !== "image") body.append(h("a", { class: "src", href: "/api/files/" + p.id, target: "_blank", rel: "noopener", onclick: e => openFile(e, p.id), text: "📄 " + (p.file_name || "첨부") }));
   }
@@ -883,9 +1044,14 @@ function postCard(p, inDialog = false) {
     const btn = e.currentTarget; btn.disabled = true;
     try { await api(`/api/posts/${p.id}/retry`, { method: "POST", body: {} }); toast("다시 정리합니다"); runPost(p.id); refreshOne(p.id); }
     catch (err) { toast(err.message); btn.disabled = false; } } }));
+  if (inDialog && p.status === "done" && p.kind !== "notice" && canEdit(p)) acts.append(h("button", { type: "button", class: "btn", text: "↻ 다시 정리", onclick: async e => {
+    if (!confirm("이 자료를 AI 로 다시 정리할까요? 지금 요약은 새 요약으로 바뀝니다.")) return;
+    const btn = e.currentTarget; btn.disabled = true;
+    try { await api(`/api/posts/${p.id}/retry`, { method: "POST", body: {} }); toast("다시 정리합니다"); runPost(p.id); refreshOne(p.id); }
+    catch (err) { toast(err.message); btn.disabled = false; } } }));
   if (bad && canEdit(p)) acts.append(h("button", { type: "button", class: "btn", text: p.kind === "video" ? "자막 붙여 AI 정리" : "본문 붙여 AI 정리",
     onclick: () => { openFill.has(p.id) ? openFill.delete(p.id) : openFill.add(p.id); inDialog ? openPost(p.id) : renderFeed(); } }));
-  const isAdm = state.me.role === "admin" && p.views;
+  const isAdm = state.me.role === "admin" && (p.views || isN);
   const viewList = isAdm ? h("div", { class: "viewers", hidden: true }) : null;
   acts.append(h("span", { class: isAdm ? "vcnt on" : "vcnt", title: isAdm ? "눌러서 누가 봤는지 보기(관리자에게만 보임)" : "열어 본 직원 수(올린 사람 제외, 한 사람은 한 번만 셉니다)",
     role: isAdm ? "button" : null, tabindex: isAdm ? "0" : null, text: "👁 본 사람 " + (p.views || 0) + "명",
@@ -893,13 +1059,38 @@ function postCard(p, inDialog = false) {
       if (!viewList.hidden) { viewList.hidden = true; return; }
       viewList.hidden = false; viewList.textContent = "불러오는 중…";
       try {
-        const vs = (await api("/api/posts/" + p.id)).viewers || [];
+        const fv = await api("/api/posts/" + p.id), vs = fv.viewers || [];
         viewList.replaceChildren(h("b", { text: "본 사람 " + vs.length + "명 (관리자에게만 보임)" }));
         for (const v of vs) viewList.append(h("div", { class: "vr" }, h("span", { text: v.name }), h("span", { class: "t", text: ago(v.created_at) })));
+        const un = fv.unread;
+        if (un) viewList.append(h("div", { class: "unread", text: un.length ? `아직 안 읽은 사람 ${un.length}명: ` + un.join(", ") : "모두 읽었습니다" }));
       } catch (e) { viewList.textContent = e.message; } } : null }));
-  acts.append(h("span", { class: "sp" }), h("button", { type: "button", class: "btn", text: "링크 복사", onclick: () => copyText(location.origin + "/#p" + p.id) }));
+  if (isN && state.me.role === "admin") acts.append(h("button", { type: "button", class: "btn", text: p.pinned ? "📌 고정 해제" : "📌 맨 위 고정", onclick: async e => {
+    e.currentTarget.disabled = true;
+    try { await api(`/api/notices/${p.id}`, { method: "POST", body: { pinned: !p.pinned } }); toast(p.pinned ? "고정을 풀었습니다" : "맨 위에 고정했습니다"); loadFeed(); refreshOne(p.id); }
+    catch (err) { toast(err.message); } } }));
+  if (state.me.role === "admin" && p.status === "done") acts.append(h("button", { type: "button", class: "btn", text: "🔔 알림 보내기",
+    title: "알림을 켠 직원에게 이 글을 알립니다(관리자에게만 보임)", onclick: async e => {
+      if (!confirm("알림을 켠 직원들에게 이 글을 알릴까요?\n(올린 사람 본인은 받지 않습니다)")) return;
+      const btn = e.currentTarget; btn.disabled = true;
+      try { const r = await api(`/api/posts/${p.id}/notify`, { method: "POST", body: {} }); toast(`알림을 보냈습니다 — 기기 ${r.ok}대`); }
+      catch (err) { toast(err.message); } finally { btn.disabled = false; } } }));
+  acts.append(h("span", { class: "sp" }));
+  if (done && s.readable !== false) acts.append(h("button", { type: "button", class: "btn", text: "전체 복사", title: "제목·요약·시사점·숫자·위험 요인·원문 주소를 한 번에 복사(카톡에 붙여 넣기 좋게)",
+    onclick: () => copyText(sumText(p, s, true), "정리 전체를") }));
+  acts.append(h("button", { type: "button", class: "btn", text: "링크 복사", onclick: () => copyText(location.origin + "/#p" + p.id) }));
   body.append(acts);
   if (viewList) body.append(viewList);
+  if (inDialog && canEdit(p) && !isN && featOn("lib") && state.shelves && state.shelves.length) {
+    const sel = h("select", { "aria-label": "자료실 칸" }); shelfFill(sel, "넣지 않음", p.shelf || "");
+    sel.onchange = async () => {
+      let v = sel.value;
+      if (v === SHELF_NEW) { v = askShelf(); if (!v) { shelfFill(sel, "넣지 않음", p.shelf || ""); return; } shelfFill(sel, "넣지 않음", v); }
+      try { const r = await api(`/api/posts/${p.id}/shelf`, { method: "POST", body: { shelf: v } }); p.shelf = r.shelf; shelfFill(sel, "넣지 않음", p.shelf || ""); toast(r.shelf ? `자료실 「${r.shelf}」에 꽂았습니다` : "자료실에서 뺐습니다"); refreshOne(p.id); }
+      catch (err) { toast(err.message); shelfFill(sel, "넣지 않음", p.shelf || ""); }
+    };
+    body.append(h("label", { class: "shelfsel" }, h("span", { text: "📁 자료실" }), sel));
+  }
   if (bad && canEdit(p) && openFill.has(p.id)) body.append(fillBox(p));
   if (cOpen) body.append(commentBox(p, inDialog));
   return card;
@@ -944,8 +1135,32 @@ function commentBox(p, inDialog) {
 async function loadFull(id) {
   try { full[id] = await api("/api/posts/" + id); const i = state.posts.findIndex(x => x.id === id); if (i >= 0) { state.posts[i] = full[id]; } renderFeed(); } catch (_) {}
 }
-function copyText(t) {
-  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => toast("링크를 복사했습니다"), () => prompt("복사하세요", t));
+function copyText(t, what) {
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => toast((what || "링크를") + " 복사했습니다"), () => prompt("복사하세요", t));
+}
+function copyBtn(label, get, what) {
+  return h("button", { type: "button", class: "cpb", text: label, onclick: e => { e.stopPropagation(); copyText(get(), what); } });
+}
+function figText(fs) {
+  return fs.map(f => "• " + (f.label ? f.label + ": " : "") + (f.value || "") + (f.as_of ? " (기준 " + f.as_of + ")" : "")).join("\n");
+}
+// 자세히 창의 정리를 글로 — full 이면 시사점·숫자·위험·고객 말투·다르게 볼 점·원문 주소까지
+function sumText(p, s, full) {
+  const L = ["📌 " + titleOf(p, s)];
+  if (s.one_line) L.push(s.one_line);
+  const kp = s.key_points || [];
+  if (kp.length) L.push("", ...kp.map(k => "• " + k.point + (k.at ? " [" + k.at + "]" : "")));
+  if (!full) return L.join("\n");
+  const part = (t, arr) => { if (arr && arr.length) L.push("", t, ...arr.map(x => "• " + x)); };
+  part("💡 시사점", s.implications);
+  if (s.figures && s.figures.length) L.push("", "🔢 자료에 나온 숫자", figText(s.figures.slice(0, 5)));
+  part("⚠️ 위험 요인", s.risks);
+  if (s.client_talk) L.push("", "💬 고객에게 이렇게 말해 보세요", s.client_talk);
+  part("🔍 다르게 볼 수 있는 점", s.counterpoint);
+  const url = p.url || "";
+  if (url) L.push("", "원문: " + url);
+  L.push("", "— AI 정리 · 원문 확인 필요");
+  return L.join("\n");
 }
 
 // 링크(#p번호)로 들어온 글
@@ -953,6 +1168,7 @@ const postDlg = $("#postDlg");
 async function openPost(id) {
   try {
     const p = await api("/api/posts/" + id + "?view=1"); full[id] = p;
+    const pin = (state.pins || []).find(x => x.id === id); if (pin && !pin.read) { pin.read = true; renderPins(); }
     $(".db", postDlg).replaceChildren(postCard(p, true));
     if (!postDlg.open) postDlg.showModal();
     if (location.hash !== "#p" + id) history.replaceState(null, "", "#p" + id);
@@ -961,6 +1177,126 @@ async function openPost(id) {
 postDlg.addEventListener("close", () => { if (location.hash.startsWith("#p")) history.replaceState(null, "", location.pathname); renderFeed(); });
 document.addEventListener("click", e => { if (e.target.matches("[data-close]")) e.target.closest("dialog").close(); });
 for (const d of document.querySelectorAll("dialog")) d.addEventListener("click", e => { if (e.target === d) d.close(); });
+
+// ── 공지 창 ──
+const noticeDlg = $("#noticeDlg");
+async function openNotices() {
+  $("#nForm").classList.toggle("hidden", state.me.role !== "admin");
+  if (!noticeDlg.open) noticeDlg.showModal();
+  const box = $("#nList"); box.textContent = "불러오는 중…";
+  try {
+    const r = await api("/api/posts?kind=notice");
+    box.replaceChildren(...(r.posts.length ? r.posts.map(p => h("button", { class: "lrow", type: "button", onclick: () => { noticeDlg.close(); openPost(p.id); } },
+      h("b", { text: (p.pinned ? "📌 " : "") + titleOf(p, {}) }), h("span", { class: "s", text: `${p.author} · ${timeOf(p.created_at)} · 👁 ${p.views || 0}명` }))) : [h("div", { class: "empty", text: "아직 공지가 없습니다." })]));
+  } catch (e) { box.textContent = e.message; }
+}
+$("#qNotice").onclick = openNotices;
+$("#nForm").onsubmit = async e => {
+  e.preventDefault();
+  const b = $("#nGo"); b.disabled = true;
+  try {
+    const r = await api("/api/notices", { method: "POST", body: { title: $("#nTitle").value.trim(), body: $("#nBody").value, pinned: $("#nPin").checked, push: $("#nPush").checked } });
+    $("#nTitle").value = ""; $("#nBody").value = "";
+    toast(r.push && r.push.ok != null ? `공지를 올렸습니다 · 알림 기기 ${r.push.ok}대` : "공지를 올렸습니다");
+    loadFeed(); openNotices();
+  } catch (err) { toast(err.message); } finally { b.disabled = false; }
+};
+
+// ── 자료실 칸 고르기(정해 둔 칸 + 직접 입력) ──
+const SHELF_NEW = "__new__";
+function shelfFill(sel, emptyText, value) {
+  if (value && !state.shelves.includes(value)) state.shelves.push(value);  // 방금 적은 이름도 목록에 둔다
+  sel.replaceChildren(h("option", { value: "", text: emptyText }), ...state.shelves.map(v => h("option", { value: v, text: v })),
+    h("option", { value: SHELF_NEW, text: "✏️ 직접 입력…" }));
+  sel.value = value || "";
+}
+function askShelf() {
+  const v = (prompt("자료실 칸 이름을 적어 주세요 (20자 이내)\n예: 상품안내장, 세미나 자료") || "").replace(/\s+/g, " ").trim();
+  if (!v) return "";
+  if (v.length > 20) { toast("20자 이내로 적어 주세요"); return ""; }
+  return v;
+}
+// ── 자료실 창 ──
+const libDlg = $("#libDlg"), lib = { shelf: "*", q: "", rows: [] };
+function libTabs() {
+  $("#libShelves").replaceChildren(...[["*", "전체"], ...state.shelves.map(v => [v, v])].map(([k, t]) =>
+    h("button", { type: "button", "aria-pressed": String(lib.shelf === k), text: t, onclick: () => { lib.shelf = k; libTabs(); libLoad(); } })));
+}
+async function libLoad(more = false) {
+  const p = new URLSearchParams({ shelf: lib.shelf }); if (lib.q) p.set("q", lib.q);
+  if (more && lib.rows.length) p.set("before", lib.rows[lib.rows.length - 1].id);
+  const box = $("#libList"); if (!more) box.textContent = "불러오는 중…";
+  try {
+    const r = await api("/api/posts?" + p);
+    lib.rows = more ? lib.rows.concat(r.posts) : r.posts;
+    box.replaceChildren(...(lib.rows.length ? lib.rows.map(x => h("button", { class: "lrow", type: "button", onclick: () => { libDlg.close(); openPost(x.id); } },
+      h("b", { text: titleOf(x, x.summary || {}) }),
+      h("span", { class: "s", text: [lib.shelf === "*" ? "📁 " + x.shelf : null, KIND[x.kind], x.file_name, x.author, timeOf(x.created_at)].filter(Boolean).join(" · ") })))
+      : [h("div", { class: "empty", text: lib.q ? "찾는 자료가 없습니다." : "이 칸에는 아직 자료가 없습니다." })]));
+    $("#libMore").classList.toggle("hidden", r.posts.length < 30);
+  } catch (e) { box.textContent = e.message; }
+}
+$("#qLib").onclick = () => { libTabs(); if (!libDlg.open) libDlg.showModal(); libLoad(); };
+$("#libMore").onclick = () => libLoad(true);
+let libT; $("#libQ").oninput = e => { clearTimeout(libT); libT = setTimeout(() => { lib.q = e.target.value.trim(); libLoad(); }, 300); };
+
+// ── 일정 창 ──
+const calDlg = $("#calDlg"), cal = { y: 0, m: 0, sel: "", evs: [], today: "" };
+const pad2 = n => String(n).padStart(2, "0");
+const ymd = (y, m, d) => `${y}-${pad2(m + 1)}-${pad2(d)}`;
+async function calLoad() {
+  const last = new Date(cal.y, cal.m + 1, 0).getDate();
+  $("#calTitle").textContent = `${cal.y}년 ${cal.m + 1}월`;
+  try {
+    const r = await api(`/api/events?from=${ymd(cal.y, cal.m, 1)}&to=${ymd(cal.y, cal.m, last)}`);
+    cal.evs = r.events; cal.today = r.today;
+  } catch (e) { cal.evs = []; toast(e.message); }
+  calDraw();
+}
+function calDraw() {
+  const first = new Date(cal.y, cal.m, 1).getDay(), last = new Date(cal.y, cal.m + 1, 0).getDate();
+  const has = new Set(cal.evs.map(e => e.day));
+  const g = WD.map((w, i) => h("div", { class: "wd" + (i ? "" : " sun"), text: w }));
+  for (let i = 0; i < first; i++) g.push(h("button", { class: "out", type: "button", tabindex: "-1", "aria-hidden": "true" }));
+  for (let d = 1; d <= last; d++) {
+    const k = ymd(cal.y, cal.m, d);
+    g.push(h("button", { type: "button", class: (k === cal.today ? "today" : "") + ((first + d - 1) % 7 ? "" : " sun"), "aria-pressed": String(cal.sel === k),
+      "aria-label": `${cal.m + 1}월 ${d}일${has.has(k) ? " 일정 있음" : ""}`,
+      onclick: () => { cal.sel = cal.sel === k ? "" : k; if (cal.sel) $("#evDay").value = k; calDraw(); } }, String(d), has.has(k) ? h("i") : null));
+  }
+  $("#calGrid").replaceChildren(...g);
+  const list = cal.sel ? cal.evs.filter(e => e.day === cal.sel) : cal.evs;
+  $("#evHead").textContent = cal.sel ? `${+cal.sel.slice(5, 7)}월 ${+cal.sel.slice(8)}일 일정` : `${cal.m + 1}월 일정 ${cal.evs.length}건`;
+  $("#evAll").hidden = !cal.sel;
+  $("#evList").replaceChildren(...(list.length ? list.map(e => {
+    const dt = new Date(e.day + "T00:00:00");
+    return h("div", { class: "ev" + (e.day < cal.today ? " past" : "") },
+      h("div", { class: "ed" }, h("b", { text: `${dt.getMonth() + 1}.${dt.getDate()} (${WD[dt.getDay()]})` }), e.time || "시각 미정"),
+      h("div", { class: "eb" }, h("span", { class: "chip", text: e.kind || "기타" }), " ", h("b", { text: e.title }),
+        h("div", { class: "s", text: [e.place ? "📍 " + e.place : null, e.note, "등록: " + e.author].filter(Boolean).join("\n") })),
+      e.mine || state.me.role === "admin" ? h("button", { class: "ex", type: "button", text: "삭제", onclick: async () => {
+        if (!confirm(`「${e.title}」 일정을 지울까요?`)) return;
+        try { await api("/api/events/" + e.id, { method: "DELETE" }); toast("지웠습니다"); calLoad(); } catch (err) { toast(err.message); } } }) : null);
+  }) : [h("div", { class: "empty", style: "padding:14px", text: cal.sel ? "이 날은 일정이 없습니다." : "이 달에는 일정이 없습니다." })]));
+}
+$("#qCal").onclick = () => {
+  const n = new Date(Date.now() + (state.skew || 0) * 1000); cal.y = n.getFullYear(); cal.m = n.getMonth(); cal.sel = "";
+  $("#evDay").value = ymd(cal.y, cal.m, n.getDate());
+  if (!calDlg.open) calDlg.showModal(); calLoad();
+};
+$("#calPrev").onclick = () => { cal.m--; if (cal.m < 0) { cal.m = 11; cal.y--; } cal.sel = ""; calLoad(); };
+$("#calNext").onclick = () => { cal.m++; if (cal.m > 11) { cal.m = 0; cal.y++; } cal.sel = ""; calLoad(); };
+$("#evAll").onclick = () => { cal.sel = ""; calDraw(); };
+$("#evForm").onsubmit = async e => {
+  e.preventDefault();
+  const day = $("#evDay").value;
+  try {
+    await api("/api/events", { method: "POST", body: { title: $("#evTitle").value.trim(), day, time: $("#evTime").value, kind: $("#evKind").value, place: $("#evPlace").value.trim(), note: $("#evNote").value.trim() } });
+    for (const id of ["#evTitle", "#evTime", "#evPlace", "#evNote"]) $(id).value = "";
+    toast("일정을 추가했습니다");
+    cal.y = +day.slice(0, 4); cal.m = +day.slice(5, 7) - 1; cal.sel = day; calLoad();
+  } catch (err) { toast(err.message); }
+};
 
 function titleEditor(p, s, h3) {
   const inp = h("input", { type: "text", maxlength: "200", value: titleOf(p, s), "aria-label": "새 제목" });
@@ -1004,6 +1340,12 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden && st
 
 // ── 올리기 시트 ──
 let kind = "article", imgFile = null, imgUrl = null, pdf = null, sending = false;
+// 팝업(dialog)이 열려 있는 동안 뒤의 목록이 같이 스크롤되지 않게 페이지를 잠근다
+(() => {
+  const sync = () => document.documentElement.classList.toggle("modal-open", !!document.querySelector("dialog[open]"));
+  new MutationObserver(sync).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["open"] });
+  sync();
+})();
 function openSheet() { $("#scrim").classList.remove("hidden"); document.body.style.overflow = "hidden"; say(""); validate(); }
 function closeSheet(force) { if (sending && !force) return; $("#scrim").classList.add("hidden"); document.body.style.overflow = ""; setTimeout(() => window.applyUpdate && applyUpdate(), 800); }
 $("#openSheet").onclick = openSheet;
@@ -1070,6 +1412,15 @@ function hasMaterial() {
 }
 function validate() { $("#submit").disabled = sending || !$("#agree").checked || !hasMaterial(); }
 for (const id of ["#aUrl", "#yUrl", "#aText", "#yText", "#tText"]) $(id).addEventListener("input", validate);
+// 입력칸을 누르면 휴대폰이 예전에 넣었던 주소를 추천해 잘못 올라가는 일이 있어, 클립보드에서 바로 넣는 단추를 둔다
+for (const b of document.querySelectorAll(".pasteBtn")) b.addEventListener("click", async () => {
+  try {
+    const t = (await navigator.clipboard.readText() || "").trim();
+    const m = t.match(/https?:\/\/[^\s<>"']+/i);
+    if (!m) { toast("복사한 내용에 링크가 없습니다"); return; }
+    const el = $(b.dataset.into); el.value = m[0].replace(/[).,]+$/, ""); el.dispatchEvent(new Event("input"));
+  } catch (_) { toast("이 앱에서는 바로 넣을 수 없습니다 — 칸을 길게 눌러 ‘붙여넣기’를 골라 주세요"); }
+});
 $("#tText").addEventListener("input", () => { const n = $("#tText").value.trim().length; $("#tCount").textContent = n ? `${n.toLocaleString()}자` : ""; });
 $("#agree").addEventListener("change", validate);
 function say(msg, err) { const s = $("#status"); s.textContent = msg; s.className = "status" + (err ? " err" : ""); }
@@ -1109,6 +1460,7 @@ const isYT = u => /(?:youtube\.com\/(?:watch|shorts|live|embed)|youtu\.be\/)/i.t
 $("#submit").onclick = async () => {
   if (sending) return;
   const body = { note: $("#wm").value.trim() };
+  if ($("#shelfIn").value && $("#shelfIn").value !== SHELF_NEW) body.shelf = $("#shelfIn").value;
   if (kind === "article") { body.url = $("#aUrl").value.trim(); body.text = $("#aText").value.trim(); }
   else if (kind === "text") { body.text = $("#tText").value.trim(); body.title = $("#tTitle").value.trim(); }
   else if (kind === "youtube") {
@@ -1142,7 +1494,7 @@ async function submitPost(body) {
   }
 }
 function resetForm() {
-  for (const id of ["#aUrl", "#aText", "#yUrl", "#yText", "#tTitle", "#tText", "#wm"]) $(id).value = "";
+  for (const id of ["#aUrl", "#aText", "#yUrl", "#yText", "#tTitle", "#tText", "#wm", "#shelfIn"]) $(id).value = "";
   $("#tCount").textContent = "";
   if (imgUrl) URL.revokeObjectURL(imgUrl); imgFile = imgUrl = null; drawPreview();
   pdf = null; $("#pdfFile").value = ""; $("#pdfLine").classList.add("hidden");
@@ -1193,26 +1545,46 @@ function showUsage(s) {
 }
 async function loadAdmin() {
   const r = await api("/api/admin/users"), ai = r.ai;
-  $("#aiStatus").textContent = `Claude: ${ai.claude ? "연결됨" : "키 없음"} (${ai.claude_model}) · Gemini: ${ai.gemini ? "연결됨" : "키 없음"} (${ai.gemini_model}) · 대기 ${r.queue}건`;
-  showUsage(r.storage);
+  $("#aiStatus").textContent = `Claude: ${ai.claude ? "연결됨" : "키 없음"} (${ai.claude_model}) · Gemini: ${ai.gemini ? "연결됨" : "키 없음"} (${ai.gemini_model}) · 대기 ${r.queue}건 · 🔔 알림 켠 사람 ${r.users.filter(u => u.push && u.active).length}명`;
+  showUsage(r.storage); featBox();
   const il = $("#invList"); il.textContent = "";
   if (!r.invites.length) il.append(h("div", { class: "caution", text: "없음" }));
   else il.append(h("table", {}, h("tbody", {}, r.invites.map(i => h("tr", {}, h("td", { text: i.name }), h("td", { text: i.role === "admin" ? "관리자" : "직원" }),
     h("td", { text: "~" + new Date(i.expires_at * 1000).toLocaleDateString("ko-KR") }),
     h("td", {}, h("button", { class: "btn small", type: "button", text: "취소", onclick: async () => { await api("/api/admin/invites/" + i.id, { method: "DELETE" }); loadAdmin(); } })))))));
   const ul = $("#userList"); ul.textContent = "";
-  ul.append(h("table", {}, h("thead", {}, h("tr", {}, ["이름", "권한", "글", "최근 접속", ""].map(t => h("th", { text: t })))),
-    h("tbody", {}, r.users.map(u => {
+  const vs = r.visits || {};
+  ul.append(h("div", { class: "caution", style: "margin-bottom:6px", text: `접속: 오늘 ${vs.today || 0}명 · 최근 7일 ${vs.week || 0}명` + (vs.since ? ` (이력은 ${vs.since}부터)` : "") + " — 이름을 누르면 그 사람의 접속 이력이 나옵니다." }));
+  ul.append(h("table", {}, h("thead", {}, h("tr", {}, ["이름", "권한", "글", "최근 접속", "30일 접속", ""].map(t => h("th", { text: t })))),
+    h("tbody", {}, r.users.flatMap(u => {
       const self = u.id === state.me.id;
       const act = (body, msg) => async () => { if (msg && !confirm(msg)) return; try { const x = await api("/api/admin/users/" + u.id, { method: "POST", body }); if (x.code) showCode(x.name, x.code, x.valid); loadAdmin(); } catch (e) { toast(e.message); } };
-      return h("tr", { style: u.active ? "" : "opacity:.5" }, h("td", { text: u.name + (u.active ? "" : " (정지)") + (u.locked ? " 🔒잠김" : "") }), h("td", { text: u.role === "admin" ? "관리자" : "직원" }),
-        h("td", { text: u.posts }), h("td", { text: u.last_login ? ago(u.last_login) : "-" }),
+      const detail = h("tr", { class: "hidden" }, h("td", { colspan: "6" }));
+      const nameBtn = h("button", { type: "button", class: "linkish", style: "all:unset;cursor:pointer;text-decoration:underline;text-underline-offset:3px", text: u.name, onclick: () => toggleActivity(u, detail) });
+      return [h("tr", { style: u.active ? "" : "opacity:.5" }, h("td", { title: u.push ? `새 글 알림 켬 — 기기 ${u.push}대` : null }, nameBtn, (u.active ? "" : " (정지)") + (u.locked ? " 🔒잠김" : "") + (u.push ? " 🔔" : "")), h("td", { text: u.role === "admin" ? "관리자" : "직원" }),
+        h("td", { text: u.posts }), h("td", { text: u.last_login ? ago(u.last_login) : "-" }), h("td", { text: u.days30 ? u.days30 + "일" : "-" }),
         h("td", { class: "row", style: "gap:4px" },
           u.locked ? h("button", { class: "btn small", type: "button", text: "잠금 풀기", onclick: act({ unlock: true }, `${u.name} 님의 계정 잠금을 풀까요?\n비밀번호가 짧은 시간에 여러 번 틀렸습니다. 본인이 틀린 것이 맞는지 먼저 확인해 주세요.`) }) : null,
           h("button", { class: "btn small", type: "button", text: "비번 재설정", onclick: act({ reset: true }, `${u.name} 님의 비밀번호 재설정 코드를 만들까요?`) }),
           self ? null : h("button", { class: "btn small", type: "button", text: u.active ? "정지" : "복구", onclick: act({ active: !u.active }, u.active ? `${u.name} 님을 정지할까요? 바로 로그아웃됩니다.` : null) }),
-          self ? null : h("button", { class: "btn small", type: "button", text: u.role === "admin" ? "직원으로" : "관리자로", onclick: act({ role: u.role === "admin" ? "member" : "admin" }) })));
+          self ? null : h("button", { class: "btn small", type: "button", text: u.role === "admin" ? "직원으로" : "관리자로", onclick: act({ role: u.role === "admin" ? "member" : "admin" }) }))), detail];
     }))));
+}
+const hm = t => new Date(t * 1000).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false });
+async function toggleActivity(u, tr) {
+  if (!tr.classList.contains("hidden")) { tr.classList.add("hidden"); return; }
+  const td = tr.firstChild; td.textContent = "불러오는 중…"; tr.classList.remove("hidden");
+  let r; try { r = await api(`/api/admin/users/${u.id}/activity`); } catch (e) { td.textContent = e.message; return; }
+  td.textContent = "";
+  td.append(h("div", { style: "font-weight:700;margin:4px 0" , text: `${r.name} — 최근 30일 접속 ${r.visits.length}일` }));
+  if (!r.visits.length) td.append(h("div", { class: "caution", text: r.since ? `${r.since} 이후 접속 기록이 없습니다.` : "아직 쌓인 접속 기록이 없습니다." }));
+  else td.append(h("table", { style: "font-size:13px;margin-bottom:8px" }, h("thead", {}, h("tr", {}, ["날짜", "처음", "마지막", "기기"].map(t => h("th", { text: t })))),
+    h("tbody", {}, r.visits.map(v => h("tr", {}, h("td", { text: v.day.slice(5).replace("-", "/") + " (" + "일월화수목금토"[new Date(v.day + "T12:00:00+09:00").getDay()] + ")" }),
+      h("td", { text: hm(v.first_at) }), h("td", { text: hm(v.last_at) }), h("td", { text: v.device || "-" }))))));
+  td.append(h("div", { style: "font-weight:700;margin:4px 0", text: `열어 본 글 ${r.nviews}건` + (r.nviews > r.views.length ? ` (최근 ${r.views.length}건)` : "") }));
+  if (!r.views.length) td.append(h("div", { class: "caution", text: "열어 본 글이 없습니다." }));
+  else td.append(h("ul", { style: "margin:0;padding-left:18px;font-size:13px" }, r.views.map(v => h("li", {}, h("span", { text: v.title }), h("span", { class: "caution", text: " · " + new Date(v.at * 1000).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false }) })))));
+  td.append(h("div", { class: "caution", style: "margin-top:6px", text: "앱을 쓴 날만 남깁니다(같은 날은 한 줄). 시각은 10분 단위로 대략입니다. 기록은 180일 보관합니다." }));
 }
 
 // ── 앱 설치 ──
@@ -1324,7 +1696,11 @@ async function pushToggle(fromBar) {
   try {
     if (turnOff) { await pushOff(); toast("이 기기의 새 글 알림을 껐습니다."); }
     else { await pushOn(); toast("새 글 알림을 켰습니다."); }
-  } catch (e) { err = e.message; if (fromBar) alert(err); }
+  } catch (e) {
+    err = e.message || String(e); if (fromBar) alert(err);
+    let perm = ""; try { perm = Notification.permission; } catch (_) {}
+    api("/api/push/error", { method: "POST", body: { msg: (e.name || "") + ": " + err, perm, app: String(standalone()), ua: navigator.userAgent } }).catch(() => {});
+  }
   await pushUi();
   if (err) $("#pushMsg").textContent = err;
 }

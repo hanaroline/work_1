@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#13294b">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg">
+<title>AI 자동 요약</title>
+<style>
+  :root { --navy:#13294b; --orange:#ff5a00; --bg:#f4f5f7; --card:#fff; --line:#dfe3ea; --ink:#1b2430; --sub:#5b6577; --err:#c62828; --ok:#2f7a3a; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0f1520; --card:#18202d; --line:#2a3546; --ink:#e7ebf2; --sub:#9aa6b8; --err:#ff8a80; --ok:#7bc47f; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif; }
+  header { background:var(--navy); color:#fff; padding:14px 16px calc(14px); padding-top:max(14px, env(safe-area-inset-top)); display:flex; align-items:center; gap:10px; }
+  header h1 { font-size:17px; margin:0; flex:1; }
+  header a { color:#cfd8e8; font-size:13px; text-decoration:none; }
+  main { max-width:640px; margin:0 auto; padding:16px; }
+  .note { font-size:12.5px; color:var(--sub); margin:0 0 12px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:14px; }
+  textarea { width:100%; border:1px solid var(--line); border-radius:8px; padding:10px; font:inherit; color:var(--ink); background:transparent; resize:vertical; }
+  #src { min-height:84px; }
+  #out { min-height:320px; font-size:14.5px; }
+  .row { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  button { font:inherit; font-weight:600; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink); padding:10px 14px; cursor:pointer; }
+  button.main { background:var(--orange); border-color:var(--orange); color:#fff; flex:1; }
+  button.kakao { background:#fee500; border-color:#fee500; color:#191919; flex:1; }
+  button:disabled { opacity:.5; cursor:default; }
+  #status { font-size:14px; color:var(--sub); min-height:1.4em; margin:2px 0 0; }
+  #status.err { color:var(--err); }
+  #status.ok { color:var(--ok); }
+  .hidden { display:none !important; }
+  .meta { font-size:12.5px; color:var(--sub); margin:8px 0 0; }
+  .meta li { margin:2px 0; }
+</style>
+</head>
+<body>
+<header><h1>AI 자동 요약</h1><a href="/">브리핑룸 ›</a></header>
+<main>
+  <p class="note">링크나 본문을 넣으면 단톡방에 올릴 요약을 만듭니다. <b>저장되지 않으며</b> 브리핑룸 피드에도 올라가지 않습니다.</p>
+
+  <div id="needLogin" class="card hidden">
+    로그인이 필요합니다. <a href="/">브리핑룸</a>에서 로그인한 뒤 이 화면으로 돌아오세요.
+  </div>
+
+  <div class="card">
+    <textarea id="src" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="기사·유튜브 링크를 붙여 넣으세요 (본문을 그대로 붙여 넣어도 됩니다)"></textarea>
+    <div class="row">
+      <button id="paste" type="button">붙여넣기</button>
+      <button id="go" class="main" type="button">요약하기</button>
+    </div>
+    <p id="status" role="status" aria-live="polite"></p>
+    <div class="row hidden" id="resumeRow"><button id="resume" type="button">이어서 다시</button></div>
+  </div>
+
+  <div class="card hidden" id="result">
+    <textarea id="out" aria-label="단톡방에 보낼 글(고칠 수 있습니다)"></textarea>
+    <div class="row">
+      <button id="share" class="kakao" type="button">카톡으로 보내기</button>
+      <button id="copy" type="button">복사</button>
+    </div>
+    <ul class="meta" id="notes"></ul>
+  </div>
+</main>
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const FOOT = "— AI 요약 · 원문 확인 필요";
+let busy = false, pending = null, wake = null;
+
+function setStatus(t, cls) { const el = $("#status"); el.textContent = t || ""; el.className = cls || ""; }
+function firstUrl(s) { const m = (s || "").match(/https?:\/\/[^\s<>"']+/i); return m ? m[0].replace(/[).,]+$/, "") : ""; }
+
+async function call(body) {
+  const r = await fetch("/api/quick", { method: "POST", credentials: "same-origin",
+    headers: { "X-Insight": "1", "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  let d = {}; try { d = await r.json(); } catch (_) {}
+  if (r.status === 401) { $("#needLogin").classList.remove("hidden"); throw new Error("로그인이 필요합니다"); }
+  if (!r.ok) throw new Error(d.error || ("오류 " + r.status));
+  return d;
+}
+
+function kakaoText(sm, url, source) {
+  const L = [];
+  L.push("📌 " + (sm.title || "").trim());
+  if (sm.one_line) L.push(sm.one_line.trim());
+  if (source) L.push("(" + source + ")");
+  if ((sm.key_points || []).length) {
+    L.push("", "✅ 핵심");
+    for (const k of sm.key_points) L.push("• " + k.point + (k.at && /^(영상\d+ )?\d+:\d{2}/.test(k.at) ? " [" + k.at + "]" : ""));
+  }
+  if ((sm.implications || []).length) { L.push("", "💡 시사점"); for (const t of sm.implications) L.push("• " + t); }
+  if ((sm.risks || []).length) { L.push("", "⚠️ 유의할 점"); for (const t of sm.risks.slice(0, 2)) L.push("• " + t); }
+  if (url) L.push("", "원문: " + url);
+  L.push("", FOOT);
+  return L.join("\n");
+}
+
+async function run(resumeState) {
+  if (busy) return;
+  const raw = $("#src").value.trim();
+  if (!raw) { setStatus("링크나 본문을 넣어 주세요.", "err"); return; }
+  const url = firstUrl(raw);
+  const onlyUrl = url && raw.replace(url, "").trim().length < 200;   // 링크에 제목 한 줄 정도 붙은 공유 글은 링크로 다룬다
+  const body = onlyUrl ? { url } : { text: raw };
+  busy = true; $("#go").disabled = true; $("#resumeRow").classList.add("hidden"); $("#result").classList.add("hidden");
+  try { if (navigator.wakeLock) wake = await navigator.wakeLock.request("screen"); } catch (_) {}
+  let state = resumeState || null;
+  setStatus(state ? "이어서 정리하는 중…" : (url && /youtu/.test(url) && onlyUrl ? "영상을 보는 중… (몇 분 걸릴 수 있습니다)" : "읽고 정리하는 중…"));
+  try {
+    for (let n = 0; n < 80; n++) {
+      const d = await call(state ? Object.assign({}, body, { state }) : body);
+      if (d.done) {
+        if (d.blocked) { setStatus(d.blocked, "err"); return; }
+        $("#out").value = kakaoText(d.summary, d.url || url, d.source);
+        const notes = $("#notes"); notes.textContent = "";
+        for (const t of (d.summary.notes || [])) { const li = document.createElement("li"); li.textContent = t; notes.append(li); }
+        $("#result").classList.remove("hidden");
+        setStatus("요약 완료 — 글을 고친 뒤 보내도 됩니다.", "ok");
+        return;
+      }
+      state = d.state;
+      if (d.failed) { pending = state; setStatus(d.msg, "err"); $("#resumeRow").classList.remove("hidden"); return; }
+      setStatus(d.msg + " — 화면을 켜 둔 채 기다려 주세요 (몇 분씩 걸릴 수 있습니다)");
+    }
+    setStatus("너무 오래 걸려 멈췄습니다.", "err");
+  } catch (e) {
+    setStatus(e.message, "err");
+    if (state) { pending = state; $("#resumeRow").classList.remove("hidden"); }
+  } finally {
+    busy = false; $("#go").disabled = false;
+    try { if (wake) await wake.release(); } catch (_) {} wake = null;
+  }
+}
+
+$("#go").onclick = () => { pending = null; run(null); };
+$("#resume").onclick = () => run(pending);
+$("#paste").onclick = async () => {
+  try { const t = await navigator.clipboard.readText(); if (t) $("#src").value = t; }
+  catch (_) { setStatus("붙여넣기를 쓸 수 없습니다 — 입력칸을 길게 눌러 붙여 넣어 주세요.", "err"); }
+};
+$("#copy").onclick = async () => {
+  try { await navigator.clipboard.writeText($("#out").value); setStatus("복사했습니다. 단톡방에 붙여 넣으세요.", "ok"); }
+  catch (_) { $("#out").select(); setStatus("복사하지 못했습니다 — 글을 길게 눌러 복사해 주세요.", "err"); }
+};
+$("#share").onclick = async () => {
+  const text = $("#out").value;
+  if (navigator.share) {
+    try { await navigator.share({ text }); return; }
+    catch (e) { if (e && e.name === "AbortError") return; }
+  }
+  $("#copy").onclick();
+};
+
+// 다른 앱(카카오톡)의 「공유」로 들어오면 받은 링크를 넣고 바로 시작한다
+(() => {
+  const p = new URLSearchParams(location.search);
+  const got = [p.get("url"), p.get("text"), p.get("title")].filter(Boolean).join("\n");
+  if (!got) return;
+  history.replaceState(null, "", "/quick");
+  $("#src").value = firstUrl(got) || got;
+  run(null);
+})();
+</script>
+</body>
+</html>
