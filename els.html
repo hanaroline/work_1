@@ -1343,15 +1343,15 @@ function renderLadder(){
     tb.appendChild(tr);
   });
 
-  var lz = s.filter(function(step){ return step.lizard != null; })[0];
-  el('lizard-note').innerHTML = lz
-    ? t('리자드 조건 — ' + lz.months + '개월 평가일에 ' + lz.barrier + '% 를 못 채워도 ' + lz.lizard +
+  // 리자드가 여러 회차에 붙는 상품("90(75)-85(65)-…")도 있어 회차마다 한 문장씩 적는다
+  el('lizard-note').innerHTML = s.filter(function(step){ return step.lizard != null; }).map(function(lz){
+    return t('리자드 조건 — ' + lz.months + '개월 평가일에 ' + lz.barrier + '% 를 못 채워도 ' + lz.lizard +
           '% 이상이면 상환됩니다' +
           (lz.lizardRate != null ? ' (이때 수익률은 연 ' + num(lz.lizardRate, 2) + '%).' : '.'),
         'Lizard feature — at the ' + lz.months + '-month observation, redemption also occurs at or above ' +
           lz.lizard + '% even if ' + lz.barrier + '% is missed' +
-          (lz.lizardRate != null ? ' (paying ' + num(lz.lizardRate, 2) + '% p.a.).' : '.'))
-    : '';
+          (lz.lizardRate != null ? ' (paying ' + num(lz.lizardRate, 2) + '% p.a.).' : '.'));
+  }).join('<br>');
 
   // 홈페이지 원문 구조 표기를 그대로 보여줘 위 표와 대조할 수 있게 한다
   el('struct-desc').textContent = p.structureDesc

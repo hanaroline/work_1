@@ -11,7 +11,7 @@
  */
 
 import { writeFile } from 'node:fs/promises';
-import { parseStructure, readData, serializeData } from './collect_els.mjs';
+import { lizardAt, parseStructure, readData, serializeData } from './collect_els.mjs';
 
 const OUT_DATA = 'data/els.js';
 
@@ -19,22 +19,23 @@ const { header, data } = await readData(OUT_DATA);
 
 let changed = 0;
 for (const p of data.products) {
-  const { barriers, lizard } = parseStructure(p.structureDesc);
+  const { barriers, lizards } = parseStructure(p.structureDesc);
   if (!barriers || !barriers.length) continue;
 
   const step = p.maturityMonths / barriers.length;
   const schedule = barriers.map((barrier, i) => ({
     months: Math.round(step * (i + 1)),
     barrier,
-    ...(lizard && lizard.index === i
-      ? { lizard: lizard.barrier, lizardRate: lizard.rate ?? null }
-      : {}),
+    ...lizardAt(lizards, i),
   }));
 
   if (JSON.stringify(schedule) === JSON.stringify(p.schedule)) continue;
   console.log(
     `  ${p.name}: ${p.schedule.length}회차 → ${schedule.length}회차` +
-    (lizard ? ` (리자드 ${lizard.barrier}%` + (lizard.rate ? ` / 연 ${lizard.rate}%` : '') + ')' : '')
+    (lizards.length
+      ? ` (리자드 ${lizards.map((lz) => `${lz.index + 1}차 ${lz.barrier}%`).join(', ')}` +
+        (lizards[0].rate ? ` / 연 ${lizards[0].rate}%` : '') + ')'
+      : '')
   );
   p.schedule = schedule;
   changed++;
